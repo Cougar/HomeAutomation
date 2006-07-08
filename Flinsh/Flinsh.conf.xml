@@ -1,0 +1,105 @@
+<option name="host" value="mbox.arune.se"/>
+<option name="port" value="2229"/>
+<option name="backcolor" value="0xf9f9f9"/>
+<!-- the image should be the same size as the stage, 800x600 -->
+<option name="backgroundimage" value=""/>
+<!-- option name="backgroundimage" value="http://www.arune.se/~arune/roomcontrol/imgs/lamp_off.png"/ test_bg2.png-->
+
+<option name="username" value="arune"/>
+<option name="password" value="thegreatpassword"/>
+
+<!-- stage width and height, sätt dem till samma som storleken på bilden, så förstoras allt med fönstret-->
+<!-- stage width/height är read-only -->
+
+<item name="type" value="timedate">
+	<!-- This font should be imported into flinsh.fla in macromedia flash / library -->
+	<option name="font" value="MenuText"/>
+	<option name="fontcolor" value="0x454545"/>
+	<option name="left" value="0.0"/>
+	<option name="top" value="0.0"/>
+	<option name="width" value="0.05"/> <!-- flinsh lyder inte denna just nu eller?-->
+	<option name="height" value="0.04"/>
+	
+	<!-- between -180 and 180 -->
+	<option name="rotation" value="0"/>
+	
+	<option name="format" value="Y-m-d"/>
+	<!-- 
+	format as http://se.php.net/manual/en/function.date.php
+	Not implemented: 
+	Timezone (e, I (capital i), O, T, Z)
+	Full Date/Time (c, r)
+	Anything with leap year (L, z)
+	Week (W)
+	and o, B
+	 -->
+</item>
+
+<item name="type" value="timedate">
+	<!-- This font should be imported into flinsh.fla in macromedia flash / library -->
+	<option name="font" value="MenuText"/>
+	<option name="fontcolor" value="0x454545"/>
+	<option name="left" value="0.01"/>
+	<option name="top" value="0.035"/>
+	<option name="width" value="0.06"/> <!-- flinsh lyder inte denna just nu eller?-->
+	<option name="height" value="0.05"/>
+	
+	<!-- between -180 and 180 -->
+	<option name="rotation" value="0"/>
+	
+	<option name="format" value="H:i"/>
+	<!-- 
+	format as http://se.php.net/manual/en/function.date.php
+	Not implemented: 
+	Timezone (e, I (capital i), O, T, Z)
+	Full Date/Time (c, r)
+	Anything with leap year (L, z)
+	Week (W)
+	and o, B
+	 -->
+</item>
+
+<!--item name="type" value="label">
+This should be one row, to be used to print the menu title (i.e. tv-chart when browsin tv-chart or a folder name when browsing its content)
+</item-->
+
+<item name="type" value="menu">
+	<!-- -->
+
+	<!--
+	descriptions parametrar
+	width, left
+	
+	mittitems-markörens färg/alpha/ram
+	-->
+	<option name="menushortname" value="MainMenu"/>
+	<option name="menudescription" value="Bla bla bla"/>
+	
+	<!-- This font must be importer into flinsh.fla in macromedia flash / library -->
+	<option name="rowitemfont" value="MenuText"/>
+	<!-- This font must be importer into flinsh.fla in macromedia flash / library -->
+	<option name="descriptionfont" value="MenuText"/>
+	<!-- position and size, part of height and part of width (0-1) -->
+	<option name="left" value="0.10"/>
+	<option name="top" value="0.05"/>
+	<option name="width" value="0.91"/>
+	<option name="height" value="0.90"/>
+	<!-- the maximum number of items to display on the menu -->
+	<option name="menurowitems" value="20"/>
+	<!-- how many items to size on top and on bottom (if this number i 3 then 3 items will be sized on top and 3 on bottom) -->
+	<option name="sizedrowitems" value="3"/>
+	<!--  -->
+	<option name="scrolldelaytime" value="0.4"/>
+	<option name="scrollrepeattime" value="0.2"/>
+	<!-- hex for color on menu rows and description -->
+	<option name="menucolor" value="0x2c5fc2"/>
+	<option name="desccolor" value="0x2c5fc2"/>
+	<!-- the time description fades in -->
+	<option name="descscrolltime" value="0.4"/>
+	<!--  -->
+	<option name="" value=""/>
+	<!--  -->
+	<option name="" value=""/>
+	<!--  -->
+	<option name="" value=""/>
+</item>
