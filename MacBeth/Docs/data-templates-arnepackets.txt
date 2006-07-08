@@ -1,0 +1,35 @@
+Ändra dimmervärdet på taklampan
+<arnepacket bytes="2" destnode="RoofDimmer">
+<byte id="1" value="128"/>
+<byte id="2" value="133"/>
+</arnepacket>
+
+
+Tända BL på display
+<arnepacket bytes="2" destnode="DesktopDisplay">
+<byte id="1" value="64"/>
+<byte id="2" value="100"/>
+</arnepacket>
+
+Toggla taklampan, byte1=1 för on, byte1=2 för off
+<arnepacket bytes="2" destnode="SimpleRoomControl">
+<byte id="1" value="240"/>
+<byte id="2" value="4"/>
+</arnepacket>
+
+
+<arnepacket bytes="7" destnode="IrMem">
+<byte id="1" value="133"/>
+<byte id="2" value="80"/>
+<byte id="3" value="0"/>
+<byte id="4" value="80"/>
+<byte id="5" value="242"/>
+<byte id="6" value=""/>
+<byte id="7" value=""/>
+</arnepacket>
+
+<byte id="1" value="133"/> 	;first bit is always 1, second always 0, 5 for 5 bytes to send (0x85)
+<byte id="2" value="80"/>	;adress arne transmission
+<byte id="3" value="0"/>	;PC_Host
+<byte id="4" value="80"/>	;PC_Module
+<byte id="5" value="242"/>	;242 för två bytes och btn down
