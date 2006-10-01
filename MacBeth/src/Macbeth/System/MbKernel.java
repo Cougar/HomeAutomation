@@ -77,7 +77,8 @@ public abstract class MbKernel extends MbComponent {
 
         //set default values on all our options
         options.putField("kernelname", "Macbeth@" + System.getProperty("user.name").toString());
-        options.putField("moduledirectory", System.getProperty("user.dir") + "\\bin\\");
+        //options.putField("moduledirectory", System.getProperty("user.dir") + "\\bin\\");
+        options.putField("moduledirectory", System.getProperty("user.dir") + File.separator+"bin"+File.separator);
         options.putField("debugstream.logged", "false");
         options.putField("debugstream.timestamped", "false");
         options.putField("debugstream.visible", "false");
@@ -274,6 +275,7 @@ public abstract class MbKernel extends MbComponent {
         _debug.println("Enumerating modules...");
         LinkedList classList = new LinkedList();
         try {
+        	//_debug.println("moduledirectory: " + options.getField("moduledirectory"));
             //try to load all classes that inherit from Macbeth.Systen.MbModule, since these are all modules
             DynamicClassLoader.locateClasses(options.getField("moduledirectory"), "", new String[]{"Macbeth.System.MbModule"}, null, classList);
         } catch (FileNotFoundException e) {

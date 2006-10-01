@@ -7,6 +7,7 @@ package Macbeth.System;
 
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -212,7 +213,8 @@ abstract public class MbModule extends MbComponent implements MbPacketHandler {
         if (configDataHandler!=null) {
             //create XML parser and try to parse configuration file
             XMLParser xmlParser = new XMLParser(configDataHandler);
-            configFile = "Config\\mod" + name() + ".xml";
+            //configFile = "Config\\mod" + name() + ".xml";
+            configFile = "Config"+File.separator+"mod" + name() + ".xml";
             try {
                 xmlParser.parseFile(configFile);
             } catch (FileNotFoundException e) {
