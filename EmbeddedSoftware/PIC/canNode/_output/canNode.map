@@ -1,5 +1,5 @@
 MPLINK 4.02, Linker
-Linker Map File - Created Sat Oct 21 10:45:47 2006
+Linker Map File - Created Sat Oct 21 11:33:24 2006
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -8,24 +8,24 @@ Linker Map File - Created Sat Oct 21 10:45:47 2006
                highVector       code   0x000008    program   0x000006
                 lowVector       code   0x000018    program   0x000006
                    .cinit    romdata   0x00002a    program   0x00001a
-             .code_Main.o       code   0x000044    program   0x000596
-              .code_CAN.o       code   0x0005da    program   0x00049e
-             .code_uart.o       code   0x000a78    program   0x0000e2
-               _cinit_scn       code   0x000b5a    program   0x00009e
-             .code_Tick.o       code   0x000bf8    program   0x000042
-             _startup_scn       code   0x000c3a    program   0x000018
-             .stringtable    romdata   0x000c52    program   0x000017
-          .romdata_Main.o    romdata   0x000c69    program   0x000000
-           .romdata_CAN.o    romdata   0x000c69    program   0x000000
-          .idata_uart.o_i    romdata   0x000c69    program   0x000000
-          .romdata_uart.o    romdata   0x000c69    program   0x000000
-          .idata_Tick.o_i    romdata   0x000c69    program   0x000004
-          .romdata_Tick.o    romdata   0x000c69    program   0x000000
-         .romdata_c018i.o    romdata   0x000c69    program   0x000000
-         .idata_c018i.o_i    romdata   0x000c69    program   0x000000
-          .idata_Main.o_i    romdata   0x000c6d    program   0x000004
-           .idata_CAN.o_i    romdata   0x000c71    program   0x000000
-            .code_c018i.o       code   0x000c72    program   0x000000
+             .code_Main.o       code   0x000044    program   0x000676
+              .code_CAN.o       code   0x0006ba    program   0x00048a
+             .code_uart.o       code   0x000b44    program   0x0000e2
+               _cinit_scn       code   0x000c26    program   0x00009e
+             .code_Tick.o       code   0x000cc4    program   0x000042
+             _startup_scn       code   0x000d06    program   0x000018
+             .stringtable    romdata   0x000d1e    program   0x000017
+          .romdata_Main.o    romdata   0x000d35    program   0x000000
+           .romdata_CAN.o    romdata   0x000d35    program   0x000000
+          .idata_uart.o_i    romdata   0x000d35    program   0x000000
+          .romdata_uart.o    romdata   0x000d35    program   0x000000
+          .idata_Tick.o_i    romdata   0x000d35    program   0x000004
+          .romdata_Tick.o    romdata   0x000d35    program   0x000000
+         .romdata_c018i.o    romdata   0x000d35    program   0x000000
+         .idata_c018i.o_i    romdata   0x000d35    program   0x000000
+          .idata_Main.o_i    romdata   0x000d39    program   0x000004
+           .idata_CAN.o_i    romdata   0x000d3d    program   0x000000
+            .code_c018i.o       code   0x000d3e    program   0x000000
                  .tmpdata      udata   0x000000       data   0x000014
                 MATH_DATA      udata   0x000014       data   0x00000b
            .udata_c018i.o      udata   0x000060       data   0x00000a
@@ -63,8 +63,8 @@ Linker Map File - Created Sat Oct 21 10:45:47 2006
                             0x000000    0x000005      
                             0x000008    0x00000d      
                             0x000018    0x00001d      
-                            0x00002a    0x000c70      
-            3161 out of 99352 program addresses used, program memory utilization is 3%
+                            0x00002a    0x000d3c      
+            3365 out of 99352 program addresses used, program memory utilization is 3%
 
 
 
@@ -75,53 +75,51 @@ Linker Map File - Created Sat Oct 21 10:45:47 2006
                HighVector   0x000008    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                    LowISR   0x0001dc    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                 LowVector   0x000018    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-           ___?:_lbl00037   0x0008e8    program     static                          
-           ___?:_lbl00038   0x0008e6    program     static                          
-         ___else_lbl00036   0x0008d8    program     static                          
-         ___else_lbl00040   0x0008fe    program     static                          
-         ___else_lbl00042   0x0009c8    program     static                          
-         ___else_lbl00044   0x000a34    program     static                          
-           ___if_lbl00033   0x0008ba    program     static                          
-           ___if_lbl00034   0x0008c8    program     static                          
-           ___if_lbl00035   0x0008dc    program     static                          
-           ___if_lbl00039   0x000904    program     static                          
-           ___if_lbl00041   0x000a26    program     static                          
-           ___if_lbl00043   0x000a3a    program     static                          
+           ___?:_lbl00041   0x000b2e    program     static                          
+           ___?:_lbl00042   0x000b2c    program     static                          
+         ___else_lbl00036   0x0009b8    program     static                          
+         ___else_lbl00038   0x000a80    program     static                          
+         ___else_lbl00040   0x000aec    program     static                          
+           ___if_lbl00033   0x00099a    program     static                          
+           ___if_lbl00034   0x0009a8    program     static                          
+           ___if_lbl00035   0x0009bc    program     static                          
+           ___if_lbl00037   0x000ade    program     static                          
+           ___if_lbl00039   0x000af2    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x000c50    program     static                          
-       ___return_lbl00002   0x000bf6    program     static                          
+       ___return_lbl00001   0x000d1c    program     static                          
+       ___return_lbl00002   0x000cc2    program     static                          
        ___return_lbl00007   0x00000c    program     static                          
        ___return_lbl00009   0x00001c    program     static                          
-       ___return_lbl00032   0x000a70    program     static                          
-               __string_0   0x000c60    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
-               __string_1   0x000c52    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                _do_cinit   0x000b5a    program     extern C:\MCC18\src\traditional\startup\c018i.c
+       ___return_lbl00032   0x000b3c    program     static                          
+               __string_0   0x000d2c    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
+               __string_1   0x000d1e    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                _do_cinit   0x000c26    program     extern C:\MCC18\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                 _startup   0x000c3a    program     extern C:\MCC18\src\traditional\startup\c018i.c
-             canGetPacket   0x0006b8    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
-                   canISR   0x000630    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                  canInit   0x0005da    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                 _startup   0x000d06    program     extern C:\MCC18\src\traditional\startup\c018i.c
+             canGetPacket   0x000798    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
+                   canISR   0x000710    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                  canInit   0x0006ba    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
                  canParse   0x000208    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-           canSendMessage   0x0008a4    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                copy_loop   0x000bcc    program     static                          
-            copy_one_byte   0x000bd2    program     static                          
-                     done   0x000bf6    program     static                          
-             done_copying   0x000be0    program     static                          
-                     loop   0x000c4a    program     static                          
+           canSendMessage   0x000984    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                copy_loop   0x000c98    program     static                          
+            copy_one_byte   0x000c9e    program     static                          
+                     done   0x000cc2    program     static                          
+             done_copying   0x000cac    program     static                          
+                     loop   0x000d16    program     static                          
                      main   0x000044    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                  mainInit   0x0001fe    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                     test   0x000b74    program     static                          
-                  tickGet   0x000c0c    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 tickInit   0x000bf8    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-               tickUpdate   0x000c1e    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 uartBusy   0x000b30    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartGet   0x000b3c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartISR   0x000b40    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartInit   0x000a78    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                     test   0x000c40    program     static                          
+                  tickGet   0x000cd8    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 tickInit   0x000cc4    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+               tickUpdate   0x000cea    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 uartBusy   0x000bfc    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartGet   0x000c08    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartISR   0x000c0c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartInit   0x000b44    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
                 uartParse   0x000354    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-                 uartPutc   0x000a90    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                uartPutrs   0x000aec    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPuts   0x000aac    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPutc   0x000b5c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                uartPutrs   0x000bb8    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPuts   0x000b78    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
                    ADCON0   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                ADCON0bits   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    ADCON1   0x000fc1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -874,45 +872,43 @@ Linker Map File - Created Sat Oct 21 10:45:47 2006
                  mainInit   0x0001fe    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
                  canParse   0x000208    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                 uartParse   0x000354    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-                  canInit   0x0005da    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                   canISR   0x000630    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-             canGetPacket   0x0006b8    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
-           canSendMessage   0x0008a4    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-           ___if_lbl00033   0x0008ba    program     static                          
-           ___if_lbl00034   0x0008c8    program     static                          
-         ___else_lbl00036   0x0008d8    program     static                          
-           ___if_lbl00035   0x0008dc    program     static                          
-           ___?:_lbl00038   0x0008e6    program     static                          
-           ___?:_lbl00037   0x0008e8    program     static                          
-         ___else_lbl00040   0x0008fe    program     static                          
-           ___if_lbl00039   0x000904    program     static                          
-         ___else_lbl00042   0x0009c8    program     static                          
-           ___if_lbl00041   0x000a26    program     static                          
-         ___else_lbl00044   0x000a34    program     static                          
-           ___if_lbl00043   0x000a3a    program     static                          
-       ___return_lbl00032   0x000a70    program     static                          
-                 uartInit   0x000a78    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPutc   0x000a90    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPuts   0x000aac    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                uartPutrs   0x000aec    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartBusy   0x000b30    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartGet   0x000b3c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartISR   0x000b40    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                _do_cinit   0x000b5a    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     test   0x000b74    program     static                          
-                copy_loop   0x000bcc    program     static                          
-            copy_one_byte   0x000bd2    program     static                          
-             done_copying   0x000be0    program     static                          
-       ___return_lbl00002   0x000bf6    program     static                          
-                     done   0x000bf6    program     static                          
-                 tickInit   0x000bf8    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                  tickGet   0x000c0c    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-               tickUpdate   0x000c1e    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 _startup   0x000c3a    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     loop   0x000c4a    program     static                          
-       ___return_lbl00001   0x000c50    program     static                          
-               __string_1   0x000c52    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
-               __string_0   0x000c60    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                  canInit   0x0006ba    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                   canISR   0x000710    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+             canGetPacket   0x000798    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
+           canSendMessage   0x000984    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+           ___if_lbl00033   0x00099a    program     static                          
+           ___if_lbl00034   0x0009a8    program     static                          
+         ___else_lbl00036   0x0009b8    program     static                          
+           ___if_lbl00035   0x0009bc    program     static                          
+         ___else_lbl00038   0x000a80    program     static                          
+           ___if_lbl00037   0x000ade    program     static                          
+         ___else_lbl00040   0x000aec    program     static                          
+           ___if_lbl00039   0x000af2    program     static                          
+           ___?:_lbl00042   0x000b2c    program     static                          
+           ___?:_lbl00041   0x000b2e    program     static                          
+       ___return_lbl00032   0x000b3c    program     static                          
+                 uartInit   0x000b44    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPutc   0x000b5c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPuts   0x000b78    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                uartPutrs   0x000bb8    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartBusy   0x000bfc    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartGet   0x000c08    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartISR   0x000c0c    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                _do_cinit   0x000c26    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     test   0x000c40    program     static                          
+                copy_loop   0x000c98    program     static                          
+            copy_one_byte   0x000c9e    program     static                          
+             done_copying   0x000cac    program     static                          
+                     done   0x000cc2    program     static                          
+       ___return_lbl00002   0x000cc2    program     static                          
+                 tickInit   0x000cc4    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                  tickGet   0x000cd8    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+               tickUpdate   0x000cea    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 _startup   0x000d06    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     loop   0x000d16    program     static                          
+       ___return_lbl00001   0x000d1c    program     static                          
+               __string_1   0x000d1e    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
+               __string_0   0x000d2c    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\CAN.c
                   __REMB3   0x000014       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm

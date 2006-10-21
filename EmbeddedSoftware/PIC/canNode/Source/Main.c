@@ -170,13 +170,32 @@ void uartParse(BYTE c)
 	if (c=='1')
 	{
 		CAN_MESSAGE cm;
-		cm.ident=0x1FFF07FF;
-		cm.extended=TRUE;
+		cm.ident=0x00000123;
+		cm.extended=FALSE;
 		cm.data_length=4;
-		cm.data[0]='a';
-		cm.data[1]='b';
-		cm.data[2]='c';
+		cm.data[0]='!';
+		cm.data[1]='j';
+		cm.data[2]='e';
+		cm.data[3]='H';
+
+		while(!canSendMessage(cm));
+	}
+
+	if (c=='2')
+	{
+		CAN_MESSAGE cm;
+		cm.ident=0x0ABCDEF0;
+		cm.extended=TRUE;
+		cm.data_length=8;
+		cm.data[0]='!';
+		cm.data[1]='g';
+		cm.data[2]='a';
 		cm.data[3]='d';
+		cm.data[4]=' ';
+		cm.data[5]='d';
+		cm.data[6]='o';
+		cm.data[7]='G';
+
 
 		while(!canSendMessage(cm));
 	}
@@ -191,7 +210,7 @@ void uartParse(BYTE c)
 		uartPutrs("Debug? Debug!");
 	}
 
-	if (c=='2')
+	if (c=='3')
 	{
 		uartPutc(RXB0CON);
 		uartPutc(RXB1CON);

@@ -7,7 +7,7 @@
  *
  * Author               Date    Comment
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Nilesh Rajbharti     8/20/01 Original        (Rev 1.0)
+ * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
 #include "../Include/CANdefs.h"
@@ -214,36 +214,11 @@ void canGetPacket()
 */
 BOOL canSendMessage(CAN_MESSAGE cm)
 {
-
-
-
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
 	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
 	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
 	// None of the transmit buffers were empty. 
 	else { return FALSE;} 
-
-	
-	// Set extended mode or not.
-	RXB0SIDLbits.EXID=(cm.extended==TRUE?1:0);
-
-
-		if (cm.extended==TRUE)
-		{
-			RXB0SIDL=RXB0SIDL|0b00001000;
-		//	_asm 
-		//		bsf RXB0SIDL, 3, 0
-		//	_endasm 
-		}
-		else
-		{
-			RXB0SIDL=RXB0SIDL&0b11110111;
-		//	_asm 
-		//		bcf RXB0SIDL, 3, 0
-		//	_endasm 
-		}
-
-		
 
 
 		if (cm.extended==TRUE)
@@ -286,6 +261,10 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 		RXB0D2=cm.data[2]; 	RXB0D3=cm.data[3];
 		RXB0D4=cm.data[4]; 	RXB0D5=cm.data[5];
 		RXB0D6=cm.data[6]; 	RXB0D7=cm.data[7];
+
+		// set extended or not
+		RXB0SIDLbits.EXID=(cm.extended==TRUE?1:0);
+
 
 		// mark as redy to transmit
 		_asm 
