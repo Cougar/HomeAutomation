@@ -29,4 +29,8 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
+#define UART_START_BYTE 253
+#define UART_END_BYTE 250
+
+
 #endif //compiler.h

@@ -17,8 +17,8 @@ CLOCK_FREQ	F:\MCP\projects\CAN\canNode\Include\compiler.h	17;"	d	line:17
 COMPILER_H	F:\MCP\projects\CAN\canNode\Include\compiler.h	14;"	d	line:14
 DWORD	F:\MCP\projects\CAN\canNode\Include\typedefs.h	19;"	t	line:19
 FALSE	F:\MCP\projects\CAN\canNode\Include\typedefs.h	16;"	e	line:16	enum:_BOOL
-HighISR	F:\MCP\projects\CAN\canNode\Source\Main.c	71;"	f	line:71	signature:(void)
-HighVector	F:\MCP\projects\CAN\canNode\Source\Main.c	84;"	f	line:84	signature:(void)
+HighISR	F:\MCP\projects\CAN\canNode\Source\Main.c	72;"	f	line:72	signature:(void)
+HighVector	F:\MCP\projects\CAN\canNode\Source\Main.c	85;"	f	line:85	signature:(void)
 INSTR_FREQ	F:\MCP\projects\CAN\canNode\Include\compiler.h	18;"	d	line:18
 LED0_IO	F:\MCP\projects\CAN\canNode\Include\compiler.h	30;"	d	line:30
 LED0_TRIS	F:\MCP\projects\CAN\canNode\Include\compiler.h	29;"	d	line:29
@@ -48,7 +48,9 @@ TRUE	F:\MCP\projects\CAN\canNode\Include\typedefs.h	16;"	e	line:16	enum:_BOOL
 TYPEDEFS_H	F:\MCP\projects\CAN\canNode\Include\typedefs.h	14;"	d	line:14
 TickCount	F:\MCP\projects\CAN\canNode\Source\Tick.c	51;"	v	line:51
 UART_BAUD_RATE	F:\MCP\projects\CAN\canNode\Include\compiler.h	21;"	d	line:21
+UART_END_BYTE	F:\MCP\projects\CAN\canNode\Include\compiler.h	33;"	d	line:33
 UART_H	F:\MCP\projects\CAN\canNode\Include\uart.h	14;"	d	line:14
+UART_START_BYTE	F:\MCP\projects\CAN\canNode\Include\compiler.h	32;"	d	line:32
 USE_CAN	F:\MCP\projects\CAN\canNode\Include\stackTasks.h	16;"	d	line:16
 USE_UART	F:\MCP\projects\CAN\canNode\Include\stackTasks.h	17;"	d	line:17
 WORD	F:\MCP\projects\CAN\canNode\Include\typedefs.h	18;"	t	line:18
@@ -61,22 +63,24 @@ canISR	F:\MCP\projects\CAN\canNode\Source\CAN.c	119;"	f	line:119
 canInit	F:\MCP\projects\CAN\canNode\Include\CAN.h	33;"	p	line:33	signature:(void)
 canInit	F:\MCP\projects\CAN\canNode\Source\CAN.c	32;"	f	line:32
 canParse	F:\MCP\projects\CAN\canNode\Include\CAN.h	35;"	p	line:35	signature:(CAN_MESSAGE cm)
-canParse	F:\MCP\projects\CAN\canNode\Source\Main.c	137;"	f	line:137	signature:(CAN_MESSAGE cm)
+canParse	F:\MCP\projects\CAN\canNode\Source\Main.c	138;"	f	line:138	signature:(CAN_MESSAGE cm)
 canSendMessage	F:\MCP\projects\CAN\canNode\Include\CAN.h	36;"	p	line:36	signature:(CAN_MESSAGE cm)
 canSendMessage	F:\MCP\projects\CAN\canNode\Source\CAN.c	215;"	f	line:215	signature:(CAN_MESSAGE cm)
 cm	F:\MCP\projects\CAN\canNode\Source\CAN.c	153;"	l	line:153
 cm	F:\MCP\projects\CAN\canNode\Source\Main.c	172;"	l	line:172
 cm	F:\MCP\projects\CAN\canNode\Source\Main.c	186;"	l	line:186
-cm	F:\MCP\projects\CAN\canNode\Source\Main.c	52;"	l	line:52
+cm	F:\MCP\projects\CAN\canNode\Source\Main.c	205;"	l	line:205
+cm	F:\MCP\projects\CAN\canNode\Source\Main.c	53;"	l	line:53
 data	F:\MCP\projects\CAN\canNode\Include\CAN.h	27;"	m	line:27	struct:_CAN_MESSAGE
 data_length	F:\MCP\projects\CAN\canNode\Include\CAN.h	26;"	m	line:26	struct:_CAN_MESSAGE
 extended	F:\MCP\projects\CAN\canNode\Include\CAN.h	25;"	m	line:25	struct:_CAN_MESSAGE
-i	F:\MCP\projects\CAN\canNode\Source\Main.c	139;"	l	line:139
+heartBeatEnabled	F:\MCP\projects\CAN\canNode\Source\Main.c	29;"	v	line:29	file:
+i	F:\MCP\projects\CAN\canNode\Source\Main.c	140;"	l	line:140
 ident	F:\MCP\projects\CAN\canNode\Include\CAN.h	24;"	m	line:24	struct:_CAN_MESSAGE
-main	F:\MCP\projects\CAN\canNode\Source\Main.c	29;"	f	line:29
+main	F:\MCP\projects\CAN\canNode\Source\Main.c	31;"	f	line:31
 mainInit	F:\MCP\projects\CAN\canNode\Source\Main.c	27;"	p	line:27	file:	signature:(void)
 stackTasks_H	F:\MCP\projects\CAN\canNode\Include\stackTasks.h	14;"	d	line:14
-t	F:\MCP\projects\CAN\canNode\Source\Main.c	31;"	l	line:31	file:
+t	F:\MCP\projects\CAN\canNode\Source\Main.c	33;"	l	line:33	file:
 tickGet	F:\MCP\projects\CAN\canNode\Include\Tick.h	41;"	p	line:41	signature:(void)
 tickGet	F:\MCP\projects\CAN\canNode\Source\Tick.c	90;"	f	line:90	signature:(void)
 tickInit	F:\MCP\projects\CAN\canNode\Include\Tick.h	40;"	p	line:40	signature:(void)

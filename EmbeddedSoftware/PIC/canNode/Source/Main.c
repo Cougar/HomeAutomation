@@ -26,6 +26,8 @@
 
 static void mainInit(void);
 
+static BOOL heartBeatEnabled = TRUE;
+
 void main()
 {
 	static TICK t = 0;
@@ -40,21 +42,20 @@ void main()
 
 	#ifdef USE_UART
 		uartInit();
-		uartPutrs("BOOT OK!");
 	#endif
 
 	tickInit();
 
 	while(1)
 	{
-		if ((tickGet()-t)>=10*TICK_SECOND)
+		if ((tickGet()-t)>=5*TICK_SECOND && heartBeatEnabled==TRUE)
 		{
 			CAN_MESSAGE cm;
 
 			t = tickGet();
 		
 			// Send heartbeat
-			cm.ident=0x00000707;
+			cm.ident=0x00000666;
 			cm.extended=FALSE;
 			cm.data_length=1;
 			cm.data[0]='H';
@@ -137,17 +138,16 @@ void mainInit()
 void canParse(CAN_MESSAGE cm)
 {
 	int i=0;
-
-	if (cm.extended==TRUE)
-	{
-		uartPutc((BYTE)(cm.ident>>24));
-		uartPutc((BYTE)(cm.ident>>16));
-	}
-	uartPutc((BYTE)(cm.ident>>8));
+	
+	uartPutc(UART_START_BYTE);
 	uartPutc((BYTE)(cm.ident));
-
-	for(i=0;i<cm.data_length && i<8;i++)
-		uartPutc(cm.data[cm.data_length-i-1]);
+	uartPutc((BYTE)(cm.ident>>8));
+	uartPutc((BYTE)(cm.ident>>16));
+	uartPutc((BYTE)(cm.ident>>24));
+	uartPutc(cm.extended);
+	uartPutc(cm.data_length);
+	for(i=0;i<8;i++) uartPutc(cm.data[cm.data_length-i-1]);
+	uartPutc(UART_END_BYTE);
 
 }
 #endif
@@ -200,18 +200,40 @@ void uartParse(BYTE c)
 		while(!canSendMessage(cm));
 	}
 
+	if (c=='3')
+	{
+		CAN_MESSAGE cm;
+		cm.ident=0x00000010;
+		cm.extended=FALSE;
+		cm.data_length=6;
+		cm.data[0]='0';
+		cm.data[1]='1';
+		cm.data[2]='2';
+		cm.data[3]='3';
+		cm.data[4]='4';
+		cm.data[5]='5';
+
+		while(!canSendMessage(cm));
+	}
+
 	if (c=='d')
 	{
-		uartPutc('D');
+		//uartPutc('D');
 	}
 
 	if (c=='D')
 	{
-		uartPutrs("Debug? Debug!");
+		//uartPutrs("Debug? Debug!");
 	}
 
-	if (c=='3')
+	if (c=='T')
 	{
+		heartBeatEnabled=(heartBeatEnabled==TRUE?FALSE:TRUE);
+	}
+
+	if (c=='4')
+	{
+		/*
 		uartPutc(RXB0CON);
 		uartPutc(RXB1CON);
 		uartPutc(123);
@@ -252,6 +274,7 @@ void uartParse(BYTE c)
 		uartPutc(123);
 		uartPutc(TXBIE);
 		uartPutc(BIE0);	
+		*/
 	}
 
 }
