@@ -1,0 +1,36 @@
+
+Controller Area Network (CAN) Demontration
+Atmel AVR and Microchip MCP2515
+
+Copyright (C) 2005 Martin Thomas, Kaiserslautern, Germany
+<eversmith@heizung-thomas.de>
+
+
+Only some modules of this project are free. If you
+use the non-free parts in commercial developments
+you must have a written permission of the author.
+
+"Commercial":
+(1) You earn money with devices where parts
+of the firmware are based on the non-free modules.
+(2) You sell source-code or binaries which use parts
+of this code.
+
+Free code modules: uart.h/uart.c mcp2515.h/mcp2515.c
+All other modules are NOT FREE.
+
+If you buy a license you get support and updates too.
+
+Yes, I know. You think: "Why should I pay for something
+I already have". Well, I spend some time with this
+project and you profit from this time. I have to pay 
+bills too, so I keep the Copyright.
+
+---
+
+Nur die Codeteile uart.h/uart.c und mcp2515.h/mcp2515.c
+sind frei, also kostenlos verwendbar. Alle anderen 
+Code-Module sind nicht frei. Wenn Sie Code aus den nicht-
+freien Komponenten in kommerziellen Anwendungen nutzen
+(=damit Geld verdienen) benötigen Sie ein schriftliche
+Nutzungserlaubnis ("Lizenz").
