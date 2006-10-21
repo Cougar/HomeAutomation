@@ -26,7 +26,7 @@
 
 static void mainInit(void);
 
-static BOOL heartBeatEnabled = TRUE;
+static BOOL heartBeatEnabled = FALSE;
 
 void main()
 {
@@ -165,117 +165,188 @@ void canParse(CAN_MESSAGE cm)
 #ifdef USE_UART
 void uartParse(BYTE c)
 {
+	BYTE i;
+	unsigned int wait = 0;
+	CAN_MESSAGE cm;	
+	static BOOL waitingMessage = FALSE;
+	static TICK timeout;
+	static BYTE count;
 
-
-	if (c=='1')
+	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)
 	{
-		CAN_MESSAGE cm;
-		cm.ident=0x00000123;
-		cm.extended=FALSE;
-		cm.data_length=4;
-		cm.data[0]='!';
-		cm.data[1]='j';
-		cm.data[2]='e';
-		cm.data[3]='H';
-
-		while(!canSendMessage(cm));
+		waitingMessage=FALSE;
 	}
 
-	if (c=='2')
+	if (waitingMessage==TRUE)
 	{
-		CAN_MESSAGE cm;
-		cm.ident=0x0ABCDEF0;
-		cm.extended=TRUE;
-		cm.data_length=8;
-		cm.data[0]='!';
-		cm.data[1]='g';
-		cm.data[2]='a';
-		cm.data[3]='d';
-		cm.data[4]=' ';
-		cm.data[5]='d';
-		cm.data[6]='o';
-		cm.data[7]='G';
+		timeout=tickGet();
 
+		// UART END
+		if(count>=14)
+		{
+			if (c==UART_END_BYTE)
+			{
+				while(!canSendMessage(cm));
+			}
+			waitingMessage=FALSE;
+			return;
+		}
 
-		while(!canSendMessage(cm));
+		// data
+		if(count>=6)
+		{
+			cm.data[count-6]=c;
+			count++;
+			return;
+		}
+
+		// data length
+		if(count>=5)
+		{
+			cm.data_length=c;
+			count++;
+			return;
+		}
+
+		// extended
+		if(count>=4)
+		{
+			cm.extended=c;
+			count++;
+			return;
+		}
+
+		// ident
+		if(count>=0)
+		{
+			cm.ident+=((DWORD)c<<(count*8));
+			count++;
+			return;
+		}
+	
 	}
 
-	if (c=='3')
-	{
-		CAN_MESSAGE cm;
-		cm.ident=0x00000010;
-		cm.extended=FALSE;
-		cm.data_length=6;
-		cm.data[0]='0';
-		cm.data[1]='1';
-		cm.data[2]='2';
-		cm.data[3]='3';
-		cm.data[4]='4';
-		cm.data[5]='5';
 
-		while(!canSendMessage(cm));
+	if (c==UART_START_BYTE && waitingMessage==FALSE)
+	{
+			waitingMessage=TRUE;
+			timeout=tickGet();
+			count=0;
+			cm.ident=0;
+			return;	
+	}
+	
+
+
+/*			
+			for(i=0;i<4;i++)
+			{
+				wait = 0;
+				while(!uartDataRedy())
+        		{
+            		if(wait < UART_READ_TIMEOUT) wait++;                 
+            		else return;           
+        		}
+				cm.ident += uartGet()<<(i*8);
+			}
+
+
+			wait = 0;
+			while(!uartDataRedy())
+        	{
+            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
+            	else return;           
+        	}
+			cm.extended= uartGet();
+
+
+
+			wait = 0;
+			while(!uartDataRedy())
+        	{
+            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
+            	else return;           
+        	}
+			cm.data_length= uartGet();
+
+			for(i=0;i<4;i++)
+			{
+				wait = 0;
+				while(!uartDataRedy())
+        		{
+            		if(wait < UART_READ_TIMEOUT) wait++ ;                 
+            		else return;           
+        		}
+				cm.data[i]=uartGet();
+			}
+
+			wait = 0;
+			while(!uartDataRedy())
+        	{
+            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
+            	else return;           
+        	}
+			if (uartGet()!=UART_END_BYTE) return;
+*/
+			/*	
+			if (uartGets(&cm.ident,4,UART_READ_TIMEOUT)) return;
+			if (uartGets(&cm.extended,1,UART_READ_TIMEOUT)) return;
+			if (uartGets(&cm.data_length,1,UART_READ_TIMEOUT)) return;
+			if (uartGets(cm.data,8,UART_READ_TIMEOUT)) return;
+			if (uartGets(&i,1,UART_READ_TIMEOUT)) return;
+			if (i!=UART_END_BYTE) return;		
+			*/
+		//	while(!canSendMessage(cm));
+//	}
+
+
+	
+	if(c=='1' && waitingMessage==FALSE) 
+	{	
+			cm.ident=0x00000123;
+			cm.extended=FALSE;
+			cm.data_length=4;
+			cm.data[0]='!';
+			cm.data[1]='j';
+			cm.data[2]='e';
+			cm.data[3]='H';
+
+			while(!canSendMessage(cm));
 	}
 
-	if (c=='d')
+	if(c=='2' && waitingMessage==FALSE)  
 	{
-		//uartPutc('D');
+			cm.ident=0x0ABCDEF0;
+			cm.extended=TRUE;
+			cm.data_length=8;
+			cm.data[0]='!';
+			cm.data[1]='g';
+			cm.data[2]='a';
+			cm.data[3]='d';
+			cm.data[4]=' ';
+			cm.data[5]='d';
+			cm.data[6]='o';
+			cm.data[7]='G';
+
+			while(!canSendMessage(cm));
 	}
 
-	if (c=='D')
+	if(c=='3' && waitingMessage==FALSE) 
 	{
-		//uartPutrs("Debug? Debug!");
+			cm.ident=0x00000010;
+			cm.extended=FALSE;
+			cm.data_length=6;
+			cm.data[0]='0';
+			cm.data[1]='1';
+			cm.data[2]='2';
+			cm.data[3]='3';
+			cm.data[4]='4';
+			cm.data[5]='5';
+	
+			while(!canSendMessage(cm));
 	}
 
-	if (c=='T')
-	{
-		heartBeatEnabled=(heartBeatEnabled==TRUE?FALSE:TRUE);
-	}
-
-	if (c=='4')
-	{
-		/*
-		uartPutc(RXB0CON);
-		uartPutc(RXB1CON);
-		uartPutc(123);
-		uartPutc(B0CON);
-		uartPutc(B1CON);
-		uartPutc(B2CON);
-		uartPutc(123);	
-		uartPutc(B3CON);	
-		uartPutc(B4CON);	
-		uartPutc(B5CON);
-		uartPutc(123);	
-		uartPutc(CANSTAT);	
-		uartPutc(COMSTAT);	
-		uartPutc(ECANCON);
-		uartPutc(123);	
-		uartPutc(TXB0CON);	
-		uartPutc(TXB1CON);	
-		uartPutc(TXB2CON);	
-		uartPutc(123);
-		uartPutc(PIR3);	
-		uartPutc(PIE3);
-		uartPutc(123);
-		uartPutc(BRGCON1);
-		uartPutc(BRGCON2);
-		uartPutc(BRGCON3);
-		uartPutc(123);
-		uartPutc(RXFCON0);
-		uartPutc(RXFCON1);
-		uartPutc(123);
-		uartPutc(RXFBCON0);
-		uartPutc(RXFBCON1);
-		uartPutc(RXFBCON2);
-		uartPutc(RXFBCON3);
-		uartPutc(RXFBCON4);
-		uartPutc(RXFBCON5);
-		uartPutc(RXFBCON6);
-		uartPutc(RXFBCON7);
-		uartPutc(123);
-		uartPutc(TXBIE);
-		uartPutc(BIE0);	
-		*/
-	}
+	
 
 }
 #endif

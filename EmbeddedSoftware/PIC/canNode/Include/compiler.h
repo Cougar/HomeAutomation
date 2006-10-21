@@ -32,5 +32,6 @@
 #define UART_START_BYTE 253
 #define UART_END_BYTE 250
 
+#define UART_READ_TIMEOUT 30000
 
 #endif //compiler.h

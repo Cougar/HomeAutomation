@@ -23,5 +23,7 @@ void uartPutrs(const rom char *c);
 BYTE uartGet(void);
 void uartParse(BYTE c);
 void uartISR(void);
+BYTE uartGets(BYTE *buffer, BYTE length,unsigned int uart_data_wait);
+char uartDataRedy(void);
 
 #endif //UART_H
