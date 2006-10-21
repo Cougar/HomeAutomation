@@ -1,3 +1,15 @@
+/*********************************************************************
+ *
+ *                  CAN driver
+ *
+ *********************************************************************
+ * FileName:        CAN.c
+ *
+ * Author               Date    Comment
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Nilesh Rajbharti     8/20/01 Original        (Rev 1.0)
+ ********************************************************************/
+
 #include "../Include/CANdefs.h"
 #include "../Include/stackTasks.h"
 #include "../Include/CAN.h"
@@ -204,17 +216,7 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 {
 
 
-	if ( TXB0CONbits.TXREQ == 0 )
-	{
-		uartPutrs("TXREQ not set.");
 
-	}
-	else { uartPutrs("TXREQ is set."); return FALSE;} 
-
-
-
-
-/*
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
 	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
 	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
@@ -292,7 +294,7 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 
 
 		return TRUE;
-*/
+
 }
 
 
