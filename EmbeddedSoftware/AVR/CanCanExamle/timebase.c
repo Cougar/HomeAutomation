@@ -13,12 +13,11 @@
 
 #include <inttypes.h>
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 
 #include "timebase.h"
 
-SIGNAL(SIG_OVERFLOW0)
+ISR(SIG_OVERFLOW0)
 {
 	gMilliSecTick++;
 	TCNT0 = TIMEBASE_RELOAD;

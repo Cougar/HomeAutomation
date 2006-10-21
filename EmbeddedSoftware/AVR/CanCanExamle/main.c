@@ -36,7 +36,7 @@
 #include "timebase.h"
 #include "debughelper.h"
 
-// #define VERBOSE (1)
+#define VERBOSE (1)
 
 #define OSCAL_READEEPROM (1)
 
