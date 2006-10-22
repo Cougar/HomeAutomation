@@ -14,8 +14,9 @@ namespace canWatcher
         TextBox[] idBoxes = new TextBox[4];
         TextBox[] dataBoxes = new TextBox[8];
         main m;
+        canMessage cmEdit;
 
-        public addMessage(main m)
+        public addMessage(main m, canMessage cmEdit)
         {
             InitializeComponent();
             idBoxes[0] = txt_id0;
@@ -33,6 +34,35 @@ namespace canWatcher
             dataBoxes[7] = txt_d7;
 
             this.m = m;
+            this.cmEdit = cmEdit;
+            if (cmEdit != null)
+            {
+                cmd_add.Text = "Save";
+                this.Text = "Edit message";
+                loadCm(cmEdit);
+            }
+            else if(m.addLastCm!=null)
+            {
+                loadCm(m.addLastCm);
+                txt_period.Text = "1000";
+            }
+        }
+
+        private void loadCm(canMessage cmEdit)
+        {
+            
+            chk_extended.Checked = cmEdit.getExtended();
+            txt_period.Text = m.mtOut.getPeriod(cmEdit).ToString();
+            uint ident = cmEdit.getIdent();
+            data_length.Value = cmEdit.getDataLength();
+            byte[] data = cmEdit.getData();
+            for (int i = 0; i < 4; i++)
+            {
+                uint er = (ident >> (8 * i));
+                byte b = ((byte)(er&0x000000FF));
+                idBoxes[i].Text = b.ToString("X").PadLeft(2, '0');
+            }
+            for (int i = 0; i < 8; i++) dataBoxes[i].Text = data[i].ToString("X").PadLeft(2, '0');
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -65,6 +95,8 @@ namespace canWatcher
             { 
                 // Add message
                 canMessage cm = new canMessage(BitConverter.ToUInt32(id,0),chk_extended.Checked,(byte)data_length.Value,data);
+                if (cmEdit != null) m.mtOut.deleteMessage(cmEdit);
+                if (cmEdit == null) m.addLastCm = cm.clone();
                 m.mtOut.addMessage(cm, period);
                 m.refreshOutgoing();
                 this.Close();
@@ -127,6 +159,11 @@ namespace canWatcher
         private void addMessage_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void cmd_cancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
     }

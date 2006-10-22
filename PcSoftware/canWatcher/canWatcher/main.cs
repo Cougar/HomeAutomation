@@ -8,6 +8,9 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Threading;
 using System.IO.Ports;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace canWatcher
 {
@@ -23,6 +26,10 @@ namespace canWatcher
         public messageTracker mt = new messageTracker();
         public outgoingKeeper mtOut = new outgoingKeeper();
 
+        public Hashtable sets = new Hashtable();
+
+        public canMessage addLastCm = null;
+
         public main()
         {
             InitializeComponent();
@@ -33,43 +40,10 @@ namespace canWatcher
 
         }
 
-        private void cmd_connect_Click(object sender, EventArgs e)
-        {
-            if (serial_conn.IsOpen)
-            {
-                lab_status.Text = "Status: Disconnected.";
-                serial_conn.Close();
-            }
-            else 
-            {
-                lab_status.Text = "Status: Connected.";
-                serial_conn.ReadBufferSize = 256;
-                serial_conn.BaudRate = 19200;
-                serial_conn.Parity = System.IO.Ports.Parity.None;
-                serial_conn.PortName = "COM2";
-                serial_conn.RtsEnable = false;
-                serial_conn.StopBits = System.IO.Ports.StopBits.One;
-                serial_conn.DataBits = 8;
-                serial_conn.Open();
-                
-            }
-        }
 
         private void txt_debug_out_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (serial_conn.IsOpen)
-            {
-                byte[] b = new byte [1];
-
-                b[0] = (byte)e.KeyChar;
-
-                serial_conn.Write(b,0,1);
-                
-            }
-            else
-            {
-                lab_status.Text = "Status: Serial port is not connected.";
-            }
+            
         }
 
         private void serial_conn_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
@@ -134,6 +108,7 @@ namespace canWatcher
         private void main_Load(object sender, EventArgs e)
         {
             this.newIncommingCanMessage += new EventHandler(main_newIncommingCanMessage);
+            loadSettings();
         }
 
         void main_newIncommingCanMessage(object sender, EventArgs e)
@@ -141,7 +116,11 @@ namespace canWatcher
             this.BeginInvoke((ThreadStart)delegate
             {
                 int scrollPosition = dg_incomming.FirstDisplayedScrollingRowIndex;
-                
+
+                Point pp = Point.Empty;
+                if (dg_incomming.SelectedCells.Count > 0)
+                    pp = dg_incomming.CurrentCellAddress;
+
                 dg_incomming.Rows.Clear();
                 foreach (DictionaryEntry de in mt.getMessages())
                 {
@@ -150,16 +129,25 @@ namespace canWatcher
                 }
 
                 if (scrollPosition > 0) dg_incomming.FirstDisplayedScrollingRowIndex = scrollPosition;
+
+
+                if (dg_incomming.Rows.Count > 0)
+                    dg_incomming.CurrentCell = dg_incomming.Rows[pp.Y].Cells[pp.X];
+            
             });
         }
 
         public void refreshOutgoing()
         {
-            
+
             this.BeginInvoke((ThreadStart)delegate
             {
                 int scrollPosition = dg_outgoing.FirstDisplayedScrollingRowIndex;
-                
+
+                Point pp = Point.Empty;
+                if (dg_outgoing.SelectedCells.Count > 0)
+                    pp = dg_outgoing.CurrentCellAddress;
+
                 dg_outgoing.Rows.Clear();
                 foreach (DictionaryEntry de in mtOut.getMessages())
                 {
@@ -168,9 +156,12 @@ namespace canWatcher
                 }
 
                 if (scrollPosition > 0) dg_outgoing.FirstDisplayedScrollingRowIndex = scrollPosition;
-  
+
+                if (dg_outgoing.Rows.Count > 0 && pp.Y < dg_outgoing.Rows.Count)
+                    dg_outgoing.CurrentCell = dg_outgoing.Rows[pp.Y].Cells[pp.X];
+
             });
-            
+       
             
         }
 
@@ -184,8 +175,8 @@ namespace canWatcher
 
         private void cmd_add_message_Click(object sender, EventArgs e)
         {
-            addMessage am = new addMessage(this);
-            am.Show();
+            addMessage am = new addMessage(this,null);
+            am.ShowDialog();
         }
 
         private void tmr_check_out_Tick(object sender, EventArgs e)
@@ -222,6 +213,146 @@ namespace canWatcher
             refreshOutgoing();
         }
 
+        private void cmd_edit_message_Click(object sender, EventArgs e)
+        {
+            if (dg_outgoing.SelectedCells.Count > 0)
+            {
+                addMessage am = new addMessage(this, (canMessage)dg_outgoing["cmO", dg_outgoing.CurrentCell.RowIndex].Value);
+                am.ShowDialog();
+            }
+            else MessageBox.Show("You need to select a message to edit.", "Row missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void cmd_delete_message_Click(object sender, EventArgs e)
+        {
+            if (dg_outgoing.SelectedCells.Count > 0)
+            {
+                mtOut.deleteMessage((canMessage)dg_outgoing["cmO", dg_outgoing.CurrentCell.RowIndex].Value);
+                refreshOutgoing();
+            }
+            else MessageBox.Show("You need to select a message to delete.","Row missing",MessageBoxButtons.OK,MessageBoxIcon.Information);
+        }
+
+        public bool setConnected(bool connected)
+        {
+            if (connected)
+            {
+                if (serial_conn.IsOpen)
+                {
+                    lab_status.Text = "Error! Port alredy open.";
+                    Console.Beep();
+                    return false;
+                }
+                try
+                {
+                    serial_conn.ReadBufferSize = 256;
+                    serial_conn.BaudRate = 19200;
+                    serial_conn.RtsEnable = false;
+                    serial_conn.Parity = (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), sets["parity"].ToString());
+                    serial_conn.PortName = (string)sets["port"];
+                    serial_conn.StopBits = (System.IO.Ports.StopBits)Enum.Parse(typeof(System.IO.Ports.StopBits), sets["stopbits"].ToString());
+                    serial_conn.DataBits = (int)sets["databits"];
+                    serial_conn.Open();
+                }
+                catch (Exception e) { MessageBox.Show("Error during com port connection: " + e.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            }
+            else
+            {
+                if (!serial_conn.IsOpen)
+                {
+                    lab_status.Text = "Error! Port alredy closed.";
+                    Console.Beep();
+                    return false;
+                } 
+                try
+                {
+                    serial_conn.Close();
+                }
+                catch (Exception e) { MessageBox.Show("Error during com port connection: " + e.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+           
+            }
+
+            if (serial_conn.IsOpen) lab_status.Text = "Connected."; else lab_status.Text = "Disconnected.";
+            cmd_connect.Enabled = !serial_conn.IsOpen;
+            cmd_disconnect.Enabled = serial_conn.IsOpen;
+            return true;
+        }
+
+        public void saveSettings()
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream st = File.OpenWrite(Application.StartupPath + "settings.dat");
+            formatter.Serialize(st, sets);
+            st.Close();
+        }
+
+        public void loadSettings()
+        {
+            IFormatter formatter = new BinaryFormatter();
+            if (File.Exists(Application.StartupPath + "settings.dat"))
+            {
+                Stream st = File.OpenRead(Application.StartupPath + "settings.dat");
+                sets=(Hashtable)formatter.Deserialize(st);
+                st.Close();
+            }
+        }
+
+
+
+
+        private void cmd_connect_Click(object sender, EventArgs e)
+        {
+
+            setConnected(true);
+        }
+
+        private void cmd_disconnect_Click(object sender, EventArgs e)
+        {
+            setConnected(false);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmd_send_Click(object sender, EventArgs e)
+        {
+            if (serial_conn.IsOpen)
+            {
+                byte[] b = Encoding.ASCII.GetBytes(txt_debug_out.Text);
+
+                serial_conn.Write(b, 0, b.Length);
+
+            }
+            else
+            {
+                lab_status.Text = "Error! Not connected!";
+            }
+        }
+
+        private void cmd_send_message_Click(object sender, EventArgs e)
+        {
+            if (dg_outgoing.SelectedCells.Count > 0)
+            {
+                if (serial_conn.IsOpen)
+                {
+                    canMessage cm = (canMessage)dg_outgoing["cmO", dg_outgoing.CurrentCell.RowIndex].Value;
+                    sendMessage(cm);
+                    mtOut.flagAsSent(cm);
+                }
+                else lab_status.Text = "Error! Not connected!";
+            }
+            else MessageBox.Show("You need to select a message to send.", "Row missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void cmd_settings_Click(object sender, EventArgs e)
+        {
+            settings s = new settings(this);
+            s.ShowDialog();
+        }
+
+
 
     }
 
@@ -231,6 +362,11 @@ namespace canWatcher
         private bool extended;
         private byte data_length;
         private byte[] data = new byte[8];
+
+        public canMessage clone()
+        {
+            return new canMessage(this.ident, this.extended, this.data_length, this.data);
+        }
 
         public canMessage(uint ident,bool extended,byte data_length,byte[] data)
         {
@@ -248,7 +384,6 @@ namespace canWatcher
             if (this.extended) this.ident &= 0x1FFFFFFF; else this.ident &= 0x000007FF; 
             this.data_length = raw[startIndex+5];
             Array.Copy(raw, startIndex+6, this.data, 0, 8);
-            Console.WriteLine(this.data[7] + " " + this.data[0]);
         }
 
         public uint getIdent() { return ident; }
@@ -275,6 +410,7 @@ namespace canWatcher
             a.Add(dgPeriod);
             a.Add(dgCount);
             a.Add(this.ident);
+            a.Add(this);
             row.SetValues(a.ToArray());
 
             return row;
@@ -325,6 +461,11 @@ namespace canWatcher
         public void addMessage(canMessage cm,long period)
         {
             outgoingMessages[cm]=new messageState(period);
+        }
+
+        public void deleteMessage(canMessage cm)
+        {
+            outgoingMessages.Remove(cm);
         }
 
         public Hashtable getMessages()

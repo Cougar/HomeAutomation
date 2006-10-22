@@ -58,6 +58,7 @@ namespace canWatcher
             this.txt_period = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cmd_add = new System.Windows.Forms.Button();
+            this.cmd_cancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.data_length)).BeginInit();
             this.SuspendLayout();
             // 
@@ -345,11 +346,22 @@ namespace canWatcher
             this.cmd_add.UseVisualStyleBackColor = true;
             this.cmd_add.Click += new System.EventHandler(this.cmd_add_Click);
             // 
+            // cmd_cancel
+            // 
+            this.cmd_cancel.Location = new System.Drawing.Point(270, 77);
+            this.cmd_cancel.Name = "cmd_cancel";
+            this.cmd_cancel.Size = new System.Drawing.Size(84, 26);
+            this.cmd_cancel.TabIndex = 30;
+            this.cmd_cancel.Text = "Cancel";
+            this.cmd_cancel.UseVisualStyleBackColor = true;
+            this.cmd_cancel.Click += new System.EventHandler(this.cmd_cancel_Click);
+            // 
             // addMessage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(455, 107);
+            this.Controls.Add(this.cmd_cancel);
             this.Controls.Add(this.cmd_add);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.txt_period);
@@ -380,8 +392,9 @@ namespace canWatcher
             this.Controls.Add(this.txt_id1);
             this.Controls.Add(this.txt_id2);
             this.Controls.Add(this.txt_id3);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "addMessage";
-            this.Text = "addMessage";
+            this.Text = "Add new message";
             this.Load += new System.EventHandler(this.addMessage_Load);
             ((System.ComponentModel.ISupportInitialize)(this.data_length)).EndInit();
             this.ResumeLayout(false);
@@ -421,5 +434,6 @@ namespace canWatcher
         private System.Windows.Forms.TextBox txt_period;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button cmd_add;
+        private System.Windows.Forms.Button cmd_cancel;
     }
 }
