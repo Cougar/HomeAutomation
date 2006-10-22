@@ -17,3 +17,4 @@ obj\Release\canWatcher.csproj.GenerateResource.Cache
 obj\Release\canWatcher.exe
 obj\Release\canWatcher.pdb
 obj\Debug\canWatcher.settings.resources
+obj\Release\canWatcher.settings.resources
