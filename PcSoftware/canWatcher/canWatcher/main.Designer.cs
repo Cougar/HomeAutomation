@@ -29,10 +29,10 @@ namespace canWatcher
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main));
             this.dg_incomming = new System.Windows.Forms.DataGridView();
             this.ident = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -42,7 +42,6 @@ namespace canWatcher
             this.count = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmI = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.txt_debug_out = new System.Windows.Forms.TextBox();
             this.serial_conn = new System.IO.Ports.SerialPort(this.components);
             this.dg_outgoing = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -67,15 +66,21 @@ namespace canWatcher
             this.cmd_send_message = new System.Windows.Forms.ToolStripButton();
             this.cmd_settings = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.strip_status = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lab_status = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cmd_send = new System.Windows.Forms.Button();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.lab_status = new System.Windows.Forms.ToolStripLabel();
+            this.cmd_save_outgoing = new System.Windows.Forms.ToolStripButton();
+            this.cmd_load_outgoing = new System.Windows.Forms.ToolStripButton();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmd_send = new System.Windows.Forms.ToolStripButton();
+            this.txt_debug_out = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dg_incomming)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_outgoing)).BeginInit();
             this.strip_tool.SuspendLayout();
-            this.strip_status.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dg_incomming
@@ -83,8 +88,8 @@ namespace canWatcher
             this.dg_incomming.AllowUserToAddRows = false;
             this.dg_incomming.AllowUserToDeleteRows = false;
             this.dg_incomming.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.dg_incomming.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.dg_incomming.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dg_incomming.BackgroundColor = System.Drawing.SystemColors.InactiveBorder;
             this.dg_incomming.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dg_incomming.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -96,14 +101,14 @@ namespace canWatcher
             this.count,
             this.hash,
             this.cmI});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dg_incomming.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dg_incomming.DefaultCellStyle = dataGridViewCellStyle6;
             this.dg_incomming.Location = new System.Drawing.Point(15, 41);
             this.dg_incomming.MultiSelect = false;
             this.dg_incomming.Name = "dg_incomming";
@@ -157,13 +162,6 @@ namespace canWatcher
             this.cmI.Name = "cmI";
             this.cmI.Visible = false;
             // 
-            // txt_debug_out
-            // 
-            this.txt_debug_out.Location = new System.Drawing.Point(344, 542);
-            this.txt_debug_out.Name = "txt_debug_out";
-            this.txt_debug_out.Size = new System.Drawing.Size(202, 20);
-            this.txt_debug_out.TabIndex = 9;
-            // 
             // serial_conn
             // 
             this.serial_conn.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serial_conn_DataReceived);
@@ -173,8 +171,8 @@ namespace canWatcher
             this.dg_outgoing.AllowUserToAddRows = false;
             this.dg_outgoing.AllowUserToDeleteRows = false;
             this.dg_outgoing.AllowUserToResizeRows = false;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.dg_outgoing.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.dg_outgoing.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle7;
             this.dg_outgoing.BackgroundColor = System.Drawing.SystemColors.InactiveBorder;
             this.dg_outgoing.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dg_outgoing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -186,14 +184,14 @@ namespace canWatcher
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6,
             this.cmO});
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dg_outgoing.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dg_outgoing.DefaultCellStyle = dataGridViewCellStyle8;
             this.dg_outgoing.Location = new System.Drawing.Point(15, 298);
             this.dg_outgoing.MultiSelect = false;
             this.dg_outgoing.Name = "dg_outgoing";
@@ -380,60 +378,116 @@ namespace canWatcher
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // strip_status
+            // toolStrip1
             // 
-            this.strip_status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.lab_status});
-            this.strip_status.Location = new System.Drawing.Point(0, 571);
-            this.strip_status.Name = "strip_status";
-            this.strip_status.Size = new System.Drawing.Size(620, 22);
-            this.strip_status.TabIndex = 19;
-            this.strip_status.Text = "statusStrip1";
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.CanOverflow = false;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2,
+            this.lab_status,
+            this.cmd_save_outgoing,
+            this.cmd_load_outgoing,
+            this.toolStripLabel3,
+            this.toolStripSeparator3,
+            this.cmd_send,
+            this.txt_debug_out,
+            this.toolStripLabel4,
+            this.toolStripSeparator5});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 546);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(620, 25);
+            this.toolStrip1.TabIndex = 22;
+            this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripStatusLabel1
+            // toolStripLabel2
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(42, 17);
-            this.toolStripStatusLabel1.Text = "Status:";
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(42, 22);
+            this.toolStripLabel2.Text = "Status:";
             // 
             // lab_status
             // 
+            this.lab_status.AutoSize = false;
             this.lab_status.Name = "lab_status";
-            this.lab_status.Size = new System.Drawing.Size(0, 17);
+            this.lab_status.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.lab_status.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lab_status.Size = new System.Drawing.Size(100, 22);
             // 
-            // label3
+            // cmd_save_outgoing
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(231, 545);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(107, 13);
-            this.label3.TabIndex = 20;
-            this.label3.Text = "Send raw data to uC:";
+            this.cmd_save_outgoing.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cmd_save_outgoing.Image = ((System.Drawing.Image)(resources.GetObject("cmd_save_outgoing.Image")));
+            this.cmd_save_outgoing.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmd_save_outgoing.Name = "cmd_save_outgoing";
+            this.cmd_save_outgoing.Size = new System.Drawing.Size(51, 22);
+            this.cmd_save_outgoing.Text = "Save";
+            this.cmd_save_outgoing.Click += new System.EventHandler(this.cmd_save_outgoing_Click);
+            // 
+            // cmd_load_outgoing
+            // 
+            this.cmd_load_outgoing.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cmd_load_outgoing.Image = ((System.Drawing.Image)(resources.GetObject("cmd_load_outgoing.Image")));
+            this.cmd_load_outgoing.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmd_load_outgoing.Name = "cmd_load_outgoing";
+            this.cmd_load_outgoing.Size = new System.Drawing.Size(50, 22);
+            this.cmd_load_outgoing.Text = "Load";
+            this.cmd_load_outgoing.Click += new System.EventHandler(this.cmd_load_outgoing_Click);
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripLabel3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabel3.Image")));
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(121, 22);
+            this.toolStripLabel3.Text = "Outgoing messages:";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // cmd_send
             // 
-            this.cmd_send.Location = new System.Drawing.Point(552, 542);
+            this.cmd_send.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cmd_send.Image = ((System.Drawing.Image)(resources.GetObject("cmd_send.Image")));
+            this.cmd_send.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cmd_send.Name = "cmd_send";
-            this.cmd_send.Size = new System.Drawing.Size(56, 20);
-            this.cmd_send.TabIndex = 21;
+            this.cmd_send.Size = new System.Drawing.Size(51, 22);
             this.cmd_send.Text = "Send";
-            this.cmd_send.UseVisualStyleBackColor = true;
             this.cmd_send.Click += new System.EventHandler(this.cmd_send_Click);
+            // 
+            // txt_debug_out
+            // 
+            this.txt_debug_out.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.txt_debug_out.Name = "txt_debug_out";
+            this.txt_debug_out.Size = new System.Drawing.Size(100, 25);
+            // 
+            // toolStripLabel4
+            // 
+            this.toolStripLabel4.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripLabel4.Name = "toolStripLabel4";
+            this.toolStripLabel4.Size = new System.Drawing.Size(81, 22);
+            this.toolStripLabel4.Text = "Send raw data:";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
             // main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(620, 593);
-            this.Controls.Add(this.cmd_send);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.strip_status);
+            this.ClientSize = new System.Drawing.Size(620, 571);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.strip_tool);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dg_outgoing);
-            this.Controls.Add(this.txt_debug_out);
             this.Controls.Add(this.dg_incomming);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -445,8 +499,8 @@ namespace canWatcher
             ((System.ComponentModel.ISupportInitialize)(this.dg_outgoing)).EndInit();
             this.strip_tool.ResumeLayout(false);
             this.strip_tool.PerformLayout();
-            this.strip_status.ResumeLayout(false);
-            this.strip_status.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -455,7 +509,6 @@ namespace canWatcher
         #endregion
 
         private System.Windows.Forms.DataGridView dg_incomming;
-        private System.Windows.Forms.TextBox txt_debug_out;
         private System.IO.Ports.SerialPort serial_conn;
         private System.Windows.Forms.DataGridView dg_outgoing;
         private System.Windows.Forms.Timer tmr_check_out;
@@ -477,9 +530,6 @@ namespace canWatcher
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
         private System.Windows.Forms.DataGridViewTextBoxColumn cmO;
         private System.Windows.Forms.ToolStrip strip_tool;
-        private System.Windows.Forms.StatusStrip strip_status;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ToolStripStatusLabel lab_status;
         private System.Windows.Forms.ToolStripButton cmd_connect;
         private System.Windows.Forms.ToolStripButton cmd_disconnect;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -487,11 +537,20 @@ namespace canWatcher
         private System.Windows.Forms.ToolStripButton cmd_edit_message;
         private System.Windows.Forms.ToolStripButton cmd_delete_message;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button cmd_send;
         private System.Windows.Forms.ToolStripButton cmd_send_message;
         private System.Windows.Forms.ToolStripButton cmd_settings;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripLabel lab_status;
+        private System.Windows.Forms.ToolStripButton cmd_save_outgoing;
+        private System.Windows.Forms.ToolStripButton cmd_load_outgoing;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel4;
+        private System.Windows.Forms.ToolStripTextBox txt_debug_out;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton cmd_send;
     }
 }
 

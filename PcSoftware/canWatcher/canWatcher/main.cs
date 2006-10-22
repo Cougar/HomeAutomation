@@ -117,6 +117,13 @@ namespace canWatcher
             {
                 int scrollPosition = dg_incomming.FirstDisplayedScrollingRowIndex;
 
+                DataGridViewColumn sortedColumn = dg_incomming.SortedColumn;
+                ListSortDirection sorder = new ListSortDirection();
+                bool doSort = true;
+                if (dg_incomming.SortOrder == SortOrder.Ascending) sorder = ListSortDirection.Ascending;
+                else if (dg_incomming.SortOrder == SortOrder.Descending) sorder = ListSortDirection.Descending;
+                else doSort = false;
+
                 Point pp = Point.Empty;
                 if (dg_incomming.SelectedCells.Count > 0)
                     pp = dg_incomming.CurrentCellAddress;
@@ -130,6 +137,7 @@ namespace canWatcher
 
                 if (scrollPosition > 0) dg_incomming.FirstDisplayedScrollingRowIndex = scrollPosition;
 
+                if (doSort) dg_incomming.Sort(sortedColumn, (ListSortDirection)sorder);
 
                 if (dg_incomming.Rows.Count > 0)
                     dg_incomming.CurrentCell = dg_incomming.Rows[pp.Y].Cells[pp.X];
@@ -144,6 +152,14 @@ namespace canWatcher
             {
                 int scrollPosition = dg_outgoing.FirstDisplayedScrollingRowIndex;
 
+                DataGridViewColumn sortedColumn = dg_outgoing.SortedColumn;
+                ListSortDirection sorder = new ListSortDirection();
+                bool doSort = true;
+                if (dg_outgoing.SortOrder == SortOrder.Ascending) sorder = ListSortDirection.Ascending;
+                else if (dg_outgoing.SortOrder == SortOrder.Descending) sorder = ListSortDirection.Descending;
+                else doSort = false;
+
+
                 Point pp = Point.Empty;
                 if (dg_outgoing.SelectedCells.Count > 0)
                     pp = dg_outgoing.CurrentCellAddress;
@@ -155,11 +171,14 @@ namespace canWatcher
                     dg_outgoing.Rows.Add(cm.getDataGridViewRow(dg_outgoing,mtOut));
                 }
 
+                if (doSort) dg_outgoing.Sort(sortedColumn,(ListSortDirection) sorder);
+
                 if (scrollPosition > 0) dg_outgoing.FirstDisplayedScrollingRowIndex = scrollPosition;
 
                 if (dg_outgoing.Rows.Count > 0 && pp.Y < dg_outgoing.Rows.Count)
                     dg_outgoing.CurrentCell = dg_outgoing.Rows[pp.Y].Cells[pp.X];
 
+                
             });
        
             
@@ -239,7 +258,7 @@ namespace canWatcher
             {
                 if (serial_conn.IsOpen)
                 {
-                    lab_status.Text = "Error! Port alredy open.";
+                    lab_status.Text = "Err! Port alredy open.";
                     Console.Beep();
                     return false;
                 }
@@ -260,7 +279,7 @@ namespace canWatcher
             {
                 if (!serial_conn.IsOpen)
                 {
-                    lab_status.Text = "Error! Port alredy closed.";
+                    lab_status.Text = "Err! Port alredy closed.";
                     Console.Beep();
                     return false;
                 } 
@@ -281,7 +300,7 @@ namespace canWatcher
         public void saveSettings()
         {
             IFormatter formatter = new BinaryFormatter();
-            Stream st = File.OpenWrite(Application.StartupPath + "settings.dat");
+            Stream st = File.OpenWrite(Application.StartupPath + "/settings.dat");
             formatter.Serialize(st, sets);
             st.Close();
         }
@@ -289,10 +308,10 @@ namespace canWatcher
         public void loadSettings()
         {
             IFormatter formatter = new BinaryFormatter();
-            if (File.Exists(Application.StartupPath + "settings.dat"))
+            if (File.Exists(Application.StartupPath + "/settings.dat"))
             {
-                Stream st = File.OpenRead(Application.StartupPath + "settings.dat");
-                sets=(Hashtable)formatter.Deserialize(st);
+                Stream st = File.OpenRead(Application.StartupPath + "/settings.dat");
+                sets = (Hashtable)formatter.Deserialize(st);
                 st.Close();
             }
         }
@@ -327,7 +346,7 @@ namespace canWatcher
             }
             else
             {
-                lab_status.Text = "Error! Not connected!";
+                lab_status.Text = "Err! Not connected!";
             }
         }
 
@@ -341,7 +360,7 @@ namespace canWatcher
                     sendMessage(cm);
                     mtOut.flagAsSent(cm);
                 }
-                else lab_status.Text = "Error! Not connected!";
+                else lab_status.Text = "Err! Not connected!";
             }
             else MessageBox.Show("You need to select a message to send.", "Row missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -352,10 +371,45 @@ namespace canWatcher
             s.ShowDialog();
         }
 
+        private void cmd_save_outgoing_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.AddExtension = true;
+            sf.Filter = "Messages (*.can)|*.can";
+            sf.Title = "Select where to save message file";
+            sf.CheckPathExists = true;
+            if (sf.ShowDialog() == DialogResult.OK)
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream st = File.OpenWrite(sf.FileName);
+                formatter.Serialize(st, mtOut);
+                st.Close();
+            }
+        }
+
+        private void cmd_load_outgoing_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fd = new OpenFileDialog();
+            fd.Multiselect = false;
+            fd.Filter = "Messages (*.can)|*.can";
+            fd.Title = "Select message file to load";
+            fd.CheckFileExists = true;
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream st = File.OpenRead(fd.FileName);
+                mtOut = (outgoingKeeper)formatter.Deserialize(st);
+                st.Close();
+                refreshOutgoing();
+
+            }
+        }
+
 
 
     }
 
+    [Serializable]
     public class canMessage
     {
         private uint ident;
@@ -452,6 +506,7 @@ namespace canWatcher
  
     }
 
+    [Serializable]
     public class outgoingKeeper : KeeperTracker
     {
         Hashtable outgoingMessages = new Hashtable();
@@ -502,8 +557,8 @@ namespace canWatcher
             ms.flagAsSent();
         }
 
-        
 
+        [Serializable]
         internal class messageState
         {
             public long period;
@@ -524,6 +579,7 @@ namespace canWatcher
         }
     }
 
+    [Serializable]
     public class messageTracker : KeeperTracker
     {
         Hashtable incommingMessages = new Hashtable();
@@ -569,7 +625,7 @@ namespace canWatcher
             return ms.count;
         }
 
-
+        [Serializable]
         internal class messageState
         {
             public int count;
