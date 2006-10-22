@@ -1,5 +1,5 @@
 MPLINK 4.02, Linker
-Linker Map File - Created Sat Oct 21 20:58:05 2006
+Linker Map File - Created Sun Oct 22 08:29:11 2006
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -8,30 +8,30 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                highVector       code   0x000008    program   0x000006
                 lowVector       code   0x000018    program   0x000006
                    .cinit    romdata   0x00002a    program   0x00001a
-             .code_Main.o       code   0x000044    program   0x000730
-              .code_CAN.o       code   0x000774    program   0x00048a
-             .code_uart.o       code   0x000bfe    program   0x000184
-               _cinit_scn       code   0x000d82    program   0x00009e
-             .code_Tick.o       code   0x000e20    program   0x000042
-             _startup_scn       code   0x000e62    program   0x000018
-         .idata_c018i.o_i    romdata   0x000e7a    program   0x000000
-          .romdata_Tick.o    romdata   0x000e7a    program   0x000000
-          .idata_Tick.o_i    romdata   0x000e7a    program   0x000004
-          .romdata_uart.o    romdata   0x000e7a    program   0x000000
-          .idata_uart.o_i    romdata   0x000e7a    program   0x000000
-           .romdata_CAN.o    romdata   0x000e7a    program   0x000000
-         .romdata_c018i.o    romdata   0x000e7a    program   0x000000
-          .romdata_Main.o    romdata   0x000e7a    program   0x000000
-          .idata_Main.o_i    romdata   0x000e7e    program   0x000006
-           .idata_CAN.o_i    romdata   0x000e84    program   0x000000
-            .code_c018i.o       code   0x000e84    program   0x000000
+             .code_Main.o       code   0x000044    program   0x00070e
+              .code_CAN.o       code   0x000752    program   0x00048a
+             .code_uart.o       code   0x000bdc    program   0x0000f4
+               _cinit_scn       code   0x000cd0    program   0x00009e
+             .code_Tick.o       code   0x000d6e    program   0x000042
+             _startup_scn       code   0x000db0    program   0x000018
+         .idata_c018i.o_i    romdata   0x000dc8    program   0x000000
+          .romdata_Tick.o    romdata   0x000dc8    program   0x000000
+          .idata_Tick.o_i    romdata   0x000dc8    program   0x000004
+          .romdata_uart.o    romdata   0x000dc8    program   0x000000
+          .idata_uart.o_i    romdata   0x000dc8    program   0x000000
+           .romdata_CAN.o    romdata   0x000dc8    program   0x000000
+         .romdata_c018i.o    romdata   0x000dc8    program   0x000000
+          .romdata_Main.o    romdata   0x000dc8    program   0x000000
+          .idata_Main.o_i    romdata   0x000dcc    program   0x00000b
+           .idata_CAN.o_i    romdata   0x000dd7    program   0x000000
+            .code_c018i.o       code   0x000dd8    program   0x000000
                  .tmpdata      udata   0x000000       data   0x000014
                 MATH_DATA      udata   0x000014       data   0x00000b
-           .udata_c018i.o      udata   0x000060       data   0x00000a
-            .idata_Main.o      idata   0x00006a       data   0x000006
-            .udata_Main.o      udata   0x000070       data   0x000005
+            .idata_Main.o      idata   0x000060       data   0x00000b
+           .udata_c018i.o      udata   0x00006b       data   0x00000a
             .idata_Tick.o      idata   0x000075       data   0x000004
            .idata_c018i.o      idata   0x000079       data   0x000000
+            .udata_Main.o      udata   0x000079       data   0x000000
              .udata_CAN.o      udata   0x000079       data   0x000000
              .idata_CAN.o      idata   0x000079       data   0x000000
             .udata_uart.o      udata   0x000079       data   0x000000
@@ -62,8 +62,8 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                             0x000000    0x000005      
                             0x000008    0x00000d      
                             0x000018    0x00001d      
-                            0x00002a    0x000e83      
-            3692 out of 99352 program addresses used, program memory utilization is 3%
+                            0x00002a    0x000dd6      
+            3519 out of 99352 program addresses used, program memory utilization is 3%
 
 
 
@@ -74,51 +74,50 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                HighVector   0x000008    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                    LowISR   0x0001d2    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                 LowVector   0x000018    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-           ___?:_lbl00041   0x000be8    program     static                          
-           ___?:_lbl00042   0x000be6    program     static                          
-         ___else_lbl00036   0x000a72    program     static                          
-         ___else_lbl00038   0x000b3a    program     static                          
-         ___else_lbl00040   0x000ba6    program     static                          
-           ___if_lbl00033   0x000a54    program     static                          
-           ___if_lbl00034   0x000a62    program     static                          
-           ___if_lbl00035   0x000a76    program     static                          
-           ___if_lbl00037   0x000b98    program     static                          
-           ___if_lbl00039   0x000bac    program     static                          
+           ___?:_lbl00041   0x000bc6    program     static                          
+           ___?:_lbl00042   0x000bc4    program     static                          
+         ___else_lbl00036   0x000a50    program     static                          
+         ___else_lbl00038   0x000b18    program     static                          
+         ___else_lbl00040   0x000b84    program     static                          
+           ___if_lbl00033   0x000a32    program     static                          
+           ___if_lbl00034   0x000a40    program     static                          
+           ___if_lbl00035   0x000a54    program     static                          
+           ___if_lbl00037   0x000b76    program     static                          
+           ___if_lbl00039   0x000b8a    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x000e78    program     static                          
-       ___return_lbl00002   0x000e1e    program     static                          
+       ___return_lbl00001   0x000dc6    program     static                          
+       ___return_lbl00002   0x000d6c    program     static                          
        ___return_lbl00008   0x00000c    program     static                          
        ___return_lbl00010   0x00001c    program     static                          
-       ___return_lbl00032   0x000bf6    program     static                          
-                _do_cinit   0x000d82    program     extern C:\MCC18\src\traditional\startup\c018i.c
+       ___return_lbl00032   0x000bd4    program     static                          
+                _do_cinit   0x000cd0    program     extern C:\MCC18\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                 _startup   0x000e62    program     extern C:\MCC18\src\traditional\startup\c018i.c
-             canGetPacket   0x000852    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
-                   canISR   0x0007ca    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                  canInit   0x000774    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                 _startup   0x000db0    program     extern C:\MCC18\src\traditional\startup\c018i.c
+             canGetPacket   0x000830    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
+                   canISR   0x0007a8    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                  canInit   0x000752    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
                  canParse   0x0001fe    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-           canSendMessage   0x000a3e    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                copy_loop   0x000df4    program     static                          
-            copy_one_byte   0x000dfa    program     static                          
-                     done   0x000e1e    program     static                          
-             done_copying   0x000e08    program     static                          
-                     loop   0x000e72    program     static                          
+           canSendMessage   0x000a1c    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                copy_loop   0x000d42    program     static                          
+            copy_one_byte   0x000d48    program     static                          
+                     done   0x000d6c    program     static                          
+             done_copying   0x000d56    program     static                          
+                     loop   0x000dc0    program     static                          
                      main   0x000044    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                  mainInit   0x0001f4    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                     test   0x000d9c    program     static                          
-                  tickGet   0x000e34    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 tickInit   0x000e20    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-               tickUpdate   0x000e46    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 uartBusy   0x000cb6    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
-             uartDataRedy   0x000d70    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartGet   0x000cc2    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartGets   0x000cc6    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartISR   0x000d56    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartInit   0x000bfe    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                uartParse   0x000352    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-                 uartPutc   0x000c16    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                uartPutrs   0x000c72    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPuts   0x000c32    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                     test   0x000cea    program     static                          
+                  tickGet   0x000d82    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 tickInit   0x000d6e    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+               tickUpdate   0x000d94    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 uartBusy   0x000c94    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
+             uartDataRedy   0x000cbe    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartGet   0x000ca0    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartISR   0x000ca4    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartInit   0x000bdc    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                uartParse   0x000338    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
+                 uartPutc   0x000bf4    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                uartPutrs   0x000c50    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPuts   0x000c10    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
                    ADCON0   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                ADCON0bits   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    ADCON1   0x000fc1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -846,18 +845,17 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                   __REMB1   0x000016       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB2   0x000015       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB3   0x000014       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
-                  __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\uart.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\CAN.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                    count   0x000074       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                curr_byte   0x000063       data     static C:\MCC18\src\traditional\startup\c018i.c
-               curr_entry   0x000065       data     static C:\MCC18\src\traditional\startup\c018i.c
-                 data_ptr   0x000067       data     static C:\MCC18\src\traditional\startup\c018i.c
-         heartBeatEnabled   0x00006a       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                     prom   0x000060       data     static C:\MCC18\src\traditional\startup\c018i.c
-                        t   0x00006b       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                  timeout   0x000070       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-           waitingMessage   0x00006f       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                    count   0x00006a       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                curr_byte   0x00006e       data     static C:\MCC18\src\traditional\startup\c018i.c
+               curr_entry   0x000070       data     static C:\MCC18\src\traditional\startup\c018i.c
+                 data_ptr   0x000072       data     static C:\MCC18\src\traditional\startup\c018i.c
+         heartBeatEnabled   0x000060       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                     prom   0x00006b       data     static C:\MCC18\src\traditional\startup\c018i.c
+                        t   0x000061       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                  timeout   0x000066       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+           waitingMessage   0x000065       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
 
 
 
@@ -875,87 +873,85 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                    LowISR   0x0001d2    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
                  mainInit   0x0001f4    program     static F:\MCP\projects\CAN\canNode\Source\Main.c
                  canParse   0x0001fe    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-                uartParse   0x000352    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
-                  canInit   0x000774    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-                   canISR   0x0007ca    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-             canGetPacket   0x000852    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
-           canSendMessage   0x000a3e    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
-           ___if_lbl00033   0x000a54    program     static                          
-           ___if_lbl00034   0x000a62    program     static                          
-         ___else_lbl00036   0x000a72    program     static                          
-           ___if_lbl00035   0x000a76    program     static                          
-         ___else_lbl00038   0x000b3a    program     static                          
-           ___if_lbl00037   0x000b98    program     static                          
-         ___else_lbl00040   0x000ba6    program     static                          
-           ___if_lbl00039   0x000bac    program     static                          
-           ___?:_lbl00042   0x000be6    program     static                          
-           ___?:_lbl00041   0x000be8    program     static                          
-       ___return_lbl00032   0x000bf6    program     static                          
-                 uartInit   0x000bfe    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPutc   0x000c16    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartPuts   0x000c32    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                uartPutrs   0x000c72    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartBusy   0x000cb6    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartGet   0x000cc2    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                 uartGets   0x000cc6    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                  uartISR   0x000d56    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-             uartDataRedy   0x000d70    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
-                _do_cinit   0x000d82    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     test   0x000d9c    program     static                          
-                copy_loop   0x000df4    program     static                          
-            copy_one_byte   0x000dfa    program     static                          
-             done_copying   0x000e08    program     static                          
-       ___return_lbl00002   0x000e1e    program     static                          
-                     done   0x000e1e    program     static                          
-                 tickInit   0x000e20    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                  tickGet   0x000e34    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-               tickUpdate   0x000e46    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 _startup   0x000e62    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     loop   0x000e72    program     static                          
-       ___return_lbl00001   0x000e78    program     static                          
+                uartParse   0x000338    program     extern F:\MCP\projects\CAN\canNode\Source\Main.c
+                  canInit   0x000752    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+                   canISR   0x0007a8    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+             canGetPacket   0x000830    program     static F:\MCP\projects\CAN\canNode\Source\CAN.c
+           canSendMessage   0x000a1c    program     extern F:\MCP\projects\CAN\canNode\Source\CAN.c
+           ___if_lbl00033   0x000a32    program     static                          
+           ___if_lbl00034   0x000a40    program     static                          
+         ___else_lbl00036   0x000a50    program     static                          
+           ___if_lbl00035   0x000a54    program     static                          
+         ___else_lbl00038   0x000b18    program     static                          
+           ___if_lbl00037   0x000b76    program     static                          
+         ___else_lbl00040   0x000b84    program     static                          
+           ___if_lbl00039   0x000b8a    program     static                          
+           ___?:_lbl00042   0x000bc4    program     static                          
+           ___?:_lbl00041   0x000bc6    program     static                          
+       ___return_lbl00032   0x000bd4    program     static                          
+                 uartInit   0x000bdc    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPutc   0x000bf4    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartPuts   0x000c10    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                uartPutrs   0x000c50    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                 uartBusy   0x000c94    program     static F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartGet   0x000ca0    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                  uartISR   0x000ca4    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+             uartDataRedy   0x000cbe    program     extern F:\MCP\projects\CAN\canNode\Source\uart.c
+                _do_cinit   0x000cd0    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     test   0x000cea    program     static                          
+                copy_loop   0x000d42    program     static                          
+            copy_one_byte   0x000d48    program     static                          
+             done_copying   0x000d56    program     static                          
+       ___return_lbl00002   0x000d6c    program     static                          
+                     done   0x000d6c    program     static                          
+                 tickInit   0x000d6e    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                  tickGet   0x000d82    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+               tickUpdate   0x000d94    program     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
+                 _startup   0x000db0    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     loop   0x000dc0    program     static                          
+       ___return_lbl00001   0x000dc6    program     static                          
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\CAN.c
-                  __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canNode\Source\uart.c
-                 __AARGB7   0x000014       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB3   0x000014       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
-                 __AARGB6   0x000015       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
+                 __AARGB7   0x000014       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB2   0x000015       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
-                 __AARGB5   0x000016       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
+                 __AARGB6   0x000015       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB1   0x000016       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
-                 __AARGB4   0x000017       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
+                 __AARGB5   0x000016       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                   __REMB0   0x000017       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
+                 __AARGB4   0x000017       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                  __AARGB3   0x000018       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                  __AARGB2   0x000019       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                  __AARGB1   0x00001a       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                  __AARGB0   0x00001b       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                    __AEXP   0x00001c       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                      SIGN   0x00001d       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
-            __FPFLAGSbits   0x00001e       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
                 __FPFLAGS   0x00001e       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
-                     prom   0x000060       data     static C:\MCC18\src\traditional\startup\c018i.c
-                curr_byte   0x000063       data     static C:\MCC18\src\traditional\startup\c018i.c
-               curr_entry   0x000065       data     static C:\MCC18\src\traditional\startup\c018i.c
-                 data_ptr   0x000067       data     static C:\MCC18\src\traditional\startup\c018i.c
-         heartBeatEnabled   0x00006a       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                        t   0x00006b       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-           waitingMessage   0x00006f       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                  timeout   0x000070       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
-                    count   0x000074       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+            __FPFLAGSbits   0x00001e       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
+         heartBeatEnabled   0x000060       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                        t   0x000061       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+           waitingMessage   0x000065       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                  timeout   0x000066       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                    count   0x00006a       data     static F:\MCP\projects\CAN\canNode\Source\Main.c
+                     prom   0x00006b       data     static C:\MCC18\src\traditional\startup\c018i.c
+                curr_byte   0x00006e       data     static C:\MCC18\src\traditional\startup\c018i.c
+               curr_entry   0x000070       data     static C:\MCC18\src\traditional\startup\c018i.c
+                 data_ptr   0x000072       data     static C:\MCC18\src\traditional\startup\c018i.c
                 TickCount   0x000075       data     extern F:\MCP\projects\CAN\canNode\Source\Tick.c
-                 RXF6SIDH   0x000d60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF6SIDHbits   0x000d60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF6SIDH   0x000d60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF6SIDLbits   0x000d61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF6SIDL   0x000d61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF6EIDHbits   0x000d62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF6EIDH   0x000d62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF6EIDLbits   0x000d63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF6EIDL   0x000d63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF7SIDH   0x000d64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF7SIDHbits   0x000d64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF7SIDH   0x000d64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF7SIDLbits   0x000d65       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF7SIDL   0x000d65       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF7EIDHbits   0x000d66       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF7EIDH   0x000d66       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF7EIDHbits   0x000d66       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF7EIDLbits   0x000d67       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF7EIDL   0x000d67       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF8SIDHbits   0x000d68       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -966,10 +962,10 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                  RXF8EIDH   0x000d6a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF8EIDLbits   0x000d6b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF8EIDL   0x000d6b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF9SIDHbits   0x000d70       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF9SIDH   0x000d70       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF9SIDLbits   0x000d71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF9SIDHbits   0x000d70       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF9SIDL   0x000d71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF9SIDLbits   0x000d71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF9EIDHbits   0x000d72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF9EIDH   0x000d72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF9EIDLbits   0x000d73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -978,24 +974,24 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
             RXF10SIDHbits   0x000d74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF10SIDL   0x000d75       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF10SIDLbits   0x000d75       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF10EIDHbits   0x000d76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF10EIDH   0x000d76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF10EIDLbits   0x000d77       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF10EIDHbits   0x000d76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF10EIDL   0x000d77       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                RXF11SIDH   0x000d78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF10EIDLbits   0x000d77       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF11SIDHbits   0x000d78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                RXF11SIDH   0x000d78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF11SIDL   0x000d79       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF11SIDLbits   0x000d79       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF11EIDHbits   0x000d7a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF11EIDH   0x000d7a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF11EIDLbits   0x000d7b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF11EIDL   0x000d7b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF11EIDLbits   0x000d7b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF12SIDH   0x000d80       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF12SIDHbits   0x000d80       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                RXF12SIDL   0x000d81       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF12SIDLbits   0x000d81       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                RXF12EIDH   0x000d82       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                RXF12SIDL   0x000d81       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF12EIDHbits   0x000d82       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                RXF12EIDH   0x000d82       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF12EIDL   0x000d83       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF12EIDLbits   0x000d83       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF13SIDHbits   0x000d84       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1004,18 +1000,18 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                 RXF13SIDL   0x000d85       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF13EIDHbits   0x000d86       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF13EIDH   0x000d86       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF13EIDLbits   0x000d87       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF13EIDL   0x000d87       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF14SIDHbits   0x000d88       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF13EIDLbits   0x000d87       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF14SIDH   0x000d88       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF14SIDLbits   0x000d89       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF14SIDHbits   0x000d88       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF14SIDL   0x000d89       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF14EIDHbits   0x000d8a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF14SIDLbits   0x000d89       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF14EIDH   0x000d8a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-            RXF14EIDLbits   0x000d8b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF14EIDHbits   0x000d8a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF14EIDL   0x000d8b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                RXF15SIDH   0x000d90       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+            RXF14EIDLbits   0x000d8b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF15SIDHbits   0x000d90       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                RXF15SIDH   0x000d90       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF15SIDLbits   0x000d91       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 RXF15SIDL   0x000d91       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
             RXF15EIDHbits   0x000d92       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1038,8 +1034,8 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
              RXFBCON3bits   0x000de3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXFBCON4   0x000de4       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXFBCON4bits   0x000de4       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXFBCON5bits   0x000de5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXFBCON5   0x000de5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXFBCON5bits   0x000de5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXFBCON6bits   0x000de6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXFBCON6   0x000de6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXFBCON7bits   0x000de7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1052,20 +1048,20 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                     MSEL2   0x000df2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 MSEL3bits   0x000df3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     MSEL3   0x000df3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                BSEL0bits   0x000df8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     BSEL0   0x000df8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                BSEL0bits   0x000df8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  BIE0bits   0x000dfa       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      BIE0   0x000dfa       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                    TXBIE   0x000dfc       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 TXBIEbits   0x000dfc       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                    B0CON   0x000e20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                    TXBIE   0x000dfc       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B0CONbits   0x000e20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B0SIDH   0x000e21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                    B0CON   0x000e20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B0SIDHbits   0x000e21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B0SIDL   0x000e22       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B0SIDH   0x000e21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B0SIDLbits   0x000e22       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               B0EIDHbits   0x000e23       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B0SIDL   0x000e22       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B0EIDH   0x000e23       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               B0EIDHbits   0x000e23       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B0EIDLbits   0x000e24       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B0EIDL   0x000e24       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B0DLC   0x000e25       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1078,32 +1074,32 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                  B0D2bits   0x000e28       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B0D3   0x000e29       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B0D3bits   0x000e29       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B0D4bits   0x000e2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B0D4   0x000e2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B0D4bits   0x000e2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B0D5bits   0x000e2b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B0D5   0x000e2b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B0D6bits   0x000e2c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B0D6   0x000e2c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B0D7bits   0x000e2d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B0D7   0x000e2d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B0D7bits   0x000e2d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO9   0x000e2e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
           CANSTAT_RO9bits   0x000e2e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-           CANCON_RO9bits   0x000e2f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO9   0x000e2f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+           CANCON_RO9bits   0x000e2f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B1CONbits   0x000e30       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B1CON   0x000e30       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               B1SIDHbits   0x000e31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B1SIDH   0x000e31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               B1SIDHbits   0x000e31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B1SIDLbits   0x000e32       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B1SIDL   0x000e32       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               B1EIDHbits   0x000e33       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B1EIDH   0x000e33       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               B1EIDHbits   0x000e33       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B1EIDLbits   0x000e34       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B1EIDL   0x000e34       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                B1DLCbits   0x000e35       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B1DLC   0x000e35       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B1D0bits   0x000e36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                B1DLCbits   0x000e35       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D0   0x000e36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B1D0bits   0x000e36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D1   0x000e37       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B1D1bits   0x000e37       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D2   0x000e38       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1114,8 +1110,8 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                      B1D4   0x000e3a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D5   0x000e3b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B1D5bits   0x000e3b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B1D6bits   0x000e3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D6   0x000e3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B1D6bits   0x000e3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B1D7bits   0x000e3d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B1D7   0x000e3d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO8   0x000e3e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1128,50 +1124,50 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                    B2SIDH   0x000e41       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B2SIDLbits   0x000e42       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B2SIDL   0x000e42       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B2EIDH   0x000e43       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B2EIDHbits   0x000e43       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B2EIDH   0x000e43       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B2EIDLbits   0x000e44       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B2EIDL   0x000e44       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                    B2DLC   0x000e45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B2DLCbits   0x000e45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     B2D0   0x000e46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                    B2DLC   0x000e45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D0bits   0x000e46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     B2D0   0x000e46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B2D1   0x000e47       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D1bits   0x000e47       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D2bits   0x000e48       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B2D2   0x000e48       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B2D3bits   0x000e49       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B2D3   0x000e49       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     B2D4   0x000e4a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B2D3bits   0x000e49       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D4bits   0x000e4a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     B2D5   0x000e4b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     B2D4   0x000e4a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D5bits   0x000e4b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     B2D5   0x000e4b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D6bits   0x000e4c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B2D6   0x000e4c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B2D7bits   0x000e4d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B2D7   0x000e4d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
           CANSTAT_RO7bits   0x000e4e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO7   0x000e4e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-           CANCON_RO7bits   0x000e4f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO7   0x000e4f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+           CANCON_RO7bits   0x000e4f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B3CONbits   0x000e50       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B3CON   0x000e50       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B3SIDH   0x000e51       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B3SIDHbits   0x000e51       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B3SIDH   0x000e51       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B3SIDL   0x000e52       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B3SIDLbits   0x000e52       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B3EIDH   0x000e53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B3EIDHbits   0x000e53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B3EIDH   0x000e53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B3EIDLbits   0x000e54       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B3EIDL   0x000e54       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                    B3DLC   0x000e55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B3DLCbits   0x000e55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B3D0bits   0x000e56       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                    B3DLC   0x000e55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D0   0x000e56       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B3D1bits   0x000e57       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B3D0bits   0x000e56       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D1   0x000e57       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B3D2bits   0x000e58       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B3D1bits   0x000e57       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D2   0x000e58       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B3D2bits   0x000e58       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B3D3bits   0x000e59       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D3   0x000e59       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B3D4bits   0x000e5a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1180,100 +1176,100 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                      B3D5   0x000e5b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B3D6bits   0x000e5c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D6   0x000e5c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B3D7bits   0x000e5d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B3D7   0x000e5d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B3D7bits   0x000e5d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO6   0x000e5e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
           CANSTAT_RO6bits   0x000e5e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-           CANCON_RO6bits   0x000e5f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO6   0x000e5f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+           CANCON_RO6bits   0x000e5f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B4CON   0x000e60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B4CONbits   0x000e60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B4SIDH   0x000e61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B4SIDHbits   0x000e61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B4SIDH   0x000e61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B4SIDL   0x000e62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B4SIDLbits   0x000e62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B4EIDH   0x000e63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B4EIDHbits   0x000e63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B4EIDL   0x000e64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B4EIDH   0x000e63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B4EIDLbits   0x000e64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                    B4DLC   0x000e65       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B4EIDL   0x000e64       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B4DLCbits   0x000e65       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                    B4DLC   0x000e65       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D0   0x000e66       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B4D0bits   0x000e66       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D1   0x000e67       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B4D1bits   0x000e67       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B4D2bits   0x000e68       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D2   0x000e68       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     B4D3   0x000e69       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B4D2bits   0x000e68       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B4D3bits   0x000e69       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B4D4bits   0x000e6a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     B4D3   0x000e69       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D4   0x000e6a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B4D5bits   0x000e6b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B4D4bits   0x000e6a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D5   0x000e6b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B4D6bits   0x000e6c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B4D5bits   0x000e6b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D6   0x000e6c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B4D6bits   0x000e6c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B4D7   0x000e6d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B4D7bits   0x000e6d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-          CANSTAT_RO5bits   0x000e6e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO5   0x000e6e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               CANCON_RO5   0x000e6f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+          CANSTAT_RO5bits   0x000e6e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
            CANCON_RO5bits   0x000e6f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               CANCON_RO5   0x000e6f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B5CONbits   0x000e70       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B5CON   0x000e70       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               B5SIDHbits   0x000e71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B5SIDH   0x000e71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               B5SIDHbits   0x000e71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B5SIDL   0x000e72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B5SIDLbits   0x000e72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   B5EIDH   0x000e73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                B5EIDHbits   0x000e73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               B5EIDLbits   0x000e74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   B5EIDH   0x000e73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    B5EIDL   0x000e74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               B5EIDLbits   0x000e74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     B5DLC   0x000e75       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 B5DLCbits   0x000e75       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B5D0bits   0x000e76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D0   0x000e76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B5D0bits   0x000e76       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B5D1bits   0x000e77       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D1   0x000e77       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B5D2bits   0x000e78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D2   0x000e78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B5D3bits   0x000e79       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B5D2bits   0x000e78       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D3   0x000e79       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B5D3bits   0x000e79       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D4   0x000e7a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B5D4bits   0x000e7a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D5   0x000e7b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B5D5bits   0x000e7b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D6   0x000e7c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  B5D6bits   0x000e7c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 B5D7bits   0x000e7d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      B5D7   0x000e7d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-          CANSTAT_RO4bits   0x000e7e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 B5D7bits   0x000e7d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO4   0x000e7e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+          CANSTAT_RO4bits   0x000e7e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
            CANCON_RO4bits   0x000e7f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO4   0x000e7f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF0SIDH   0x000f00       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF0SIDHbits   0x000f00       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF0SIDL   0x000f01       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF0SIDH   0x000f00       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF0SIDLbits   0x000f01       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF0EIDH   0x000f02       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF0SIDL   0x000f01       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF0EIDHbits   0x000f02       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF0EIDL   0x000f03       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF0EIDH   0x000f02       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF0EIDLbits   0x000f03       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF1SIDHbits   0x000f04       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF0EIDL   0x000f03       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF1SIDH   0x000f04       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF1SIDHbits   0x000f04       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF1SIDLbits   0x000f05       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF1SIDL   0x000f05       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF1EIDH   0x000f06       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF1EIDHbits   0x000f06       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF1EIDLbits   0x000f07       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF1EIDL   0x000f07       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF2SIDH   0x000f08       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF1EIDLbits   0x000f07       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF2SIDHbits   0x000f08       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXF2SIDLbits   0x000f09       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF2SIDH   0x000f08       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF2SIDL   0x000f09       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXF2SIDLbits   0x000f09       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF2EIDH   0x000f0a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF2EIDHbits   0x000f0a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF2EIDL   0x000f0b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF2EIDLbits   0x000f0b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF2EIDL   0x000f0b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF3SIDHbits   0x000f0c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF3SIDH   0x000f0c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF3SIDLbits   0x000f0d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1286,44 +1282,44 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                  RXF4SIDH   0x000f10       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF4SIDLbits   0x000f11       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF4SIDL   0x000f11       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF4EIDH   0x000f12       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF4EIDHbits   0x000f12       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF4EIDL   0x000f13       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF4EIDH   0x000f12       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF4EIDLbits   0x000f13       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF4EIDL   0x000f13       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF5SIDHbits   0x000f14       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF5SIDH   0x000f14       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXF5SIDL   0x000f15       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF5SIDLbits   0x000f15       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXF5SIDL   0x000f15       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF5EIDH   0x000f16       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF5EIDHbits   0x000f16       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXF5EIDL   0x000f17       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXF5EIDLbits   0x000f17       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXM0SIDH   0x000f18       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM0SIDHbits   0x000f18       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXM0SIDL   0x000f19       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM0SIDLbits   0x000f19       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXM0SIDL   0x000f19       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM0EIDHbits   0x000f1a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXM0EIDH   0x000f1a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXM0EIDL   0x000f1b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM0EIDLbits   0x000f1b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXM0EIDL   0x000f1b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXM1SIDH   0x000f1c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM1SIDHbits   0x000f1c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXM1SIDL   0x000f1d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM1SIDLbits   0x000f1d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXM1EIDH   0x000f1e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM1EIDHbits   0x000f1e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXM1EIDL   0x000f1f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXM1EIDH   0x000f1e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXM1EIDLbits   0x000f1f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              TXB2CONbits   0x000f20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXM1EIDL   0x000f1f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   TXB2CON   0x000f20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 TXB2SIDH   0x000f21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              TXB2CONbits   0x000f20       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB2SIDHbits   0x000f21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 TXB2SIDH   0x000f21       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB2SIDL   0x000f22       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB2SIDLbits   0x000f22       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB2EIDHbits   0x000f23       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB2EIDH   0x000f23       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             TXB2EIDLbits   0x000f24       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB2EIDL   0x000f24       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             TXB2EIDLbits   0x000f24       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               TXB2DLCbits   0x000f25       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   TXB2DLC   0x000f25       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB2D0   0x000f26       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1332,24 +1328,24 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                TXB2D1bits   0x000f27       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB2D2   0x000f28       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB2D2bits   0x000f28       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB2D3bits   0x000f29       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB2D3   0x000f29       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB2D4bits   0x000f2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB2D3bits   0x000f29       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB2D4   0x000f2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   TXB2D5   0x000f2b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB2D4bits   0x000f2a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB2D5bits   0x000f2b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   TXB2D6   0x000f2c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   TXB2D5   0x000f2b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB2D6bits   0x000f2c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   TXB2D6   0x000f2c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB2D7   0x000f2d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB2D7bits   0x000f2d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              CANSTAT_RO3   0x000f2e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
           CANSTAT_RO3bits   0x000f2e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              CANSTAT_RO3   0x000f2e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO3   0x000f2f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
            CANCON_RO3bits   0x000f2f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   TXB1CON   0x000f30       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               TXB1CONbits   0x000f30       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 TXB1SIDH   0x000f31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB1SIDHbits   0x000f31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 TXB1SIDH   0x000f31       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB1SIDL   0x000f32       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB1SIDLbits   0x000f32       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB1EIDHbits   0x000f33       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1358,40 +1354,40 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                  TXB1EIDL   0x000f34       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               TXB1DLCbits   0x000f35       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   TXB1DLC   0x000f35       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB1D0bits   0x000f36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D0   0x000f36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB1D0bits   0x000f36       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D1   0x000f37       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB1D1bits   0x000f37       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   TXB1D2   0x000f38       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB1D2bits   0x000f38       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   TXB1D2   0x000f38       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB1D3bits   0x000f39       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D3   0x000f39       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB1D4bits   0x000f3a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D4   0x000f3a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   TXB1D5   0x000f3b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB1D5bits   0x000f3b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB1D6bits   0x000f3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   TXB1D5   0x000f3b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D6   0x000f3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB1D7bits   0x000f3d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB1D6bits   0x000f3c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB1D7   0x000f3d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              CANSTAT_RO2   0x000f3e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB1D7bits   0x000f3d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
           CANSTAT_RO2bits   0x000f3e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-           CANCON_RO2bits   0x000f3f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              CANSTAT_RO2   0x000f3e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO2   0x000f3f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                  TXB0CON   0x000f40       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+           CANCON_RO2bits   0x000f3f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               TXB0CONbits   0x000f40       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                  TXB0CON   0x000f40       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB0SIDHbits   0x000f41       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB0SIDH   0x000f41       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB0SIDLbits   0x000f42       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB0SIDL   0x000f42       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB0EIDHbits   0x000f43       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  TXB0EIDH   0x000f43       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 TXB0EIDL   0x000f44       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              TXB0EIDLbits   0x000f44       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                  TXB0DLC   0x000f45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 TXB0EIDL   0x000f44       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               TXB0DLCbits   0x000f45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   TXB0D0   0x000f46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                  TXB0DLC   0x000f45       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB0D0bits   0x000f46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   TXB0D0   0x000f46       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB0D1   0x000f47       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB0D1bits   0x000f47       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB0D2bits   0x000f48       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1402,26 +1398,26 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                    TXB0D4   0x000f4a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                TXB0D5bits   0x000f4b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB0D5   0x000f4b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB0D6bits   0x000f4c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB0D6   0x000f4c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               TXB0D7bits   0x000f4d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB0D6bits   0x000f4c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    TXB0D7   0x000f4d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-          CANSTAT_RO1bits   0x000f4e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               TXB0D7bits   0x000f4d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO1   0x000f4e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+          CANSTAT_RO1bits   0x000f4e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
            CANCON_RO1bits   0x000f4f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO1   0x000f4f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              RXB1CONbits   0x000f50       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   RXB1CON   0x000f50       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              RXB1CONbits   0x000f50       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB1SIDHbits   0x000f51       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXB1SIDH   0x000f51       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB1SIDLbits   0x000f52       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXB1SIDL   0x000f52       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXB1EIDH   0x000f53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB1EIDHbits   0x000f53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-             RXB1EIDLbits   0x000f54       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXB1EIDH   0x000f53       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXB1EIDL   0x000f54       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                  RXB1DLC   0x000f55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+             RXB1EIDLbits   0x000f54       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               RXB1DLCbits   0x000f55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                  RXB1DLC   0x000f55       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D0bits   0x000f56       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    RXB1D0   0x000f56       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D1bits   0x000f57       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1432,20 +1428,20 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                RXB1D3bits   0x000f59       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    RXB1D4   0x000f5a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D4bits   0x000f5a       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   RXB1D5   0x000f5b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D5bits   0x000f5b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   RXB1D5   0x000f5b       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D6bits   0x000f5c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    RXB1D6   0x000f5c       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    RXB1D7   0x000f5d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                RXB1D7bits   0x000f5d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-          CANSTAT_RO0bits   0x000f5e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               CANSTAT_RO0   0x000f5e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+          CANSTAT_RO0bits   0x000f5e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
            CANCON_RO0bits   0x000f5f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CANCON_RO0   0x000f5f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              RXB0CONbits   0x000f60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   RXB0CON   0x000f60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 RXB0SIDH   0x000f61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              RXB0CONbits   0x000f60       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB0SIDHbits   0x000f61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 RXB0SIDH   0x000f61       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXB0SIDL   0x000f62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB0SIDLbits   0x000f62       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
              RXB0EIDHbits   0x000f63       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1480,8 +1476,8 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
               BRGCON2bits   0x000f71       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   BRGCON3   0x000f72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               BRGCON3bits   0x000f72       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                   CIOCON   0x000f73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                CIOCONbits   0x000f73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                   CIOCON   0x000f73       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   COMSTAT   0x000f74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               COMSTATbits   0x000f74       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RXERRCNT   0x000f75       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1522,22 +1518,22 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                      PIE1   0x000f9d       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      PIR1   0x000f9e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  PIR1bits   0x000f9e       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                 IPR1bits   0x000f9f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      IPR1   0x000f9f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     PIE2   0x000fa0       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                 IPR1bits   0x000f9f       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  PIE2bits   0x000fa0       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     PIR2   0x000fa1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     PIE2   0x000fa0       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  PIR2bits   0x000fa1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     PIR2   0x000fa1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  IPR2bits   0x000fa2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      IPR2   0x000fa2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                     PIE3   0x000fa3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  PIE3bits   0x000fa3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                     PIE3   0x000fa3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  PIR3bits   0x000fa4       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      PIR3   0x000fa4       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  IPR3bits   0x000fa5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      IPR3   0x000fa5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-               EECON1bits   0x000fa6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    EECON1   0x000fa6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+               EECON1bits   0x000fa6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    EECON2   0x000fa7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    EEDATA   0x000fa8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     EEADR   0x000fa9       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1550,14 +1546,14 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                     RCREG   0x000fae       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     SPBRG   0x000faf       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    SPBRGH   0x000fb0       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                T3CONbits   0x000fb1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     T3CON   0x000fb1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                T3CONbits   0x000fb1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR3L   0x000fb2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR3H   0x000fb3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              BAUDCONbits   0x000fb8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   BAUDCON   0x000fb8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-              CCP1CONbits   0x000fbd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              BAUDCONbits   0x000fb8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   CCP1CON   0x000fbd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+              CCP1CONbits   0x000fbd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     CCPR1   0x000fbe       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    CCPR1L   0x000fbe       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    CCPR1H   0x000fbf       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1572,18 +1568,18 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                    ADRESH   0x000fc4       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                   SSPCON2   0x000fc5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               SSPCON2bits   0x000fc5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                  SSPCON1   0x000fc6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               SSPCON1bits   0x000fc6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                  SSPSTAT   0x000fc7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                  SSPCON1   0x000fc6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
               SSPSTATbits   0x000fc7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                  SSPSTAT   0x000fc7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    SSPADD   0x000fc8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    SSPBUF   0x000fc9       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     T2CON   0x000fca       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                 T2CONbits   0x000fca       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                       PR2   0x000fcb       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                      TMR2   0x000fcc       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                T1CONbits   0x000fcd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     T1CON   0x000fcd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                T1CONbits   0x000fcd       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR1L   0x000fce       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR1H   0x000fcf       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                  RCONbits   0x000fd0       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1596,8 +1592,8 @@ Linker Map File - Created Sat Oct 21 20:58:05 2006
                LVDCONbits   0x000fd2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    OSCCON   0x000fd3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                OSCCONbits   0x000fd3       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
-                T0CONbits   0x000fd5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     T0CON   0x000fd5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
+                T0CONbits   0x000fd5       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR0L   0x000fd6       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                     TMR0H   0x000fd7       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                STATUSbits   0x000fd8       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm

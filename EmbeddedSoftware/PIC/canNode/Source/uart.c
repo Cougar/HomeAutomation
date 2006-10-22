@@ -131,45 +131,6 @@ BYTE uartGet(void)
 
 
 /*
-*	Function: uartGets
-*
-*	Input:	Byte array to read, number of bytes to read and timeout.
-*	Output: Number of read bytes.
-*	Pre-conditions: call to uartInit()
-*	Affects: none
-*	Depends: none
-*/
-BYTE uartGets(BYTE *buffer, BYTE length,unsigned int uart_data_wait)
-{
- 	unsigned int wait = 0;
-	BYTE data;
-
-    while(length)
-    {
-        while(!uartDataRedy())
-        {
-            if(wait < uart_data_wait)
-                wait++ ;                  /*wait for more data */
-            else
-                return(length);           /*Time out- Return words/bytes to be read */
-        }
-        wait=0;
-        data = uartGet();
-    	*buffer = data;
-    	buffer++;              // Increment the string pointer
-        length--;
-    }
-
-    return(length);                       /* number of data yet to be received i.e.,0 */
-
-
-
-
-
-
-}
-
-/*
 *	Function: uartISR
 *
 *	Input:	none

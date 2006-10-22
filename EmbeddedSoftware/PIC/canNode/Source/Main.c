@@ -146,7 +146,7 @@ void canParse(CAN_MESSAGE cm)
 	uartPutc((BYTE)(cm.ident>>24));
 	uartPutc(cm.extended);
 	uartPutc(cm.data_length);
-	for(i=0;i<8;i++) uartPutc(cm.data[cm.data_length-i-1]);
+	for(i=0;i<8;i++) uartPutc(cm.data[i]);
 	uartPutc(UART_END_BYTE);
 
 }
@@ -169,8 +169,8 @@ void uartParse(BYTE c)
 	unsigned int wait = 0;
 	CAN_MESSAGE cm;	
 	static BOOL waitingMessage = FALSE;
-	static TICK timeout;
-	static BYTE count;
+	static TICK timeout=0;
+	static BYTE count=0;
 
 	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)
 	{
@@ -237,80 +237,16 @@ void uartParse(BYTE c)
 	}
 	
 
-
-/*			
-			for(i=0;i<4;i++)
-			{
-				wait = 0;
-				while(!uartDataRedy())
-        		{
-            		if(wait < UART_READ_TIMEOUT) wait++;                 
-            		else return;           
-        		}
-				cm.ident += uartGet()<<(i*8);
-			}
-
-
-			wait = 0;
-			while(!uartDataRedy())
-        	{
-            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
-            	else return;           
-        	}
-			cm.extended= uartGet();
-
-
-
-			wait = 0;
-			while(!uartDataRedy())
-        	{
-            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
-            	else return;           
-        	}
-			cm.data_length= uartGet();
-
-			for(i=0;i<4;i++)
-			{
-				wait = 0;
-				while(!uartDataRedy())
-        		{
-            		if(wait < UART_READ_TIMEOUT) wait++ ;                 
-            		else return;           
-        		}
-				cm.data[i]=uartGet();
-			}
-
-			wait = 0;
-			while(!uartDataRedy())
-        	{
-            	if(wait < UART_READ_TIMEOUT) wait++ ;                 
-            	else return;           
-        	}
-			if (uartGet()!=UART_END_BYTE) return;
-*/
-			/*	
-			if (uartGets(&cm.ident,4,UART_READ_TIMEOUT)) return;
-			if (uartGets(&cm.extended,1,UART_READ_TIMEOUT)) return;
-			if (uartGets(&cm.data_length,1,UART_READ_TIMEOUT)) return;
-			if (uartGets(cm.data,8,UART_READ_TIMEOUT)) return;
-			if (uartGets(&i,1,UART_READ_TIMEOUT)) return;
-			if (i!=UART_END_BYTE) return;		
-			*/
-		//	while(!canSendMessage(cm));
-//	}
-
-
-	
 	if(c=='1' && waitingMessage==FALSE) 
 	{	
 			cm.ident=0x00000123;
 			cm.extended=FALSE;
 			cm.data_length=4;
-			cm.data[0]='!';
-			cm.data[1]='j';
-			cm.data[2]='e';
 			cm.data[3]='H';
-
+			cm.data[2]='e';
+			cm.data[1]='j';
+			cm.data[0]='!';
+			
 			while(!canSendMessage(cm));
 	}
 
@@ -319,14 +255,14 @@ void uartParse(BYTE c)
 			cm.ident=0x0ABCDEF0;
 			cm.extended=TRUE;
 			cm.data_length=8;
-			cm.data[0]='!';
-			cm.data[1]='g';
-			cm.data[2]='a';
-			cm.data[3]='d';
-			cm.data[4]=' ';
-			cm.data[5]='d';
-			cm.data[6]='o';
 			cm.data[7]='G';
+			cm.data[6]='o';
+			cm.data[5]='d';
+			cm.data[4]=' ';
+			cm.data[3]='d';
+			cm.data[2]='a';
+			cm.data[1]='g';
+			cm.data[0]='!';		
 
 			while(!canSendMessage(cm));
 	}
@@ -336,13 +272,13 @@ void uartParse(BYTE c)
 			cm.ident=0x00000010;
 			cm.extended=FALSE;
 			cm.data_length=6;
-			cm.data[0]='0';
-			cm.data[1]='1';
-			cm.data[2]='2';
-			cm.data[3]='3';
-			cm.data[4]='4';
 			cm.data[5]='5';
-	
+			cm.data[4]='4';
+			cm.data[3]='3';
+			cm.data[2]='2';
+			cm.data[1]='1';
+			cm.data[0]='0';
+
 			while(!canSendMessage(cm));
 	}
 
