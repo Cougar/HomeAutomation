@@ -118,9 +118,10 @@ void canInit()
 */
 void canISR()
 {
+	
+
 	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)
 	{
-
 		// Get which buffer that is ful.
 			 if (RXB0CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10000; canGetPacket(); }
 		else if (RXB1CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10001; canGetPacket(); }
@@ -214,6 +215,7 @@ void canGetPacket()
 */
 BOOL canSendMessage(CAN_MESSAGE cm)
 {
+	
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
 	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
 	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
@@ -270,7 +272,6 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 		_asm 
 			bsf RXB0CON, 3, 0
 		_endasm 
-
 
 		return TRUE;
 

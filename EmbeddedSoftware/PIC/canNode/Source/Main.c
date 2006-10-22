@@ -27,6 +27,7 @@
 static void mainInit(void);
 
 static BOOL heartBeatEnabled = FALSE;
+BYTE ldc = 50;
 
 void main()
 {
@@ -48,6 +49,7 @@ void main()
 
 	while(1)
 	{
+		#ifdef USE_CAN
 		if ((tickGet()-t)>=5*TICK_SECOND && heartBeatEnabled==TRUE)
 		{
 			CAN_MESSAGE cm;
@@ -64,6 +66,7 @@ void main()
 
 			
 		}
+		#endif
 	}
 }
 
@@ -71,6 +74,8 @@ void main()
 #pragma interruptlow HighISR
 void HighISR(void)
 {
+	//if(ldc--<=1) {LED0_IO=~LED0_IO; ldc=50; }
+
 	#ifdef USE_CAN
 		canISR();
 	#endif
@@ -78,6 +83,32 @@ void HighISR(void)
 	#ifdef USE_UART
 		uartISR();
 	#endif
+
+	if (INTCONbits.INT0IE && INTCONbits.INT0IF)
+	{
+		static TICK t = 0;
+		CAN_MESSAGE cm;
+
+		if ((tickGet()-t)>TICK_SECOND/2)
+		{
+
+			LED0_IO=~LED0_IO;
+
+			// Send heartbeat
+			cm.ident=0x00000666;
+			cm.extended=FALSE;
+			cm.data_length=1;
+			cm.data[0]='H';
+
+			while(!canSendMessage(cm));
+			
+			t=tickGet();
+		}
+
+		INTCONbits.INT0IF=0;
+	}
+
+	//if (RCSTAbits.OERR) { RCSTAbits.CREN=0; RCSTAbits.CREN=1; }
 
 	tickUpdate();
 }
@@ -122,6 +153,15 @@ void mainInit()
 	// Enable Interrupts
     INTCONbits.GIEH = 1;
     INTCONbits.GIEL = 1;
+
+
+	// RB0 interrupt
+	INTCON2bits.INTEDG0 = 1; //rising edge
+	INTCONbits.INT0IE = 1;	
+
+	// Enable interrupt prirority
+	RCONbits.IPEN=1;
+	
 
 }
 
@@ -172,13 +212,16 @@ void uartParse(BYTE c)
 	static TICK timeout=0;
 	static BYTE count=0;
 
+
 	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)
 	{
 		waitingMessage=FALSE;
 	}
 
+
 	if (waitingMessage==TRUE)
 	{
+
 		timeout=tickGet();
 
 		// UART END
@@ -235,7 +278,6 @@ void uartParse(BYTE c)
 			cm.ident=0;
 			return;	
 	}
-	
 
 	if(c=='1' && waitingMessage==FALSE) 
 	{	
@@ -282,7 +324,7 @@ void uartParse(BYTE c)
 			while(!canSendMessage(cm));
 	}
 
-	
+
 
 }
 #endif

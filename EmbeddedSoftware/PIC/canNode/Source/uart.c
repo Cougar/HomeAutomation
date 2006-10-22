@@ -143,6 +143,8 @@ void uartISR(void)
 {
 	if (PIR1bits.RCIF==1 && PIE1bits.RCIE==1)
 	{
+		if (RCSTAbits.OERR) { RCSTAbits.CREN=0; RCSTAbits.CREN=1; }
+
 		uartParse(uartGet());
 		PIR1bits.RCIF=0;
 	}
