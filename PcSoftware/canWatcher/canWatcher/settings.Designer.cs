@@ -149,6 +149,7 @@ namespace canWatcher
             this.Controls.Add(this.cmd_add);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "settings";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "settings";
             this.Load += new System.EventHandler(this.settings_Load);
             this.ResumeLayout(false);

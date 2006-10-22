@@ -411,6 +411,11 @@ namespace canWatcher
             main_newIncommingCanMessage(this, EventArgs.Empty);
         }
 
+        private void dg_outgoing_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            cmd_edit_message_Click(this, EventArgs.Empty);
+        }
+
 
 
     }

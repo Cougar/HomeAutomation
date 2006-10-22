@@ -394,6 +394,7 @@ namespace canWatcher
             this.Controls.Add(this.txt_id3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "addMessage";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add new message";
             this.Load += new System.EventHandler(this.addMessage_Load);
             ((System.ComponentModel.ISupportInitialize)(this.data_length)).EndInit();
