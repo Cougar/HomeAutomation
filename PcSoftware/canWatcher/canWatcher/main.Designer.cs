@@ -29,10 +29,10 @@ namespace canWatcher
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main));
             this.dg_incomming = new System.Windows.Forms.DataGridView();
             this.ident = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -77,6 +77,8 @@ namespace canWatcher
             this.txt_debug_out = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmd_clear_incomming = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dg_incomming)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_outgoing)).BeginInit();
             this.strip_tool.SuspendLayout();
@@ -88,8 +90,8 @@ namespace canWatcher
             this.dg_incomming.AllowUserToAddRows = false;
             this.dg_incomming.AllowUserToDeleteRows = false;
             this.dg_incomming.AllowUserToResizeRows = false;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.dg_incomming.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.dg_incomming.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dg_incomming.BackgroundColor = System.Drawing.SystemColors.InactiveBorder;
             this.dg_incomming.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dg_incomming.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -101,18 +103,18 @@ namespace canWatcher
             this.count,
             this.hash,
             this.cmI});
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dg_incomming.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dg_incomming.DefaultCellStyle = dataGridViewCellStyle6;
             this.dg_incomming.Location = new System.Drawing.Point(15, 41);
             this.dg_incomming.MultiSelect = false;
             this.dg_incomming.Name = "dg_incomming";
-            this.dg_incomming.Size = new System.Drawing.Size(600, 238);
+            this.dg_incomming.Size = new System.Drawing.Size(610, 238);
             this.dg_incomming.TabIndex = 8;
             this.dg_incomming.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_schedule_CellContentClick);
             // 
@@ -171,8 +173,8 @@ namespace canWatcher
             this.dg_outgoing.AllowUserToAddRows = false;
             this.dg_outgoing.AllowUserToDeleteRows = false;
             this.dg_outgoing.AllowUserToResizeRows = false;
-            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.dg_outgoing.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.dg_outgoing.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle7;
             this.dg_outgoing.BackgroundColor = System.Drawing.SystemColors.InactiveBorder;
             this.dg_outgoing.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dg_outgoing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -184,18 +186,18 @@ namespace canWatcher
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6,
             this.cmO});
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dg_outgoing.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dg_outgoing.DefaultCellStyle = dataGridViewCellStyle8;
             this.dg_outgoing.Location = new System.Drawing.Point(15, 298);
             this.dg_outgoing.MultiSelect = false;
             this.dg_outgoing.Name = "dg_outgoing";
-            this.dg_outgoing.Size = new System.Drawing.Size(600, 238);
+            this.dg_outgoing.Size = new System.Drawing.Size(610, 238);
             this.dg_outgoing.TabIndex = 12;
             // 
             // dataGridViewTextBoxColumn1
@@ -282,6 +284,8 @@ namespace canWatcher
             this.cmd_connect,
             this.cmd_disconnect,
             this.toolStripSeparator1,
+            this.cmd_clear_incomming,
+            this.toolStripSeparator4,
             this.toolStripLabel1,
             this.cmd_add_message,
             this.cmd_edit_message,
@@ -291,7 +295,7 @@ namespace canWatcher
             this.toolStripSeparator2});
             this.strip_tool.Location = new System.Drawing.Point(0, 0);
             this.strip_tool.Name = "strip_tool";
-            this.strip_tool.Size = new System.Drawing.Size(620, 25);
+            this.strip_tool.Size = new System.Drawing.Size(637, 25);
             this.strip_tool.TabIndex = 18;
             this.strip_tool.Text = "toolStrip1";
             // 
@@ -323,8 +327,8 @@ namespace canWatcher
             // 
             this.toolStripLabel1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabel1.Image")));
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(121, 22);
-            this.toolStripLabel1.Text = "Outgoing messages:";
+            this.toolStripLabel1.Size = new System.Drawing.Size(71, 22);
+            this.toolStripLabel1.Text = "Outgoing:";
             // 
             // cmd_add_message
             // 
@@ -397,7 +401,7 @@ namespace canWatcher
             this.toolStripSeparator5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 546);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(620, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(637, 25);
             this.toolStrip1.TabIndex = 22;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -477,11 +481,25 @@ namespace canWatcher
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
+            // cmd_clear_incomming
+            // 
+            this.cmd_clear_incomming.Image = ((System.Drawing.Image)(resources.GetObject("cmd_clear_incomming.Image")));
+            this.cmd_clear_incomming.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmd_clear_incomming.Name = "cmd_clear_incomming";
+            this.cmd_clear_incomming.Size = new System.Drawing.Size(104, 22);
+            this.cmd_clear_incomming.Text = "Clear incomming";
+            this.cmd_clear_incomming.Click += new System.EventHandler(this.cmd_clear_incomming_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
             // main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(620, 571);
+            this.ClientSize = new System.Drawing.Size(637, 571);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.strip_tool);
             this.Controls.Add(this.label2);
@@ -550,6 +568,8 @@ namespace canWatcher
         private System.Windows.Forms.ToolStripTextBox txt_debug_out;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripButton cmd_send;
+        private System.Windows.Forms.ToolStripButton cmd_clear_incomming;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 

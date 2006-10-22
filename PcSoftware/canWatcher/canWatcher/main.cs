@@ -405,6 +405,12 @@ namespace canWatcher
             }
         }
 
+        private void cmd_clear_incomming_Click(object sender, EventArgs e)
+        {
+            mt = new messageTracker();
+            main_newIncommingCanMessage(this, EventArgs.Empty);
+        }
+
 
 
     }
