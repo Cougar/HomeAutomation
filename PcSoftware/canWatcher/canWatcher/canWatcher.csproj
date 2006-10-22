@@ -42,6 +42,7 @@
     <Compile Include="addMessage.Designer.cs">
       <DependentUpon>addMessage.cs</DependentUpon>
     </Compile>
+    <Compile Include="canMessage.cs" />
     <Compile Include="KeeperTracker.cs" />
     <Compile Include="main.cs">
       <SubType>Form</SubType>
@@ -49,6 +50,8 @@
     <Compile Include="main.Designer.cs">
       <DependentUpon>main.cs</DependentUpon>
     </Compile>
+    <Compile Include="messageTracker.cs" />
+    <Compile Include="outgoingKeeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="addMessage.resx">
