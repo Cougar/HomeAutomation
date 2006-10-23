@@ -10,5 +10,6 @@ namespace canWatcher
         Hashtable getMessages();
         long getPeriod(canMessage cm);
         int getCount(canMessage cm);
+        DateTime getTime(canMessage cm);
     }
 }

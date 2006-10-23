@@ -20,6 +20,14 @@ namespace canWatcher
 
         private void cmd_add_Click(object sender, EventArgs e)
         {
+            int baud;
+            if (!int.TryParse(txt_baud.Text, out baud) || baud < 1)
+            {
+                MessageBox.Show("Baud rate must be a integer value larger than one.", "Input error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            m.sets["baud"] = (int)baud;
             m.sets["port"] = cmb_port.SelectedItem.ToString();
             m.sets["parity"] = cmb_parity.SelectedItem.ToString();
             m.sets["stopbits"] = cmb_stopbits.SelectedItem.ToString();
@@ -42,6 +50,7 @@ namespace canWatcher
             cmb_stopbits.Items.AddRange(str);
             for (int i = 1; i < 11; i++) cmb_databits.Items.Add(i);
 
+            if (m.sets["baud"] == null) txt_baud.Text = "19200"; else txt_baud.Text = m.sets["baud"].ToString();
             if (m.sets["port"] == null) cmb_port.SelectedIndex = 1; else cmb_port.SelectedItem = m.sets["port"];
             if (m.sets["parity"] == null) cmb_parity.SelectedIndex = 2; else cmb_parity.SelectedItem = m.sets["parity"];
             if (m.sets["stopbits"] == null) cmb_stopbits.SelectedIndex = 1; else cmb_stopbits.SelectedItem = m.sets["stopbits"];

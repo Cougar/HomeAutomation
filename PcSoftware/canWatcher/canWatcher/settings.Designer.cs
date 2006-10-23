@@ -38,11 +38,13 @@ namespace canWatcher
             this.cmb_parity = new System.Windows.Forms.ComboBox();
             this.cmb_stopbits = new System.Windows.Forms.ComboBox();
             this.cmb_databits = new System.Windows.Forms.ComboBox();
+            this.txt_baud = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // cmd_cancel
             // 
-            this.cmd_cancel.Location = new System.Drawing.Point(15, 120);
+            this.cmd_cancel.Location = new System.Drawing.Point(15, 149);
             this.cmd_cancel.Name = "cmd_cancel";
             this.cmd_cancel.Size = new System.Drawing.Size(84, 26);
             this.cmd_cancel.TabIndex = 32;
@@ -52,7 +54,7 @@ namespace canWatcher
             // 
             // cmd_add
             // 
-            this.cmd_add.Location = new System.Drawing.Point(105, 120);
+            this.cmd_add.Location = new System.Drawing.Point(105, 149);
             this.cmd_add.Name = "cmd_add";
             this.cmd_add.Size = new System.Drawing.Size(84, 26);
             this.cmd_add.TabIndex = 31;
@@ -63,7 +65,7 @@ namespace canWatcher
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(12, 44);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 13);
             this.label1.TabIndex = 33;
@@ -72,7 +74,7 @@ namespace canWatcher
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 42);
+            this.label2.Location = new System.Drawing.Point(12, 71);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 13);
             this.label2.TabIndex = 34;
@@ -81,7 +83,7 @@ namespace canWatcher
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 69);
+            this.label3.Location = new System.Drawing.Point(12, 98);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(51, 13);
             this.label3.TabIndex = 35;
@@ -90,7 +92,7 @@ namespace canWatcher
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 96);
+            this.label4.Location = new System.Drawing.Point(12, 125);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(52, 13);
             this.label4.TabIndex = 36;
@@ -100,7 +102,7 @@ namespace canWatcher
             // 
             this.cmb_port.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_port.FormattingEnabled = true;
-            this.cmb_port.Location = new System.Drawing.Point(70, 12);
+            this.cmb_port.Location = new System.Drawing.Point(70, 41);
             this.cmb_port.Name = "cmb_port";
             this.cmb_port.Size = new System.Drawing.Size(118, 21);
             this.cmb_port.TabIndex = 37;
@@ -109,7 +111,7 @@ namespace canWatcher
             // 
             this.cmb_parity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_parity.FormattingEnabled = true;
-            this.cmb_parity.Location = new System.Drawing.Point(70, 39);
+            this.cmb_parity.Location = new System.Drawing.Point(70, 68);
             this.cmb_parity.Name = "cmb_parity";
             this.cmb_parity.Size = new System.Drawing.Size(118, 21);
             this.cmb_parity.TabIndex = 38;
@@ -118,7 +120,7 @@ namespace canWatcher
             // 
             this.cmb_stopbits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_stopbits.FormattingEnabled = true;
-            this.cmb_stopbits.Location = new System.Drawing.Point(70, 66);
+            this.cmb_stopbits.Location = new System.Drawing.Point(70, 95);
             this.cmb_stopbits.Name = "cmb_stopbits";
             this.cmb_stopbits.Size = new System.Drawing.Size(118, 21);
             this.cmb_stopbits.TabIndex = 39;
@@ -127,16 +129,34 @@ namespace canWatcher
             // 
             this.cmb_databits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_databits.FormattingEnabled = true;
-            this.cmb_databits.Location = new System.Drawing.Point(70, 93);
+            this.cmb_databits.Location = new System.Drawing.Point(70, 122);
             this.cmb_databits.Name = "cmb_databits";
             this.cmb_databits.Size = new System.Drawing.Size(118, 21);
             this.cmb_databits.TabIndex = 40;
+            // 
+            // txt_baud
+            // 
+            this.txt_baud.Location = new System.Drawing.Point(70, 15);
+            this.txt_baud.Name = "txt_baud";
+            this.txt_baud.Size = new System.Drawing.Size(118, 20);
+            this.txt_baud.TabIndex = 41;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 18);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 13);
+            this.label5.TabIndex = 42;
+            this.label5.Text = "Baud:";
             // 
             // settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(200, 157);
+            this.ClientSize = new System.Drawing.Size(203, 187);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.txt_baud);
             this.Controls.Add(this.cmb_databits);
             this.Controls.Add(this.cmb_stopbits);
             this.Controls.Add(this.cmb_parity);
@@ -169,5 +189,7 @@ namespace canWatcher
         private System.Windows.Forms.ComboBox cmb_parity;
         private System.Windows.Forms.ComboBox cmb_stopbits;
         private System.Windows.Forms.ComboBox cmb_databits;
+        private System.Windows.Forms.TextBox txt_baud;
+        private System.Windows.Forms.Label label5;
     }
 }

@@ -41,6 +41,14 @@ namespace canWatcher
             return ms.count;
         }
 
+        public DateTime getTime(canMessage cm)
+        {
+            messageState ms = (messageState)outgoingMessages[cm];
+
+            if (ms == null) return new DateTime();
+            return ms.timestamp;
+        }
+
         public bool timeToSend(canMessage cm)
         {
             messageState ms = (messageState)outgoingMessages[cm];
@@ -63,6 +71,7 @@ namespace canWatcher
             public long period;
             public int count;
             public long nextTimeToSend = 0;
+            public DateTime timestamp = new DateTime();
 
             public messageState(long period)
             {
@@ -74,6 +83,7 @@ namespace canWatcher
             {
                 this.count++;
                 this.nextTimeToSend = Environment.TickCount + this.period;
+                this.timestamp = DateTime.Now;
             }
         }
     }

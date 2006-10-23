@@ -51,11 +51,20 @@ namespace canWatcher
             return ms.count;
         }
 
+        public DateTime getTime(canMessage cm)
+        {
+            messageState ms = (messageState)incommingMessages[cm.getIdent()];
+
+            if (ms == null) return new DateTime();
+            return ms.timestamp;
+        }
+
         [Serializable]
         internal class messageState
         {
             public int count;
             public long period;
+            public DateTime timestamp = new DateTime();
 
             private long lastStamp;
 
@@ -70,7 +79,8 @@ namespace canWatcher
             {
                 this.count++;
                 this.period = Environment.TickCount - lastStamp;
-                lastStamp = Environment.TickCount;
+                this.lastStamp = Environment.TickCount;
+                this.timestamp = DateTime.Now;
             }
 
         }

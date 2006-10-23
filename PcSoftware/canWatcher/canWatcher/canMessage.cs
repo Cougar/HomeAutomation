@@ -53,6 +53,7 @@ namespace canWatcher
             string dgData = byteArrayToHexString(this.data, this.data_length);
             string dgPeriod = mt.getPeriod(this).ToString();
             string dgCount = mt.getCount(this).ToString();
+            string dgTime = mt.getTime(this).ToLongTimeString();
 
             ArrayList a = new ArrayList();
             a.Add(dgIdentifier);
@@ -60,6 +61,7 @@ namespace canWatcher
             a.Add(dgData);
             a.Add(dgPeriod);
             a.Add(dgCount);
+            a.Add(dgTime);
             a.Add(this.ident);
             a.Add(this);
             row.SetValues(a.ToArray());

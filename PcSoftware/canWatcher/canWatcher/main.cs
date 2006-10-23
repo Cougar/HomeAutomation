@@ -18,11 +18,6 @@ namespace canWatcher
 
     public partial class main : Form
     {
-        public const byte UART_START_BYTE = 253;
-        public const byte UART_END_BYTE = 250;
-
-        byte[] iBuff = new byte[256];
-        int iBuffPointer=0;
         public messageTracker mt = new messageTracker();
         public outgoingKeeper mtOut = new outgoingKeeper();
 
@@ -30,91 +25,40 @@ namespace canWatcher
 
         public canMessage addLastCm = null;
 
+        public serialCanConnection canconnection;
+
         public main()
         {
             InitializeComponent();
         }
 
-        private void dg_schedule_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-
-        private void txt_debug_out_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            
-        }
-
-        private void serial_conn_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-        {
-
-            System.IO.Ports.SerialPort port = (System.IO.Ports.SerialPort)sender;
-            byte[] data = new byte[port.BytesToRead];
-
-            int bytesToRead = port.BytesToRead;
-
-            // Fyll på array hela tiden i slutet.
-            port.Read(data, 0, data.Length);
-            Array.Copy(data, 0, iBuff, iBuffPointer, data.Length);
-            iBuffPointer += bytesToRead;
-
-         
-            // När array större eller lika med 16...
-            while (iBuffPointer >= 16)
-            {
-                int startIndex = 0;
-
-                // Sök igenom efter start byte från början.
-                for (int i = 0; i < iBuffPointer; i++)
-                {
-                    // Poppa alla bytes som inte är startbyte.
-                    if (iBuff[i] != UART_START_BYTE) startIndex++; 
-                    else
-                    {
-                        // När startbyte hittas, kolla om återstående längd är större eller lika med 16 (inkl startbyte)
-                        if ((iBuffPointer - startIndex) >= 16)
-                        {
-                            //om så, kolla 15 byte fram.
-                            if (iBuff[startIndex + 15] == UART_END_BYTE)
-                            {
-                                // Om byte 15 är slutbyte så extraktas startIndex till slutbyteindex.
-                                canMessage cm = new canMessage(iBuff, startIndex + 1);
-                                mt.addMessage(cm);
-                                
-                                newIncommingCanMessage.Invoke(this, EventArgs.Empty);
-
-                                // Sätt ny startindex och avsluta loop.
-                                startIndex += 16;
-                                break;
-                            }
-                        }
-                    }
-                }
-                // och i slutet göra en array copy.
-                // Flytta ner allt efter slutbyte till index 0 i array.
-                Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - 16);
-                iBuffPointer -= startIndex;
-            }
-            
-            
-            
-   
-
-        }
-
-        public event EventHandler newIncommingCanMessage;
-
         private void main_Load(object sender, EventArgs e)
         {
-            this.newIncommingCanMessage += new EventHandler(main_newIncommingCanMessage);
             loadSettings();
+            createSerialCanConnection();
+        }
+
+        private void createSerialCanConnection()
+        {
+            string str;
+            try
+            {
+                if (canconnection != null && canconnection.isConnected()) canconnection.disconnect(out str);
+                setConnected(false);
+                canconnection = new serialCanConnection(19200, (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), sets["parity"].ToString()), (string)sets["port"], (System.IO.Ports.StopBits)Enum.Parse(typeof(System.IO.Ports.StopBits), sets["stopbits"].ToString()), (int)sets["databits"], false);
+            }
+            catch (Exception e2) { MessageBox.Show("Error during port initlization. Check settings. Error message: " + e2.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+            canconnection.newIncommingCanMessage += new EventHandler(main_newIncommingCanMessage);
         }
 
         void main_newIncommingCanMessage(object sender, EventArgs e)
         {
             this.BeginInvoke((ThreadStart)delegate
             {
+                canMessage newcm = canconnection.getMessage();
+                if(newcm!=null) mt.addMessage(newcm);
+
                 int scrollPosition = dg_incomming.FirstDisplayedScrollingRowIndex;
 
                 DataGridViewColumn sortedColumn = dg_incomming.SortedColumn;
@@ -186,10 +130,11 @@ namespace canWatcher
 
 
 
-
         private void main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            serial_conn.Close();
+            string str;
+            canconnection.disconnect(out str);
+            canconnection = null;
         }
 
         private void cmd_add_message_Click(object sender, EventArgs e)
@@ -200,7 +145,7 @@ namespace canWatcher
 
         private void tmr_check_out_Tick(object sender, EventArgs e)
         {
-            if (serial_conn.IsOpen)
+            if (canconnection!=null && canconnection.isConnected())
             {
                 foreach (DictionaryEntry de in mtOut.getMessages())
                 {
@@ -208,25 +153,14 @@ namespace canWatcher
                     if (mtOut.timeToSend(cm))
                     { 
                         // send
-                        sendMessage(cm);
+                        canconnection.sendMessage(cm);
                         mtOut.flagAsSent(cm);
                     }
                 }
             }
         }
 
-        private void sendMessage(canMessage cm)
-        {
-            if (serial_conn.IsOpen)
-            {
-                byte[] b = new byte[16];
-                b[0] = UART_START_BYTE;
-                Array.Copy(cm.getRaw(), 0, b, 1, 14);
-                b[15] = UART_END_BYTE;
-                serial_conn.Write(b, 0, 16);
-            }
-        }
-
+        
         private void tmr_refresher_Tick(object sender, EventArgs e)
         {
             refreshOutgoing();
@@ -254,51 +188,25 @@ namespace canWatcher
 
         public bool setConnected(bool connected)
         {
-            if (connected)
+            string err;
+            if (canconnection != null && connected)
             {
-                if (serial_conn.IsOpen)
-                {
-                    lab_status.Text = "Err! Port alredy open.";
-                    Console.Beep();
-                    return false;
-                }
-                try
-                {
-                    serial_conn.ReadBufferSize = 256;
-                    serial_conn.BaudRate = 19200;
-                    serial_conn.RtsEnable = false;
-                    serial_conn.Parity = (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), sets["parity"].ToString());
-                    serial_conn.PortName = (string)sets["port"];
-                    serial_conn.StopBits = (System.IO.Ports.StopBits)Enum.Parse(typeof(System.IO.Ports.StopBits), sets["stopbits"].ToString());
-                    serial_conn.DataBits = (int)sets["databits"];
-                    serial_conn.Open();
-                }
-                catch (Exception e) { MessageBox.Show("Error during com port connection: " + e.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                if (!canconnection.connect(out err)) MessageBox.Show("Error during com port connection: " + err, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else
+            else if (canconnection!=null && !connected)
             {
-                if (!serial_conn.IsOpen)
-                {
-                    lab_status.Text = "Err! Port alredy closed.";
-                    Console.Beep();
-                    return false;
-                } 
-                try
-                {
-                    serial_conn.Close();
-                }
-                catch (Exception e) { MessageBox.Show("Error during com port connection: " + e.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-           
+                if (!canconnection.disconnect(out err)) MessageBox.Show("Error during com port disconnection: " + err, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            if (serial_conn.IsOpen) lab_status.Text = "Connected."; else lab_status.Text = "Disconnected.";
-            cmd_connect.Enabled = !serial_conn.IsOpen;
-            cmd_disconnect.Enabled = serial_conn.IsOpen;
+            if (canconnection != null && canconnection.isConnected()) lab_status.Text = "Connected."; else lab_status.Text = "Disconnected.";
+            cmd_connect.Enabled = (canconnection == null || !canconnection.isConnected());
+            cmd_disconnect.Enabled = !cmd_connect.Enabled;
             return true;
         }
 
         public void saveSettings()
         {
+            createSerialCanConnection();
             IFormatter formatter = new BinaryFormatter();
             Stream st = File.OpenWrite(Application.StartupPath + "/settings.dat");
             formatter.Serialize(st, sets);
@@ -330,19 +238,13 @@ namespace canWatcher
             setConnected(false);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void cmd_send_Click(object sender, EventArgs e)
         {
-            if (serial_conn.IsOpen)
+            if (canconnection != null && canconnection.isConnected())
             {
                 byte[] b = Encoding.ASCII.GetBytes(txt_debug_out.Text);
-
-                serial_conn.Write(b, 0, b.Length);
-
+                canconnection.writeRaw(b, b.Length);
             }
             else
             {
@@ -354,10 +256,10 @@ namespace canWatcher
         {
             if (dg_outgoing.SelectedCells.Count > 0)
             {
-                if (serial_conn.IsOpen)
+                if (canconnection != null && canconnection.isConnected())
                 {
                     canMessage cm = (canMessage)dg_outgoing["cmO", dg_outgoing.CurrentCell.RowIndex].Value;
-                    sendMessage(cm);
+                    canconnection.sendMessage(cm);
                     mtOut.flagAsSent(cm);
                 }
                 else lab_status.Text = "Err! Not connected!";

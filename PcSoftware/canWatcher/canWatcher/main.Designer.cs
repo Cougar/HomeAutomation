@@ -40,15 +40,16 @@ namespace canWatcher
             this.data = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.period = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.count = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmI = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.serial_conn = new System.IO.Ports.SerialPort(this.components);
             this.dg_outgoing = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tmr_check_out = new System.Windows.Forms.Timer(this.components);
@@ -59,6 +60,8 @@ namespace canWatcher
             this.cmd_connect = new System.Windows.Forms.ToolStripButton();
             this.cmd_disconnect = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmd_clear_incomming = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmd_add_message = new System.Windows.Forms.ToolStripButton();
             this.cmd_edit_message = new System.Windows.Forms.ToolStripButton();
@@ -77,8 +80,6 @@ namespace canWatcher
             this.txt_debug_out = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.cmd_clear_incomming = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dg_incomming)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_outgoing)).BeginInit();
             this.strip_tool.SuspendLayout();
@@ -101,6 +102,7 @@ namespace canWatcher
             this.data,
             this.period,
             this.count,
+            this.Column1,
             this.hash,
             this.cmI});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -116,7 +118,6 @@ namespace canWatcher
             this.dg_incomming.Name = "dg_incomming";
             this.dg_incomming.Size = new System.Drawing.Size(610, 238);
             this.dg_incomming.TabIndex = 8;
-            this.dg_incomming.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_schedule_CellContentClick);
             // 
             // ident
             // 
@@ -136,7 +137,7 @@ namespace canWatcher
             this.data.HeaderText = "Data";
             this.data.Name = "data";
             this.data.ReadOnly = true;
-            this.data.Width = 200;
+            this.data.Width = 130;
             // 
             // period
             // 
@@ -150,7 +151,13 @@ namespace canWatcher
             this.count.HeaderText = "Count";
             this.count.Name = "count";
             this.count.ReadOnly = true;
-            this.count.Width = 80;
+            this.count.Width = 60;
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Time";
+            this.Column1.Name = "Column1";
+            this.Column1.Width = 80;
             // 
             // hash
             // 
@@ -163,10 +170,6 @@ namespace canWatcher
             this.cmI.HeaderText = "cmcm";
             this.cmI.Name = "cmI";
             this.cmI.Visible = false;
-            // 
-            // serial_conn
-            // 
-            this.serial_conn.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serial_conn_DataReceived);
             // 
             // dg_outgoing
             // 
@@ -184,6 +187,7 @@ namespace canWatcher
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
             this.dataGridViewTextBoxColumn5,
+            this.Column2,
             this.dataGridViewTextBoxColumn6,
             this.cmO});
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -219,7 +223,7 @@ namespace canWatcher
             this.dataGridViewTextBoxColumn3.HeaderText = "Data";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            this.dataGridViewTextBoxColumn3.Width = 200;
+            this.dataGridViewTextBoxColumn3.Width = 130;
             // 
             // dataGridViewTextBoxColumn4
             // 
@@ -233,7 +237,13 @@ namespace canWatcher
             this.dataGridViewTextBoxColumn5.HeaderText = "Count";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 80;
+            this.dataGridViewTextBoxColumn5.Width = 60;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Time";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 80;
             // 
             // dataGridViewTextBoxColumn6
             // 
@@ -323,6 +333,20 @@ namespace canWatcher
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // cmd_clear_incomming
+            // 
+            this.cmd_clear_incomming.Image = ((System.Drawing.Image)(resources.GetObject("cmd_clear_incomming.Image")));
+            this.cmd_clear_incomming.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmd_clear_incomming.Name = "cmd_clear_incomming";
+            this.cmd_clear_incomming.Size = new System.Drawing.Size(104, 22);
+            this.cmd_clear_incomming.Text = "Clear incomming";
+            this.cmd_clear_incomming.Click += new System.EventHandler(this.cmd_clear_incomming_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripLabel1
             // 
@@ -482,20 +506,6 @@ namespace canWatcher
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
-            // cmd_clear_incomming
-            // 
-            this.cmd_clear_incomming.Image = ((System.Drawing.Image)(resources.GetObject("cmd_clear_incomming.Image")));
-            this.cmd_clear_incomming.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmd_clear_incomming.Name = "cmd_clear_incomming";
-            this.cmd_clear_incomming.Size = new System.Drawing.Size(104, 22);
-            this.cmd_clear_incomming.Text = "Clear incomming";
-            this.cmd_clear_incomming.Click += new System.EventHandler(this.cmd_clear_incomming_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
             // main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -527,26 +537,11 @@ namespace canWatcher
         #endregion
 
         private System.Windows.Forms.DataGridView dg_incomming;
-        private System.IO.Ports.SerialPort serial_conn;
         private System.Windows.Forms.DataGridView dg_outgoing;
         private System.Windows.Forms.Timer tmr_check_out;
         private System.Windows.Forms.Timer tmr_refresher;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ident;
-        private System.Windows.Forms.DataGridViewTextBoxColumn length;
-        private System.Windows.Forms.DataGridViewTextBoxColumn data;
-        private System.Windows.Forms.DataGridViewTextBoxColumn period;
-        private System.Windows.Forms.DataGridViewTextBoxColumn count;
-        private System.Windows.Forms.DataGridViewTextBoxColumn hash;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cmI;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cmO;
         private System.Windows.Forms.ToolStrip strip_tool;
         private System.Windows.Forms.ToolStripButton cmd_connect;
         private System.Windows.Forms.ToolStripButton cmd_disconnect;
@@ -571,6 +566,22 @@ namespace canWatcher
         private System.Windows.Forms.ToolStripButton cmd_send;
         private System.Windows.Forms.ToolStripButton cmd_clear_incomming;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ident;
+        private System.Windows.Forms.DataGridViewTextBoxColumn length;
+        private System.Windows.Forms.DataGridViewTextBoxColumn data;
+        private System.Windows.Forms.DataGridViewTextBoxColumn period;
+        private System.Windows.Forms.DataGridViewTextBoxColumn count;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hash;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cmI;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cmO;
     }
 }
 
