@@ -10,11 +10,12 @@
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
+
 #ifndef UART_H
 #define UART_H
 
-#include "../Include/compiler.h"
-#include "../Include/typedefs.h"
+#include <compiler.h>
+#include <typedefs.h>
 
 void uartInit(void);
 void uartPutc(BYTE c);

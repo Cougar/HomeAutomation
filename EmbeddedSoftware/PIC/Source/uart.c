@@ -10,8 +10,8 @@
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
-#include "../Include/stackTasks.h"
-#include "../Include/uart.h"
+#include <uart.h>
+#include <stackTasks.h>
 
 #ifdef USE_UART
 

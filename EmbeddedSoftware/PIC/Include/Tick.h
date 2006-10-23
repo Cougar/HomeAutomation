@@ -13,7 +13,7 @@
 #ifndef TICK_H
 #define TICK_H
 
-#include "..\Include\stackTasks.h"
+#include <stackTasks.h>
 
 typedef unsigned long TICK;
 

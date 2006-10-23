@@ -10,10 +10,9 @@
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
-#include "../Include/CANdefs.h"
-#include "../Include/stackTasks.h"
-#include "../Include/CAN.h"
-#include "../Include/uart.h"
+#include <CANdefs.h>
+#include <stackTasks.h>
+#include <CAN.h>
 
 static void canGetPacket(void);
 

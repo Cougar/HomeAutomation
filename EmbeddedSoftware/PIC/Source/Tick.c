@@ -12,8 +12,8 @@
 
 #define TICK_INCLUDE
 
-#include "..\Include\Tick.h"
-#include "..\Include\Compiler.h"
+#include <Tick.h>
+#include <Compiler.h>
 
 #define TICK_TEMP_VALUE_1 ((INSTR_FREQ) / (TICKS_PER_SECOND * TICK_PRESCALE_VALUE))
 

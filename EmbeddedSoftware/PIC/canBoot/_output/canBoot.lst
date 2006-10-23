@@ -1,0 +1,1034 @@
+MP2COD 4.02, COFF to COD File Converter
+Copyright (c) 2006 Microchip Technology Inc.
+Listing File Generated: Mon Oct 23 23:15:47 2006
+
+
+Address  Value    Disassembly              Source                                                                           File
+-------  -------  -----------------------  -------------------------------------------------------------------------------  -----
+                                           /*********************************************************************           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *                  Main application                                             F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *********************************************************************           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            * FileName:        Main.c                                                       F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            * Author               Date    Comment                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            * Johan Böhlin     21-10-06 	Original        (Rev 1.0)                          F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                            ********************************************************************/           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #include <compiler.h>                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #include <stackTasks.h>                                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #ifdef USE_CAN                                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	#include <CAN.h>                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #endif                                                                           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           static void mainInit(void);                                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           void main()                                                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	// Inits                                                                        F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004e8   d86c     RCALL     0x5c2          	mainInit();                                                                     F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	#ifdef USE_CAN                                                                  F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004ea   ec16     CALL      0x2c,0x0       		canInit();                                                                     F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004ec   f000                                                                                                               
+                                           	#endif                                                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004ee   d7ff     BRA       0x4ee          	while(1)                                                                        F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	{                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	}                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004f0   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #pragma interruptlow HighISR                                                     F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004f2   cfd8     MOVFF     0xfd8,0xfe4    void HighISR(void)                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+0004f4   ffe4                                                                                                               
+0004f6   cfe0     MOVFF     0xfe0,0xfe4                                                                                     
+0004f8   ffe4                                                                                                               
+0004fa   6ee4     MOVWF     0xe4,0x0                                                                                        
+0004fc   cfda     MOVFF     0xfda,0xfe4                                                                                     
+0004fe   ffe4                                                                                                               
+000500   cfe2     MOVFF     0xfe2,0xfda                                                                                     
+000502   ffda                                                                                                               
+000504   cfe9     MOVFF     0xfe9,0xfe4                                                                                     
+000506   ffe4                                                                                                               
+000508   cfea     MOVFF     0xfea,0xfe4                                                                                     
+00050a   ffe4                                                                                                               
+00050c   cff6     MOVFF     0xff6,0xfe4                                                                                     
+00050e   ffe4                                                                                                               
+000510   cff7     MOVFF     0xff7,0xfe4                                                                                     
+000512   ffe4                                                                                                               
+000514   cff5     MOVFF     0xff5,0xfe4                                                                                     
+000516   ffe4                                                                                                               
+000518   cff3     MOVFF     0xff3,0xfe4                                                                                     
+00051a   ffe4                                                                                                               
+00051c   cff4     MOVFF     0xff4,0xfe4                                                                                     
+00051e   ffe4                                                                                                               
+000520   cffa     MOVFF     0xffa,0xfe4                                                                                     
+000522   ffe4                                                                                                               
+000524   ee00     LFSR      0x0,0x14                                                                                        
+000526   f014                                                                                                               
+000528   0e02     MOVLW     0x2                                                                                             
+00052a   04e8     DECF      0xe8,0x0,0x0                                                                                    
+00052c   e303     BNC       0x534                                                                                           
+00052e   cfee     MOVFF     0xfee,0xfe4                                                                                     
+000530   ffe4                                                                                                               
+000532   d7fb     BRA       0x52a                                                                                           
+000534   ee00     LFSR      0x0,0x0                                                                                         
+000536   f000                                                                                                               
+000538   0e14     MOVLW     0x14                                                                                            
+00053a   04e8     DECF      0xe8,0x0,0x0                                                                                    
+00053c   e303     BNC       0x544                                                                                           
+00053e   cfee     MOVFF     0xfee,0xfe4                                                                                     
+000540   ffe4                                                                                                               
+000542   d7fb     BRA       0x53a                                                                                           
+000544   52e6     MOVF      0xe6,0x1,0x0                                                                                    
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	#ifdef USE_CAN                                                                  F:\MCP\projects\CAN\canBoot\Source\Main.c
+000546   ec41     CALL      0x82,0x0       		canISR();                                                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+000548   f000                                                                                                               
+                                           	#endif                                                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+00054a   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+00054c   ee00     LFSR      0x0,0x13                                                                                        
+00054e   f013                                                                                                               
+000550   0e14     MOVLW     0x14                                                                                            
+000552   04e8     DECF      0xe8,0x0,0x0                                                                                    
+000554   e303     BNC       0x55c                                                                                           
+000556   cfe5     MOVFF     0xfe5,0xfed                                                                                     
+000558   ffed                                                                                                               
+00055a   d7fb     BRA       0x552                                                                                           
+00055c   ee00     LFSR      0x0,0x15                                                                                        
+00055e   f015                                                                                                               
+000560   0e02     MOVLW     0x2                                                                                             
+000562   04e8     DECF      0xe8,0x0,0x0                                                                                    
+000564   e303     BNC       0x56c                                                                                           
+000566   cfe5     MOVFF     0xfe5,0xfed                                                                                     
+000568   ffed                                                                                                               
+00056a   d7fb     BRA       0x562                                                                                           
+00056c   cfe5     MOVFF     0xfe5,0xffa                                                                                     
+00056e   fffa                                                                                                               
+000570   cfe5     MOVFF     0xfe5,0xff4                                                                                     
+000572   fff4                                                                                                               
+000574   cfe5     MOVFF     0xfe5,0xff3                                                                                     
+000576   fff3                                                                                                               
+000578   cfe5     MOVFF     0xfe5,0xff5                                                                                     
+00057a   fff5                                                                                                               
+00057c   cfe5     MOVFF     0xfe5,0xff7                                                                                     
+00057e   fff7                                                                                                               
+000580   cfe5     MOVFF     0xfe5,0xff6                                                                                     
+000582   fff6                                                                                                               
+000584   cfe5     MOVFF     0xfe5,0xfea                                                                                     
+000586   ffea                                                                                                               
+000588   cfe5     MOVFF     0xfe5,0xfe9                                                                                     
+00058a   ffe9                                                                                                               
+00058c   cfe5     MOVFF     0xfe5,0xfda                                                                                     
+00058e   ffda                                                                                                               
+000590   50e5     MOVF      0xe5,0x0,0x0                                                                                    
+000592   cfe5     MOVFF     0xfe5,0xfe0                                                                                     
+000594   ffe0                                                                                                               
+000596   cfe5     MOVFF     0xfe5,0xfd8                                                                                     
+000598   ffd8                                                                                                               
+00059a   0010     RETFIE    0x0                                                                                             
+                                           #pragma code highVector=0x08                                                     F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           void HighVector (void)                                                           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+000008   ef79     GOTO      0x4f2              _asm goto HighISR _endasm                                                    F:\MCP\projects\CAN\canBoot\Source\Main.c
+00000a   f002                                                                                                               
+00000c   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #pragma code // Return to default code section                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #pragma interruptlow LowISR                                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+00059c   cfd8     MOVFF     0xfd8,0xfe4    void LowISR(void)                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+00059e   ffe4                                                                                                               
+0005a0   cfe0     MOVFF     0xfe0,0xfe4                                                                                     
+0005a2   ffe4                                                                                                               
+0005a4   6ee4     MOVWF     0xe4,0x0                                                                                        
+0005a6   cfda     MOVFF     0xfda,0xfe4                                                                                     
+0005a8   ffe4                                                                                                               
+0005aa   cfe2     MOVFF     0xfe2,0xfda                                                                                     
+0005ac   ffda                                                                                                               
+0005ae   52e6     MOVF      0xe6,0x1,0x0                                                                                    
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005b0   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005b2   cfe5     MOVFF     0xfe5,0xfda                                                                                     
+0005b4   ffda                                                                                                               
+0005b6   50e5     MOVF      0xe5,0x0,0x0                                                                                    
+0005b8   cfe5     MOVFF     0xfe5,0xfe0                                                                                     
+0005ba   ffe0                                                                                                               
+0005bc   cfe5     MOVFF     0xfe5,0xfd8                                                                                     
+0005be   ffd8                                                                                                               
+0005c0   0010     RETFIE    0x0                                                                                             
+                                           #pragma code lowVector=0x18                                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           void LowVector (void)                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+000018   efce     GOTO      0x59c              _asm goto LowISR _endasm                                                     F:\MCP\projects\CAN\canBoot\Source\Main.c
+00001a   f002                                                                                                               
+00001c   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #pragma code // Return to default code section                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           /*                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Function: mainInit                                                             F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Input:	none                                                                    F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Output: none                                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Pre-conditions: none                                                           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Affects: Se code                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Depends: none.                                                                 F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           */                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           void mainInit()                                                                  F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005c2   9294     BCF       0x94,0x1,0x0   	LED0_TRIS=0;	                                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                               // Enable internal PORTB pull-ups                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005c4   9ef1     BCF       0xf1,0x7,0x0       INTCON2bits.RBPU = 0;                                                        F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	// Enable Interrupts                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005c6   8ef2     BSF       0xf2,0x7,0x0       INTCONbits.GIEH = 1;                                                         F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005c8   8cf2     BSF       0xf2,0x6,0x0       INTCONbits.GIEL = 1;                                                         F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	// Enable interrupt prirority                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005ca   8ed0     BSF       0xd0,0x7,0x0   	RCONbits.IPEN=1;                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           	                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005cc   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           /*                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Function: canParse                                                             F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Input:	Received can message                                                    F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Output: none                                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Pre-conditions: canInit and received packet.                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Affects: Sensors/actuators/etc. See code.                                      F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           *	Depends: none.                                                                 F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           */                                                                               F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           #ifdef USE_CAN                                                                   F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005ce   cfd9     MOVFF     0xfd9,0xfe6    void canParse(CAN_MESSAGE cm)                                                    F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005d0   ffe6                                                                                                               
+0005d2   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+0005d4   ffd9                                                                                                               
+                                           {                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005d6   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBoot\Source\Main.c
+0005d8   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+0005da   ffd9                                                                                                               
+0005dc   0012     RETURN    0x0                                                                                             
+                                           #endif                                                                           F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           /*********************************************************************           F:\MCP\projects\CAN\Source\CAN.c
+                                            *                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                            *                  CAN driver                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                            *                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                            *********************************************************************           F:\MCP\projects\CAN\Source\CAN.c
+                                            * FileName:        CAN.c                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                            *                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                            * Author               Date    Comment                                          F:\MCP\projects\CAN\Source\CAN.c
+                                            *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~           F:\MCP\projects\CAN\Source\CAN.c
+                                            * Johan Böhlin     21-10-06 	Original        (Rev 1.0)                          F:\MCP\projects\CAN\Source\CAN.c
+                                            ********************************************************************/           F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           #include <CANdefs.h>                                                             F:\MCP\projects\CAN\Source\CAN.c
+                                           #include <stackTasks.h>                                                          F:\MCP\projects\CAN\Source\CAN.c
+                                           #include <CAN.h>                                                                 F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           static void canGetPacket(void);                                                  F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           #ifdef USE_CAN                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           /*                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Function: canInit                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                           *                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Input:	none                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Output: none                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Pre-conditions: none                                                           F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Affects: Changes can registers.                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Depends: none.                                                                 F:\MCP\projects\CAN\Source\CAN.c
+                                           */                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           void canInit()                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                           {                                                                                F:\MCP\projects\CAN\Source\CAN.c
+00002c   0e80     MOVLW     0x80           	CANCON = 0x80; //request config mode                                            F:\MCP\projects\CAN\Source\CAN.c
+00002e   6e6f     MOVWF     0x6f,0x0                                                                                        
+000030   0ee0     MOVLW     0xe0           	while ((CANSTAT & 0xE0) != 0x80 ); //wait for config mode request               F:\MCP\projects\CAN\Source\CAN.c
+000032   146e     ANDWF     0x6e,0x0,0x0                                                                                    
+000034   0880     SUBLW     0x80                                                                                            
+000036   e001     BZ        0x3a                                                                                            
+000038   d7fb     BRA       0x30                                                                                            
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	// BAUD AND TQS                                                                 F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+00003a   6a70     CLRF      0x70,0x0       	BRGCON1=0;                                                                      F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Sync_Seq = 2 x TQ = 1                                                        F:\MCP\projects\CAN\Source\CAN.c
+00003c   9e70     BCF       0x70,0x7,0x0   	BRGCON1bits.SJW1=0;                                                             F:\MCP\projects\CAN\Source\CAN.c
+00003e   8c70     BSF       0x70,0x6,0x0   	BRGCON1bits.SJW0=1;                                                             F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Setting BRP.                                                                 F:\MCP\projects\CAN\Source\CAN.c
+000040   0e09     MOVLW     0x9            	BRGCON1=BRGCON1|CAN_BRP;                                                        F:\MCP\projects\CAN\Source\CAN.c
+000042   1070     IORWF     0x70,0x0,0x0                                                                                    
+000044   6e70     MOVWF     0x70,0x0                                                                                        
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Maximum PHEG1                                                                F:\MCP\projects\CAN\Source\CAN.c
+000046   8e71     BSF       0x71,0x7,0x0   	BRGCON2bits.SEG2PHTS = 1;                                                       F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Phase_Seg1 = 2 x TQ = 1                                                      F:\MCP\projects\CAN\Source\CAN.c
+000048   9a71     BCF       0x71,0x5,0x0   	BRGCON2bits.SEG1PH2 = 0;                                                        F:\MCP\projects\CAN\Source\CAN.c
+00004a   9871     BCF       0x71,0x4,0x0   	BRGCON2bits.SEG1PH1 = 0;                                                        F:\MCP\projects\CAN\Source\CAN.c
+00004c   8671     BSF       0x71,0x3,0x0   	BRGCON2bits.SEG1PH0 = 1;                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Prop_Seq = 2 x TQ = 1                                                        F:\MCP\projects\CAN\Source\CAN.c
+00004e   9471     BCF       0x71,0x2,0x0   	BRGCON2bits.PRSEG2 = 0;                                                         F:\MCP\projects\CAN\Source\CAN.c
+000050   9271     BCF       0x71,0x1,0x0   	BRGCON2bits.PRSEG1 = 0;                                                         F:\MCP\projects\CAN\Source\CAN.c
+000052   8071     BSF       0x71,0x0,0x0   	BRGCON2bits.PRSEG0 = 1;                                                         F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	//  Enableing bus wake-up                                                       F:\MCP\projects\CAN\Source\CAN.c
+000054   9e72     BCF       0x72,0x7,0x0   	BRGCON3bits.WAKDIS = 0;                                                         F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Dont use filter when wakeup                                                  F:\MCP\projects\CAN\Source\CAN.c
+000056   9c72     BCF       0x72,0x6,0x0   	BRGCON3bits.WAKFIL = 0;                                                         F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Phase_Seg2 = 2 x TQ = 1                                                      F:\MCP\projects\CAN\Source\CAN.c
+000058   9472     BCF       0x72,0x2,0x0   	BRGCON3bits.SEG2PH2 = 0;                                                        F:\MCP\projects\CAN\Source\CAN.c
+00005a   9272     BCF       0x72,0x1,0x0   	BRGCON3bits.SEG2PH1 = 0;                                                        F:\MCP\projects\CAN\Source\CAN.c
+00005c   8072     BSF       0x72,0x0,0x0   	BRGCON3bits.SEG2PH0 = 1;                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+00005e   6a77     CLRF      0x77,0x0       	ECANCON=0;                                                                      F:\MCP\projects\CAN\Source\CAN.c
+000060   9e77     BCF       0x77,0x7,0x0   	ECANCONbits.MDSEL1 = 0;                                                         F:\MCP\projects\CAN\Source\CAN.c
+000062   8c77     BSF       0x77,0x6,0x0   	ECANCONbits.MDSEL0 = 1;                                                         F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	// FILTERS AND MASKS                                                            F:\MCP\projects\CAN\Source\CAN.c
+000064   8c60     BSF       0x60,0x6,0x0   	RXB0CONbits.RXM1=1;                                                             F:\MCP\projects\CAN\Source\CAN.c
+000066   9a60     BCF       0x60,0x5,0x0   	RXB0CONbits.RXM0=0;                                                             F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	// INTERRUPTS                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Diable transmit interrupt                                                    F:\MCP\projects\CAN\Source\CAN.c
+000068   010d     MOVLB     0xd            	TXBIE = 0;                                                                      F:\MCP\projects\CAN\Source\CAN.c
+00006a   6bfc     CLRF      0xfc,0x1                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	//rx any interrupt                                                              F:\MCP\projects\CAN\Source\CAN.c
+00006c   6aa4     CLRF      0xa4,0x0       	PIR3 = 0;                                                                       F:\MCP\projects\CAN\Source\CAN.c
+00006e   0e03     MOVLW     0x3            	PIE3 = 0b00000011;                                                              F:\MCP\projects\CAN\Source\CAN.c
+000070   6ea3     MOVWF     0xa3,0x0                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	// High interrupt                                                               F:\MCP\projects\CAN\Source\CAN.c
+000072   6ea5     MOVWF     0xa5,0x0       	IPR3 =0b00000011;                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	// Programmable buffers interrupt                                               F:\MCP\projects\CAN\Source\CAN.c
+000074   69fa     SETF      0xfa,0x1       	BIE0  = 0xFF;	                                                                  F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           	//loopback mode or not                                                          F:\MCP\projects\CAN\Source\CAN.c
+                                           	#ifdef CAN_LOOPBACK_MODE                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                           		CANCON = 0x40;//request loopback mode                                          F:\MCP\projects\CAN\Source\CAN.c
+                                           		while ((CANSTAT & 0xE0) != 0x40 );//wait for loopback mode                     F:\MCP\projects\CAN\Source\CAN.c
+                                           	#else                                                                           F:\MCP\projects\CAN\Source\CAN.c
+000076   6a6f     CLRF      0x6f,0x0       		CANCON = 0x00;//request normal mode                                            F:\MCP\projects\CAN\Source\CAN.c
+000078   0ee0     MOVLW     0xe0           		while ((CANSTAT & 0xE0) != 0x00 );//wait for normal mode                       F:\MCP\projects\CAN\Source\CAN.c
+00007a   146e     ANDWF     0x6e,0x0,0x0                                                                                    
+00007c   e001     BZ        0x80                                                                                            
+00007e   d7fc     BRA       0x78                                                                                            
+                                           	#endif                                                                          F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000080   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           /*                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Function: canISR                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           *                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Input:	none                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Output: none                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Pre-conditions: a call to canInit()                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Affects: interrupt registers and receive data buffers                          F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Depends: ..                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           */                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           void canISR()                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           {                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000082   50a4     MOVF      0xa4,0x0,0x0   	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)                      F:\MCP\projects\CAN\Source\CAN.c
+000084   0b02     ANDLW     0x2                                                                                             
+000086   e106     BNZ       0x94                                                                                            
+000088   50a4     MOVF      0xa4,0x0,0x0                                                                                    
+00008a   0b02     ANDLW     0x2                                                                                             
+00008c   e103     BNZ       0x94                                                                                            
+00008e   50a4     MOVF      0xa4,0x0,0x0                                                                                    
+000090   0b01     ANDLW     0x1                                                                                             
+000092   e047     BZ        0x122                                                                                           
+                                           	{                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Get which buffer that is ful.                                               F:\MCP\projects\CAN\Source\CAN.c
+000094   ae60     BTFSS     0x60,0x7,0x0   			 if (RXB0CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10000; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+000096   d006     BRA       0xa4                                                                                            
+000098   0e00     MOVLW     0x0                                                                                             
+00009a   1477     ANDWF     0x77,0x0,0x0                                                                                    
+00009c   0910     IORLW     0x10                                                                                            
+00009e   6e77     MOVWF     0x77,0x0                                                                                        
+0000a0   d841     RCALL     0x124                                                                                           
+0000a2   d039     BRA       0x116          		else if (RXB1CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10001; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000a4   010f     MOVLB     0xf                                                                                             
+0000a6   af50     BTFSS     0x50,0x7,0x1                                                                                    
+0000a8   d006     BRA       0xb6                                                                                            
+0000aa   0e00     MOVLW     0x0                                                                                             
+0000ac   1477     ANDWF     0x77,0x0,0x0                                                                                    
+0000ae   0911     IORLW     0x11                                                                                            
+0000b0   6e77     MOVWF     0x77,0x0                                                                                        
+0000b2   d838     RCALL     0x124                                                                                           
+0000b4   d030     BRA       0x116          		else if (B0CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10010; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000b6   010e     MOVLB     0xe                                                                                             
+0000b8   af20     BTFSS     0x20,0x7,0x1                                                                                    
+0000ba   d006     BRA       0xc8                                                                                            
+0000bc   0e00     MOVLW     0x0                                                                                             
+0000be   1477     ANDWF     0x77,0x0,0x0                                                                                    
+0000c0   0912     IORLW     0x12                                                                                            
+0000c2   6e77     MOVWF     0x77,0x0                                                                                        
+0000c4   d82f     RCALL     0x124                                                                                           
+0000c6   d027     BRA       0x116          		else if (B1CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10011; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000c8   af30     BTFSS     0x30,0x7,0x1                                                                                    
+0000ca   d006     BRA       0xd8                                                                                            
+0000cc   0e00     MOVLW     0x0                                                                                             
+0000ce   1477     ANDWF     0x77,0x0,0x0                                                                                    
+0000d0   0913     IORLW     0x13                                                                                            
+0000d2   6e77     MOVWF     0x77,0x0                                                                                        
+0000d4   d827     RCALL     0x124                                                                                           
+0000d6   d01f     BRA       0x116          		else if (B2CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10100; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000d8   af40     BTFSS     0x40,0x7,0x1                                                                                    
+0000da   d006     BRA       0xe8                                                                                            
+0000dc   0e00     MOVLW     0x0                                                                                             
+0000de   1477     ANDWF     0x77,0x0,0x0                                                                                    
+0000e0   0914     IORLW     0x14                                                                                            
+0000e2   6e77     MOVWF     0x77,0x0                                                                                        
+0000e4   d81f     RCALL     0x124                                                                                           
+0000e6   d017     BRA       0x116          		else if (B3CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10101; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000e8   af50     BTFSS     0x50,0x7,0x1                                                                                    
+0000ea   d006     BRA       0xf8                                                                                            
+0000ec   0e00     MOVLW     0x0                                                                                             
+0000ee   1477     ANDWF     0x77,0x0,0x0                                                                                    
+0000f0   0915     IORLW     0x15                                                                                            
+0000f2   6e77     MOVWF     0x77,0x0                                                                                        
+0000f4   d817     RCALL     0x124                                                                                           
+0000f6   d00f     BRA       0x116          		else if (B4CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10110; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+0000f8   af60     BTFSS     0x60,0x7,0x1                                                                                    
+0000fa   d006     BRA       0x108                                                                                           
+0000fc   0e00     MOVLW     0x0                                                                                             
+0000fe   1477     ANDWF     0x77,0x0,0x0                                                                                    
+000100   0916     IORLW     0x16                                                                                            
+000102   6e77     MOVWF     0x77,0x0                                                                                        
+000104   d80f     RCALL     0x124                                                                                           
+000106   d007     BRA       0x116          		else if (B5CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10111; canGetPacket(); } F:\MCP\projects\CAN\Source\CAN.c
+000108   af70     BTFSS     0x70,0x7,0x1                                                                                    
+00010a   d005     BRA       0x116                                                                                           
+00010c   0e00     MOVLW     0x0                                                                                             
+00010e   1477     ANDWF     0x77,0x0,0x0                                                                                    
+000110   0917     IORLW     0x17                                                                                            
+000112   6e77     MOVWF     0x77,0x0                                                                                        
+000114   d807     RCALL     0x124                                                                                           
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+000116   b2a4     BTFSC     0xa4,0x1,0x0   		if (PIR3bits.RXBnIF) {PIR3bits.RXBnIF = 0;}                                    F:\MCP\projects\CAN\Source\CAN.c
+000118   92a4     BCF       0xa4,0x1,0x0                                                                                    
+00011a   b2a4     BTFSC     0xa4,0x1,0x0   		if (PIR3bits.RXB1IF) {PIR3bits.RXB1IF = 0;}                                    F:\MCP\projects\CAN\Source\CAN.c
+00011c   92a4     BCF       0xa4,0x1,0x0                                                                                    
+00011e   b0a4     BTFSC     0xa4,0x0,0x0   		if (PIR3bits.RXB0IF) {PIR3bits.RXB0IF = 0;}                                    F:\MCP\projects\CAN\Source\CAN.c
+000120   90a4     BCF       0xa4,0x0,0x0                                                                                    
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	}                                                                               F:\MCP\projects\CAN\Source\CAN.c
+000122   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           /*                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Function: canGetPacket                                                         F:\MCP\projects\CAN\Source\CAN.c
+                                           *                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Input:	none                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Output: none                                                                   F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Pre-conditions: a call to canISR and an packet is available and banked to RXB0 F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Affects: Calls canParse() function in main for parsing received packet.        F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Depends: none.                                                                 F:\MCP\projects\CAN\Source\CAN.c
+                                           */                                                                               F:\MCP\projects\CAN\Source\CAN.c
+000124   cfd9     MOVFF     0xfd9,0xfe6    void canGetPacket()                                                              F:\MCP\projects\CAN\Source\CAN.c
+000126   ffe6                                                                                                               
+000128   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+00012a   ffd9                                                                                                               
+00012c   0e0e     MOVLW     0xe                                                                                             
+00012e   26e1     ADDWF     0xe1,0x1,0x0                                                                                    
+                                           {                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           		CAN_MESSAGE cm;                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Set extended mode or not.                                                   F:\MCP\projects\CAN\Source\CAN.c
+000130   5062     MOVF      0x62,0x0,0x0   		cm.extended=(RXB0SIDLbits.EXID==0?FALSE:TRUE);                                 F:\MCP\projects\CAN\Source\CAN.c
+000132   0b08     ANDLW     0x8                                                                                             
+000134   e102     BNZ       0x13a                                                                                           
+000136   0e00     MOVLW     0x0                                                                                             
+000138   d001     BRA       0x13c                                                                                           
+00013a   0e01     MOVLW     0x1                                                                                             
+00013c   6ee7     MOVWF     0xe7,0x0                                                                                        
+00013e   0e04     MOVLW     0x4                                                                                             
+000140   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
+000142   ffdb                                                                                                               
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Clear                                                                       F:\MCP\projects\CAN\Source\CAN.c
+000144   6ade     CLRF      0xde,0x0       		cm.ident=0;                                                                    F:\MCP\projects\CAN\Source\CAN.c
+000146   6ade     CLRF      0xde,0x0                                                                                        
+000148   6ade     CLRF      0xde,0x0                                                                                        
+00014a   6add     CLRF      0xdd,0x0                                                                                        
+00014c   52dd     MOVF      0xdd,0x1,0x0                                                                                    
+00014e   52dd     MOVF      0xdd,0x1,0x0                                                                                    
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000150   04db     DECF      0xdb,0x0,0x0   		if (cm.extended==TRUE)                                                         F:\MCP\projects\CAN\Source\CAN.c
+000152   e16f     BNZ       0x232                                                                                           
+                                           		{                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                           			//Read extended ident.                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           			//xx xx xx 28 27 26 25 24   23 22 21 20 19 18 17 16   15 14 13 12 11 10 09 08   07 06 05 04 03 02 01 00 F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDH 28 27 26 25 24 23 22 21                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDL 20 19 18 xx xx xx 17 16                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0EIDH 15 14 13 12 11 10 09 08                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0EIDL 07 06 05 04 03 02 01 00                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000154   5061     MOVF      0x61,0x0,0x0           	cm.ident = (((DWORD)RXB0SIDH)<<21) + (((DWORD)(RXB0SIDL & 0xE0))<<13) + (((DWORD)(RXB0SIDL & 0x03))<<16) + (((DWORD)RXB0EIDH)<<8) + (BYTE)RXB0EIDL; F:\MCP\projects\CAN\Source\CAN.c
+000156   6e00     MOVWF     0x0,0x0                                                                                         
+000158   6a01     CLRF      0x1,0x0                                                                                         
+00015a   6a02     CLRF      0x2,0x0                                                                                         
+00015c   6a03     CLRF      0x3,0x0                                                                                         
+00015e   0e15     MOVLW     0x15                                                                                            
+000160   0b1f     ANDLW     0x1f                                                                                            
+000162   e007     BZ        0x172                                                                                           
+000164   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000166   3600     RLCF      0x0,0x1,0x0                                                                                     
+000168   3601     RLCF      0x1,0x1,0x0                                                                                     
+00016a   3602     RLCF      0x2,0x1,0x0                                                                                     
+00016c   3603     RLCF      0x3,0x1,0x0                                                                                     
+00016e   06e8     DECF      0xe8,0x1,0x0                                                                                    
+000170   e1f9     BNZ       0x164                                                                                           
+000172   0ee0     MOVLW     0xe0                                                                                            
+000174   1462     ANDWF     0x62,0x0,0x0                                                                                    
+000176   6e04     MOVWF     0x4,0x0                                                                                         
+000178   6a05     CLRF      0x5,0x0                                                                                         
+00017a   6a06     CLRF      0x6,0x0                                                                                         
+00017c   6a07     CLRF      0x7,0x0                                                                                         
+00017e   0e0d     MOVLW     0xd                                                                                             
+000180   0b1f     ANDLW     0x1f                                                                                            
+000182   e007     BZ        0x192                                                                                           
+000184   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000186   3604     RLCF      0x4,0x1,0x0                                                                                     
+000188   3605     RLCF      0x5,0x1,0x0                                                                                     
+00018a   3606     RLCF      0x6,0x1,0x0                                                                                     
+00018c   3607     RLCF      0x7,0x1,0x0                                                                                     
+00018e   06e8     DECF      0xe8,0x1,0x0                                                                                    
+000190   e1f9     BNZ       0x184                                                                                           
+000192   5004     MOVF      0x4,0x0,0x0                                                                                     
+000194   2600     ADDWF     0x0,0x1,0x0                                                                                     
+000196   5005     MOVF      0x5,0x0,0x0                                                                                     
+000198   2201     ADDWFC    0x1,0x1,0x0                                                                                     
+00019a   5006     MOVF      0x6,0x0,0x0                                                                                     
+00019c   2202     ADDWFC    0x2,0x1,0x0                                                                                     
+00019e   5007     MOVF      0x7,0x0,0x0                                                                                     
+0001a0   2203     ADDWFC    0x3,0x1,0x0                                                                                     
+0001a2   0e03     MOVLW     0x3                                                                                             
+0001a4   1462     ANDWF     0x62,0x0,0x0                                                                                    
+0001a6   6e08     MOVWF     0x8,0x0                                                                                         
+0001a8   6a09     CLRF      0x9,0x0                                                                                         
+0001aa   6a0a     CLRF      0xa,0x0                                                                                         
+0001ac   6a0b     CLRF      0xb,0x0                                                                                         
+0001ae   0e10     MOVLW     0x10                                                                                            
+0001b0   0b1f     ANDLW     0x1f                                                                                            
+0001b2   e007     BZ        0x1c2                                                                                           
+0001b4   90d8     BCF       0xd8,0x0,0x0                                                                                    
+0001b6   3608     RLCF      0x8,0x1,0x0                                                                                     
+0001b8   3609     RLCF      0x9,0x1,0x0                                                                                     
+0001ba   360a     RLCF      0xa,0x1,0x0                                                                                     
+0001bc   360b     RLCF      0xb,0x1,0x0                                                                                     
+0001be   06e8     DECF      0xe8,0x1,0x0                                                                                    
+0001c0   e1f9     BNZ       0x1b4                                                                                           
+0001c2   5008     MOVF      0x8,0x0,0x0                                                                                     
+0001c4   2600     ADDWF     0x0,0x1,0x0                                                                                     
+0001c6   5009     MOVF      0x9,0x0,0x0                                                                                     
+0001c8   2201     ADDWFC    0x1,0x1,0x0                                                                                     
+0001ca   500a     MOVF      0xa,0x0,0x0                                                                                     
+0001cc   2202     ADDWFC    0x2,0x1,0x0                                                                                     
+0001ce   500b     MOVF      0xb,0x0,0x0                                                                                     
+0001d0   2203     ADDWFC    0x3,0x1,0x0                                                                                     
+0001d2   5063     MOVF      0x63,0x0,0x0                                                                                    
+0001d4   6e0c     MOVWF     0xc,0x0                                                                                         
+0001d6   6a0d     CLRF      0xd,0x0                                                                                         
+0001d8   6a0e     CLRF      0xe,0x0                                                                                         
+0001da   6a0f     CLRF      0xf,0x0                                                                                         
+0001dc   0e08     MOVLW     0x8                                                                                             
+0001de   0b1f     ANDLW     0x1f                                                                                            
+0001e0   e007     BZ        0x1f0                                                                                           
+0001e2   90d8     BCF       0xd8,0x0,0x0                                                                                    
+0001e4   360c     RLCF      0xc,0x1,0x0                                                                                     
+0001e6   360d     RLCF      0xd,0x1,0x0                                                                                     
+0001e8   360e     RLCF      0xe,0x1,0x0                                                                                     
+0001ea   360f     RLCF      0xf,0x1,0x0                                                                                     
+0001ec   06e8     DECF      0xe8,0x1,0x0                                                                                    
+0001ee   e1f9     BNZ       0x1e2                                                                                           
+0001f0   500c     MOVF      0xc,0x0,0x0                                                                                     
+0001f2   2600     ADDWF     0x0,0x1,0x0                                                                                     
+0001f4   500d     MOVF      0xd,0x0,0x0                                                                                     
+0001f6   2201     ADDWFC    0x1,0x1,0x0                                                                                     
+0001f8   500e     MOVF      0xe,0x0,0x0                                                                                     
+0001fa   2202     ADDWFC    0x2,0x1,0x0                                                                                     
+0001fc   500f     MOVF      0xf,0x0,0x0                                                                                     
+0001fe   2203     ADDWFC    0x3,0x1,0x0                                                                                     
+000200   5064     MOVF      0x64,0x0,0x0                                                                                    
+000202   6e10     MOVWF     0x10,0x0                                                                                        
+000204   6a11     CLRF      0x11,0x0                                                                                        
+000206   6a12     CLRF      0x12,0x0                                                                                        
+000208   6a13     CLRF      0x13,0x0                                                                                        
+00020a   5010     MOVF      0x10,0x0,0x0                                                                                    
+00020c   2600     ADDWF     0x0,0x1,0x0                                                                                     
+00020e   5011     MOVF      0x11,0x0,0x0                                                                                    
+000210   2201     ADDWFC    0x1,0x1,0x0                                                                                     
+000212   5012     MOVF      0x12,0x0,0x0                                                                                    
+000214   2202     ADDWFC    0x2,0x1,0x0                                                                                     
+000216   5013     MOVF      0x13,0x0,0x0                                                                                    
+000218   2203     ADDWFC    0x3,0x1,0x0                                                                                     
+00021a   c000     MOVFF     0x0,0xfdf                                                                                       
+00021c   ffdf                                                                                                               
+00021e   0e01     MOVLW     0x1                                                                                             
+000220   c001     MOVFF     0x1,0xfdb                                                                                       
+000222   ffdb                                                                                                               
+000224   0e02     MOVLW     0x2                                                                                             
+000226   c002     MOVFF     0x2,0xfdb                                                                                       
+000228   ffdb                                                                                                               
+00022a   0e03     MOVLW     0x3                                                                                             
+00022c   c003     MOVFF     0x3,0xfdb                                                                                       
+00022e   ffdb                                                                                                               
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		}                                                                              F:\MCP\projects\CAN\Source\CAN.c
+000230   d02f     BRA       0x290          		else                                                                           F:\MCP\projects\CAN\Source\CAN.c
+                                           		{                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                           			//Read standard ident.                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           			//xx xx xx xx xx 10 09 08   07 06 05 04 03 02 01 00                           F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDH 10 09 08 07 06 05 04 03                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDL 02 01 00 xx xx xx xx xx                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000232   5061     MOVF      0x61,0x0,0x0   			cm.ident = (((DWORD)RXB0SIDH)<<3) + (((DWORD)RXB0SIDL)>>5);                   F:\MCP\projects\CAN\Source\CAN.c
+000234   6e00     MOVWF     0x0,0x0                                                                                         
+000236   6a01     CLRF      0x1,0x0                                                                                         
+000238   6a02     CLRF      0x2,0x0                                                                                         
+00023a   6a03     CLRF      0x3,0x0                                                                                         
+00023c   0e03     MOVLW     0x3                                                                                             
+00023e   0b1f     ANDLW     0x1f                                                                                            
+000240   e007     BZ        0x250                                                                                           
+000242   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000244   3600     RLCF      0x0,0x1,0x0                                                                                     
+000246   3601     RLCF      0x1,0x1,0x0                                                                                     
+000248   3602     RLCF      0x2,0x1,0x0                                                                                     
+00024a   3603     RLCF      0x3,0x1,0x0                                                                                     
+00024c   06e8     DECF      0xe8,0x1,0x0                                                                                    
+00024e   e1f9     BNZ       0x242                                                                                           
+000250   5062     MOVF      0x62,0x0,0x0                                                                                    
+000252   6e04     MOVWF     0x4,0x0                                                                                         
+000254   6a05     CLRF      0x5,0x0                                                                                         
+000256   6a06     CLRF      0x6,0x0                                                                                         
+000258   6a07     CLRF      0x7,0x0                                                                                         
+00025a   0e05     MOVLW     0x5                                                                                             
+00025c   90d8     BCF       0xd8,0x0,0x0                                                                                    
+00025e   3207     RRCF      0x7,0x1,0x0                                                                                     
+000260   3206     RRCF      0x6,0x1,0x0                                                                                     
+000262   3205     RRCF      0x5,0x1,0x0                                                                                     
+000264   3204     RRCF      0x4,0x1,0x0                                                                                     
+000266   06e8     DECF      0xe8,0x1,0x0                                                                                    
+000268   e1f9     BNZ       0x25c                                                                                           
+00026a   5004     MOVF      0x4,0x0,0x0                                                                                     
+00026c   2600     ADDWF     0x0,0x1,0x0                                                                                     
+00026e   5005     MOVF      0x5,0x0,0x0                                                                                     
+000270   2201     ADDWFC    0x1,0x1,0x0                                                                                     
+000272   5006     MOVF      0x6,0x0,0x0                                                                                     
+000274   2202     ADDWFC    0x2,0x1,0x0                                                                                     
+000276   5007     MOVF      0x7,0x0,0x0                                                                                     
+000278   2203     ADDWFC    0x3,0x1,0x0                                                                                     
+00027a   c000     MOVFF     0x0,0xfdf                                                                                       
+00027c   ffdf                                                                                                               
+00027e   0e01     MOVLW     0x1                                                                                             
+000280   c001     MOVFF     0x1,0xfdb                                                                                       
+000282   ffdb                                                                                                               
+000284   0e02     MOVLW     0x2                                                                                             
+000286   c002     MOVFF     0x2,0xfdb                                                                                       
+000288   ffdb                                                                                                               
+00028a   0e03     MOVLW     0x3                                                                                             
+00028c   c003     MOVFF     0x3,0xfdb                                                                                       
+00028e   ffdb                                                                                                               
+                                           		}                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Data length                                                                 F:\MCP\projects\CAN\Source\CAN.c
+000290   0e05     MOVLW     0x5            		cm.data_length=RXB0DLC;                                                        F:\MCP\projects\CAN\Source\CAN.c
+000292   cf65     MOVFF     0xf65,0xfdb                                                                                     
+000294   ffdb                                                                                                               
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Data one bye one, for speed                                                 F:\MCP\projects\CAN\Source\CAN.c
+000296   0e06     MOVLW     0x6            		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;                                          F:\MCP\projects\CAN\Source\CAN.c
+000298   cf66     MOVFF     0xf66,0xfdb                                                                                     
+00029a   ffdb                                                                                                               
+00029c   0e07     MOVLW     0x7                                                                                             
+00029e   cf67     MOVFF     0xf67,0xfdb                                                                                     
+0002a0   ffdb                                                                                                               
+0002a2   0e08     MOVLW     0x8            		cm.data[2]=RXB0D2; 	cm.data[3]=RXB0D3;                                         F:\MCP\projects\CAN\Source\CAN.c
+0002a4   cf68     MOVFF     0xf68,0xfdb                                                                                     
+0002a6   ffdb                                                                                                               
+0002a8   0e09     MOVLW     0x9                                                                                             
+0002aa   cf69     MOVFF     0xf69,0xfdb                                                                                     
+0002ac   ffdb                                                                                                               
+0002ae   0e0a     MOVLW     0xa            		cm.data[4]=RXB0D4; 	cm.data[5]=RXB0D5;                                         F:\MCP\projects\CAN\Source\CAN.c
+0002b0   cf6a     MOVFF     0xf6a,0xfdb                                                                                     
+0002b2   ffdb                                                                                                               
+0002b4   0e0b     MOVLW     0xb                                                                                             
+0002b6   cf6b     MOVFF     0xf6b,0xfdb                                                                                     
+0002b8   ffdb                                                                                                               
+0002ba   0e0c     MOVLW     0xc            		cm.data[6]=RXB0D6; 	cm.data[7]=RXB0D7;                                         F:\MCP\projects\CAN\Source\CAN.c
+0002bc   cf6c     MOVFF     0xf6c,0xfdb                                                                                     
+0002be   ffdb                                                                                                               
+0002c0   0e0d     MOVLW     0xd                                                                                             
+0002c2   cf6d     MOVFF     0xf6d,0xfdb                                                                                     
+0002c4   ffdb                                                                                                               
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Clear ful status                                                            F:\MCP\projects\CAN\Source\CAN.c
+0002c6   9e60     BCF       0x60,0x7,0x0   		RXB0CONbits.RXFUL=0;                                                           F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		//Call main parser                                                             F:\MCP\projects\CAN\Source\CAN.c
+0002c8   cfd9     MOVFF     0xfd9,0xfe9    		canParse(cm);                                                                  F:\MCP\projects\CAN\Source\CAN.c
+0002ca   ffe9                                                                                                               
+0002cc   cfda     MOVFF     0xfda,0xfea                                                                                     
+0002ce   ffea                                                                                                               
+0002d0   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002d2   ffe6                                                                                                               
+0002d4   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002d6   ffe6                                                                                                               
+0002d8   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002da   ffe6                                                                                                               
+0002dc   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002de   ffe6                                                                                                               
+0002e0   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002e2   ffe6                                                                                                               
+0002e4   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002e6   ffe6                                                                                                               
+0002e8   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002ea   ffe6                                                                                                               
+0002ec   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002ee   ffe6                                                                                                               
+0002f0   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002f2   ffe6                                                                                                               
+0002f4   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002f6   ffe6                                                                                                               
+0002f8   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002fa   ffe6                                                                                                               
+0002fc   cfee     MOVFF     0xfee,0xfe6                                                                                     
+0002fe   ffe6                                                                                                               
+000300   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000302   ffe6                                                                                                               
+000304   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000306   ffe6                                                                                                               
+000308   ece7     CALL      0x5ce,0x0                                                                                       
+00030a   f002                                                                                                               
+00030c   6e00     MOVWF     0x0,0x0                                                                                         
+00030e   0e0e     MOVLW     0xe                                                                                             
+000310   5ee1     SUBWF     0xe1,0x1,0x0                                                                                    
+000312   5000     MOVF      0x0,0x0,0x0                                                                                     
+000314   0e0e     MOVLW     0xe            }                                                                                F:\MCP\projects\CAN\Source\CAN.c
+000316   5ce1     SUBWF     0xe1,0x0,0x0                                                                                    
+000318   e202     BC        0x31e                                                                                           
+00031a   6ae1     CLRF      0xe1,0x0                                                                                        
+00031c   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+00031e   6ee1     MOVWF     0xe1,0x0                                                                                        
+000320   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+000322   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+000324   ffd9                                                                                                               
+000326   0012     RETURN    0x0                                                                                             
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           /*                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Function: canSendMessage                                                       F:\MCP\projects\CAN\Source\CAN.c
+                                           *                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Input:	CAN_MESSAGE to send                                                     F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Output: True if packet scheduled sucess, false otherwise.                      F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Pre-conditions: canInit                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Affects: ..                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           *	Depends: ..                                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           */                                                                               F:\MCP\projects\CAN\Source\CAN.c
+000328   cfd9     MOVFF     0xfd9,0xfe6    BOOL canSendMessage(CAN_MESSAGE cm)                                              F:\MCP\projects\CAN\Source\CAN.c
+00032a   ffe6                                                                                                               
+00032c   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+00032e   ffd9                                                                                                               
+                                           {                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+000330   010f     MOVLB     0xf            	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; }           F:\MCP\projects\CAN\Source\CAN.c
+000332   b740     BTFSC     0x40,0x3,0x1                                                                                    
+000334   d004     BRA       0x33e                                                                                           
+000336   0e00     MOVLW     0x0                                                                                             
+000338   1477     ANDWF     0x77,0x0,0x0                                                                                    
+00033a   0903     IORLW     0x3                                                                                             
+00033c   6e77     MOVWF     0x77,0x0                                                                                        
+00033e   010f     MOVLB     0xf            	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; }           F:\MCP\projects\CAN\Source\CAN.c
+000340   b730     BTFSC     0x30,0x3,0x1                                                                                    
+000342   d004     BRA       0x34c                                                                                           
+000344   0e00     MOVLW     0x0                                                                                             
+000346   1477     ANDWF     0x77,0x0,0x0                                                                                    
+000348   0904     IORLW     0x4                                                                                             
+00034a   6e77     MOVWF     0x77,0x0                                                                                        
+00034c   010f     MOVLB     0xf            	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; }           F:\MCP\projects\CAN\Source\CAN.c
+00034e   b720     BTFSC     0x20,0x3,0x1                                                                                    
+000350   d005     BRA       0x35c                                                                                           
+000352   0e00     MOVLW     0x0                                                                                             
+000354   1477     ANDWF     0x77,0x0,0x0                                                                                    
+000356   0905     IORLW     0x5                                                                                             
+000358   6e77     MOVWF     0x77,0x0                                                                                        
+                                           	// None of the transmit buffers were empty.                                     F:\MCP\projects\CAN\Source\CAN.c
+00035a   d002     BRA       0x360          	else { return FALSE;}                                                           F:\MCP\projects\CAN\Source\CAN.c
+00035c   0e00     MOVLW     0x0                                                                                             
+00035e   d0c0     BRA       0x4e0                                                                                           
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000360   0ef5     MOVLW     0xf5           		if (cm.extended==TRUE)                                                         F:\MCP\projects\CAN\Source\CAN.c
+000362   04db     DECF      0xdb,0x0,0x0                                                                                    
+000364   e15f     BNZ       0x424                                                                                           
+                                           		{                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                           			//Write extended ident.                                                       F:\MCP\projects\CAN\Source\CAN.c
+                                           	                                                                                F:\MCP\projects\CAN\Source\CAN.c
+                                           			//xx xx xx 28 27 26 25 24   23 22 21 20 19 18 17 16   15 14 13 12 11 10 09 08   07 06 05 04 03 02 01 00 F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDH 28 27 26 25 24 23 22 21                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDL 20 19 18 xx xx xx 17 16                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0EIDH 15 14 13 12 11 10 09 08                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0EIDL 07 06 05 04 03 02 01 00                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000366   0ef1     MOVLW     0xf1                   	RXB0SIDH =  (BYTE)((cm.ident>>21));                                     F:\MCP\projects\CAN\Source\CAN.c
+000368   cfdb     MOVFF     0xfdb,0x0                                                                                       
+00036a   f000                                                                                                               
+00036c   0ef2     MOVLW     0xf2                                                                                            
+00036e   cfdb     MOVFF     0xfdb,0x1                                                                                       
+000370   f001                                                                                                               
+000372   0ef3     MOVLW     0xf3                                                                                            
+000374   cfdb     MOVFF     0xfdb,0x2                                                                                       
+000376   f002                                                                                                               
+000378   0ef4     MOVLW     0xf4                                                                                            
+00037a   cfdb     MOVFF     0xfdb,0x3                                                                                       
+00037c   f003                                                                                                               
+00037e   0e15     MOVLW     0x15                                                                                            
+000380   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000382   3203     RRCF      0x3,0x1,0x0                                                                                     
+000384   3202     RRCF      0x2,0x1,0x0                                                                                     
+000386   3201     RRCF      0x1,0x1,0x0                                                                                     
+000388   3200     RRCF      0x0,0x1,0x0                                                                                     
+00038a   06e8     DECF      0xe8,0x1,0x0                                                                                    
+00038c   e1f9     BNZ       0x380                                                                                           
+00038e   5000     MOVF      0x0,0x0,0x0                                                                                     
+000390   6e61     MOVWF     0x61,0x0                                                                                        
+000392   0ef1     MOVLW     0xf1                   	RXB0SIDL = ((BYTE)(cm.ident>>16) & 0x03) + ((BYTE)(cm.ident>>13) & 0xE0); F:\MCP\projects\CAN\Source\CAN.c
+000394   cfdb     MOVFF     0xfdb,0x5                                                                                       
+000396   f005                                                                                                               
+000398   0ef2     MOVLW     0xf2                                                                                            
+00039a   cfdb     MOVFF     0xfdb,0x6                                                                                       
+00039c   f006                                                                                                               
+00039e   0ef3     MOVLW     0xf3                                                                                            
+0003a0   cfdb     MOVFF     0xfdb,0x7                                                                                       
+0003a2   f007                                                                                                               
+0003a4   0ef4     MOVLW     0xf4                                                                                            
+0003a6   cfdb     MOVFF     0xfdb,0x8                                                                                       
+0003a8   f008                                                                                                               
+0003aa   0e0d     MOVLW     0xd                                                                                             
+0003ac   90d8     BCF       0xd8,0x0,0x0                                                                                    
+0003ae   3208     RRCF      0x8,0x1,0x0                                                                                     
+0003b0   3207     RRCF      0x7,0x1,0x0                                                                                     
+0003b2   3206     RRCF      0x6,0x1,0x0                                                                                     
+0003b4   3205     RRCF      0x5,0x1,0x0                                                                                     
+0003b6   06e8     DECF      0xe8,0x1,0x0                                                                                    
+0003b8   e1f9     BNZ       0x3ac                                                                                           
+0003ba   0ee0     MOVLW     0xe0                                                                                            
+0003bc   1405     ANDWF     0x5,0x0,0x0                                                                                     
+0003be   6e04     MOVWF     0x4,0x0                                                                                         
+0003c0   0ef1     MOVLW     0xf1                                                                                            
+0003c2   cfdb     MOVFF     0xfdb,0x0                                                                                       
+0003c4   f000                                                                                                               
+0003c6   0ef2     MOVLW     0xf2                                                                                            
+0003c8   cfdb     MOVFF     0xfdb,0x1                                                                                       
+0003ca   f001                                                                                                               
+0003cc   0ef3     MOVLW     0xf3                                                                                            
+0003ce   cfdb     MOVFF     0xfdb,0x2                                                                                       
+0003d0   f002                                                                                                               
+0003d2   0ef4     MOVLW     0xf4                                                                                            
+0003d4   cfdb     MOVFF     0xfdb,0x3                                                                                       
+0003d6   f003                                                                                                               
+0003d8   0e10     MOVLW     0x10                                                                                            
+0003da   90d8     BCF       0xd8,0x0,0x0                                                                                    
+0003dc   3203     RRCF      0x3,0x1,0x0                                                                                     
+0003de   3202     RRCF      0x2,0x1,0x0                                                                                     
+0003e0   3201     RRCF      0x1,0x1,0x0                                                                                     
+0003e2   3200     RRCF      0x0,0x1,0x0                                                                                     
+0003e4   06e8     DECF      0xe8,0x1,0x0                                                                                    
+0003e6   e1f9     BNZ       0x3da                                                                                           
+0003e8   0e03     MOVLW     0x3                                                                                             
+0003ea   1400     ANDWF     0x0,0x0,0x0                                                                                     
+0003ec   2404     ADDWF     0x4,0x0,0x0                                                                                     
+0003ee   6e62     MOVWF     0x62,0x0                                                                                        
+0003f0   0ef1     MOVLW     0xf1                   	RXB0EIDH =  (BYTE)(cm.ident>>8);                                        F:\MCP\projects\CAN\Source\CAN.c
+0003f2   cfdb     MOVFF     0xfdb,0x0                                                                                       
+0003f4   f000                                                                                                               
+0003f6   0ef2     MOVLW     0xf2                                                                                            
+0003f8   cfdb     MOVFF     0xfdb,0x1                                                                                       
+0003fa   f001                                                                                                               
+0003fc   0ef3     MOVLW     0xf3                                                                                            
+0003fe   cfdb     MOVFF     0xfdb,0x2                                                                                       
+000400   f002                                                                                                               
+000402   0ef4     MOVLW     0xf4                                                                                            
+000404   cfdb     MOVFF     0xfdb,0x3                                                                                       
+000406   f003                                                                                                               
+000408   0e08     MOVLW     0x8                                                                                             
+00040a   90d8     BCF       0xd8,0x0,0x0                                                                                    
+00040c   3203     RRCF      0x3,0x1,0x0                                                                                     
+00040e   3202     RRCF      0x2,0x1,0x0                                                                                     
+000410   3201     RRCF      0x1,0x1,0x0                                                                                     
+000412   3200     RRCF      0x0,0x1,0x0                                                                                     
+000414   06e8     DECF      0xe8,0x1,0x0                                                                                    
+000416   e1f9     BNZ       0x40a                                                                                           
+000418   5000     MOVF      0x0,0x0,0x0                                                                                     
+00041a   6e63     MOVWF     0x63,0x0                                                                                        
+00041c   0ef1     MOVLW     0xf1                   	RXB0EIDL =  (BYTE)cm.ident;                                             F:\MCP\projects\CAN\Source\CAN.c
+00041e   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000420   6e64     MOVWF     0x64,0x0                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		}                                                                              F:\MCP\projects\CAN\Source\CAN.c
+000422   d02f     BRA       0x482          		else                                                                           F:\MCP\projects\CAN\Source\CAN.c
+                                           		{                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                           			//Write standard ident.                                                       F:\MCP\projects\CAN\Source\CAN.c
+                                           		                                                                               F:\MCP\projects\CAN\Source\CAN.c
+                                           			//xx xx xx xx xx 10 09 08   07 06 05 04 03 02 01 00                           F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDH 10 09 08 07 06 05 04 03                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                   	//RXB0SIDL 02 01 00 xx xx xx xx xx                                      F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+000424   0ef1     MOVLW     0xf1                  		RXB0SIDH=  (BYTE)(cm.ident>>3);                                         F:\MCP\projects\CAN\Source\CAN.c
+000426   cfdb     MOVFF     0xfdb,0x0                                                                                       
+000428   f000                                                                                                               
+00042a   0ef2     MOVLW     0xf2                                                                                            
+00042c   cfdb     MOVFF     0xfdb,0x1                                                                                       
+00042e   f001                                                                                                               
+000430   0ef3     MOVLW     0xf3                                                                                            
+000432   cfdb     MOVFF     0xfdb,0x2                                                                                       
+000434   f002                                                                                                               
+000436   0ef4     MOVLW     0xf4                                                                                            
+000438   cfdb     MOVFF     0xfdb,0x3                                                                                       
+00043a   f003                                                                                                               
+00043c   0e03     MOVLW     0x3                                                                                             
+00043e   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000440   3203     RRCF      0x3,0x1,0x0                                                                                     
+000442   3202     RRCF      0x2,0x1,0x0                                                                                     
+000444   3201     RRCF      0x1,0x1,0x0                                                                                     
+000446   3200     RRCF      0x0,0x1,0x0                                                                                     
+000448   06e8     DECF      0xe8,0x1,0x0                                                                                    
+00044a   e1f9     BNZ       0x43e                                                                                           
+00044c   5000     MOVF      0x0,0x0,0x0                                                                                     
+00044e   6e61     MOVWF     0x61,0x0                                                                                        
+000450   0ef1     MOVLW     0xf1                   	RXB0SIDL= ((BYTE)(cm.ident<<5) & 0xE0);                                 F:\MCP\projects\CAN\Source\CAN.c
+000452   cfdb     MOVFF     0xfdb,0x0                                                                                       
+000454   f000                                                                                                               
+000456   0ef2     MOVLW     0xf2                                                                                            
+000458   cfdb     MOVFF     0xfdb,0x1                                                                                       
+00045a   f001                                                                                                               
+00045c   0ef3     MOVLW     0xf3                                                                                            
+00045e   cfdb     MOVFF     0xfdb,0x2                                                                                       
+000460   f002                                                                                                               
+000462   0ef4     MOVLW     0xf4                                                                                            
+000464   cfdb     MOVFF     0xfdb,0x3                                                                                       
+000466   f003                                                                                                               
+000468   0e05     MOVLW     0x5                                                                                             
+00046a   0b1f     ANDLW     0x1f                                                                                            
+00046c   e007     BZ        0x47c                                                                                           
+00046e   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000470   3600     RLCF      0x0,0x1,0x0                                                                                     
+000472   3601     RLCF      0x1,0x1,0x0                                                                                     
+000474   3602     RLCF      0x2,0x1,0x0                                                                                     
+000476   3603     RLCF      0x3,0x1,0x0                                                                                     
+000478   06e8     DECF      0xe8,0x1,0x0                                                                                    
+00047a   e1f9     BNZ       0x46e                                                                                           
+00047c   0ee0     MOVLW     0xe0                                                                                            
+00047e   1400     ANDWF     0x0,0x0,0x0                                                                                     
+000480   6e62     MOVWF     0x62,0x0                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		}                                                                              F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Data length                                                                 F:\MCP\projects\CAN\Source\CAN.c
+000482   0ef6     MOVLW     0xf6           		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;                  F:\MCP\projects\CAN\Source\CAN.c
+000484   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000486   0808     SUBLW     0x8                                                                                             
+000488   e203     BC        0x490                                                                                           
+00048a   0e08     MOVLW     0x8                                                                                             
+00048c   6e65     MOVWF     0x65,0x0                                                                                        
+00048e   d003     BRA       0x496                                                                                           
+000490   0ef6     MOVLW     0xf6                                                                                            
+000492   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000494   6e65     MOVWF     0x65,0x0                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// Data one bye one, for speed                                                 F:\MCP\projects\CAN\Source\CAN.c
+000496   0ef7     MOVLW     0xf7           		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];                                          F:\MCP\projects\CAN\Source\CAN.c
+000498   50db     MOVF      0xdb,0x0,0x0                                                                                    
+00049a   6e66     MOVWF     0x66,0x0                                                                                        
+00049c   0ef8     MOVLW     0xf8                                                                                            
+00049e   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004a0   6e67     MOVWF     0x67,0x0                                                                                        
+0004a2   0ef9     MOVLW     0xf9           		RXB0D2=cm.data[2]; 	RXB0D3=cm.data[3];                                         F:\MCP\projects\CAN\Source\CAN.c
+0004a4   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004a6   6e68     MOVWF     0x68,0x0                                                                                        
+0004a8   0efa     MOVLW     0xfa                                                                                            
+0004aa   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004ac   6e69     MOVWF     0x69,0x0                                                                                        
+0004ae   0efb     MOVLW     0xfb           		RXB0D4=cm.data[4]; 	RXB0D5=cm.data[5];                                         F:\MCP\projects\CAN\Source\CAN.c
+0004b0   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004b2   6e6a     MOVWF     0x6a,0x0                                                                                        
+0004b4   0efc     MOVLW     0xfc                                                                                            
+0004b6   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004b8   6e6b     MOVWF     0x6b,0x0                                                                                        
+0004ba   0efd     MOVLW     0xfd           		RXB0D6=cm.data[6]; 	RXB0D7=cm.data[7];                                         F:\MCP\projects\CAN\Source\CAN.c
+0004bc   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004be   6e6c     MOVWF     0x6c,0x0                                                                                        
+0004c0   0efe     MOVLW     0xfe                                                                                            
+0004c2   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0004c4   6e6d     MOVWF     0x6d,0x0                                                                                        
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// set extended or not                                                         F:\MCP\projects\CAN\Source\CAN.c
+0004c6   0ef5     MOVLW     0xf5           		RXB0SIDLbits.EXID=(cm.extended==TRUE?1:0);                                     F:\MCP\projects\CAN\Source\CAN.c
+0004c8   04db     DECF      0xdb,0x0,0x0                                                                                    
+0004ca   e102     BNZ       0x4d0                                                                                           
+0004cc   0e01     MOVLW     0x1                                                                                             
+0004ce   d001     BRA       0x4d2                                                                                           
+0004d0   0e00     MOVLW     0x0                                                                                             
+0004d2   b0e8     BTFSC     0xe8,0x0,0x0                                                                                    
+0004d4   8662     BSF       0x62,0x3,0x0                                                                                    
+0004d6   a0e8     BTFSS     0xe8,0x0,0x0                                                                                    
+0004d8   9662     BCF       0x62,0x3,0x0                                                                                    
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           		// mark as redy to transmit                                                    F:\MCP\projects\CAN\Source\CAN.c
+                                           		_asm                                                                           F:\MCP\projects\CAN\Source\CAN.c
+0004da   8660     BSF       0x60,0x3,0x0   			bsf RXB0CON, 3, 0                                                             F:\MCP\projects\CAN\Source\CAN.c
+                                           		_endasm                                                                        F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+0004dc   0e01     MOVLW     0x1            		return TRUE;                                                                   F:\MCP\projects\CAN\Source\CAN.c
+0004de   d000     BRA       0x4e0                                                                                           
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+0004e0   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\Source\CAN.c
+0004e2   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+0004e4   ffd9                                                                                                               
+0004e6   0012     RETURN    0x0                                                                                             
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                                                                                                            F:\MCP\projects\CAN\Source\CAN.c
+                                           #endif //USE_CAN                                                                 F:\MCP\projects\CAN\Source\CAN.c

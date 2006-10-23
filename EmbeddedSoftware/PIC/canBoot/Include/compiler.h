@@ -1,28 +1,25 @@
 /*********************************************************************
  *
- *                  uart header file
+ *                  Compiler specific
  *
  *********************************************************************
- * FileName:        uart.h
+ * FileName:        compiler.h
  *
  * Author               Date    Comment
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
-#ifndef UART_H
-#define UART_H
+#ifndef COMPILER_H
+#define COMPILER_H
 
-#include "../Include/compiler.h"
-#include "../Include/typedefs.h"
+#include <p18cxxx.h>
+#define CLOCK_FREQ		(40000000)      // Hz
+#define INSTR_FREQ			(CLOCK_FREQ/4)
+#define CLOCK_FOSC		(40)      // MHz
 
-void uartInit(void);
-void uartPutc(BYTE c);
-void uartPuts(BYTE c[]);
-void uartPutrs(const rom char *c);
-BYTE uartGet(void);
-void uartParse(BYTE c);
-void uartISR(void);
-char uartDataRedy(void);
+#define LED0_TRIS		(TRISCbits.TRISC1)
+#define LED0_IO			(PORTCbits.RC1)
 
-#endif //UART_H
+
+#endif //compiler.h

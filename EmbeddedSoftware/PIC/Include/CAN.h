@@ -13,9 +13,9 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include "../Include/CANdefs.h"
-#include "../Include/compiler.h"
-#include "../Include/typedefs.h"
+#include <CANdefs.h>
+#include <compiler.h>
+#include <typedefs.h>
 
 
 typedef struct _CAN_MESSAGE

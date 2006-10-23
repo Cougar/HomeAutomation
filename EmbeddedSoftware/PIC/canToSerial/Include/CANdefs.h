@@ -13,7 +13,7 @@
 #ifndef CANDEFS_H
 #define CANDEFS_H
 
-#include "../Include/compiler.h"
+#include <compiler.h>
 
 #define CAN_BAUD 0.250000 //in Mbits/s
 //#define CAN_LOOPBACK_MODE

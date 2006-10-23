@@ -10,12 +10,12 @@
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
 
-#include "../Include/compiler.h"
-#include "../Include/stackTasks.h"
-#include "../Include/Tick.h"
+#include <compiler.h>
+#include <stackTasks.h>
+#include <Tick.h>
 
 #ifdef USE_CAN
-	#include "../Include/CAN.h"
+	#include <CAN.h>
 #endif
 
 static void mainInit(void);
