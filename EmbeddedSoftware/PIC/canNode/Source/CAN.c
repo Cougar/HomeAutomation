@@ -13,7 +13,6 @@
 #include "../Include/CANdefs.h"
 #include "../Include/stackTasks.h"
 #include "../Include/CAN.h"
-#include "../Include/uart.h"
 
 static void canGetPacket(void);
 

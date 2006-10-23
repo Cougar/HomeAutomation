@@ -16,7 +16,7 @@
 #include "../Include/compiler.h"
 
 #define CAN_BAUD 0.250000 //in Mbits/s
-#define CAN_LOOPBACK_MODE
+//#define CAN_LOOPBACK_MODE
 
 
 // TQ(us) = (2 * (BRP + 1))/FOSC(MHz)

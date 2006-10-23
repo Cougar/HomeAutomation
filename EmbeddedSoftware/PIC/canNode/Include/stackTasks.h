@@ -14,7 +14,6 @@
 #define stackTasks_H
 
 #define USE_CAN
-#define USE_UART
 
 #define TICKS_PER_SECOND               (100)        // 10ms
 

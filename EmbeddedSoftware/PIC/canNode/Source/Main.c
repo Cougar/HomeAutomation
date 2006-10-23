@@ -18,16 +18,7 @@
 	#include "../Include/CAN.h"
 #endif
 
-#ifdef USE_UART
-	#include "../Include/uart.h"
-#endif
-
-
-
 static void mainInit(void);
-
-static BOOL heartBeatEnabled = FALSE;
-BYTE ldc = 50;
 
 void main()
 {
@@ -41,16 +32,12 @@ void main()
 		canInit();
 	#endif
 
-	#ifdef USE_UART
-		uartInit();
-	#endif
-
 	tickInit();
 
 	while(1)
 	{
 		#ifdef USE_CAN
-		if ((tickGet()-t)>=5*TICK_SECOND && heartBeatEnabled==TRUE)
+		if ((tickGet()-t)>=5*TICK_SECOND)
 		{
 			CAN_MESSAGE cm;
 
@@ -62,9 +49,7 @@ void main()
 			cm.data_length=1;
 			cm.data[0]='H';
 
-			while(!canSendMessage(cm));
-
-			
+			while(!canSendMessage(cm));	
 		}
 		#endif
 	}
@@ -74,15 +59,12 @@ void main()
 #pragma interruptlow HighISR
 void HighISR(void)
 {
-	//if(ldc--<=1) {LED0_IO=~LED0_IO; ldc=50; }
+
 
 	#ifdef USE_CAN
 		canISR();
 	#endif
 
-	#ifdef USE_UART
-		uartISR();
-	#endif
 
 	if (INTCONbits.INT0IE && INTCONbits.INT0IF)
 	{
@@ -95,10 +77,14 @@ void HighISR(void)
 			LED0_IO=~LED0_IO;
 
 			// Send heartbeat
-			cm.ident=0x00000666;
-			cm.extended=FALSE;
+			cm.ident=0x1F910091;
+			cm.extended=TRUE;
 			cm.data_length=1;
-			cm.data[0]='H';
+			cm.data[0]=0x01;
+			cm.data[1]=0x07;
+			cm.data[2]=0x09;
+			cm.data[3]=0x08;
+			cm.data[4]=0x03;
 
 			while(!canSendMessage(cm));
 			
@@ -108,7 +94,6 @@ void HighISR(void)
 		INTCONbits.INT0IF=0;
 	}
 
-	//if (RCSTAbits.OERR) { RCSTAbits.CREN=0; RCSTAbits.CREN=1; }
 
 	tickUpdate();
 }
@@ -177,154 +162,22 @@ void mainInit()
 #ifdef USE_CAN
 void canParse(CAN_MESSAGE cm)
 {
-	int i=0;
-	
-	uartPutc(UART_START_BYTE);
-	uartPutc((BYTE)(cm.ident));
-	uartPutc((BYTE)(cm.ident>>8));
-	uartPutc((BYTE)(cm.ident>>16));
-	uartPutc((BYTE)(cm.ident>>24));
-	uartPutc(cm.extended);
-	uartPutc(cm.data_length);
-	for(i=0;i<8;i++) uartPutc(cm.data[i]);
-	uartPutc(UART_END_BYTE);
-
-}
-#endif
-
-
-/*
-*	Function: uartParse
-*
-*	Input:	Received uart message
-*	Output: none
-*	Pre-conditions: uartInit and received byte.
-*	Affects: Sensors/actuators/etc. See code.
-*	Depends: none.
-*/
-#ifdef USE_UART
-void uartParse(BYTE c)
-{
-	BYTE i;
-	unsigned int wait = 0;
-	CAN_MESSAGE cm;	
-	static BOOL waitingMessage = FALSE;
-	static TICK timeout=0;
-	static BYTE count=0;
-
-
-	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)
-	{
-		waitingMessage=FALSE;
-	}
-
-
-	if (waitingMessage==TRUE)
-	{
-
-		timeout=tickGet();
-
-		// UART END
-		if(count>=14)
+		if (cm.ident==0x00000304)
 		{
-			if (c==UART_END_BYTE)
+			if (cm.data[0]==0x20) LED0_IO=1;
+			if (cm.data[0]==0x40) LED0_IO=0;
+			if (cm.data[0]==0x80) 
 			{
-				while(!canSendMessage(cm));
+				cm.ident=0x00000303;
+				cm.extended=FALSE;
+				cm.data_length=1;
+				cm.data[0]=LED0_IO;
+				while(!canSendMessage(cm));	
+
 			}
-			waitingMessage=FALSE;
-			return;
 		}
-
-		// data
-		if(count>=6)
-		{
-			cm.data[count-6]=c;
-			count++;
-			return;
-		}
-
-		// data length
-		if(count>=5)
-		{
-			cm.data_length=c;
-			count++;
-			return;
-		}
-
-		// extended
-		if(count>=4)
-		{
-			cm.extended=c;
-			count++;
-			return;
-		}
-
-		// ident
-		if(count>=0)
-		{
-			cm.ident+=((DWORD)c<<(count*8));
-			count++;
-			return;
-		}
-	
-	}
-
-
-	if (c==UART_START_BYTE && waitingMessage==FALSE)
-	{
-			waitingMessage=TRUE;
-			timeout=tickGet();
-			count=0;
-			cm.ident=0;
-			return;	
-	}
-
-	if(c=='1' && waitingMessage==FALSE) 
-	{	
-			cm.ident=0x00000123;
-			cm.extended=FALSE;
-			cm.data_length=4;
-			cm.data[3]='H';
-			cm.data[2]='e';
-			cm.data[1]='j';
-			cm.data[0]='!';
-			
-			while(!canSendMessage(cm));
-	}
-
-	if(c=='2' && waitingMessage==FALSE)  
-	{
-			cm.ident=0x0ABCDEF0;
-			cm.extended=TRUE;
-			cm.data_length=8;
-			cm.data[7]='G';
-			cm.data[6]='o';
-			cm.data[5]='d';
-			cm.data[4]=' ';
-			cm.data[3]='d';
-			cm.data[2]='a';
-			cm.data[1]='g';
-			cm.data[0]='!';		
-
-			while(!canSendMessage(cm));
-	}
-
-	if(c=='3' && waitingMessage==FALSE) 
-	{
-			cm.ident=0x00000010;
-			cm.extended=FALSE;
-			cm.data_length=6;
-			cm.data[5]='5';
-			cm.data[4]='4';
-			cm.data[3]='3';
-			cm.data[2]='2';
-			cm.data[1]='1';
-			cm.data[0]='0';
-
-			while(!canSendMessage(cm));
-	}
-
 
 
 }
 #endif
+
