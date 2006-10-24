@@ -14,6 +14,8 @@ namespace canWatcher
         public const byte UART_START_BYTE = 253;
         public const byte UART_END_BYTE = 250;
 
+        public const int PACKET_LENGTH = 17;
+
         byte[] iBuff = new byte[256];
         int iBuffPointer = 0;
 
@@ -102,11 +104,11 @@ namespace canWatcher
         {
             if (serial_conn.IsOpen)
             {
-                byte[] b = new byte[16];
+                byte[] b = new byte[PACKET_LENGTH];
                 b[0] = UART_START_BYTE;
-                Array.Copy(cm.getRaw(), 0, b, 1, 14);
-                b[15] = UART_END_BYTE;
-                serial_conn.Write(b, 0, 16);
+                Array.Copy(cm.getRaw(), 0, b, 1, PACKET_LENGTH-2);
+                b[PACKET_LENGTH-1] = UART_END_BYTE;
+                serial_conn.Write(b, 0, PACKET_LENGTH);
                 return true;
             }
             return false;
@@ -137,8 +139,8 @@ namespace canWatcher
             iBuffPointer += bytesToRead;
 
 
-            // När array större eller lika med 16...
-            while (iBuffPointer >= 16)
+            // När array större eller lika med PACKET_LENGTH...
+            while (iBuffPointer >= PACKET_LENGTH)
             {
                 int startIndex = 0;
 
@@ -149,20 +151,20 @@ namespace canWatcher
                     if (iBuff[i] != UART_START_BYTE) startIndex++;
                     else
                     {
-                        // När startbyte hittas, kolla om återstående längd är större eller lika med 16 (inkl startbyte)
-                        if ((iBuffPointer - startIndex) >= 16)
+                        // När startbyte hittas, kolla om återstående längd är större eller lika med PACKET_LENGTH (inkl startbyte)
+                        if ((iBuffPointer - startIndex) >= PACKET_LENGTH)
                         {
-                            //om så, kolla 15 byte fram.
-                            if (iBuff[startIndex + 15] == UART_END_BYTE)
+                            //om så, kolla PACKET_LENGTH-1 byte fram.
+                            if (iBuff[startIndex + PACKET_LENGTH-1] == UART_END_BYTE)
                             {
-                                // Om byte 15 är slutbyte så extraktas startIndex till slutbyteindex.
+                                // Om byte PACKET_LENGTH-1 är slutbyte så extraktas startIndex till slutbyteindex.
                                 canMessage cm = new canMessage(iBuff, startIndex + 1);
                                 cmQueue.Enqueue(cm);
 
                                 newIncommingCanMessage.Invoke(this, EventArgs.Empty);
 
                                 // Sätt ny startindex och avsluta loop.
-                                startIndex += 16;
+                                startIndex += PACKET_LENGTH;
                                 break;
                             }
                         }
@@ -170,7 +172,7 @@ namespace canWatcher
                 }
                 // och i slutet göra en array copy.
                 // Flytta ner allt efter slutbyte till index 0 i array.
-                Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - 16);
+                Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - PACKET_LENGTH);
                 iBuffPointer -= startIndex;
             }
 

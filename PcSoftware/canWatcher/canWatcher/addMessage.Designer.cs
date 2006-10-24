@@ -59,6 +59,7 @@ namespace canWatcher
             this.label14 = new System.Windows.Forms.Label();
             this.cmd_add = new System.Windows.Forms.Button();
             this.cmd_cancel = new System.Windows.Forms.Button();
+            this.chk_remote_request = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.data_length)).BeginInit();
             this.SuspendLayout();
             // 
@@ -356,11 +357,22 @@ namespace canWatcher
             this.cmd_cancel.UseVisualStyleBackColor = true;
             this.cmd_cancel.Click += new System.EventHandler(this.cmd_cancel_Click);
             // 
+            // chk_remote_request
+            // 
+            this.chk_remote_request.AutoSize = true;
+            this.chk_remote_request.Location = new System.Drawing.Point(15, 74);
+            this.chk_remote_request.Name = "chk_remote_request";
+            this.chk_remote_request.Size = new System.Drawing.Size(101, 17);
+            this.chk_remote_request.TabIndex = 31;
+            this.chk_remote_request.Text = "Remote request";
+            this.chk_remote_request.UseVisualStyleBackColor = true;
+            // 
             // addMessage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(455, 107);
+            this.Controls.Add(this.chk_remote_request);
             this.Controls.Add(this.cmd_cancel);
             this.Controls.Add(this.cmd_add);
             this.Controls.Add(this.label14);
@@ -436,5 +448,6 @@ namespace canWatcher
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button cmd_add;
         private System.Windows.Forms.Button cmd_cancel;
+        private System.Windows.Forms.CheckBox chk_remote_request;
     }
 }

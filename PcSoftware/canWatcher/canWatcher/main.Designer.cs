@@ -35,23 +35,7 @@ namespace canWatcher
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main));
             this.dg_incomming = new System.Windows.Forms.DataGridView();
-            this.ident = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.length = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.data = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.period = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.count = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cmI = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dg_outgoing = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cmO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tmr_check_out = new System.Windows.Forms.Timer(this.components);
             this.tmr_refresher = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
@@ -80,6 +64,25 @@ namespace canWatcher
             this.txt_debug_out = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.ident = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.length = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.data = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.period = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.count = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmI = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmd_show_raw_log = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.dg_incomming)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_outgoing)).BeginInit();
             this.strip_tool.SuspendLayout();
@@ -98,6 +101,7 @@ namespace canWatcher
             this.dg_incomming.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dg_incomming.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ident,
+            this.Column3,
             this.length,
             this.data,
             this.period,
@@ -116,60 +120,9 @@ namespace canWatcher
             this.dg_incomming.Location = new System.Drawing.Point(15, 41);
             this.dg_incomming.MultiSelect = false;
             this.dg_incomming.Name = "dg_incomming";
-            this.dg_incomming.Size = new System.Drawing.Size(610, 238);
+            this.dg_incomming.Size = new System.Drawing.Size(637, 238);
             this.dg_incomming.TabIndex = 8;
-            // 
-            // ident
-            // 
-            this.ident.HeaderText = "Identifier";
-            this.ident.Name = "ident";
-            this.ident.ReadOnly = true;
-            // 
-            // length
-            // 
-            this.length.HeaderText = "Length";
-            this.length.Name = "length";
-            this.length.ReadOnly = true;
-            this.length.Width = 80;
-            // 
-            // data
-            // 
-            this.data.HeaderText = "Data";
-            this.data.Name = "data";
-            this.data.ReadOnly = true;
-            this.data.Width = 130;
-            // 
-            // period
-            // 
-            this.period.HeaderText = "Period";
-            this.period.Name = "period";
-            this.period.ReadOnly = true;
-            this.period.Width = 80;
-            // 
-            // count
-            // 
-            this.count.HeaderText = "Count";
-            this.count.Name = "count";
-            this.count.ReadOnly = true;
-            this.count.Width = 60;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Time";
-            this.Column1.Name = "Column1";
-            this.Column1.Width = 80;
-            // 
-            // hash
-            // 
-            this.hash.HeaderText = "hash";
-            this.hash.Name = "hash";
-            this.hash.Visible = false;
-            // 
-            // cmI
-            // 
-            this.cmI.HeaderText = "cmcm";
-            this.cmI.Name = "cmI";
-            this.cmI.Visible = false;
+            this.dg_incomming.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_incomming_CellDoubleClick);
             // 
             // dg_outgoing
             // 
@@ -183,6 +136,7 @@ namespace canWatcher
             this.dg_outgoing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dg_outgoing.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
+            this.Column4,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
@@ -201,61 +155,9 @@ namespace canWatcher
             this.dg_outgoing.Location = new System.Drawing.Point(15, 298);
             this.dg_outgoing.MultiSelect = false;
             this.dg_outgoing.Name = "dg_outgoing";
-            this.dg_outgoing.Size = new System.Drawing.Size(610, 238);
+            this.dg_outgoing.Size = new System.Drawing.Size(637, 238);
             this.dg_outgoing.TabIndex = 12;
             this.dg_outgoing.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_outgoing_CellDoubleClick);
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "Identifier";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.HeaderText = "Length";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 80;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Data";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            this.dataGridViewTextBoxColumn3.Width = 130;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.HeaderText = "Period";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.ReadOnly = true;
-            this.dataGridViewTextBoxColumn4.Width = 80;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.HeaderText = "Count";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 60;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Time";
-            this.Column2.Name = "Column2";
-            this.Column2.Width = 80;
-            // 
-            // dataGridViewTextBoxColumn6
-            // 
-            this.dataGridViewTextBoxColumn6.HeaderText = "hash";
-            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.Visible = false;
-            // 
-            // cmO
-            // 
-            this.cmO.HeaderText = "cm";
-            this.cmO.Name = "cmO";
-            this.cmO.Visible = false;
             // 
             // tmr_check_out
             // 
@@ -303,10 +205,11 @@ namespace canWatcher
             this.cmd_delete_message,
             this.cmd_send_message,
             this.cmd_settings,
-            this.toolStripSeparator2});
+            this.toolStripSeparator2,
+            this.cmd_show_raw_log});
             this.strip_tool.Location = new System.Drawing.Point(0, 0);
             this.strip_tool.Name = "strip_tool";
-            this.strip_tool.Size = new System.Drawing.Size(637, 25);
+            this.strip_tool.Size = new System.Drawing.Size(664, 25);
             this.strip_tool.TabIndex = 18;
             this.strip_tool.Text = "toolStrip1";
             // 
@@ -426,7 +329,7 @@ namespace canWatcher
             this.toolStripSeparator5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 546);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(637, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(664, 25);
             this.toolStrip1.TabIndex = 22;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -506,11 +409,140 @@ namespace canWatcher
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
+            // ident
+            // 
+            this.ident.HeaderText = "Identifier";
+            this.ident.Name = "ident";
+            this.ident.ReadOnly = true;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "RTR";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 40;
+            // 
+            // length
+            // 
+            this.length.HeaderText = "Length";
+            this.length.Name = "length";
+            this.length.ReadOnly = true;
+            this.length.Width = 80;
+            // 
+            // data
+            // 
+            this.data.HeaderText = "Data";
+            this.data.Name = "data";
+            this.data.ReadOnly = true;
+            this.data.Width = 130;
+            // 
+            // period
+            // 
+            this.period.HeaderText = "Period";
+            this.period.Name = "period";
+            this.period.ReadOnly = true;
+            this.period.Width = 80;
+            // 
+            // count
+            // 
+            this.count.HeaderText = "Count";
+            this.count.Name = "count";
+            this.count.ReadOnly = true;
+            this.count.Width = 60;
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Time";
+            this.Column1.Name = "Column1";
+            this.Column1.Width = 80;
+            // 
+            // hash
+            // 
+            this.hash.HeaderText = "hash";
+            this.hash.Name = "hash";
+            this.hash.Visible = false;
+            // 
+            // cmI
+            // 
+            this.cmI.HeaderText = "cmcm";
+            this.cmI.Name = "cmI";
+            this.cmI.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "Identifier";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "RTR";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 40;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "Length";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 80;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Data";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.Width = 130;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.HeaderText = "Period";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.Width = 80;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.HeaderText = "Count";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.Width = 60;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Time";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 80;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.HeaderText = "hash";
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.Visible = false;
+            // 
+            // cmO
+            // 
+            this.cmO.HeaderText = "cm";
+            this.cmO.Name = "cmO";
+            this.cmO.Visible = false;
+            // 
+            // cmd_show_raw_log
+            // 
+            this.cmd_show_raw_log.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cmd_show_raw_log.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmd_show_raw_log.Image = ((System.Drawing.Image)(resources.GetObject("cmd_show_raw_log.Image")));
+            this.cmd_show_raw_log.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmd_show_raw_log.Name = "cmd_show_raw_log";
+            this.cmd_show_raw_log.Size = new System.Drawing.Size(23, 22);
+            this.cmd_show_raw_log.Text = "Show log";
+            this.cmd_show_raw_log.Click += new System.EventHandler(this.cmd_show_raw_log_Click);
+            // 
             // main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(637, 571);
+            this.ClientSize = new System.Drawing.Size(664, 571);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.strip_tool);
             this.Controls.Add(this.label2);
@@ -567,6 +599,7 @@ namespace canWatcher
         private System.Windows.Forms.ToolStripButton cmd_clear_incomming;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.DataGridViewTextBoxColumn ident;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn length;
         private System.Windows.Forms.DataGridViewTextBoxColumn data;
         private System.Windows.Forms.DataGridViewTextBoxColumn period;
@@ -575,6 +608,7 @@ namespace canWatcher
         private System.Windows.Forms.DataGridViewTextBoxColumn hash;
         private System.Windows.Forms.DataGridViewTextBoxColumn cmI;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
@@ -582,6 +616,7 @@ namespace canWatcher
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
         private System.Windows.Forms.DataGridViewTextBoxColumn cmO;
+        private System.Windows.Forms.ToolStripButton cmd_show_raw_log;
     }
 }
 

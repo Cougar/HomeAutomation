@@ -43,6 +43,14 @@
       <DependentUpon>addMessage.cs</DependentUpon>
     </Compile>
     <Compile Include="canMessage.cs" />
+    <Compile Include="dataHistory.cs" />
+    <Compile Include="dataHistoryViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dataHistoryViewer.Designer.cs">
+      <DependentUpon>dataHistoryViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="exportFunctions.cs" />
     <Compile Include="KeeperTracker.cs" />
     <Compile Include="main.cs">
       <SubType>Form</SubType>
@@ -58,6 +66,14 @@
       <SubType>Designer</SubType>
       <DependentUpon>addMessage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="dataHistoryViewer.af.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>dataHistoryViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dataHistoryViewer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>dataHistoryViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="main.resx">
       <SubType>Designer</SubType>
       <DependentUpon>main.cs</DependentUpon>
@@ -66,6 +82,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rawLog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>rawLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="settings.resx">
       <SubType>Designer</SubType>
@@ -83,6 +103,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="rawLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="rawLog.Designer.cs">
+      <DependentUpon>rawLog.cs</DependentUpon>
     </Compile>
     <Compile Include="serialCanConnection.cs" />
     <Compile Include="settings.cs">

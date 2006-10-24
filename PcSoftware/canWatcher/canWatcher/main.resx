@@ -120,6 +120,9 @@
   <metadata name="ident.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <metadata name="Column3.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="length.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -142,6 +145,9 @@
     <value>True</value>
   </metadata>
   <metadata name="dataGridViewTextBoxColumn1.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Column4.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="dataGridViewTextBoxColumn2.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -304,6 +310,18 @@
         3KCnPuYcB2HciWj0Ewn22EONOp3EjzJ+jOWcy/yQ6Vek5ZfEGX5jxOEgA4U9liwriMXjiDMoikJ8B3x/
         yzFiNLDZbSTK5U4uxb9yOXBEIluw2e0En+8RhlnsOYFgFTA7O88my/D7AxCsVgiCQHtuyuudhqt5j4nF
         YoaZgUdeMA9ZsLb2lr1+ApahNvffyzR4E6ZBE6Ff8z/Onck7AVP0UwAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="cmd_show_raw_log.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAATlJREFUOE9jZACC
+        2sbm/yAaF+Dl5WXg4OBg0NRQZ3B1cmTEUFdRU/f/6eufeHHvhEn/t+/cDcS7MC0rLqsAa752/ytO3N7d
+        +//z5y//12/c/H/Ltu2ohuQVFhM0oLGl7f+zFy/BeMHipf83bNqCMCQzJ4+gATX1jf/RMTwsUtIz/4PA
+        t+/ficIgtflFJQgXJCSlgA34/OULURikFqQH7oLo2HiwAR8/ffp/8OAhvBikBgRAeuAGhEVEgQXfvf9A
+        FAapBemBGxAYHAo24M3bd//37t2HF4PUgABID9wAH78AsODLV6+JwiC1ID1wA9w9vcEGPAfG8c5du7Bi
+        kBwMg9SC9MANcHZxAxvw5NlzojBILUgP3AA7OwewAQ8fPyEKg9SC9MANsLS0BhtACgDpgRtgYmL2nxwM
+        MgAAzIeyC/D8d2UAAAAASUVORK5CYII=
 </value>
   </data>
   <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

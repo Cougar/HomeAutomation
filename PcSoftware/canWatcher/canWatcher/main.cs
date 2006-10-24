@@ -14,7 +14,8 @@ using System.IO;
 
 namespace canWatcher
 {
-    
+    // TODO - History for incomming data per address
+    // TODO - Raw log export as xml (maybe).
 
     public partial class main : Form
     {
@@ -27,6 +28,10 @@ namespace canWatcher
 
         public serialCanConnection canconnection;
 
+        public rawLog rlog;
+
+        public dataHistory dhistory = new dataHistory();
+
         public main()
         {
             InitializeComponent();
@@ -36,6 +41,7 @@ namespace canWatcher
         {
             loadSettings();
             createSerialCanConnection();
+            rlog = new rawLog();
         }
 
         private void createSerialCanConnection()
@@ -57,8 +63,12 @@ namespace canWatcher
             this.BeginInvoke((ThreadStart)delegate
             {
                 canMessage newcm = canconnection.getMessage();
-                if(newcm!=null) mt.addMessage(newcm);
-
+                if (newcm != null)
+                {
+                    mt.addMessage(newcm);
+                    rlog.addMessage(newcm);
+                    dhistory.createHistory(newcm);
+                }
                 int scrollPosition = dg_incomming.FirstDisplayedScrollingRowIndex;
 
                 DataGridViewColumn sortedColumn = dg_incomming.SortedColumn;
@@ -316,6 +326,21 @@ namespace canWatcher
         private void dg_outgoing_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             cmd_edit_message_Click(this, EventArgs.Empty);
+        }
+
+        private void cmd_show_raw_log_Click(object sender, EventArgs e)
+        {
+            rlog.Show();
+        }
+
+        private void dg_incomming_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dg_incomming.SelectedCells.Count > 0)
+            {
+                dataHistoryViewer dhw = new dataHistoryViewer(this, (canMessage)dg_incomming["cmI", dg_incomming.CurrentCell.RowIndex].Value);
+                dhw.Show();
+            }
+            else MessageBox.Show("You need to select a message to view data log for.", "Row missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
 

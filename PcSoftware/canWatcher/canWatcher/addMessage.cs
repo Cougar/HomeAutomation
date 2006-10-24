@@ -52,6 +52,7 @@ namespace canWatcher
         {
             
             chk_extended.Checked = cmEdit.getExtended();
+            chk_remote_request.Checked = cmEdit.getRemoteRequest();
             txt_period.Text = m.mtOut.getPeriod(cmEdit).ToString();
             uint ident = cmEdit.getIdent();
             data_length.Value = cmEdit.getDataLength();
@@ -94,7 +95,7 @@ namespace canWatcher
             if (checkID(out id) && checkData(out data) && checkPeriod(out period))
             { 
                 // Add message
-                canMessage cm = new canMessage(BitConverter.ToUInt32(id,0),chk_extended.Checked,(byte)data_length.Value,data);
+                canMessage cm = new canMessage(BitConverter.ToUInt32(id,0),chk_extended.Checked,chk_remote_request.Checked,(byte)data_length.Value,data);
                 if (cmEdit != null) m.mtOut.deleteMessage(cmEdit);
                 if (cmEdit == null) m.addLastCm = cm.clone();
                 m.mtOut.addMessage(cm, period);

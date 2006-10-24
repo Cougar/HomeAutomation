@@ -18,3 +18,13 @@ obj\Release\canWatcher.exe
 obj\Release\canWatcher.pdb
 obj\Debug\canWatcher.settings.resources
 obj\Release\canWatcher.settings.resources
+obj\Debug\canWatcher.rawLog.resources
+bin\Release\af\canWatcher.resources.dll
+obj\Release\canWatcher.dataHistoryViewer.resources
+obj\Release\canWatcher.rawLog.resources
+obj\Release\canWatcher.dataHistoryViewer.af.resources
+obj\Release\af\canWatcher.resources.dll
+bin\Debug\af\canWatcher.resources.dll
+obj\Debug\canWatcher.dataHistoryViewer.resources
+obj\Debug\canWatcher.dataHistoryViewer.af.resources
+obj\Debug\af\canWatcher.resources.dll
