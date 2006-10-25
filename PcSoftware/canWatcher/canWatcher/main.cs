@@ -51,11 +51,11 @@ namespace canWatcher
             {
                 if (canconnection != null && canconnection.isConnected()) canconnection.disconnect(out str);
                 setConnected(false);
-                canconnection = new serialCanConnection(19200, (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), sets["parity"].ToString()), (string)sets["port"], (System.IO.Ports.StopBits)Enum.Parse(typeof(System.IO.Ports.StopBits), sets["stopbits"].ToString()), (int)sets["databits"], false);
+                canconnection = new serialCanConnection((int)sets["baud"], (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), sets["parity"].ToString()), (string)sets["port"], (System.IO.Ports.StopBits)Enum.Parse(typeof(System.IO.Ports.StopBits), sets["stopbits"].ToString()), (int)sets["databits"], false);
             }
             catch (Exception e2) { MessageBox.Show("Error during port initlization. Check settings. Error message: " + e2.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
-            canconnection.newIncommingCanMessage += new EventHandler(main_newIncommingCanMessage);
+            if (canconnection != null) canconnection.newIncommingCanMessage += new EventHandler(main_newIncommingCanMessage);
         }
 
         void main_newIncommingCanMessage(object sender, EventArgs e)
@@ -341,6 +341,11 @@ namespace canWatcher
                 dhw.Show();
             }
             else MessageBox.Show("You need to select a message to view data log for.", "Row missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void dg_incomming_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
 
 
