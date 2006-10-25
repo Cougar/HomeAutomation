@@ -20,6 +20,8 @@
 
 static void mainInit(void);
 
+unsigned int heartcnt=0;
+
 void main()
 {
 	static TICK t = 0;
@@ -46,10 +48,16 @@ void main()
 			// Send heartbeat
 			cm.ident=0x00000666;
 			cm.extended=FALSE;
-			cm.data_length=1;
+			cm.data_length=5;
 			cm.data[0]='H';
+			cm.data[1]=(BYTE)((heartcnt & 0x000000FF));
+			cm.data[2]=(BYTE)((heartcnt & 0x0000FF00)>>1);
+			cm.data[3]=(BYTE)((heartcnt & 0x00FF0000)>>2);
+			cm.data[4]=(BYTE)((heartcnt & 0xFF000000)>>3);
 
-			while(!canSendMessage(cm));	
+			heartcnt++;
+
+			while(!canSendMessage(cm,PRIO_LOW));	
 		}
 		#endif
 	}
@@ -79,6 +87,7 @@ void HighISR(void)
 			// Send heartbeat
 			cm.ident=0x1F910091;
 			cm.extended=TRUE;
+			cm.remote_request=TRUE;
 			cm.data_length=1;
 			cm.data[0]=0x01;
 			cm.data[1]=0x07;
@@ -86,7 +95,7 @@ void HighISR(void)
 			cm.data[3]=0x08;
 			cm.data[4]=0x03;
 
-			while(!canSendMessage(cm));
+			while(!canSendMessage(cm,PRIO_LOW));
 			
 			t=tickGet();
 		}
@@ -172,7 +181,7 @@ void canParse(CAN_MESSAGE cm)
 				cm.extended=FALSE;
 				cm.data_length=1;
 				cm.data[0]=LED0_IO;
-				while(!canSendMessage(cm));	
+				while(!canSendMessage(cm,PRIO_LOW));	
 
 			}
 		}

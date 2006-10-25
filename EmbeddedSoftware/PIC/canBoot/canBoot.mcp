@@ -6,7 +6,7 @@ dir_src=
 dir_bin=F:\MCP\projects\CAN\canBoot\_output
 dir_tmp=F:\MCP\projects\CAN\canBoot\_output
 dir_sin=
-dir_inc=F:\MCP\projects\CAN\canBoot\Include;F:\MCP\projects\CAN\Include
+dir_inc=F:\MCP\projects\CAN\canBoot\Include
 dir_lib=E:\program\MCC18\lib
 dir_lkr=
 [CAT_FILTERS]
@@ -26,12 +26,12 @@ file_006=no
 file_007=no
 [FILE_INFO]
 file_000=Source\Main.c
-file_001=F:\MCP\projects\CAN\Source\CAN.c
+file_001=Source\CAN.c
 file_002=Include\CANdefs.h
 file_003=Include\compiler.h
 file_004=Include\stackTasks.h
-file_005=F:\MCP\projects\CAN\Include\CAN.h
-file_006=F:\MCP\projects\CAN\Include\typedefs.h
+file_005=Include\typedefs.h
+file_006=Include\CAN.h
 file_007=lkr\18f2685.lkr
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}

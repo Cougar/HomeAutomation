@@ -137,6 +137,7 @@ void canParse(CAN_MESSAGE cm)
 	uartPutc((BYTE)(cm.ident>>16));
 	uartPutc((BYTE)(cm.ident>>24));
 	uartPutc(cm.extended);
+	uartPutc(cm.remote_request);
 	uartPutc(cm.data_length);
 	for(i=0;i<8;i++) uartPutc(cm.data[i]);
 	uartPutc(UART_END_BYTE);
@@ -176,29 +177,39 @@ void uartParse(BYTE c)
 
 		timeout=tickGet();
 
+
 		// UART END
-		if(count>=14)
+		if(count>=15)
 		{
 			if (c==UART_END_BYTE)
 			{
-				while(!canSendMessage(cm));
+				LED0_IO=~LED0_IO;
+				while(!canSendMessage(cm,PRIO_LOWEST));
 			}
 			waitingMessage=FALSE;
 			return;
 		}
 
 		// data
-		if(count>=6)
+		if(count>=7)
 		{
-			cm.data[count-6]=c;
+			cm.data[count-7]=c;
 			count++;
 			return;
 		}
 
 		// data length
-		if(count>=5)
+		if(count>=6)
 		{
 			cm.data_length=c;
+			count++;
+			return;
+		}
+
+		// remote request
+		if(count>=5)
+		{
+			cm.remote_request=c;
 			count++;
 			return;
 		}

@@ -107,7 +107,7 @@ void mainInit()
 #ifdef USE_CAN
 void canParse(CAN_MESSAGE cm)
 {
-
+	LED0_IO=~LED0_IO;
 }
 #endif
 

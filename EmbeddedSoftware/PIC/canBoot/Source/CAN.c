@@ -187,7 +187,10 @@ void canGetPacket()
 		}
 
 		// Data length
-		cm.data_length=RXB0DLC;
+		cm.data_length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
+
+		// Remote request
+		cm.remote_request=(RXB0DLCbits.RXRTR==0?FALSE:TRUE);
 
 		// Data one bye one, for speed
 		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;
@@ -212,7 +215,7 @@ void canGetPacket()
 *	Affects: ..
 *	Depends: ..
 */
-BOOL canSendMessage(CAN_MESSAGE cm)
+BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 {
 	
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
@@ -220,6 +223,8 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
 	// None of the transmit buffers were empty. 
 	else { return FALSE;} 
+
+	if (prio<0 || prio>3) prio = 0;
 
 
 		if (cm.extended==TRUE)
@@ -255,7 +260,22 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 		}
 
 		// Data length
+		RXB0DLC = 0;
 		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;
+		
+		// Remote request
+		if (cm.remote_request==TRUE)
+		{
+			_asm 
+				bsf RXB0DLC, 6, 0
+			_endasm 
+		}
+		else
+		{
+			_asm 
+				bcf RXB0DLC, 6, 0
+			_endasm 
+		}
 
 		// Data one bye one, for speed
 		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];
@@ -266,6 +286,8 @@ BOOL canSendMessage(CAN_MESSAGE cm)
 		// set extended or not
 		RXB0SIDLbits.EXID=(cm.extended==TRUE?1:0);
 
+		// Priority
+		RXB0CON = (RXB0CON & 0b11111100) | prio;
 
 		// mark as redy to transmit
 		_asm 
