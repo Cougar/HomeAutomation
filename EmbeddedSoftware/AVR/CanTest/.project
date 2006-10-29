@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>AVR Lib</name>
+	<name>CanTest</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -34,6 +34,10 @@
 					<value>all</value>
 				</dictionary>
 				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.target.full</key>
+					<value>clean all</value>
+				</dictionary>
+				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.arguments</key>
 					<value></value>
 				</dictionary>
@@ -46,6 +50,10 @@
 					<value>true</value>
 				</dictionary>
 				<dictionary>
+					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
+					<value>true</value>
+				</dictionary>
+				<dictionary>
 					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
 					<value>false</value>
 				</dictionary>
@@ -54,12 +62,12 @@
 					<value>all</value>
 				</dictionary>
 				<dictionary>
-					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
-					<value>true</value>
-				</dictionary>
-				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.target.clean</key>
 					<value>clean</value>
+				</dictionary>
+				<dictionary>
+					<key>org.eclipse.cdt.make.core.build.location</key>
+					<value></value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.core.errorOutputParser</key>
