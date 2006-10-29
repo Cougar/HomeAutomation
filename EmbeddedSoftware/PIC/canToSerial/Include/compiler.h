@@ -18,9 +18,16 @@
 #define INSTR_FREQ			(CLOCK_FREQ/4)
 #define CLOCK_FOSC		(40)      // MHz
 
-#define UART_BAUD_RATE       (19200)     // bps
+#define UART_BAUD_RATE       (115200)     // bps
+#define HIGH_BRG
 
-#define SPBRG_VAL   ( ((INSTR_FREQ/UART_BAUD_RATE)/16) - 1)
+#ifdef HIGH_BRG
+	#define SPBRG_VAL   ( ((CLOCK_FREQ/UART_BAUD_RATE)/4) - 1)
+	#define SPBRGH_VAL	0
+#else
+	#define SPBRG_VAL   ( ((INSTR_FREQ/UART_BAUD_RATE)/16) - 1)
+#endif
+
 
 #if (SPBRG_VAL > 255)
     #error "Calculated SPBRG value is out of range for currnet CLOCK_FREQ."

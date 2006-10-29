@@ -106,7 +106,7 @@ void HighISR(void)
 
 	tickUpdate();
 }
-#pragma code highVector=0x08
+#pragma code highVector=0x2008
 void HighVector (void)
 {
     _asm goto HighISR _endasm
@@ -120,7 +120,7 @@ void LowISR(void)
 {
 
 }
-#pragma code lowVector=0x18
+#pragma code lowVector=0x2018
 void LowVector (void)
 {
     _asm goto LowISR _endasm

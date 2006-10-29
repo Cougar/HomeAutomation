@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Wed Oct 25 15:35:16 2006
+Listing File Generated: Sun Oct 29 20:04:53 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -37,20 +37,30 @@ Address  Value    Disassembly              Source                               
                                            void uartInit()                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            		// Configure USART                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009c4   8e94     BSF       0x94,0x7,0x0   		TRISCbits.TRISC7=1;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009c6   9c94     BCF       0x94,0x6,0x0   		TRISCbits.TRISC6=0;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009c8   0e20     MOVLW     0x20           		TXSTA=0b00100000; // Low BRG speed                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009ca   6eac     MOVWF     0xac,0x0                                                                                        
-0009cc   0e90     MOVLW     0x90           		RCSTA=0b10010000;                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009ce   6eab     MOVWF     0xab,0x0                                                                                        
-0009d0   0e1f     MOVLW     0x1f           		SPBRG = SPBRG_VAL;                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009d2   6eaf     MOVWF     0xaf,0x0                                                                                        
+0009c6   8e94     BSF       0x94,0x7,0x0   		TRISCbits.TRISC7=1;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009c8   9c94     BCF       0x94,0x6,0x0   		TRISCbits.TRISC6=0;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009ca   0e20     MOVLW     0x20           		TXSTA=0b00100000;                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009cc   6eac     MOVWF     0xac,0x0                                                                                        
+                                           		#ifdef HIGH_BRG                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009ce   84ac     BSF       0xac,0x2,0x0   			TXSTAbits.BRGH=1; // High BRG speed                                           F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009d0   86b8     BSF       0xb8,0x3,0x0   			BAUDCONbits.BRG16=1;                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009d2   6ab0     CLRF      0xb0,0x0       			SPBRGH = SPBRGH_VAL;                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009d4   0e55     MOVLW     0x55           			SPBRG = SPBRG_VAL;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009d6   6eaf     MOVWF     0xaf,0x0                                                                                        
+                                           		#else                                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+                                           			TXSTAbits.BRGH=0;  // Low BRG speed                                           F:\MCP\projects\CAN\canToSerial\Source\uart.c
+                                           			SPBRG = SPBRG_VAL;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+                                           		#endif                                                                         F:\MCP\projects\CAN\canToSerial\Source\uart.c
+                                           		                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009d8   0e90     MOVLW     0x90           		RCSTA=0b10010000;                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009da   6eab     MOVWF     0xab,0x0                                                                                        
+                                           		                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            		// USART RX interrupt                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009d4   9a9e     BCF       0x9e,0x5,0x0   		PIR1bits.RCIF=0;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009d6   8a9d     BSF       0x9d,0x5,0x0   		PIE1bits.RCIE=1;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009dc   9a9e     BCF       0x9e,0x5,0x0   		PIR1bits.RCIF=0;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009de   8a9d     BSF       0x9d,0x5,0x0   		PIE1bits.RCIE=1;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            		// High interrupt                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009d8   8a9f     BSF       0x9f,0x5,0x0   		IPR1bits.RCIP=1;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009da   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009e0   8a9f     BSF       0x9f,0x5,0x0   		IPR1bits.RCIP=1;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009e2   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -62,23 +72,23 @@ Address  Value    Disassembly              Source                               
                                            *	Affects: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            *	Depends: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009dc   cfd9     MOVFF     0xfd9,0xfe6    void uartPutc(BYTE c)                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009de   ffe6                                                                                                               
-0009e0   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
-0009e2   ffd9                                                                                                               
+0009e4   cfd9     MOVFF     0xfd9,0xfe6    void uartPutc(BYTE c)                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009e6   ffe6                                                                                                               
+0009e8   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+0009ea   ffd9                                                                                                               
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	// Write the data byte to the USART                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009e4   0efe     MOVLW     0xfe           	TXREG = c;                                                                      F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009e6   50db     MOVF      0xdb,0x0,0x0                                                                                    
-0009e8   6ead     MOVWF     0xad,0x0                                                                                        
-0009ea   d84b     RCALL     0xa82          	while(uartBusy());                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009ec   0900     IORLW     0x0                                                                                             
-0009ee   e001     BZ        0x9f2                                                                                           
-0009f0   d7fc     BRA       0x9ea                                                                                           
-0009f2   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009f4   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
-0009f6   ffd9                                                                                                               
-0009f8   0012     RETURN    0x0                                                                                             
+0009ec   0efe     MOVLW     0xfe           	TXREG = c;                                                                      F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009ee   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0009f0   6ead     MOVWF     0xad,0x0                                                                                        
+0009f2   d84b     RCALL     0xa8a          	while(uartBusy());                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009f4   0900     IORLW     0x0                                                                                             
+0009f6   e001     BZ        0x9fa                                                                                           
+0009f8   d7fc     BRA       0x9f2                                                                                           
+0009fa   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+0009fc   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+0009fe   ffd9                                                                                                               
+000a00   0012     RETURN    0x0                                                                                             
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -90,42 +100,42 @@ Address  Value    Disassembly              Source                               
                                            *	Affects: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            *	Depends: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009fa   cfd9     MOVFF     0xfd9,0xfe6    void uartPuts(BYTE c[])                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-0009fc   ffe6                                                                                                               
-0009fe   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
-000a00   ffd9                                                                                                               
+000a02   cfd9     MOVFF     0xfd9,0xfe6    void uartPuts(BYTE c[])                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a04   ffe6                                                                                                               
+000a06   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+000a08   ffd9                                                                                                               
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	do                                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                              	{  // Transmit a byte                                                         F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a02   d83f     RCALL     0xa82              	while(uartBusy());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a04   0900     IORLW     0x0                                                                                             
-000a06   e001     BZ        0xa0a                                                                                           
-000a08   d7fc     BRA       0xa02                                                                                           
-000a0a   0efd     MOVLW     0xfd               	uartPutc(*c);                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a0c   cfdb     MOVFF     0xfdb,0xfe9                                                                                     
-000a0e   ffe9                                                                                                               
-000a10   0efe     MOVLW     0xfe                                                                                            
-000a12   cfdb     MOVFF     0xfdb,0xfea                                                                                     
-000a14   ffea                                                                                                               
-000a16   50ef     MOVF      0xef,0x0,0x0                                                                                    
-000a18   6ee6     MOVWF     0xe6,0x0                                                                                        
-000a1a   dfe0     RCALL     0x9dc                                                                                           
-000a1c   52e5     MOVF      0xe5,0x1,0x0                                                                                    
-000a1e   0efd     MOVLW     0xfd             	} while( *c++ );                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a20   cfdb     MOVFF     0xfdb,0xfe9                                                                                     
-000a22   ffe9                                                                                                               
-000a24   2adb     INCF      0xdb,0x1,0x0                                                                                    
-000a26   0efe     MOVLW     0xfe                                                                                            
-000a28   cfdb     MOVFF     0xfdb,0xfea                                                                                     
-000a2a   ffea                                                                                                               
-000a2c   e301     BNC       0xa30                                                                                           
-000a2e   2adb     INCF      0xdb,0x1,0x0                                                                                    
-000a30   50ef     MOVF      0xef,0x0,0x0                                                                                    
-000a32   e1e7     BNZ       0xa02                                                                                           
-000a34   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a36   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
-000a38   ffd9                                                                                                               
-000a3a   0012     RETURN    0x0                                                                                             
+000a0a   d83f     RCALL     0xa8a              	while(uartBusy());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a0c   0900     IORLW     0x0                                                                                             
+000a0e   e001     BZ        0xa12                                                                                           
+000a10   d7fc     BRA       0xa0a                                                                                           
+000a12   0efd     MOVLW     0xfd               	uartPutc(*c);                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a14   cfdb     MOVFF     0xfdb,0xfe9                                                                                     
+000a16   ffe9                                                                                                               
+000a18   0efe     MOVLW     0xfe                                                                                            
+000a1a   cfdb     MOVFF     0xfdb,0xfea                                                                                     
+000a1c   ffea                                                                                                               
+000a1e   50ef     MOVF      0xef,0x0,0x0                                                                                    
+000a20   6ee6     MOVWF     0xe6,0x0                                                                                        
+000a22   dfe0     RCALL     0x9e4                                                                                           
+000a24   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+000a26   0efd     MOVLW     0xfd             	} while( *c++ );                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a28   cfdb     MOVFF     0xfdb,0xfe9                                                                                     
+000a2a   ffe9                                                                                                               
+000a2c   2adb     INCF      0xdb,0x1,0x0                                                                                    
+000a2e   0efe     MOVLW     0xfe                                                                                            
+000a30   cfdb     MOVFF     0xfdb,0xfea                                                                                     
+000a32   ffea                                                                                                               
+000a34   e301     BNC       0xa38                                                                                           
+000a36   2adb     INCF      0xdb,0x1,0x0                                                                                    
+000a38   50ef     MOVF      0xef,0x0,0x0                                                                                    
+000a3a   e1e7     BNZ       0xa0a                                                                                           
+000a3c   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a3e   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+000a40   ffd9                                                                                                               
+000a42   0012     RETURN    0x0                                                                                             
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            *	Function: uartPutrs                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -136,44 +146,44 @@ Address  Value    Disassembly              Source                               
                                            *	Affects: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            *	Depends: none                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a3c   cfd9     MOVFF     0xfd9,0xfe6    void uartPutrs(const rom char *c)                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a3e   ffe6                                                                                                               
-000a40   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
-000a42   ffd9                                                                                                               
+000a44   cfd9     MOVFF     0xfd9,0xfe6    void uartPutrs(const rom char *c)                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a46   ffe6                                                                                                               
+000a48   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+000a4a   ffd9                                                                                                               
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	do                                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                              	{  // Transmit a byte                                                         F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a44   d81e     RCALL     0xa82              	while(uartBusy());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a46   0900     IORLW     0x0                                                                                             
-000a48   e001     BZ        0xa4c                                                                                           
-000a4a   d7fc     BRA       0xa44                                                                                           
-000a4c   0efd     MOVLW     0xfd               	uartPutc(*c);                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a4e   cfdb     MOVFF     0xfdb,0xff6                                                                                     
-000a50   fff6                                                                                                               
-000a52   0efe     MOVLW     0xfe                                                                                            
-000a54   cfdb     MOVFF     0xfdb,0xff7                                                                                     
-000a56   fff7                                                                                                               
-000a58   0008     TBLRD                                                                                                     
-000a5a   50f5     MOVF      0xf5,0x0,0x0                                                                                    
-000a5c   6ee6     MOVWF     0xe6,0x0                                                                                        
-000a5e   dfbe     RCALL     0x9dc                                                                                           
-000a60   52e5     MOVF      0xe5,0x1,0x0                                                                                    
-000a62   0efd     MOVLW     0xfd             	} while( *c++ );                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a64   cfdb     MOVFF     0xfdb,0xff6                                                                                     
-000a66   fff6                                                                                                               
-000a68   2adb     INCF      0xdb,0x1,0x0                                                                                    
-000a6a   0efe     MOVLW     0xfe                                                                                            
-000a6c   cfdb     MOVFF     0xfdb,0xff7                                                                                     
-000a6e   fff7                                                                                                               
-000a70   e301     BNC       0xa74                                                                                           
-000a72   2adb     INCF      0xdb,0x1,0x0                                                                                    
-000a74   0008     TBLRD                                                                                                     
-000a76   50f5     MOVF      0xf5,0x0,0x0                                                                                    
-000a78   e1e5     BNZ       0xa44                                                                                           
-000a7a   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a7c   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
-000a7e   ffd9                                                                                                               
-000a80   0012     RETURN    0x0                                                                                             
+000a4c   d81e     RCALL     0xa8a              	while(uartBusy());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a4e   0900     IORLW     0x0                                                                                             
+000a50   e001     BZ        0xa54                                                                                           
+000a52   d7fc     BRA       0xa4c                                                                                           
+000a54   0efd     MOVLW     0xfd               	uartPutc(*c);                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a56   cfdb     MOVFF     0xfdb,0xff6                                                                                     
+000a58   fff6                                                                                                               
+000a5a   0efe     MOVLW     0xfe                                                                                            
+000a5c   cfdb     MOVFF     0xfdb,0xff7                                                                                     
+000a5e   fff7                                                                                                               
+000a60   0008     TBLRD                                                                                                     
+000a62   50f5     MOVF      0xf5,0x0,0x0                                                                                    
+000a64   6ee6     MOVWF     0xe6,0x0                                                                                        
+000a66   dfbe     RCALL     0x9e4                                                                                           
+000a68   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+000a6a   0efd     MOVLW     0xfd             	} while( *c++ );                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a6c   cfdb     MOVFF     0xfdb,0xff6                                                                                     
+000a6e   fff6                                                                                                               
+000a70   2adb     INCF      0xdb,0x1,0x0                                                                                    
+000a72   0efe     MOVLW     0xfe                                                                                            
+000a74   cfdb     MOVFF     0xfdb,0xff7                                                                                     
+000a76   fff7                                                                                                               
+000a78   e301     BNC       0xa7c                                                                                           
+000a7a   2adb     INCF      0xdb,0x1,0x0                                                                                    
+000a7c   0008     TBLRD                                                                                                     
+000a7e   50f5     MOVF      0xf5,0x0,0x0                                                                                    
+000a80   e1e5     BNZ       0xa4c                                                                                           
+000a82   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a84   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+000a86   ffd9                                                                                                               
+000a88   0012     RETURN    0x0                                                                                             
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -189,13 +199,13 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            char uartBusy(void)                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a82   50ac     MOVF      0xac,0x0,0x0   	return !TXSTAbits.TRMT;                                                         F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a84   0b02     ANDLW     0x2                                                                                             
-000a86   0a02     XORLW     0x2                                                                                             
-000a88   e001     BZ        0xa8c                                                                                           
-000a8a   0e01     MOVLW     0x1                                                                                             
-000a8c   d000     BRA       0xa8e                                                                                           
-000a8e   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a8a   50ac     MOVF      0xac,0x0,0x0   	return !TXSTAbits.TRMT;                                                         F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a8c   0b02     ANDLW     0x2                                                                                             
+000a8e   0a02     XORLW     0x2                                                                                             
+000a90   e001     BZ        0xa94                                                                                           
+000a92   0e01     MOVLW     0x1                                                                                             
+000a94   d000     BRA       0xa96                                                                                           
+000a96   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -210,9 +220,9 @@ Address  Value    Disassembly              Source                               
                                            BYTE uartGet(void)                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	// Return the received data                                                     F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a90   50ae     MOVF      0xae,0x0,0x0   	return RCREG;	                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a92   d000     BRA       0xa94                                                                                           
-000a94   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a98   50ae     MOVF      0xae,0x0,0x0   	return RCREG;	                                                                  F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000a9a   d000     BRA       0xa9c                                                                                           
+000a9c   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -226,26 +236,26 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            void uartISR(void)                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a96   509e     MOVF      0x9e,0x0,0x0   	if (PIR1bits.RCIF==1 && PIE1bits.RCIE==1)                                       F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000a98   0b20     ANDLW     0x20                                                                                            
-000a9a   e00d     BZ        0xab6                                                                                           
-000a9c   509d     MOVF      0x9d,0x0,0x0                                                                                    
-000a9e   0b20     ANDLW     0x20                                                                                            
-000aa0   e00a     BZ        0xab6                                                                                           
+000a9e   509e     MOVF      0x9e,0x0,0x0   	if (PIR1bits.RCIF==1 && PIE1bits.RCIE==1)                                       F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000aa0   0b20     ANDLW     0x20                                                                                            
+000aa2   e00d     BZ        0xabe                                                                                           
+000aa4   509d     MOVF      0x9d,0x0,0x0                                                                                    
+000aa6   0b20     ANDLW     0x20                                                                                            
+000aa8   e00a     BZ        0xabe                                                                                           
                                            	{                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000aa2   a2ab     BTFSS     0xab,0x1,0x0   		if (RCSTAbits.OERR) { RCSTAbits.CREN=0; RCSTAbits.CREN=1; }                    F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000aa4   d002     BRA       0xaaa                                                                                           
-000aa6   98ab     BCF       0xab,0x4,0x0                                                                                    
-000aa8   88ab     BSF       0xab,0x4,0x0                                                                                    
+000aaa   a2ab     BTFSS     0xab,0x1,0x0   		if (RCSTAbits.OERR) { RCSTAbits.CREN=0; RCSTAbits.CREN=1; }                    F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000aac   d002     BRA       0xab2                                                                                           
+000aae   98ab     BCF       0xab,0x4,0x0                                                                                    
+000ab0   88ab     BSF       0xab,0x4,0x0                                                                                    
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000aaa   dff2     RCALL     0xa90          		uartParse(uartGet());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000aac   6ee6     MOVWF     0xe6,0x0                                                                                        
-000aae   ece8     CALL      0x7d0,0x0                                                                                       
-000ab0   f003                                                                                                               
-000ab2   52e5     MOVF      0xe5,0x1,0x0                                                                                    
-000ab4   9a9e     BCF       0x9e,0x5,0x0   		PIR1bits.RCIF=0;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ab2   dff2     RCALL     0xa98          		uartParse(uartGet());                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ab4   6ee6     MOVWF     0xe6,0x0                                                                                        
+000ab6   ece8     CALL      0x7d0,0x0                                                                                       
+000ab8   f003                                                                                                               
+000aba   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+000abc   9a9e     BCF       0x9e,0x5,0x0   		PIR1bits.RCIF=0;                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	}                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000ab6   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000abe   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
@@ -259,18 +269,18 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            char uartDataRedy(void)                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000ab8   a2ab     BTFSS     0xab,0x1,0x0   	if(RCSTAbits.OERR)                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000aba   d002     BRA       0xac0                                                                                           
+000ac0   a2ab     BTFSS     0xab,0x1,0x0   	if(RCSTAbits.OERR)                                                              F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ac2   d002     BRA       0xac8                                                                                           
                                            	{                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000abc   98ab     BCF       0xab,0x4,0x0   		RCSTAbits.CREN = 0;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000abe   88ab     BSF       0xab,0x4,0x0   		RCSTAbits.CREN = 1;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ac4   98ab     BCF       0xab,0x4,0x0   		RCSTAbits.CREN = 0;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ac6   88ab     BSF       0xab,0x4,0x0   		RCSTAbits.CREN = 1;                                                            F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            	}                                                                               F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000ac0   509e     MOVF      0x9e,0x0,0x0     return PIR1bits.RCIF;                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
-000ac2   0b20     ANDLW     0x20                                                                                            
-000ac4   e001     BZ        0xac8                                                                                           
-000ac6   0e01     MOVLW     0x1                                                                                             
-000ac8   d000     BRA       0xaca                                                                                           
-000aca   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000ac8   509e     MOVF      0x9e,0x0,0x0     return PIR1bits.RCIF;                                                          F:\MCP\projects\CAN\canToSerial\Source\uart.c
+000aca   0b20     ANDLW     0x20                                                                                            
+000acc   e001     BZ        0xad0                                                                                           
+000ace   0e01     MOVLW     0x1                                                                                             
+000ad0   d000     BRA       0xad2                                                                                           
+000ad2   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            #endif                                                                           F:\MCP\projects\CAN\canToSerial\Source\uart.c
                                            /*********************************************************************           F:\MCP\projects\CAN\canToSerial\Source\CAN.c
@@ -322,7 +332,7 @@ Address  Value    Disassembly              Source                               
 000056   8c70     BSF       0x70,0x6,0x0   	BRGCON1bits.SJW0=1;                                                             F:\MCP\projects\CAN\canToSerial\Source\CAN.c
                                            	                                                                                F:\MCP\projects\CAN\canToSerial\Source\CAN.c
                                            	// Setting BRP.                                                                 F:\MCP\projects\CAN\canToSerial\Source\CAN.c
-000058   0e09     MOVLW     0x9            	BRGCON1=BRGCON1|CAN_BRP;                                                        F:\MCP\projects\CAN\canToSerial\Source\CAN.c
+000058   0e04     MOVLW     0x4            	BRGCON1=BRGCON1|CAN_BRP;                                                        F:\MCP\projects\CAN\canToSerial\Source\CAN.c
 00005a   1070     IORWF     0x70,0x0,0x0                                                                                    
 00005c   6e70     MOVWF     0x70,0x0                                                                                        
                                            	                                                                                F:\MCP\projects\CAN\canToSerial\Source\CAN.c
@@ -1195,7 +1205,6 @@ Address  Value    Disassembly              Source                               
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            static void mainInit(void);                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-                                                                                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            void main()                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	static TICK t = 0;                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1210,15 +1219,17 @@ Address  Value    Disassembly              Source                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	#ifdef USE_UART                                                                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00059a   ece2     CALL      0x9c4,0x0      		uartInit();                                                                    F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00059a   ece3     CALL      0x9c6,0x0      		uartInit();                                                                    F:\MCP\projects\CAN\canToSerial\Source\Main.c
 00059c   f004                                                                                                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00059e   ecb5     CALL      0xb6a,0x0      	tickInit();                                                                     F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00059e   ecb9     CALL      0xb72,0x0      	tickInit();                                                                     F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0005a0   f005                                                                                                               
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
+                                           	                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0005a2   d7ff     BRA       0x5a2          	while(1)                                                                        F:\MCP\projects\CAN\canToSerial\Source\Main.c
-                                           	{                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
+                                           	{	                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	}                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0005a4   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1271,7 +1282,7 @@ Address  Value    Disassembly              Source                               
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	#ifdef USE_UART                                                                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0005fa   ec4b     CALL      0xa96,0x0      		uartISR();                                                                     F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0005fa   ec4f     CALL      0xa9e,0x0      		uartISR();                                                                     F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0005fc   f005                                                                                                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1281,7 +1292,7 @@ Address  Value    Disassembly              Source                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000602   ecc9     CALL      0xb92,0x0      	tickUpdate();                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000602   eccd     CALL      0xb9a,0x0      	tickUpdate();                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000604   f005                                                                                                               
 000606   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000608   ee00     LFSR      0x0,0x13                                                                                        
@@ -1414,13 +1425,13 @@ Address  Value    Disassembly              Source                               
                                            	                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
 00069a   0efd     MOVLW     0xfd           	uartPutc(UART_START_BYTE);                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
 00069c   6ee6     MOVWF     0xe6,0x0                                                                                        
-00069e   ecee     CALL      0x9dc,0x0                                                                                       
+00069e   ecf2     CALL      0x9e4,0x0                                                                                       
 0006a0   f004                                                                                                               
 0006a2   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 0006a4   0ef0     MOVLW     0xf0           	uartPutc((BYTE)(cm.ident));                                                     F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0006a6   cfdb     MOVFF     0xfdb,0xfe6                                                                                     
 0006a8   ffe6                                                                                                               
-0006aa   ecee     CALL      0x9dc,0x0                                                                                       
+0006aa   ecf2     CALL      0x9e4,0x0                                                                                       
 0006ac   f004                                                                                                               
 0006ae   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 0006b0   0ef0     MOVLW     0xf0           	uartPutc((BYTE)(cm.ident>>8));                                                  F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1445,7 +1456,7 @@ Address  Value    Disassembly              Source                               
 0006d6   e1f9     BNZ       0x6ca                                                                                           
 0006d8   5000     MOVF      0x0,0x0,0x0                                                                                     
 0006da   6ee6     MOVWF     0xe6,0x0                                                                                        
-0006dc   ecee     CALL      0x9dc,0x0                                                                                       
+0006dc   ecf2     CALL      0x9e4,0x0                                                                                       
 0006de   f004                                                                                                               
 0006e0   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 0006e2   0ef0     MOVLW     0xf0           	uartPutc((BYTE)(cm.ident>>16));                                                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1470,7 +1481,7 @@ Address  Value    Disassembly              Source                               
 000708   e1f9     BNZ       0x6fc                                                                                           
 00070a   5000     MOVF      0x0,0x0,0x0                                                                                     
 00070c   6ee6     MOVWF     0xe6,0x0                                                                                        
-00070e   ecee     CALL      0x9dc,0x0                                                                                       
+00070e   ecf2     CALL      0x9e4,0x0                                                                                       
 000710   f004                                                                                                               
 000712   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 000714   0ef0     MOVLW     0xf0           	uartPutc((BYTE)(cm.ident>>24));                                                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1495,25 +1506,25 @@ Address  Value    Disassembly              Source                               
 00073a   e1f9     BNZ       0x72e                                                                                           
 00073c   5000     MOVF      0x0,0x0,0x0                                                                                     
 00073e   6ee6     MOVWF     0xe6,0x0                                                                                        
-000740   ecee     CALL      0x9dc,0x0                                                                                       
+000740   ecf2     CALL      0x9e4,0x0                                                                                       
 000742   f004                                                                                                               
 000744   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 000746   0ef4     MOVLW     0xf4           	uartPutc(cm.extended);                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000748   cfdb     MOVFF     0xfdb,0xfe6                                                                                     
 00074a   ffe6                                                                                                               
-00074c   ecee     CALL      0x9dc,0x0                                                                                       
+00074c   ecf2     CALL      0x9e4,0x0                                                                                       
 00074e   f004                                                                                                               
 000750   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 000752   0ef5     MOVLW     0xf5           	uartPutc(cm.remote_request);                                                    F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000754   cfdb     MOVFF     0xfdb,0xfe6                                                                                     
 000756   ffe6                                                                                                               
-000758   ecee     CALL      0x9dc,0x0                                                                                       
+000758   ecf2     CALL      0x9e4,0x0                                                                                       
 00075a   f004                                                                                                               
 00075c   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 00075e   0ef6     MOVLW     0xf6           	uartPutc(cm.data_length);                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000760   cfdb     MOVFF     0xfdb,0xfe6                                                                                     
 000762   ffe6                                                                                                               
-000764   ecee     CALL      0x9dc,0x0                                                                                       
+000764   ecf2     CALL      0x9e4,0x0                                                                                       
 000766   f004                                                                                                               
 000768   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 00076a   6ade     CLRF      0xde,0x0       	for(i=0;i<8;i++) uartPutc(cm.data[i]);                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1544,7 +1555,7 @@ Address  Value    Disassembly              Source                               
 00079c   6eea     MOVWF     0xea,0x0                                                                                        
 00079e   50ef     MOVF      0xef,0x0,0x0                                                                                    
 0007a0   6ee6     MOVWF     0xe6,0x0                                                                                        
-0007a2   ecee     CALL      0x9dc,0x0                                                                                       
+0007a2   ecf2     CALL      0x9e4,0x0                                                                                       
 0007a4   f004                                                                                                               
 0007a6   52e5     MOVF      0xe5,0x1,0x0                                                                                    
 0007a8   2adf     INCF      0xdf,0x1,0x0                                                                                    
@@ -1554,7 +1565,7 @@ Address  Value    Disassembly              Source                               
 0007b0   d7de     BRA       0x76e                                                                                           
 0007b2   0efa     MOVLW     0xfa           	uartPutc(UART_END_BYTE);                                                        F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0007b4   6ee6     MOVWF     0xe6,0x0                                                                                        
-0007b6   ecee     CALL      0x9dc,0x0                                                                                       
+0007b6   ecf2     CALL      0x9e4,0x0                                                                                       
 0007b8   f004                                                                                                               
 0007ba   52e5     MOVF      0xe5,0x1,0x0                                                                                    
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
@@ -1598,11 +1609,10 @@ Address  Value    Disassembly              Source                               
                                            	static TICK timeout=0;                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	static BYTE count=0;                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-                                                                                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0007e4   0100     MOVLB     0x0            	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
 0007e6   056e     DECF      0x6e,0x0,0x1                                                                                    
 0007e8   e11a     BNZ       0x81e                                                                                           
-0007ea   ecbf     CALL      0xb7e,0x0                                                                                       
+0007ea   ecc3     CALL      0xb86,0x0                                                                                       
 0007ec   f005                                                                                                               
 0007ee   0100     MOVLB     0x0                                                                                             
 0007f0   516f     MOVF      0x6f,0x0,0x1                                                                                    
@@ -1634,10 +1644,10 @@ Address  Value    Disassembly              Source                               
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
 00081e   056e     DECF      0x6e,0x0,0x1   	if (waitingMessage==TRUE)                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000820   e001     BZ        0x824                                                                                           
-000822   d0a4     BRA       0x96c                                                                                           
+000822   d0a5     BRA       0x96e                                                                                           
                                            	{                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000824   ecbf     CALL      0xb7e,0x0      		timeout=tickGet();                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000824   ecc3     CALL      0xb86,0x0      		timeout=tickGet();                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000826   f005                                                                                                               
 000828   c018     MOVFF     0x18,0x6f                                                                                       
 00082a   f06f                                                                                                               
@@ -1653,7 +1663,7 @@ Address  Value    Disassembly              Source                               
 000838   0e0f     MOVLW     0xf            		if(count>=15)                                                                  F:\MCP\projects\CAN\canToSerial\Source\Main.c
 00083a   0100     MOVLB     0x0                                                                                             
 00083c   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-00083e   e33a     BNC       0x8b4                                                                                           
+00083e   e33b     BNC       0x8b6                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000840   0efe     MOVLW     0xfe           			if (c==UART_END_BYTE)                                                         F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000842   50db     MOVF      0xdb,0x0,0x0                                                                                    
@@ -1663,223 +1673,225 @@ Address  Value    Disassembly              Source                               
 00084a   1800     XORWF     0x0,0x0,0x0                                                                                     
 00084c   e101     BNZ       0x850                                                                                           
 00084e   5001     MOVF      0x1,0x0,0x0                                                                                     
-000850   e12e     BNZ       0x8ae                                                                                           
+000850   e12f     BNZ       0x8b0                                                                                           
                                            			{                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
 000852   7282     BTG       0x82,0x1,0x0   				LED0_IO=~LED0_IO;                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000854   6ae6     CLRF      0xe6,0x0       				while(!canSendMessage(cm,PRIO_LOWEST));                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000856   50d9     MOVF      0xd9,0x0,0x0                                                                                    
-000858   0f03     ADDLW     0x3                                                                                             
-00085a   6ee9     MOVWF     0xe9,0x0                                                                                        
-00085c   cfda     MOVFF     0xfda,0xfea                                                                                     
-00085e   ffea                                                                                                               
-000860   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000862   ffe6                                                                                                               
-000864   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000866   ffe6                                                                                                               
-000868   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00086a   ffe6                                                                                                               
-00086c   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00086e   ffe6                                                                                                               
-000870   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000872   ffe6                                                                                                               
-000874   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000876   ffe6                                                                                                               
-000878   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00087a   ffe6                                                                                                               
-00087c   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00087e   ffe6                                                                                                               
-000880   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000882   ffe6                                                                                                               
-000884   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000886   ffe6                                                                                                               
-000888   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00088a   ffe6                                                                                                               
-00088c   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00088e   ffe6                                                                                                               
-000890   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000892   ffe6                                                                                                               
-000894   cfee     MOVFF     0xfee,0xfe6                                                                                     
-000896   ffe6                                                                                                               
-000898   cfee     MOVFF     0xfee,0xfe6                                                                                     
-00089a   ffe6                                                                                                               
-00089c   ecc6     CALL      0x38c,0x0                                                                                       
-00089e   f001                                                                                                               
-0008a0   6e00     MOVWF     0x0,0x0                                                                                         
-0008a2   0e10     MOVLW     0x10                                                                                            
-0008a4   5ee1     SUBWF     0xe1,0x1,0x0                                                                                    
-0008a6   5000     MOVF      0x0,0x0,0x0                                                                                     
-0008a8   0900     IORLW     0x0                                                                                             
-0008aa   e101     BNZ       0x8ae                                                                                           
-0008ac   d7d3     BRA       0x854                                                                                           
+                                           				//canParse(cm);                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000854   0e03     MOVLW     0x3            				while(!canSendMessage(cm,PRIO_HIGEST));                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000856   6ee6     MOVWF     0xe6,0x0                                                                                        
+000858   50d9     MOVF      0xd9,0x0,0x0                                                                                    
+00085a   0f03     ADDLW     0x3                                                                                             
+00085c   6ee9     MOVWF     0xe9,0x0                                                                                        
+00085e   cfda     MOVFF     0xfda,0xfea                                                                                     
+000860   ffea                                                                                                               
+000862   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000864   ffe6                                                                                                               
+000866   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000868   ffe6                                                                                                               
+00086a   cfee     MOVFF     0xfee,0xfe6                                                                                     
+00086c   ffe6                                                                                                               
+00086e   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000870   ffe6                                                                                                               
+000872   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000874   ffe6                                                                                                               
+000876   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000878   ffe6                                                                                                               
+00087a   cfee     MOVFF     0xfee,0xfe6                                                                                     
+00087c   ffe6                                                                                                               
+00087e   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000880   ffe6                                                                                                               
+000882   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000884   ffe6                                                                                                               
+000886   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000888   ffe6                                                                                                               
+00088a   cfee     MOVFF     0xfee,0xfe6                                                                                     
+00088c   ffe6                                                                                                               
+00088e   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000890   ffe6                                                                                                               
+000892   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000894   ffe6                                                                                                               
+000896   cfee     MOVFF     0xfee,0xfe6                                                                                     
+000898   ffe6                                                                                                               
+00089a   cfee     MOVFF     0xfee,0xfe6                                                                                     
+00089c   ffe6                                                                                                               
+00089e   ecc6     CALL      0x38c,0x0                                                                                       
+0008a0   f001                                                                                                               
+0008a2   6e00     MOVWF     0x0,0x0                                                                                         
+0008a4   0e10     MOVLW     0x10                                                                                            
+0008a6   5ee1     SUBWF     0xe1,0x1,0x0                                                                                    
+0008a8   5000     MOVF      0x0,0x0,0x0                                                                                     
+0008aa   0900     IORLW     0x0                                                                                             
+0008ac   e101     BNZ       0x8b0                                                                                           
+0008ae   d7d2     BRA       0x854                                                                                           
                                            			}                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008ae   0100     MOVLB     0x0            			waitingMessage=FALSE;                                                         F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008b0   6b6e     CLRF      0x6e,0x1                                                                                        
-0008b2   d07e     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008b0   0100     MOVLB     0x0            			waitingMessage=FALSE;                                                         F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008b2   6b6e     CLRF      0x6e,0x1                                                                                        
+0008b4   d07e     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		// data                                                                        F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008b4   0e07     MOVLW     0x7            		if(count>=7)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008b6   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-0008b8   e313     BNC       0x8e0                                                                                           
+0008b6   0e07     MOVLW     0x7            		if(count>=7)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008b8   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+0008ba   e313     BNC       0x8e2                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008ba   50d9     MOVF      0xd9,0x0,0x0   			cm.data[count-7]=c;                                                           F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008bc   0f0a     ADDLW     0xa                                                                                             
-0008be   6e00     MOVWF     0x0,0x0                                                                                         
-0008c0   cfda     MOVFF     0xfda,0x1                                                                                       
-0008c2   f001                                                                                                               
-0008c4   0e07     MOVLW     0x7                                                                                             
-0008c6   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-0008c8   010f     MOVLB     0xf                                                                                             
-0008ca   2400     ADDWF     0x0,0x0,0x0                                                                                     
-0008cc   6ee9     MOVWF     0xe9,0x0                                                                                        
-0008ce   0e00     MOVLW     0x0                                                                                             
-0008d0   2001     ADDWFC    0x1,0x0,0x0                                                                                     
-0008d2   6eea     MOVWF     0xea,0x0                                                                                        
-0008d4   0efe     MOVLW     0xfe                                                                                            
-0008d6   cfdb     MOVFF     0xfdb,0xfef                                                                                     
-0008d8   ffef                                                                                                               
-0008da   0100     MOVLB     0x0            			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008dc   2b73     INCF      0x73,0x1,0x1                                                                                    
-0008de   d068     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008bc   50d9     MOVF      0xd9,0x0,0x0   			cm.data[count-7]=c;                                                           F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008be   0f0a     ADDLW     0xa                                                                                             
+0008c0   6e00     MOVWF     0x0,0x0                                                                                         
+0008c2   cfda     MOVFF     0xfda,0x1                                                                                       
+0008c4   f001                                                                                                               
+0008c6   0e07     MOVLW     0x7                                                                                             
+0008c8   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+0008ca   010f     MOVLB     0xf                                                                                             
+0008cc   2400     ADDWF     0x0,0x0,0x0                                                                                     
+0008ce   6ee9     MOVWF     0xe9,0x0                                                                                        
+0008d0   0e00     MOVLW     0x0                                                                                             
+0008d2   2001     ADDWFC    0x1,0x0,0x0                                                                                     
+0008d4   6eea     MOVWF     0xea,0x0                                                                                        
+0008d6   0efe     MOVLW     0xfe                                                                                            
+0008d8   cfdb     MOVFF     0xfdb,0xfef                                                                                     
+0008da   ffef                                                                                                               
+0008dc   0100     MOVLB     0x0            			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008de   2b73     INCF      0x73,0x1,0x1                                                                                    
+0008e0   d068     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		// data length                                                                 F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008e0   0e06     MOVLW     0x6            		if(count>=6)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008e2   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-0008e4   e308     BNC       0x8f6                                                                                           
+0008e2   0e06     MOVLW     0x6            		if(count>=6)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008e4   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+0008e6   e308     BNC       0x8f8                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008e6   0efe     MOVLW     0xfe           			cm.data_length=c;                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008e8   50db     MOVF      0xdb,0x0,0x0                                                                                    
-0008ea   6ee7     MOVWF     0xe7,0x0                                                                                        
-0008ec   0e09     MOVLW     0x9                                                                                             
-0008ee   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
-0008f0   ffdb                                                                                                               
-0008f2   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008f4   d05d     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008e8   0efe     MOVLW     0xfe           			cm.data_length=c;                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008ea   50db     MOVF      0xdb,0x0,0x0                                                                                    
+0008ec   6ee7     MOVWF     0xe7,0x0                                                                                        
+0008ee   0e09     MOVLW     0x9                                                                                             
+0008f0   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
+0008f2   ffdb                                                                                                               
+0008f4   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008f6   d05d     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		// remote request                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008f6   0e05     MOVLW     0x5            		if(count>=5)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008f8   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-0008fa   e308     BNC       0x90c                                                                                           
+0008f8   0e05     MOVLW     0x5            		if(count>=5)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008fa   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+0008fc   e308     BNC       0x90e                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008fc   0efe     MOVLW     0xfe           			cm.remote_request=c;                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0008fe   50db     MOVF      0xdb,0x0,0x0                                                                                    
-000900   6ee7     MOVWF     0xe7,0x0                                                                                        
-000902   0e08     MOVLW     0x8                                                                                             
-000904   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
-000906   ffdb                                                                                                               
-000908   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00090a   d052     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0008fe   0efe     MOVLW     0xfe           			cm.remote_request=c;                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000900   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000902   6ee7     MOVWF     0xe7,0x0                                                                                        
+000904   0e08     MOVLW     0x8                                                                                             
+000906   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
+000908   ffdb                                                                                                               
+00090a   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00090c   d052     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		// extended                                                                    F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00090c   0e04     MOVLW     0x4            		if(count>=4)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00090e   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-000910   e308     BNC       0x922                                                                                           
+00090e   0e04     MOVLW     0x4            		if(count>=4)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000910   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+000912   e308     BNC       0x924                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000912   0efe     MOVLW     0xfe           			cm.extended=c;                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000914   50db     MOVF      0xdb,0x0,0x0                                                                                    
-000916   6ee7     MOVWF     0xe7,0x0                                                                                        
-000918   0e07     MOVLW     0x7                                                                                             
-00091a   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
-00091c   ffdb                                                                                                               
-00091e   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000920   d047     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000914   0efe     MOVLW     0xfe           			cm.extended=c;                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000916   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000918   6ee7     MOVWF     0xe7,0x0                                                                                        
+00091a   0e07     MOVLW     0x7                                                                                             
+00091c   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
+00091e   ffdb                                                                                                               
+000920   2b73     INCF      0x73,0x1,0x1   			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000922   d047     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		// ident                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000922   0e00     MOVLW     0x0            		if(count>=0)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000924   5d73     SUBWF     0x73,0x0,0x1                                                                                    
-000926   e322     BNC       0x96c                                                                                           
+000924   0e00     MOVLW     0x0            		if(count>=0)                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000926   5d73     SUBWF     0x73,0x0,0x1                                                                                    
+000928   e322     BNC       0x96e                                                                                           
                                            		{                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000928   0efe     MOVLW     0xfe           			cm.ident+=((DWORD)c<<(count*8));                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00092a   cfdb     MOVFF     0xfdb,0x0                                                                                       
-00092c   f000                                                                                                               
-00092e   6a01     CLRF      0x1,0x0                                                                                         
-000930   6a02     CLRF      0x2,0x0                                                                                         
-000932   6a03     CLRF      0x3,0x0                                                                                         
-000934   0e08     MOVLW     0x8                                                                                             
-000936   0373     MULWF     0x73,0x1                                                                                        
-000938   50f3     MOVF      0xf3,0x0,0x0                                                                                    
-00093a   0b1f     ANDLW     0x1f                                                                                            
-00093c   e007     BZ        0x94c                                                                                           
-00093e   90d8     BCF       0xd8,0x0,0x0                                                                                    
-000940   3600     RLCF      0x0,0x1,0x0                                                                                     
-000942   3601     RLCF      0x1,0x1,0x0                                                                                     
-000944   3602     RLCF      0x2,0x1,0x0                                                                                     
-000946   3603     RLCF      0x3,0x1,0x0                                                                                     
-000948   06e8     DECF      0xe8,0x1,0x0                                                                                    
-00094a   e1f9     BNZ       0x93e                                                                                           
-00094c   50d9     MOVF      0xd9,0x0,0x0                                                                                    
-00094e   0f03     ADDLW     0x3                                                                                             
-000950   6ee9     MOVWF     0xe9,0x0                                                                                        
-000952   cfda     MOVFF     0xfda,0xfea                                                                                     
-000954   ffea                                                                                                               
-000956   5000     MOVF      0x0,0x0,0x0                                                                                     
-000958   26ee     ADDWF     0xee,0x1,0x0                                                                                    
-00095a   5001     MOVF      0x1,0x0,0x0                                                                                     
-00095c   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
-00095e   5002     MOVF      0x2,0x0,0x0                                                                                     
-000960   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
-000962   5003     MOVF      0x3,0x0,0x0                                                                                     
-000964   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
-000966   0100     MOVLB     0x0            			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000968   2b73     INCF      0x73,0x1,0x1                                                                                    
-00096a   d022     BRA       0x9b0          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00092a   0efe     MOVLW     0xfe           			cm.ident+=((DWORD)c<<(count*8));                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00092c   cfdb     MOVFF     0xfdb,0x0                                                                                       
+00092e   f000                                                                                                               
+000930   6a01     CLRF      0x1,0x0                                                                                         
+000932   6a02     CLRF      0x2,0x0                                                                                         
+000934   6a03     CLRF      0x3,0x0                                                                                         
+000936   0e08     MOVLW     0x8                                                                                             
+000938   0373     MULWF     0x73,0x1                                                                                        
+00093a   50f3     MOVF      0xf3,0x0,0x0                                                                                    
+00093c   0b1f     ANDLW     0x1f                                                                                            
+00093e   e007     BZ        0x94e                                                                                           
+000940   90d8     BCF       0xd8,0x0,0x0                                                                                    
+000942   3600     RLCF      0x0,0x1,0x0                                                                                     
+000944   3601     RLCF      0x1,0x1,0x0                                                                                     
+000946   3602     RLCF      0x2,0x1,0x0                                                                                     
+000948   3603     RLCF      0x3,0x1,0x0                                                                                     
+00094a   06e8     DECF      0xe8,0x1,0x0                                                                                    
+00094c   e1f9     BNZ       0x940                                                                                           
+00094e   50d9     MOVF      0xd9,0x0,0x0                                                                                    
+000950   0f03     ADDLW     0x3                                                                                             
+000952   6ee9     MOVWF     0xe9,0x0                                                                                        
+000954   cfda     MOVFF     0xfda,0xfea                                                                                     
+000956   ffea                                                                                                               
+000958   5000     MOVF      0x0,0x0,0x0                                                                                     
+00095a   26ee     ADDWF     0xee,0x1,0x0                                                                                    
+00095c   5001     MOVF      0x1,0x0,0x0                                                                                     
+00095e   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
+000960   5002     MOVF      0x2,0x0,0x0                                                                                     
+000962   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
+000964   5003     MOVF      0x3,0x0,0x0                                                                                     
+000966   22ee     ADDWFC    0xee,0x1,0x0                                                                                    
+000968   0100     MOVLB     0x0            			count++;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00096a   2b73     INCF      0x73,0x1,0x1                                                                                    
+00096c   d022     BRA       0x9b2          			return;                                                                       F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            		}                                                                              F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	}                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00096c   0efe     MOVLW     0xfe           	if (c==UART_START_BYTE && waitingMessage==FALSE)                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00096e   50db     MOVF      0xdb,0x0,0x0                                                                                    
-000970   6e00     MOVWF     0x0,0x0                                                                                         
-000972   6a01     CLRF      0x1,0x0                                                                                         
-000974   0efd     MOVLW     0xfd                                                                                            
-000976   1800     XORWF     0x0,0x0,0x0                                                                                     
-000978   e101     BNZ       0x97c                                                                                           
-00097a   5001     MOVF      0x1,0x0,0x0                                                                                     
-00097c   e119     BNZ       0x9b0                                                                                           
-00097e   516e     MOVF      0x6e,0x0,0x1                                                                                    
-000980   e117     BNZ       0x9b0                                                                                           
+00096e   0efe     MOVLW     0xfe           	if (c==UART_START_BYTE && waitingMessage==FALSE)                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000970   50db     MOVF      0xdb,0x0,0x0                                                                                    
+000972   6e00     MOVWF     0x0,0x0                                                                                         
+000974   6a01     CLRF      0x1,0x0                                                                                         
+000976   0efd     MOVLW     0xfd                                                                                            
+000978   1800     XORWF     0x0,0x0,0x0                                                                                     
+00097a   e101     BNZ       0x97e                                                                                           
+00097c   5001     MOVF      0x1,0x0,0x0                                                                                     
+00097e   e119     BNZ       0x9b2                                                                                           
+000980   516e     MOVF      0x6e,0x0,0x1                                                                                    
+000982   e117     BNZ       0x9b2                                                                                           
                                            	{                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000982   0e01     MOVLW     0x1            			waitingMessage=TRUE;                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000984   6f6e     MOVWF     0x6e,0x1                                                                                        
-000986   ecbf     CALL      0xb7e,0x0      			timeout=tickGet();                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
-000988   f005                                                                                                               
-00098a   c018     MOVFF     0x18,0x6f                                                                                       
-00098c   f06f                                                                                                               
-00098e   c019     MOVFF     0x19,0x70                                                                                       
-000990   f070                                                                                                               
-000992   c01a     MOVFF     0x1a,0x71                                                                                       
-000994   f071                                                                                                               
-000996   c01b     MOVFF     0x1b,0x72                                                                                       
-000998   f072                                                                                                               
-00099a   0100     MOVLB     0x0            			count=0;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
-00099c   6b73     CLRF      0x73,0x1                                                                                        
-00099e   0e03     MOVLW     0x3            			cm.ident=0;                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0009a0   6adb     CLRF      0xdb,0x0                                                                                        
-0009a2   0e04     MOVLW     0x4                                                                                             
-0009a4   6adb     CLRF      0xdb,0x0                                                                                        
-0009a6   0e05     MOVLW     0x5                                                                                             
-0009a8   6adb     CLRF      0xdb,0x0                                                                                        
-0009aa   0e06     MOVLW     0x6                                                                                             
-0009ac   6adb     CLRF      0xdb,0x0                                                                                        
-0009ae   d000     BRA       0x9b0          			return;	                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000984   0e01     MOVLW     0x1            			waitingMessage=TRUE;                                                          F:\MCP\projects\CAN\canToSerial\Source\Main.c
+000986   6f6e     MOVWF     0x6e,0x1                                                                                        
+000988   ecc3     CALL      0xb86,0x0      			timeout=tickGet();                                                            F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00098a   f005                                                                                                               
+00098c   c018     MOVFF     0x18,0x6f                                                                                       
+00098e   f06f                                                                                                               
+000990   c019     MOVFF     0x19,0x70                                                                                       
+000992   f070                                                                                                               
+000994   c01a     MOVFF     0x1a,0x71                                                                                       
+000996   f071                                                                                                               
+000998   c01b     MOVFF     0x1b,0x72                                                                                       
+00099a   f072                                                                                                               
+00099c   0100     MOVLB     0x0            			count=0;                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
+00099e   6b73     CLRF      0x73,0x1                                                                                        
+0009a0   0e03     MOVLW     0x3            			cm.ident=0;                                                                   F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0009a2   6adb     CLRF      0xdb,0x0                                                                                        
+0009a4   0e04     MOVLW     0x4                                                                                             
+0009a6   6adb     CLRF      0xdb,0x0                                                                                        
+0009a8   0e05     MOVLW     0x5                                                                                             
+0009aa   6adb     CLRF      0xdb,0x0                                                                                        
+0009ac   0e06     MOVLW     0x6                                                                                             
+0009ae   6adb     CLRF      0xdb,0x0                                                                                        
+0009b0   d000     BRA       0x9b2          			return;	                                                                      F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            	}                                                                               F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0009b0   0e12     MOVLW     0x12           }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
-0009b2   5ce1     SUBWF     0xe1,0x0,0x0                                                                                    
-0009b4   e202     BC        0x9ba                                                                                           
-0009b6   6ae1     CLRF      0xe1,0x0                                                                                        
-0009b8   52e5     MOVF      0xe5,0x1,0x0                                                                                    
-0009ba   6ee1     MOVWF     0xe1,0x0                                                                                        
-0009bc   52e5     MOVF      0xe5,0x1,0x0                                                                                    
-0009be   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
-0009c0   ffd9                                                                                                               
-0009c2   0012     RETURN    0x0                                                                                             
+0009b2   0e12     MOVLW     0x12           }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Main.c
+0009b4   5ce1     SUBWF     0xe1,0x0,0x0                                                                                    
+0009b6   e202     BC        0x9bc                                                                                           
+0009b8   6ae1     CLRF      0xe1,0x0                                                                                        
+0009ba   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+0009bc   6ee1     MOVWF     0xe1,0x0                                                                                        
+0009be   52e5     MOVF      0xe5,0x1,0x0                                                                                    
+0009c0   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+0009c2   ffd9                                                                                                               
+0009c4   0012     RETURN    0x0                                                                                             
                                            #endif                                                                           F:\MCP\projects\CAN\canToSerial\Source\Main.c
                                            /*********************************************************************           F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                             *                                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
@@ -1948,21 +1960,21 @@ Address  Value    Disassembly              Source                               
                                            void tickInit(void)                                                              F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                // Start the timer.                                                          F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b6a   0e79     MOVLW     0x79               TMR0L = TICK_COUNTER_LOW;                                                    F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b6c   6ed6     MOVWF     0xd6,0x0                                                                                        
-000b6e   0efe     MOVLW     0xfe               TMR0H = TICK_COUNTER_HIGH;                                                   F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b70   6ed7     MOVWF     0xd7,0x0                                                                                        
+000b72   0e79     MOVLW     0x79               TMR0L = TICK_COUNTER_LOW;                                                    F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b74   6ed6     MOVWF     0xd6,0x0                                                                                        
+000b76   0efe     MOVLW     0xfe               TMR0H = TICK_COUNTER_HIGH;                                                   F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b78   6ed7     MOVWF     0xd7,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                // 16-BIT, internal timer, PSA set to 1:256                                  F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b72   0e07     MOVLW     0x7                T0CON = 0b00000000 | TIMER_PRESCALE;                                         F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b74   6ed5     MOVWF     0xd5,0x0                                                                                        
+000b7a   0e07     MOVLW     0x7                T0CON = 0b00000000 | TIMER_PRESCALE;                                         F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b7c   6ed5     MOVWF     0xd5,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                // Start the timer.                                                          F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b76   8ed5     BSF       0xd5,0x7,0x0       T0CONbits.TMR0ON = 1;                                                        F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b7e   8ed5     BSF       0xd5,0x7,0x0       T0CONbits.TMR0ON = 1;                                                        F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b78   84f2     BSF       0xf2,0x2,0x0       INTCONbits.TMR0IF = 1;                                                       F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b7a   8af2     BSF       0xf2,0x5,0x0       INTCONbits.TMR0IE = 1;                                                       F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b7c   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b80   84f2     BSF       0xf2,0x2,0x0       INTCONbits.TMR0IF = 1;                                                       F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b82   8af2     BSF       0xf2,0x5,0x0       INTCONbits.TMR0IE = 1;                                                       F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b84   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            *	Function: TickGet                                                              F:\MCP\projects\CAN\canToSerial\Source\Tick.c
@@ -1975,16 +1987,16 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            TICK tickGet(void)                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b7e   c074     MOVFF     0x74,0x18          return TickCount;                                                            F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b80   f018                                                                                                               
-000b82   c075     MOVFF     0x75,0x19                                                                                       
-000b84   f019                                                                                                               
-000b86   c076     MOVFF     0x76,0x1a                                                                                       
-000b88   f01a                                                                                                               
-000b8a   c077     MOVFF     0x77,0x1b                                                                                       
-000b8c   f01b                                                                                                               
-000b8e   d000     BRA       0xb90                                                                                           
-000b90   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b86   c074     MOVFF     0x74,0x18          return TickCount;                                                            F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b88   f018                                                                                                               
+000b8a   c075     MOVFF     0x75,0x19                                                                                       
+000b8c   f019                                                                                                               
+000b8e   c076     MOVFF     0x76,0x1a                                                                                       
+000b90   f01a                                                                                                               
+000b92   c077     MOVFF     0x77,0x1b                                                                                       
+000b94   f01b                                                                                                               
+000b96   d000     BRA       0xb98                                                                                           
+000b98   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            /*                                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
@@ -1998,21 +2010,21 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            void tickUpdate(void)                                                            F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b92   a4f2     BTFSS     0xf2,0x2,0x0       if(INTCONbits.TMR0IF)                                                        F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b94   d00b     BRA       0xbac                                                                                           
+000b9a   a4f2     BTFSS     0xf2,0x2,0x0       if(INTCONbits.TMR0IF)                                                        F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000b9c   d00b     BRA       0xbb4                                                                                           
                                                {                                                                            F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b96   0efe     MOVLW     0xfe                   TMR0H = TICK_COUNTER_HIGH;                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b98   6ed7     MOVWF     0xd7,0x0                                                                                        
-000b9a   0e79     MOVLW     0x79                   TMR0L = TICK_COUNTER_LOW;                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b9c   6ed6     MOVWF     0xd6,0x0                                                                                        
+000b9e   0efe     MOVLW     0xfe                   TMR0H = TICK_COUNTER_HIGH;                                               F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000ba0   6ed7     MOVWF     0xd7,0x0                                                                                        
+000ba2   0e79     MOVLW     0x79                   TMR0L = TICK_COUNTER_LOW;                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000ba4   6ed6     MOVWF     0xd6,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000b9e   0100     MOVLB     0x0                    TickCount++;                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000ba0   2b74     INCF      0x74,0x1,0x1                                                                                    
-000ba2   0e00     MOVLW     0x0                                                                                             
-000ba4   2375     ADDWFC    0x75,0x1,0x1                                                                                    
-000ba6   2376     ADDWFC    0x76,0x1,0x1                                                                                    
-000ba8   2377     ADDWFC    0x77,0x1,0x1                                                                                    
+000ba6   0100     MOVLB     0x0                    TickCount++;                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000ba8   2b74     INCF      0x74,0x1,0x1                                                                                    
+000baa   0e00     MOVLW     0x0                                                                                             
+000bac   2375     ADDWFC    0x75,0x1,0x1                                                                                    
+000bae   2376     ADDWFC    0x76,0x1,0x1                                                                                    
+000bb0   2377     ADDWFC    0x77,0x1,0x1                                                                                    
                                                                                                                             F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000baa   94f2     BCF       0xf2,0x2,0x0           INTCONbits.TMR0IF = 0;                                                   F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000bb2   94f2     BCF       0xf2,0x2,0x0           INTCONbits.TMR0IF = 0;                                                   F:\MCP\projects\CAN\canToSerial\Source\Tick.c
                                                }                                                                            F:\MCP\projects\CAN\canToSerial\Source\Tick.c
-000bac   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c
+000bb4   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canToSerial\Source\Tick.c

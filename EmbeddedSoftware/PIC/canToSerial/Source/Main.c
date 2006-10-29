@@ -26,7 +26,6 @@
 
 static void mainInit(void);
 
-
 void main()
 {
 	static TICK t = 0;
@@ -45,8 +44,10 @@ void main()
 
 	tickInit();
 
+	
+
 	while(1)
-	{
+	{	
 	}
 
 }
@@ -165,7 +166,6 @@ void uartParse(BYTE c)
 	static TICK timeout=0;
 	static BYTE count=0;
 
-
 	if (waitingMessage==TRUE && (tickGet()-timeout)>TICK_SECOND/20)
 	{
 		waitingMessage=FALSE;
@@ -184,7 +184,8 @@ void uartParse(BYTE c)
 			if (c==UART_END_BYTE)
 			{
 				LED0_IO=~LED0_IO;
-				while(!canSendMessage(cm,PRIO_LOWEST));
+				//canParse(cm);
+				while(!canSendMessage(cm,PRIO_HIGEST));
 			}
 			waitingMessage=FALSE;
 			return;

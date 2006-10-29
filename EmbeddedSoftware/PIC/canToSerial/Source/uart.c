@@ -32,9 +32,19 @@ void uartInit()
 		// Configure USART
 		TRISCbits.TRISC7=1;
 		TRISCbits.TRISC6=0;
-		TXSTA=0b00100000; // Low BRG speed
+		TXSTA=0b00100000;
+		#ifdef HIGH_BRG
+			TXSTAbits.BRGH=1; // High BRG speed
+			BAUDCONbits.BRG16=1;
+			SPBRGH = SPBRGH_VAL;
+			SPBRG = SPBRG_VAL;
+		#else
+			TXSTAbits.BRGH=0;  // Low BRG speed
+			SPBRG = SPBRG_VAL;
+		#endif
+		
 		RCSTA=0b10010000;
-		SPBRG = SPBRG_VAL;
+		
 		// USART RX interrupt
 		PIR1bits.RCIF=0;
 		PIE1bits.RCIE=1;
