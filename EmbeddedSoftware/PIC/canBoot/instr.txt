@@ -1,0 +1,49 @@
+Ny struktur igen....
+
+
+Kontrollpaket:
+
+__________I D E N T______     _______________D A T A________
+<FUNCT><FUNCC><NID><SID>      <RESVD><RID>ADDRU><ADDRH><ADDRL>
+
+
+<FUNCT> = 0000, funktionskod för bootloadern, högprioriterat.
+<FUNCC> = kommando. 
+ - 0000000001 för att initiera en programmering.
+ - 0000000010 for att ändra adress.
+ - 0000000101 för att avsluta en programmering.
+
+<NID> = nätverksid.
+<SID> = hostens id.
+
+<RID>[3] = mottagarens id, den som ska programmeras.
+
+<ADDRU>[2], 8 bitar = program adress bit 23-16
+<ADDRH>[1], 8 bitar = program adress bit 15-08
+<ADDRL>[0], 8 bitar = program adress bit 07-00
+
+
+Paketstruktur för programpaketet:
+
+__________I D E N T_____      _____D A T A_____
+<FUNCT><FUNCC><NID><SID>      <data7>...<data0>
+
+
+<FUNCT> = 0000, funktionskod för bootloadern, högprioriterat.
+<FUNCC> = kommando. 
+ - 0000000011 för att indikera att detta är programdata som ska skrivas.
+
+
+
+Paketstruktur för ackpaketen:
+
+__________I D E N T_____      _______D A T A_______
+<FUNCT><FUNCC><NID><SID>      <RESVD><ERR><RESVD>
+
+<FUNCT> = 0000, funktionskod för bootloadern, högprioriterat.
+<FUNCC> = kommando. 
+ - 0000000100 för att indikera att detta är en ACK.
+
+<ERR>[4] 8 bitar feltyp
+0x00 = inget fel
+0x01 = fel
