@@ -60,8 +60,11 @@ namespace canWatcher
 
         void main_newIncommingCanMessage(object sender, EventArgs e)
         {
+          
+
             this.BeginInvoke((ThreadStart)delegate
             {
+
                 canMessage newcm = canconnection.getMessage();
                 if (newcm != null)
                 {

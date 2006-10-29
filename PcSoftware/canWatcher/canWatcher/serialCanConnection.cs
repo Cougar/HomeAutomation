@@ -8,7 +8,7 @@ namespace canWatcher
 {
     public class serialCanConnection
     {
-        const int readBufferSize = 256;
+        const int readBufferSize = 1024;
         SerialPort serial_conn;
 
         public const byte UART_START_BYTE = 253;
@@ -16,7 +16,7 @@ namespace canWatcher
 
         public const int PACKET_LENGTH = 17;
 
-        byte[] iBuff = new byte[256];
+        byte[] iBuff = new byte[8192];
         int iBuffPointer = 0;
 
         Queue<canMessage> cmQueue = new Queue<canMessage>();
