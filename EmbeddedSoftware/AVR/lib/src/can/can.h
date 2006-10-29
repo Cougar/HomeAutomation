@@ -80,7 +80,7 @@ typedef struct {
 
 CanReturn_t CanInit(CanBitrate_t bitrate);
 void can_initMessageStruct(CanMessage_t* msg);
-CanReturn_t CanSend(const CanMessage_t* msg);
+CanReturn_t CanSend(CanMessage_t* msg);
 CanReturn_t CanReceiveAvailable(void);
 CanReturn_t CanReceive(CanMessage_t *msg);
 CanReturn_t CanCheckError(void);

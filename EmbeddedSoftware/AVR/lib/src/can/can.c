@@ -65,7 +65,7 @@ CanReturn_t CanInit(const CanBitrate_t bitrate) {
  *		CAN_OK if the message was successfully sent (or put in queue).
  *		CAN_FAILTX if the controller is busy AND the transmission queue is full.
  */
-CanReturn_t CanSend(const CanMessage_t* msg) {
+CanReturn_t CanSend(CanMessage_t* msg) {
 
 #ifdef CAN_CONTROLLER_MCP2515
 	uint8_t res, txbuf_n;
