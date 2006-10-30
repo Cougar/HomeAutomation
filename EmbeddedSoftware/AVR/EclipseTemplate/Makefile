@@ -17,10 +17,13 @@ override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
+SIZE           = avr-size
+SZFLAGS        = 
 UPLOAD         = uisp
 ULFLAGS        = -dpart=$(MCU_TARGET) -dprog=avr910 -dserial=/dev/ttyS0 -dspeed=115200 --erase --upload --verify if=$(PRG).hex
 
 default: $(PRG).elf lst
+	@$(SIZE) $(SZFLAGS) $(PRG).elf
 
 all: $(PRG).elf lst text eeprom
 
