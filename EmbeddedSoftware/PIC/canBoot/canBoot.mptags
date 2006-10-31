@@ -46,15 +46,15 @@ RID_INDEX	F:\MCP\projects\CAN\canBoot\Include\CAN.h	53;"	d	line:53
 RM_HIGH_INTERRUPT_VECTOR	F:\MCP\projects\CAN\canBoot\Include\boot.h	5;"	d	line:5
 RM_LOW_INTERRUPT_VECTOR	F:\MCP\projects\CAN\canBoot\Include\boot.h	6;"	d	line:6
 RM_RESET_VECTOR	F:\MCP\projects\CAN\canBoot\Include\boot.h	4;"	d	line:4
-RXB0CON	F:\MCP\projects\CAN\canBoot\Source\Main.c	571;"	l	line:571
-RXB0DLC	F:\MCP\projects\CAN\canBoot\Source\Main.c	547;"	l	line:547
-RXB0DLC	F:\MCP\projects\CAN\canBoot\Source\Main.c	553;"	l	line:553
+RXB0CON	F:\MCP\projects\CAN\canBoot\Source\Main.c	580;"	l	line:580
+RXB0DLC	F:\MCP\projects\CAN\canBoot\Source\Main.c	556;"	l	line:556
+RXB0DLC	F:\MCP\projects\CAN\canBoot\Source\Main.c	562;"	l	line:562
 TBLRD_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	49;"	p	line:49	file:	signature:(void)
-TBLRD_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	585;"	f	line:585
+TBLRD_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	594;"	f	line:594
 TBLWTPOSTINC_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	48;"	p	line:48	file:	signature:(void)
-TBLWTPOSTINC_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	600;"	f	line:600	signature:(void)
+TBLWTPOSTINC_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	609;"	f	line:609	signature:(void)
 TBLWT_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	47;"	p	line:47	file:	signature:(void)
-TBLWT_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	592;"	f	line:592
+TBLWT_Func	F:\MCP\projects\CAN\canBoot\Source\Main.c	601;"	f	line:601
 TICK_SUB_COUNTER_10MS	F:\MCP\projects\CAN\canBoot\Source\Main.c	51;"	d	line:51	file:
 TRUE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	16;"	e	line:16	enum:_BOOL
 TYPEDEFS_H	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	14;"	d	line:14
@@ -66,12 +66,12 @@ _PROGRAM_STATE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	21;"	g	line:21
 _high_ISR	F:\MCP\projects\CAN\canBoot\Source\Main.c	23;"	f	line:23	signature:(void)
 afterAckPgs	F:\MCP\projects\CAN\canBoot\Source\Main.c	67;"	l	line:67	file:
 bytesReceived	F:\MCP\projects\CAN\canBoot\Source\Main.c	69;"	l	line:69	file:
-canGetPacket	F:\MCP\projects\CAN\canBoot\Source\Main.c	452;"	f	line:452
+canGetPacket	F:\MCP\projects\CAN\canBoot\Source\Main.c	461;"	f	line:461
 canGetPacket	F:\MCP\projects\CAN\canBoot\Source\Main.c	46;"	p	line:46	file:	signature:(void)
 canInit	F:\MCP\projects\CAN\canBoot\Include\CAN.h	64;"	p	line:64	signature:(void)
-canInit	F:\MCP\projects\CAN\canBoot\Source\Main.c	365;"	f	line:365
+canInit	F:\MCP\projects\CAN\canBoot\Source\Main.c	374;"	f	line:374
 canSendMessage	F:\MCP\projects\CAN\canBoot\Include\CAN.h	65;"	p	line:65	signature:(CAN_PROTO_MESSAGE cm, CAN_PRIORITY prio)
-canSendMessage	F:\MCP\projects\CAN\canBoot\Source\Main.c	512;"	f	line:512	signature:(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
+canSendMessage	F:\MCP\projects\CAN\canBoot\Source\Main.c	521;"	f	line:521	signature:(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
 cnt	F:\MCP\projects\CAN\canBoot\Source\Main.c	43;"	l	line:43	file:
 data	F:\MCP\projects\CAN\canBoot\Include\CAN.h	29;"	m	line:29	struct:_CAN_PROTO_MESSAGE
 data_length	F:\MCP\projects\CAN\canBoot\Include\CAN.h	27;"	m	line:27	struct:_CAN_PROTO_MESSAGE
@@ -84,7 +84,7 @@ i	F:\MCP\projects\CAN\canBoot\Source\Main.c	89;"	l	line:89
 localIndex	F:\MCP\projects\CAN\canBoot\Source\Main.c	153;"	l	line:153
 localIndex	F:\MCP\projects\CAN\canBoot\Source\Main.c	173;"	l	line:173
 main	F:\MCP\projects\CAN\canBoot\Source\Main.c	60;"	f	line:60
-mainInit	F:\MCP\projects\CAN\canBoot\Source\Main.c	331;"	f	line:331
+mainInit	F:\MCP\projects\CAN\canBoot\Source\Main.c	340;"	f	line:340
 mainInit	F:\MCP\projects\CAN\canBoot\Source\Main.c	45;"	p	line:45	file:	signature:(void)
 nid	F:\MCP\projects\CAN\canBoot\Include\CAN.h	25;"	m	line:25	struct:_CAN_PROTO_MESSAGE
 outCm	F:\MCP\projects\CAN\canBoot\Source\Main.c	90;"	l	line:90
@@ -105,6 +105,6 @@ t	F:\MCP\projects\CAN\canBoot\Source\Main.c	63;"	l	line:63	file:
 tBoot	F:\MCP\projects\CAN\canBoot\Source\Main.c	71;"	l	line:71
 tickCounter	F:\MCP\projects\CAN\canBoot\Source\Main.c	55;"	l	line:55
 tickGet	F:\MCP\projects\CAN\canBoot\Source\Main.c	58;"	p	line:58	file:	signature:(void)
-tickGet	F:\MCP\projects\CAN\canBoot\Source\Main.c	606;"	f	line:606
+tickGet	F:\MCP\projects\CAN\canBoot\Source\Main.c	615;"	f	line:615
 tickSubCounter	F:\MCP\projects\CAN\canBoot\Source\Main.c	56;"	l	line:56
 tmp	F:\MCP\projects\CAN\canBoot\Source\Main.c	75;"	l	line:75	file:

@@ -235,6 +235,15 @@ void main()
 
 				// Write program and send ack.
 
+				// Check addr limit
+				if (pgmAddress<RM_RESET_VECTOR)
+				{				
+					errMsg			= ERR_ERROR;
+					pgs 			= pgsSEND_ACK;
+					//Not allowed to write here!
+					
+				}
+
 				//Load Table pointer registers with base address to erase.
 				TBLPTRU = (BYTE)((pgmAddress & 0xFF0000)>>16);
 				TBLPTRH = (BYTE)((pgmAddress & 0xFF00)>>8);
