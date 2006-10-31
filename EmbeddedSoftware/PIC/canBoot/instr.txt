@@ -1,4 +1,14 @@
-Ny struktur igen....
+Vanligt paket:
+
+
+__________I D E N T____       _____D A T A_____
+<FUNCT><FUNCC><NID><SID>      <data7>...<data0>
+
+<FUNCT>, 4 bitar = Function Type, funktionstyp.
+<FUNCC>, 10 bitar = Function Code, funktionskod.
+<NID>, 6 bitar = Network ID, nätverksid.
+<SID>, 9 bitar = Sender ID, sändarid.
+
 
 
 Kontrollpaket:
@@ -31,8 +41,9 @@ __________I D E N T_____      _____D A T A_____
 
 <FUNCT> = 0000, funktionskod för bootloadern, högprioriterat.
 <FUNCC> = kommando. 
- - 0000000011 för att indikera att detta är programdata som ska skrivas.
+ - 00000xxx11 för att indikera att detta är programdata som ska skrivas.
 
+ Där xxx är 0-7 indikerar vilka av de 8*8 bytes det är.
 
 
 Paketstruktur för ackpaketen:
@@ -47,3 +58,4 @@ __________I D E N T_____      _______D A T A_______
 <ERR>[4] 8 bitar feltyp
 0x00 = inget fel
 0x01 = fel
+

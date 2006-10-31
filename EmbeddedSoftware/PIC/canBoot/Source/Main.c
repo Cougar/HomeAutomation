@@ -14,7 +14,25 @@
 #include <stackTasks.h>
 #include <CANdefs.h>
 #include <CAN.h>
-#include <Tick.h>
+//#include <Tick.h>
+#include <boot.h>
+
+/** V E C T O R  R E M A P P I N G *******************************************/
+
+#pragma code _HIGH_INTERRUPT_VECTOR = 0x000008
+void _high_ISR (void)
+{
+    _asm goto RM_HIGH_INTERRUPT_VECTOR _endasm
+}
+
+#pragma code _LOW_INTERRUPT_VECTOR = 0x000018
+void _low_ISR (void)
+{
+    _asm goto RM_LOW_INTERRUPT_VECTOR _endasm
+}
+
+#pragma code
+
 
 #ifdef USE_CAN
 	#include <CAN.h>
@@ -26,14 +44,23 @@ static DWORD cnt =0;
 
 static void mainInit(void);
 static BOOL canGetPacket(void);
+void TBLWT_Func(void);
+void TBLWTPOSTINC_Func (void);
+void TBLRD_Func(void);
 
-#define PACKET_TIMEOUT (TICK_SECOND/20)
-#define BOOTLOADER_INIT_TIMOUT (TICK_SECOND*5)
+#define TICK_SUB_COUNTER_10MS 312
+#define PACKET_TIMEOUT 14
+#define BOOTLOADER_INIT_TIMOUT 500
+
+DWORD tickCounter = 0;
+DWORD tickSubCounter = 0;
+
+DWORD tickGet(void);
 
 void main()
 {
 	static PROGRAM_STATE pgs = pgsWATING_START;
-	static TICK t = 0;
+	static DWORD t = 0;
 	static WORD programmerSid=0;
 	
 	static BYTE errMsg = ERR_NO_ERROR;
@@ -41,30 +68,33 @@ void main()
 	static DWORD pgmAddress = 0;
 	static BYTE bytesReceived = 0;
 
+	DWORD tBoot;
+	
+	static BYTE pgmData[64];
+
 	static BYTE tmp;
 
 	// Inits
-
 	mainInit();
 
 	#ifdef USE_CAN
 		canInit();
 	#endif
 
-
-
-	tickInit();
-
+	tBoot = tickGet();
 	
 
 	for(;;)
 	{
+		BYTE i;
 		CAN_PROTO_MESSAGE outCm;
 		BOOL hasPacket = canGetPacket();
 
-		if (hasPacket)
+		tickSubCounter++;
+		if (tickSubCounter>TICK_SUB_COUNTER_10MS)
 		{
-				tmp=5;
+			tickCounter++;
+			tickSubCounter=0;
 		}
 
 		switch(pgs)
@@ -80,11 +110,15 @@ void main()
 					errMsg			= ERR_NO_ERROR;
 					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 					pgs 			= pgsSEND_ACK;
+					// save pgm adress.
+					
 				}
 
-				// TODO TIMEOUT!
-				// tBoot = tickGet();
-				// if ((tickGet()-tBoot)>BOOTLOADER_INIT_TIMOUT) goto userprgm;
+				// Bootloader timeout
+				if ((tickGet()-tBoot)>BOOTLOADER_INIT_TIMOUT)
+				{
+					pgs = pgsDONE;
+				}
 			break;			
 
 			case pgsSEND_ACK:
@@ -114,10 +148,15 @@ void main()
 				}
 
 				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
 				{
+					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
+
 					// Save bytes in memory, setup start adress etc..
-					bytesReceived 	= 8;
+					bytesReceived 	= 8;		
+					pgmData[localIndex+0]=cm.data[0]; pgmData[localIndex+1]=cm.data[1]; pgmData[localIndex+2]=cm.data[2]; pgmData[localIndex+3]=cm.data[3];
+					pgmData[localIndex+4]=cm.data[4]; pgmData[localIndex+5]=cm.data[5]; pgmData[localIndex+6]=cm.data[6]; pgmData[localIndex+7]=cm.data[7];
+				
 					pgs 			= pgsWAIT_PGM_PACKET;
 				}
 
@@ -129,9 +168,13 @@ void main()
 		
 			
 				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
 				{
+					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
 					// Save bytes in memory, inc received bytes.
+					pgmData[localIndex+0]=cm.data[0]; pgmData[localIndex+1]=cm.data[1]; pgmData[localIndex+2]=cm.data[2]; pgmData[localIndex+3]=cm.data[3];
+					pgmData[localIndex+4]=cm.data[4]; pgmData[localIndex+5]=cm.data[5]; pgmData[localIndex+6]=cm.data[6]; pgmData[localIndex+7]=cm.data[7];
+					
 					bytesReceived 	+= 8;
 					pgs 			 = pgsWAIT_PGM_PACKET;
 				}
@@ -140,6 +183,7 @@ void main()
 				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_ADDR && cm.nid==MY_NID && cm.sid==programmerSid)
 				{
 					// Send ack and goto wait first packet.
+					// save adress.
 					errMsg			= ERR_NO_ERROR;
 					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 					pgs 			= pgsSEND_ACK;
@@ -188,7 +232,68 @@ void main()
 
 			case pgsWRITE_PROGRAM:
 
+
 				// Write program and send ack.
+
+				//Load Table pointer registers with base address to erase.
+				TBLPTRU = (BYTE)((pgmAddress & 0xFF0000)>>16);
+				TBLPTRH = (BYTE)((pgmAddress & 0xFF00)>>8);
+				TBLPTRL = (BYTE)(pgmAddress & 0xFF);
+
+				// point to Flash program memory
+				EECON1bits.EEPGD = 1;
+				// access Flash program memory
+				EECON1bits.CFGS = 0;
+				// enable write to memory
+				EECON1bits.WREN = 1;
+				// enable Row Erase operation
+				EECON1bits.FREE = 1;
+				// disable interrupts
+				INTCONbits.GIE = 0;
+
+				// Do it!
+				EECON2 = 0x55;
+				EECON2 = 0xAA;
+				EECON1bits.WR = 1;
+
+				// enable interrupts
+				INTCONbits.GIE = 1;
+				
+				//Load Table pointer registers with base address to program.
+				TBLPTRU = (BYTE)((pgmAddress & 0xFF0000)>>16);
+				TBLPTRH = (BYTE)((pgmAddress & 0xFF00)>>8);
+				TBLPTRL = (BYTE)(pgmAddress & 0xFF);
+
+				// Load bytes
+				for(i=0;i<63;i++)
+				{
+					TABLAT=pgmData[i];
+					TBLWTPOSTINC_Func();
+				}
+				TABLAT=pgmData[63];	
+				TBLWT_Func();
+
+
+				// point to Flash program memory
+				EECON1bits.EEPGD = 1;
+				// access Flash program memory
+				EECON1bits.CFGS = 0;
+				// enable write to memory
+				EECON1bits.WREN = 1;
+				// disable interrupts
+				INTCONbits.GIE = 0;
+				
+				// Do it!
+				EECON2 = 0x55;
+				EECON2 = 0xAA;
+				EECON1bits.WR = 1;
+
+				// enable interrupts
+				INTCONbits.GIE = 1;
+
+				// disable write to memory
+				EECON1bits.WREN = 0;
+
 				pgmAddress	   += 64;
 				bytesReceived 	= 0;
 				errMsg			= ERR_NO_ERROR;
@@ -198,13 +303,7 @@ void main()
 
 
 			case pgsDONE:
-				// Goto main program.
-				if ((tickGet()-t)>=TICK_SECOND/4)
-				{
-					
-					LED0_IO=~LED0_IO;
-					t=tickGet();
-				}
+				_asm  goto RM_RESET_VECTOR _endasm
 			break;
 
 		
@@ -218,33 +317,6 @@ void main()
 
 	}
 }
-
-
-#pragma interruptlow HighISR
-void HighISR(void)
-{
-	tickUpdate();
-}
-#pragma code highVector=0x08
-void HighVector (void)
-{
-    _asm goto HighISR _endasm
-}
-#pragma code // Return to default code section
-
-
-
-#pragma interruptlow LowISR
-void LowISR(void)
-{
-
-}
-#pragma code lowVector=0x18
-void LowVector (void)
-{
-    _asm goto LowISR _endasm
-}
-#pragma code // Return to default code section
 
 
 /*
@@ -506,3 +578,35 @@ BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
 
 
 #endif //USE_CAN
+
+
+
+
+void TBLRD_Func()
+{
+_asm
+	TBLRD
+_endasm
+}
+
+void TBLWT_Func()
+{
+_asm
+	TBLWT
+_endasm
+}
+
+
+void TBLWTPOSTINC_Func (void){
+_asm
+	TBLWTPOSTINC
+_endasm
+}
+
+DWORD tickGet()
+{
+	return tickCounter;
+}
+
+
+#pragma code user = RM_RESET_VECTOR
