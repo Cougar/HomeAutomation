@@ -46,22 +46,20 @@ void UartParseByte(uint8_t c) {
 	static uint32_t startTime = 0;
 	static int8_t count = 0;
 	
-	printf("Byte: %u\n", c);
-	
 	/* 50ms timeout */
-	/*if (waitingMessage && TimebasePassedTimeMS(startTime) > 50) {
+	if (waitingMessage && TimebasePassedTimeMS(startTime) > 50) {
 		waitingMessage = 0;
-	}*/
+	}
 	
 	if (waitingMessage) {
 		/* save start time */
 		startTime = TimebaseCurrentTime();
 		/* UART END */
 		if (count >= 15) {
-			PORTC ^= (1<<PC0);
-			//if (c == UART_END_BYTE) {
+			if (c == UART_END_BYTE) {
+				PORTC ^= (1<<PC0);
 				CanSend(&cm);
-			//}
+			}
 			waitingMessage = 0;
 			return;
 		}

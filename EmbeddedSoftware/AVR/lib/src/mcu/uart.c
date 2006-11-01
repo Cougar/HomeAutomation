@@ -197,7 +197,7 @@ Purpose:  called when the UART has received a character
         /* store received data in buffer */
         UART_RxBuf[tmphead] = data;
     }
-    UART_LastRxError = lastRxError;   
+    UART_LastRxError = lastRxError;
 }
 
 

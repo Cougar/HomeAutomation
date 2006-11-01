@@ -39,7 +39,7 @@ typedef enum {
  */
 typedef struct {
     /*
-     * ID section. Contains either 29bit ID or 11bit ID (depending on ExtFlag).
+     * ID section. Contains either 29bit ID or 11bit ID (depending on ExtendedFlag).
      */
     uint32_t Id;
     
