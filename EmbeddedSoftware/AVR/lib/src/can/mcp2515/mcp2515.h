@@ -2,11 +2,8 @@
 #define MCP2515_H_
 
 #include "mcp2515_defs.h"
+#include "mcp2515_cfg.h"
 #include <can.h>
-
-#define MCP_CS_PORT PORTB
-#define MCP_CS_DDR  DDRB
-#define MCP_CS_BIT  PB0
 
 #define MCP_N_TXBUFFERS (3)
 
