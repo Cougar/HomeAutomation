@@ -15,9 +15,12 @@
 #define MCP_CLOCK_FREQ_MHZ		24
 
 
+/**
+ * MCP2515 Chip Select port on avr. 
+ */ 
 #define MCP_CS_PORT PORTB
 #define MCP_CS_DDR  DDRB
-#define MCP_CS_BIT  PB2
+#define MCP_CS_BIT  PB0
 
 
 /**
