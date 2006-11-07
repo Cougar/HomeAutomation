@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <title>Using IntelliJ IDEA for Macbeth development</title>
+    <link rel="StyleSheet" href="doc.style.css" type="Text/CSS">
+</head>
+
+<body>
+
+    <h1>Using IntelliJ IDEA for Macbeth development</h1>
+
+    <h2>Installation</h2>
+    Download the most recent IntelliJ IDEA upgrade from <a href="http://www.intellij.com/download/idea/freeUpgrade">
+    http://www.intellij.com/download/idea/freeUpgrade</a>. This is the full version, but it does of course require
+    that you have a serial number, so keep your serial number ready the first time you start IDEA. The installation
+    is very straight forward. Nothing particular to keep in mind there.
+
+    <h2>Basic Configuration</h2>
+    <p>Now you need to configure IDEA to use the Java SDK you have installed on your system (if you don't have
+    the SDK installed yet, just visit <a href="http://java.sun.com/">http://java.sun.com/</a> to download and
+    install the latest J2SE SDK before going on!)</p>
+    <p>Open the Macbeth project file with IDEA. Then choose <span class="mark_red">File->Project Properties</span>.
+    Go to the Paths-dialog and locate the drop-down list called <span class="mark_red">"Target JDK"</span>. This is
+    a list of the JDKs you have installed, and to get your installed Java SDK to show up here, you need to press the
+    <span class="mark_red">"..."-button</span> and then press the <span class="mark_red">"+"-button</span> in the
+    dialog box that shows up. Next, <span class="mark_red">locate your J2SDK-directory</span> (typically "C:\j2sdk1.4.2_03")
+    and press OK until you're back to the Project Properties dialog. Now, in the drop-down list, choose the JDK you just
+    configured and press OK.</p>
+    <p>IntelliJ IDEA is now ready for Macbeth development! You should be able to compile everything without
+    any errors.</p>
+
+    <h2>Code style</h2>
+    <p>If you plan to participate in Macbeth development, you should make sure you follow the code style
+    guidelines. Since IDEA does quite a lot of work for you while you're writing code, you might want to
+    make sure IDEA follows these guidelines as well. As a bare minimum, make sure that at least the settings
+    shown in the dialog below are set equally in your configuration (This is the <span class="mark_red">
+    Options->IDE Settings</span> dialog)</p>
+    <center><img src="http://jm.csbnet.se/macbeth/images/IDEA.codestyle.indent.png" width="742" height="674" alt="code style"></center>
+
+</body>
+</html>
