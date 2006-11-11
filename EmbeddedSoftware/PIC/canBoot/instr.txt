@@ -1,6 +1,5 @@
 Vanligt paket:
 
-
 __________I D E N T____       _____D A T A_____
 <FUNCT><FUNCC><NID><SID>      <data7>...<data0>
 
@@ -10,11 +9,12 @@ __________I D E N T____       _____D A T A_____
 <SID>, 9 bitar = Sender ID, sändarid.
 
 
+Bootloader.
 
-Kontrollpaket:
+Paketstruktur för Kontrollpaket:
 
 __________I D E N T______     _______________D A T A________
-<FUNCT><FUNCC><NID><SID>      <RESVD><RID>ADDRU><ADDRH><ADDRL>
+<FUNCT><FUNCC><NID><SID>      <RESVD><RID_HIGH><RID_LOW>ADDRU><ADDRH><ADDRL>
 
 
 <FUNCT> = 0000, funktionskod för bootloadern, högprioriterat.
@@ -26,7 +26,8 @@ __________I D E N T______     _______________D A T A________
 <NID> = nätverksid.
 <SID> = hostens id.
 
-<RID>[3] = mottagarens id, den som ska programmeras.
+<RID_LOW>[4] = mottagarens id (låga 8 bitar), den som ska programmeras.
+<RID_HIGH>[5] = mottagarens id (höga 8 bitar), den som ska programmeras.
 
 <ADDRU>[2], 8 bitar = program adress bit 23-16
 <ADDRH>[1], 8 bitar = program adress bit 15-08

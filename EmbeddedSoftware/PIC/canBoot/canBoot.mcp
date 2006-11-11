@@ -25,8 +25,6 @@ file_005=no
 file_006=no
 file_007=no
 file_008=yes
-file_009=yes
-file_010=yes
 [FILE_INFO]
 file_000=Source\Main.c
 file_001=Include\CANdefs.h
@@ -36,9 +34,7 @@ file_004=Include\typedefs.h
 file_005=Include\CAN.h
 file_006=Include\boot.h
 file_007=lkr\18f2685.lkr
-file_008=programmer.jpg
-file_009=bootloader.jpg
-file_010=instr.txt
+file_008=instr.txt
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=
@@ -49,3 +45,7 @@ TS{C2AF05E7-1416-4625-923D-E114DB6E2B96}=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
 TS{ADE93A55-C7C7-4D4D-A4BA-59305F7D0391}=
 [VAULT]
 vault={F17EEB7A-8D33-4A59-8CD5-BBF561CBB5B3}
+[INSTRUMENTED_TRACE]
+enable=0
+transport=0
+format=0
