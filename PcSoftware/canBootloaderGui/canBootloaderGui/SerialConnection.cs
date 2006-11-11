@@ -23,7 +23,14 @@ namespace canBootloader
         public bool open() 
         { 
             if (serial_conn==null) return false;
-            if (!serial_conn.IsOpen) serial_conn.Open();
+            try
+            {
+                if (!serial_conn.IsOpen) serial_conn.Open();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
             return true; 
         }
         public bool close() 

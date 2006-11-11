@@ -170,7 +170,6 @@ namespace canBootloader
             this.nicon.Icon = ((System.Drawing.Icon)(resources.GetObject("nicon.Icon")));
             this.nicon.Text = "canBootloader";
             this.nicon.Visible = true;
-            this.nicon.Click += new System.EventHandler(this.nicon_Click);
             this.nicon.DoubleClick += new System.EventHandler(this.nicon_DoubleClick);
             // 
             // main
@@ -183,8 +182,10 @@ namespace canBootloader
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menu;
+            this.MaximizeBox = false;
             this.Name = "main";
             this.Text = "canBootloader";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.main_FormClosing);
             this.Load += new System.EventHandler(this.main_Load);
             this.menu.ResumeLayout(false);
             this.menu.PerformLayout();
