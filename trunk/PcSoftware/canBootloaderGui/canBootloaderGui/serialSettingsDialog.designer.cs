@@ -28,6 +28,7 @@ namespace canBootloader
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(serialSettingsDialog));
             this.cmd_cancel = new System.Windows.Forms.Button();
             this.cmd_add = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -150,7 +151,7 @@ namespace canBootloader
             this.label5.TabIndex = 42;
             this.label5.Text = "Baud:";
             // 
-            // settings
+            // serialSettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -168,7 +169,8 @@ namespace canBootloader
             this.Controls.Add(this.cmd_cancel);
             this.Controls.Add(this.cmd_add);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "settings";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "serialSettingsDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "settings";
             this.Load += new System.EventHandler(this.settings_Load);

@@ -19,13 +19,19 @@ namespace canBootloader
         private const byte FUNCC_BOOT_DONE = 0x05; //för att avsluta en programmering/erase/etc.
         private const byte FUNCC_BOOT_PGM = 0x03; //för att indikera att detta är programdata som ska skrivas.
         private const byte FUNCC_BOOT_ACK = 0x04; //för att indikera att detta är en ACK.
-        private const byte MY_ID = 0x91;
-        private const byte TARGET_ID = 0x78;
-        private const byte MY_NID = 0x0;
+
+        private uint MY_ID = 0;
+        private uint TARGET_ID = 0;
+        private byte MY_NID = 0;
+        
+        //private const byte MY_ID = 0x91;
+        //private const byte TARGET_ID = 0x78;
+        //private const byte MY_NID = 0x0;
         private const byte ADDRL_INDEX = 0;
         private const byte ADDRH_INDEX = 1;
         private const byte ADDRU_INDEX = 2;
-        private const byte RID_INDEX = 4;
+        private const byte RID_LOW_INDEX = 4;
+        private const byte RID_HIGH_INDEX = 5;
         private const byte ERR_INDEX = 4;
         private const byte ERR_NO_ERROR = 0x00; //= inget fel
         private const byte ERR_ERROR = 0x01; //= fel
@@ -35,15 +41,21 @@ namespace canBootloader
         private long timeStart = 0;
 
         private bool userAborted = false;
+        private bool hasFoundNode = false;
 
 
-        public Downloader(HexFile hf, SerialConnection sc) 
+        public Downloader(HexFile hf, SerialConnection sc,uint myId,byte nid,uint targetId) 
         {
             this.hf = hf;
             this.sc = sc;
+            this.MY_ID = myId;
+            this.MY_NID = nid;
+            this.TARGET_ID = targetId;
         }
 
         ~Downloader() { if (down.IsAlive) userAborted = true; down.Abort(); }
+
+        public bool foundNode() { return hasFoundNode; }
 
         public bool go() 
         {
@@ -85,15 +97,17 @@ namespace canBootloader
                             // Send boot start packet to target.
                             // and wait for ack.
                             currentAddress = hf.getAddrLower();
-                            data[RID_INDEX] = TARGET_ID;
+                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID>>8);
+                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
                             data[ADDRU_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
                             data[ADDRH_INDEX] = (byte)((currentAddress & 0xFF00) >> 8);
                             data[ADDRL_INDEX] = (byte)(currentAddress & 0xFF);
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_INIT, MY_NID, MY_ID, 8, data);
+                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_INIT, (byte)MY_NID, (uint)MY_ID, 8, data);
                             sc.writePacket(outCm);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_ACK;
                             timeStart = Environment.TickCount;
+                            hasFoundNode = false;
                             break;
 
 
@@ -114,6 +128,7 @@ namespace canBootloader
                                     // Start sending program data..
                                     byteSent = 0;
                                     pgs = dState.SEND_PGM_DATA;
+                                    hasFoundNode = true;
                                 }
                                 else 
                                 { 
@@ -131,7 +146,7 @@ namespace canBootloader
                                 // Populate data.
                                 data[i] = hf.getByte(currentAddress + i + byteSent);
                             }
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, (uint)((uint)((uint)(Math.Floor(((double)byteSent/8.0)))<<2) + (FUNCC_BOOT_PGM)), MY_NID, MY_ID, 8, data);
+                            outCm = new CanPacket(FUNCT_BOOTLOADER, (uint)((uint)((uint)(Math.Floor(((double)byteSent/8.0)))<<2) + (FUNCC_BOOT_PGM)), (byte)MY_NID, (byte)MY_ID, 8, data);
                             sc.writePacket(outCm);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_OWN_PACKET;
@@ -208,7 +223,7 @@ namespace canBootloader
 
                         case dState.SEND_DONE:
                             // Send done
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_DONE, MY_NID, MY_ID, 8, data);
+                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_DONE, (byte)MY_NID, (uint)MY_ID, 8, data);
                             sc.writePacket(outCm);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_DONE;
@@ -216,11 +231,12 @@ namespace canBootloader
 
                         case dState.RESEND_ADDR:
                             // Resend addr.
-                            data[RID_INDEX] = TARGET_ID;
+                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID>>8);
+                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
                             data[ADDRU_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
                             data[ADDRH_INDEX] = (byte)((currentAddress & 0xFF00) >> 8);
                             data[ADDRL_INDEX] = (byte)(currentAddress & 0xFF);
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_ADDR, MY_NID, MY_ID, 8, data);
+                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_ADDR, (byte)MY_NID, (uint)MY_ID, 8, data);
                             sc.writePacket(outCm);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_ADDR_ACK;
