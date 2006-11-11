@@ -28,6 +28,7 @@ namespace canBootloader
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(manageTargetsDialog));
             this.cmd_save = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -41,7 +42,7 @@ namespace canBootloader
             // 
             // cmd_save
             // 
-            this.cmd_save.Location = new System.Drawing.Point(215, 25);
+            this.cmd_save.Location = new System.Drawing.Point(361, 25);
             this.cmd_save.Name = "cmd_save";
             this.cmd_save.Size = new System.Drawing.Size(68, 20);
             this.cmd_save.TabIndex = 0;
@@ -102,7 +103,7 @@ namespace canBootloader
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 54);
+            this.label5.Location = new System.Drawing.Point(220, 9);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(38, 13);
             this.label5.TabIndex = 7;
@@ -110,17 +111,17 @@ namespace canBootloader
             // 
             // txt_expl
             // 
-            this.txt_expl.Location = new System.Drawing.Point(53, 51);
+            this.txt_expl.Location = new System.Drawing.Point(223, 25);
             this.txt_expl.MaxLength = 50;
             this.txt_expl.Name = "txt_expl";
-            this.txt_expl.Size = new System.Drawing.Size(144, 20);
+            this.txt_expl.Size = new System.Drawing.Size(120, 20);
             this.txt_expl.TabIndex = 8;
             // 
             // manageTargetsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(294, 77);
+            this.ClientSize = new System.Drawing.Size(441, 62);
             this.Controls.Add(this.txt_expl);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -131,6 +132,7 @@ namespace canBootloader
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmd_save);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "manageTargetsDialog";
             this.Text = "manageTargetsDialog";
             this.Load += new System.EventHandler(this.manageTargetsDialog_Load);
