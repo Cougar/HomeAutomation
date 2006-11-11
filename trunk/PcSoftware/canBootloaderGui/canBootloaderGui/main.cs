@@ -268,11 +268,12 @@ namespace canBootloader
         public void saveSettings()
         { 
             Hashtable saveblock = new Hashtable();
-            saveblock["recentFiles"]=recentFiles;
-            saveblock["serialSettings"]=serialSettings;
+            saveblock["recentFiles"] = recentFiles;
+            saveblock["serialSettings"] = serialSettings;
             saveblock["targets"] = targets;
             saveblock["currentTarget"] = currentTarget;
             saveblock["myid"] = myid;
+            saveblock["currentLoadedFile"] = currentLoadedFile;
 
             IFormatter formatter = new BinaryFormatter();
             Stream st = File.OpenWrite(Application.StartupPath + "/settings.dat");
@@ -295,6 +296,7 @@ namespace canBootloader
                     serialSettings = (Hashtable)saveblock["serialSettings"];
                     targets = (LinkedList<nodeTarget>)saveblock["targets"];
                     currentTarget = (nodeTarget)saveblock["currentTarget"];
+                    currentLoadedFile = (string)saveblock["currentLoadedFile"];
                     myid = (uint)saveblock["myid"];
                 }
                 catch (Exception) { }
@@ -317,12 +319,6 @@ namespace canBootloader
         {
             txtLog.SelectionStart = txtLog.Text.Length;
             txtLog.ScrollToCaret();
-        }
-
-        private void nicon_Click(object sender, EventArgs e)
-        {
-            MouseEventArgs mea = (MouseEventArgs)e;
-            if (mea.Button == MouseButtons.Right) this.Visible = !this.Visible;
         }
 
         private void nicon_DoubleClick(object sender, EventArgs e)
@@ -363,6 +359,15 @@ namespace canBootloader
         {
             menu_settings_myid.Text = "My ID: 0x"+myid.ToString("X");
             menu_settings_myid_txt.Text = myid.ToString("X");
+        }
+
+        private void main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.WindowState = FormWindowState.Minimized;
+            }
         }
 
     }
