@@ -23,7 +23,7 @@ namespace canBootloader
         private uint myid;
 
         private enum TrayIcon {NORMAL,DOWNLOADING,FAIL,OK};
-        private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main));
+        private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(trayIcons));
         private System.Timers.Timer iconTimer = new System.Timers.Timer(3000.0);
         private System.Timers.Timer downloadTimeout = new System.Timers.Timer(5000.0);
 

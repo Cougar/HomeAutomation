@@ -18,3 +18,5 @@ obj\Debug\canBootloader.serialSettingsDialog.resources
 obj\Release\canBootloader.serialSettingsDialog.resources
 obj\Debug\canBootloader.manageTargetsDialog.resources
 obj\Release\canBootloader.manageTargetsDialog.resources
+obj\Debug\canBootloader.trayIcons.resources
+obj\Release\canBootloader.trayIcons.resources
