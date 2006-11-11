@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Sat Nov 11 21:18:58 2006
+Listing File Generated: Sat Nov 11 21:22:18 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -16,7 +16,7 @@ Address  Value    Disassembly              Source                               
                                             *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~           F:\MCP\projects\CAN\canBoot\Source\Main.c
                                             * Johan Böhlin     21-10-06 	Original        (Rev 1.0)                          F:\MCP\projects\CAN\canBoot\Source\Main.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canBoot\Source\Main.c
-                                           // $IDI$                                                                         F:\MCP\projects\CAN\canBoot\Source\Main.c
+                                           // $Id$                                                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBoot\Source\Main.c
                                            #include <compiler.h>                                                            F:\MCP\projects\CAN\canBoot\Source\Main.c
                                            #include <stackTasks.h>                                                          F:\MCP\projects\CAN\canBoot\Source\Main.c
