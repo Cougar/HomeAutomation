@@ -9,6 +9,8 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
+// $IDI$
+
 
 #ifndef CAN_H
 #define CAN_H
@@ -50,7 +52,8 @@ typedef struct _CAN_PROTO_MESSAGE
 #define ADDRL_INDEX 0
 #define ADDRH_INDEX 1
 #define ADDRU_INDEX 2
-#define RID_INDEX 4
+#define RID_LOW_INDEX 4
+#define RID_HIGH_INDEX 5
 #define ERR_INDEX 4
 
 //<ERR> 8 bitar feltyp

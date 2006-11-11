@@ -9,12 +9,12 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
  ********************************************************************/
+// $IDI$
 
 #include <compiler.h>
 #include <stackTasks.h>
 #include <CANdefs.h>
 #include <CAN.h>
-//#include <Tick.h>
 #include <boot.h>
 
 /** V E C T O R  R E M A P P I N G *******************************************/
@@ -101,7 +101,7 @@ void main()
 		{
 			case pgsWATING_START:
 				// Check if there is bootloader start packet
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_INIT && cm.data[RID_INDEX]==MY_ID && cm.nid==MY_NID)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_INIT && ((((unsigned int)cm.data[RID_HIGH_INDEX])<<8)+cm.data[RID_LOW_INDEX])==MY_ID && cm.nid==MY_NID)
 				{
 					// Has new start packet
 					pgmAddress 		= (((DWORD)cm.data[ADDRU_INDEX])<<16)+(((DWORD)cm.data[ADDRH_INDEX])<<8)+((DWORD)cm.data[ADDRL_INDEX]);
