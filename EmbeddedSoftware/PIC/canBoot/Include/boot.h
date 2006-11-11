@@ -1,4 +1,4 @@
-// $IDI$
+// $Id$
 
 #ifndef BOOT_H
 #define BOOT_H
