@@ -16,3 +16,5 @@ obj\Release\canBootloaderGui.exe
 obj\Release\canBootloaderGui.pdb
 obj\Debug\canBootloader.serialSettingsDialog.resources
 obj\Release\canBootloader.serialSettingsDialog.resources
+obj\Debug\canBootloader.manageTargetsDialog.resources
+obj\Release\canBootloader.manageTargetsDialog.resources
