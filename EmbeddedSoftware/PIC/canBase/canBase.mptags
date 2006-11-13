@@ -1,0 +1,90 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_REVISION_NAME	MCHPTags	//
+!_TAG_REVISION_VERSION	6.0.1	//
+BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	t	line:16
+BYTE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	17;"	t	line:17
+CANDEFS_H	F:\MCP\projects\CAN\canBase\Include\CANdefs.h	14;"	d	line:14
+CAN_BAUD::0.500000	F:\MCP\projects\CAN\canBase\Include\CANdefs.h	18;"	d	line:18
+CAN_BRP::(int)(CLOCK_FOSC/(CAN_BAUD*16)	F:\MCP\projects\CAN\canBase\Include\CANdefs.h	29;"	d	line:29
+CAN_H	F:\MCP\projects\CAN\canBase\Include\CAN.h	14;"	d	line:14
+CAN_MESSAGE	F:\MCP\projects\CAN\canBase\Include\CAN.h	29;"	t	line:29
+CAN_PRIORITY	F:\MCP\projects\CAN\canBase\Include\CAN.h	32;"	t	line:32
+CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canBase\Include\compiler.h	19;"	d	line:19
+CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canBase\Include\compiler.h	17;"	d	line:17
+COMPILER_H	F:\MCP\projects\CAN\canBase\Include\compiler.h	14;"	d	line:14
+DWORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	19;"	t	line:19
+FALSE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	e	line:16	enum:_BOOL
+INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canBase\Include\compiler.h	18;"	d	line:18
+LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canBase\Include\compiler.h	22;"	d	line:22
+LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canBase\Include\compiler.h	21;"	d	line:21
+PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	d	line:64	file:
+PRIO_HIGEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	32;"	e	line:32
+PRIO_HIGH	F:\MCP\projects\CAN\canBase\Include\CAN.h	32;"	e	line:32
+PRIO_LOW	F:\MCP\projects\CAN\canBase\Include\CAN.h	32;"	e	line:32
+PRIO_LOWEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	32;"	e	line:32
+TICK	F:\MCP\projects\CAN\canBase\Include\Tick.h	18;"	t	line:18
+TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canBase\Include\stackTasks.h	18;"	d	line:18
+TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
+TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	28;"	d	line:28	file:
+TICK_H	F:\MCP\projects\CAN\canBase\Include\Tick.h	14;"	d	line:14
+TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	13;"	d	line:13	file:
+TICK_PERIOD_MS::10	F:\MCP\projects\CAN\canBase\Include\Tick.h	28;"	d	line:28
+TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canBase\Include\stackTasks.h	28;"	d	line:28
+TICK_SECOND::((TICK)TICKS_PER_SECOND)	F:\MCP\projects\CAN\canBase\Include\Tick.h	29;"	d	line:29
+TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	25;"	d	line:25	file:
+TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	18;"	d	line:18	file:
+TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	31;"	d	line:31	file:
+TIMER_PRESCALE::(1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	33;"	d	line:33	file:
+TIMER_PRESCALE::(2)	F:\MCP\projects\CAN\canBase\Source\Tick.c	35;"	d	line:35	file:
+TIMER_PRESCALE::(3)	F:\MCP\projects\CAN\canBase\Source\Tick.c	37;"	d	line:37	file:
+TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	39;"	d	line:39	file:
+TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	41;"	d	line:41	file:
+TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	43;"	d	line:43	file:
+TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	45;"	d	line:45	file:
+TRUE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	e	line:16	enum:_BOOL
+TYPEDEFS_H	F:\MCP\projects\CAN\canBase\Include\typedefs.h	14;"	d	line:14
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	51;"	v	line:51
+USE_CAN	F:\MCP\projects\CAN\canBase\Include\stackTasks.h	16;"	d	line:16
+WORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	18;"	t	line:18
+_BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	g	line:16
+_CAN_MESSAGE	F:\MCP\projects\CAN\canBase\Include\CAN.h	21;"	s	line:21
+_reset	F:\MCP\projects\CAN\canBase\Source\Main.c	184;"	f	line:184	signature:(void)
+_startup	F:\MCP\projects\CAN\canBase\Source\Main.c	182;"	p	line:182	file:	signature:(void)
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	151;"	f	line:151
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	17;"	p	line:17	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Include\CAN.h	36;"	p	line:36	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	118;"	f	line:118
+canInit	F:\MCP\projects\CAN\canBase\Include\CAN.h	35;"	p	line:35	signature:(void)
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	31;"	f	line:31
+canParse	F:\MCP\projects\CAN\canBase\Include\CAN.h	37;"	p	line:37	signature:(CAN_MESSAGE cm)
+canParse	F:\MCP\projects\CAN\canBase\Source\Main.c	160;"	f	line:160	signature:(CAN_MESSAGE cm)
+canSendMessage	F:\MCP\projects\CAN\canBase\Include\CAN.h	38;"	p	line:38	signature:(CAN_MESSAGE cm, CAN_PRIORITY prio)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	218;"	f	line:218	signature:(CAN_MESSAGE cm,CAN_PRIORITY prio)
+cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	153;"	l	line:153
+cm	F:\MCP\projects\CAN\canBase\Source\Main.c	45;"	l	line:45
+cm	F:\MCP\projects\CAN\canBase\Source\Main.c	80;"	l	line:80
+data	F:\MCP\projects\CAN\canBase\Include\CAN.h	28;"	m	line:28	struct:_CAN_MESSAGE
+data_length	F:\MCP\projects\CAN\canBase\Include\CAN.h	27;"	m	line:27	struct:_CAN_MESSAGE
+extended	F:\MCP\projects\CAN\canBase\Include\CAN.h	25;"	m	line:25	struct:_CAN_MESSAGE
+heartcnt	F:\MCP\projects\CAN\canBase\Source\Main.c	24;"	v	line:24
+high_isr	F:\MCP\projects\CAN\canBase\Source\Main.c	69;"	f	line:69	signature:(void)
+ident	F:\MCP\projects\CAN\canBase\Include\CAN.h	24;"	m	line:24	struct:_CAN_MESSAGE
+low_isr	F:\MCP\projects\CAN\canBase\Source\Main.c	112;"	f	line:112	signature:(void)
+main	F:\MCP\projects\CAN\canBase\Source\Main.c	26;"	f	line:26
+mainInit	F:\MCP\projects\CAN\canBase\Source\Main.c	128;"	f	line:128
+mainInit	F:\MCP\projects\CAN\canBase\Source\Main.c	22;"	p	line:22	file:	signature:(void)
+remote_request	F:\MCP\projects\CAN\canBase\Include\CAN.h	26;"	m	line:26	struct:_CAN_MESSAGE
+stackTasks_H	F:\MCP\projects\CAN\canBase\Include\stackTasks.h	14;"	d	line:14
+t	F:\MCP\projects\CAN\canBase\Source\Main.c	28;"	l	line:28	file:
+t	F:\MCP\projects\CAN\canBase\Source\Main.c	79;"	l	line:79	file:
+tickGet	F:\MCP\projects\CAN\canBase\Include\Tick.h	41;"	p	line:41	signature:(void)
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	90;"	f	line:90	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Include\Tick.h	40;"	p	line:40	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	65;"	f	line:65	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Include\Tick.h	42;"	p	line:42	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	105;"	f	line:105	signature:(void)
