@@ -1,4 +1,13 @@
-// $Id$
+/*********************************************************************
+ *
+ *                  Vector remappings
+ *
+ *********************************************************************
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
+ ********************************************************************/
 
 #ifndef BOOT_H
 #define BOOT_H
