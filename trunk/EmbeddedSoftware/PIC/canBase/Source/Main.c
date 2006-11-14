@@ -3,11 +3,10 @@
  *                  Main application
  *
  *********************************************************************
- * FileName:        Main.c
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 
@@ -21,7 +20,6 @@
 
 static void mainInit(void);
 
-unsigned int heartcnt=0;
 
 void main()
 {
@@ -39,28 +37,11 @@ void main()
 
 	while(1)
 	{
-		#ifdef USE_CAN
-		if ((tickGet()-t)>=5*TICK_SECOND)
+		static TICK t = 0;
+		if ((tickGet()-t)>TICK_SECOND/2)
 		{
-			CAN_MESSAGE cm;
-
-			t = tickGet();
-		
-			// Send heartbeat
-			cm.ident=0x00000666;
-			cm.extended=FALSE;
-			cm.data_length=5;
-			cm.data[0]='H';
-			cm.data[1]=(BYTE)((heartcnt & 0x000000FF));
-			cm.data[2]=(BYTE)((heartcnt & 0x0000FF00)>>1);
-			cm.data[3]=(BYTE)((heartcnt & 0x00FF0000)>>2);
-			cm.data[4]=(BYTE)((heartcnt & 0xFF000000)>>3);
-
-			heartcnt++;
-
-			while(!canSendMessage(cm,PRIO_LOW));	
+			LED0_IO=~LED0_IO;
 		}
-		#endif
 	}
 }
 
@@ -72,37 +53,6 @@ void high_isr(void)
 	#ifdef USE_CAN
 		canISR();
 	#endif
-
-
-	if (INTCONbits.INT0IE && INTCONbits.INT0IF)
-	{
-		static TICK t = 0;
-		CAN_MESSAGE cm;
-
-		if ((tickGet()-t)>TICK_SECOND/2)
-		{
-
-			LED0_IO=~LED0_IO;
-
-			// Send heartbeat
-			cm.ident=0x1F910091;
-			cm.extended=TRUE;
-			cm.remote_request=TRUE;
-			cm.data_length=1;
-			cm.data[0]=0x01;
-			cm.data[1]=0x07;
-			cm.data[2]=0x09;
-			cm.data[3]=0x08;
-			cm.data[4]=0x03;
-
-			while(!canSendMessage(cm,PRIO_LOW));
-			
-			t=tickGet();
-		}
-
-		INTCONbits.INT0IF=0;
-	}
-
 
 	tickUpdate();
 }
@@ -129,17 +79,9 @@ void mainInit()
 {
 	LED0_TRIS=0;	
 
-    // Enable internal PORTB pull-ups
-    INTCON2bits.RBPU = 0;
-	
 	// Enable Interrupts
     INTCONbits.GIEH = 1;
     INTCONbits.GIEL = 1;
-
-
-	// RB0 interrupt
-	INTCON2bits.INTEDG0 = 1; //rising edge
-	INTCONbits.INT0IE = 1;	
 
 	// Enable interrupt prirority
 	RCONbits.IPEN=1;
@@ -159,24 +101,18 @@ void mainInit()
 #ifdef USE_CAN
 void canParse(CAN_MESSAGE cm)
 {
-		if (cm.ident==0x00000304)
-		{
-			if (cm.data[0]==0x20) LED0_IO=1;
-			if (cm.data[0]==0x40) LED0_IO=0;
-			if (cm.data[0]==0x80) 
-			{
-				cm.ident=0x00000303;
-				cm.extended=FALSE;
-				cm.data_length=1;
-				cm.data[0]=LED0_IO;
-				while(!canSendMessage(cm,PRIO_LOW));	
-
-			}
-		}
-
-
+	switch(cm.funct)
+	{
+		case FUNCT_BOOTLOADER:
+			if (cm.funcc==FUNCC_BOOT_INIT) { _asm goto 0x0 _endasm }
+		break;
+	}
 }
 #endif
+
+
+// Below are mandantory when using bootloader
+// define DEBUG_MODE to use without bootloader.
 
 #ifndef DEBUG_MODE
 extern void _startup (void); 

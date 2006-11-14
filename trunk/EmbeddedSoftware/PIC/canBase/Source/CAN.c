@@ -1,13 +1,12 @@
 /*********************************************************************
  *
- *                  CAN driver
+ *                  CAN module
  *
  *********************************************************************
- * FileName:        CAN.c
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 #include <CANdefs.h>
@@ -152,45 +151,25 @@ void canGetPacket()
 {
 		CAN_MESSAGE cm;
 
-		// Set extended mode or not.
-		cm.extended=(RXB0SIDLbits.EXID==0?FALSE:TRUE);
+		//RXB0SIDH 28 27 26 25 24 23 22 21
+        //RXB0SIDL 20 19 18 xx xx xx 17 16
+        //RXB0EIDH 15 14 13 12 11 10 09 08
+        //RXB0EIDL 07 06 05 04 03 02 01 00
 
-		// Clear
-		cm.ident=0;
-
-
-		if (cm.extended==TRUE)
-		{
-			//Read extended ident.
-
-			//xx xx xx 28 27 26 25 24   23 22 21 20 19 18 17 16   15 14 13 12 11 10 09 08   07 06 05 04 03 02 01 00
-
-        	//RXB0SIDH 28 27 26 25 24 23 22 21
-        	//RXB0SIDL 20 19 18 xx xx xx 17 16
-        	//RXB0EIDH 15 14 13 12 11 10 09 08
-        	//RXB0EIDL 07 06 05 04 03 02 01 00
+		//funct xx xx xx xx 28 27 26 25
+		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
+		//nid   xx xx 14 13 12 11 10 09 
+		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
 
 
-        	cm.ident = (((DWORD)RXB0SIDH)<<21) + (((DWORD)(RXB0SIDL & 0xE0))<<13) + (((DWORD)(RXB0SIDL & 0x03))<<16) + (((DWORD)RXB0EIDH)<<8) + (BYTE)RXB0EIDL;
+       	cm.funct=((RXB0SIDH & 0xF0)>>4);
+        cm.funcc=(((WORD)(RXB0SIDH & 0x0F))<<6)+(((WORD)(RXB0SIDL & 0xE0))>>2)+(((WORD)(RXB0SIDL & 0x03))<<1)+(((WORD)(RXB0EIDH & 0x80))>>7);
+        cm.nid=((RXB0EIDH & 0x7E)>>1);
+        cm.sid=(((WORD)(RXB0EIDH & 0x01))<<8)+RXB0EIDL;
 
-		}
-		else
-		{
-			//Read standard ident.
-
-			//xx xx xx xx xx 10 09 08   07 06 05 04 03 02 01 00
-
-        	//RXB0SIDH 10 09 08 07 06 05 04 03
-        	//RXB0SIDL 02 01 00 xx xx xx xx xx
-
-			cm.ident = (((DWORD)RXB0SIDH)<<3) + (((DWORD)RXB0SIDL)>>5);
-		}
 
 		// Data length
 		cm.data_length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
-
-		// Remote request
-		cm.remote_request=(RXB0DLCbits.RXRTR==0?FALSE:TRUE);
 
 		// Data one bye one, for speed
 		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;
@@ -227,55 +206,31 @@ BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 	if (prio<0 || prio>3) prio = 0;
 
 
-		if (cm.extended==TRUE)
-		{
-			//Write extended ident.
-	
-			//xx xx xx 28 27 26 25 24   23 22 21 20 19 18 17 16   15 14 13 12 11 10 09 08   07 06 05 04 03 02 01 00
+		//RXB0SIDH 28 27 26 25 24 23 22 21
+        //RXB0SIDL 20 19 18 xx xx xx 17 16
+        //RXB0EIDH 15 14 13 12 11 10 09 08
+        //RXB0EIDL 07 06 05 04 03 02 01 00
 
-        	//RXB0SIDH 28 27 26 25 24 23 22 21
-        	//RXB0SIDL 20 19 18 xx xx xx 17 16
-        	//RXB0EIDH 15 14 13 12 11 10 09 08
-        	//RXB0EIDL 07 06 05 04 03 02 01 00
+		//funct xx xx xx xx 28 27 26 25
+		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
+		//nid   xx xx 14 13 12 11 10 09 
+		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
 
-
-        	RXB0SIDH =  (BYTE)((cm.ident>>21));
-        	RXB0SIDL = ((BYTE)(cm.ident>>16) & 0x03) + ((BYTE)(cm.ident>>13) & 0xE0);
-        	RXB0EIDH =  (BYTE)(cm.ident>>8);
-        	RXB0EIDL =  (BYTE)cm.ident;
-
-		}
-		else
-		{
-			//Write standard ident.
-		
-			//xx xx xx xx xx 10 09 08   07 06 05 04 03 02 01 00
-
-        	//RXB0SIDH 10 09 08 07 06 05 04 03
-        	//RXB0SIDL 02 01 00 xx xx xx xx xx
-
-       		RXB0SIDH=  (BYTE)(cm.ident>>3);
-        	RXB0SIDL= ((BYTE)(cm.ident<<5) & 0xE0);
-
-		}
+		RXB0SIDH = (BYTE)((cm.funct & 0x0F)<<4)+(BYTE)((cm.funcc & 0x03C0)>>6);
+		RXB0SIDL = (BYTE)((cm.funcc & 0x003F)<<2)+(BYTE)((cm.funcc & 0x0006)>>1);
+		RXB0EIDH = (BYTE)((cm.funcc & 0x0001)<<7)+(BYTE)((cm.nid & 0x3F)<<1)+(BYTE)((cm.sid & 0x0100)>>8);
+		RXB0EIDL = (BYTE)((cm.sid & 0x00FF));
 
 		// Data length
 		RXB0DLC = 0;
 		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;
 		
-		// Remote request
-		if (cm.remote_request==TRUE)
-		{
-			_asm 
-				bsf RXB0DLC, 6, 0
-			_endasm 
-		}
-		else
-		{
-			_asm 
-				bcf RXB0DLC, 6, 0
-			_endasm 
-		}
+
+		// NOT Remote request
+		_asm 
+			bcf RXB0DLC, 6, 0
+		_endasm 
+		
 
 		// Data one bye one, for speed
 		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];
@@ -283,8 +238,8 @@ BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 		RXB0D4=cm.data[4]; 	RXB0D5=cm.data[5];
 		RXB0D6=cm.data[6]; 	RXB0D7=cm.data[7];
 
-		// set extended or not
-		RXB0SIDLbits.EXID=(cm.extended==TRUE?1:0);
+		// set extended
+		RXB0SIDLbits.EXID=1;
 
 		// Priority
 		RXB0CON = (RXB0CON & 0b11111100) | prio;

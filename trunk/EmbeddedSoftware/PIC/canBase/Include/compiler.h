@@ -1,13 +1,12 @@
 /*********************************************************************
  *
- *                  Compiler specific
+ *                  Compiler specifics like clockspeed and portIOs.
  *
  *********************************************************************
- * FileName:        compiler.h
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 #ifndef COMPILER_H
@@ -20,6 +19,13 @@
 
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
+
+//<FUNCT>
+#define FUNCT_BOOTLOADER 0x0
+
+//<FUNCC>
+#define FUNCC_BOOT_INIT 0b0000000001 //för att initiera en programmering.
+
 
 
 #endif //compiler.h
