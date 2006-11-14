@@ -14,6 +14,7 @@
 #include <CANdefs.h>
 #include <CAN.h>
 #include <boot.h>
+#include <funcdefs.h>
 
 /** V E C T O R  R E M A P P I N G *******************************************/
 

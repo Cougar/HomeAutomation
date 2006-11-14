@@ -29,20 +29,6 @@ typedef struct _CAN_PROTO_MESSAGE
 } CAN_PROTO_MESSAGE;
 
 
-//<FUNCT>
-#define FUNCT_BOOTLOADER 0x0
-
-//<FUNCC> configuration packet
-#define FUNCC_BOOT_INIT 0b0000000001 //för att initiera en programmering.
-#define FUNCC_BOOT_ADDR 0b0000000010  //för att ändra adress.
-#define FUNCC_BOOT_DONE 0b0000000101  //för att avsluta en programmering.
-
-//<FUNCC> program packet
-#define FUNCC_BOOT_PGM 0b0000000011 //för att indikera att detta är programdata som ska skrivas.
-
-//<FUNCC> ack packet
-#define FUNCC_BOOT_ACK 0b0000000100 //för att indikera att detta är en ACK.
-
 #define MY_ID 0x78 
 #define MY_NID 0x00
 
