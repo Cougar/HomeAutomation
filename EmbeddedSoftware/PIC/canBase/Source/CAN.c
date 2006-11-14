@@ -116,10 +116,12 @@ void canInit()
 */
 void canISR()
 {
-	
+
 
 	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)
 	{
+					
+
 		// Get which buffer that is ful.
 			 if (RXB0CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10000; canGetPacket(); }
 		else if (RXB1CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10001; canGetPacket(); }
