@@ -24,6 +24,7 @@ static void mainInit(void);
 void main()
 {
 	static TICK t = 0;
+	CAN_MESSAGE cm2;
 
 	// Inits
 
@@ -35,12 +36,19 @@ void main()
 
 	tickInit();
 
+	// Dummy bootmessage
+	cm2.data[0]=0x91;
+	cm2.data_length=1;
+	canSendMessage(cm2,PRIO_HIGH);
+
+
 	while(1)
 	{
 		static TICK t = 0;
-		if ((tickGet()-t)>TICK_SECOND/2)
+		if ((tickGet()-t)>TICK_SECOND)
 		{
 			LED0_IO=~LED0_IO;
+			t = tickGet();
 		}
 	}
 }
@@ -104,7 +112,7 @@ void canParse(CAN_MESSAGE cm)
 	switch(cm.funct)
 	{
 		case FUNCT_BOOTLOADER:
-			if (cm.funcc==FUNCC_BOOT_INIT) { _asm goto 0x0 _endasm }
+			if (cm.funcc==FUNCC_BOOT_INIT) { Reset(); }
 		break;
 	}
 }

@@ -1,5 +1,5 @@
 MPLINK 4.02, Linker
-Linker Map File - Created Tue Nov 14 10:50:27 2006
+Linker Map File - Created Tue Nov 14 11:19:21 2006
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -10,19 +10,19 @@ Linker Map File - Created Tue Nov 14 10:50:27 2006
     _LOW_INTERRUPT_VECTOR       code   0x001018    program   0x000006
                    .cinit    romdata   0x00102a    program   0x00001a
               .code_CAN.o       code   0x001044    program   0x00042e
-             .code_Main.o       code   0x001472    program   0x00012c
-               _cinit_scn       code   0x00159e    program   0x00009e
-             .code_Tick.o       code   0x00163c    program   0x000044
-             _startup_scn       code   0x001680    program   0x000018
-          .romdata_Main.o    romdata   0x001698    program   0x000000
-           .romdata_CAN.o    romdata   0x001698    program   0x000000
-          .romdata_Tick.o    romdata   0x001698    program   0x000000
-          .idata_Tick.o_i    romdata   0x001698    program   0x000004
-         .romdata_c018i.o    romdata   0x001698    program   0x000000
-         .idata_c018i.o_i    romdata   0x001698    program   0x000000
-          .idata_Main.o_i    romdata   0x00169c    program   0x000008
-           .idata_CAN.o_i    romdata   0x0016a4    program   0x000000
-            .code_c018i.o       code   0x0016a4    program   0x000000
+             .code_Main.o       code   0x001472    program   0x0001c4
+               _cinit_scn       code   0x001636    program   0x00009e
+             .code_Tick.o       code   0x0016d4    program   0x000044
+             _startup_scn       code   0x001718    program   0x000018
+          .romdata_Main.o    romdata   0x001730    program   0x000000
+           .romdata_CAN.o    romdata   0x001730    program   0x000000
+          .romdata_Tick.o    romdata   0x001730    program   0x000000
+          .idata_Tick.o_i    romdata   0x001730    program   0x000004
+         .romdata_c018i.o    romdata   0x001730    program   0x000000
+         .idata_c018i.o_i    romdata   0x001730    program   0x000000
+          .idata_Main.o_i    romdata   0x001734    program   0x000008
+           .idata_CAN.o_i    romdata   0x00173c    program   0x000000
+            .code_c018i.o       code   0x00173c    program   0x000000
                  .tmpdata      udata   0x000000       data   0x00000e
                 MATH_DATA      udata   0x00000e       data   0x00000b
            .udata_c018i.o      udata   0x000060       data   0x00000a
@@ -59,59 +59,59 @@ Linker Map File - Created Tue Nov 14 10:50:27 2006
                             0x001000    0x001005      
                             0x001008    0x00100d      
                             0x001018    0x00101d      
-                            0x00102a    0x0016a3      
-            1682 out of 99352 program addresses used, program memory utilization is 1%
+                            0x00102a    0x00173b      
+            1834 out of 99352 program addresses used, program memory utilization is 1%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-       ___case_0_lbl00010   0x00157a    program     static                          
+       ___case_0_lbl00010   0x001614    program     static                          
          ___else_lbl00032   0x001306    program     static                          
          ___else_lbl00036   0x00141a    program     static                          
-           ___if_lbl00009   0x001594    program     static                          
+           ___if_lbl00009   0x00162c    program     static                          
            ___if_lbl00029   0x0012e8    program     static                          
            ___if_lbl00030   0x0012f6    program     static                          
            ___if_lbl00031   0x00130a    program     static                          
            ___if_lbl00034   0x001334    program     static                          
            ___if_lbl00035   0x001420    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x001696    program     static                          
-       ___return_lbl00002   0x00163a    program     static                          
-       ___return_lbl00007   0x001596    program     static                          
+       ___return_lbl00001   0x00172e    program     static                          
+       ___return_lbl00002   0x0016d2    program     static                          
+       ___return_lbl00007   0x00162e    program     static                          
        ___return_lbl00011   0x001004    program     static                          
        ___return_lbl00012   0x00100c    program     static                          
        ___return_lbl00013   0x00101c    program     static                          
        ___return_lbl00028   0x00146a    program     static                          
-   ___switchexit_lbl00008   0x001596    program     static                          
+   ___switchexit_lbl00008   0x00162e    program     static                          
               __tmplbl_13   0x001328    program     static                          
                __tmplbl_3   0x001330    program     static                          
                __tmplbl_4   0x001314    program     static                          
-                _do_cinit   0x00159e    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                _do_cinit   0x001636    program     extern C:\MCC18\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern C:\MCC18\src\traditional\startup\c018i.c
                 _high_ISR   0x001008    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
                  _low_ISR   0x001018    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
                    _reset   0x001000    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                 _startup   0x001680    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                 _startup   0x001718    program     extern C:\MCC18\src\traditional\startup\c018i.c
              canGetPacket   0x00113c    program     static F:\MCP\projects\CAN\canBase\Source\CAN.c
                    canISR   0x00109a    program     extern F:\MCP\projects\CAN\canBase\Source\CAN.c
                   canInit   0x001044    program     extern F:\MCP\projects\CAN\canBase\Source\CAN.c
-                 canParse   0x00156a    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+                 canParse   0x001604    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
            canSendMessage   0x0012d2    program     extern F:\MCP\projects\CAN\canBase\Source\CAN.c
-                copy_loop   0x001610    program     static                          
-            copy_one_byte   0x001616    program     static                          
-                     done   0x00163a    program     static                          
-             done_copying   0x001624    program     static                          
-                 high_isr   0x0014b4    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                     loop   0x001690    program     static                          
-                  low_isr   0x00154e    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+                copy_loop   0x0016a8    program     static                          
+            copy_one_byte   0x0016ae    program     static                          
+                     done   0x0016d2    program     static                          
+             done_copying   0x0016bc    program     static                          
+                 high_isr   0x00154e    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+                     loop   0x001728    program     static                          
+                  low_isr   0x0015e8    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
                      main   0x001472    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                 mainInit   0x001560    program     static F:\MCP\projects\CAN\canBase\Source\Main.c
-                     test   0x0015b8    program     static                          
-                  tickGet   0x001650    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                 tickInit   0x00163c    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-               tickUpdate   0x001664    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                 mainInit   0x0015fa    program     static F:\MCP\projects\CAN\canBase\Source\Main.c
+                     test   0x001650    program     static                          
+                  tickGet   0x0016e8    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                 tickInit   0x0016d4    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+               tickUpdate   0x0016fc    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
                    ADCON0   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                ADCON0bits   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    ADCON1   0x000fc1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -877,27 +877,27 @@ Linker Map File - Created Tue Nov 14 10:50:27 2006
            ___if_lbl00035   0x001420    program     static                          
        ___return_lbl00028   0x00146a    program     static                          
                      main   0x001472    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                 high_isr   0x0014b4    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                  low_isr   0x00154e    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-                 mainInit   0x001560    program     static F:\MCP\projects\CAN\canBase\Source\Main.c
-                 canParse   0x00156a    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
-       ___case_0_lbl00010   0x00157a    program     static                          
-           ___if_lbl00009   0x001594    program     static                          
-   ___switchexit_lbl00008   0x001596    program     static                          
-       ___return_lbl00007   0x001596    program     static                          
-                _do_cinit   0x00159e    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     test   0x0015b8    program     static                          
-                copy_loop   0x001610    program     static                          
-            copy_one_byte   0x001616    program     static                          
-             done_copying   0x001624    program     static                          
-                     done   0x00163a    program     static                          
-       ___return_lbl00002   0x00163a    program     static                          
-                 tickInit   0x00163c    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                  tickGet   0x001650    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-               tickUpdate   0x001664    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                 _startup   0x001680    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     loop   0x001690    program     static                          
-       ___return_lbl00001   0x001696    program     static                          
+                 high_isr   0x00154e    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+                  low_isr   0x0015e8    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+                 mainInit   0x0015fa    program     static F:\MCP\projects\CAN\canBase\Source\Main.c
+                 canParse   0x001604    program     extern F:\MCP\projects\CAN\canBase\Source\Main.c
+       ___case_0_lbl00010   0x001614    program     static                          
+           ___if_lbl00009   0x00162c    program     static                          
+   ___switchexit_lbl00008   0x00162e    program     static                          
+       ___return_lbl00007   0x00162e    program     static                          
+                _do_cinit   0x001636    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     test   0x001650    program     static                          
+                copy_loop   0x0016a8    program     static                          
+            copy_one_byte   0x0016ae    program     static                          
+             done_copying   0x0016bc    program     static                          
+                     done   0x0016d2    program     static                          
+       ___return_lbl00002   0x0016d2    program     static                          
+                 tickInit   0x0016d4    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                  tickGet   0x0016e8    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+               tickUpdate   0x0016fc    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                 _startup   0x001718    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     loop   0x001728    program     static                          
+       ___return_lbl00001   0x00172e    program     static                          
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canBase\Source\CAN.c
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canBase\Source\Main.c
                   __REMB3   0x00000e       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
