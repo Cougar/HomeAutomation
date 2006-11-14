@@ -3,13 +3,11 @@
  *                  Stack specific
  *
  *********************************************************************
- * FileName:        stackTasks.h
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
-// $Id$
 
 #ifndef stackTasks_H
 #define stackTasks_H

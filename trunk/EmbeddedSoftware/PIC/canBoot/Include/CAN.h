@@ -1,15 +1,13 @@
 /*********************************************************************
  *
- *                  CAN.c header file
+ *                  CAN module header file
  *
  *********************************************************************
- * FileName:        CAN.h
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
-// $Id$
 
 
 #ifndef CAN_H
@@ -27,7 +25,6 @@ typedef struct _CAN_PROTO_MESSAGE
 	BYTE nid; //6
 	WORD sid; //9
 	BYTE data_length;//5
-	BOOL remote_request; //1
 	BYTE data[8];
 } CAN_PROTO_MESSAGE;
 

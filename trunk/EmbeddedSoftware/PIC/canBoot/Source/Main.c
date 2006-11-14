@@ -3,13 +3,11 @@
  *                  Main application
  *
  *********************************************************************
- * FileName:        Main.c
- *
- * Author               Date    Comment
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Johan Böhlin     21-10-06 	Original        (Rev 1.0)
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
-// $Id$
 
 #include <compiler.h>
 #include <stackTasks.h>
@@ -95,6 +93,7 @@ void main()
 		{
 			tickCounter++;
 			tickSubCounter=0;
+			ClrWdt();
 		}
 
 		switch(pgs)
@@ -128,7 +127,6 @@ void main()
 				outCm.nid   			= MY_NID;
 				outCm.sid   			= MY_ID;
 				outCm.data_length 		= 8;
-				outCm.remote_request 	= FALSE;
 				outCm.data[ERR_INDEX]	= errMsg;
 				t						= tickGet();
 				pgs						= afterAckPgs;
@@ -232,6 +230,7 @@ void main()
 
 			case pgsWRITE_PROGRAM:
 
+				ClrWdt();
 
 				// Write program and send ack.
 
@@ -493,9 +492,6 @@ BOOL canGetPacket()
 		// Data length
 		cm.data_length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
 
-		// Remote request
-		cm.remote_request=(RXB0DLCbits.RXRTR==0?FALSE:TRUE);
-
 		// Data one bye one, for speed
 		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;
 		cm.data[2]=RXB0D2; 	cm.data[3]=RXB0D3;
@@ -549,19 +545,11 @@ BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
 		RXB0DLC = 0;
 		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;
 		
-		// Remote request
-		if (cm.remote_request==TRUE)
-		{
-			_asm 
-				bsf RXB0DLC, 6, 0
-			_endasm 
-		}
-		else
-		{
-			_asm 
-				bcf RXB0DLC, 6, 0
-			_endasm 
-		}
+		// NOT Remote request
+		_asm 
+			bcf RXB0DLC, 6, 0
+		_endasm 
+
 
 		// Data one bye one, for speed
 		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];
