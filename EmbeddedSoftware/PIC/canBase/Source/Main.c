@@ -14,6 +14,7 @@
 #include <stackTasks.h>
 #include <Tick.h>
 #include <funcdefs.h>
+#include <EEaccess.h>
 
 #ifdef USE_CAN
 	#include <CAN.h>

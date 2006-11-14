@@ -68,8 +68,8 @@ void canInit()
 	BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
-	ECANCONbits.MDSEL1 = 0;
-	ECANCONbits.MDSEL0 = 1;
+	ECANCONbits.MDSEL1 = 1; // 0  For mode 1 
+	ECANCONbits.MDSEL0 = 0; // 1  For mode 1 
 
 
 	// FILTERS AND MASKS
@@ -116,26 +116,14 @@ void canInit()
 */
 void canISR()
 {
-
-
 	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)
 	{
-					
-
-		// Get which buffer that is ful.
-			 if (RXB0CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10000; canGetPacket(); }
-		else if (RXB1CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10001; canGetPacket(); }
-		else if (B0CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10010; canGetPacket(); }
-		else if (B1CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10011; canGetPacket(); }
-		else if (B2CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10100; canGetPacket(); }
-		else if (B3CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10101; canGetPacket(); }
-		else if (B4CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10110; canGetPacket(); }
-		else if (B5CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10111; canGetPacket(); }
+		ECANCON=(ECANCON&0b00000)|(0b10000|(CANCON&0x0F)); 
+		if (RXB0CONbits.RXFUL) canGetPacket(); 
 	
-		if (PIR3bits.RXBnIF) {PIR3bits.RXBnIF = 0;}
-		if (PIR3bits.RXB1IF) {PIR3bits.RXB1IF = 0;}
-		if (PIR3bits.RXB0IF) {PIR3bits.RXB0IF = 0;}
-	
+		if (PIR3bits.RXBnIF) {PIR3bits.RXBnIF = 0; return;}
+		if (PIR3bits.RXB1IF) {PIR3bits.RXB1IF = 0; return;}
+		if (PIR3bits.RXB0IF) {PIR3bits.RXB0IF = 0; return;}
 	}
 }
 
