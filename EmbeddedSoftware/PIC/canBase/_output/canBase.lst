@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Tue Nov 14 11:19:21 2006
+Listing File Generated: Tue Nov 14 11:41:55 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -71,21 +71,21 @@ Address  Value    Disassembly              Source                               
                                            void tickInit(void)                                                              F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                // Start the timer.                                                          F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016d4   0e79     MOVLW     0x79               TMR0L = TICK_COUNTER_LOW;                                                    F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016d6   6ed6     MOVWF     0xd6,0x0                                                                                        
-0016d8   0efe     MOVLW     0xfe               TMR0H = TICK_COUNTER_HIGH;                                                   F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016da   6ed7     MOVWF     0xd7,0x0                                                                                        
+0016d8   0e79     MOVLW     0x79               TMR0L = TICK_COUNTER_LOW;                                                    F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016da   6ed6     MOVWF     0xd6,0x0                                                                                        
+0016dc   0efe     MOVLW     0xfe               TMR0H = TICK_COUNTER_HIGH;                                                   F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016de   6ed7     MOVWF     0xd7,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                // 16-BIT, internal timer, PSA set to 1:256                                  F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016dc   0e07     MOVLW     0x7                T0CON = 0b00000000 | TIMER_PRESCALE;                                         F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016de   6ed5     MOVWF     0xd5,0x0                                                                                        
+0016e0   0e07     MOVLW     0x7                T0CON = 0b00000000 | TIMER_PRESCALE;                                         F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016e2   6ed5     MOVWF     0xd5,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                // Start the timer.                                                          F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016e0   8ed5     BSF       0xd5,0x7,0x0       T0CONbits.TMR0ON = 1;                                                        F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016e4   8ed5     BSF       0xd5,0x7,0x0       T0CONbits.TMR0ON = 1;                                                        F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016e2   84f2     BSF       0xf2,0x2,0x0       INTCONbits.TMR0IF = 1;                                                       F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016e4   8af2     BSF       0xf2,0x5,0x0       INTCONbits.TMR0IE = 1;                                                       F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016e6   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016e6   84f2     BSF       0xf2,0x2,0x0       INTCONbits.TMR0IF = 1;                                                       F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016e8   8af2     BSF       0xf2,0x5,0x0       INTCONbits.TMR0IE = 1;                                                       F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016ea   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            /*                                                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            *	Function: TickGet                                                              F:\MCP\projects\CAN\canBase\Source\Tick.c
@@ -98,16 +98,16 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            TICK tickGet(void)                                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016e8   c072     MOVFF     0x72,0x12          return TickCount;                                                            F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016ea   f012                                                                                                               
-0016ec   c073     MOVFF     0x73,0x13                                                                                       
-0016ee   f013                                                                                                               
-0016f0   c074     MOVFF     0x74,0x14                                                                                       
-0016f2   f014                                                                                                               
-0016f4   c075     MOVFF     0x75,0x15                                                                                       
-0016f6   f015                                                                                                               
-0016f8   d000     BRA       0x16fa                                                                                          
-0016fa   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016ec   c072     MOVFF     0x72,0x12          return TickCount;                                                            F:\MCP\projects\CAN\canBase\Source\Tick.c
+0016ee   f012                                                                                                               
+0016f0   c073     MOVFF     0x73,0x13                                                                                       
+0016f2   f013                                                                                                               
+0016f4   c074     MOVFF     0x74,0x14                                                                                       
+0016f6   f014                                                                                                               
+0016f8   c075     MOVFF     0x75,0x15                                                                                       
+0016fa   f015                                                                                                               
+0016fc   d000     BRA       0x16fe                                                                                          
+0016fe   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            /*                                                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
@@ -121,33 +121,33 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            void tickUpdate(void)                                                            F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016fc   a4f2     BTFSS     0xf2,0x2,0x0       if(INTCONbits.TMR0IF)                                                        F:\MCP\projects\CAN\canBase\Source\Tick.c
-0016fe   d00b     BRA       0x1716                                                                                          
+001700   a4f2     BTFSS     0xf2,0x2,0x0       if(INTCONbits.TMR0IF)                                                        F:\MCP\projects\CAN\canBase\Source\Tick.c
+001702   d00b     BRA       0x171a                                                                                          
                                                {                                                                            F:\MCP\projects\CAN\canBase\Source\Tick.c
-001700   0efe     MOVLW     0xfe                   TMR0H = TICK_COUNTER_HIGH;                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
-001702   6ed7     MOVWF     0xd7,0x0                                                                                        
-001704   0e79     MOVLW     0x79                   TMR0L = TICK_COUNTER_LOW;                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
-001706   6ed6     MOVWF     0xd6,0x0                                                                                        
+001704   0efe     MOVLW     0xfe                   TMR0H = TICK_COUNTER_HIGH;                                               F:\MCP\projects\CAN\canBase\Source\Tick.c
+001706   6ed7     MOVWF     0xd7,0x0                                                                                        
+001708   0e79     MOVLW     0x79                   TMR0L = TICK_COUNTER_LOW;                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
+00170a   6ed6     MOVWF     0xd6,0x0                                                                                        
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
-001708   0100     MOVLB     0x0                    TickCount++;                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
-00170a   2b72     INCF      0x72,0x1,0x1                                                                                    
-00170c   0e00     MOVLW     0x0                                                                                             
-00170e   2373     ADDWFC    0x73,0x1,0x1                                                                                    
-001710   2374     ADDWFC    0x74,0x1,0x1                                                                                    
-001712   2375     ADDWFC    0x75,0x1,0x1                                                                                    
+00170c   0100     MOVLB     0x0                    TickCount++;                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
+00170e   2b72     INCF      0x72,0x1,0x1                                                                                    
+001710   0e00     MOVLW     0x0                                                                                             
+001712   2373     ADDWFC    0x73,0x1,0x1                                                                                    
+001714   2374     ADDWFC    0x74,0x1,0x1                                                                                    
+001716   2375     ADDWFC    0x75,0x1,0x1                                                                                    
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Tick.c
-001714   94f2     BCF       0xf2,0x2,0x0           INTCONbits.TMR0IF = 0;                                                   F:\MCP\projects\CAN\canBase\Source\Tick.c
+001718   94f2     BCF       0xf2,0x2,0x0           INTCONbits.TMR0IF = 0;                                                   F:\MCP\projects\CAN\canBase\Source\Tick.c
                                                }                                                                            F:\MCP\projects\CAN\canBase\Source\Tick.c
-001716   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
+00171a   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Tick.c
                                            /*********************************************************************           F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             *                                                                               F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             *                  CAN module                                                   F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             *                                                                               F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             *********************************************************************           F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Source/CAN.c $ F:\MCP\projects\CAN\canBase\Source\CAN.c
-                                            * Last changed:	$LastChangedDate: 2006-11-14 10:55:38 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\CAN.c
+                                            * Last changed:	$LastChangedDate: 2006-11-14 11:20:48 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canBase\Source\CAN.c
-                                            * Revision:		$Revision: 86 $                                                    F:\MCP\projects\CAN\canBase\Source\CAN.c
+                                            * Revision:		$Revision: 87 $                                                    F:\MCP\projects\CAN\canBase\Source\CAN.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canBase\Source\CAN.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\CAN.c
                                            #include <CANdefs.h>                                                             F:\MCP\projects\CAN\canBase\Source\CAN.c
@@ -580,7 +580,7 @@ Address  Value    Disassembly              Source                               
 0012ac   ffe6                                                                                                               
 0012ae   cfee     MOVFF     0xfee,0xfe6                                                                                     
 0012b0   ffe6                                                                                                               
-0012b2   ec02     CALL      0x1604,0x0                                                                                      
+0012b2   ec03     CALL      0x1606,0x0                                                                                      
 0012b4   f00b                                                                                                               
 0012b6   6e00     MOVWF     0x0,0x0                                                                                         
 0012b8   0e0f     MOVLW     0xf                                                                                             
@@ -861,9 +861,9 @@ Address  Value    Disassembly              Source                               
                                             *                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                             *********************************************************************           F:\MCP\projects\CAN\canBase\Source\Main.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Source/Main.c $ F:\MCP\projects\CAN\canBase\Source\Main.c
-                                            * Last changed:	$LastChangedDate: 2006-11-14 10:55:38 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\Main.c
+                                            * Last changed:	$LastChangedDate: 2006-11-14 11:20:48 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\Main.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canBase\Source\Main.c
-                                            * Revision:		$Revision: 86 $                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
+                                            * Revision:		$Revision: 87 $                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -890,14 +890,14 @@ Address  Value    Disassembly              Source                               
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	// Inits                                                                        F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-00147e   d8bd     RCALL     0x15fa         	mainInit();                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
+00147e   d8be     RCALL     0x15fc         	mainInit();                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	#ifdef USE_CAN                                                                  F:\MCP\projects\CAN\canBase\Source\Main.c
 001480   ec22     CALL      0x1044,0x0     		canInit();                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
 001482   f008                                                                                                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-001484   ec6a     CALL      0x16d4,0x0     	tickInit();                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
+001484   ec6c     CALL      0x16d8,0x0     	tickInit();                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
 001486   f00b                                                                                                               
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	// Dummy bootmessage                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -958,7 +958,7 @@ Address  Value    Disassembly              Source                               
 001538   d7db     BRA       0x14f0         	while(1)                                                                        F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	{                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            		static TICK t = 0;                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-0014f0   ec74     CALL      0x16e8,0x0     		if ((tickGet()-t)>TICK_SECOND)                                                 F:\MCP\projects\CAN\canBase\Source\Main.c
+0014f0   ec76     CALL      0x16ec,0x0     		if ((tickGet()-t)>TICK_SECOND)                                                 F:\MCP\projects\CAN\canBase\Source\Main.c
 0014f2   f00b                                                                                                               
 0014f4   0100     MOVLB     0x0                                                                                             
 0014f6   516e     MOVF      0x6e,0x0,0x1                                                                                    
@@ -985,7 +985,7 @@ Address  Value    Disassembly              Source                               
 001520   e20b     BC        0x1538                                                                                          
                                            		{                                                                              F:\MCP\projects\CAN\canBase\Source\Main.c
 001522   7282     BTG       0x82,0x1,0x0   			LED0_IO=~LED0_IO;                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-001524   ec74     CALL      0x16e8,0x0     			t = tickGet();                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001524   ec76     CALL      0x16ec,0x0     			t = tickGet();                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
 001526   f00b                                                                                                               
 001528   c012     MOVFF     0x12,0x6e                                                                                       
 00152a   f06e                                                                                                               
@@ -1048,64 +1048,66 @@ Address  Value    Disassembly              Source                               
 001594   d7fb     BRA       0x158c                                                                                          
 001596   52e6     MOVF      0xe6,0x1,0x0                                                                                    
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001598   0004     CLRWDT                   	ClrWdt();                                                                       F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	#ifdef USE_CAN                                                                  F:\MCP\projects\CAN\canBase\Source\Main.c
-001598   ec4d     CALL      0x109a,0x0     		canISR();                                                                      F:\MCP\projects\CAN\canBase\Source\Main.c
-00159a   f008                                                                                                               
+00159a   ec4d     CALL      0x109a,0x0     		canISR();                                                                      F:\MCP\projects\CAN\canBase\Source\Main.c
+00159c   f008                                                                                                               
                                            	#endif                                                                          F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-00159c   ec7e     CALL      0x16fc,0x0     	tickUpdate();                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
-00159e   f00b                                                                                                               
-0015a0   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-0015a2   ee00     LFSR      0x0,0xd                                                                                         
-0015a4   f00d                                                                                                               
-0015a6   0e0e     MOVLW     0xe                                                                                             
-0015a8   04e8     DECF      0xe8,0x0,0x0                                                                                    
-0015aa   e303     BNC       0x15b2                                                                                          
-0015ac   cfe5     MOVFF     0xfe5,0xfed                                                                                     
-0015ae   ffed                                                                                                               
-0015b0   d7fb     BRA       0x15a8                                                                                          
-0015b2   ee00     LFSR      0x0,0x18                                                                                        
-0015b4   f018                                                                                                               
-0015b6   0e0b     MOVLW     0xb                                                                                             
-0015b8   04e8     DECF      0xe8,0x0,0x0                                                                                    
-0015ba   e303     BNC       0x15c2                                                                                          
-0015bc   cfe5     MOVFF     0xfe5,0xfed                                                                                     
-0015be   ffed                                                                                                               
-0015c0   d7fb     BRA       0x15b8                                                                                          
-0015c2   cfe5     MOVFF     0xfe5,0xffa                                                                                     
-0015c4   fffa                                                                                                               
-0015c6   cfe5     MOVFF     0xfe5,0xff4                                                                                     
-0015c8   fff4                                                                                                               
-0015ca   cfe5     MOVFF     0xfe5,0xff3                                                                                     
-0015cc   fff3                                                                                                               
-0015ce   cfe5     MOVFF     0xfe5,0xff5                                                                                     
-0015d0   fff5                                                                                                               
-0015d2   cfe5     MOVFF     0xfe5,0xff7                                                                                     
-0015d4   fff7                                                                                                               
-0015d6   cfe5     MOVFF     0xfe5,0xff6                                                                                     
-0015d8   fff6                                                                                                               
-0015da   cfe5     MOVFF     0xfe5,0xfea                                                                                     
-0015dc   ffea                                                                                                               
-0015de   cfe5     MOVFF     0xfe5,0xfe9                                                                                     
-0015e0   ffe9                                                                                                               
-0015e2   cfe5     MOVFF     0xfe5,0xfda                                                                                     
-0015e4   ffda                                                                                                               
-0015e6   0011     RETFIE    0x1                                                                                             
+00159e   ec80     CALL      0x1700,0x0     	tickUpdate();                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
+0015a0   f00b                                                                                                               
+                                                                                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
+0015a2   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+0015a4   ee00     LFSR      0x0,0xd                                                                                         
+0015a6   f00d                                                                                                               
+0015a8   0e0e     MOVLW     0xe                                                                                             
+0015aa   04e8     DECF      0xe8,0x0,0x0                                                                                    
+0015ac   e303     BNC       0x15b4                                                                                          
+0015ae   cfe5     MOVFF     0xfe5,0xfed                                                                                     
+0015b0   ffed                                                                                                               
+0015b2   d7fb     BRA       0x15aa                                                                                          
+0015b4   ee00     LFSR      0x0,0x18                                                                                        
+0015b6   f018                                                                                                               
+0015b8   0e0b     MOVLW     0xb                                                                                             
+0015ba   04e8     DECF      0xe8,0x0,0x0                                                                                    
+0015bc   e303     BNC       0x15c4                                                                                          
+0015be   cfe5     MOVFF     0xfe5,0xfed                                                                                     
+0015c0   ffed                                                                                                               
+0015c2   d7fb     BRA       0x15ba                                                                                          
+0015c4   cfe5     MOVFF     0xfe5,0xffa                                                                                     
+0015c6   fffa                                                                                                               
+0015c8   cfe5     MOVFF     0xfe5,0xff4                                                                                     
+0015ca   fff4                                                                                                               
+0015cc   cfe5     MOVFF     0xfe5,0xff3                                                                                     
+0015ce   fff3                                                                                                               
+0015d0   cfe5     MOVFF     0xfe5,0xff5                                                                                     
+0015d2   fff5                                                                                                               
+0015d4   cfe5     MOVFF     0xfe5,0xff7                                                                                     
+0015d6   fff7                                                                                                               
+0015d8   cfe5     MOVFF     0xfe5,0xff6                                                                                     
+0015da   fff6                                                                                                               
+0015dc   cfe5     MOVFF     0xfe5,0xfea                                                                                     
+0015de   ffea                                                                                                               
+0015e0   cfe5     MOVFF     0xfe5,0xfe9                                                                                     
+0015e2   ffe9                                                                                                               
+0015e4   cfe5     MOVFF     0xfe5,0xfda                                                                                     
+0015e6   ffda                                                                                                               
+0015e8   0011     RETFIE    0x1                                                                                             
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #pragma interrupt low_isr                                                        F:\MCP\projects\CAN\canBase\Source\Main.c
-0015e8   cfda     MOVFF     0xfda,0xfe4    void low_isr(void)                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
-0015ea   ffe4                                                                                                               
-0015ec   cfe2     MOVFF     0xfe2,0xfda                                                                                     
-0015ee   ffda                                                                                                               
-0015f0   52e6     MOVF      0xe6,0x1,0x0                                                                                    
+0015ea   cfda     MOVFF     0xfda,0xfe4    void low_isr(void)                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
+0015ec   ffe4                                                                                                               
+0015ee   cfe2     MOVFF     0xfe2,0xfda                                                                                     
+0015f0   ffda                                                                                                               
+0015f2   52e6     MOVF      0xe6,0x1,0x0                                                                                    
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-0015f2   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-0015f4   cfe5     MOVFF     0xfe5,0xfda                                                                                     
-0015f6   ffda                                                                                                               
-0015f8   0011     RETFIE    0x1                                                                                             
+0015f4   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+0015f6   cfe5     MOVFF     0xfe5,0xfda                                                                                     
+0015f8   ffda                                                                                                               
+0015fa   0011     RETFIE    0x1                                                                                             
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -1120,17 +1122,17 @@ Address  Value    Disassembly              Source                               
                                            */                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            void mainInit()                                                                  F:\MCP\projects\CAN\canBase\Source\Main.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-0015fa   9294     BCF       0x94,0x1,0x0   	LED0_TRIS=0;	                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
+0015fc   9294     BCF       0x94,0x1,0x0   	LED0_TRIS=0;	                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	// Enable Interrupts                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
-0015fc   8ef2     BSF       0xf2,0x7,0x0       INTCONbits.GIEH = 1;                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
-0015fe   8cf2     BSF       0xf2,0x6,0x0       INTCONbits.GIEL = 1;                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
+0015fe   8ef2     BSF       0xf2,0x7,0x0       INTCONbits.GIEH = 1;                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
+001600   8cf2     BSF       0xf2,0x6,0x0       INTCONbits.GIEL = 1;                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	// Enable interrupt prirority                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
-001600   8ed0     BSF       0xd0,0x7,0x0   	RCONbits.IPEN=1;                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001602   8ed0     BSF       0xd0,0x7,0x0   	RCONbits.IPEN=1;                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
-001602   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001604   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            /*                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            *	Function: canParse                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -1142,35 +1144,37 @@ Address  Value    Disassembly              Source                               
                                            *	Depends: none.                                                                 F:\MCP\projects\CAN\canBase\Source\Main.c
                                            */                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #ifdef USE_CAN                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
-001604   cfd9     MOVFF     0xfd9,0xfe6    void canParse(CAN_MESSAGE cm)                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
-001606   ffe6                                                                                                               
-001608   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
-00160a   ffd9                                                                                                               
+001606   cfd9     MOVFF     0xfd9,0xfe6    void canParse(CAN_MESSAGE cm)                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
+001608   ffe6                                                                                                               
+00160a   cfe1     MOVFF     0xfe1,0xfd9                                                                                     
+00160c   ffd9                                                                                                               
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-00160c   0ef0     MOVLW     0xf0           	switch(cm.funct)                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-00160e   50db     MOVF      0xdb,0x0,0x0                                                                                    
-001610   e001     BZ        0x1614                                                                                          
-001612   d00d     BRA       0x162e                                                                                          
+00160e   0004     CLRWDT                   	ClrWdt();                                                                       F:\MCP\projects\CAN\canBase\Source\Main.c
+                                                                                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
+001610   0ef0     MOVLW     0xf0           	switch(cm.funct)                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001612   50db     MOVF      0xdb,0x0,0x0                                                                                    
+001614   e001     BZ        0x1618                                                                                          
+001616   d00d     BRA       0x1632                                                                                          
                                            	{                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            		case FUNCT_BOOTLOADER:                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
-001614   50d9     MOVF      0xd9,0x0,0x0   			if (cm.funcc==FUNCC_BOOT_INIT) { Reset(); }                                   F:\MCP\projects\CAN\canBase\Source\Main.c
-001616   0ff1     ADDLW     0xf1                                                                                            
-001618   6ee9     MOVWF     0xe9,0x0                                                                                        
-00161a   0eff     MOVLW     0xff                                                                                            
-00161c   20da     ADDWFC    0xda,0x0,0x0                                                                                    
-00161e   6eea     MOVWF     0xea,0x0                                                                                        
-001620   0e01     MOVLW     0x1                                                                                             
-001622   18ee     XORWF     0xee,0x0,0x0                                                                                    
-001624   e101     BNZ       0x1628                                                                                          
-001626   50ed     MOVF      0xed,0x0,0x0                                                                                    
+001618   50d9     MOVF      0xd9,0x0,0x0   			if (cm.funcc==FUNCC_BOOT_INIT) { Reset(); }                                   F:\MCP\projects\CAN\canBase\Source\Main.c
+00161a   0ff1     ADDLW     0xf1                                                                                            
+00161c   6ee9     MOVWF     0xe9,0x0                                                                                        
+00161e   0eff     MOVLW     0xff                                                                                            
+001620   20da     ADDWFC    0xda,0x0,0x0                                                                                    
+001622   6eea     MOVWF     0xea,0x0                                                                                        
+001624   0e01     MOVLW     0x1                                                                                             
+001626   18ee     XORWF     0xee,0x0,0x0                                                                                    
 001628   e101     BNZ       0x162c                                                                                          
-00162a   00ff     RESET                                                                                                     
-00162c   d000     BRA       0x162e         		break;                                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
+00162a   50ed     MOVF      0xed,0x0,0x0                                                                                    
+00162c   e101     BNZ       0x1630                                                                                          
+00162e   00ff     RESET                                                                                                     
+001630   d000     BRA       0x1632         		break;                                                                         F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	}                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
-00162e   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-001630   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
-001632   ffd9                                                                                                               
-001634   0012     RETURN    0x0                                                                                             
+001632   52e5     MOVF      0xe5,0x1,0x0   }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+001634   cfe7     MOVFF     0xfe7,0xfd9                                                                                     
+001636   ffd9                                                                                                               
+001638   0012     RETURN    0x0                                                                                             
                                            #endif                                                                           F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -1182,7 +1186,7 @@ Address  Value    Disassembly              Source                               
                                            #pragma code _RESET_INTERRUPT_VECTOR = 0x001000                                  F:\MCP\projects\CAN\canBase\Source\Main.c
                                            void _reset (void)                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-001000   ef8c     GOTO      0x1718             _asm goto _startup _endasm                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
+001000   ef8e     GOTO      0x171c             _asm goto _startup _endasm                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
 001002   f00b                                                                                                               
 001004   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #pragma code                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c
@@ -1199,7 +1203,7 @@ Address  Value    Disassembly              Source                               
                                            #pragma code _LOW_INTERRUPT_VECTOR = 0x001018                                    F:\MCP\projects\CAN\canBase\Source\Main.c
                                            void _low_ISR (void)                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            {                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
-001018   eff4     GOTO      0x15e8             _asm GOTO low_isr _endasm                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
+001018   eff5     GOTO      0x15ea             _asm GOTO low_isr _endasm                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
 00101a   f00a                                                                                                               
 00101c   0012     RETURN    0x0            }                                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #pragma code                                                                     F:\MCP\projects\CAN\canBase\Source\Main.c

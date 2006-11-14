@@ -57,12 +57,14 @@ void main()
 #pragma interrupt high_isr
 void high_isr(void)
 {
+	ClrWdt();
 
 	#ifdef USE_CAN
 		canISR();
 	#endif
 
 	tickUpdate();
+
 }
 
 
@@ -109,6 +111,8 @@ void mainInit()
 #ifdef USE_CAN
 void canParse(CAN_MESSAGE cm)
 {
+	ClrWdt();
+
 	switch(cm.funct)
 	{
 		case FUNCT_BOOTLOADER:
