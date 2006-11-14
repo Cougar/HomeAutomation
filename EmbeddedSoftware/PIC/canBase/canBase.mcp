@@ -6,7 +6,7 @@ dir_src=
 dir_bin=F:\MCP\projects\CAN\canBase\_output
 dir_tmp=F:\MCP\projects\CAN\canBase\_output
 dir_sin=
-dir_inc=F:\MCP\projects\CAN\canBase\Include
+dir_inc=F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include
 dir_lib=E:\program\MCC18\lib
 dir_lkr=
 [CAT_FILTERS]

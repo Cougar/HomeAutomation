@@ -13,6 +13,7 @@
 #include <compiler.h>
 #include <stackTasks.h>
 #include <Tick.h>
+#include <funcdefs.h>
 
 #ifdef USE_CAN
 	#include <CAN.h>

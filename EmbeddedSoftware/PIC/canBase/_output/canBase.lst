@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Tue Nov 14 11:41:55 2006
+Listing File Generated: Tue Nov 14 12:47:51 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -861,15 +861,16 @@ Address  Value    Disassembly              Source                               
                                             *                                                                               F:\MCP\projects\CAN\canBase\Source\Main.c
                                             *********************************************************************           F:\MCP\projects\CAN\canBase\Source\Main.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Source/Main.c $ F:\MCP\projects\CAN\canBase\Source\Main.c
-                                            * Last changed:	$LastChangedDate: 2006-11-14 11:20:48 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\Main.c
+                                            * Last changed:	$LastChangedDate: 2006-11-14 11:44:48 +0100 (ti, 14 nov 2006) $ F:\MCP\projects\CAN\canBase\Source\Main.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canBase\Source\Main.c
-                                            * Revision:		$Revision: 87 $                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
+                                            * Revision:		$Revision: 89 $                                                    F:\MCP\projects\CAN\canBase\Source\Main.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #include <compiler.h>                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #include <stackTasks.h>                                                          F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #include <Tick.h>                                                                F:\MCP\projects\CAN\canBase\Source\Main.c
+                                           #include <funcdefs.h>                                                            F:\MCP\projects\CAN\canBase\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canBase\Source\Main.c
                                            #ifdef USE_CAN                                                                   F:\MCP\projects\CAN\canBase\Source\Main.c
                                            	#include <CAN.h>                                                                F:\MCP\projects\CAN\canBase\Source\Main.c

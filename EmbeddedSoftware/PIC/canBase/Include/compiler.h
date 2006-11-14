@@ -20,12 +20,5 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
-//<FUNCT>
-#define FUNCT_BOOTLOADER 0x0
-
-//<FUNCC>
-#define FUNCC_BOOT_INIT 0b0000000001 //för att initiera en programmering.
-
-
 
 #endif //compiler.h
