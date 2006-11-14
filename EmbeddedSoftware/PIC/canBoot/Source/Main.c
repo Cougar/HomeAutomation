@@ -412,8 +412,8 @@ void canInit()
 	BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
-	ECANCONbits.MDSEL1 = 0;
-	ECANCONbits.MDSEL0 = 1;
+	ECANCONbits.MDSEL1 = 1;
+	ECANCONbits.MDSEL0 = 0;
 
 
 	// FILTERS AND MASKS
@@ -462,17 +462,9 @@ BOOL canGetPacket()
 {
 
 		// Get which buffer that is ful.
-			 if (RXB0CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10000;  }
-		else if (RXB1CONbits.RXFUL) { ECANCON=(ECANCON&0b00000)|0b10001;  }
-		else if (B0CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10010;  }
-		else if (B1CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10011;  }
-		else if (B2CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10100;  }
-		else if (B3CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10101;  }
-		else if (B4CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10110;  }
-		else if (B5CONbits.RXFUL) 	{ ECANCON=(ECANCON&0b00000)|0b10111;  }
-		else return FALSE;
-
-
+		ECANCON=(ECANCON&0b00000)|(0b10000|(CANCON&0x0F)); 
+		if (!RXB0CONbits.RXFUL) return FALSE; 
+	
 		//RXB0SIDH 28 27 26 25 24 23 22 21
         //RXB0SIDL 20 19 18 xx xx xx 17 16
         //RXB0EIDH 15 14 13 12 11 10 09 08
