@@ -1,5 +1,5 @@
 MPLINK 4.02, Linker
-Linker Map File - Created Tue Nov 14 12:48:21 2006
+Linker Map File - Created Tue Nov 14 21:10:39 2006
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -8,14 +8,14 @@ Linker Map File - Created Tue Nov 14 12:48:21 2006
    _HIGH_INTERRUPT_VECTOR       code   0x000008    program   0x000006
     _LOW_INTERRUPT_VECTOR       code   0x000018    program   0x000006
                    .cinit    romdata   0x00002a    program   0x00000e
-             .code_Main.o       code   0x000038    program   0x000ad2
-               _cinit_scn       code   0x000b0a    program   0x00009e
-             _startup_scn       code   0x000ba8    program   0x000018
-         .idata_c018i.o_i    romdata   0x000bc0    program   0x000000
-         .romdata_c018i.o    romdata   0x000bc0    program   0x000000
-          .idata_Main.o_i    romdata   0x000bc0    program   0x00001b
-          .romdata_Main.o    romdata   0x000bc0    program   0x000000
-            .code_c018i.o       code   0x000bdc    program   0x000000
+             .code_Main.o       code   0x000038    program   0x000a70
+               _cinit_scn       code   0x000aa8    program   0x00009e
+             _startup_scn       code   0x000b46    program   0x000018
+         .idata_c018i.o_i    romdata   0x000b5e    program   0x000000
+         .romdata_c018i.o    romdata   0x000b5e    program   0x000000
+          .idata_Main.o_i    romdata   0x000b5e    program   0x00001b
+          .romdata_Main.o    romdata   0x000b5e    program   0x000000
+            .code_c018i.o       code   0x000b7a    program   0x000000
                      user       code   0x001000    program   0x000000
                  .tmpdata      udata   0x000000       data   0x00000c
                 MATH_DATA      udata   0x00000c       data   0x00000b
@@ -48,113 +48,113 @@ Linker Map File - Created Tue Nov 14 12:48:21 2006
                             0x000000    0x000005      
                             0x000008    0x00000d      
                             0x000018    0x00001d      
-                            0x00002a    0x000bda      
-            3011 out of 99352 program addresses used, program memory utilization is 3%
+                            0x00002a    0x000b78      
+            2913 out of 99352 program addresses used, program memory utilization is 2%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-               TBLRD_Func   0x000aea    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-        TBLWTPOSTINC_Func   0x000af2    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-               TBLWT_Func   0x000aee    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+               TBLRD_Func   0x000a88    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+        TBLWTPOSTINC_Func   0x000a90    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+               TBLWT_Func   0x000a8c    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
        ___case_0_lbl00012   0x0000cc    program     static                          
        ___case_1_lbl00014   0x000230    program     static                          
        ___case_2_lbl00018   0x0002d8    program     static                          
-       ___case_3_lbl00029   0x000428    program     static                          
-       ___case_4_lbl00045   0x0005fa    program     static                          
-       ___case_5_lbl00050   0x000758    program     static                          
-      ___default_lbl00051   0x00075e    program     static                          
-         ___else_lbl00040   0x0005d6    program     static                          
-         ___else_lbl00042   0x0005ba    program     static                          
-         ___else_lbl00080   0x00097e    program     static                          
-         ___else_lbl00084   0x000a92    program     static                          
-          ___for_lbl00003   0x000764    program     static                          
-          ___for_lbl00004   0x000766    program     static                          
-          ___for_lbl00047   0x00070e    program     static                          
-          ___for_lbl00048   0x000714    program     static                          
-          ___for_lbl00049   0x0006ea    program     static                          
+       ___case_3_lbl00029   0x000426    program     static                          
+       ___case_4_lbl00045   0x0005f8    program     static                          
+       ___case_5_lbl00050   0x000756    program     static                          
+      ___default_lbl00051   0x00075c    program     static                          
+         ___else_lbl00040   0x0005d4    program     static                          
+         ___else_lbl00042   0x0005b8    program     static                          
+         ___else_lbl00065   0x00091c    program     static                          
+         ___else_lbl00069   0x000a30    program     static                          
+          ___for_lbl00003   0x000762    program     static                          
+          ___for_lbl00004   0x000764    program     static                          
+          ___for_lbl00047   0x00070c    program     static                          
+          ___for_lbl00048   0x000712    program     static                          
+          ___for_lbl00049   0x0006e8    program     static                          
           ___for_lbl00052   0x000060    program     static                          
            ___if_lbl00005   0x0000a4    program     static                          
            ___if_lbl00011   0x0001b0    program     static                          
            ___if_lbl00013   0x00022e    program     static                          
-           ___if_lbl00017   0x000320    program     static                          
-           ___if_lbl00023   0x000426    program     static                          
-           ___if_lbl00028   0x00052e    program     static                          
-           ___if_lbl00034   0x000570    program     static                          
-           ___if_lbl00039   0x0005e2    program     static                          
-           ___if_lbl00041   0x0005e2    program     static                          
-           ___if_lbl00043   0x0005e2    program     static                          
-           ___if_lbl00044   0x0005f8    program     static                          
-           ___if_lbl00046   0x00061c    program     static                          
-           ___if_lbl00077   0x000960    program     static                          
-           ___if_lbl00078   0x00096e    program     static                          
-           ___if_lbl00079   0x000982    program     static                          
-           ___if_lbl00082   0x0009ac    program     static                          
-           ___if_lbl00083   0x000a98    program     static                          
+           ___if_lbl00017   0x00031e    program     static                          
+           ___if_lbl00023   0x000424    program     static                          
+           ___if_lbl00028   0x00052c    program     static                          
+           ___if_lbl00034   0x00056e    program     static                          
+           ___if_lbl00039   0x0005e0    program     static                          
+           ___if_lbl00041   0x0005e0    program     static                          
+           ___if_lbl00043   0x0005e0    program     static                          
+           ___if_lbl00044   0x0005f6    program     static                          
+           ___if_lbl00046   0x00061a    program     static                          
+           ___if_lbl00062   0x0008fe    program     static                          
+           ___if_lbl00063   0x00090c    program     static                          
+           ___if_lbl00064   0x000920    program     static                          
+           ___if_lbl00067   0x00094a    program     static                          
+           ___if_lbl00068   0x000a36    program     static                          
        ___return_lbl00000   0x00000c    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00001   0x000bbe    program     static                          
+       ___return_lbl00001   0x000b5c    program     static                          
        ___return_lbl00001   0x00001c    program     static                          
-       ___return_lbl00002   0x000ba6    program     static                          
-       ___return_lbl00002   0x000766    program     static                          
-       ___return_lbl00076   0x000ae2    program     static                          
-       ___return_lbl00085   0x000aec    program     static                          
-       ___return_lbl00086   0x000af0    program     static                          
-       ___return_lbl00087   0x000af4    program     static                          
-   ___switchexit_lbl00006   0x000764    program     static                          
+       ___return_lbl00002   0x000b44    program     static                          
+       ___return_lbl00002   0x000764    program     static                          
+       ___return_lbl00061   0x000a80    program     static                          
+       ___return_lbl00070   0x000a8a    program     static                          
+       ___return_lbl00071   0x000a8e    program     static                          
+       ___return_lbl00072   0x000a92    program     static                          
+   ___switchexit_lbl00006   0x000762    program     static                          
         ___while_lbl00015   0x00027c    program     static                          
         ___while_lbl00016   0x0002d6    program     static                          
                __tmplbl_0   0x00008a    program     static                          
                __tmplbl_1   0x00010e    program     static                          
-              __tmplbl_10   0x000344    program     static                          
-              __tmplbl_11   0x000330    program     static                          
-              __tmplbl_12   0x000328    program     static                          
-              __tmplbl_13   0x000466    program     static                          
-              __tmplbl_14   0x000452    program     static                          
-              __tmplbl_15   0x00044c    program     static                          
-              __tmplbl_16   0x000438    program     static                          
-              __tmplbl_17   0x000430    program     static                          
-              __tmplbl_18   0x000560    program     static                          
-              __tmplbl_19   0x00054c    program     static                          
+              __tmplbl_10   0x000342    program     static                          
+              __tmplbl_11   0x00032e    program     static                          
+              __tmplbl_12   0x000326    program     static                          
+              __tmplbl_13   0x000464    program     static                          
+              __tmplbl_14   0x000450    program     static                          
+              __tmplbl_15   0x00044a    program     static                          
+              __tmplbl_16   0x000436    program     static                          
+              __tmplbl_17   0x00042e    program     static                          
+              __tmplbl_18   0x00055e    program     static                          
+              __tmplbl_19   0x00054a    program     static                          
                __tmplbl_2   0x000108    program     static                          
-              __tmplbl_20   0x000546    program     static                          
-              __tmplbl_21   0x00053a    program     static                          
-              __tmplbl_22   0x000534    program     static                          
-              __tmplbl_23   0x0005a2    program     static                          
-              __tmplbl_24   0x00058e    program     static                          
-              __tmplbl_25   0x000588    program     static                          
-              __tmplbl_26   0x00057c    program     static                          
-              __tmplbl_27   0x000576    program     static                          
-              __tmplbl_28   0x00060e    program     static                          
-              __tmplbl_29   0x0009a8    program     static                          
+              __tmplbl_20   0x000544    program     static                          
+              __tmplbl_21   0x000538    program     static                          
+              __tmplbl_22   0x000532    program     static                          
+              __tmplbl_23   0x0005a0    program     static                          
+              __tmplbl_24   0x00058c    program     static                          
+              __tmplbl_25   0x000586    program     static                          
+              __tmplbl_26   0x00057a    program     static                          
+              __tmplbl_27   0x000574    program     static                          
+              __tmplbl_28   0x00060c    program     static                          
+              __tmplbl_29   0x000946    program     static                          
                __tmplbl_3   0x0000e4    program     static                          
-              __tmplbl_30   0x00098c    program     static                          
-              __tmplbl_39   0x0009a0    program     static                          
+              __tmplbl_30   0x00092a    program     static                          
+              __tmplbl_32   0x00093e    program     static                          
                __tmplbl_4   0x0000d8    program     static                          
                __tmplbl_5   0x0000d2    program     static                          
                __tmplbl_6   0x000226    program     static                          
-               __tmplbl_7   0x00030e    program     static                          
-               __tmplbl_8   0x00035e    program     static                          
-               __tmplbl_9   0x00034a    program     static                          
-                _do_cinit   0x000b0a    program     extern C:\MCC18\src\traditional\startup\c018i.c
+               __tmplbl_7   0x00030c    program     static                          
+               __tmplbl_8   0x00035c    program     static                          
+               __tmplbl_9   0x000348    program     static                          
+                _do_cinit   0x000aa8    program     extern C:\MCC18\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern C:\MCC18\src\traditional\startup\c018i.c
                 _high_ISR   0x000008    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
                  _low_ISR   0x000018    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-                 _startup   0x000ba8    program     extern C:\MCC18\src\traditional\startup\c018i.c
-             canGetPacket   0x0007d8    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
-                  canInit   0x000786    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-           canSendMessage   0x00094a    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-                copy_loop   0x000b7c    program     static                          
-            copy_one_byte   0x000b82    program     static                          
-                     done   0x000ba6    program     static                          
-             done_copying   0x000b90    program     static                          
-                     loop   0x000bb8    program     static                          
+                 _startup   0x000b46    program     extern C:\MCC18\src\traditional\startup\c018i.c
+             canGetPacket   0x0007d6    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
+                  canInit   0x000784    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+           canSendMessage   0x0008e8    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+                copy_loop   0x000b1a    program     static                          
+            copy_one_byte   0x000b20    program     static                          
+                     done   0x000b44    program     static                          
+             done_copying   0x000b2e    program     static                          
+                     loop   0x000b56    program     static                          
                      main   0x000038    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-                 mainInit   0x00077a    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
-                     test   0x000b24    program     static                          
-                  tickGet   0x000af6    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+                 mainInit   0x000778    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
+                     test   0x000ac2    program     static                          
+                  tickGet   0x000a94    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
                    ADCON0   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                ADCON0bits   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    ADCON1   0x000fc1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -929,82 +929,82 @@ Linker Map File - Created Tue Nov 14 12:48:21 2006
         ___while_lbl00015   0x00027c    program     static                          
         ___while_lbl00016   0x0002d6    program     static                          
        ___case_2_lbl00018   0x0002d8    program     static                          
-               __tmplbl_7   0x00030e    program     static                          
-           ___if_lbl00017   0x000320    program     static                          
-              __tmplbl_12   0x000328    program     static                          
-              __tmplbl_11   0x000330    program     static                          
-              __tmplbl_10   0x000344    program     static                          
-               __tmplbl_9   0x00034a    program     static                          
-               __tmplbl_8   0x00035e    program     static                          
-           ___if_lbl00023   0x000426    program     static                          
-       ___case_3_lbl00029   0x000428    program     static                          
-              __tmplbl_17   0x000430    program     static                          
-              __tmplbl_16   0x000438    program     static                          
-              __tmplbl_15   0x00044c    program     static                          
-              __tmplbl_14   0x000452    program     static                          
-              __tmplbl_13   0x000466    program     static                          
-           ___if_lbl00028   0x00052e    program     static                          
-              __tmplbl_22   0x000534    program     static                          
-              __tmplbl_21   0x00053a    program     static                          
-              __tmplbl_20   0x000546    program     static                          
-              __tmplbl_19   0x00054c    program     static                          
-              __tmplbl_18   0x000560    program     static                          
-           ___if_lbl00034   0x000570    program     static                          
-              __tmplbl_27   0x000576    program     static                          
-              __tmplbl_26   0x00057c    program     static                          
-              __tmplbl_25   0x000588    program     static                          
-              __tmplbl_24   0x00058e    program     static                          
-              __tmplbl_23   0x0005a2    program     static                          
-         ___else_lbl00042   0x0005ba    program     static                          
-         ___else_lbl00040   0x0005d6    program     static                          
-           ___if_lbl00039   0x0005e2    program     static                          
-           ___if_lbl00043   0x0005e2    program     static                          
-           ___if_lbl00041   0x0005e2    program     static                          
-           ___if_lbl00044   0x0005f8    program     static                          
-       ___case_4_lbl00045   0x0005fa    program     static                          
-              __tmplbl_28   0x00060e    program     static                          
-           ___if_lbl00046   0x00061c    program     static                          
-          ___for_lbl00049   0x0006ea    program     static                          
-          ___for_lbl00047   0x00070e    program     static                          
-          ___for_lbl00048   0x000714    program     static                          
-       ___case_5_lbl00050   0x000758    program     static                          
-      ___default_lbl00051   0x00075e    program     static                          
-   ___switchexit_lbl00006   0x000764    program     static                          
-          ___for_lbl00003   0x000764    program     static                          
-          ___for_lbl00004   0x000766    program     static                          
-       ___return_lbl00002   0x000766    program     static                          
-                 mainInit   0x00077a    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
-                  canInit   0x000786    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-             canGetPacket   0x0007d8    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
-           canSendMessage   0x00094a    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-           ___if_lbl00077   0x000960    program     static                          
-           ___if_lbl00078   0x00096e    program     static                          
-         ___else_lbl00080   0x00097e    program     static                          
-           ___if_lbl00079   0x000982    program     static                          
-              __tmplbl_30   0x00098c    program     static                          
-              __tmplbl_39   0x0009a0    program     static                          
-              __tmplbl_29   0x0009a8    program     static                          
-           ___if_lbl00082   0x0009ac    program     static                          
-         ___else_lbl00084   0x000a92    program     static                          
-           ___if_lbl00083   0x000a98    program     static                          
-       ___return_lbl00076   0x000ae2    program     static                          
-               TBLRD_Func   0x000aea    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-       ___return_lbl00085   0x000aec    program     static                          
-               TBLWT_Func   0x000aee    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-       ___return_lbl00086   0x000af0    program     static                          
-        TBLWTPOSTINC_Func   0x000af2    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-       ___return_lbl00087   0x000af4    program     static                          
-                  tickGet   0x000af6    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
-                _do_cinit   0x000b0a    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     test   0x000b24    program     static                          
-                copy_loop   0x000b7c    program     static                          
-            copy_one_byte   0x000b82    program     static                          
-             done_copying   0x000b90    program     static                          
-                     done   0x000ba6    program     static                          
-       ___return_lbl00002   0x000ba6    program     static                          
-                 _startup   0x000ba8    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     loop   0x000bb8    program     static                          
-       ___return_lbl00001   0x000bbe    program     static                          
+               __tmplbl_7   0x00030c    program     static                          
+           ___if_lbl00017   0x00031e    program     static                          
+              __tmplbl_12   0x000326    program     static                          
+              __tmplbl_11   0x00032e    program     static                          
+              __tmplbl_10   0x000342    program     static                          
+               __tmplbl_9   0x000348    program     static                          
+               __tmplbl_8   0x00035c    program     static                          
+           ___if_lbl00023   0x000424    program     static                          
+       ___case_3_lbl00029   0x000426    program     static                          
+              __tmplbl_17   0x00042e    program     static                          
+              __tmplbl_16   0x000436    program     static                          
+              __tmplbl_15   0x00044a    program     static                          
+              __tmplbl_14   0x000450    program     static                          
+              __tmplbl_13   0x000464    program     static                          
+           ___if_lbl00028   0x00052c    program     static                          
+              __tmplbl_22   0x000532    program     static                          
+              __tmplbl_21   0x000538    program     static                          
+              __tmplbl_20   0x000544    program     static                          
+              __tmplbl_19   0x00054a    program     static                          
+              __tmplbl_18   0x00055e    program     static                          
+           ___if_lbl00034   0x00056e    program     static                          
+              __tmplbl_27   0x000574    program     static                          
+              __tmplbl_26   0x00057a    program     static                          
+              __tmplbl_25   0x000586    program     static                          
+              __tmplbl_24   0x00058c    program     static                          
+              __tmplbl_23   0x0005a0    program     static                          
+         ___else_lbl00042   0x0005b8    program     static                          
+         ___else_lbl00040   0x0005d4    program     static                          
+           ___if_lbl00039   0x0005e0    program     static                          
+           ___if_lbl00043   0x0005e0    program     static                          
+           ___if_lbl00041   0x0005e0    program     static                          
+           ___if_lbl00044   0x0005f6    program     static                          
+       ___case_4_lbl00045   0x0005f8    program     static                          
+              __tmplbl_28   0x00060c    program     static                          
+           ___if_lbl00046   0x00061a    program     static                          
+          ___for_lbl00049   0x0006e8    program     static                          
+          ___for_lbl00047   0x00070c    program     static                          
+          ___for_lbl00048   0x000712    program     static                          
+       ___case_5_lbl00050   0x000756    program     static                          
+      ___default_lbl00051   0x00075c    program     static                          
+   ___switchexit_lbl00006   0x000762    program     static                          
+          ___for_lbl00003   0x000762    program     static                          
+          ___for_lbl00004   0x000764    program     static                          
+       ___return_lbl00002   0x000764    program     static                          
+                 mainInit   0x000778    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
+                  canInit   0x000784    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+             canGetPacket   0x0007d6    program     static F:\MCP\projects\CAN\canBoot\Source\Main.c
+           canSendMessage   0x0008e8    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+           ___if_lbl00062   0x0008fe    program     static                          
+           ___if_lbl00063   0x00090c    program     static                          
+         ___else_lbl00065   0x00091c    program     static                          
+           ___if_lbl00064   0x000920    program     static                          
+              __tmplbl_30   0x00092a    program     static                          
+              __tmplbl_32   0x00093e    program     static                          
+              __tmplbl_29   0x000946    program     static                          
+           ___if_lbl00067   0x00094a    program     static                          
+         ___else_lbl00069   0x000a30    program     static                          
+           ___if_lbl00068   0x000a36    program     static                          
+       ___return_lbl00061   0x000a80    program     static                          
+               TBLRD_Func   0x000a88    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+       ___return_lbl00070   0x000a8a    program     static                          
+               TBLWT_Func   0x000a8c    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+       ___return_lbl00071   0x000a8e    program     static                          
+        TBLWTPOSTINC_Func   0x000a90    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+       ___return_lbl00072   0x000a92    program     static                          
+                  tickGet   0x000a94    program     extern F:\MCP\projects\CAN\canBoot\Source\Main.c
+                _do_cinit   0x000aa8    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     test   0x000ac2    program     static                          
+                copy_loop   0x000b1a    program     static                          
+            copy_one_byte   0x000b20    program     static                          
+             done_copying   0x000b2e    program     static                          
+                     done   0x000b44    program     static                          
+       ___return_lbl00002   0x000b44    program     static                          
+                 _startup   0x000b46    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     loop   0x000b56    program     static                          
+       ___return_lbl00001   0x000b5c    program     static                          
                   __tmp_0   0x000000       data     static F:\MCP\projects\CAN\canBoot\Source\Main.c
                   __REMB3   0x00000c       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
                  __AARGB7   0x00000c       data     extern C:\MCC18\SRC\TRADIT~1\MATH\aarg.asm
