@@ -6,9 +6,6 @@
 !_TAG_PROGRAM_VERSION	5.5.4	//
 !_TAG_REVISION_NAME	MCHPTags	//
 !_TAG_REVISION_VERSION	6.0.1	//
-ADDRH_INDEX::1	F:\MCP\projects\CAN\canBoot\Include\CAN.h	36;"	d	line:36
-ADDRL_INDEX::0	F:\MCP\projects\CAN\canBoot\Include\CAN.h	35;"	d	line:35
-ADDRU_INDEX::2	F:\MCP\projects\CAN\canBoot\Include\CAN.h	37;"	d	line:37
 BOOL	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	15;"	t	line:15
 BOOTLOADER_INIT_TIMOUT::500	F:\MCP\projects\CAN\canBoot\Source\Main.c	52;"	d	line:52	file:
 BOOT_H	F:\MCP\projects\CAN\canBoot\Include\boot.h	13;"	d	line:13
@@ -17,29 +14,24 @@ CANDEFS_H	F:\MCP\projects\CAN\canBoot\Include\CANdefs.h	13;"	d	line:13
 CAN_BAUD::0.500000	F:\MCP\projects\CAN\canBoot\Include\CANdefs.h	17;"	d	line:17
 CAN_BRP::(int)(CLOCK_FOSC/(CAN_BAUD*16)	F:\MCP\projects\CAN\canBoot\Include\CANdefs.h	28;"	d	line:28
 CAN_H	F:\MCP\projects\CAN\canBoot\Include\CAN.h	14;"	d	line:14
-CAN_PRIORITY	F:\MCP\projects\CAN\canBoot\Include\CAN.h	47;"	t	line:47
+CAN_PRIORITY	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	t	line:32
 CAN_PROTO_MESSAGE	F:\MCP\projects\CAN\canBoot\Include\CAN.h	29;"	t	line:29
 CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	18;"	d	line:18
 CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	16;"	d	line:16
 COMPILER_H	F:\MCP\projects\CAN\canBoot\Include\compiler.h	13;"	d	line:13
 DWORD	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	18;"	t	line:18
-ERR_ERROR::0x01	F:\MCP\projects\CAN\canBoot\Include\CAN.h	44;"	d	line:44
-ERR_INDEX::4	F:\MCP\projects\CAN\canBoot\Include\CAN.h	40;"	d	line:40
-ERR_NO_ERROR::0x00	F:\MCP\projects\CAN\canBoot\Include\CAN.h	43;"	d	line:43
+EERead	F:\MCP\projects\CAN\Include\EEAccess.c	14;"	f	line:14	signature:(WORD addr)
+EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	25;"	f	line:25	signature:(WORD addr,BYTE data)
 FALSE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
 INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	17;"	d	line:17
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	21;"	d	line:21
 LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	20;"	d	line:20
-MY_ID::0x78	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	d	line:32
-MY_NID::0x00	F:\MCP\projects\CAN\canBoot\Include\CAN.h	33;"	d	line:33
 PACKET_TIMEOUT::14	F:\MCP\projects\CAN\canBoot\Source\Main.c	51;"	d	line:51	file:
-PRIO_HIGEST	F:\MCP\projects\CAN\canBoot\Include\CAN.h	47;"	e	line:47
-PRIO_HIGH	F:\MCP\projects\CAN\canBoot\Include\CAN.h	47;"	e	line:47
-PRIO_LOW	F:\MCP\projects\CAN\canBoot\Include\CAN.h	47;"	e	line:47
-PRIO_LOWEST	F:\MCP\projects\CAN\canBoot\Include\CAN.h	47;"	e	line:47
+PRIO_HIGEST	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	e	line:32
+PRIO_HIGH	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	e	line:32
+PRIO_LOW	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	e	line:32
+PRIO_LOWEST	F:\MCP\projects\CAN\canBoot\Include\CAN.h	32;"	e	line:32
 PROGRAM_STATE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	28;"	t	line:28
-RID_HIGH_INDEX::5	F:\MCP\projects\CAN\canBoot\Include\CAN.h	39;"	d	line:39
-RID_LOW_INDEX::4	F:\MCP\projects\CAN\canBoot\Include\CAN.h	38;"	d	line:38
 RM_HIGH_INTERRUPT_VECTOR::0x001008	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
 RM_LOW_INTERRUPT_VECTOR::0x001018	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
 RM_RESET_VECTOR::0x001000	F:\MCP\projects\CAN\canBoot\Include\boot.h	15;"	d	line:15
@@ -51,9 +43,9 @@ WORD	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	17;"	t	line:17
 _BOOL	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	15;"	g	line:15
 _CAN_PROTO_MESSAGE	F:\MCP\projects\CAN\canBoot\Include\CAN.h	21;"	s	line:21
 _PROGRAM_STATE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	20;"	g	line:20
-_high_ISR	F:\MCP\projects\CAN\canBoot\Source\Main.c	22;"	f	line:22	signature:(void)
-canInit	F:\MCP\projects\CAN\canBoot\Include\CAN.h	50;"	p	line:50	signature:(void)
-canSendMessage	F:\MCP\projects\CAN\canBoot\Include\CAN.h	51;"	p	line:51	signature:(CAN_PROTO_MESSAGE cm, CAN_PRIORITY prio)
+_high_ISR	F:\MCP\projects\CAN\canBoot\Source\Main.c	23;"	f	line:23	signature:(void)
+canInit	F:\MCP\projects\CAN\canBoot\Include\CAN.h	35;"	p	line:35	signature:(void)
+canSendMessage	F:\MCP\projects\CAN\canBoot\Include\CAN.h	36;"	p	line:36	signature:(CAN_PROTO_MESSAGE cm, CAN_PRIORITY prio)
 data	F:\MCP\projects\CAN\canBoot\Include\CAN.h	28;"	m	line:28	struct:_CAN_PROTO_MESSAGE
 data_length	F:\MCP\projects\CAN\canBoot\Include\CAN.h	27;"	m	line:27	struct:_CAN_PROTO_MESSAGE
 funcc	F:\MCP\projects\CAN\canBoot\Include\CAN.h	24;"	m	line:24	struct:_CAN_PROTO_MESSAGE
