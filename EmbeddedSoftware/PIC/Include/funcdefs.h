@@ -31,9 +31,23 @@
 
 
 #define NODE_ID_EE  0x00   	// EEPROM first index where to look for ID and NID. 
-				// NODE_HAS_ID_EE = NODE_HAS_ID if has correct ID, otherwise use DEFAULT_ID and DEFAULT_NID
-				// NODE_HAS_ID_EE + 1 = ID[1]
-				// NODE_HAS_ID_EE + 2 = ID[0]
-				// NODE_HAS_ID_EE + 3 = NID
+				// NODE_ID_EE = NODE_HAS_ID if has correct ID, otherwise use DEFAULT_ID and DEFAULT_NID
+				// NODE_ID_EE + 1 = ID[1]
+				// NODE_ID_EE + 2 = ID[0]
+				// NODE_ID_EE + 3 = NID
  
 #define NODE_HAS_ID 0x2A   	// Value which indicate valid ID and NID.
+
+
+// Definitions for BOOT packets. Which index in data where things are.
+#define BOOT_DATA_ADDRL_INDEX 0
+#define BOOT_DATA_ADDRH_INDEX 1
+#define BOOT_DATA_ADDRU_INDEX 2
+#define BOOT_DATA_RID_LOW_INDEX 4
+#define BOOT_DATA_RID_HIGH_INDEX 5
+#define BOOT_DATA_ERR_INDEX 4
+
+//<ERR>
+// Value in BOOT_DATA_ERR_INDEX
+#define ACK_ERR_NO_ERROR 0x00 //= no error
+#define ACK_ERR_ERROR 0x01 //= error
