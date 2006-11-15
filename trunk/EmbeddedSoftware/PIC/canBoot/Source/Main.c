@@ -15,6 +15,7 @@
 #include <CAN.h>
 #include <boot.h>
 #include <funcdefs.h>
+#include <EEaccess.h>
 
 /** V E C T O R  R E M A P P I N G *******************************************/
 
@@ -38,7 +39,6 @@ void _low_ISR (void)
 #endif
 
 static CAN_PROTO_MESSAGE cm;
-static BYTE ful=0;
 static DWORD cnt =0;
 
 static void mainInit(void);
@@ -56,13 +56,16 @@ DWORD tickSubCounter = 0;
 
 DWORD tickGet(void);
 
+static int MY_ID = DEFAULT_ID;
+static BYTE MY_NID = DEFAULT_NID;
+
 void main()
 {
 	static PROGRAM_STATE pgs = pgsWATING_START;
 	static DWORD t = 0;
 	static WORD programmerSid=0;
 	
-	static BYTE errMsg = ERR_NO_ERROR;
+	static BYTE errMsg = ACK_ERR_NO_ERROR;
 	static PROGRAM_STATE afterAckPgs = pgsWATING_START;
 	static DWORD pgmAddress = 0;
 	static BYTE bytesReceived = 0;
@@ -70,8 +73,6 @@ void main()
 	DWORD tBoot;
 	
 	static BYTE pgmData[64];
-
-	static BYTE tmp;
 
 	// Inits
 	mainInit();
@@ -82,6 +83,13 @@ void main()
 
 	tBoot = tickGet();
 	
+	// Read ID and NID if exist.
+	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
+	{
+		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
+		MY_NID=EERead(NODE_ID_EE + 3);
+	}
+
 
 	for(;;)
 	{
@@ -101,13 +109,13 @@ void main()
 		{
 			case pgsWATING_START:
 				// Check if there is bootloader start packet
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_INIT && ((((unsigned int)cm.data[RID_HIGH_INDEX])<<8)+cm.data[RID_LOW_INDEX])==MY_ID && cm.nid==MY_NID)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_INIT && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID && cm.nid==MY_NID)
 				{
 					// Has new start packet
-					pgmAddress 		= (((DWORD)cm.data[ADDRU_INDEX])<<16)+(((DWORD)cm.data[ADDRH_INDEX])<<8)+((DWORD)cm.data[ADDRL_INDEX]);
+					pgmAddress 		= (((DWORD)cm.data[BOOT_DATA_ADDRU_INDEX])<<16)+(((DWORD)cm.data[BOOT_DATA_ADDRH_INDEX])<<8)+((DWORD)cm.data[BOOT_DATA_ADDRL_INDEX]);
 					programmerSid 	= cm.sid;
 					t 				= tickGet();
-					errMsg			= ERR_NO_ERROR;
+					errMsg			= ACK_ERR_NO_ERROR;
 					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 					pgs 			= pgsSEND_ACK;
 					// save pgm adress.
@@ -128,7 +136,7 @@ void main()
 				outCm.nid   			= MY_NID;
 				outCm.sid   			= MY_ID;
 				outCm.data_length 		= 8;
-				outCm.data[ERR_INDEX]	= errMsg;
+				outCm.data[BOOT_DATA_ERR_INDEX]	= errMsg;
 				t						= tickGet();
 				pgs						= afterAckPgs;
 
@@ -141,7 +149,7 @@ void main()
 				if ((tickGet()-t)>PACKET_TIMEOUT)
 				{
 					// Timeout, resend ack.
-					errMsg			= ERR_NO_ERROR;
+					errMsg			= ACK_ERR_NO_ERROR;
 					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 					pgs 			= pgsSEND_ACK;
 				}
@@ -183,7 +191,7 @@ void main()
 				{
 					// Send ack and goto wait first packet.
 					// save adress.
-					errMsg			= ERR_NO_ERROR;
+					errMsg			= ACK_ERR_NO_ERROR;
 					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 					pgs 			= pgsSEND_ACK;
 				}
@@ -199,13 +207,13 @@ void main()
 					if (bytesReceived==0)
 					{
 						// No received, done.
-						errMsg			= ERR_NO_ERROR;
+						errMsg			= ACK_ERR_NO_ERROR;
 						afterAckPgs		= pgsDONE;
 						pgs 			= pgsSEND_ACK;
 					}
 					else if (bytesReceived!=64)
 					{
-						errMsg			= ERR_ERROR;
+						errMsg			= ACK_ERR_ERROR;
 						afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
 						pgs 			= pgsSEND_ACK;
 					}
@@ -238,7 +246,7 @@ void main()
 				// Check addr limit
 				if (pgmAddress<RM_RESET_VECTOR)
 				{				
-					errMsg			= ERR_ERROR;
+					errMsg			= ACK_ERR_ERROR;
 					pgs 			= pgsSEND_ACK;
 					//Not allowed to write here!
 					
@@ -305,7 +313,7 @@ void main()
 
 				pgmAddress	   += 64;
 				bytesReceived 	= 0;
-				errMsg			= ERR_NO_ERROR;
+				errMsg			= ACK_ERR_NO_ERROR;
 				pgs 			= pgsSEND_ACK;
 
 			break;
