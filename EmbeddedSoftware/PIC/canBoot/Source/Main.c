@@ -74,6 +74,8 @@ void main()
 	
 	static BYTE pgmData[64];
 
+	CAN_PROTO_MESSAGE outCmHeart;
+
 	// Inits
 	mainInit();
 
@@ -89,6 +91,15 @@ void main()
 		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
 		MY_NID=EERead(NODE_ID_EE + 3);
 	}
+
+	// Send bootloader startup heatbeat
+	outCmHeart.funct 					= FUNCT_BOOTLOADER;
+	outCmHeart.funcc 					= FUNCC_BOOT_HEARTBEAT;
+	outCmHeart.nid   					= MY_NID;
+	outCmHeart.sid   					= MY_ID;
+	outCmHeart.data_length 				= 1;
+	outCmHeart.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_BOOT_STARTUP;
+	while(!canSendMessage(outCmHeart,PRIO_HIGH));
 
 
 	for(;;)
