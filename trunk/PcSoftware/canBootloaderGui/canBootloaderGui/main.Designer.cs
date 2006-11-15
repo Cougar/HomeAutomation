@@ -45,6 +45,8 @@ namespace canBootloader
             this.menu_target = new System.Windows.Forms.ToolStripMenuItem();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.nicon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menu_action_change_target_idnid = new System.Windows.Forms.ToolStripMenuItem();
             this.menu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -95,7 +97,9 @@ namespace canBootloader
             // 
             this.menu_action.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menu_action_download,
-            this.menu_action_abort});
+            this.menu_action_abort,
+            this.toolStripSeparator1,
+            this.menu_action_change_target_idnid});
             this.menu_action.Name = "menu_action";
             this.menu_action.Size = new System.Drawing.Size(49, 20);
             this.menu_action.Text = "Action";
@@ -104,7 +108,7 @@ namespace canBootloader
             // 
             this.menu_action_download.Name = "menu_action_download";
             this.menu_action_download.ShortcutKeys = System.Windows.Forms.Keys.F10;
-            this.menu_action_download.Size = new System.Drawing.Size(146, 22);
+            this.menu_action_download.Size = new System.Drawing.Size(185, 22);
             this.menu_action_download.Text = "Download";
             this.menu_action_download.Click += new System.EventHandler(this.menu_action_download_Click);
             // 
@@ -112,7 +116,7 @@ namespace canBootloader
             // 
             this.menu_action_abort.Name = "menu_action_abort";
             this.menu_action_abort.ShortcutKeys = System.Windows.Forms.Keys.F12;
-            this.menu_action_abort.Size = new System.Drawing.Size(146, 22);
+            this.menu_action_abort.Size = new System.Drawing.Size(185, 22);
             this.menu_action_abort.Text = "Abort";
             this.menu_action_abort.Click += new System.EventHandler(this.menu_action_abort_Click);
             // 
@@ -144,6 +148,7 @@ namespace canBootloader
             // 
             // menu_settings_myid_txt
             // 
+            this.menu_settings_myid_txt.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.menu_settings_myid_txt.Name = "menu_settings_myid_txt";
             this.menu_settings_myid_txt.Size = new System.Drawing.Size(100, 21);
             // 
@@ -171,6 +176,18 @@ namespace canBootloader
             this.nicon.Text = "canBootloader";
             this.nicon.Visible = true;
             this.nicon.DoubleClick += new System.EventHandler(this.nicon_DoubleClick);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(182, 6);
+            // 
+            // menu_action_change_target_idnid
+            // 
+            this.menu_action_change_target_idnid.Name = "menu_action_change_target_idnid";
+            this.menu_action_change_target_idnid.Size = new System.Drawing.Size(185, 22);
+            this.menu_action_change_target_idnid.Text = "Change targets ID/NID";
+            this.menu_action_change_target_idnid.Click += new System.EventHandler(this.menu_action_change_target_idnid_Click);
             // 
             // main
             // 
@@ -211,6 +228,8 @@ namespace canBootloader
         private System.Windows.Forms.ToolStripMenuItem menu_target;
         private System.Windows.Forms.ToolStripMenuItem menu_settings_myid;
         private System.Windows.Forms.ToolStripTextBox menu_settings_myid_txt;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem menu_action_change_target_idnid;
     }
 }
 

@@ -135,7 +135,6 @@ namespace canBootloader
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "manageTargetsDialog";
             this.Text = "manageTargetsDialog";
-            this.Load += new System.EventHandler(this.manageTargetsDialog_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

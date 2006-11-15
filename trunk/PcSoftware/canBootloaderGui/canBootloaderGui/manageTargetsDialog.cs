@@ -10,20 +10,37 @@ namespace canBootloader
 {
     public partial class manageTargetsDialog : Form
     {
+        public enum manageMode {ADD_TARGET,EDIT_TARGET,CHANGE_ID_NID };
+
         main m;
         LinkedList<nodeTarget> targets;
+        manageMode mmode;
+        nodeTarget targetToEdit = null;
 
-        public manageTargetsDialog(main m,LinkedList<nodeTarget> targets)
+
+        public manageTargetsDialog(main m,LinkedList<nodeTarget> targets,manageMode mmode,nodeTarget targetToEdit)
         {
             InitializeComponent();
             this.m = m;
             this.targets = targets;
+            this.targetToEdit = targetToEdit;
+            setMode(mmode);
         }
 
-        private void manageTargetsDialog_Load(object sender, EventArgs e)
+        private void setMode(manageMode mmode)
         {
-
+            this.mmode = mmode;
+            if (mmode == manageMode.CHANGE_ID_NID)
+            {
+                txt_expl.Enabled = false;
+                this.Text = "Enter new ID and NID";
+            }
+            if (mmode == manageMode.ADD_TARGET || mmode == manageMode.EDIT_TARGET)
+            {
+                this.Text = "Add/edit target ID, NID and description";
+            }
         }
+
 
         private void cmd_save_Click(object sender, EventArgs e)
         {
@@ -33,10 +50,23 @@ namespace canBootloader
             if (!byte.TryParse(txt_nid.Text, System.Globalization.NumberStyles.HexNumber, null, out nid) || nid > 0xF)
             { MessageBox.Show("Network id need to be a hexadecimal number between 0 and 0xF.", "Format error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
 
-            targets.AddFirst(new nodeTarget(txt_expl.Text, tid, nid));
+            if (mmode == manageMode.EDIT_TARGET)
+            {
+                targets.Remove(targetToEdit);
+            }
 
-            m.saveSettings();
-            m.refreshTargets();
+            if (mmode == manageMode.ADD_TARGET || mmode == manageMode.EDIT_TARGET)
+            {
+                targets.AddFirst(new nodeTarget(txt_expl.Text, tid, nid));
+                m.saveSettings();
+                m.refreshTargets();
+            }
+
+            if (mmode == manageMode.CHANGE_ID_NID)
+            {
+                m.changeIdNid(tid,nid);
+            }
+
             this.Close();
         }
     }
