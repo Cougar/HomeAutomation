@@ -27,10 +27,11 @@
 
 
 #define DEFAULT_ID 0x78 	// Default ID for bootloader/node when no id is set.
+#define DEFAULT_NID 0x00	// Default ID for bootloader/node when no nid is set.
 
 
 #define NODE_ID_EE  0x00   	// EEPROM first index where to look for ID and NID. 
-				// NODE_HAS_ID_EE = NODE_HAS_ID if has correct ID, otherwise use DEFAULT_ID
+				// NODE_HAS_ID_EE = NODE_HAS_ID if has correct ID, otherwise use DEFAULT_ID and DEFAULT_NID
 				// NODE_HAS_ID_EE + 1 = ID[1]
 				// NODE_HAS_ID_EE + 2 = ID[0]
 				// NODE_HAS_ID_EE + 3 = NID
