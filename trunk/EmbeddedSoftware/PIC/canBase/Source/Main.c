@@ -48,6 +48,16 @@ void main()
 		MY_NID=EERead(NODE_ID_EE + 3);
 	}
 
+	// Send user program startup heatbeat
+	outCm.funct 					= FUNCT_BOOTLOADER;
+	outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
+	outCm.nid   					= MY_NID;
+	outCm.sid   					= MY_ID;
+	outCm.data_length 				= 1;
+	outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_USER_STARTUP;
+	while(!canSendMessage(outCm,PRIO_HIGH));
+
+
 	while(1)
 	{
 		static TICK t = 0;
@@ -56,11 +66,13 @@ void main()
 		
 		if ((tickGet()-heartbeat)>TICK_SECOND*5)
 		{
+			// Send alive heartbeat
 			outCm.funct 					= FUNCT_BOOTLOADER;
 			outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
 			outCm.nid   					= MY_NID;
 			outCm.sid   					= MY_ID;
-			outCm.data_length 				= 0;
+			outCm.data_length 				= 1;
+			outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_ALIVE;
 			while(!canSendMessage(outCm,PRIO_HIGH));
 			
 			heartbeat = tickGet();
@@ -145,11 +157,11 @@ void canParse(CAN_MESSAGE cm)
 					case FUNCC_BOOT_INIT: Reset(); break; //User whant to program me, reset me.
 					case FUNCC_BOOT_SET_ID:
 						// Change my ID and NID
-						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW];
-						MY_NID=cm.data[BOOT_DATA_NEW_NID];
-						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH]);
-						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW]);
-						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID]);
+						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW_INDEX];
+						MY_NID=cm.data[BOOT_DATA_NEW_NID_INDEX];
+						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX]);
+						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW_INDEX]);
+						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID_INDEX]);
 						EEWrite(NODE_ID_EE,NODE_HAS_ID);
 						// Send ack with new id.
 						outCm.funct 					= FUNCT_BOOTLOADER;
