@@ -20,6 +20,8 @@
 #define FUNCC_BOOT_SET_ID 0b0000000110  //Change ID and NID.
 #define FUNCC_BOOT_DONE   0b0000000101  //End programming, start user program.
 
+#define FUNCC_BOOT_HEARTBEAT 0b0000001000 // Heartbeat
+
 //<FUNCC> program packet
 #define FUNCC_BOOT_PGM 0b0000000011 //To indicate programming data packet.
 
@@ -55,4 +57,3 @@
 // Value in BOOT_DATA_ERR_INDEX
 #define ACK_ERR_NO_ERROR 0x00 //= no error
 #define ACK_ERR_ERROR 0x01 //= error
-
