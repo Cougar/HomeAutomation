@@ -23,6 +23,9 @@
 static void mainInit(void);
 
 
+static int MY_ID = DEFAULT_ID;
+static BYTE MY_NID = DEFAULT_NID;
+
 void main()
 {
 	static TICK t = 0;
@@ -37,6 +40,13 @@ void main()
 	#endif
 
 	tickInit();
+
+	// Read ID and NID if exist.
+	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
+	{
+		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
+		MY_NID=EERead(NODE_ID_EE + 3);
+	}
 
 	// Dummy bootmessage
 	cm2.data[0]=0x91;
@@ -118,7 +128,7 @@ void canParse(CAN_MESSAGE cm)
 	switch(cm.funct)
 	{
 		case FUNCT_BOOTLOADER:
-			if (cm.funcc==FUNCC_BOOT_INIT) { Reset(); }
+			if (cm.funcc==FUNCC_BOOT_INIT && cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) { Reset(); }
 		break;
 	}
 }
