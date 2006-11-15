@@ -128,7 +128,24 @@ void canParse(CAN_MESSAGE cm)
 	switch(cm.funct)
 	{
 		case FUNCT_BOOTLOADER:
-			if (cm.funcc==FUNCC_BOOT_INIT && cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) { Reset(); }
+			if (cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) 
+			{
+				switch(cm.funcc)
+				{
+					case FUNCC_BOOT_INIT: Reset(); break; //User whant to program me, reset me.
+					case FUNCC_BOOT_SET_ID:
+						// Change my ID and NID
+						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW];
+						MY_NID=cm.data[BOOT_DATA_NEW_NID];
+						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH]);
+						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW]);
+						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID]);
+						EEWrite(NODE_ID_EE,NODE_HAS_ID);
+					break;
+				}
+			}
+
+
 		break;
 	}
 }

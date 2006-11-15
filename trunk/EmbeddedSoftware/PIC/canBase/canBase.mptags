@@ -57,8 +57,8 @@ USE_CAN	F:\MCP\projects\CAN\canBase\Include\stackTasks.h	15;"	d	line:15
 WORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	17;"	t	line:17
 _BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	g	line:15
 _CAN_MESSAGE	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	s	line:20
-_reset	F:\MCP\projects\CAN\canBase\Source\Main.c	144;"	f	line:144	signature:(void)
-_startup	F:\MCP\projects\CAN\canBase\Source\Main.c	142;"	p	line:142	file:	signature:(void)
+_reset	F:\MCP\projects\CAN\canBase\Source\Main.c	161;"	f	line:161	signature:(void)
+_startup	F:\MCP\projects\CAN\canBase\Source\Main.c	159;"	p	line:159	file:	signature:(void)
 canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	140;"	f	line:140
 canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	16;"	p	line:16	file:	signature:(void)
 canISR	F:\MCP\projects\CAN\canBase\Include\CAN.h	35;"	p	line:35	signature:(void)
