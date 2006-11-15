@@ -46,7 +46,7 @@ namespace canBootloader
             this.cmd_save.Name = "cmd_save";
             this.cmd_save.Size = new System.Drawing.Size(68, 20);
             this.cmd_save.TabIndex = 0;
-            this.cmd_save.Text = "Add";
+            this.cmd_save.Text = "OK";
             this.cmd_save.UseVisualStyleBackColor = true;
             this.cmd_save.Click += new System.EventHandler(this.cmd_save_Click);
             // 
@@ -74,6 +74,8 @@ namespace canBootloader
             this.txt_tid.Name = "txt_tid";
             this.txt_tid.Size = new System.Drawing.Size(60, 20);
             this.txt_tid.TabIndex = 3;
+            this.txt_tid.Text = "000";
+            this.txt_tid.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // txt_nid
             // 
@@ -81,6 +83,8 @@ namespace canBootloader
             this.txt_nid.Name = "txt_nid";
             this.txt_nid.Size = new System.Drawing.Size(60, 20);
             this.txt_nid.TabIndex = 4;
+            this.txt_nid.Text = "0";
+            this.txt_nid.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label3
             // 

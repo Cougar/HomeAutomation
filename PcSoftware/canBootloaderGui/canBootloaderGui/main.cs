@@ -160,6 +160,7 @@ namespace canBootloader
                 targetItem ti = new targetItem(nt);
                 menu_target.DropDownItems.Add(ti);
                 ti.Click += new EventHandler(targetItem_Click);
+                ti.DoubleClick += new EventHandler(ti_DoubleClick);
                 ti.Checked = ti.getNodeTarget().Equals(currentTarget);
                 targetItemDelete tidel = new targetItemDelete(ti);
                 tidel.Click += new EventHandler(tidel_Click);
@@ -168,12 +169,30 @@ namespace canBootloader
 
         }
 
+        void ti_DoubleClick(object sender, EventArgs e)
+        {
+            manageTargetsDialog mtd = new manageTargetsDialog(this, targets, manageTargetsDialog.manageMode.EDIT_TARGET, ((targetItem)sender).getNodeTarget());
+            mtd.ShowDialog();
+        }
+
         void tidel_Click(object sender, EventArgs e)
         {
             targetItemDelete tidel = (targetItemDelete)sender;
             if (tidel.getTargetItem().getNodeTarget().Equals(currentTarget)) currentTarget = null;
             targets.Remove(tidel.getTargetItem().getNodeTarget());
             refreshTargets();
+            saveSettings();
+        }
+
+        private void targetItem_Click(object sender, EventArgs e)
+        {
+            targetItem ti = (targetItem)sender;
+            currentTarget = ti.getNodeTarget();
+            for (int i = 2; i < menu_target.DropDownItems.Count; i++)
+            {
+                ((targetItem)menu_target.DropDownItems[i]).Checked = false;
+            }
+            ti.Checked = true;
             saveSettings();
         }
 
@@ -350,19 +369,6 @@ namespace canBootloader
         {
             MouseEventArgs mea = (MouseEventArgs)e;
             if (mea.Button == MouseButtons.Left) download(Downloader.downloadMode.PROGRAM);
-        }
-
-
-        private void targetItem_Click(object sender, EventArgs e)
-        {
-            targetItem ti = (targetItem)sender;
-            currentTarget = ti.getNodeTarget();
-            for (int i = 2; i < menu_target.DropDownItems.Count;i++ )
-            {
-                ((targetItem)menu_target.DropDownItems[i]).Checked = false;
-            }
-            ti.Checked = true;
-            saveSettings();
         }
 
 

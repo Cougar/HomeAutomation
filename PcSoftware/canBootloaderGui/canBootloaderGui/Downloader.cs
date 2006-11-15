@@ -7,7 +7,7 @@ namespace canBootloader
 {
     public class Downloader
     {
-        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2,CHANGE_ID_START,CHANGE_ID_WAIT_OWN_PACKET,CHANGE_ID_DONE };
+        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2,CHANGE_ID_START,CHANGE_ID_WAIT_ACK_PACKET,CHANGE_ID_DONE };
         public enum downloadMode { PROGRAM, CHANGE_ID_NID };
         public enum abortMode { USER, PROGRAM, CHANGE_ID_NID };
 
@@ -51,6 +51,8 @@ namespace canBootloader
         private uint tmp_new_id = 0;
         private byte tmp_new_nid = 0;
 
+        public string lastError = "";
+
         public Downloader(HexFile hf, SerialConnection sc, uint myId, byte nid, uint targetId, downloadMode downloadmode, uint tmp_new_id, byte tmp_new_nid) 
         {
             this.hf = hf;
@@ -69,9 +71,13 @@ namespace canBootloader
 
         public bool go() 
         {
-            if (sc==null || hf==null || hf.getLength()==0 || !sc.isOpen()) return false;
+            if (sc == null) { lastError = "No serial connection established!"; return false; }
+            if (!sc.isOpen()) { lastError = "Serial port is not open!"; return false; }
+            if(downloadmode == downloadMode.PROGRAM && (hf == null || hf.getLength() == 0)) {lastError="No hex file loaded or hexfile has length 0."; return false;}
+
             if (downloadmode == downloadMode.PROGRAM)
             {
+                
                 pgs = dState.SEND_START;
             }
             else if (downloadmode == downloadMode.CHANGE_ID_NID)
@@ -330,20 +336,29 @@ namespace canBootloader
                             outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_SET_ID, (byte)MY_NID, (uint)MY_ID, 8, data);
                             sc.writePacket(outCm);
                             t = Environment.TickCount;
-                            pgs = dState.CHANGE_ID_WAIT_OWN_PACKET;
+                            pgs = dState.CHANGE_ID_WAIT_ACK_PACKET;
                             timeStart = Environment.TickCount;
                             break;
 
-                        case dState.CHANGE_ID_WAIT_OWN_PACKET:
+                        case dState.CHANGE_ID_WAIT_ACK_PACKET:
                             // Wait reciving own packet, if timeout, resend last.
                             if ((Environment.TickCount - t) > TIMEOUT_MS)
                             {
                                 pgs = dState.CHANGE_ID_START;
                             }
 
-                            if (hasMessage && outCm.Equals(cm))
+                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == tmp_new_nid && cm.getSid() == tmp_new_id)
                             {
-                                pgs = dState.CHANGE_ID_DONE;
+                                // If no error
+                                if (data[ERR_INDEX] == ERR_NO_ERROR)
+                                {
+                                    pgs = dState.CHANGE_ID_DONE;
+                                }
+                                else
+                                {
+                                    // else resend change.
+                                    pgs = dState.CHANGE_ID_START;
+                                }
                             }
 
                             break;
@@ -359,7 +374,9 @@ namespace canBootloader
 
             } catch(Exception) 
             {
-                threadAbort.Invoke(this, new threadAbortEvent((int)(Environment.TickCount - timeStart), (int)hf.getLength(), abortmode));
+                int hfLength = 0;
+                if (hf != null) hfLength = (int)hf.getLength();
+                threadAbort.Invoke(this, new threadAbortEvent((int)(Environment.TickCount - timeStart), hfLength, abortmode));
             }
         }
 
