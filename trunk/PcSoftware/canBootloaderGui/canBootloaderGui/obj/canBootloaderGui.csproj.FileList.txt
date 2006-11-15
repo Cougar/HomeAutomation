@@ -21,3 +21,4 @@ obj\Release\canBootloader.manageTargetsDialog.resources
 obj\Debug\canBootloader.trayIcons.resources
 obj\Release\canBootloader.trayIcons.resources
 bin\Debug\canBootloaderGui.exe.config
+bin\Release\canBootloaderGui.exe.config
