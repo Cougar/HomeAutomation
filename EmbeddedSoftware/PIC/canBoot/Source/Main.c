@@ -155,7 +155,7 @@ void main()
 				}
 
 				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3E3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
 				{
 					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
 
@@ -175,7 +175,7 @@ void main()
 		
 			
 				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3E3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
 				{
 					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
 					// Save bytes in memory, inc received bytes.
