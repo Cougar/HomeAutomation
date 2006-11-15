@@ -15,12 +15,16 @@ namespace canBootloader
 {
     public partial class main : Form
     {
+
         private HexFile hf;
         private SerialConnection sc;
         private Downloader dl;
         private string currentLoadedFile = "";
         private nodeTarget currentTarget;
         private uint myid;
+
+        private uint tmp_new_id = 0;
+        private byte tmp_new_nid = 0;
 
         private enum TrayIcon {NORMAL,DOWNLOADING,FAIL,OK};
         private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(trayIcons));
@@ -178,13 +182,16 @@ namespace canBootloader
             return str;
         }
 
-        private void download()
+        private void download(Downloader.downloadMode downloadmode)
         {
-            if (dl != null) { log("Download in progress..."); return; }
+            if (dl != null) { log("Process in progress..."); return; }
 
-            loadFile(currentLoadedFile);
+            if (downloadmode == Downloader.downloadMode.PROGRAM)
+            {
+                loadFile(currentLoadedFile);
 
-            if (hf == null) { log("No hexfile loaded.");  return; }
+                if (hf == null) { log("No hexfile loaded."); return; }
+            }
 
             if (currentTarget == null) { log("No target selected."); return; }
 
@@ -196,14 +203,20 @@ namespace canBootloader
             catch (Exception e) { log("Error setting serial connection settings: " + e.Message); setTrayIcon(TrayIcon.FAIL); return; }
             if (!sc.open()) { log("Error opening port."); setTrayIcon(TrayIcon.FAIL); return; }
 
-            dl = new Downloader(hf, sc, 0x91, currentTarget.getNid(), currentTarget.getTargetId());
-            if (!dl.go()) { log("Error downloading..."); setTrayIcon(TrayIcon.FAIL); return; }
+            dl = new Downloader(hf, sc, myid, currentTarget.getNid(), currentTarget.getTargetId(), downloadmode, tmp_new_id, tmp_new_nid);
+            if (!dl.go()) { log("Error downloading/ID change..."); setTrayIcon(TrayIcon.FAIL); return; }
             setTrayIcon(TrayIcon.DOWNLOADING);
             downloadTimeout.Stop();
             downloadTimeout.Start();
             downloadTimeout.Enabled = true;
-            log("Downloading...");
-            
+            if (downloadmode == Downloader.downloadMode.PROGRAM)
+            {
+                log("Downloading...");
+            }
+            else if (downloadmode == Downloader.downloadMode.CHANGE_ID_NID) 
+            {
+                log("Changeing ID/NID.");
+            }
             dl.threadAbort += new EventHandler(dl_threadAbort);
 
         }
@@ -241,12 +254,24 @@ namespace canBootloader
                 this.BeginInvoke((ThreadStart)delegate
                 {
                     threadAbortEvent e2 = (threadAbortEvent)e;
-                    if (!e2.getUserAborted())
+                    switch(e2.getAbortMode())
                     {
-                        log("Download done. Time spent: " + e2.getTimeS().ToString() + " seconds. " + Math.Round(e2.getBps(), 0) + " Bps");
-                        setTrayIcon(TrayIcon.OK);
+                        case Downloader.abortMode.CHANGE_ID_NID:
+                            log("ID and NID changed.");
+                            setTrayIcon(TrayIcon.OK);
+                            break;
+
+                        case Downloader.abortMode.PROGRAM:
+                            log("Download done. Time spent: " + e2.getTimeS().ToString() + " seconds. " + Math.Round(e2.getBps(), 0) + " Bps");
+                            setTrayIcon(TrayIcon.OK);
+                            break;
+
+                        case Downloader.abortMode.USER:
+                            log("Download aborted.");
+                            break;
+                      
                     }
-                    else { log("Download aborted."); }
+
                     sc.close(); sc = null;
                     dl = null;
                     downloadTimeout.Enabled = false;
@@ -262,7 +287,7 @@ namespace canBootloader
 
         private void menu_action_download_Click(object sender, EventArgs e)
         {
-            download();
+            download(Downloader.downloadMode.PROGRAM);
         }
 
         public void saveSettings()
@@ -324,7 +349,7 @@ namespace canBootloader
         private void nicon_DoubleClick(object sender, EventArgs e)
         {
             MouseEventArgs mea = (MouseEventArgs)e;
-            if (mea.Button == MouseButtons.Left) download();
+            if (mea.Button == MouseButtons.Left) download(Downloader.downloadMode.PROGRAM);
         }
 
 
@@ -343,7 +368,7 @@ namespace canBootloader
 
         private void menu_target_add_Click(object sender, EventArgs e)
         {
-            manageTargetsDialog mtd = new manageTargetsDialog(this, targets);
+            manageTargetsDialog mtd = new manageTargetsDialog(this, targets,manageTargetsDialog.manageMode.ADD_TARGET,null);
             mtd.ShowDialog();
         }
 
@@ -370,6 +395,19 @@ namespace canBootloader
             }
         }
 
+        private void menu_action_change_target_idnid_Click(object sender, EventArgs e)
+        {
+            manageTargetsDialog mtd = new manageTargetsDialog(this, targets, manageTargetsDialog.manageMode.CHANGE_ID_NID, null);
+            mtd.ShowDialog();
+        }
+
+
+        internal void changeIdNid(uint tid, byte nid)
+        {
+            tmp_new_id = tid;
+            tmp_new_nid = nid;
+            download(Downloader.downloadMode.CHANGE_ID_NID);
+        }
     }
 
     internal class recentItem : ToolStripMenuItem
@@ -444,13 +482,13 @@ namespace canBootloader
 
         public override string ToString()
         {
-            return this.nt.getExpl() + " (0x" + this.nt.getTargetId().ToString("X").PadLeft(3,'0')+ ")";
+            return this.nt.getExpl() + " (0x " + this.nt.getNid().ToString("X").PadLeft(1, '0') + ", 0x" + this.nt.getTargetId().ToString("X").PadLeft(3, '0') + ")";
         }
         public override string Text
         {
             get
             {
-                return this.nt.getExpl() + " (0x" + this.nt.getTargetId().ToString("X").PadLeft(3, '0') + ")";
+                return this.ToString();
             }
             set
             {

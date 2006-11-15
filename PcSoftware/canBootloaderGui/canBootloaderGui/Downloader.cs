@@ -7,59 +7,77 @@ namespace canBootloader
 {
     public class Downloader
     {
-        private HexFile hf;
-        private SerialConnection sc;
-        private Thread down;
+        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2,CHANGE_ID_START,CHANGE_ID_WAIT_OWN_PACKET,CHANGE_ID_DONE };
+        public enum downloadMode { PROGRAM, CHANGE_ID_NID };
+        public enum abortMode { USER, PROGRAM, CHANGE_ID_NID };
 
-        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2 };
-
-        private const byte FUNCT_BOOTLOADER = 0x0;
-        private const byte FUNCC_BOOT_INIT = 0x01; //för att initiera en programmering/erase/etc.
-        private const byte FUNCC_BOOT_ADDR = 0x02;  // For att ändra adress.
-        private const byte FUNCC_BOOT_DONE = 0x05; //för att avsluta en programmering/erase/etc.
-        private const byte FUNCC_BOOT_PGM = 0x03; //för att indikera att detta är programdata som ska skrivas.
-        private const byte FUNCC_BOOT_ACK = 0x04; //för att indikera att detta är en ACK.
+        private const byte FUNCT_BOOTLOADER     = 0x0;
+        private const uint FUNCC_BOOT_INIT = 0x01; //för att initiera en programmering/erase/etc.
+        private const uint FUNCC_BOOT_SET_ID = 0x06;
+        private const uint FUNCC_BOOT_ADDR = 0x02;  // For att ändra adress.
+        private const uint FUNCC_BOOT_DONE = 0x05; //för att avsluta en programmering/erase/etc.
+        private const uint FUNCC_BOOT_PGM = 0x03; //för att indikera att detta är programdata som ska skrivas.
+        private const uint FUNCC_BOOT_ACK = 0x04; //för att indikera att detta är en ACK.
 
         private uint MY_ID = 0;
         private uint TARGET_ID = 0;
         private byte MY_NID = 0;
         
-        //private const byte MY_ID = 0x91;
-        //private const byte TARGET_ID = 0x78;
-        //private const byte MY_NID = 0x0;
         private const byte ADDRL_INDEX = 0;
         private const byte ADDRH_INDEX = 1;
         private const byte ADDRU_INDEX = 2;
         private const byte RID_LOW_INDEX = 4;
         private const byte RID_HIGH_INDEX = 5;
         private const byte ERR_INDEX = 4;
+        private const byte BOOT_DATA_NEW_ID_LOW = 0; 
+        private const byte BOOT_DATA_NEW_ID_HIGH = 1;
+        private const byte BOOT_DATA_NEW_NID = 2;
         private const byte ERR_NO_ERROR = 0x00; //= inget fel
         private const byte ERR_ERROR = 0x01; //= fel
+
+        private HexFile hf;
+        private SerialConnection sc;
+        private Thread down;
+        private dState pgs;
+        private downloadMode downloadmode;
 
         private const int TIMEOUT_MS = 100;
 
         private long timeStart = 0;
 
-        private bool userAborted = false;
+        private abortMode abortmode;
         private bool hasFoundNode = false;
 
+        private uint tmp_new_id = 0;
+        private byte tmp_new_nid = 0;
 
-        public Downloader(HexFile hf, SerialConnection sc,uint myId,byte nid,uint targetId) 
+        public Downloader(HexFile hf, SerialConnection sc, uint myId, byte nid, uint targetId, downloadMode downloadmode, uint tmp_new_id, byte tmp_new_nid) 
         {
             this.hf = hf;
             this.sc = sc;
             this.MY_ID = myId;
             this.MY_NID = nid;
             this.TARGET_ID = targetId;
+            this.downloadmode = downloadmode;
+            this.tmp_new_id = tmp_new_id;
+            this.tmp_new_nid = tmp_new_nid;
         }
 
-        ~Downloader() { if (down.IsAlive) userAborted = true; down.Abort(); }
+        ~Downloader() { if (down.IsAlive) abortmode = abortMode.USER; down.Abort(); }
 
         public bool foundNode() { return hasFoundNode; }
 
         public bool go() 
         {
             if (sc==null || hf==null || hf.getLength()==0 || !sc.isOpen()) return false;
+            if (downloadmode == downloadMode.PROGRAM)
+            {
+                pgs = dState.SEND_START;
+            }
+            else if (downloadmode == downloadMode.CHANGE_ID_NID)
+            {
+                pgs = dState.CHANGE_ID_START;
+            }
             down = new Thread(new ThreadStart(downloader));
             down.Start();
             return true;
@@ -67,12 +85,11 @@ namespace canBootloader
 
         public void abort()
         {
-            if (down != null && down.IsAlive) { userAborted = true; down.Abort(); }
+            if (down != null && down.IsAlive) { abortmode = abortMode.USER; down.Abort(); }
         }
 
         public void downloader()
         {
-            dState pgs = dState.SEND_START;
             int t = 0;
             CanPacket outCm = null;
             CanPacket cm = null;
@@ -295,15 +312,54 @@ namespace canBootloader
                             break;
 
                         case dState.DONE:
-                            userAborted = false;
+                            abortmode = abortMode.PROGRAM;
                             down.Abort();
                             break;
+
+
+ // -------------------------------- CHANGE ID NID ------------------------------------
+
+                        case dState.CHANGE_ID_START:
+                            // Send change id packet
+                            // and wait for own packet.
+                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID >> 8);
+                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
+                            data[BOOT_DATA_NEW_ID_HIGH] = (byte)(tmp_new_id>>8);
+                            data[BOOT_DATA_NEW_ID_LOW] = (byte)tmp_new_id;
+                            data[BOOT_DATA_NEW_NID]=tmp_new_nid;
+                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_SET_ID, (byte)MY_NID, (uint)MY_ID, 8, data);
+                            sc.writePacket(outCm);
+                            t = Environment.TickCount;
+                            pgs = dState.CHANGE_ID_WAIT_OWN_PACKET;
+                            timeStart = Environment.TickCount;
+                            break;
+
+                        case dState.CHANGE_ID_WAIT_OWN_PACKET:
+                            // Wait reciving own packet, if timeout, resend last.
+                            if ((Environment.TickCount - t) > TIMEOUT_MS)
+                            {
+                                pgs = dState.CHANGE_ID_START;
+                            }
+
+                            if (hasMessage && outCm.Equals(cm))
+                            {
+                                pgs = dState.CHANGE_ID_DONE;
+                            }
+
+                            break;
+
+                        case dState.CHANGE_ID_DONE:
+                            abortmode = abortMode.CHANGE_ID_NID;
+                            down.Abort();
+                            break;
+
+
                     }
                 }
 
             } catch(Exception) 
             {
-                threadAbort.Invoke(this, new threadAbortEvent((int)(Environment.TickCount - timeStart), (int)hf.getLength(), userAborted));
+                threadAbort.Invoke(this, new threadAbortEvent((int)(Environment.TickCount - timeStart), (int)hf.getLength(), abortmode));
             }
         }
 
@@ -316,22 +372,22 @@ namespace canBootloader
         private int times = 0;
         private double bps = 0;
         private int bytes = 0;
-        private bool userAborted = false;
+        private Downloader.abortMode abortmode;
 
-        public threadAbortEvent(int diffms, int bytes, bool userAborted)
+        public threadAbortEvent(int diffms, int bytes, Downloader.abortMode abortmode)
         {
-            if (!userAborted)
+            if (abortmode == Downloader.abortMode.PROGRAM)
             {
                 this.timems = diffms;
                 this.times = this.timems/1000;
                 this.bytes = bytes;
                 this.bps = ((double)bytes / ((double)this.timems/1000.0));
             }
-            this.userAborted = userAborted;
+            this.abortmode = abortmode;
         }
 
         public double getBps() { return this.bps; }
         public int getTimeS() { return this.times; }
-        public bool getUserAborted() { return this.userAborted; }
+        public Downloader.abortMode getAbortMode() { return this.abortmode; }
     }
 }

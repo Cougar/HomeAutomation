@@ -116,6 +116,7 @@
     <None Include="Resources\canBootloader_done_fail.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resources\canBootloader_done_ok.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
