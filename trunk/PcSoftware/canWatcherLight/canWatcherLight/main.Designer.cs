@@ -45,10 +45,12 @@ namespace canWatcherLight
             // 
             // lst_incomming
             // 
+            this.lst_incomming.Font = new System.Drawing.Font("Lucida Sans Unicode", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lst_incomming.FormattingEnabled = true;
+            this.lst_incomming.ItemHeight = 14;
             this.lst_incomming.Location = new System.Drawing.Point(12, 28);
             this.lst_incomming.Name = "lst_incomming";
-            this.lst_incomming.Size = new System.Drawing.Size(574, 134);
+            this.lst_incomming.Size = new System.Drawing.Size(599, 130);
             this.lst_incomming.TabIndex = 0;
             // 
             // tstrip
@@ -62,7 +64,7 @@ namespace canWatcherLight
             this.cmd_settings});
             this.tstrip.Location = new System.Drawing.Point(0, 0);
             this.tstrip.Name = "tstrip";
-            this.tstrip.Size = new System.Drawing.Size(598, 25);
+            this.tstrip.Size = new System.Drawing.Size(618, 25);
             this.tstrip.TabIndex = 1;
             this.tstrip.Text = "tstrip";
             // 
@@ -118,9 +120,9 @@ namespace canWatcherLight
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lab_status});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 172);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 176);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(598, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(618, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -133,7 +135,7 @@ namespace canWatcherLight
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(598, 197);
+            this.ClientSize = new System.Drawing.Size(618, 201);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.tstrip);
             this.Controls.Add(this.lst_incomming);
