@@ -84,7 +84,7 @@ namespace canWatcherLight
             string str = "";
 
             str = "\t0x"+funct.ToString("X").PadLeft(1,'0')+"\t0x"+funcc.ToString("X").PadLeft(3,'0')+"\t0x"+nid.ToString("X").PadLeft(2,'0')+"\t0x"+sid.ToString("X").PadLeft(3,'0')+"\t"+data_length.ToString()+"\t";
-            for (int i = 0; i < 8; i++) str+="0x"+data[7-i].ToString("X").PadLeft(2,'0')+" ";
+            for (int i = 0; i < 8; i++) str +=((7 - i) < this.data_length ? "0x"+data[7 - i].ToString("X").PadLeft(2, '0') : "xxxx") + " ";
 
             return str;
         }
