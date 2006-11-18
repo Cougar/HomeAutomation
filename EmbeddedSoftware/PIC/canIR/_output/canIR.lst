@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Sat Nov 18 20:46:45 2006
+Listing File Generated: Sat Nov 18 22:11:28 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -11,9 +11,9 @@ Address  Value    Disassembly              Source                               
                                             *                                                                               F:\MCP\projects\CAN\canIR\Source\Main.c
                                             *********************************************************************           F:\MCP\projects\CAN\canIR\Source\Main.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canIR/Source/Main.c $ F:\MCP\projects\CAN\canIR\Source\Main.c
-                                            * Last changed:	$LastChangedDate: 2006-11-18 14:35:12 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\Main.c
+                                            * Last changed:	$LastChangedDate: 2006-11-18 21:08:42 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\Main.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canIR\Source\Main.c
-                                            * Revision:		$Revision: 121 $                                                   F:\MCP\projects\CAN\canIR\Source\Main.c
+                                            * Revision:		$Revision: 122 $                                                   F:\MCP\projects\CAN\canIR\Source\Main.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canIR\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\Main.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\Main.c
@@ -760,10 +760,10 @@ Address  Value    Disassembly              Source                               
 001510   0e06     MOVLW     0x6                                                                                             
 001512   cff3     MOVFF     0xff3,0xfdb                                                                                     
 001514   ffdb                                                                                                               
-001516   0efe     MOVLW     0xfe           	outCm.data[2]		= type;                                                          F:\MCP\projects\CAN\canIR\Source\Main.c
+001516   0efe     MOVLW     0xfe           	outCm.data[3]		= type;                                                          F:\MCP\projects\CAN\canIR\Source\Main.c
 001518   50db     MOVF      0xdb,0x0,0x0                                                                                    
 00151a   6ee7     MOVWF     0xe7,0x0                                                                                        
-00151c   0e09     MOVLW     0x9                                                                                             
+00151c   0e0a     MOVLW     0xa                                                                                             
 00151e   cfe7     MOVFF     0xfe7,0xfdb                                                                                     
 001520   ffdb                                                                                                               
 001522   0efd     MOVLW     0xfd           	outCm.data[2]		= toggle;                                                        F:\MCP\projects\CAN\canIR\Source\Main.c
@@ -1777,9 +1777,9 @@ Address  Value    Disassembly              Source                               
                                             *                                                                               F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             *********************************************************************           F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canIR/Source/IRec.c $ F:\MCP\projects\CAN\canIR\Source\IRec.c
-                                            * Last changed:	$LastChangedDate: 2006-11-18 14:35:12 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                            * Last changed:	$LastChangedDate: 2006-11-18 21:08:42 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canIR\Source\IRec.c
-                                            * Revision:		$Revision: 121 $                                                   F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                            * Revision:		$Revision: 122 $                                                   F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canIR\Source\IRec.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
                                            #include <IRec.h>                                                                F:\MCP\projects\CAN\canIR\Source\IRec.c
@@ -1878,6 +1878,7 @@ Address  Value    Disassembly              Source                               
                                            		// Disable interrupt                                                           F:\MCP\projects\CAN\canIR\Source\IRec.c
 0015fa   949e     BCF       0x9e,0x2,0x0   		PIR1bits.CCP1IF=0;                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                           		// If found RC5 och RC5X startbit...                                           F:\MCP\projects\CAN\canIR\Source\IRec.c
 0015fc   0580     DECF      0x80,0x0,0x1   		if (started==TRUE && (type==IR_RC5 || type==IR_RC5X))                          F:\MCP\projects\CAN\canIR\Source\IRec.c
 0015fe   e001     BZ        0x1602                                                                                          
 001600   d0d0     BRA       0x17a2                                                                                          
@@ -1888,7 +1889,8 @@ Address  Value    Disassembly              Source                               
 00160a   e001     BZ        0x160e                                                                                          
 00160c   d0ca     BRA       0x17a2                                                                                          
                                            		{                                                                              F:\MCP\projects\CAN\canIR\Source\IRec.c
-                                                                                                                            F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                           			// Parse message                                                              F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                           			                                                                              F:\MCP\projects\CAN\canIR\Source\IRec.c
 00160e   0e33     MOVLW     0x33           			if ((t2-250)<timediff && timediff<(t2+250) && second==FALSE)                  F:\MCP\projects\CAN\canIR\Source\IRec.c
 001610   80d8     BSF       0xd8,0x0,0x0                                                                                    
 001612   557e     SUBFWB    0x7e,0x0,0x1                                                                                    
@@ -2111,6 +2113,7 @@ Address  Value    Disassembly              Source                               
                                            		} // if started and type == RC5 or RC5X                                        F:\MCP\projects\CAN\canIR\Source\IRec.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                           		// If RC6...                                                                   F:\MCP\projects\CAN\canIR\Source\IRec.c
 0017a2   0580     DECF      0x80,0x0,0x1   		if (started==TRUE && type==IR_RC6)                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
 0017a4   e001     BZ        0x17a8                                                                                          
 0017a6   d0ce     BRA       0x1944                                                                                          

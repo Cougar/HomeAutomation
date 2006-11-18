@@ -85,9 +85,11 @@ void irecISR()
 		// Disable interrupt
 		PIR1bits.CCP1IF=0;
 
+		// If found RC5 och RC5X startbit...
 		if (started==TRUE && (type==IR_RC5 || type==IR_RC5X))
 		{
-
+			// Parse message
+			
 			if ((t2-250)<timediff && timediff<(t2+250) && second==FALSE)
 			{
 				if (bitIndex==0) toggle=lastbit;
@@ -133,6 +135,7 @@ void irecISR()
 		} // if started and type == RC5 or RC5X
 
 
+		// If RC6...
 		if (started==TRUE && type==IR_RC6)
 		{
 
