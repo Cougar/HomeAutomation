@@ -3,10 +3,10 @@
  *                  Compiler specifics like clockspeed and portIOs.
  *
  *********************************************************************
- * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Include/compiler.h $
- * Last changed:	$LastChangedDate: 2006-11-14 12:49:56 +0100 (ti, 14 nov 2006) $
- * By:				$LastChangedBy: johboh $
- * Revision:		$Revision: 90 $
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 #ifndef COMPILER_H
