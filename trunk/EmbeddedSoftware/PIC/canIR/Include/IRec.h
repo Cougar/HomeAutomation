@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *                  Compiler specifics like clockspeed and portIOs.
+ *                  IR Reciver header file
  *
  *********************************************************************
  * FileName:        $HeadURL$
@@ -9,16 +9,11 @@
  * Revision:		$Revision$
  ********************************************************************/
 
-#ifndef COMPILER_H
-#define COMPILER_H
+#ifndef IREC_H
+#define IREC_H
 
 #include <p18cxxx.h>
-#define CLOCK_FREQ		(40000000)      // Hz
-#define INSTR_FREQ			(CLOCK_FREQ/4)
-#define CLOCK_FOSC		(40)      // MHz
-
-#define LED0_TRIS		(TRISCbits.TRISC1)
-#define LED0_IO			(PORTCbits.RC1)
 
 
-#endif //compiler.h
+
+#endif //IREC_H

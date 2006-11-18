@@ -3,10 +3,10 @@
  *                  Main application
  *
  *********************************************************************
- * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Source/Main.c $
- * Last changed:	$LastChangedDate: 2006-11-15 18:49:55 +0100 (on, 15 nov 2006) $
- * By:				$LastChangedBy: johboh $
- * Revision:		$Revision: 109 $
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 
