@@ -3,10 +3,10 @@
  *                  Stack specific like which modules to use.
  *
  *********************************************************************
- * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canBase/Include/stackTasks.h $
- * Last changed:	$LastChangedDate: 2006-11-14 10:55:38 +0100 (ti, 14 nov 2006) $
- * By:				$LastChangedBy: johboh $
- * Revision:		$Revision: 86 $
+ * FileName:        $HeadURL$
+ * Last changed:	$LastChangedDate$
+ * By:				$LastChangedBy$
+ * Revision:		$Revision$
  ********************************************************************/
 
 #ifndef stackTasks_H
