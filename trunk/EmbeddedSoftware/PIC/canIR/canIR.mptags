@@ -55,11 +55,11 @@ cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	142;"	l	line:142
 data	F:\MCP\projects\CAN\canIR\Source\IRec.c	21;"	v	line:21	file:
 heartbeat	F:\MCP\projects\CAN\canIR\Source\Main.c	72;"	l	line:72	file:
 high_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	98;"	f	line:98	signature:(void)
-irecISR	F:\MCP\projects\CAN\canIR\Include\IRec.h	37;"	p	line:37	signature:(void)
+irecISR	F:\MCP\projects\CAN\canIR\Include\IRec.h	31;"	p	line:31	signature:(void)
 irecISR	F:\MCP\projects\CAN\canIR\Source\IRec.c	64;"	f	line:64
-irecInit	F:\MCP\projects\CAN\canIR\Include\IRec.h	36;"	p	line:36	signature:(void)
+irecInit	F:\MCP\projects\CAN\canIR\Include\IRec.h	30;"	p	line:30	signature:(void)
 irecInit	F:\MCP\projects\CAN\canIR\Source\IRec.c	34;"	f	line:34
-irecParse	F:\MCP\projects\CAN\canIR\Include\IRec.h	38;"	p	line:38	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
+irecParse	F:\MCP\projects\CAN\canIR\Include\IRec.h	32;"	p	line:32	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 irecParse	F:\MCP\projects\CAN\canIR\Source\Main.c	207;"	f	line:207	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 lastbit	F:\MCP\projects\CAN\canIR\Source\IRec.c	68;"	l	line:68	file:
 low_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	116;"	f	line:116	signature:(void)
