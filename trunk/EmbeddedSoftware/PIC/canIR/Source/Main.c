@@ -20,6 +20,10 @@
 	#include <CAN.h>
 #endif
 
+#ifdef USE_IREC
+	#include <IRec.h>
+#endif
+
 static void mainInit(void);
 
 
@@ -37,6 +41,10 @@ void main()
 
 	#ifdef USE_CAN
 		canInit();
+	#endif
+
+	#ifdef USE_IREC
+		irecInit();
 	#endif
 
 	tickInit();
@@ -93,6 +101,10 @@ void high_isr(void)
 
 	#ifdef USE_CAN
 		canISR();
+	#endif
+
+	#ifdef USE_IREC
+		irecISR();
 	#endif
 
 	tickUpdate();
@@ -181,6 +193,35 @@ void canParse(CAN_MESSAGE cm)
 }
 #endif
 
+
+/*
+*	Function: irecParse
+*
+*	Input:	Received IR message
+*	Output: none
+*	Pre-conditions: irecInit
+*	Affects: Sensors/actuators/etc. See code.
+*	Depends: none.
+*/
+#ifdef USE_IREC
+void irecParse(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
+{
+	CAN_MESSAGE outCm;
+	outCm.funct 		= 0x01;
+	outCm.funcc 		= 0x01;
+	outCm.nid   		= MY_NID;
+	outCm.sid   		= MY_ID;
+	outCm.data_length 	= 4;
+	outCm.data[3]		= type;
+	outCm.data[2]		= toggle;
+	outCm.data[1]		= addr;
+	outCm.data[0]		= data;
+	
+	while(!canSendMessage(outCm,PRIO_HIGH));
+
+
+}
+#endif
 
 // Below are mandantory when using bootloader
 // define DEBUG_MODE to use without bootloader.
