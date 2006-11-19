@@ -41,24 +41,24 @@
  * 		The received UART byte.
  */
 void UartParseByte(uint8_t c) {
-	static CanMessage_t cm;
+	static Can_Message_t cm;
 	static uint8_t waitingMessage = 0;
 	static uint32_t startTime = 0;
 	static int8_t count = 0;
 	
 	/* 50ms timeout */
-	if (waitingMessage && TimebasePassedTimeMS(startTime) > 50) {
+	if (waitingMessage && Timebase_PassedTimeMillis(startTime) > 50) {
 		waitingMessage = 0;
 	}
 	
 	if (waitingMessage) {
 		/* save start time */
-		startTime = TimebaseCurrentTime();
+		startTime = Timebase_CurrentTime();
 		/* UART END */
 		if (count >= 15) {
 			if (c == UART_END_BYTE) {
 				PORTC ^= (1<<PC0);
-				CanSend(&cm);
+				Can_Send(&cm);
 			}
 			waitingMessage = 0;
 			return;
@@ -97,7 +97,7 @@ void UartParseByte(uint8_t c) {
 	
 	if (c == UART_START_BYTE && !waitingMessage) {
 		waitingMessage = 1;
-		startTime = TimebaseCurrentTime();
+		startTime = Timebase_CurrentTime();
 		count = 0;
 		cm.Id = 0;
 		return;	
@@ -109,23 +109,23 @@ void UartParseByte(uint8_t c) {
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	TimebaseInit();
-	UartInit();
-	CanInit(CAN_BITRATE_1M);
+	Timebase_Init();
+	Uart_Init();
+	Can_Init();
 	
 	DDRC = 1<<PC1 | 1<<PC0;
 	PORTC = (1<<PC1) | (1<<PC0);
 	
 	sei();
 	
-	CanMessage_t rxMsg;
+	Can_Message_t rxMsg;
 	uint16_t rxByte;
 	uint8_t i = 0;
 	
 	/* main loop */
 	while (1) {
 		/* any new CAN messages received? */
-		if (CanReceive(&rxMsg) == CAN_OK) {
+		if (Can_Receive(&rxMsg) == CAN_OK) {
 			PORTC ^= (1<<PC1);
 			/* send message to CanWatcher */
 			uart_putc(UART_START_BYTE);

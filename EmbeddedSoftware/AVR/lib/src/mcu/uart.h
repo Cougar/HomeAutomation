@@ -67,18 +67,15 @@ Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
 #define UART_NO_DATA          0x0100              /* no receive data available   */
 
 
-/*
-** function prototypes
-*/
 
-void UartInit(void);
+void Uart_Init(void);
 
 /**
    @brief   Initialize UART and set baudrate 
    @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
    @return  none
 */
-extern void uart_init(unsigned int baudrate);
+extern void Uart_InitHw(unsigned int baudrate);
 
 
 /**

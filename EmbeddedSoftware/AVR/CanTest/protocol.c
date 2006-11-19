@@ -15,7 +15,7 @@
  * Public Functions
  *---------------------------------------------------------------------------*/
 
-void ProtocolParseCanMessage(CanMessage_t *cmsg) {
+void ProtocolParseCanMessage(Can_Message_t *cmsg) {
 	/* parse as protocol message */
 	ProtocolMessage_t pmsg;
 	pmsg.Header.Raw = cmsg->Id;

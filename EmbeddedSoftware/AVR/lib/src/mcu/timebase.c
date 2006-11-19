@@ -7,7 +7,7 @@
  * @author	Martin Thomas
  * @author	Jimmy Myhrman
  * 
- * @date	2006-10-29
+ * @date	2006-11-19
  */
 
 /*-----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ ISR(SIG_OVERFLOW0) {
  * Initializes the timebase. The hardware timer interrupt source will be
  * enabled, but global interrupts need to be enabled by the application.
  */
-void TimebaseInit() {
+void Timebase_Init() {
 	TCCR0 = (1<<CS01) | (1<<CS00); // prescaler: 64
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR  |= (1<<TOV0);  // clear overflow int.
@@ -55,7 +55,7 @@ void TimebaseInit() {
  * @return
  * 		The current time in milliseconds (32bit value).
  */
-uint32_t TimebaseCurrentTime(void) {
+uint32_t Timebase_CurrentTime(void) {
 	uint8_t sreg;
 	uint16_t res;
 	sreg=SREG;
@@ -73,7 +73,7 @@ uint32_t TimebaseCurrentTime(void) {
  * @return
  * 		Number of milliseconds that have passed since t0.
  */ 
-uint32_t TimebasePassedTimeMS(uint32_t t0) {
+uint32_t Timebase_PassedTimeMillis(uint32_t t0) {
 	uint8_t sreg;
 	uint16_t res;
 	sreg=SREG;

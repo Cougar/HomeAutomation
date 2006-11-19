@@ -19,7 +19,7 @@ typedef enum {
     CAN_BITRATE_250K = 1,
     CAN_BITRATE_500K = 2,
     CAN_BITRATE_1M = 3
-} CanBitrate_t;
+} Can_Bitrate_t;
 
 /**
  * CAN Return Type. Most CAN functions return one of these. 
@@ -32,7 +32,7 @@ typedef enum {
 	CAN_NOMSG = 4,
 	CAN_CTRLERROR = 5,
 	CAN_FAIL = 0xFF
-} CanReturn_t;
+} Can_Return_t;
 
 /**
  * CAN Message Type. Stores a complete CAN frame.
@@ -71,19 +71,18 @@ typedef struct {
         /* read as 32bit unsigned data */
         uint32_t dwords[2];
     } Data;
-} CanMessage_t;
+} Can_Message_t;
 
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
 
-CanReturn_t CanInit(CanBitrate_t bitrate);
-void can_initMessageStruct(CanMessage_t* msg);
-CanReturn_t CanSend(CanMessage_t* msg);
-CanReturn_t CanReceiveAvailable(void);
-CanReturn_t CanReceive(CanMessage_t *msg);
-CanReturn_t CanCheckError(void);
+Can_Return_t Can_Init(void);
+Can_Return_t Can_Send(Can_Message_t* msg);
+Can_Return_t Can_ReceiveAvailable(void);
+Can_Return_t Can_Receive(Can_Message_t *msg);
+Can_Return_t Can_CheckError(void);
 
 #if (CANDEBUG)
 void can_debug1(void);

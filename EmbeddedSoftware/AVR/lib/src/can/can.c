@@ -3,7 +3,7 @@
  * Underlying CAN controllers are abstracted by this interface, so the
  * application needs not work directly against the CAN controllers.
  * 
- * @date	2006-10-28
+ * @date	2006-11-19
  * 
  * @author	Jimmy Myhrman
  * @author	Martin Thomas
@@ -30,21 +30,19 @@
  *---------------------------------------------------------------------------*/
 
 /**
- * Initializes the CAN interface.
+ * Initializes the CAN interface. Edit can_cfg.h to choose bitrate.
  * 
- * @param bitrate
- *		The bitrate that should be used.
  * @return
  *		CAN_OK if initialization was successful.
  *		CAN_FAILINIT otherwise.
  */
-CanReturn_t CanInit(const CanBitrate_t bitrate) {
-
+Can_Return_t Can_Init() {
+	Can_Bitrate_t bitrate = CAN_BITRATE;
 #ifdef CAN_CONTROLLER_MCP2515
-	if (mcp2515_init(bitrate) != MCP2515_OK) {
+	if (MCP2515_Init(bitrate) != MCP2515_OK) {
 		return CAN_FAILINIT;
 	}
-	if (mcp2515_setCANCTRL_Mode(MODE_NORMAL) != MCP2515_OK) {
+	if (MCP2515_SetCanCtrlMode(MODE_NORMAL) != MCP2515_OK) {
 		return CAN_FAILINIT;
 	}
 	return CAN_OK;
@@ -65,16 +63,16 @@ CanReturn_t CanInit(const CanBitrate_t bitrate) {
  *		CAN_OK if the message was successfully sent (or put in queue).
  *		CAN_FAILTX if the controller is busy AND the transmission queue is full.
  */
-CanReturn_t CanSend(CanMessage_t* msg) {
+Can_Return_t Can_Send(Can_Message_t* msg) {
 
 #ifdef CAN_CONTROLLER_MCP2515
 	uint8_t res, txbuf_n;
-	res = mcp2515_getNextFreeTXBuf(&txbuf_n); // info = addr.
+	res = MCP2515_GetNextFreeTXBuf(&txbuf_n); // info = addr.
 	if (res == MCP_ALLTXBUSY) {
 		return CAN_FAILTX;
 	}
-	mcp2515_write_canMsg(txbuf_n, msg);
-	mcp2515_start_transmit(txbuf_n);
+	MCP2515_WriteCanMsg(txbuf_n, msg);
+	MCP2515_StartTransmit(txbuf_n);
 	return CAN_OK;
 #endif
 
@@ -92,21 +90,21 @@ CanReturn_t CanSend(CanMessage_t* msg) {
  *		CAN_OK if a received message was successfully copied into the buffer.
  *		CAN_NOMSG if there are no received messages available.
  */
-CanReturn_t CanReceive(CanMessage_t *msg) {
+Can_Return_t Can_Receive(Can_Message_t *msg) {
 	
 #ifdef CAN_CONTROLLER_MCP2515
 	uint8_t stat, res;
-	stat = mcp2515_readStatus();
+	stat = MCP2515_ReadStatus();
 	if (stat & MCP_STAT_RX0IF) {
 		// Msg in Buffer 0
-		mcp2515_read_canMsg( MCP_RXBUF_0, msg);
-		mcp2515_modifyRegister(MCP_CANINTF, MCP_RX0IF, 0);
+		MCP2515_ReadCanMsg( MCP_RXBUF_0, msg);
+		MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX0IF, 0);
 		res = CAN_OK;
 	}
 	else if (stat & MCP_STAT_RX1IF) {
 		// Msg in Buffer 1
-		mcp2515_read_canMsg( MCP_RXBUF_1, msg);
-		mcp2515_modifyRegister(MCP_CANINTF, MCP_RX1IF, 0);
+		MCP2515_ReadCanMsg( MCP_RXBUF_1, msg);
+		MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX1IF, 0);
 		res = CAN_OK;
 	}
 	else {
@@ -125,11 +123,11 @@ CanReturn_t CanReceive(CanMessage_t *msg) {
  *		CAN_MSGAVAIL if there are messages available.
  *		CAN_NOMSG if the queue is empty.
  */
-CanReturn_t CanReceiveAvailable(void) {
+Can_Return_t Can_ReceiveAvailable(void) {
 	
 #ifdef CAN_CONTROLLER_MCP2515
 	uint8_t res;
-	res = mcp2515_readStatus(); // RXnIF in Bit 1 and 0
+	res = MCP2515_ReadStatus(); // RXnIF in Bit 1 and 0
 	if ( res & MCP_STAT_RXIF_MASK ) {
 		return CAN_MSGAVAIL;
 	}
@@ -150,10 +148,10 @@ CanReturn_t CanReceiveAvailable(void) {
  * @todo
  * 		Styr upp denna funktion lite bättre.
  */
-CanReturn_t CanCheckError(void) {
+Can_Return_t Can_CheckError(void) {
 	
 #ifdef CAN_CONTROLLER_MCP2515
-	uint8_t eflg = mcp2515_readRegister(MCP_EFLG);
+	uint8_t eflg = MCP2515_ReadRegister(MCP_EFLG);
 	if (eflg & MCP_EFLG_ERRORMASK) {
 		return CAN_CTRLERROR;
 	}
