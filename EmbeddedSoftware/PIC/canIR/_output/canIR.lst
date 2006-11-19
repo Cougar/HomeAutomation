@@ -1,6 +1,6 @@
 MP2COD 4.02, COFF to COD File Converter
 Copyright (c) 2006 Microchip Technology Inc.
-Listing File Generated: Sat Nov 18 22:11:28 2006
+Listing File Generated: Sun Nov 19 15:56:12 2006
 
 
 Address  Value    Disassembly              Source                                                                           File
@@ -739,9 +739,9 @@ Address  Value    Disassembly              Source                               
 0014ea   26e1     ADDWF     0xe1,0x1,0x0                                                                                    
                                            {                                                                                F:\MCP\projects\CAN\canIR\Source\Main.c
                                            	CAN_MESSAGE outCm;                                                              F:\MCP\projects\CAN\canIR\Source\Main.c
-0014ec   0e01     MOVLW     0x1            	outCm.funct 		= 0x01;                                                           F:\MCP\projects\CAN\canIR\Source\Main.c
+0014ec   0e01     MOVLW     0x1            	outCm.funct 		= FUNCT_SENSORS;                                                  F:\MCP\projects\CAN\canIR\Source\Main.c
 0014ee   6edf     MOVWF     0xdf,0x0                                                                                        
-0014f0   6ef3     MOVWF     0xf3,0x0       	outCm.funcc 		= 0x01;                                                           F:\MCP\projects\CAN\canIR\Source\Main.c
+0014f0   6ef3     MOVWF     0xf3,0x0       	outCm.funcc 		= FUNCC_SENSORS_IR;                                               F:\MCP\projects\CAN\canIR\Source\Main.c
 0014f2   cff3     MOVFF     0xff3,0xfdb                                                                                     
 0014f4   ffdb                                                                                                               
 0014f6   0e02     MOVLW     0x2                                                                                             
@@ -1777,9 +1777,9 @@ Address  Value    Disassembly              Source                               
                                             *                                                                               F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             *********************************************************************           F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             * FileName:        $HeadURL: http://svn.arune.se/svn/HomeAutomation/trunk/EmbeddedSoftware/PIC/canIR/Source/IRec.c $ F:\MCP\projects\CAN\canIR\Source\IRec.c
-                                            * Last changed:	$LastChangedDate: 2006-11-18 21:08:42 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                            * Last changed:	$LastChangedDate: 2006-11-18 22:14:33 +0100 (lö, 18 nov 2006) $ F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             * By:				$LastChangedBy: johboh $                                               F:\MCP\projects\CAN\canIR\Source\IRec.c
-                                            * Revision:		$Revision: 122 $                                                   F:\MCP\projects\CAN\canIR\Source\IRec.c
+                                            * Revision:		$Revision: 124 $                                                   F:\MCP\projects\CAN\canIR\Source\IRec.c
                                             ********************************************************************/           F:\MCP\projects\CAN\canIR\Source\IRec.c
                                                                                                                             F:\MCP\projects\CAN\canIR\Source\IRec.c
                                            #include <IRec.h>                                                                F:\MCP\projects\CAN\canIR\Source\IRec.c
