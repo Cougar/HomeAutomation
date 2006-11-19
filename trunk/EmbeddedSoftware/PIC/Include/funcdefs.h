@@ -12,7 +12,8 @@
 
 
 //<FUNCT>
-#define FUNCT_BOOTLOADER 0x0
+#define FUNCT_BOOTLOADER 0x00
+#define FUNCT_SENSORS 0x01
 
 //<FUNCC> configuration packet
 #define FUNCC_BOOT_INIT   0b0000000001 //Start programmring and/or resseting user program to go into bootloader mode.
@@ -27,6 +28,9 @@
 
 //<FUNCC> ack packet
 #define FUNCC_BOOT_ACK 0b0000000100 //Ack packet
+
+//<FUNCC>
+#define FUNCC_SENSORS_IR 0b0000000001
 
 
 #define DEFAULT_ID 0x78 	// Default ID for bootloader/node when no id is set.
