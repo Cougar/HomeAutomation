@@ -54,7 +54,7 @@ typedef struct {
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void ProtocolParseCanMessage(CanMessage_t *cmsg);
+void ProtocolParseCanMessage(Can_Message_t *cmsg);
 
 
 #endif /*PROTOCOL_H_*/

@@ -17,4 +17,10 @@
 //#define CAN_CONTROLLER_AT90CAN
 
 
+/**
+ * CAN bitrate. Possible bitrates are listed in can.h.
+ */
+#define CAN_BITRATE		CAN_BITRATE_1M
+
+
 #endif /*CAN_CFG_H_*/

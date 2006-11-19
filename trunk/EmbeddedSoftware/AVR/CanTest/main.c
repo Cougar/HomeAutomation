@@ -26,8 +26,8 @@
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	TimebaseInit();
-	UartInit();
+	Timebase_Init();
+	Uart_Init();
 	sei();
 	
 	printf("\n------------------------------\n");
@@ -35,7 +35,7 @@ int main(void) {
 	printf("------------------------------\n");
 	
 	printf("CanInit...");
-	if (CanInit(CAN_BITRATE_1M) != CAN_OK) {
+	if (Can_Init() != CAN_OK) {
 		printf("FAILED!\n");
 	}
 	else {
@@ -44,30 +44,30 @@ int main(void) {
 	
 	uint32_t timeStamp = 0;
 	
-	CanMessage_t txMsg;
-	CanMessage_t rxMsg;
+	Can_Message_t txMsg;
+	Can_Message_t rxMsg;
 	
 	txMsg.DataLength = 8;
 	txMsg.Data.bytes[0] = 7;
-	txMsg.Id = 733;
+	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	
 	/* main loop */
 	while (1) {
 		/* any new CAN messages received? */
-		if (CanReceive(&rxMsg) == CAN_OK) {
+		if (Can_Receive(&rxMsg) == CAN_OK) {
 			ProtocolParseCanMessage(&rxMsg);
 		}
 		
 		/* send CAN message and check for CAN errors once every second */
-		if (TimebasePassedTimeMS(timeStamp) >= 1000) {
-			/* increase ID and send txMsg */
+		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
+			/* send txMsg */
 			txMsg.Id++;
-			CanSend(&txMsg);
+			Can_Send(&txMsg);
 			/* check for errors */
-			timeStamp = TimebaseCurrentTime();
-			if (CanCheckError() != CAN_OK) {
+			timeStamp = Timebase_CurrentTime();
+			if (Can_CheckError() != CAN_OK) {
 				printf("CAN ERROR detected!\n");
 			}
 		}

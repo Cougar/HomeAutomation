@@ -227,8 +227,8 @@ Purpose:  called when the UART is ready to transmit the next byte
 /**
  * Wrapper function for uart_init.
  */
-void UartInit() {
-	uart_init((UART_BAUD_SELECT((BAUD),F_OSC)));
+void Uart_Init() {
+	Uart_InitHw((UART_BAUD_SELECT((BAUD),F_OSC)));
 	stdout = &myStdOut;
 }
 
@@ -239,7 +239,7 @@ Purpose:  initialize UART and set baudrate
 Input:    baudrate using macro UART_BAUD_SELECT()
 Returns:  none
 **************************************************************************/
-void uart_init(unsigned int baudrate)
+static void Uart_InitHw(unsigned int baudrate)
 {
     UART_TxHead = 0;
     UART_TxTail = 0;

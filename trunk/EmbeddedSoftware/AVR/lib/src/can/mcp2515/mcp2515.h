@@ -24,34 +24,34 @@
 #define MCP2515_FAIL       (1)
 #define MCP_ALLTXBUSY      (2)
 
-void mcp2515_reset(void);
+void MCP2515_Reset(void);
 
-uint8_t mcp2515_readRegister(const uint8_t address);
-void mcp2515_setRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n);
+uint8_t MCP2515_ReadRegister(const uint8_t address);
+void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n);
 
-void mcp2515_setRegister(const uint8_t address, const uint8_t value);
-void mcp2515_setRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n);
-void mcp2515_modifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data);
+void MCP2515_SetRegister(const uint8_t address, const uint8_t value);
+void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n);
+void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data);
 
-uint8_t mcp2515_readStatus(void);
-uint8_t mcp2515_RXStatus(void);
+uint8_t MCP2515_ReadStatus(void);
+uint8_t MCP2515_RxStatus(void);
 
-uint8_t mcp2515_setCANCTRL_Mode(const uint8_t newmode);
+uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode);
 
-uint8_t mcp2515_configRate(const uint8_t canSpeed);
-uint8_t mcp2515_init(const uint8_t canSpeed);
+uint8_t MCP2515_ConfigRate(const uint8_t canSpeed);
+uint8_t MCP2515_Init(const uint8_t canSpeed);
 
-void mcp2515_write_can_id(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id);
-void mcp2515_read_can_id(const uint8_t mcp_addr, uint8_t* ext, uint32_t* can_id );
-void mcp2515_write_canMsg(const uint8_t buffer_sidh_addr, const CanMessage_t* msg);
-void mcp2515_read_canMsg(const uint8_t buffer_sidh_addr, CanMessage_t* msg);
+void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id);
+void MCP2515_ReadCanId(const uint8_t mcp_addr, uint8_t* ext, uint32_t* can_id );
+void MCP2515_WriteCanMsg(const uint8_t buffer_sidh_addr, const Can_Message_t* msg);
+void MCP2515_ReadCanMsg(const uint8_t buffer_sidh_addr, Can_Message_t* msg);
 
-void mcp2515_start_transmit(const uint8_t mcp_addr);
+void MCP2515_StartTransmit(const uint8_t mcp_addr);
 
-uint8_t mcp2515_getNextFreeTXBuf(uint8_t *txbuf_n);
+uint8_t MCP2515_GetNextFreeTXBuf(uint8_t *txbuf_n);
 
 #ifdef MCP_DEBUGMODE
-void mcp2515_dumpExtendedStatus(void);
+void MCP2515_DumpExtendedStatus(void);
 #endif
 
 #endif

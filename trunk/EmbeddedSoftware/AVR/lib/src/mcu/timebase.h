@@ -19,9 +19,9 @@
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void TimebaseInit(void);
-uint32_t TimebaseCurrentTime(void);
-uint32_t TimebasePassedTimeMS(uint32_t t0);
+void Timebase_Init(void);
+uint32_t Timebase_CurrentTime(void);
+uint32_t Timebase_PassedTimeMillis(uint32_t t0);
 
 
 #endif
