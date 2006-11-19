@@ -207,8 +207,8 @@ void canParse(CAN_MESSAGE cm)
 void irecParse(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 {
 	CAN_MESSAGE outCm;
-	outCm.funct 		= 0x01;
-	outCm.funcc 		= 0x01;
+	outCm.funct 		= FUNCT_SENSORS;
+	outCm.funcc 		= FUNCC_SENSORS_IR;
 	outCm.nid   		= MY_NID;
 	outCm.sid   		= MY_ID;
 	outCm.data_length 	= 4;
