@@ -363,6 +363,7 @@ namespace canBootloader
         {
             txtLog.SelectionStart = txtLog.Text.Length;
             txtLog.ScrollToCaret();
+            txtLog.DeselectAll();
         }
 
         private void nicon_DoubleClick(object sender, EventArgs e)
