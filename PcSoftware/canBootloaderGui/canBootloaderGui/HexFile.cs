@@ -100,6 +100,7 @@ namespace canBootloader
 
                 this.valid = true;
 	            sr.Close();
+                file.Close();
 	        }
 
 	        // Force lower addr to start
