@@ -1,0 +1,59 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_REVISION_NAME	MCHPTags	//
+!_TAG_REVISION_VERSION	6.0.1	//
+CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	18;"	d	line:18
+CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	16;"	d	line:16
+COMPILER_H	F:\MCP\projects\CAN\canTemp\Include\compiler.h	13;"	d	line:13
+EERead	F:\MCP\projects\CAN\Include\EEAccess.c	14;"	f	line:14	signature:(WORD addr)
+EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	25;"	f	line:25	signature:(WORD addr,BYTE data)
+INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	17;"	d	line:17
+LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	21;"	d	line:21
+LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	20;"	d	line:20
+MY_ID	F:\MCP\projects\CAN\canTemp\Source\Main.c	26;"	v	line:26	file:
+MY_NID	F:\MCP\projects\CAN\canTemp\Source\Main.c	27;"	v	line:27	file:
+PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	63;"	d	line:63	file:
+TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	17;"	d	line:17
+TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	26;"	d	line:26	file:
+TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
+TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
+TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	27;"	d	line:27
+TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	24;"	d	line:24	file:
+TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	d	line:17	file:
+TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	d	line:30	file:
+TIMER_PRESCALE::(1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	32;"	d	line:32	file:
+TIMER_PRESCALE::(2)	F:\MCP\projects\CAN\canBase\Source\Tick.c	34;"	d	line:34	file:
+TIMER_PRESCALE::(3)	F:\MCP\projects\CAN\canBase\Source\Tick.c	36;"	d	line:36	file:
+TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	38;"	d	line:38	file:
+TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	40;"	d	line:40	file:
+TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	file:
+TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
+USE_CAN	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	15;"	d	line:15
+_reset	F:\MCP\projects\CAN\canTemp\Source\Main.c	192;"	f	line:192	signature:(void)
+_startup	F:\MCP\projects\CAN\canTemp\Source\Main.c	190;"	p	line:190	file:	signature:(void)
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	140;"	f	line:140
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	16;"	p	line:16	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	117;"	f	line:117
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	30;"	f	line:30
+canParse	F:\MCP\projects\CAN\canTemp\Source\Main.c	144;"	f	line:144	signature:(CAN_MESSAGE cm)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	187;"	f	line:187	signature:(CAN_MESSAGE cm,CAN_PRIORITY prio)
+cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	142;"	l	line:142
+heartbeat	F:\MCP\projects\CAN\canTemp\Source\Main.c	64;"	l	line:64	file:
+high_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	90;"	f	line:90	signature:(void)
+low_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	104;"	f	line:104	signature:(void)
+main	F:\MCP\projects\CAN\canTemp\Source\Main.c	29;"	f	line:29
+mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	120;"	f	line:120
+mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	23;"	p	line:23	file:	signature:(void)
+outCm	F:\MCP\projects\CAN\canTemp\Source\Main.c	146;"	l	line:146
+outCm	F:\MCP\projects\CAN\canTemp\Source\Main.c	32;"	l	line:32
+stackTasks_H	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	13;"	d	line:13
+t	F:\MCP\projects\CAN\canTemp\Source\Main.c	31;"	l	line:31	file:
+t	F:\MCP\projects\CAN\canTemp\Source\Main.c	63;"	l	line:63	file:
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	89;"	f	line:89	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	f	line:64	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	104;"	f	line:104	signature:(void)
