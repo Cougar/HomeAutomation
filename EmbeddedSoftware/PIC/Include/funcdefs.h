@@ -1,4 +1,4 @@
-/*********************************************************************
+﻿/*********************************************************************
  *
  *   Defines functs and funccs and other global definitions.
  *
@@ -29,8 +29,13 @@
 //<FUNCC> ack packet
 #define FUNCC_BOOT_ACK 0b0000000100 //Ack packet
 
+
 //<FUNCC>
-#define FUNCC_SENSORS_IR 0b0000000001
+#define FUNCC_SENSORS_IR 			0b0000000001
+#define FUNCC_SENSORS_TEMPERATURE_INSIDE 	0b0000000010
+#define FUNCC_SENSORS_TEMPERATURE_OUTSIDE 	0b0000000011
+#define FUNCC_SENSORS_TEMPERATURE_FREEZER 	0b0000000012
+#define FUNCC_SENSORS_TEMPERATURE_REFRIGERATOR 	0b0000000013
 
 
 #define DEFAULT_ID 0x78 	// Default ID for bootloader/node when no id is set.

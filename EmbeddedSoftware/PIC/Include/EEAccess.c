@@ -11,6 +11,15 @@
 #include <p18cxxx.h>
 #include <EEaccess.h>
 
+/*
+*	Function: EERead
+*
+*	Input:	WORD address to read from.
+*	Output: Byte read.
+*	Pre-conditions: none
+*	Affects: none.
+*	Depends: none.
+*/
 BYTE EERead(WORD addr)
 {
 	EEADRH=(BYTE)(addr>>8);
@@ -22,6 +31,15 @@ BYTE EERead(WORD addr)
 }
 
 
+/*
+*	Function: EEWrite
+*
+*	Input:	WORD address to write to and BYTE data to write.
+*	Output: none.
+*	Pre-conditions: none
+*	Affects: none.
+*	Depends: none.
+*/
 void EEWrite(WORD addr,BYTE data)
 {
 	PIR2bits.EEIF=0;
