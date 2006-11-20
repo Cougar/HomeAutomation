@@ -18,6 +18,8 @@ namespace canWatcherLight
         public serialCanConnection canconnection;
         public Hashtable sets = new Hashtable();
 
+        private const int MAX_MESSAGES = 200;
+
         public main()
         {
             InitializeComponent();
@@ -83,6 +85,7 @@ namespace canWatcherLight
                 if (canconnection.getMessage(out cm))
                 { 
                     lst_incomming.Items.Insert(1,"["+DateTime.Now.ToLongTimeString()+"] "+cm.ToString());
+                    while (lst_incomming.Items.Count > MAX_MESSAGES) lst_incomming.Items.RemoveAt(lst_incomming.Items.Count - 1);
                 }
             });
         }
