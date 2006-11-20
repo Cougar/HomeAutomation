@@ -20,6 +20,10 @@
 	#include <CAN.h>
 #endif
 
+#ifdef USE_ADC
+	#include <adc.h>
+#endif
+
 static void mainInit(void);
 
 
@@ -37,6 +41,10 @@ void main()
 
 	#ifdef USE_CAN
 		canInit();
+	#endif
+
+	#ifdef USE_ADC
+		adcInit(TRUE,0b1011);
 	#endif
 
 	tickInit();
@@ -62,6 +70,8 @@ void main()
 	{
 		static TICK t = 0;
 		static TICK heartbeat = 0;
+		static TICK temperature = 0;
+		static BYTE lastTemperature = TEMPERATURE_INSIDE;
 
 		
 		if ((tickGet()-heartbeat)>TICK_SECOND*5)
@@ -77,11 +87,41 @@ void main()
 			
 			heartbeat = tickGet();
 		}
+
 		if ((tickGet()-t)>TICK_SECOND)
 		{
 			LED0_IO=~LED0_IO;
 			t = tickGet();
 		}
+
+		#ifdef USE_ADC
+		if ((tickGet()-temperature)>TICK_SECOND*2) // Each 2 second, read temperature.
+		{
+			if (lastTemperature==TEMPERATURE_INSIDE) lastTemperature=TEMPERATURE_OUTSIDE; else lastTemperature=TEMPERATURE_INSIDE;
+			adcConvert(lastTemperature);
+			temperature = tickGet();
+		}
+		#endif
+
+
+		#ifdef USE_ADC
+		if (adcDone()) // Has temperature, send it to the bus
+		{
+			BYTE decimal;
+			signed char tenth;
+			temperatureRead(&tenth,&decimal);
+
+			outCm.funct 					= FUNCT_SENSORS;
+			outCm.funcc 					= (lastTemperature==TEMPERATURE_INSIDE?FUNCC_SENSORS_TEMPERATURE_INSIDE:FUNCC_SENSORS_TEMPERATURE_OUTSIDE);
+			outCm.nid   					= MY_NID;
+			outCm.sid   					= MY_ID;
+			outCm.data_length 				= 2;
+			outCm.data[1]					= tenth; //  signed 10 an 1 decimal.
+			outCm.data[0]					= decimal; //  Decimal value, 0-9
+			while(!canSendMessage(outCm,PRIO_HIGH));
+		}
+		#endif
+
 	}
 }
 
@@ -103,7 +143,9 @@ void high_isr(void)
 #pragma interrupt low_isr
 void low_isr(void)
 {
-
+	#ifdef USE_ADC
+		adcISR();
+	#endif
 }
 
 

@@ -20,5 +20,7 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
+#define TEMPERATURE_INSIDE 0b0000
+#define TEMPERATURE_OUTSIDE 0b0001
 
 #endif //compiler.h
