@@ -66,9 +66,9 @@ static void SPI_Init(void) {
 	/* MISO as input */
 	SPI_DDR &= ~(1<<SPI_MISO);
 	/* INIT interface, Master, set clock rate fck/4 */
-	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1);
+	SPCR = (1<<SPE)|(1<<MSTR)|(0<<SPR0)|(0<<SPR1);
 	/* enable double rate */
-	//SPSR = (1<<SPI2X); /* we will now gain fck/2 instead of fck/4 */
+	SPSR = (1<<SPI2X); /* we will now gain fck/2 instead of fck/4 */
 }
 
 static uint8_t SPI_ReadWrite(uint8_t data) {
