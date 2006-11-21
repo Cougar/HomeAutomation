@@ -234,9 +234,36 @@ uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
 	}
 } 
 
-// ---
 
-// Buffer can be MCP_RXBUF_0 or MCP_RXBUF_1
+/**
+ * Reads a CAN message from the specified buffer base address in the MCP2515. The message
+ * is stored in the following format:
+ * 
+ * 		BASE+0:
+ * 		| SID10 | SID9  | SID8  | SID7  | SID6  | SID5  | SID4  | SID3  |
+ * 		
+ * 		BASE+1:
+ * 		| SID2  | SID1  | SID0  | SRR   | IDE   |       | EID17 | EID16 |
+ * 		
+ * 		BASE+2:
+ * 		| EID15 | EID14 | EID13 | EID12 | EID11 | EID10 | EID9  | EID8  |
+ * 		
+ * 		BASE+3:
+ * 		| EID7  | EID6  | EID5  | EID4  | EID3  | EID2  | EID1  | EID0  |
+ * 		
+ * 		BASE+4:
+ * 		|       |  RTR  |  RB1  |  RB0  | DLC3  | DLC2  | DLC1  | DCL0  |
+ * 		
+ * 		BASE+5 - BASE+12:
+ * 		DATA0 - DATA7
+ *
+ * @param buffer_sidh_addr
+ * 		Base address to the RX buffer.
+ * 
+ * @param msg
+ * 		Pointer to the message buffer into which the data should be copied.
+ * 
+ */
 void MCP2515_ReadCanMsg(const uint8_t buffer_sidh_addr, Can_Message_t* msg) {
 	uint8_t tbufdata[13];
 	uint8_t mcp_addr;
@@ -287,6 +314,7 @@ void MCP2515_ReadCanMsg(const uint8_t buffer_sidh_addr, Can_Message_t* msg) {
     	msg->Data.bytes[i] = tbufdata[5+i];
     }
 }
+
 
 
 void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
