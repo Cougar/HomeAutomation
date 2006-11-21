@@ -23,11 +23,4 @@
 #define MCP_CS_BIT  PB0
 
 
-/**
- * Define this to enable MCP2515 debug mode. A lot of debug info will be
- * printed to stdout. Turn off for silent mode.
- */
-//#define MCP_DEBUGMODE
-
-
 #endif /*MCP2515_CFG_H_*/

@@ -9,30 +9,44 @@
 
 
 /*-----------------------------------------------------------------------------
+ * Defines
+ *---------------------------------------------------------------------------*/
+
+/*
+ * The supported CAN controller devices are listed below.
+ */
+#define CAN_CONTROLLER_NULL		0		/* Virtual null-device */
+#define CAN_CONTROLLER_MCP2515	1		/* Microchip MCP2515 via SPI */
+
+
+/*-----------------------------------------------------------------------------
  * Type Definitions
  *---------------------------------------------------------------------------*/
+
 /**
- * CAN Bitrate type.
+ * CAN Bitrate Type. The supported bitrates.
  */
 typedef enum {
-    CAN_BITRATE_125K = 0,
-    CAN_BITRATE_250K = 1,
-    CAN_BITRATE_500K = 2,
-    CAN_BITRATE_1M = 3
+    CAN_BITRATE_125K = 0,			/* Max cable length: 500m */
+    CAN_BITRATE_250K = 1,			/* Max cable length: 250m */
+    CAN_BITRATE_500K = 2,			/* Max cable length: 100m */
+    CAN_BITRATE_1M = 3				/* Max cable length: 40m */
 } Can_Bitrate_t;
+
 
 /**
  * CAN Return Type. Most CAN functions return one of these. 
  */
 typedef enum {
-	CAN_OK = 0,
-	CAN_FAILINIT = 1,
-	CAN_FAILTX = 2,
-	CAN_MSGAVAIL = 3,
-	CAN_NOMSG = 4,
-	CAN_CTRLERROR = 5,
-	CAN_FAIL = 0xFF
+	CAN_FAIL = -1,					/* The function failed */
+	CAN_OK = 1,						/* The function succeeded */
+	
+	CAN_MSG_AVAILABLE = 2,			/* Messsages are available */
+	CAN_NO_MSG_AVAILABLE = -2,		/* Messages are NOT available */
+	
+	//CAN_CTRLERROR = -4
 } Can_Return_t;
+
 
 /**
  * CAN Message Type. Stores a complete CAN frame.
@@ -80,15 +94,7 @@ typedef struct {
 
 Can_Return_t Can_Init(void);
 Can_Return_t Can_Send(Can_Message_t* msg);
-Can_Return_t Can_ReceiveAvailable(void);
+void Can_Service(void);
 Can_Return_t Can_Receive(Can_Message_t *msg);
-Can_Return_t Can_CheckError(void);
-
-#if (CANDEBUG)
-void can_debug1(void);
-void can_dumpMessage(CanMessage *msg);
-uint8_t can_testTransmit(const uint8_t ext, const uint8_t data2);
-void can_dumpStatus(void);
-#endif
 
 #endif

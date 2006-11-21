@@ -70,13 +70,6 @@ Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
 
 void Uart_Init(void);
 
-/**
-   @brief   Initialize UART and set baudrate 
-   @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
-   @return  none
-*/
-extern void Uart_InitHw(unsigned int baudrate);
-
 
 /**
  *  @brief   Get received byte from ringbuffer

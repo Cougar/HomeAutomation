@@ -37,6 +37,7 @@ NOTES:
 
 
 static int uart_putchar(char c, FILE *stream);
+static void Uart_InitHw(unsigned int baudrate);
 
 static FILE myStdOut = FDEV_SETUP_STREAM(uart_putchar, NULL,_FDEV_SETUP_WRITE);
 
