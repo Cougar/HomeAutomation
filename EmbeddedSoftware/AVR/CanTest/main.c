@@ -1,8 +1,8 @@
 /**
- * CAN test program.
+ * CAN Test. This program sends a CAN message once every second. The ID of the
+ * message is increased each time for testing purposes.
  * 
- * @target	AVR
- * @date	2006-10-29
+ * @date	2006-11-21
  * @author	Jimmy Myhrman
  *   
  */
@@ -19,7 +19,6 @@
 #include <can.h>
 #include <uart.h>
 #include <timebase.h>
-#include <protocol.h>
 
 
 /*-----------------------------------------------------------------------------
@@ -30,9 +29,9 @@ int main(void) {
 	Uart_Init();
 	sei();
 	
-	printf("\n------------------------------\n");
-	printf("   CAN Monitor\n");
-	printf("------------------------------\n");
+	printf("\n------------------------------------------------------------\n");
+	printf(  "   CAN Test: Periodic Transmission\n");
+	printf(  "------------------------------------------------------------\n");
 	
 	printf("CanInit...");
 	if (Can_Init() != CAN_OK) {
@@ -62,21 +61,17 @@ int main(void) {
 			timeStamp = Timebase_CurrentTime();
 			/* send txMsg */
 			txMsg.Id++;
-			//Can_Send(&txMsg);
-			printf(".");
+			Can_Send(&txMsg);
 		}
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-			//printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		//printf("data={ ");
-    		/*for (uint8_t i=0; i<rxMsg.DataLength; i++) {
+			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+    		printf("data={ ");
+    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
     			printf("%x ", rxMsg.Data.bytes[i]);
-    		}*/
-    		//printf("}\n");
-			if (Can_Send(&rxMsg) != CAN_OK) {
-				break;
-			}
+    		}
+    		printf("}\n");
 		}
 	}
 	
