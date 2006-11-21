@@ -63,7 +63,8 @@ int main(void) {
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-			/* try to send message */
+			/* echo back with increased Id */
+			rxMsg.Id++;
 			while (Can_Send(&rxMsg) != CAN_OK);
 		}
 	}
