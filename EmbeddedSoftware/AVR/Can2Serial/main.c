@@ -124,6 +124,9 @@ int main(void) {
 	
 	/* main loop */
 	while (1) {
+		/* service the CAN routines */
+		Can_Service();
+		
 		/* any new CAN messages received? */
 		if (Can_Receive(&rxMsg) == CAN_OK) {
 			PORTC ^= (1<<PC1);

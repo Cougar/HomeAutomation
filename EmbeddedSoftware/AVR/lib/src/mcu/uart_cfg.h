@@ -12,8 +12,8 @@
 /** UART baudrate */
 #define BAUD 115200
 /** Size of the circular receive buffer, must be power of 2 */
-#define UART_RX_BUFFER_SIZE 32
+#define UART_RX_BUFFER_SIZE 8
 /** Size of the circular transmit buffer, must be power of 2 */
-#define UART_TX_BUFFER_SIZE 32
+#define UART_TX_BUFFER_SIZE 64
 
 #endif /*UART_CFG_H_*/

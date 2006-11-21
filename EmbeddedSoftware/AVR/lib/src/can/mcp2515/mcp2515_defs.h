@@ -21,10 +21,10 @@ Changes M. Thomas:
 */
 
 // Begin mt
-#define MCP_SIDH        0
+/*#define MCP_SIDH        0
 #define MCP_SIDL        1
 #define MCP_EID8        2
-#define MCP_EID0        3
+#define MCP_EID0        3*/
 
 #define MCP_TXB_EXIDE_M     0x08    /* In TXBnSIDL */
 #define MCP_DLC_MASK        0x0F    /* 4 LSBits */

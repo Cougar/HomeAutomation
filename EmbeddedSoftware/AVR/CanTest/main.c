@@ -46,7 +46,6 @@ int main(void) {
 	
 	Can_Message_t txMsg;
 	Can_Message_t rxMsg;
-	
 	txMsg.DataLength = 8;
 	txMsg.Data.bytes[0] = 7;
 	txMsg.Id = 0;
@@ -55,20 +54,28 @@ int main(void) {
 	
 	/* main loop */
 	while (1) {
-		/* any new CAN messages received? */
-		if (Can_Receive(&rxMsg) == CAN_OK) {
-			ProtocolParseCanMessage(&rxMsg);
-		}
+		/* service the CAN routines */
+		Can_Service();
 		
 		/* send CAN message and check for CAN errors once every second */
 		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
+			timeStamp = Timebase_CurrentTime();
 			/* send txMsg */
 			txMsg.Id++;
-			Can_Send(&txMsg);
-			/* check for errors */
-			timeStamp = Timebase_CurrentTime();
-			if (Can_CheckError() != CAN_OK) {
-				printf("CAN ERROR detected!\n");
+			//Can_Send(&txMsg);
+			printf(".");
+		}
+		
+		/* check if any messages have been received */
+		while (Can_Receive(&rxMsg) == CAN_OK) {
+			//printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+    		//printf("data={ ");
+    		/*for (uint8_t i=0; i<rxMsg.DataLength; i++) {
+    			printf("%x ", rxMsg.Data.bytes[i]);
+    		}*/
+    		//printf("}\n");
+			if (Can_Send(&rxMsg) != CAN_OK) {
+				break;
 			}
 		}
 	}

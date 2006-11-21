@@ -67,6 +67,7 @@ LIBDIR = ../lib/src/
 SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/uart.c\
 		$(LIBDIR)mcu/timebase.c\
+		$(LIBDIR)mcu/mcu.c\
 		$(LIBDIR)can/can.c\
 		$(LIBDIR)can/mcp2515/mcp2515.c
 
@@ -117,7 +118,8 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
+CFLAGS = 
+#CFLAGS += -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums

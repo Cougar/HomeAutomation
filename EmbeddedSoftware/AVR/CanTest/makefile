@@ -66,6 +66,7 @@ LIBDIR = ../lib/src/
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
 		protocol.c\
+		$(LIBDIR)mcu/mcu.c\
 		$(LIBDIR)mcu/uart.c\
 		$(LIBDIR)mcu/timebase.c\
 		$(LIBDIR)can/can.c\
@@ -118,7 +119,8 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
+CFLAGS = 
+#CFLAGS += -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
@@ -150,7 +152,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 # Floating point printf version (requires MATH_LIB = -lm below)
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
-PRINTF_LIB = 
+PRINTF_LIB = $(PRINTF_LIB_MIN)
 
 # Minimalistic scanf version
 SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min

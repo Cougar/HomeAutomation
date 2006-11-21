@@ -66,9 +66,9 @@ static void SPI_Init(void) {
 	/* MISO as input */
 	SPI_DDR &= ~(1<<SPI_MISO);
 	/* INIT interface, Master, set clock rate fck/4 */
-	SPCR = (1<<SPE)|(1<<MSTR)|(0<<SPR0)|(0<<SPR1);
+	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1);
 	/* enable double rate */
-	SPSR = (1<<SPI2X); /* we will now gain fck/2 instead of fck/4 */
+	//SPSR = (1<<SPI2X); /* we will now gain fck/2 instead of fck/4 */
 }
 
 static uint8_t SPI_ReadWrite(uint8_t data) {
@@ -236,42 +236,56 @@ uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
 
 // ---
 
-void MCP2515_ReadCanId(const uint8_t mcp_addr, uint8_t* ext, uint32_t* can_id) {
-    uint8_t tbufdata[4];
-	
-    *ext = 0;
-    *can_id = 0;
-    
-	MCP2515_ReadRegisterS( mcp_addr, tbufdata, 4 );
-    
-	*can_id = (tbufdata[MCP_SIDH]<<3) + (tbufdata[MCP_SIDL]>>5);
-	
-    if ((tbufdata[MCP_SIDL] & MCP_TXB_EXIDE_M) ==  MCP_TXB_EXIDE_M) {
-		// extended id
-        *can_id = (*can_id<<2) + (tbufdata[MCP_SIDL] & 0x03);
-        *can_id <<= 16;
-        *can_id = *can_id +(tbufdata[MCP_EID8]<<8) + tbufdata[MCP_EID0];
-        *ext = 1;
-    }
-}
-
 // Buffer can be MCP_RXBUF_0 or MCP_RXBUF_1
 void MCP2515_ReadCanMsg(const uint8_t buffer_sidh_addr, Can_Message_t* msg) {
-	uint8_t mcp_addr, ctrl;
+	uint8_t tbufdata[13];
+	uint8_t mcp_addr;
 	mcp_addr = buffer_sidh_addr;
-	MCP2515_ReadCanId(mcp_addr, &(msg->ExtendedFlag), &(msg->Id));
 	
-	ctrl = MCP2515_ReadRegister(mcp_addr-1);
-    msg->DataLength = MCP2515_ReadRegister(mcp_addr+4);
+	/* read ID */
+	MCP2515_ReadRegisterS(mcp_addr, tbufdata, 13);
+	
+	/* extract SID10-SID0 */
+	msg->Id = 0;
+	msg->Id = (((uint32_t)(tbufdata[0])) << 3) + (((uint32_t)(tbufdata[1] & 0xE0)) >> 5);
+	
+	if ((tbufdata[1] & MCP_TXB_EXIDE_M) != 0) {
+		/* extended message */
+		msg->ExtendedFlag = 1;
+		/* SID10-SID0 are still most significant, so shift them up
+		 * and make room for 18 extended least significant EID-bits */
+		msg->Id = (uint32_t)(msg->Id) << 18;
+		/* exctract EID17-EID16 */ 
+		msg->Id = (uint32_t)msg->Id | ((uint32_t)(((uint32_t)(tbufdata[1] & 0x03))<<16));
+		/* extract EID15-EID8 */
+		msg->Id |= (((uint32_t)tbufdata[2])<<8);
+		/* extract EID7-EID0 */
+		msg->Id |= ((uint32_t)tbufdata[3]);
+		/* mask ID to guarantee 29bit range */
+		msg->Id &= 0x1FFFFFFF;
+    }
+    else {
+    	/* standard message */
+    	msg->ExtendedFlag = 0;
+    	/* mask ID to guarantee 11bit range */
+    	msg->Id &= 0x000007FF;
+    }
     
-    if (/*(*dlc & RTR_MASK) || */(ctrl & 0x08)) {
+    /* extract DLC */
+    msg->DataLength = tbufdata[4] & 0x0F;
+    if (msg->DataLength > 8) msg->DataLength = 8;	/* saturate DLC to guarantee 0-8 range */
+    
+    /* check RTR flag */
+    if (tbufdata[4] & 0x40) {
     	msg->RemoteFlag = 1;
     } else {
         msg->RemoteFlag = 0;
     }
     
-    msg->DataLength &= MCP_DLC_MASK;
-    MCP2515_ReadRegisterS(mcp_addr+5, &(msg->Data.bytes[0]), msg->DataLength);
+    /* copy data */
+    for (uint8_t i=0; i<msg->DataLength; i++) {
+    	msg->Data.bytes[i] = tbufdata[5+i];
+    }
 }
 
 
@@ -281,19 +295,19 @@ void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_
 	canid = (uint16_t)(can_id & 0x0FFFF);
     
 	if (ext == 1) {
-        tbufdata[MCP_EID0] = (uint8_t) (canid & 0xFF);
-        tbufdata[MCP_EID8] = (uint8_t) (canid / 256);
+        tbufdata[3] = (uint8_t) (canid & 0xFF);
+        tbufdata[2] = (uint8_t) (canid / 256);
         canid = (uint16_t)( can_id / 0x10000L );
-        tbufdata[MCP_SIDL] = (uint8_t) (canid & 0x03);
-        tbufdata[MCP_SIDL] += (uint8_t) ((canid & 0x1C )*8);
-        tbufdata[MCP_SIDL] |= MCP_TXB_EXIDE_M;
-        tbufdata[MCP_SIDH] = (uint8_t) (canid / 32 );
+        tbufdata[1] = (uint8_t) (canid & 0x03);
+        tbufdata[1] += (uint8_t) ((canid & 0x1C )*8);
+        tbufdata[1] |= MCP_TXB_EXIDE_M;
+        tbufdata[0] = (uint8_t) (canid / 32 );
     }
     else {
-        tbufdata[MCP_SIDH] = (uint8_t) (canid / 8 );
-        tbufdata[MCP_SIDL] = (uint8_t) ((canid & 0x07 )*32);
-        tbufdata[MCP_EID0] = 0;
-        tbufdata[MCP_EID8] = 0;
+        tbufdata[0] = (uint8_t) (canid / 8 );
+        tbufdata[1] = (uint8_t) ((canid & 0x07 )*32);
+        tbufdata[2] = 0;
+        tbufdata[3] = 0;
     }
 	MCP2515_SetRegisterS(mcp_addr, tbufdata, 4);
 }
