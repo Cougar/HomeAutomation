@@ -1,4 +1,4 @@
-﻿/*********************************************************************
+/*********************************************************************
  *
  *                  Main application
  *
@@ -15,6 +15,10 @@
 #include <Tick.h>
 #include <funcdefs.h>
 #include <EEaccess.h>
+
+#ifdef USE_LCD
+	#include "lcd.h"
+#endif
 
 #ifdef USE_CAN
 	#include <CAN.h>
@@ -37,6 +41,12 @@ void main()
 
 	#ifdef USE_CAN
 		canInit();
+	#endif
+
+	#ifdef USE_LCD
+		lcdInit();
+		lcdClear();
+		lcdPutrs("Welcome!");
 	#endif
 
 	tickInit();
