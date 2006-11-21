@@ -65,7 +65,6 @@ LIBDIR = ../lib/src/
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
-		protocol.c\
 		$(LIBDIR)mcu/mcu.c\
 		$(LIBDIR)mcu/uart.c\
 		$(LIBDIR)mcu/timebase.c\
