@@ -20,6 +20,10 @@
 	#include <CAN.h>
 #endif
 
+#ifdef USE_ADC
+	#include <adc.h>
+#endif
+
 static void mainInit(void);
 
 
@@ -37,6 +41,10 @@ void main()
 
 	#ifdef USE_CAN
 		canInit();
+	#endif
+
+	#ifdef USE_ADC
+		adcInit(TRUE,0b1011);
 	#endif
 
 	tickInit();
@@ -62,6 +70,39 @@ void main()
 	{
 		static TICK t = 0;
 		static TICK heartbeat = 0;
+		static TICK temperature = 0;
+		static BYTE lastTemperature = TEMPERATURE_FREEZER;
+		static BYTE lastFreezerDoor = DOOR_CLOSED;
+		static BYTE lastRefrigeratorDoor = DOOR_CLOSED;
+
+
+		//Poll doors freezer door
+		if (lastFreezerDoor!=DOOR_FREEZER_IO)
+		{	
+			lastFreezerDoor=DOOR_FREEZER_IO;
+			// Send door status change
+			outCm.funct 					= FUNCT_SENSORS;
+			outCm.funcc 					= FUNCC_SENSORS_DOORS_FREEZER;
+			outCm.nid   					= MY_NID;
+			outCm.sid   					= MY_ID;
+			outCm.data_length 				= 1;
+			outCm.data[0]					= (lastFreezerDoor==DOOR_OPEN?0:1);
+			while(!canSendMessage(outCm,PRIO_HIGH));
+		}
+
+		//Poll doors refrigerator door
+		if (lastRefrigeratorDoor!=DOOR_REFRIGERATOR_IO)
+		{	
+			lastRefrigeratorDoor=DOOR_REFRIGERATOR_IO;
+			// Send door status change
+			outCm.funct 					= FUNCT_SENSORS;
+			outCm.funcc 					= FUNCC_SENSORS_DOORS_REFRIGERATOR;
+			outCm.nid   					= MY_NID;
+			outCm.sid   					= MY_ID;
+			outCm.data_length 				= 1;
+			outCm.data[0]					= (lastRefrigeratorDoor==DOOR_OPEN?0:1);
+			while(!canSendMessage(outCm,PRIO_HIGH));
+		}
 
 		
 		if ((tickGet()-heartbeat)>TICK_SECOND*5)
@@ -77,11 +118,41 @@ void main()
 			
 			heartbeat = tickGet();
 		}
+
 		if ((tickGet()-t)>TICK_SECOND)
 		{
 			LED0_IO=~LED0_IO;
 			t = tickGet();
 		}
+
+		#ifdef USE_ADC
+		if ((tickGet()-temperature)>TICK_SECOND*2) // Each 2 second, read temperature.
+		{
+			if (lastTemperature==TEMPERATURE_FREEZER) lastTemperature=TEMPERATURE_REFRIGERATOR; else lastTemperature=TEMPERATURE_FREEZER;
+			adcConvert(lastTemperature);
+			temperature = tickGet();
+		}
+		#endif
+
+
+		#ifdef USE_ADC
+		if (adcDone()) // Has temperature, send it to the bus
+		{
+			BYTE decimal;
+			signed char tenth;
+			temperatureRead(&tenth,&decimal);
+
+			outCm.funct 					= FUNCT_SENSORS;
+			outCm.funcc 					= (lastTemperature==TEMPERATURE_FREEZER?FUNCC_SENSORS_TEMPERATURE_FREEZER:FUNCC_SENSORS_TEMPERATURE_REFRIGERATOR);
+			outCm.nid   					= MY_NID;
+			outCm.sid   					= MY_ID;
+			outCm.data_length 				= 2;
+			outCm.data[1]					= tenth; //  signed 10 an 1 decimal.
+			outCm.data[0]					= decimal; //  Decimal value, 0-9
+			while(!canSendMessage(outCm,PRIO_HIGH));
+		}
+		#endif
+
 	}
 }
 
@@ -103,7 +174,9 @@ void high_isr(void)
 #pragma interrupt low_isr
 void low_isr(void)
 {
-
+	#ifdef USE_ADC
+		adcISR();
+	#endif
 }
 
 
@@ -120,6 +193,9 @@ void low_isr(void)
 void mainInit()
 {
 	LED0_TRIS=0;	
+
+	DOOR_FREEZER_TRIS=1;
+	DOOR_REFRIGERATOR_TRIS=1;
 
 	// Enable Interrupts
     INTCONbits.GIEH = 1;
