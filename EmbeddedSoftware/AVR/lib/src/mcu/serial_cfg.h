@@ -1,19 +1,23 @@
 /**
- * Configuration file for the UART software module.
+ * Configuration file for the Serial Communication software module.
  */
 
-#ifndef UART_CFG_H_
-#define UART_CFG_H_
+#ifndef SERIAL_CFG_H_
+#define SERIAL_CFG_H_
+
 
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
 
-/** UART baudrate */
-#define BAUD 115200
-/** Size of the circular receive buffer, must be power of 2 */
-#define UART_RX_BUFFER_SIZE 8
-/** Size of the circular transmit buffer, must be power of 2 */
-#define UART_TX_BUFFER_SIZE 64
+/** Baudrate */
+#define SERIAL_BAUDRATE			115200
 
-#endif /*UART_CFG_H_*/
+/** Size of the circular receive buffer, must be power of 2 */
+#define SERIAL_RX_BUFFER_SIZE	2
+
+/** Size of the circular transmit buffer, must be power of 2 */
+#define SERIAL_TX_BUFFER_SIZE	64
+
+
+#endif /*SERIAL_CFG_H_*/

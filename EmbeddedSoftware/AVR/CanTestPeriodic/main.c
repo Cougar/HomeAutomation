@@ -17,7 +17,7 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-#include <uart.h>
+#include <serial.h>
 #include <timebase.h>
 
 
@@ -26,7 +26,7 @@
  *---------------------------------------------------------------------------*/
 int main(void) {
 	Timebase_Init();
-	Uart_Init();
+	Serial_Init();
 	sei();
 	
 	printf("\n------------------------------------------------------------\n");
@@ -45,8 +45,6 @@ int main(void) {
 	
 	Can_Message_t txMsg;
 	Can_Message_t rxMsg;
-	txMsg.DataLength = 8;
-	txMsg.Data.bytes[0] = 7;
 	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;

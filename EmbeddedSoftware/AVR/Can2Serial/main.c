@@ -17,6 +17,7 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
+#include <serial.h>
 #include <uart.h>
 #include <timebase.h>
 
@@ -110,7 +111,7 @@ void UartParseByte(uint8_t c) {
  *---------------------------------------------------------------------------*/
 int main(void) {
 	Timebase_Init();
-	Uart_Init();
+	Serial_Init();
 	Can_Init();
 	
 	DDRC = 1<<PC1 | 1<<PC0;

@@ -2,8 +2,6 @@
  * Timebase software module. Utilizes timer0 to provide a 32bit timebase with
  * millisecond-granularity to the application.
  * 
- * @target	ATmega8
- * 
  * @author	Martin Thomas
  * @author	Jimmy Myhrman
  * 
@@ -38,16 +36,28 @@ ISR(SIG_OVERFLOW0) {
 /*-----------------------------------------------------------------------------
  * Public Functions
  *---------------------------------------------------------------------------*/
+
 /**
  * Initializes the timebase. The hardware timer interrupt source will be
  * enabled, but global interrupts need to be enabled by the application.
  */
 void Timebase_Init() {
+	
+	#if defined(__AVR_ATmega8__)
 	TCCR0 = (1<<CS01) | (1<<CS00); // prescaler: 64
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR  |= (1<<TOV0);  // clear overflow int.
 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
+	#endif
+	
+	#if defined(__AVR_ATmega88__)
+	TCCR0A = (1<<CS01) | (1<<CS00); // prescaler: 64
+	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
+	TIFR0  |= (1<<TOV0);  // clear overflow int.
+	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
+	#endif
 }
+
 
 /**
  * Reads the current time.
@@ -64,6 +74,7 @@ uint32_t Timebase_CurrentTime(void) {
 	SREG=sreg;
 	return res;
 }
+
 
 /**
  * Checks how much time has passed since a given timestamp.
