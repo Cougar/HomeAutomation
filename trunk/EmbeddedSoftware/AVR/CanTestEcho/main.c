@@ -17,7 +17,7 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-#include <uart.h>
+#include <serial.h>
 #include <timebase.h>
 
 
@@ -26,7 +26,7 @@
  *---------------------------------------------------------------------------*/
 int main(void) {
 	Timebase_Init();
-	Uart_Init();
+	Serial_Init();
 	sei();
 	
 	printf("\n------------------------------------------------------------\n");

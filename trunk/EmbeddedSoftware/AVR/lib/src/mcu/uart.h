@@ -1,19 +1,13 @@
 #ifndef UART_H
 #define UART_H
 /************************************************************************
-Title:     Interrupt UART library with receive/transmit circular buffers
-Author:    Peter Fleury <pfleury@gmx.ch>   http://jump.to/fleury
-File:      not valid see "Extension" 
-           ($Id: uart.h,v 1.7.2.1 2003/12/27 20:39:14 peter Exp $)
-Software:  AVR-GCC 3.3/3.4
-Hardware:  any AVR with built-in UART, tested on AT90S8515 at 4 Mhz and
-           ATmega16 at 1.8, 3.6, 4 and 8 MHz
-Usage:     see Doxygen manual
-Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
-           uart_putbin_byte by M.Thomas 9/2004 and 1/2005
+Title:    Interrupt UART library with receive/transmit circular buffers
+Author:   Peter Fleury <pfleury@gmx.ch>   http://jump.to/fleury
+File:     $Id: uart.h,v 1.7.2.5 2005/08/14 11:25:41 Peter Exp $
+Software: AVR-GCC 3.3
+Hardware: any AVR with built-in UART, tested on AT90S8515 at 4 Mhz
+Usage:    see Doxygen manual
 ************************************************************************/
-
-#include <uart_cfg.h>
 
 /** 
  *  @defgroup pfleury_uart UART Library
@@ -29,16 +23,18 @@ Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
  *
  *  The UART_RX_BUFFER_SIZE and UART_TX_BUFFER_SIZE constants define
  *  the size of the circular buffers in bytes. Note that these constants must be a power of 2.
- *  You may need to adapt this size to your target and your application.
+ *  You may need to adapt this constants to your target and your application by adding 
+ *  CDEFS += -DUART_RX_BUFFER_SIZE=nn -DUART_RX_BUFFER_SIZE=nn to your Makefile.
  *
  *  @note Based on Atmel Application Note AVR306
  *  @author Peter Fleury pfleury@gmx.ch  http://jump.to/fleury
  */
  
-/*@{*/
+/**@{*/
 
-#if (__GNUC__ * 100 + __GNUC_MINOR__) < 303
-#error "This library requires AVR-GCC 3.3 or later, update to newer AVR-GCC compiler !"
+
+#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
+#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
 
 
@@ -47,16 +43,31 @@ Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
 */
 
 /** @brief  UART Baudrate Expression
- *  @param  xtalcpu  system clock in Mhz           
+ *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz          
  *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
  */
 #define UART_BAUD_SELECT(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
 
+/** @brief  UART Baudrate Expression for ATmega double speed mode
+ *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz           
+ *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
+ */
+#define UART_BAUD_SELECT_DOUBLE_SPEED(baudRate,xtalCpu) (((xtalCpu)/((baudRate)*8l)-1)|0x8000)
 
-#ifndef P
-#define P(s) ({static const char c[] __attribute__ ((progmem)) = s;c;})
+
+/** Size of the circular receive buffer, must be power of 2 */
+#ifndef UART_RX_BUFFER_SIZE
+#define UART_RX_BUFFER_SIZE 32
+#endif
+/** Size of the circular transmit buffer, must be power of 2 */
+#ifndef UART_TX_BUFFER_SIZE
+#define UART_TX_BUFFER_SIZE 32
 #endif
 
+/* test if the size of the circular buffers fits into SRAM */
+#if ( (UART_RX_BUFFER_SIZE+UART_TX_BUFFER_SIZE) >= (RAMEND-0x60 ) )
+//#error "size of UART_RX_BUFFER_SIZE + UART_TX_BUFFER_SIZE larger than size of SRAM"
+#endif
 
 /* 
 ** high byte error return code of uart_getc()
@@ -67,8 +78,16 @@ Extensions:uart_puti, uart_puthex_nibble, uart_puthex_byte,
 #define UART_NO_DATA          0x0100              /* no receive data available   */
 
 
+/*
+** function prototypes
+*/
 
-void Uart_Init(void);
+/**
+   @brief   Initialize UART and set baudrate 
+   @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
+   @return  none
+*/
+extern void uart_init(unsigned int baudrate);
 
 
 /**
@@ -136,56 +155,25 @@ extern void uart_puts_p(const char *s );
 /**
  * @brief    Macro to automatically put a string constant into program memory
  */
-#define uart_puts_P(__s)       uart_puts_p(P(__s))
+#define uart_puts_P(__s)       uart_puts_p(PSTR(__s))
 
-/**
- * @brief    Put integer to ringbuffer for transmitting via UART.
- *
- * The integer is converted to a string which is buffered by the uart 
- * library in a circular buffer and one character at a time is transmitted 
- * to the UART using interrupts.
- *
- * @param    value to transfer
- * @return   none
- * @see      uart_puts_p
- */
-extern void uart_puti( int i );
 
-/**
- * @brief    Put nibble as hex to ringbuffer for transmit via UART.
- *
- * The lower nibble of the parameter is convertet to correspondig
- * hex-char and put in a circular buffer and one character at a time 
- * is transmitted to the UART using interrupts.
- *
- * @param    value to transfer (byte, only lower nibble converted)
- * @return   none
- * @see      uart_putc
- */
-extern void uart_puthex_nibble(const unsigned char b);
 
-/**
- * @brief    Put byte as hex to ringbuffer for transmit via UART.
- *
- * The upper and lower nibble of the parameter are convertet to 
- * correspondig hex-chars and put in a circular buffer and one 
- * character at a time is transmitted to the UART using interrupts.
- *
- * @param    value to transfer
- * @return   none
- * @see      uart_puthex_nibble
- */
-extern void uart_puthex_byte(const unsigned char b);
+/** @brief  Initialize USART1 (only available on selected ATmegas) @see uart_init */
+extern void uart1_init(unsigned int baudrate);
+/** @brief  Get received byte of USART1 from ringbuffer. (only available on selected ATmega) @see uart_getc */
+extern unsigned int uart1_getc(void);
+/** @brief  Put byte to ringbuffer for transmitting via USART1 (only available on selected ATmega) @see uart_putc */
+extern void uart1_putc(unsigned char data);
+/** @brief  Put string to ringbuffer for transmitting via USART1 (only available on selected ATmega) @see uart_puts */
+extern void uart1_puts(const char *s );
+/** @brief  Put string from program memory to ringbuffer for transmitting via USART1 (only available on selected ATmega) @see uart_puts_p */
+extern void uart1_puts_p(const char *s );
+/** @brief  Macro to automatically put a string constant into program memory */
+#define uart1_puts_P(__s)       uart1_puts_p(PSTR(__s))
 
-/**
- * @brief    Put byte as bin to ringbuffer for transmit via UART.
- *
- * @param    value to transfer
- * @return   none
- * @see      uart_putc
- */
-extern void uart_putbin_byte(const unsigned char b);
+/**@}*/
 
-/*@}*/
+
 #endif // UART_H 
 
