@@ -51,7 +51,7 @@ void Timebase_Init() {
 	#endif
 	
 	#if defined(__AVR_ATmega88__)
-	TCCR0A = (1<<CS01) | (1<<CS00); // prescaler: 64
+	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler: 64
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR0  |= (1<<TOV0);  // clear overflow int.
 	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
