@@ -47,7 +47,7 @@ int main(void) {
 	Can_Message_t rxMsg;
 	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
+	txMsg.ExtendedFlag = 1; //DataLength and the databytes are just what happens to be in the memory. They are never set.
 	
 	/* main loop */
 	while (1) {
