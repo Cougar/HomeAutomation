@@ -152,11 +152,10 @@ int main(void) {
 						txMsg.Data.bytes[i*2+1] = (cel_frac_bits<<4);
 						
 					}
-					else printf("CRC Error (lost connection?)");
-					printf("\n");
+					else printf("CRC Error (lost connection?)\n");
 				}
 			}
-			else printf("Start meas. failed (short circuit?)");
+			else printf("Start meas. failed (short circuit?)\n");
 
 			txMsg.DataLength = nSensors*2;
 			/* send txMsg */
