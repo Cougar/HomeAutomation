@@ -137,6 +137,7 @@ int main(void) {
 			timeStamp = Timebase_CurrentTime();
 			
 			if ( DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL ) == DS18X20_OK) {
+				printf("Measuring temperature... ");
 				delay_ms(DS18B20_TCONV_12BIT);
 				for ( i=0; i<nSensors; i++ ) {
 					if ( DS18X20_read_meas( &gSensorIDs[i][0], &subzero,
@@ -158,6 +159,7 @@ int main(void) {
 			else printf("Start meas. failed (short circuit?)\n");
 
 			txMsg.DataLength = nSensors*2;
+			printf("sending...\n");
 			/* send txMsg */
 			Can_Send(&txMsg);
 		}
