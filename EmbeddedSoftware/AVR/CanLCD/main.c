@@ -22,10 +22,16 @@
 #include <timebase.h>
 #include <lcd_HD44780.h>
 
+#define BUFFER_SIZE 20
+
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
+
+    char buffer[ BUFFER_SIZE ];
+    int num=1234;
+
 	Timebase_Init();
 	Serial_Init();
 	sei();
@@ -49,6 +55,11 @@ int main(void) {
         lcd_puts("OK!\n");
 	}
 	
+//    snprintf(buffer, BUFFER_SIZE, "yo %d 98765432109\n", num);
+//    lcd_puts(buffer);
+//    lcd_puts("test\n");
+//    lcd_puts(buffer);
+
 	uint32_t timeStamp = 0;
 	
 	Can_Message_t txMsg;
@@ -74,10 +85,24 @@ int main(void) {
 		while (Can_Receive(&rxMsg) == CAN_OK) {
 			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
     		printf("data={ ");
+
     		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
     			printf("%x ", rxMsg.Data.bytes[i]);
     		}
     		printf("}\n");
+
+            if( rxMsg.Id == 0x3 ){
+//                lcd_gotoxy(0,1);
+                lcd_clrscr();
+ //               lcd_putc(0xdf);
+                lcd_puts("Temperature data:\n");
+
+                for( uint8_t i=0; i<(rxMsg.DataLength/2); i++ ){
+                        snprintf( buffer, BUFFER_SIZE, "Sensor %i: %d,%d%cC", i, rxMsg.Data.bytes[i*2], rxMsg.Data.bytes[i*2+1], 0xdf );
+                        lcd_gotoxy(0,1+i);
+                        lcd_puts( buffer );
+                }
+            }
 		}
 	}
 	
