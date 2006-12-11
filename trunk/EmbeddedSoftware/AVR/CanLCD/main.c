@@ -20,7 +20,7 @@
 #include <can.h>
 #include <serial.h>
 #include <timebase.h>
-#include <lcd.h>
+#include <lcd_HD44780.h>
 
 /*-----------------------------------------------------------------------------
  * Main Program

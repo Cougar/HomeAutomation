@@ -71,7 +71,7 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/timebase.c\
 		$(LIBDIR)can/can.c\
 		$(LIBDIR)can/mcp2515/mcp2515.c\
-		$(LIBDIR)lcd/lcd.c
+		$(LIBDIR)lcd/lcd_HD44780.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
