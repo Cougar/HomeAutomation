@@ -110,7 +110,7 @@ static inline void _delayFourCycles(unsigned int __count)
 delay for a minimum of <us> microseconds
 the number of loops is calculated at compile-time from MCU clock frequency
 *************************************************************************/
-#define delay(us)  _delayFourCycles( ( ( 1*(XTAL/4000) )*us)/1000 )
+#define delay(us)  _delayFourCycles( ( ( 1*(F_OSC/4000) )*us)/1000 )
 
 
 #if LCD_IO_MODE
