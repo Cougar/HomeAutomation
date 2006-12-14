@@ -22,6 +22,8 @@
 #include <timebase.h>
 #include <lcd_HD44780.h>
 
+#include <eqlazer_funcdefs.h>
+
 #define BUFFER_SIZE 20
 
 /*-----------------------------------------------------------------------------
@@ -30,7 +32,7 @@
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-    int num=1234;
+    uint8_t subzero;
 
 	Timebase_Init();
 	Serial_Init();
@@ -38,7 +40,7 @@ int main(void) {
 	lcd_init( LCD_DISP_ON );
 
 	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN Test: Periodic Transmission\n");
+	printf(  "   CAN Test: LCD\n");
 	printf(  "------------------------------------------------------------\n");
 
     lcd_clrscr();
@@ -55,11 +57,6 @@ int main(void) {
         lcd_puts("OK!\n");
 	}
 	
-//    snprintf(buffer, BUFFER_SIZE, "yo %d 98765432109\n", num);
-//    lcd_puts(buffer);
-//    lcd_puts("test\n");
-//    lcd_puts(buffer);
-
 	uint32_t timeStamp = 0;
 	
 	Can_Message_t txMsg;
@@ -67,20 +64,22 @@ int main(void) {
 	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1; //DataLength and the databytes are just what happens to be in the memory. They are never set.
-	
+
+    lcd_clrscr();
+
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
 		
 		/* send CAN message and check for CAN errors once every second */
-		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
-			timeStamp = Timebase_CurrentTime();
+//		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
+//			timeStamp = Timebase_CurrentTime();
 			/* send txMsg */
-			txMsg.Id++;
-			Can_Send(&txMsg);
-		}
-		
+//			txMsg.Id++;
+//			Can_Send(&txMsg);
+//		}
+
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
 			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
@@ -91,17 +90,57 @@ int main(void) {
     		}
     		printf("}\n");
 
-            if( rxMsg.Id == 0x3 ){
-//                lcd_gotoxy(0,1);
-                lcd_clrscr();
- //               lcd_putc(0xdf);
-                lcd_puts("Temperature data:\n");
 
+            if( (rxMsg.Id & 0x1E000000)>>25 == FUNCT_SENSORS){ // if sensor data received
+
+                /* which temperature sensor? */
+                if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_INSIDE ){
+                    /* Below 0 degrees celsius? */
+                    if(rxMsg.Data.bytes[0]&0x80){
+                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
+                        subzero = 1;
+                    }else{
+                        subzero = 0;
+                    }
+                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
+                        lcd_gotoxy( LCD_LINE0_0 );
+                        lcd_puts( LCD_SENSOR_TEMPERATURE_INSIDE );
+                        lcd_gotoxy( LCD_LINE1_0 );
+                        lcd_puts( buffer );
+                }else if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_OUTSIDE ){
+                    if(rxMsg.Data.bytes[0]&0x80){
+                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
+                        subzero = 1;
+                    }else{
+                        subzero = 0;
+                    }
+                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
+                        lcd_gotoxy( LCD_LINE2_0 );
+                        lcd_puts( LCD_SENSOR_TEMPERATURE_OUTSIDE );
+                        lcd_gotoxy( LCD_LINE3_0 );
+                        lcd_puts( buffer );
+                }else if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_FREEZER ){
+                    if(rxMsg.Data.bytes[0]&0x80){
+                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
+                        subzero = 1;
+                    }else{
+                        subzero = 0;
+                    }
+                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
+                        lcd_gotoxy( LCD_LINE2_2 );
+                        lcd_puts( LCD_SENSOR_TEMPERATURE_FREEZER );
+                        lcd_gotoxy( LCD_LINE3_2 );
+                        lcd_puts( buffer );
+                }else{
+                    lcd_clrscr();
+                    lcd_puts("Sensors: No config.");
+                }
+/*
                 for( uint8_t i=0; i<(rxMsg.DataLength/2); i++ ){
                         snprintf( buffer, BUFFER_SIZE, "Sensor %i: %d,%d%cC", i, rxMsg.Data.bytes[i*2], rxMsg.Data.bytes[i*2+1], 0xdf );
                         lcd_gotoxy(0,1+i);
                         lcd_puts( buffer );
-                }
+                }*/
             }
 		}
 	}

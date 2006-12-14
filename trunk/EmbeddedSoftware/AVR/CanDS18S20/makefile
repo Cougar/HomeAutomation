@@ -39,7 +39,7 @@
 
 # MCU name
 #MCU = atmega32
-MCU = atmega8
+MCU = atmega88
 #MCU = atmega16
 
 
@@ -100,7 +100,7 @@ DEBUG =
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/temperature/ds18s20
+EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/temperature/ds18s20 $(LIBDIR)/../funcdefs
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
