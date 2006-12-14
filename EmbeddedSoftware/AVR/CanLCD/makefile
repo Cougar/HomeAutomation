@@ -62,7 +62,6 @@ TARGET = main
 
 LIBDIR = ../lib/src/
 
-
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/mcu.c\
@@ -97,7 +96,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/lcd
+EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/lcd $(LIBDIR)/../funcdefs
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
