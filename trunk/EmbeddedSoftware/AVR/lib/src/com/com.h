@@ -14,9 +14,32 @@
  *---------------------------------------------------------------------------*/
 /**
  * Communication Message Type.
+ *
+ * IDENT:<FUNCT><FUNCC><NID><SID> DATA:<data7>...<data0>
+ *
  */
 typedef struct {
-    //TODO
+
+    /*
+     * <FUNCT>, 4 bits = Function Type.
+     */
+    uint8_t Funct;
+
+    /*
+     * <FUNCC>, 10 bits = Function Code.
+     */
+    uint16_t Funcc;
+
+    /*
+     * <NID>, 6 bits = Network ID.
+     */
+    uint8_t Nid;
+
+    /*
+     * <SID>, 9 bits = Sender ID.
+     */
+    uint16_t Sid;
+
 } Com_Message_t;
 
 
