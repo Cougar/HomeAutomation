@@ -21,7 +21,8 @@
 #include <timebase.h>
 #include <irreceiver.h>
 
-
+#define STATE_IDLE		0
+#define STATE_IR_REPEAT	1
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -31,9 +32,6 @@ int main(void) {
 	Serial_Init();
 	sei();
 	
-	DDRD |= (1<<PD5);
-	PORTD &= ~(1<<PD5);
-
 	IRDDR &= ~(1<<IRBIT);
 	
 	printf("\n------------------------------------------------------------\n");
@@ -49,49 +47,52 @@ int main(void) {
 	}
 	
 	uint32_t timeStamp = 0;
+	uint32_t irTimeoutTimeStamp = 0;
 	
 	Can_Message_t txMsg;
 	Can_Message_t rxMsg;
-	txMsg.Id = 2;
+	txMsg.Id = 1;
 	
 	uint8_t ir_protocol, ir_address, ir_command;
+	uint8_t state = STATE_IDLE;
 	
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
 		
-		if (IRPIN & (1<<IRBIT)) {
-			PORTD |= (1<<PD5);
-		} else {
-			PORTD &= ~(1<<PD5);
+		if (state == STATE_IDLE) {
+			if (checkIr(&ir_protocol, &ir_address, &ir_command) == IR_OK) {
+				txMsg.Data.bytes[0] = 0x00;
+				txMsg.Data.bytes[1] = ir_protocol;
+				txMsg.Data.bytes[2] = ir_address;
+				txMsg.Data.bytes[3] = ir_command;
+				txMsg.DataLength = 4;
+				Can_Send(&txMsg);
+				irTimeoutTimeStamp = Timebase_CurrentTime();
+				state = STATE_IR_REPEAT;
+			}
+		} else if (state == STATE_IR_REPEAT) {
+			//kolla efter ny ir, om ingen ny ir och timeout så sätt state till IDLE
+			if (Timebase_PassedTimeMillis(irTimeoutTimeStamp) >= 105) {		//getLastProtoTimeout()
+				state = STATE_IDLE;
+				txMsg.Data.bytes[0] = 0x0f;
+				Can_Send(&txMsg);
+			}
+			if (!(IRPIN & (1<<IRBIT))) {		//funktion som borde finnas i irreceiver.c
+				irTimeoutTimeStamp = Timebase_CurrentTime();
+			}
 		}
 		
-		if (checkIr(&ir_protocol, &ir_address, &ir_command) == IR_OK) {
-			txMsg.Data.bytes[0] = 0x00;
-			txMsg.Data.bytes[1] = ir_protocol;
-			txMsg.Data.bytes[2] = ir_address;
-			txMsg.Data.bytes[3] = ir_command;
-			txMsg.DataLength = 4;
-			Can_Send(&txMsg);
-		}
-		
-		/* send CAN message and check for CAN errors once every second */
-		if (Timebase_PassedTimeMillis(timeStamp) >= 2000) {
-			timeStamp = Timebase_CurrentTime();
-			txMsg.DataLength = 0;
-			/* send txMsg */
-			Can_Send(&txMsg);
-		}
-		
+	
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+			/*printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
     		printf("data={ ");
     		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
     			printf("%x ", rxMsg.Data.bytes[i]);
     		}
-    		printf("}\n");
+    		printf("}\n");*/
 		}
 	}
 	
