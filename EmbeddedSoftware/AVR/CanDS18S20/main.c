@@ -27,9 +27,8 @@
 #include <ds18x20.h>
 
 #include <delay.h>
-#include <inttypes.h>
 
-#include <eqlazer_funcdefs.h>
+
 
 #define MAXSENSORS 4
 
@@ -70,6 +69,7 @@ uint8_t search_sensors(void)
 }
 
 
+
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
@@ -106,8 +106,8 @@ int main(void) {
 	else {
 		printf("OK!\n");
 	}
-
-    uint32_t timeStamp = 0;
+	
+	uint32_t timeStamp = 0;
 	
 	Can_Message_t txMsg;
 	Can_Message_t rxMsg;
@@ -116,31 +116,23 @@ int main(void) {
 	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
-
-//    txMsg.Id = txMsg.Id | NODE_SENSOR_1 | (NID << 9) | (FUNCC_SENSORS_TEMPERATURE_INSIDE << 15) | (FUNCT_SENSORS << 25);
-//    txMsg.Id = 0x02010A0F;
-
-    /* main loop */
+	
+	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
 
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-/*			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		printf("data={ ");
-    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-    			printf("%x ", rxMsg.Data.bytes[i]);
-    		}
-    		printf("}\n");
-*/		}
+			
+		}
 
 		/* check temperature and send on CAN once every other second */
 		if (Timebase_PassedTimeMillis(timeStamp) >= 2000) {
 			timeStamp = Timebase_CurrentTime();
 			
 			if ( DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL ) == DS18X20_OK) {
-				printf("Measuring temperature... \n");
+				printf("Measuring temperature... ");
 				delay_ms(DS18B20_TCONV_12BIT);
 				for ( i=0; i<nSensors; i++ ) {
 					if ( DS18X20_read_meas( &gSensorIDs[i][0], &subzero,
@@ -148,43 +140,24 @@ int main(void) {
 						
 						//txMsg.Data.bytes[0] = subzero;
 						if (subzero) {
-							txMsg.Data.bytes[0] = -cel;
-						} else {
-							txMsg.Data.bytes[0] = cel;
-						}
-/*						if (subzero) {
 							txMsg.Data.bytes[i*2] = -cel;
+							txMsg.Data.bytes[i*2+1] = ~(cel_frac_bits<<4);
 						} else {
 							txMsg.Data.bytes[i*2] = cel;
+							txMsg.Data.bytes[i*2+1] = (cel_frac_bits<<4);
 						}
-*/						//hur göra med decimaldelen???
-						txMsg.Data.bytes[1] = (cel_frac_bits<<4);
-//						txMsg.Data.bytes[i*2+1] = (cel_frac_bits<<4);
-						if(i==0){ // freezer
-                            txMsg.Id = 0x02020A0F;
-//                            printf("freezer\n");
-                        }else if(i==1){ // outside
-                            txMsg.Id = 0x0201FA0F;
-//                            printf("outside\n");
-                        }else if(i==2){ // inside
-                            txMsg.Id = 0x02010A0F;
-//                            printf("inside\n");
-                        }else{
-                            txMsg.Id = 0x00000003;
-                        }
-
-                        printf("sending...\n");
-                        Can_Send(&txMsg);
+						
 					}
 					else printf("CRC Error (lost connection?)\n");
 				}
+				
+				txMsg.DataLength = nSensors*2;
+				printf("sending...\n");
+				/* send txMsg */
+				Can_Send(&txMsg);
 			}
 			else printf("Start meas. failed (short circuit?)\n");
 
-//			txMsg.DataLength = nSensors*2;
-//			printf("sending...\n");
-			/* send txMsg */
-//			Can_Send(&txMsg);
 		}
 	}
 	
