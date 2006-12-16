@@ -39,7 +39,7 @@
 
 # MCU name
 #MCU = atmega32
-MCU = atmega8
+MCU = atmega88
 #MCU = atmega16
 
 
