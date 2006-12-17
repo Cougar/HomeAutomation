@@ -1,12 +1,18 @@
 /**
- * CAN Test. This program sends a CAN message once every second. The ID of the
- * message is increased each time for testing purposes.
- * Added LCD output
- * 
- * @date	2006-11-21, LCD addition 2006-12-11
- * @author	Jimmy Myhrman, Erik Larsson
- *   
+ * CAN LCD.
+ * For HD44780- and KS0073-based LCD displays
+ * This is the early version that only prints temperature sensor data.
+ *
+ * @date    2006-12-11
+ * @author  Erik Larsson
+ *
+ * TODO Fix more types of output: relay status, mail recieved etc.
+ * Make it configurable to use UART, because it's not necessary on the final PCB
+ *
  */
+
+/* For eq's testing purpose */
+#define EQLAZER 0
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -22,7 +28,12 @@
 #include <timebase.h>
 #include <lcd_HD44780.h>
 
-#include <eqlazer_funcdefs.h>
+/* defines */
+//#include <global_funcdefs> // TODO in future version use this (first fix the defs)
+
+#ifdef EQLAZER
+#include <eqlazer_funcdefs.h> // for eq's personal defs
+#endif
 
 #define BUFFER_SIZE 20
 
@@ -40,7 +51,7 @@ int main(void) {
 	lcd_init( LCD_DISP_ON );
 
 	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN Test: LCD\n");
+	printf(  "   CAN LCD\n");
 	printf(  "------------------------------------------------------------\n");
 
     lcd_clrscr();
@@ -63,36 +74,31 @@ int main(void) {
 	Can_Message_t rxMsg;
 	txMsg.Id = 0;
 	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1; //DataLength and the databytes are just what happens to be in the memory. They are never set.
+	txMsg.ExtendedFlag = 1;
 
     lcd_clrscr();
 
-	/* main loop */
-	while (1) {
-		/* service the CAN routines */
-		Can_Service();
-		
-		/* send CAN message and check for CAN errors once every second */
-//		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
-//			timeStamp = Timebase_CurrentTime();
-			/* send txMsg */
-//			txMsg.Id++;
-//			Can_Send(&txMsg);
-//		}
+    /* main loop */
+    while (1) {
+        /* service the CAN routines */
+        Can_Service();
 
-		/* check if any messages have been received */
-		while (Can_Receive(&rxMsg) == CAN_OK) {
-			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		printf("data={ ");
+        /* check if any messages have been received and print to uart */
+        while (Can_Receive(&rxMsg) == CAN_OK) {
+            printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+            printf("data={ ");
 
-    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-    			printf("%x ", rxMsg.Data.bytes[i]);
-    		}
-    		printf("}\n");
+            for (uint8_t i=0; i<rxMsg.DataLength; i++) {
+                printf("%x ", rxMsg.Data.bytes[i]);
+            }
+            printf("}\n");
 
+#ifdef EQLAZER /* More personalized code */
+            if( (rxMsg.Id & 0x1E000000)>>25 == FUNCT_SENSORS){
 
-            if( (rxMsg.Id & 0x1E000000)>>25 == FUNCT_SENSORS){ // if sensor data received
-
+// TODO fixa rätt umatning av sensordata: negativa tal och decimaldelen.
+// Skriva om hela skiten
+//
                 /* which temperature sensor? */
                 if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_INSIDE ){
                     /* Below 0 degrees celsius? */
@@ -135,13 +141,19 @@ int main(void) {
                     lcd_clrscr();
                     lcd_puts("Sensors: No config.");
                 }
-/*
+            }
+#else /* Generally code */
+
+        /* If temperature sensor data received print to LCD */
+        if( rxMsg.Id  == 0x300 ){
+
                 for( uint8_t i=0; i<(rxMsg.DataLength/2); i++ ){
-                        snprintf( buffer, BUFFER_SIZE, "Sensor %i: %d,%d%cC", i, rxMsg.Data.bytes[i*2], rxMsg.Data.bytes[i*2+1], 0xdf );
+                        snprintf( buffer, BUFFER_SIZE, "Sensor %i: %d,%d%cC", i, rxMsg.Data.bytes[i*2], rxMsg.Data.bytes[i*2+1], 0xdf ); // TODO fixa korrekt utmatning av negativa tal och decimaldel
                         lcd_gotoxy(0,1+i);
                         lcd_puts( buffer );
-                }*/
+                }
             }
+#endif
 		}
 	}
 	
