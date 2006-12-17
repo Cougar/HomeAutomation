@@ -1,7 +1,7 @@
 /**
  * Communication services.
  *
- * @date	2006-10-29
+ * @date	2006-12-17
  * @author	Jimmy Myhrman
  */
 
@@ -69,11 +69,18 @@ void Com_Service() {
  * @param msg
  * 			Pointer to the CAN message structure.
  */
-static void Com_ParseReceivedMessage(Can_Message_t *msg) {
-#if 0
-	printf("Com_ParseReceivedMessage: {ID=%x, DLC=%u, EXT=%u, RTR=%u}\n\r", msg->Id, msg->DataLength, msg->ExtendedFlag, msg->RemoteFlag); 
-#endif
+static void Com_ParseReceivedMessage(Can_Message_t *canMsg) {
+	/*
+	 * Prepare a COM message.
+	 */
+	Com_Message_t comMsg;
+	comMsg.Funct =	(canMsg->Id & 0x1E000000L) >> 25;	/* bit[25..28] */
+	comMsg.Funcc =	(canMsg->Id & 0x01FF8000L) >> 15;	/* bit[15..24] */
+	comMsg.Nid =	(canMsg->Id & 0x00007E00L) >> 9;	/* bit[9..14] */
+	comMsg.Sid =	(canMsg->Id & 0x000001FFL) >> 0;	/* bit[0..8] */
 	
-	//TODO: pack
-
+	/*
+	 * Parse the COM message.
+	 */
+	//TODO
 }

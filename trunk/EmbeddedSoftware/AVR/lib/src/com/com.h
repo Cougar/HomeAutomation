@@ -23,22 +23,22 @@ typedef struct {
     /*
      * <FUNCT>, 4 bits = Function Type.
      */
-    uint8_t Funct;
+	uint8_t Funct	:4;
 
     /*
      * <FUNCC>, 10 bits = Function Code.
      */
-    uint16_t Funcc;
+	uint16_t Funcc	:10;
 
     /*
      * <NID>, 6 bits = Network ID.
      */
-    uint8_t Nid;
+	uint8_t Nid		:6;
 
     /*
      * <SID>, 9 bits = Sender ID.
      */
-    uint16_t Sid;
+	uint16_t Sid	:9;
 
 } Com_Message_t;
 
