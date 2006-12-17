@@ -8,6 +8,9 @@
  *   
  *   Observera! Applikationen är helt otestad
  *   ADC=Vin*1024/Vref
+ *   Vout=( 10 mV/C )( Temperature C ) + 500 mV
+ *
+ *  Transmitts: DATA: <temperature high byte> <temperature low byte> <relay status>
  *
  */
 
@@ -24,30 +27,37 @@
 #include <serial.h>
 #include <timebase.h>
 
-//#define RELAY_PORT  PORTC
-//#define RELAY_PIN   PC1
 #define OFF     0x00
 #define ON      0x01
+#define Vref    5
 
 /*------------------------------------------------------------------------------
  * Read relay state (OPEN/CLOSED) and temperature
  * ---------------------------------------------------------------------------*/
-void readRelayStatus( Can_Message_t* msg, uint8_t state )
+void sendRelayStatus( Can_Message_t* msg, uint8_t state )
 {
-            /* Start measureing */
-            ADCSRA |= (1<<ADSC);
+    int16_t temp;
 
-            /* Wait for conversion to complete */
-            while( ADCSRA & (1<<ADSC) ){}
+    /* Start measureing */
+    ADCSRA |= (1<<ADSC);
 
-            msg->Id = 0x1201; // temporary ID
+    /* Wait for conversion to complete */
+    while( ADCSRA & (1<<ADSC) ){}
 
-            msg->Data.bytes[0] = state;
-            msg->Data.bytes[1]= ADCL;
-            msg->Data.bytes[2]= ADCH;
-            msg->DataLength = 3;
+    msg->Id = 0x1201; // temporary ID
 
-            Can_Send( msg );
+    msg->Data.bytes[0] = state;
+
+    /* Convert voltage to temperature */
+    temp = (ADCL & (ADCH<<8));
+    temp = temp*Vref/1024;
+    temp = (temp - 0.5)/(0.01);
+
+    msg->Data.bytes[1]= temp;
+    msg->Data.bytes[2]= (temp>>8);
+    msg->DataLength = 3;
+
+    Can_Send( &msg );
 }
 
 /*-----------------------------------------------------------------------------
@@ -57,15 +67,14 @@ int main(void) {
 
     uint8_t relayStatus;
 
-	Timebase_Init();
-	Serial_Init();
-	sei();
-
-    /* Enable RELAY_PIN as output */
-    DDRC |= (1<<DDC1);
+    Timebase_Init();
+    Serial_Init();
+    sei();
 
     /* Turn relay off */
     PORTC &= ~(1<<PC1);
+    DDRC |= (1<<DDC1);
+
     relayStatus = OFF;
 
     /* Initiate ADC for reading temperature sensor */
@@ -76,14 +85,14 @@ int main(void) {
     ADMUX = 0x07;
     ADCSRA |= (1<<ADEN);
 
-	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN: Relay\n");
-	printf(  "------------------------------------------------------------\n");
+    printf("\n------------------------------------------------------------\n");
+    printf(  "   CAN: Relay\n");
+    printf(  "------------------------------------------------------------\n");
 
 
-	printf("CanInit...");
-	if (Can_Init() != CAN_OK) {
-    printf("FAILED!\n");
+    printf("CanInit...");
+    if (Can_Init() != CAN_OK) {
+        printf("FAILED!\n");
     }else{
         printf("OK!\n");
     }
@@ -119,8 +128,8 @@ int main(void) {
                 }else if(rxMsg.Data.bytes[0] == 0x02){
                     /* Turn relay off */
 
-                    DDRC |= (1<<DDC1);
                     PORTC &= ~(1<<PC1);
+                    DDRC |= (1<<DDC1);
 
                     relayStatus = OFF;
 
@@ -128,21 +137,21 @@ int main(void) {
                     /* Toggle relay */
 
                     if(relayStatus == ON){
-                        
-                        DDRC |= (1<<DDC1);
                         PORTC &= ~(1<<PC1);
+                        DDRC |= (1<<DDC1);
+
                         relayStatus = OFF;
 
                     }else{
-
                         DDRC &= ~(1<<DDC1);
                         PORTC |= (1<<PC1);
+
                         relayStatus = ON;
                     }
 
                 }else if(rxMsg.Data.bytes[0] == 0x04){
                     /* Get relay status (ON/OFF?, temperature) */
-                    readRelayStatus( &txMsg, relayStatus );
+                    sendRelayStatus( &txMsg, relayStatus );
                 }
             }
         }
@@ -155,7 +164,7 @@ int main(void) {
             timeStamp = Timebase_CurrentTime();
             /* Get relay status (ON/OFF?, temperature) */
 
-             readRelayStatus( &txMsg, relayStatus );
+             sendRelayStatus( &txMsg, relayStatus );
         }
 	}
 	return 0;
