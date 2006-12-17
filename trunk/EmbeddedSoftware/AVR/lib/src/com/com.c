@@ -74,10 +74,14 @@ static void Com_ParseReceivedMessage(Can_Message_t *canMsg) {
 	 * Prepare a COM message.
 	 */
 	Com_Message_t comMsg;
+	/* Unpack the header fields */
 	comMsg.Funct =	(canMsg->Id & 0x1E000000L) >> 25;	/* bit[25..28] */
 	comMsg.Funcc =	(canMsg->Id & 0x01FF8000L) >> 15;	/* bit[15..24] */
 	comMsg.Nid =	(canMsg->Id & 0x00007E00L) >> 9;	/* bit[9..14] */
 	comMsg.Sid =	(canMsg->Id & 0x000001FFL) >> 0;	/* bit[0..8] */
+	/* Copy data */
+	comMsg.Data.dwords[0] = canMsg->Data.dwords[0];
+	comMsg.Data.dwords[1] = canMsg->Data.dwords[1];
 	
 	/*
 	 * Parse the COM message.
