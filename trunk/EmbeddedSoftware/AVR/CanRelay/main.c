@@ -1,18 +1,24 @@
 /**
- * CAN Test. This program sends a CAN message once every second. The ID of the
- * message is increased each time for testing purposes.
- * Added LCD output
- * 
- * @date	2006-11-21, LCD addition 2006-12-11
- * @author	Jimmy Myhrman, Erik Larsson
- *   
- *   Observera! Applikationen är helt otestad
+ * CAN Relay.
+ *
+ *
+ * @date    2006-12-17
+ * @author  Erik Larsson
+ *
+ *   Observera! Applikationen är helt otestad!
+ *
  *   ADC=Vin*1024/Vref
  *   Vout=( 10 mV/C )( Temperature C ) + 500 mV
  *
  *  Transmitts: DATA: <temperature high byte> <temperature low byte> <relay status>
  *
  */
+
+/*
+ * For testing with ATmega88 PDIP enable this fetaure
+ * Since PDIP doesn't have ADC7 it will use the ADC0 instead
+ */
+#define PDIP    0
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -26,13 +32,13 @@
 #include <can.h>
 #include <serial.h>
 #include <timebase.h>
-
+/* defines */
 #define OFF     0x00
 #define ON      0x01
 #define Vref    5
 
 /*------------------------------------------------------------------------------
- * Read relay state (OPEN/CLOSED) and temperature
+ * Read and send relay state (OPEN/CLOSED) and temperature
  * ---------------------------------------------------------------------------*/
 void sendRelayStatus( Can_Message_t* msg, uint8_t state )
 {
@@ -81,8 +87,14 @@ int main(void) {
 
     /* Wake up ADC */
     PRR &= ~(1<<PRADC);
-    /* Enable AREF and ADC7 */
+#if PDIP
+    /* Enable AREF and ADC0 (For PDIP package) */
+    ADMUX = 0x00;
+#else
+    /* Enable AREF and ADC7 (For TQFP package) */
     ADMUX = 0x07;
+#endif
+
     ADCSRA |= (1<<ADEN);
 
     printf("\n------------------------------------------------------------\n");
@@ -162,11 +174,11 @@ int main(void) {
 
         if( Timebase_PassedTimeMillis(timeStamp) >=5000){
             timeStamp = Timebase_CurrentTime();
-            /* Get relay status (ON/OFF?, temperature) */
+            /* Get relay status (ON/OFF?, temperature) and send */
 
              sendRelayStatus( &txMsg, relayStatus );
         }
-	}
-	return 0;
+    }
+    return 0;
 }
 
