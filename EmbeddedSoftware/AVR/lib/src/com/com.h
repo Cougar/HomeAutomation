@@ -39,6 +39,20 @@ typedef struct {
      * <SID>, 9 bits = Sender ID.
      */
 	uint16_t Sid	:9;
+	
+	/*
+     * DATA section. Contains up to 8 data bytes.
+     */
+    union {
+        /* read as 8bit unsigned data */
+        uint8_t bytes[8];
+        
+        /* read as 16bit unsigned data */
+        uint16_t words[4];
+        
+        /* read as 32bit unsigned data */
+        uint32_t dwords[2];
+    } Data;
 
 } Com_Message_t;
 
