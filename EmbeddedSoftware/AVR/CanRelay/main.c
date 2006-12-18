@@ -5,16 +5,17 @@
  * @date    2006-12-17
  * @author  Erik Larsson
  *
- *   Observera! Applikationen är testad på labplatta med m88, pot och lysdiod
+ *   Observera! Applikationen är endast testad på labplatta med m88, pot och lysdiod
  *
  *   ADC=Vin*1024/Vref
  *   Vout=( 10 mV/C )( Temperature C ) + 500 mV
  *
- *  Transmitts: DATA: <temperature high byte> <temperature low byte> <relay status>
+ *  Transmitts: DATA: <temperature low byte> <temperature high byte> <relay status>
  *
  *  TODO fixa så status/temp ligger i en funktion
- *  temperaturomvandlingen fungerar fint, men sparas i Data på ett fuckat sätt
+ *  temperaturomvandlingen fungerar fint
  *  fixa så adcn inte pollas hela tiden, det tar för mycket tid
+ *  kunna använda Vref = 1.1
  *
  */
 
@@ -38,9 +39,9 @@
 #include <serial.h>
 #include <timebase.h>
 /* defines */
-#define OFF     0x01
-#define ON      0x02
-#define Vref    5
+#define OFF     0x00
+#define ON      0x01
+#define Vref    5 /* For Aref use 5, internal ref 1.1 */
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -51,7 +52,9 @@ int main(void) {
     uint32_t boardTemperature;
 
     Timebase_Init();
+#if DEBUG
     Serial_Init();
+#endif
     sei();
 
     /* Turn relay off */
@@ -85,6 +88,8 @@ int main(void) {
     }else{
         printf("OK!\n");
     }
+#else
+    Can_Init();
 #endif
     uint32_t timeStamp = 0;
 
@@ -158,7 +163,7 @@ int main(void) {
 
                     txMsg.Id = 0x1201; // temporary ID
 
-                    txMsg.Data.bytes[3] = relayStatus;
+                    txMsg.Data.bytes[2] = relayStatus;
 
                     /* Convert voltage to temperature */
 
@@ -168,8 +173,8 @@ int main(void) {
                     boardTemperature = (boardTemperature*100/1024)-50;
 
                     /* Save and send */
-                    txMsg.Data.bytes[0]= (uint32_t)boardTemperature&0x00FF;
-                    txMsg.Data.bytes[1]= ((uint32_t)boardTemperature&0xFF00)>>8;
+                    txMsg.Data.bytes[0]= boardTemperature & 0x00FF;
+                    txMsg.Data.bytes[1]= (boardTemperature & 0xFF00)>>8;
 
                     txMsg.DataLength = 3;
 
@@ -193,7 +198,7 @@ int main(void) {
 
             txMsg.Id = 0x1201; // temporary ID
 
-            txMsg.Data.bytes[3] = relayStatus;
+            txMsg.Data.bytes[2] = relayStatus;
 
             /* Convert voltage to temperature */
 
@@ -203,8 +208,8 @@ int main(void) {
             boardTemperature = (boardTemperature*100/1024)-50;
 
             /* Save and send */
-            txMsg.Data.bytes[0]= (uint32_t)boardTemperature&0x00FF;
-            txMsg.Data.bytes[1]= ((uint32_t)boardTemperature&0xFF00)>>8;
+            txMsg.Data.bytes[0]= boardTemperature & 0x00FF;
+            txMsg.Data.bytes[1]= (boardTemperature & 0xFF00)>>8;
 
             txMsg.DataLength = 3;
             Can_Send( &txMsg );
