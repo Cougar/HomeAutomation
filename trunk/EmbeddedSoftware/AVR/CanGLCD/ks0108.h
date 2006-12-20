@@ -56,3 +56,5 @@ void SetData(uint8_t Data);
 void glcdSetXY(uint8_t x, uint8_t y);
 
 void glcdPowerOn(void);
+
+void glcdClear(void);
