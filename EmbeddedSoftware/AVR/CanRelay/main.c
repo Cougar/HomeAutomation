@@ -12,18 +12,13 @@
  *
  *  Transmitts: DATA: <temperature low byte> <temperature high byte> <relay status>
  *
- *  TODO fixa så status/temp ligger i en funktion
- *  temperaturomvandlingen fungerar fint
+ *  TODO
  *  fixa så adcn inte pollas hela tiden, det tar för mycket tid
  *  kunna använda Vref = 1.1
  *
+ *
  */
 
-/*
- * For testing with ATmega88 PDIP enable this fetaure
- * Since PDIP doesn't have ADC7 it will use the ADC0 instead
- */
-#define PDIP    1
 #define DEBUG   0 /* Prints debug messages to uart */
 
 /*-----------------------------------------------------------------------------
@@ -38,10 +33,31 @@
 #include <can.h>
 #include <serial.h>
 #include <timebase.h>
+
+#include <tc1047.h>
+
 /* defines */
-#define OFF     0x00
-#define ON      0x01
-#define Vref    5 /* For Aref use 5, internal ref 1.1 */
+#define RELAY_OFF           0x01
+#define RELAY_ON            0x02
+#define FAILSAFE_MODE       0x0F
+#define FAILSAFE_TRESHOLD   60  /* Degrees when nodeRelay goes into failsafe mode */
+
+#define RELAY_CMD_GET       0x1200
+#define RELAY_CMD_SEND      0x1201
+#define RELAY_CMD_ON        0x01
+#define RELAY_CMD_OFF       0x02
+#define RELAY_CMD_TOGGLE    0x03
+#define RELAY_CMD_STATUS    0x04
+#define RELAY_CMD_RESET     0x05
+#define STATUS_SEND_PERIOD  10000 /* milliseconds */
+#define FAILSAFE_SEND_PERIOD  10000 /* milliseconds */
+
+/*----------------------------------------------------------------------------
+ * Functions
+ * -------------------------------------------------------------------------*/
+uint8_t relayOff();
+uint8_t relayOn();
+void relayFailsafe();
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -49,7 +65,9 @@
 int main(void) {
 
     uint8_t relayStatus;
-    uint32_t boardTemperature;
+    uint32_t boardTemperature = 0;
+
+    adcTemperatureInit();
 
     Timebase_Init();
 #if DEBUG
@@ -58,23 +76,7 @@ int main(void) {
     sei();
 
     /* Turn relay off */
-    PORTC &= ~(1<<PC1);
-    DDRC |= (1<<DDC1);
-
-    relayStatus = OFF;
-
-    /* Initiate ADC for reading temperature sensor */
-
-    /* Wake up ADC */
-    PRR &= ~(1<<PRADC);
-#if PDIP
-    /* Enable AREF and ADC0 (For PDIP package) */
-    ADMUX = 0x00; // TODO 0x00 för aref, 0xc0 för internal 1,1
-#else
-    /* Enable AREF and ADC7 (For TQFP package) */
-    ADMUX = 0x07;
-#endif
-    ADCSRA |= (1<<ADEN);
+    relayStatus = relayOff();
 
 #if DEBUG
     printf("\n------------------------------------------------------------\n");
@@ -95,9 +97,10 @@ int main(void) {
 
     Can_Message_t txMsg;
     Can_Message_t rxMsg;
-    txMsg.Id = 0;
+    txMsg.Id = RELAY_CMD_SEND;
     txMsg.RemoteFlag = 0;
     txMsg.ExtendedFlag = 1;
+    txMsg.DataLength = 3;
 
     /* main loop */
     while (1) {
@@ -107,119 +110,135 @@ int main(void) {
         /* check if any messages have been received */
         while (Can_Receive(&rxMsg) == CAN_OK) {
             /* This relay is adressed*/
-            if( rxMsg.Id == 0x1200 ){
+            if( rxMsg.Id == RELAY_CMD_GET ){
 
-                if( rxMsg.Data.bytes[0] == 0x01 ){
+                if( rxMsg.Data.bytes[0] == RELAY_CMD_ON ){
                     /* Turn relay on */
+                    relayStatus = relayOn();
 
-                    /* Set as input and enable pull-up */
-                    DDRC &= ~(1<<DDC1);
-                    PORTC |= (1<<PC1);
-
-                    relayStatus = ON;
-#if DEBUG
-                    printf("turn on\n");
-#endif
-
-                }else if(rxMsg.Data.bytes[0] == 0x02){
+                }else if(rxMsg.Data.bytes[0] == RELAY_CMD_OFF){
                     /* Turn relay off */
+                    relayStatus = relayOff();
 
-                    PORTC &= ~(1<<PC1);
-                    DDRC |= (1<<DDC1);
-
-                    relayStatus = OFF;
-#if DEBUG
-                    printf("turn off\n");
-#endif
-
-                }else if(rxMsg.Data.bytes[0] == 0x03){
+                }else if(rxMsg.Data.bytes[0] == RELAY_CMD_TOGGLE ){
                     /* Toggle relay */
 
-                    if(relayStatus == ON){
-                        PORTC &= ~(1<<PC1);
-                        DDRC |= (1<<DDC1);
-#if DEBUG
-                        printf("toggle: turn off\n");
-#endif
-
-                        relayStatus = OFF;
-
+                    if(relayStatus == RELAY_OFF){
+                        relayStatus = relayOn();
                     }else{
-                        DDRC &= ~(1<<DDC1);
-                        PORTC |= (1<<PC1);
-#if DEBUG
-                        printf("toggle: turn on\n");
-#endif
-
-                        relayStatus = ON;
+                        relayStatus = relayOff();
                     }
 
-                }else if(rxMsg.Data.bytes[0] == 0x04){
-                    /* Get relay status (ON/OFF?, temperature) */
-                    ADCSRA |= (1<<ADSC);
+                }else if(rxMsg.Data.bytes[0] == RELAY_CMD_STATUS){
+                    /* Send relay status to CAN */
 
-                    /* Wait for conversion to complete */
-                    while( ADCSRA & (1<<ADSC) ){}
+                    boardTemperature = getTC1047temperature();
 
-                    txMsg.Id = 0x1201; // temporary ID
+                    if( boardTemperature >= FAILSAFE_TRESHOLD ){
+                        relayFailsafe();
+                    }else{
+                        txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
+                        txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+                        txMsg.Data.bytes[2] = relayStatus;
 
-                    txMsg.Data.bytes[2] = relayStatus;
-
-                    /* Convert voltage to temperature */
-
-                    boardTemperature = ADCW;
-
-                    boardTemperature = boardTemperature*Vref;
-                    boardTemperature = (boardTemperature*100/1024)-50;
-
-                    /* Save and send */
-                    txMsg.Data.bytes[0]= boardTemperature & 0x00FF;
-                    txMsg.Data.bytes[1]= (boardTemperature & 0xFF00)>>8;
-
-                    txMsg.DataLength = 3;
-
-                    Can_Send( &txMsg );
+                        Can_Send( &txMsg );
+                    }
                 }
             }
         }
 
-        // TODO
-        // ska status på relä och temperatur skickas periodiskt?
-        // tätare intervall om temperaturen kommer över en viss gräns?
-
-        if( Timebase_PassedTimeMillis(timeStamp) >=10000){
+        if( Timebase_PassedTimeMillis(timeStamp) >= STATUS_SEND_PERIOD ){
             timeStamp = Timebase_CurrentTime();
-            /* Get relay status (ON/OFF?, temperature) and send */
+            /* Send relay status to CAN */
 
-            ADCSRA |= (1<<ADSC);
+            boardTemperature = getTC1047temperature();
 
-            /* Wait for conversion to complete */
-            while( ADCSRA & (1<<ADSC) ){}
+            if( boardTemperature >= FAILSAFE_TRESHOLD ){
+                relayFailsafe();
+            }else{
+                txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
+                txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+                txMsg.Data.bytes[2] = relayStatus;
 
-            txMsg.Id = 0x1201; // temporary ID
-
-            txMsg.Data.bytes[2] = relayStatus;
-
-            /* Convert voltage to temperature */
-
-            boardTemperature = ADCW;
-
-            boardTemperature = boardTemperature*Vref;
-            boardTemperature = (boardTemperature*100/1024)-50;
-
-            /* Save and send */
-            txMsg.Data.bytes[0]= boardTemperature & 0x00FF;
-            txMsg.Data.bytes[1]= (boardTemperature & 0xFF00)>>8;
-
-            txMsg.DataLength = 3;
-            Can_Send( &txMsg );
+                Can_Send( &txMsg );
 #if DEBUG
-            printf("Message sent...\n");
-            printf("Temperature: %d\nRelay status: %x, %u\n", boardTemperature, relayStatus, relayStatus);
+                printf("Periodic message sent...\n");
+                printf("Temperature: %d\nRelay status: %u\n", boardTemperature, relayStatus);
 #endif
-
+            }
         }
     }
     return 0;
+}
+
+uint8_t relayOff()
+{
+    /* Set as output and sink */
+    PORTC &= ~(1<<PC1);
+    DDRC |= (1<<DDC1);
+
+#if DEBUG
+    printf("relay turned off\n");
+#endif
+
+    return RELAY_OFF;
+}
+
+uint8_t relayOn()
+{
+    /* Set as input and enable pull-up */
+    DDRC &= ~(1<<DDC1);
+    PORTC |= (1<<PC1);
+
+#if DEBUG
+    printf("relay turned on\n");
+#endif
+
+    return RELAY_ON;
+}
+
+void relayFailsafe()
+{
+    uint8_t relayStatus;
+    uint32_t boardTemperature = 0, timeStamp = 0;
+
+    Can_Message_t txMsg;
+    Can_Message_t rxMsg;
+    txMsg.Id = RELAY_CMD_SEND;
+    txMsg.RemoteFlag = 0;
+    txMsg.ExtendedFlag = 1;
+    txMsg.DataLength = 4;
+
+    relayStatus = relayOff();
+
+    while(1){
+        /* service the CAN routines */
+        Can_Service();
+
+        /* check if any messages have been received */
+        while (Can_Receive(&rxMsg) == CAN_OK) {
+            /* This relay is adressed*/
+            if( rxMsg.Id == RELAY_CMD_GET ){
+                if( rxMsg.Data.bytes[0] == RELAY_CMD_RESET ){
+                    /* Return from failsafe mode */
+                    return 0;
+                }
+            }
+        }
+
+        if( Timebase_PassedTimeMillis(timeStamp) >= FAILSAFE_SEND_PERIOD ){
+            timeStamp = Timebase_CurrentTime();
+            /* Send relay status to CAN */
+
+            boardTemperature = getTC1047temperature();
+
+            txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
+            txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+            txMsg.Data.bytes[2] = relayStatus;
+            txMsg.Data.bytes[3] = FAILSAFE_MODE;
+
+            Can_Send( &txMsg );
+        }
+    }
 }
 
