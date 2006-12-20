@@ -10,11 +10,7 @@
  *   ADC=Vin*1024/Vref
  *   Vout=( 10 mV/C )( Temperature C ) + 500 mV
  *
- *  Transmitts: DATA: <temperature low byte> <temperature high byte> <relay status>
- *
- *  TODO
- *  fixa så adcn inte pollas hela tiden, det tar för mycket tid
- *  kunna använda Vref = 1.1
+ *  Transmitts: DATA: <temperature low byte> <temperature high byte> <relay status> <failsafe mode>
  *
  *
  */
@@ -134,7 +130,7 @@ int main(void) {
 
                     boardTemperature = getTC1047temperature();
 
-                    if( boardTemperature >= FAILSAFE_TRESHOLD ){
+                    if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
                         relayFailsafe();
                     }else{
                         txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
@@ -153,7 +149,7 @@ int main(void) {
 
             boardTemperature = getTC1047temperature();
 
-            if( boardTemperature >= FAILSAFE_TRESHOLD ){
+            if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
                 relayFailsafe();
             }else{
                 txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
@@ -229,7 +225,9 @@ void relayFailsafe()
         if( Timebase_PassedTimeMillis(timeStamp) >= FAILSAFE_SEND_PERIOD ){
             timeStamp = Timebase_CurrentTime();
             /* Send relay status to CAN */
-
+#if DEBUG
+            printf("Failsafe mode!\n");
+#endif
             boardTemperature = getTC1047temperature();
 
             txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
