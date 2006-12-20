@@ -23,12 +23,7 @@
 #include <ks0108.h>
 
 
-//En variabel för att hålla tillståndet
-
-//Interrupttest
-
-
-uint8_t encoderPosition; //Bara för interrupttest;
+uint8_t encoderPosition; //Bara för interrupttest. +/-1 beroende på riktning.;
 
 SIGNAL (SIG_INTERRUPT1)
 {
@@ -43,63 +38,37 @@ SIGNAL (SIG_INTERRUPT1)
 	if (encoderPosition > 99) encoderPosition = 99;
 }
 
-// /Interrupttest
 
 
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-//INterrupttest
-GICR|=0x80;
-MCUCR=0b00001000;
-GIFR=0x80;
+	GICR|=0x80;		//Interrupt på
+	MCUCR=0b00001000;	//Rising Edge
+	GIFR=0x80;		//Något interruptigt :)
 
-
-// /Interrupttest
 
 	Timebase_Init();
 	sei();
-
 	uint32_t timeStamp = 0;
 
 
-	//Här leker vi med displayen woohoo
+	//Sätt en massa ut/ingångar.. kanske inte snygg lösning, men det får bli så sålänge.
+	PORTC=0x00;
+	DDRC |= (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5);
+	PORTD=0x00;
+	DDRD |= (1<<0)|(1<<1)|(1<<2)|(1<<4)|(1<<5)|(1<<6)|(1<<7);
+	PORTB=0x00;
+	DDRB |= (1<<0)|(1<<1);
+	DDRD &= ~(1<<3);
+	DDRB &= ~(1<<7);
 
-//Sätt rubbet till utgångar.. kanske inte snygg lösning, men det får bli så sålänge.
-PORTC=0x00;
-
-DDRC |= (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5);
-
-PORTD=0x00;
-DDRD |= (1<<0)|(1<<1)|(1<<2)|(1<<4)|(1<<5)|(1<<6)|(1<<7);
-PORTB=0x00;
-DDRB |= (1<<0)|(1<<1);
-
-DDRD &= ~(1<<3);
-DDRB &= ~(1<<7);
-
-	//Initiera tjohej
-
-
-
-
-
-//Ny och snyggare kod :)
-
-
-//Slå på
-glcdPowerOn();
-
-
-
-
-//Test med lite CAN
-
-
+	
+	glcdPowerOn();
 
 	Can_Message_t rxMsg;
-	char buffert[21];
+	char buffert[21];	//Buffert för snprintf
 
 
 	glcdSetXY(0,0);
@@ -134,17 +103,12 @@ glcdPowerOn();
 		}
 		
 		/* Här kollar vi klickvriden */		
-		glcdSetXY(116,0);
+		glcdSetXY(115,0);
 		snprintf(buffert,21,"%u ",encoderPosition);
 		glcdPutStr(buffert);
 
 
 	}
 
-
-	while (1) {
-
-	}
-	
 	return 0;
 }
