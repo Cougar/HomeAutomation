@@ -25,6 +25,43 @@
 
 uint8_t encoderPosition; //Bara för interrupttest. +/-1 beroende på riktning.;
 
+//variabler för visning
+	Can_Message_t rxMsg;
+
+void draw_lcd_screen(void){
+
+	switch (encoderPosition) {
+		case 0:
+			glcdSetXY(0,0);
+			char buffert[21];
+			glcdPutStr("Latest CAN-message:");
+			glcdSetXY(0,1);
+			snprintf(buffert,21,"ID=%lx L=%u E=%u RT=%u", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+			glcdPutStr(buffert);
+
+			glcdSetXY(0,2);
+
+  			for (uint8_t i=0; i<rxMsg.DataLength; i++) {
+    				snprintf(buffert,21,"%x ", rxMsg.Data.bytes[i]);
+				glcdPutStr(buffert);
+    			}
+		return;	
+
+		case 1: 
+			glcdSetXY(0,0);
+			glcdPutStr("Muahaha, Har har vi nummer tva. Och detta kanske funkar!");
+		return;
+		case 2: 
+			glcdSetXY(0,0);
+			glcdPutStr("cparune :P");
+		return;
+
+	}
+
+}
+
+
+
 SIGNAL (SIG_INTERRUPT1)
 {
 	if ((PINB&(0b10000000))==0){
@@ -36,7 +73,14 @@ SIGNAL (SIG_INTERRUPT1)
 
 	if (encoderPosition > 250) encoderPosition = 0;
 	if (encoderPosition > 99) encoderPosition = 99;
+	glcdClear(); //Nolla displayen
+
+	draw_lcd_screen();
 }
+
+
+//Stöd för en massa olika sidor
+
 
 
 
@@ -67,10 +111,6 @@ int main(void) {
 	
 	glcdPowerOn();
 
-	Can_Message_t rxMsg;
-	char buffert[21];	//Buffert för snprintf
-
-
 	glcdSetXY(0,0);
 	glcdPutStr("CanInit...");
 	if (Can_Init() != CAN_OK) {
@@ -88,26 +128,15 @@ int main(void) {
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-			glcdSetXY(0,1);
-			glcdPutStr("MSG Recieved!");
-			glcdSetXY(0,2);
-			snprintf(buffert,21,"ID=%lx L=%u E=%u RT=%u", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-			glcdPutStr(buffert);
-
-			glcdSetXY(0,3);
-
-  			for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-    				snprintf(buffert,21,"%x ", rxMsg.Data.bytes[i]);
-				glcdPutStr(buffert);
-    			}
+			if (encoderPosition == 0){
+				draw_lcd_screen();
+			}
 		}
 		
 		/* Här kollar vi klickvriden */		
-		glcdSetXY(115,0);
-		snprintf(buffert,21,"%u ",encoderPosition);
-		glcdPutStr(buffert);
-
-
+//		glcdSetXY(115,0);
+//		snprintf(buffert,21,"%u ",encoderPosition);
+//		glcdPutStr(buffert);
 	}
 
 	return 0;

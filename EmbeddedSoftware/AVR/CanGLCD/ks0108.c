@@ -69,6 +69,16 @@ void glcdPowerOn(){
 	SetData(0b00111111);
 	Enable();
 	
+	glcdClear();
+}
+
+void glcdClear(){
+	LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_CS2)|(1<<LCD_CONTROL_PIN_CS1);
+	Enable();
+	Delay();
+	Disable();
+
+
 	uint8_t i;
 	uint8_t j;
 
