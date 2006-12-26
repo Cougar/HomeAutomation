@@ -15,7 +15,8 @@
  *
  */
 
-#define DEBUG   0 /* Prints debug messages to uart */
+#define DEBUG           1 /* Prints debug messages to uart */
+#define TWO_BUTTON_MODE 1 /* If using two (or just one but nothing more) auxiliary buttons */
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -46,7 +47,18 @@
 #define RELAY_CMD_STATUS    0x04
 #define RELAY_CMD_RESET     0x05
 #define STATUS_SEND_PERIOD  10000 /* milliseconds */
-#define FAILSAFE_SEND_PERIOD  10000 /* milliseconds */
+#define FAILSAFE_SEND_PERIOD    10000 /* milliseconds */
+#define BOUNCE_TIME         10 /* milliseconds */
+#define BUTTON_ID           0x1202
+#define BUTTON1             1
+#define BUTTON2             2
+
+/*-------------------------------------------------------------------------
+ * Global variables
+ * -----------------------------------------------------------------------*/
+#if TWO_BUTTON_MODE
+Can_Message_t txMsg_Button;
+#endif
 
 /*----------------------------------------------------------------------------
  * Functions
@@ -54,6 +66,81 @@
 uint8_t relayOff();
 uint8_t relayOn();
 void relayFailsafe();
+
+/*----------------------------------------------------------------------------
+ * Interrupt routines
+ * -------------------------------------------------------------------------*/
+#if TWO_BUTTON_MODE
+ISR( PCINT2_vect )
+{
+    /* 
+     * Auxiliary button pressed and released
+     * Check time between press and release to eliminate bounces
+     */
+    static uint32_t buttonTime[2];
+
+    txMsg_Button.RemoteFlag = 0;
+    txMsg_Button.ExtendedFlag = 1;
+
+    if( (PIND & (1<<PD6)) == 0){
+        /* Button pressed */
+        buttonTime[0] = Timebase_CurrentTime();
+#if DEBUG
+        printf("Button 1 pressed\n");
+#endif
+    }else if( (PIND & (1<<PD6)) == 1){
+        if( Timebase_PassedTimeMillis( buttonTime[0] ) >= BOUNCE_TIME ){
+            /* No bounce, send message */
+            txMsg_Button.Id = BUTTON_ID;
+            txMsg_Button.DataLength = 1;
+            txMsg_Button.Data.bytes[0] = BUTTON1;
+#if DEBUG
+            printf("Button 1 pressed: message sent\n");
+#endif
+            return;
+        }else{
+            /* Just bounces, ignore it */
+#if DEBUG
+            printf("Button 1 just bounced\n");
+#endif
+            return;
+        }
+    }
+    if( (PIND & (1<<PD7)) == 0){
+        /* Button pressed */
+        buttonTime[1] = Timebase_CurrentTime();
+#if DEBUG
+        printf("Button 2 pressed\n");
+#endif
+    }else if( (PIND & (1<<PD7)) == 1){
+        if( Timebase_PassedTimeMillis( buttonTime[1] ) >= BOUNCE_TIME ){
+            /* No bounce, send message */
+            txMsg_Button.Id = BUTTON_ID;
+            txMsg_Button.DataLength = 1;
+            txMsg_Button.Data.bytes[0] = BUTTON2;
+#if DEBUG
+            printf("Button 2 pressed: message sent\n");
+#endif
+            return;
+        }else{
+            /* Just bounces, ignore it */
+#if DEBUG
+            printf("Button 2 just bounced\n");
+#endif
+            return;
+        }
+    }
+}
+#endif
+
+//ISR( ADC_vect )
+//{
+    /*
+     * ADC conversion completed
+     */
+    // TODO använd denna rutin för att läsa värde när omvandlingen är klar
+
+//}
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -69,6 +156,25 @@ int main(void) {
 #if DEBUG
     Serial_Init();
 #endif
+
+#if TWO_BUTTON_MODE
+    /*
+     * Initialize buttons
+     * It is possible to use ie. sensors instead
+     * but then change this
+     */
+    /* Set as input and enable pull-up */
+    DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
+    PORTD |= (1<<PD6)|(1<<PD7);
+
+    /* Enable IO-pin interrupt */
+    PCICR |= (1<<PCIE1);
+    /* Unmask PD6 and PD7 */
+    PCMSK2 |= (1<<PCINT22) | (1<<PCINT23);
+        /* Button pressed */
+#endif
+
+
     sei();
 
     /* Turn relay off */
@@ -217,7 +323,7 @@ void relayFailsafe()
             if( rxMsg.Id == RELAY_CMD_GET ){
                 if( rxMsg.Data.bytes[0] == RELAY_CMD_RESET ){
                     /* Return from failsafe mode */
-                    return 0;
+                    return;
                 }
             }
         }
