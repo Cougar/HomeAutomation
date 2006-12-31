@@ -171,10 +171,7 @@ int main(void) {
     PCICR |= (1<<PCIE1);
     /* Unmask PD6 and PD7 */
     PCMSK2 |= (1<<PCINT22) | (1<<PCINT23);
-        /* Button pressed */
 #endif
-
-
     sei();
 
     /* Turn relay off */

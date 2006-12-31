@@ -11,8 +11,7 @@
  *
  */
 
-/* For eq's testing purpose */
-#define EQLAZER 0
+#define DEBUG 1
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -27,15 +26,27 @@
 #include <serial.h>
 #include <timebase.h>
 #include <lcd_HD44780.h>
+#include <clcd20x4.h>
+/* funcdefs */
+#include <global_funcdefs.h>
+#include <eqlazer_funcdefs.h>
 
 /* defines */
-//#include <global_funcdefs> // TODO in future version use this (first fix the defs)
-
-#ifdef EQLAZER
-#include <eqlazer_funcdefs.h> // for eq's personal defs
-#endif
-
 #define BUFFER_SIZE 20
+
+uint8_t currentView = MAIN_VIEW;
+/*static const PROGMEM unsigned char symbolThermometer[] =
+{
+    0x04, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0E, 0x0E,
+    0x0E, 0x0E, 0x0E, 0x0A, 0x11, 0x11, 0x0A, 0x04
+};*/ // TODO behövs symbol för termometer?
+
+// TODO ISR() för att använda optoencoders
+ISR( PCINT2_vect ){
+    // TODO do the magic stuff
+    // vriden medurs currentView++
+    // moturs currentView--
+} // TODO lägga denna koden i ett eget lib?
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -43,38 +54,60 @@
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-    uint8_t subzero;
+    uint8_t subzero; // TODO städa upp
+    uint8_t m, temperatureData[8], relayStatus[4], dimmerStatus[4];
 
-	Timebase_Init();
-	Serial_Init();
-	sei();
-	lcd_init( LCD_DISP_ON );
+    /*
+     * Initialize optoencoders and buttons
+     */
+    /* Set as input and enable pull-up */ // TODO fixa rätt ingångar
+    DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
+    PORTD |= (1<<PD6)|(1<<PD7);
+    /* Enable IO-pin interrupt */
+    PCICR |= (1<<PCIE1);
+    /* Unmask PD6 and PD7 */
+    PCMSK2 |= (1<<PCINT22)|(1<<PCINT23);
 
-	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN LCD\n");
-	printf(  "------------------------------------------------------------\n");
 
+    Timebase_Init();
+#if DEBUG
+    Serial_Init();
+#endif
+    sei();
+    lcd_init( LCD_DISP_ON );
+#if DEBUG
+    printf("\n------------------------------------------------------------\n");
+    printf(  "   CAN LCD\n");
+    printf(  "------------------------------------------------------------\n");
+#endif
     lcd_clrscr();
     lcd_puts("CAN LCD test\n");
-
-	printf("CanInit...");
+#if DEBUG
+    printf("CanInit...");
     lcd_puts("CanInit... ");
-	if (Can_Init() != CAN_OK) {
-		printf("FAILED!\n");
+    if (Can_Init() != CAN_OK) {
+        printf("FAILED!\n");
         lcd_puts("FAILED!\n");
-	}
-	else {
-		printf("OK!\n");
+    }
+    else {
+        printf("OK!\n");
         lcd_puts("OK!\n");
-	}
-	
-	uint32_t timeStamp = 0;
-	
-	Can_Message_t txMsg;
-	Can_Message_t rxMsg;
-	txMsg.Id = 0;
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
+    }
+#else
+    lcd_puts("CanInit... ");
+    if (Can_Init() != CAN_OK) {
+        lcd_puts("FAILED!\n");
+    }else{
+        lcd_puts("OK!\n");
+    }
+#endif
+    uint32_t timeStamp = 0;
+
+    Can_Message_t txMsg;
+    Can_Message_t rxMsg;
+    txMsg.Id = 0;
+    txMsg.RemoteFlag = 0;
+    txMsg.ExtendedFlag = 1;
 
     lcd_clrscr();
 
@@ -85,6 +118,7 @@ int main(void) {
 
         /* check if any messages have been received and print to uart */
         while (Can_Receive(&rxMsg) == CAN_OK) {
+#if DEBUG
             printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
             printf("data={ ");
 
@@ -92,70 +126,24 @@ int main(void) {
                 printf("%x ", rxMsg.Data.bytes[i]);
             }
             printf("}\n");
-
-#ifdef EQLAZER /* More personalized code */
-            if( (rxMsg.Id & 0x1E000000)>>25 == FUNCT_SENSORS){
-
-// TODO fixa rätt umatning av sensordata: negativa tal och decimaldelen.
-// Skriva om hela skiten
-//
-                /* which temperature sensor? */
-                if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_INSIDE ){
-                    /* Below 0 degrees celsius? */
-                    if(rxMsg.Data.bytes[0]&0x80){
-                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
-                        subzero = 1;
-                    }else{
-                        subzero = 0;
-                    }
-                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
-                        lcd_gotoxy( LCD_LINE0_0 );
-                        lcd_puts( LCD_SENSOR_TEMPERATURE_INSIDE );
-                        lcd_gotoxy( LCD_LINE1_0 );
-                        lcd_puts( buffer );
-                }else if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_OUTSIDE ){
-                    if(rxMsg.Data.bytes[0]&0x80){
-                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
-                        subzero = 1;
-                    }else{
-                        subzero = 0;
-                    }
-                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
-                        lcd_gotoxy( LCD_LINE2_0 );
-                        lcd_puts( LCD_SENSOR_TEMPERATURE_OUTSIDE );
-                        lcd_gotoxy( LCD_LINE3_0 );
-                        lcd_puts( buffer );
-                }else if( (rxMsg.Id & 0x01FF8000)>>15 == FUNCC_SENSORS_TEMPERATURE_FREEZER ){
-                    if(rxMsg.Data.bytes[0]&0x80){
-                        rxMsg.Data.bytes[0]= -rxMsg.Data.bytes[0];
-                        subzero = 1;
-                    }else{
-                        subzero = 0;
-                    }
-                        snprintf( buffer, BUFFER_SIZE, (subzero)?"-%d,%d%cC":"%d,%d%cC", rxMsg.Data.bytes[0], rxMsg.Data.bytes[1], 0xdf );
-                        lcd_gotoxy( LCD_LINE2_2 );
-                        lcd_puts( LCD_SENSOR_TEMPERATURE_FREEZER );
-                        lcd_gotoxy( LCD_LINE3_2 );
-                        lcd_puts( buffer );
-                }else{
-                    lcd_clrscr();
-                    lcd_puts("Sensors: No config.");
-                }
-            }
-#else /* Generally code */
-
-        /* If temperature sensor data received print to LCD */
-        if( rxMsg.Id  == 0x300 ){
-
-                for( uint8_t i=0; i<(rxMsg.DataLength/2); i++ ){
-                        snprintf( buffer, BUFFER_SIZE, "Sensor %i: %d,%d%cC", i, rxMsg.Data.bytes[i*2], rxMsg.Data.bytes[i*2+1], 0xdf ); // TODO fixa korrekt utmatning av negativa tal och decimaldel
-                        lcd_gotoxy(0,1+i);
-                        lcd_puts( buffer );
-                }
-            }
 #endif
-		}
-	}
-	
-	return 0;
+            /* Get data from bus and store */
+            if( rxMsg.Id == 0x300 ){
+                /* Temperature sensor data */
+                for(m=0; m<rxMsg.DataLength; m++){
+                    temperatureData[m] = rxMsg.Data.bytes[m];
+                }
+            }else if( rxMsg.Id == 0x1201 ){
+                /* Relay status (ON/OFF) */
+                relayStatus[1] = rxMsg.Data.bytes[2];
+            } /* TODO Add extra messages here */
+        }
+
+        /* Print views */
+        // TODO använd optoencoders för att växla view
+        printLCDview( MAIN_VIEW );
+
+    }
+
+    return 0;
 }
