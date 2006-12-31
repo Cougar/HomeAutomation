@@ -25,22 +25,17 @@
 #define RELAYS_VIEW     2
 #define DIMMERS_VIEW    3
 
-#define DATA1           3,1
-#define DATA2           13,1
-#define DATA3           3,2
-#define DATA4           13,2
-
 /*---------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------*/
 void printLCDview(uint8_t view);
-void printLCDviewData(uint8_t view, uint8_t *data);
+void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size);
 
 /*---------------------------------------------------------------
  * Views
  * <Line 1> <Line 2> <Line 3> <Left> <Right>
  *--------------------------------------------------------------*/
-char viewStrings[][ MAX_LENGTH ] = {
+static char viewStrings[][ MAX_LENGTH ] = {
     /* Main view */
     "HomeAutomation", "", "Welcome", "NA", "Temp",
     /* Temperature sensors */
@@ -50,4 +45,12 @@ char viewStrings[][ MAX_LENGTH ] = {
     /* Dimmer status */
     "Dimmer Status", "1: NA     2: NA", "3: NA    4: NA", "Relay", "NA"
 };
+
+static uint8_t dataPos[][2] = {
+    {3,1}, /* Data position 1 */
+    {13,1}, /* Data position 2 */
+    {3,2}, /* Data position 3 */
+    {13,2} /* Data position 4 */
+};
+
 
