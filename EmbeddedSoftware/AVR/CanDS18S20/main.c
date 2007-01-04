@@ -80,6 +80,12 @@ int main(void) {
 	Timebase_Init();
 	Serial_Init();
 	sei();
+
+    // set the clock speed to 8MHz
+    // set the clock prescaler. First write CLKPCE to enable setting of clock the
+    // next four instructions.
+    CLKPR=(1<<CLKPCE);
+    CLKPR=0; // 8 MHZ
 	
 	printf( "\nDS18X20 1-Wire-Reader\n" );
 	printf( "-----------------------" );
