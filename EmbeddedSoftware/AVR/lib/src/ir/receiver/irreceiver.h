@@ -45,6 +45,9 @@
 #define IR_SHARP_ST_BIT		275*CYCLES_PER_US		//us //Wont work together with RCMM
 #define IR_SHARP_TIMEOUT	55		//ms
 
+#define IR_MIN_REPEATE_PULSE_WIDTH	200
+#define IR_MAX_REPEATE_PULSE_WIDTH	40000
+
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
@@ -55,7 +58,8 @@ uint16_t getTimerVal(void);
 void setTimerVal(uint16_t value);
 int receiveRC5(uint8_t *address, uint8_t *command);
 int checkIr(uint8_t *proto, uint8_t *address, uint8_t *command);
-
+int checkIrIdle(void);
+uint16_t getLastProtoTimeout(void);
 
 
 #endif /*MCU_H_*/

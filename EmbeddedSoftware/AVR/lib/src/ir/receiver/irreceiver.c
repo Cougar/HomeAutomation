@@ -13,6 +13,11 @@
 #include "irreceiver.h"
 #include <avr/io.h>
 
+/*-----------------------------------------------------------------------------
+ * Globals
+ *---------------------------------------------------------------------------*/
+volatile uint16_t lastProtoTimeout = 0;
+
 
 /*-----------------------------------------------------------------------------
  * Prerequisites
@@ -154,6 +159,10 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 	return IR_OK;
 }
 
+uint16_t getLastProtoTimeout(void) {
+	return lastProtoTimeout;
+}
+
 /**
  * Checks if ir-receiver is outputting data, if so then receive it 
  * 
@@ -193,6 +202,30 @@ int checkIr(uint8_t *proto, uint8_t *address, uint8_t *command) {
 	if ((timerVal < IR_RC5_ST_BIT+500) && (timerVal > IR_RC5_ST_BIT-500)) {
 		*proto = IR_PROTO_RC5;
 		return receiveRC5(&*address, &*command);
+	} //else if ...
+	
+	
+	return IR_NO_PROTOCOL;
+}
+
+
+int checkIrIdle(void) {
+	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
+	
+	//nu lägger irmodulen ut en nolla, "startbiten" alltså
+	
+	uint16_t timerVal;
+	
+	//Läs in längden på startbiten
+	initTimer();
+	while (!(IRPIN & (1<<IRBIT))) {		//vänta på att irmodulen lägger ut en etta
+		//om timeout (om timer-ovflow-flaggan sätt)
+		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+	}
+	timerVal = getTimerVal();
+	
+	if ((timerVal < IR_MAX_REPEATE_PULSE_WIDTH) && (timerVal > IR_MIN_REPEATE_PULSE_WIDTH)) {
+		return IR_OK;
 	} //else if ...
 	
 	
