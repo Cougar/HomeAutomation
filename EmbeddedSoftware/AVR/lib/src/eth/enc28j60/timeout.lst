@@ -1,0 +1,79 @@
+   1               		.file	"timeout.c"
+   2               		.arch atmega88
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  10               		.text
+  11               	.global	delay_ms
+  13               	delay_ms:
+  14               	/* prologue: frame size=0 */
+  15               	/* prologue end (size=0) */
+  16 0000 9C01      		movw r18,r24
+  17 0002 E0E8      		ldi r30,lo8(1920)
+  18 0004 F7E0      		ldi r31,hi8(1920)
+  19 0006 05C0      		rjmp .L2
+  20               	.L3:
+  21 0008 CF01      		movw r24,r30
+  22               	/* #APP */
+  23 000a 0197      		1: sbiw r24,1
+  24 000c F1F7      		brne 1b
+  25               	/* #NOAPP */
+  26 000e 2150      		subi r18,lo8(-(-1))
+  27 0010 3040      		sbci r19,hi8(-(-1))
+  28               	.L2:
+  29 0012 2115      		cp r18,__zero_reg__
+  30 0014 3105      		cpc r19,__zero_reg__
+  31 0016 C1F7      		brne .L3
+  32               	/* epilogue: frame size=0 */
+  33 0018 0895      		ret
+  34               	/* epilogue end (size=1) */
+  35               	/* function delay_ms size 15 (14) */
+  37               	.global	wd_init
+  39               	wd_init:
+  40               	/* prologue: frame size=0 */
+  41               	/* prologue end (size=0) */
+  42 001a 88E1      		ldi r24,lo8(24)
+  43 001c 90E0      		ldi r25,hi8(24)
+  44 001e 2FE0      		ldi r18,lo8(15)
+  45               	/* #APP */
+  46 0020 0FB6      		in __tmp_reg__,__SREG__
+  47 0022 F894      		cli
+  48 0024 A895      		wdr
+  49 0026 8093 6000 		sts 96,r24
+  50 002a 0FBE      		out __SREG__,__tmp_reg__
+  51 002c 2093 6000 		sts 96,r18
+  52               	/* #NOAPP */
+  53               	/* epilogue: frame size=0 */
+  54 0030 0895      		ret
+  55               	/* epilogue end (size=1) */
+  56               	/* function wd_init size 16 (15) */
+  58               	.global	wd_kick
+  60               	wd_kick:
+  61               	/* prologue: frame size=0 */
+  62               	/* prologue end (size=0) */
+  63               	/* #APP */
+  64 0032 A895      		wdr
+  65               	/* #NOAPP */
+  66               	/* epilogue: frame size=0 */
+  67 0034 0895      		ret
+  68               	/* epilogue end (size=1) */
+  69               	/* function wd_kick size 3 (2) */
+  71               	/* File "../lib/src/eth/enc28j60/timeout.c": code   34 = 0x0022 (  31), prologues   0, epilogues   
+DEFINED SYMBOLS
+                            *ABS*:00000000 timeout.c
+     /tmp/ccSGbnjR.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccSGbnjR.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccSGbnjR.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccSGbnjR.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccSGbnjR.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccSGbnjR.s:13     .text:00000000 delay_ms
+     /tmp/ccSGbnjR.s:39     .text:0000001a wd_init
+     /tmp/ccSGbnjR.s:60     .text:00000032 wd_kick
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
