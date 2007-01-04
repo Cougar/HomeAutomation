@@ -327,6 +327,53 @@ void make_udp_reply_from_request(uint8_t *buf,char *data,uint8_t datalen,uint16_
         enc28j60PacketSend(UDP_HEADER_LEN+IP_HEADER_LEN+ETH_HEADER_LEN+datalen,buf);
 }
 
+void send_udp(uint8_t *buf,char *data,uint8_t datalen,uint16_t port, uint8_t *remotemac, uint8_t *remoteip)
+{
+
+        uint8_t i=0;
+        uint16_t ck;
+        //make_eth(buf);
+        while(i<6){
+            buf[ETH_DST_MAC +i]=remotemac[i];
+            buf[ETH_SRC_MAC +i]=macaddr[i];
+            i++;
+        }
+        i=0;
+
+        if (datalen>220){
+                datalen=220;
+        }
+        // total length field in the IP header must be set:
+        buf[IP_TOTLEN_H_P]=0;
+        buf[IP_TOTLEN_L_P]=IP_HEADER_LEN+UDP_HEADER_LEN+datalen;
+        while(i<4){
+            buf[IP_DST_P+i]=remoteip[i];
+            buf[IP_SRC_P+i]=ipaddr[i];
+            i++;
+        }
+        i=0;
+        fill_ip_hdr_checksum(buf);
+        //make_ip(buf);
+        buf[UDP_DST_PORT_H_P]=port>>8;
+        buf[UDP_DST_PORT_L_P]=port & 0xff;
+        // source port does not matter and is what the sender used.
+        // calculte the udp length:
+        buf[UDP_LEN_H_P]=0;
+        buf[UDP_LEN_L_P]=UDP_HEADER_LEN+datalen;
+        // zero the checksum
+        buf[UDP_CHECKSUM_H_P]=0;
+        buf[UDP_CHECKSUM_L_P]=0;
+        // copy the data:
+        while(i<datalen){
+                buf[UDP_DATA_P+i]=data[i];
+                i++;
+        }
+        ck=checksum(&buf[IP_SRC_P], 16 + datalen,1);
+        buf[UDP_CHECKSUM_H_P]=ck>>8;
+        buf[UDP_CHECKSUM_L_P]=ck& 0xff;
+        enc28j60PacketSend(UDP_HEADER_LEN+IP_HEADER_LEN+ETH_HEADER_LEN+datalen,buf);
+}
+
 void make_tcp_synack_from_syn(uint8_t *buf)
 {
         uint16_t ck;
