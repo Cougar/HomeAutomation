@@ -31,7 +31,15 @@ int main(void) {
 	Timebase_Init();
 	Serial_Init();
 	sei();
-	
+    
+    #if defined(__AVR_ATmega88__)
+    // set the clock speed to 8MHz
+    // set the clock prescaler. First write CLKPCE to enable setting of clock the
+    // next four instructions.
+    CLKPR=(1<<CLKPCE);
+    CLKPR=0; // 8 MHZ
+    #endif
+    
 	IRDDR &= ~(1<<IRBIT);
 	
 	printf("\n------------------------------------------------------------\n");
@@ -79,7 +87,7 @@ int main(void) {
 				txMsg.Data.bytes[0] = 0x0f;
 				Can_Send(&txMsg);
 			}
-			if (!(IRPIN & (1<<IRBIT))) {		//funktion som borde finnas i irreceiver.c
+			if (checkIrIdle() == IR_OK) {		//funktion som borde finnas i irreceiver.c
 				irTimeoutTimeStamp = Timebase_CurrentTime();
 			}
 		}
