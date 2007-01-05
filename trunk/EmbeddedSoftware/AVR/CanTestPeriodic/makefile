@@ -39,7 +39,7 @@
 
 # MCU name
 #MCU = atmega32
-MCU = atmega8
+MCU = atmega88
 #MCU = atmega16
 
 
@@ -49,8 +49,8 @@ MCU = atmega8
 ##F_OSC = 2000000
 ##F_OSC = 3686400
 ##F_OSC = 4000000
-##F_OSC = 8000000
-F_OSC = 11059200
+F_OSC = 8000000
+##F_OSC = 11059200
 ##F_OSC = 16000000
 
 # Output format. (can be srec, ihex, binary)
