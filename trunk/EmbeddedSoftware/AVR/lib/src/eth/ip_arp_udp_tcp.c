@@ -20,13 +20,17 @@
 #include "avr_compat.h"
 #include "net.h"
 #include "enc28j60.h"
+#include "ip_arp_udp_tcp.h"
 
 static uint8_t wwwport=80;
 static uint8_t macaddr[6];
 static uint8_t ipaddr[4];
+
+#ifdef useTCP
 static int16_t info_hdr_len=0;
 static int16_t info_data_len=0;
 static uint8_t seqnum=0xa; // my initial tcp sequence number
+#endif //useTCP
 
 // The Ip checksum is calculated over the ip header only starting
 // with the header length field and a total length of 20 bytes
@@ -187,77 +191,6 @@ void make_ip(uint8_t *buf)
         fill_ip_hdr_checksum(buf);
 }
 
-// make a return tcp header from a received tcp packet
-// rel_ack_num is how much we must step the seq number received from the
-// other side. We do not send more than 255 bytes of text (=data) in the tcp packet.
-// If mss=1 then mss is included in the options list
-//
-// After calling this function you can fill in the first data byte at TCP_OPTIONS_P+4
-// If cp_seq=0 then an initial sequence number is used (should be use in synack)
-// otherwise it is copied from the packet we received
-void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t mss,uint8_t cp_seq)
-{
-        uint8_t i=0;
-        uint8_t tseq;
-        while(i<2){
-                buf[TCP_DST_PORT_H_P+i]=buf[TCP_SRC_PORT_H_P+i];
-                buf[TCP_SRC_PORT_H_P+i]=0; // clear source port
-                i++;
-        }
-        // set source port  (http):
-        buf[TCP_SRC_PORT_L_P]=wwwport;
-        i=4;
-        // sequence numbers:
-        // add the rel ack num to SEQACK
-        while(i>0){
-                rel_ack_num=buf[TCP_SEQ_H_P+i-1]+rel_ack_num;
-                tseq=buf[TCP_SEQACK_H_P+i-1];
-                buf[TCP_SEQACK_H_P+i-1]=0xff&rel_ack_num;
-                if (cp_seq){
-                        // copy the acknum sent to us into the sequence number
-                        buf[TCP_SEQ_H_P+i-1]=tseq;
-                }else{
-                        buf[TCP_SEQ_H_P+i-1]= 0; // some preset vallue
-                }
-                rel_ack_num=rel_ack_num>>8;
-                i--;
-        }
-        if (cp_seq==0){
-                // put inital seq number
-                buf[TCP_SEQ_H_P+0]= 0;
-                buf[TCP_SEQ_H_P+1]= 0;
-                // we step only the second byte, this allows us to send packts 
-                // with 255 bytes or 512 (if we step the initial seqnum by 2)
-                buf[TCP_SEQ_H_P+2]= seqnum; 
-                buf[TCP_SEQ_H_P+3]= 0;
-                // step the inititial seq num by something we will not use
-                // during this tcp session:
-                seqnum+=2;
-        }
-        // zero the checksum
-        buf[TCP_CHECKSUM_H_P]=0;
-        buf[TCP_CHECKSUM_L_P]=0;
-
-        // The tcp header length is only a 4 bit field (the upper 4 bits).
-        // It is calculated in units of 4 bytes. 
-        // E.g 24 bytes: 24/4=6 => 0x60=header len field
-        //buf[TCP_HEADER_LEN_P]=(((TCP_HEADER_LEN_PLAIN+4)/4)) <<4; // 0x60
-        if (mss){
-                // the only option we set is MSS to 1408:
-                // 1408 in hex is 0x580
-                buf[TCP_OPTIONS_P]=2;
-                buf[TCP_OPTIONS_P+1]=4;
-                buf[TCP_OPTIONS_P+2]=0x05; 
-                buf[TCP_OPTIONS_P+3]=0x80;
-                // 24 bytes:
-                buf[TCP_HEADER_LEN_P]=0x60;
-        }else{
-                // no options:
-                // 20 bytes:
-                buf[TCP_HEADER_LEN_P]=0x50;
-        }
-}
-
 void make_arp_answer_from_request(uint8_t *buf)
 {
         uint8_t i=0;
@@ -296,6 +229,7 @@ void make_echo_reply_from_request(uint8_t *buf,uint16_t len)
         enc28j60PacketSend(len,buf);
 }
 
+#ifdef useUDP
 // you can send a max of 220 bytes of data
 void make_udp_reply_from_request(uint8_t *buf,char *data,uint8_t datalen,uint16_t port)
 {
@@ -379,6 +313,79 @@ void send_udp(uint8_t *buf,char *data,uint8_t datalen,uint16_t port, uint8_t *re
         buf[UDP_CHECKSUM_H_P]=ck>>8;
         buf[UDP_CHECKSUM_L_P]=ck& 0xff;
         enc28j60PacketSend(UDP_HEADER_LEN+IP_HEADER_LEN+ETH_HEADER_LEN+datalen,buf);
+}
+#endif //useUDP
+
+#ifdef useTCP
+// make a return tcp header from a received tcp packet
+// rel_ack_num is how much we must step the seq number received from the
+// other side. We do not send more than 255 bytes of text (=data) in the tcp packet.
+// If mss=1 then mss is included in the options list
+//
+// After calling this function you can fill in the first data byte at TCP_OPTIONS_P+4
+// If cp_seq=0 then an initial sequence number is used (should be use in synack)
+// otherwise it is copied from the packet we received
+void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t mss,uint8_t cp_seq)
+{
+        uint8_t i=0;
+        uint8_t tseq;
+        while(i<2){
+                buf[TCP_DST_PORT_H_P+i]=buf[TCP_SRC_PORT_H_P+i];
+                buf[TCP_SRC_PORT_H_P+i]=0; // clear source port
+                i++;
+        }
+        // set source port  (http):
+        buf[TCP_SRC_PORT_L_P]=wwwport;
+        i=4;
+        // sequence numbers:
+        // add the rel ack num to SEQACK
+        while(i>0){
+                rel_ack_num=buf[TCP_SEQ_H_P+i-1]+rel_ack_num;
+                tseq=buf[TCP_SEQACK_H_P+i-1];
+                buf[TCP_SEQACK_H_P+i-1]=0xff&rel_ack_num;
+                if (cp_seq){
+                        // copy the acknum sent to us into the sequence number
+                        buf[TCP_SEQ_H_P+i-1]=tseq;
+                }else{
+                        buf[TCP_SEQ_H_P+i-1]= 0; // some preset vallue
+                }
+                rel_ack_num=rel_ack_num>>8;
+                i--;
+        }
+        if (cp_seq==0){
+                // put inital seq number
+                buf[TCP_SEQ_H_P+0]= 0;
+                buf[TCP_SEQ_H_P+1]= 0;
+                // we step only the second byte, this allows us to send packts 
+                // with 255 bytes or 512 (if we step the initial seqnum by 2)
+                buf[TCP_SEQ_H_P+2]= seqnum; 
+                buf[TCP_SEQ_H_P+3]= 0;
+                // step the inititial seq num by something we will not use
+                // during this tcp session:
+                seqnum+=2;
+        }
+        // zero the checksum
+        buf[TCP_CHECKSUM_H_P]=0;
+        buf[TCP_CHECKSUM_L_P]=0;
+
+        // The tcp header length is only a 4 bit field (the upper 4 bits).
+        // It is calculated in units of 4 bytes. 
+        // E.g 24 bytes: 24/4=6 => 0x60=header len field
+        //buf[TCP_HEADER_LEN_P]=(((TCP_HEADER_LEN_PLAIN+4)/4)) <<4; // 0x60
+        if (mss){
+                // the only option we set is MSS to 1408:
+                // 1408 in hex is 0x580
+                buf[TCP_OPTIONS_P]=2;
+                buf[TCP_OPTIONS_P+1]=4;
+                buf[TCP_OPTIONS_P+2]=0x05; 
+                buf[TCP_OPTIONS_P+3]=0x80;
+                // 24 bytes:
+                buf[TCP_HEADER_LEN_P]=0x60;
+        }else{
+                // no options:
+                // 20 bytes:
+                buf[TCP_HEADER_LEN_P]=0x50;
+        }
 }
 
 void make_tcp_synack_from_syn(uint8_t *buf)
@@ -513,5 +520,6 @@ void make_tcp_ack_with_data(uint8_t *buf,uint16_t dlen)
         buf[TCP_CHECKSUM_L_P]=j& 0xff;
         enc28j60PacketSend(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+dlen+ETH_HEADER_LEN,buf);
 }
+#endif //useTCP
 
 /* end of ip_arp_udp.c */
