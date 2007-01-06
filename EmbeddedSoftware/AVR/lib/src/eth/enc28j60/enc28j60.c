@@ -247,6 +247,8 @@ uint8_t enc28j60getrev(void)
 
 void enc28j60PacketSend(uint16_t len, uint8_t* packet)
 {
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
 	// Set the write pointer to start of transmit buffer area
 	enc28j60Write(EWRPTL, TXSTART_INIT&0xFF);
 	enc28j60Write(EWRPTH, TXSTART_INIT>>8);
