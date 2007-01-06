@@ -71,6 +71,7 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)can/can.c\
 		$(LIBDIR)can/mcp2515/mcp2515.c\
 		$(LIBDIR)temperature/tc1047/tc1047.c\
+		$(LIBDIR)electromechanic/rc_servo.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -96,7 +97,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/lcd $(LIBDIR)/../funcdefs $(LIBDIR)/temperature/tc1047 
+EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/lcd $(LIBDIR)/../funcdefs $(LIBDIR)/temperature/tc1047 $(LIBDIR)/electromechanic
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
