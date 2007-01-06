@@ -17,7 +17,7 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-//#include <serial.h>
+#include <serial.h>
 #include <timebase.h>
 #include <ip_arp_udp_tcp.h>
 #include <enc28j60.h>
@@ -40,18 +40,26 @@ static uint8_t remoteip[4];
 
 #define BUFFER_SIZE 250
 static uint8_t buf[BUFFER_SIZE+1];
-static uint8_t replybuf[BUFFER_SIZE+1];
 
+#define SEND_BUFFER_SIZE 20
+static char sendbuf[SEND_BUFFER_SIZE+1];
+static uint8_t buffpoint;
+ 
+/*----------------------------------------------------------------------------
+ * Putchar for udp
+ * Implements a small buffer, sends packet over udp if buffer is full or 
+ * \n-char is sent.
+ * Needs a timeout to force send. 
+ *--------------------------------------------------------------------------*/
 int udp_putchar(char c, FILE* stream) {
 	if (gotserver != 0) {
-    	uint8_t i=0;
-        while(i<BUFFER_SIZE+1){
-            buf[i]=replybuf[i];
-            i++;
+        sendbuf[buffpoint] = c;
+        buffpoint++;
+        
+        if (c == '\n' || buffpoint > SEND_BUFFER_SIZE) {
+        	send_udp(buf, sendbuf, buffpoint, remoteport, remotemac, remoteip);
+        	buffpoint = 0;
         }
-		//send_udp(replybuf, &c, 1, remoteport, remotemac, remoteip);
-		make_udp_reply_from_request(buf, "hello", 5, remoteport);
-		//send_udp(buf, &c, 1, remoteport, remotemac, remoteip);
 	}
 	return 0;
 }
@@ -67,8 +75,7 @@ int main(void) {
     uint16_t plen = 0;
     uint8_t ledi=0;
     uint8_t payloadlen=0;
-    
- 	uint32_t timeStamp = 0;
+	buffpoint = 0;
 	
 	//can vars
 	Can_Message_t txMsg;
@@ -77,18 +84,16 @@ int main(void) {
 	txMsg.DataLength = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1; //DataLength and the databytes are just what happens to be in the memory. They are never set.
+
+
+ 	uint32_t timeStamp = 0;
 	
+	Mcu_Init();
 	Timebase_Init();
-//	Serial_Init();
-    #if defined(__AVR_ATmega88__)
-    // set the clock speed to 8MHz
-    // set the clock prescaler. First write CLKPCE to enable setting of clock the
-    // next four instructions.
-    CLKPR=(1<<CLKPCE);
-    CLKPR=0; // 8 MHZ
-    #endif
-    
-    //stdout = &mystdout;    //set the output stream 
+	Serial_Init();
+
+    //alla printf ska skriva till udp
+    stdout = &mystdout;    //set the output stream 
     
 	sei();
 
@@ -115,6 +120,7 @@ int main(void) {
     /* set output to Vcc, LED off */
     PORTD|= (1<<PD6);
 
+	//printf("Init enc\n");
     /*initialize enc28j60*/
     enc28j60Init(mymac);
     delay_ms(20);
@@ -123,7 +129,6 @@ int main(void) {
     // LEDB=yellow LEDA=green
     //
     // 0x476 is PHLCON LEDA=links status, LEDB=receive/transmit
-    // enc28j60PhyWrite(PHLCON,0b0000 0100 0111 01 10);
     enc28j60PhyWrite(PHLCON,0x476);
     delay_ms(20);
     
@@ -139,53 +144,41 @@ int main(void) {
 		/* service the CAN routines */
 		Can_Service();
 		
-//PORTD &= ~(1<<PD6);
-		
 		/* send CAN message and check for CAN errors once every second */
 		if (Timebase_PassedTimeMillis(timeStamp) >= 2000) {
 			timeStamp = Timebase_CurrentTime();
 			/* send txMsg */
 			//txMsg.Id++;
-			txMsg.Id = 3;
-			Can_Send(&txMsg);
-	        if (ledi){
-	                /* set output to Vcc, LED off */
-	                PORTD|= (1<<PD6);
-	                ledi=0;
-	        }else{
-	                /* set output to GND, LED on */
-	                PORTD &= ~(1<<PD6);
-	                ledi=1;
-	        }
+			//txMsg.Id = 3;
+			//Can_Send(&txMsg);
 			
 		}
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
-			//printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		/*printf("data={ ");
+			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+    		printf("data={ ");
     		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
     			printf("%x ", rxMsg.Data.bytes[i]);
     		}
 	   		printf("}\n");
-	   		*/
-    		if (gotserver != 0) {
-    			uint8_t i = 0;
-		        while(i<BUFFER_SIZE+1){
-		            buf[i]=replybuf[i];
-		            i++;
-		        }
-				send_udp(buf, "hello", 6, remoteport, remotemac, remoteip);
-				//make_udp_reply_from_request(buf, "hello", 5, remoteport);
-    			i = 0;
-		        while(i<BUFFER_SIZE+1){
-		            buf[i]=replybuf[i];
-		            i++;
-		        }
-		        //make_udp_reply_from_request(buf, "world", 5, remoteport);
-		        send_udp(buf, "world", 6, remoteport, remotemac, remoteip);
-    		}
-            //printf("Hello world! %i \n", txMsg.Id);        
+	   		
+		}
+		
+		//test-debug-kod
+		if ((enc28j60Read(EIR) & EIR_TXERIF)) {
+			//printf("EIR_TXERIF set!\n");
+			if ((enc28j60Read(ECON1) & ECON1_TXRTS)) {
+				//printf("ECON1_TXRTS set!\n");
+			}
+		}
+		if ((enc28j60Read(EIR) & EIR_TXIF)) {
+			//printf("EIR_TXIF set! ");
+		}
+		if ((enc28j60Read(ESTAT) & ESTAT_TXABRT)) {
+			//printf("ESTAT_TXABRT set!\n");
+			//printf("MACLCON1: %i\n", enc28j60Read(MACLCON1));
+			enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ESTAT, ESTAT_TXABRT);
 		}
 		
         // get the next new packet:
@@ -202,45 +195,35 @@ int main(void) {
 	        } else {
 			    // check if ip packets (icmp or udp) are for us:
 			    if(eth_type_is_ip_and_my_ip(buf,plen)!=0){
-			        //if (ledi){
-			                /* set output to Vcc, LED off */
-			        //        PORTD|= (1<<PD6);
-			        //        ledi=0;
-			        //}else{
-			                /* set output to GND, LED on */
-			        //        PORTD &= ~(1<<PD6);
-			        //        ledi=1;
-			        //}
 			        
 			        if(buf[IP_PROTO_P]==IP_PROTO_ICMP_V && buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V){
 			                // a ping packet, let's send pong
 			                make_echo_reply_from_request(buf,plen);
-			                txMsg.Id = 6;
-			                Can_Send(&txMsg);
+			                //txMsg.Id = 6;
+			                //Can_Send(&txMsg);
 			                
 			        }
 	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V){
                         payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
                         if (buf[UDP_DATA_P]=='t' && payloadlen==5){
                 	        uint8_t i=0;
-							
-			                while(i<6){
-				                remotemac[i]=buf[ETH_SRC_MAC +i];
-				                i++;
-					        }
-					        i=0;
-			                while(i<4){
-				                remoteip[i]=buf[IP_SRC_P +i];
-				                i++;
-					        }
-                        	i=0;
-			                while(i<BUFFER_SIZE+1){
-				                replybuf[i]=buf[i];
-				                i++;
-					        }
-					        
-                        	gotserver = 1;
-                        	make_udp_reply_from_request(buf,"Got server",10,remoteport);
+                	        if (gotserver == 0) {
+				                while(i<6){
+					                remotemac[i]=buf[ETH_SRC_MAC +i];
+					                i++;
+						        }
+						        i=0;
+				                while(i<4){
+					                remoteip[i]=buf[IP_SRC_P +i];
+					                i++;
+						        }
+	                        	i=0;
+								
+	                        	gotserver = 1;
+	                        	make_udp_reply_from_request(buf,"Got server",10,remoteport);
+                	        } else {
+                	        	make_udp_reply_from_request(buf,"Already got server",18,remoteport);
+                	        }
                         }
 	                }			            
 			    }
