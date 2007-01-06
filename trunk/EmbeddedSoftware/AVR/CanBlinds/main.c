@@ -2,12 +2,15 @@
  * CanBlinds.
  * Takes incomming packages and adjusts PWM output.
  * Input: -128 to +127
+ * Position msg: <byte0 BLINDS_CMD> <byte1 position>
+ * Turning msg: <byte0 START/STOP> <byte 1 direction>
  *
-* @date    2001-01-01
+ * @date    2001-01-01
  * @author  Erik Larsson
  */
 
-#define DEBUG           1 /* Prints debug messages to uart */
+#define DEBUG           0 /* Prints debug messages to uart */
+#define TWO_BUTTON_MODE 0 /* If using two (or just one but nothing more) auxiliary buttons */
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -19,29 +22,34 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
+#if DEBUG
 #include <serial.h>
+#endif
 #include <timebase.h>
 
 #include <tc1047.h>
+#include <rc_servo.h>
 
 /* defines */
-//#define PWM_MAX_PULSE       500 /* milliseconds */
-//#define PWM_MIN_PULSE       1500
 #define FAILSAFE_MODE       0x0F
-#define FAILSAFE_TRESHOLD   60  /* Degrees when nodeBlinds goes into failsafe mode */
+#define FAILSAFE_TRESHOLD   60  /* Degrees celcius when nodeBlinds goes into failsafe mode */
 
-#define BLINDS_CMD_GET      0x1200
-#define BLINDS_CMD_SEND     0x1201
+#define BLINDS_CMD_GET      0x1300
+#define BLINDS_CMD_SEND     0x1301
 
 #define BLINDS_CMD_ABS      0x01 /* Absolute position */
 #define BLINDS_CMD_REL      0x02 /* Relative position */
 #define BLINDS_CMD_START    0x03 /* Start turning RC-servo */
 #define BLINDS_CMD_STOP     0x04 /* Stop turning RC-servo */
 #define BLINDS_CMD_RESET    0x05
+#define BLINDS_CMD_STATUS   0x06
 
-#define BLINDS_TURN_LEFT    0x00
-#define BLINDS_TURN_RIGHT   0x01
+#define BLINDS_TURN_STOP    0x00
+#define BLINDS_TURN_LEFT    0x01
+#define BLINDS_TURN_RIGHT   0x02
 
+#define STEPS_PER_TURN_PERIOD 10 /* number of steps for each adjustment */
+#define TURN_PERIOD         100 /* milliseconds */
 #define STATUS_SEND_PERIOD  10000 /* milliseconds */
 #define FAILSAFE_SEND_PERIOD    10000 /* milliseconds */
 #define BOUNCE_TIME         10 /* milliseconds */
@@ -127,25 +135,19 @@ ISR( PCINT2_vect )
 }
 #endif
 
-//ISR( ADC_vect )
-//{
-    /*
-     * ADC conversion completed
-     */
-    // TODO använd denna rutin för att läsa värde när omvandlingen är klar
-
-//}
-
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
 
-    uint8_t blindsStatus; /* Position */
+    uint8_t blindsStatus, /* Position (-128 to 127) */
+            turnDirection = BLINDS_TURN_STOP; /* Specifies direction to turn or stopped */
     uint32_t boardTemperature = 0;
+    uint32_t timeStamp = 0, timeStampTurn = 0;
 
     adcTemperatureInit();
     Timebase_Init();
+    rcServoInit();
 #if DEBUG
     Serial_Init();
 #endif
@@ -180,7 +182,6 @@ int main(void) {
 #else
     Can_Init();
 #endif
-    uint32_t timeStamp = 0;
 
     Can_Message_t txMsg;
     Can_Message_t rxMsg;
@@ -201,19 +202,22 @@ int main(void) {
 
                 if( rxMsg.Data.bytes[0] == BLINDS_CMD_ABS ){
                     /* Set absolute position to servo */
+                    setPosition( rxMsg.Data.bytes[1] );
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_REL){
                     /* Set relative position to servo */
+                    alterPosition( rxMsg.Data.bytes[1] );
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_START ){
                     /* Start turning the servo */
+                    turnDirection = rxMsg.Data.bytes[1];
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STOP ){
                     /* Stop turning */
+                    turnDirection = BLINDS_TURN_STOP;
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STATUS){
                     /* Send blinds status to CAN */
-
                     boardTemperature = getTC1047temperature();
 
                     if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
@@ -221,7 +225,7 @@ int main(void) {
                     }else{
                         txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
                         txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-                        txMsg.Data.bytes[2] = relayStatus;
+                        txMsg.Data.bytes[2] = getPosition();
 
                         Can_Send( &txMsg );
                     }
@@ -240,20 +244,32 @@ int main(void) {
             }else{
                 txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
                 txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-                txMsg.Data.bytes[2] = relayStatus;
+                txMsg.Data.bytes[2] = getPosition();
 
                 Can_Send( &txMsg );
 #if DEBUG
                 printf("Periodic message sent...\n");
-                printf("Temperature: %d\nRelay status: %u\n", boardTemperature, relayStatus);
+                printf("Temperature: %d\nBlinds status: %u\n", boardTemperature, getPosition());
 #endif
+            }
+        }
+        /* If start turning servo */
+        if( turnDirection ){
+            if( Timebase_PassedTimeMillis( timeStampTurn ) >= TURN_PERIOD ){
+                timeStampTurn = Timebase_CurrentTime();
+                /* Clockwise or counterclockwise? */
+                if( turnDirection == BLINDS_TURN_LEFT ){
+                    alterPosition( -STEPS_PER_TURN_PERIOD );
+                }else if( turnDirection == BLINDS_TURN_RIGHT ){
+                    alterPosition( STEPS_PER_TURN_PERIOD );
+                }
             }
         }
     }
     return 0;
 }
 
-void blindsFailsafe() // TODO fixa failsafe
+void blindsFailsafe() // TODO fixa failsafe, vad ska hända med PWM?
 {
     uint8_t relayStatus;
     uint32_t boardTemperature = 0, timeStamp = 0;
@@ -264,8 +280,6 @@ void blindsFailsafe() // TODO fixa failsafe
     txMsg.RemoteFlag = 0;
     txMsg.ExtendedFlag = 1;
     txMsg.DataLength = 4;
-
-    relayStatus = relayOff();
 
     while(1){
         /* service the CAN routines */
@@ -292,7 +306,7 @@ void blindsFailsafe() // TODO fixa failsafe
 
             txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
             txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-            txMsg.Data.bytes[2] = relayStatus;
+            txMsg.Data.bytes[2] = getPosition();
             txMsg.Data.bytes[3] = FAILSAFE_MODE;
 
             Can_Send( &txMsg );
