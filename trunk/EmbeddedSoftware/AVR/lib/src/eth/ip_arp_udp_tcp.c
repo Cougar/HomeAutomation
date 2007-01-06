@@ -159,7 +159,9 @@ void make_eth(uint8_t *buf)
         }
 }
 void fill_ip_hdr_checksum(uint8_t *buf)
-{
+{		
+		//bits 0-3 = version (ipv4 => 4), bits 4-7 = header length (minimum 5 32bit fields => 5)
+		buf[IP_HEADER_LEN_VER_P]=0x45;
         uint16_t ck;
         // clear the 2 byte checksum
         buf[IP_CHECKSUM_P]=0;
@@ -339,10 +341,15 @@ void send_udp(uint8_t *buf,char *data,uint8_t datalen,uint16_t port, uint8_t *re
             i++;
         }
         i=0;
+        
+		buf[ETH_TYPE_H_P] = 0x08;
+		buf[ETH_TYPE_L_P] = 0x00;
 
         if (datalen>220){
                 datalen=220;
         }
+        //set protocol
+        buf[IP_PROTO_P]=IP_PROTO_UDP_V;
         // total length field in the IP header must be set:
         buf[IP_TOTLEN_H_P]=0;
         buf[IP_TOTLEN_L_P]=IP_HEADER_LEN+UDP_HEADER_LEN+datalen;
