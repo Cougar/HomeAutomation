@@ -150,7 +150,7 @@ void enc28j60Init(uint8_t* macaddr)
 	ENC28J60_CONTROL_DDR |= 1<<ENC28J60_CONTROL_CS;
 	CSPASSIVE;
         //	
-	DDRB  |= 1<<PB2 |1<<PB3 | 1<<PB5; // mosi, sck, ss output
+	DDRB  |= 1<<PB3 | 1<<PB5; // mosi, sck output
 	cbi(DDRB,PINB4); // MISO is input
         //
 	CSPASSIVE;
@@ -257,12 +257,15 @@ void enc28j60PacketSend(uint16_t len, uint8_t* packet)
 	enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
 	// copy the packet into the transmit buffer
 	enc28j60WriteBuffer(len, packet);
-	// send the contents of the transmit buffer onto the network
-	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
         // Reset the transmit logic problem. See Rev. B4 Silicon Errata point 12.
 	if( (enc28j60Read(EIR) & EIR_TXERIF) ){
-                enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRTS);
-        }
+		enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+		enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
+        //enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRTS);
+        enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, EIR, EIR_TXERIF);
+	}
+	// send the contents of the transmit buffer onto the network
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
 }
 
 // Gets a packet from the network receive buffer, if one is available.
