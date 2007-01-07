@@ -187,7 +187,7 @@ uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode) {
 uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 	uint8_t i;
 	MCP2515_ModifyRegister(MCP_CANCTRL, CLK_MASK, newmode);
-	// verify as advised in datasheet
+	// verify, perhaps not needed?
 	i = MCP2515_ReadRegister(MCP_CANCTRL);
 	i &= CLK_MASK;
 	if ( i == newmode ) {
