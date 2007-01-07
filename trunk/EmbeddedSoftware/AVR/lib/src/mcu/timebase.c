@@ -44,14 +44,22 @@ ISR(SIG_OVERFLOW0) {
 void Timebase_Init() {
 	
 	#if defined(__AVR_ATmega8__)
-	TCCR0 = (1<<CS01) | (1<<CS00); // prescaler: 64
+	#if TIMEBASE_PRESCALE = 64
+	TCCR0 = (1<<CS01) | (1<<CS00);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE = 256
+	TCCR0 = (1<<CS02); 				// prescaler: 256
+	#endif
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR  |= (1<<TOV0);  // clear overflow int.
 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
 	#endif
 	
 	#if defined(__AVR_ATmega88__)
-	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler: 64
+	#if TIMEBASE_PRESCALE == 64
+	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR0B = (1<<CS02);				// prescaler: 256
+	#endif
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR0  |= (1<<TOV0);  // clear overflow int.
 	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
