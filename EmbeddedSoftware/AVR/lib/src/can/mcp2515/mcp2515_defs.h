@@ -170,6 +170,7 @@ Changes M. Thomas:
 #define MODE_ONESHOT	0x08
 #define CLKOUT_ENABLE	0x04
 #define CLKOUT_DISABLE	0x00
+#define CLK_MASK		0x03
 #define CLKOUT_PS1		0x00
 #define CLKOUT_PS2		0x01
 #define CLKOUT_PS4		0x02

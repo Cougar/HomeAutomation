@@ -184,6 +184,20 @@ uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode) {
 	}
 }
 
+uint8_t MCP2515_SetClkout(const uint8_t newmode) {
+	uint8_t i;
+	MCP2515_ModifyRegister(MCP_CANCTRL, CLK_MASK, newmode);
+	// verify as advised in datasheet
+	i = MCP2515_ReadRegister(MCP_CANCTRL);
+	i &= CLK_MASK;
+	if ( i == newmode ) {
+		return MCP2515_OK; 
+	}
+	else {
+		return MCP2515_FAIL;
+	}
+}
+
 
 uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
 	uint8_t set, cfg1, cfg2, cfg3;
@@ -431,6 +445,10 @@ uint8_t MCP2515_Init(const uint8_t canSpeed) {
 	MCP2515_Reset();
 	
 	res = MCP2515_SetCanCtrlMode(MODE_CONFIG);
+	
+	if (res == MCP2515_FAIL) return res;  /* function exit on error */
+
+	res = MCP2515_SetClkout(CLKOUT_PS1);
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 	
