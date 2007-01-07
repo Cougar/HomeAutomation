@@ -83,12 +83,13 @@ int main(void) {
 	MT_Q4_DDR &= ~(1<<MT_Q4_BIT);
 	
 	uint8_t receviercounter = 0;
+	uint8_t datain = 0;
 	
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
-		
+
 		if ((MT_StD_PIN & (1<<MT_StD_BIT)) != 0) {
 			//här ska det egentligen vara en en kort delay innan man kollar 
 			//om std är hög igen
@@ -99,8 +100,7 @@ int main(void) {
 					receviercounter = 0;	//kasta paket
 				} else {
 					//nu finns data tillgänglig på Qx
-					uint8_t datain = 0;
-					datain |= ((MT_Q1_PIN >> MT_Q1_BIT) & 0x1);
+					datain = ((MT_Q1_PIN >> MT_Q1_BIT) & 0x1);
 					datain |= (((MT_Q2_PIN >> MT_Q2_BIT) & 0x1)<<1);
 					datain |= (((MT_Q3_PIN >> MT_Q3_BIT) & 0x1)<<2);
 					datain |= (((MT_Q4_PIN >> MT_Q4_BIT) & 0x1)<<3);
@@ -132,14 +132,20 @@ int main(void) {
 		
 		if (timerOn ==1 && Timebase_PassedTimeMillis(lastToneTimeStamp) >= 1800) {
 			timerOn = 0;
-			if ((receviercounter & 0x1) == 0) {
-				txMsg.DataLength = (receviercounter>>1);
-			} else {
-				txMsg.DataLength = (receviercounter>>1)+1;
-			}
 			
-			receviercounter = 0;
-			Can_Send(&txMsg);
+			if (datain == 0xc) {	//om sista tonen var c
+				if ((receviercounter & 0x1) == 0) {
+					txMsg.DataLength = (receviercounter>>1);
+				} else {
+					txMsg.DataLength = (receviercounter>>1)+1;
+					txMsg.Data.bytes[(receviercounter>>1)] |= 0xc; //spara ett extra c om udda antal
+				}
+				
+				receviercounter = 0;
+				Can_Send(&txMsg);
+			} else {
+				//den ska skicka felmeddelande? använda ett annat id till det, FUNCT/FUNCC?
+			}
 		}		
 		
 		/* send CAN message and check for CAN errors once every second */
