@@ -28,15 +28,9 @@
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
+	Mcu_Init();
 	Timebase_Init();
 	Serial_Init();
-    #if defined(__AVR_ATmega88__)
-    // set the clock speed to 8MHz
-    // set the clock prescaler. First write CLKPCE to enable setting of clock the
-    // next four instructions.
-    CLKPR=(1<<CLKPCE);
-    CLKPR=0; // 8 MHZ
-    #endif
     
 	sei();
     
