@@ -13,6 +13,14 @@
  *---------------------------------------------------------------------------*/
 #define TIMEBASE_PRESCALE (64)
 #define TIMEBASE_HITS_PER_1MS (F_OSC/TIMEBASE_PRESCALE/1000)
+
+#if TIMEBASE_HITS_PER_1MS > 255
+#undef TIMEBASE_PRESCALE
+#define TIMEBASE_PRESCALE (256)
+#undef TIMEBASE_HITS_PER_1MS
+#define TIMEBASE_HITS_PER_1MS (F_OSC/TIMEBASE_PRESCALE/1000)	// behöver denna definieras om ifall prescalern definierats om?
+#endif
+
 #define TIMEBASE_RELOAD ((uint8_t)(0xff-TIMEBASE_HITS_PER_1MS+1))
 
 
