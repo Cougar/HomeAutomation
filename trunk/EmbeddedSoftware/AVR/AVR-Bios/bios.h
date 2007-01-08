@@ -10,10 +10,11 @@
 // Public function structure definition and declaration
 
 typedef struct bios{
-	int (*put_char)(char c, FILE *stream);
-	int (*get_char)(FILE *stream);
+	unsigned version;
 	void (*reset)(void);
-	unsigned (*version)(void);
+	void (*can_send)(char c);
+	char (*can_receive)(void);
+	long (*timebase_get)(void);
 } bios_t;
  
 static bios_t bios_functions __attribute__ ((section (".bios_interface")));

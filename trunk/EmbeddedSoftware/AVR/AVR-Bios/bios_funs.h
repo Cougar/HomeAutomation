@@ -2,30 +2,37 @@
 #define BIOS_FUNS_H_
 
 #define BIOS_BUILDTYPE_BIOS
-#define BIOS_VERSION 0x1001
+#define BIOS_VERSION 0x1002
 
-#include <avr/boot.h>
+#define UART_RX_BUFFER_SIZE 16
+#define UART_TX_BUFFER_SIZE 16
+
 #include "bios.h"
 
 //---------------------------------------------------------------------------
 // Function prototypes for the exported interface
 
-static int bios_putchar(char c, FILE *stream);
-static int bios_getchar(FILE *stream);
-static void bios_reset(void);
-static unsigned bios_version(void);
+static void reset(void);
+static void bios_putchar(char c);
+static char bios_getchar(void);
+static long timebase_get(void);
 
 static bios_t bios_functions = {
+	BIOS_VERSION,
+	reset,
 	bios_putchar,
 	bios_getchar,
-	bios_reset,
-	bios_version
+	timebase_get
 };
 
 //---------------------------------------------------------------------------
 // Function prototypes for flash modifying functions
+// TODO: These must be located above boot loader section limit even if bios
+// size grows larger than that.
 
-//void program_page (uint32_t page, uint8_t *buf) BOOTLOADER_SECTION;
-void program_page (uint32_t page, uint8_t *buf);
+void flash_flush_buffer(void);
+void flash_load_buffer(uint16_t addr);
+void flash_write_word(uint16_t addr, uint16_t word);
+void flash_init(void);
 
 #endif /*BIOS_FUNS_H_*/

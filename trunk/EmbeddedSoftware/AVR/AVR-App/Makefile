@@ -3,7 +3,7 @@ OBJ            = main.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
 
-DEFS           = -I/home/andreas/Develop/AVR/avr-bios -DBIOS_INTERFACE=$(BIOS_INTERFACE_START)
+DEFS           = -I../AVR-Bios
 LIBS           =
 
 # You should not have to change anything below here.
@@ -13,8 +13,7 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-#override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.bios_interface=$(BIOS_INTERFACE_START),-Tdata=$(BIOS_INTERFACE_END),--cref,-nostdlib,-L/home/andreas/Develop/AVR/avr-bios,-Ttarget.ld
-override LDFLAGS       = -Wl,-Map,$(PRG).map,-L/home/andreas/Develop/AVR/avr-bios,-T$(MCU_TARGET)_app.ld
+override LDFLAGS       = -Wl,-Map,$(PRG).map,-L../AVR-Bios,-T$(MCU_TARGET)_app.ld
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump

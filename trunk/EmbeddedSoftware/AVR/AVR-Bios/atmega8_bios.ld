@@ -67,6 +67,10 @@ SECTIONS
   .rel.plt       : { *(.rel.plt)		}
   .rela.plt      : { *(.rela.plt)		}
   /* Internal text space or external memory */
+  .app_vectors 0 :
+  {
+    *(.app_vectors)
+  }
   .text :
   {
     *(.vectors)
