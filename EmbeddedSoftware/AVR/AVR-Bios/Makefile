@@ -2,11 +2,8 @@ PRG            = bios
 OBJ            = bios.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
-BOOT_START     = 0x1800
-BIOS_INTERFACE_START = 0x800060
-BIOS_INTERFACE_END   = 0x800080
 
-DEFS           = -DBIOS_INTERFACE=$(BIOS_INTERFACE_START)
+DEFS           = 
 LIBS           =
 
 # You should not have to change anything below here.
@@ -16,7 +13,6 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-#override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.bios_interface=$(BIOS_INTERFACE_START),-Tdata=$(BIOS_INTERFACE_END),-Ttext=$(BOOT_START),--cref
 override LDFLAGS       = -Wl,-Map,$(PRG).map,-T$(MCU_TARGET)_bios.ld,--cref
 
 OBJCOPY        = avr-objcopy

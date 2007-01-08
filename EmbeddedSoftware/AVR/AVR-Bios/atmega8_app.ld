@@ -112,7 +112,7 @@ SECTIONS
     . = ALIGN(2);
      PROVIDE (__bios_interface_end = .) ;
   }  > data
-  .data	 0x00800086 : AT (ADDR (.text) + SIZEOF (.text))
+  .data	 0x008000ba : AT (ADDR (.text) + SIZEOF (.text))
   {
      PROVIDE (__data_start = .) ;
     *(.data)
