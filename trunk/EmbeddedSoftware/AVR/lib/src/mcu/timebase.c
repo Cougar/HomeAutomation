@@ -44,9 +44,9 @@ ISR(SIG_OVERFLOW0) {
 void Timebase_Init() {
 	
 	#if defined(__AVR_ATmega8__)
-	#if TIMEBASE_PRESCALE = 64
+	#if TIMEBASE_PRESCALE == 64
 	TCCR0 = (1<<CS01) | (1<<CS00);	// prescaler: 64
-	#elif TIMEBASE_PRESCALE = 256
+	#elif TIMEBASE_PRESCALE == 256
 	TCCR0 = (1<<CS02); 				// prescaler: 256
 	#endif
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
