@@ -24,13 +24,23 @@ void reset(void) {
 };
 
 void bios_putchar(char c) {
+	#if defined(__AVR_ATmega8__)
 	loop_until_bit_is_set(UCSRA, UDRE);
 	UDR = c;
+	#elif defined(__AVR_ATmega88__)
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+	UDR0 = c;
+	#endif
 };
 
 char bios_getchar(void) {
+	#if defined(__AVR_ATmega8__)
 	loop_until_bit_is_set(UCSRA, RXC);
 	return UDR;
+	#elif defined(__AVR_ATmega88__)
+	loop_until_bit_is_set(UCSR0A, RXC0);
+	return UDR0;
+	#endif
 };
 
 long timebase_get(void) {
@@ -127,8 +137,13 @@ int main() {
 	void (*app_reset)(void) = 0;
 	
 	// Setup USART for debug channel
+	#if defined(__AVR_ATmega8__)
 	UCSRB = _BV(RXEN)|_BV(TXEN);
 	UBRRL = (F_CPU / 16 / F_BAUD) - 1;
+	#elif defined(__AVR_ATmega88__)
+	UCSR0B = _BV(RXEN0)|_BV(TXEN0);
+	UBRR0L = (F_CPU / 16 / F_BAUD) - 1;
+	#endif
 	stdout = &bios_stdio;
 	stdin = &bios_stdio;
 	
@@ -140,8 +155,13 @@ int main() {
 	wdt_enable(WDTO_500MS);
 	
 	// Move interrupt vectors to start of bootloader section and enable interrupts
+	#if defined(__AVR_ATmega8__)
 	GICR = _BV(IVCE);
 	GICR = _BV(IVSEL);
+	#elif defined(__AVR_ATmega88__)
+	MCUCR = _BV(IVCE);
+	MCUCR = _BV(IVSEL);
+	#endif
 	sei();
 	
 	printf("AVR BIOS\n");
