@@ -1,6 +1,11 @@
 /**
  * CanGPS.
  *
+ * Messages: <byte0><byte1>...<byte7>
+ * $GPGGA: <GGA_MSG><UTC><Latitude><Latitude dec.><N/S><Longitude><Longitude dec.><E/W>
+ * $GPVTG: <VTG_MSG><Course true><Course dec. true><Course magnetic><Course dec. magnetic><Speed km/h><Speed dec. km/h>
+ * $GPZDA: <ZDA_MSG><hh><mm><ss><day><month><year>
+ *
  * @date    2001-01-09
  * @author  Erik Larsson
  */
@@ -27,10 +32,18 @@
 #define GPS_CMD_SEND    0x1401
 #define STATUS_SEND_PERIOD 500 /* milliseconds */
 
+#define GGA_MSG     0x01
+#define VTG_MSG     0x02
+#define ZDA_MSG     0x03
+#define GGA_MSG_BYTES 8
+#define VTG_MSG_BYTES 7
+#define ZDA_MSG_BYTES 7
+
 #define TRUE 1
 #define FALSE !TRUE
 #define CR 0x0D
 #define LF 0x0A
+#define GPS_MSG_DELIMITER ","
 
 /*-------------------------------------------------------------------------
  * Global variables
@@ -51,10 +64,17 @@ ISR( PCINT2_vect )
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-
     uint32_t timeStamp = 0, timeStampTurn = 0;
     uint8_t buffering = FALSE, gpsMsg_received = FALSE, rxGps_element;
     char buffer[100], rxGps;
+    /* GPGGA, Global positioning system fix data */
+    char gga_utc[7], gga_latitude[9], gga_latitude_NS, gga_longitude[10], gga_longitude_EW;
+    /* GPVTG, Course over ground and speed */
+    char vtg_course_true[6], vtg_course_magnetic[6], vtg_speed_kmh[6];
+    /* GPZDA, Time & Date */
+    char zda_time[7], zda_day[3], zda_month[3], zda_year[5];
+
+    char *pch;
 
     Timebase_Init();
     Serial_Init();
@@ -127,12 +147,63 @@ int main(void) {
             /* One whole msg is completed, start compare and parse */
             if( !strncmp(buffer, "GPGGA", 5) ){
                 /* Standard NMEA message, $GPGGA */
+                strtok(buffer, GPS_MSG_DELIMITER); /* Throw away "GPGGA" */
+
+                /* Get UTC */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(gga_utc, pch);
+
+                /* Get latitude */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(gga_latitude, pch);
+
+                /* Get latitude N/S */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(gga_latitude_NS, pch);
+
+                /* Get longitude */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(gga_longitude, pch);
+
+                /* Get longitude E/W */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(gga_longitude_EW, pch);
 
             }else if( !strncmp(buffer, "GPVTG", 5) ){
                 /* Standard NMEA message, $GPVTG */
+                strtok(buffer, GPS_MSG_DELIMITER); /* Throw away "GPVTG" */
+
+                /* Get course over ground, true degree */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(vtg_course_true, pch);
+
+                /* Get course over ground, magnetic degree */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(vtg_course_magnetic, pch);
+
+                /* Get speed over ground, km/h */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(vtg_speed_kmh, pch);
 
             }else if( !strncmp(buffer, "GPZDA", 5) ){
                 /* Standard NMEA message, $GPZDA */
+                strtok(buffer, GPS_MSG_DELIMITER); /* Throw away "GPZDA" */
+
+                /* Get time */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(zda_time, pch);
+
+                /* Get day, 0-31 */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(zda_day, pch);
+
+                /* Get month, 1-12 */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(zda_month, pch);
+
+                /* Get year */
+                pch = strtok(NULL, GPS_MSG_DELIMITER);
+                strcpy(zda_year, pch);
             }
 
             gpsMsg_received = FALSE; /* Get ready for next message */
