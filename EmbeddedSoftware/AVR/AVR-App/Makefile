@@ -1,6 +1,6 @@
 PRG            = main
 OBJ            = main.o
-MCU_TARGET     = atmega88
+MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
 # grep bios.map for __bios_ram_end to retreive this value
 BIOS_RAM_END   = 0x008000bd
@@ -14,7 +14,7 @@ LIBS           =
 CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
-
+ 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
 override LDFLAGS       = -v -Wl,-Map,$(PRG).map,-L../AVR-Bios,--defsym,__bios_ram_end=$(BIOS_RAM_END),-T$(MCU_TARGET)_app.ld
 override ASFLAGS       = -x assembler-with-cpp -Wa,-gstabs -mmcu=$(MCU_TARGET) $(DEFS)
@@ -23,8 +23,9 @@ OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 SIZE           = avr-size
 SZFLAGS        = 
-UPLOAD         = uisp
-ULFLAGS        = -dpart=$(MCU_TARGET) -dprog=avr910 -dserial=/dev/ttyS0 -dspeed=115200 --upload --verify if=$(PRG).hex
+UPLOAD         = avrdude
+ULFLAGS        = -p $(MCU_TARGET) -D -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
+# -D disables erase!
 
 default: $(PRG).elf lst
 	@$(SIZE) $(SZFLAGS) $(PRG).elf
