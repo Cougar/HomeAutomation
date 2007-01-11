@@ -1,10 +1,12 @@
 PRG            = main
 OBJ            = main.o
-MCU_TARGET     = atmega8
+MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
 # grep bios.map for __bios_ram_end to retreive this value
-BIOS_RAM_END   = 0x008000bd
 # In the future, this should be automatically inserted into *_app.ld at every bios compilation
+BIOS_RAM_END   = 0x0080015d
+#uncomment this line if you're using m88, remove line when gcc-bug fixed
+#EXTRA_LD        = avr-ld -m avr4 -o $(PRG).elf /usr/avr/lib/avr4/crtm88.o -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/avr/lib/avr4 -Map $(PRG).map -L../AVR-Bios --defsym __bios_ram_end=0x0080015d -T$(MCU_TARGET)_app.ld $(PRG).o -lgcc -lc -lgcc
 
 DEFS           = -I../AVR-Bios
 LIBS           =
@@ -34,6 +36,7 @@ all: $(PRG).elf lst text eeprom
 
 $(PRG).elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(EXTRA_LD)
 
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
