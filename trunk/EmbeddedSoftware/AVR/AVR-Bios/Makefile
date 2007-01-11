@@ -22,8 +22,9 @@ OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 SIZE           = avr-size
 SZFLAGS        = 
-UPLOAD         = uisp
-ULFLAGS        = -dpart=$(MCU_TARGET) -dprog=avr910 -dserial=/dev/ttyS0 -dspeed=115200 --erase --upload --verify if=$(PRG).hex
+UPLOAD         = avrdude
+ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
+
 
 default: $(PRG).elf lst
 	@$(SIZE) $(SZFLAGS) $(PRG).elf
