@@ -24,11 +24,12 @@ void flash_flush_buffer() {
 	boot_page_write(flash_prev_addr);     // Store buffer in flash page.
 	boot_spm_busy_wait();       // Wait until the memory is written.
 
+	flash_buffer_dirty = 0;
+
 	// Reenable RWW-section again. We need this if we want to jump back
 	// to the application after bootloading.
 
 	boot_rww_enable ();
-
 	// Re-enable interrupts (if they were ever enabled).
 
 	SREG = sreg;
