@@ -1,13 +1,13 @@
 #include "bios_funs.h"
 #include "avr_cfg.h"
 #include <inttypes.h>
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
-#include <avr/boot.h>
 #include <avr/pgmspace.h>
-#include <avr/io.h>
 #include <stdio.h>
-#include "app_vectors.h"
+#include "flash.h"
+#include "vectors.h" // Must be included after sfr_defs.h
 
 //---------------------------------------------------------------------------
 // Globals
@@ -24,23 +24,13 @@ void reset(void) {
 };
 
 void bios_putchar(char c) {
-	#if defined(__AVR_ATmega8__)
-	loop_until_bit_is_set(UCSRA, UDRE);
-	UDR = c;
-	#elif defined(__AVR_ATmega88__)
-	loop_until_bit_is_set(UCSR0A, UDRE0);
-	UDR0 = c;
-	#endif
+	UART_PUTCHAR(c);
 };
 
 char bios_getchar(void) {
-	#if defined(__AVR_ATmega8__)
-	loop_until_bit_is_set(UCSRA, RXC);
-	return UDR;
-	#elif defined(__AVR_ATmega88__)
-	loop_until_bit_is_set(UCSR0A, RXC0);
-	return UDR0;
-	#endif
+	char c;
+	UART_GETCHAR(c)
+	return c;
 };
 
 long timebase_get(void) {
@@ -61,61 +51,12 @@ long timebase_get(void) {
 //---------------------------------------------------------------------------
 // Function definitions for the private functions
 
-static uint16_t flash_prev_addr;
-
-void flash_flush_buffer() {
-	uint8_t sreg;
-	
-	// Disable interrupts.
-	
-	sreg = SREG;
-	cli();
-	
-	eeprom_busy_wait();
-	
-	boot_page_erase(flash_prev_addr);
-	boot_spm_busy_wait();      // Wait until the memory is erased.
-	
-	boot_page_write(flash_prev_addr);     // Store buffer in flash page.
-	boot_spm_busy_wait();       // Wait until the memory is written.
-
-	// Reenable RWW-section again. We need this if we want to jump back
-	// to the application after bootloading.
-
-	boot_rww_enable ();
-
-	// Re-enable interrupts (if they were ever enabled).
-
-	SREG = sreg;
-}
-
-void flash_load_buffer(uint16_t addr) {
-	//TODO: Load current flash page contents into temporary buffer to implement
-	// flash read-modify-writes with word granularity. (If possible, the data
-	// sheet is a little fuzzy about this.)
-} 
-
-void flash_write_word(uint16_t addr, uint16_t word) {
-	
-	if ((addr / SPM_PAGESIZE) != (flash_prev_addr / SPM_PAGESIZE)) {
-		flash_flush_buffer();
-		flash_load_buffer(addr);
-	}
-	
-	boot_page_fill(addr, word);
-	flash_prev_addr = addr;
-}     
-
-void flash_init() {
-	flash_prev_addr = 0xffff;
-}
-
 static int console_getchar(FILE *stream) {
-	return bios->can_receive();
+	return bios_getchar();
 }
 
 static int console_putchar(char c, FILE *stream) {
-	bios->can_send(c);
+	bios_putchar(c);
 	return 0;
 }
 
@@ -137,13 +78,7 @@ int main() {
 	void (*app_reset)(void) = 0;
 	
 	// Setup USART for debug channel
-	#if defined(__AVR_ATmega8__)
-	UCSRB = _BV(RXEN)|_BV(TXEN);
-	UBRRL = (F_CPU / 16 / F_BAUD) - 1;
-	#elif defined(__AVR_ATmega88__)
-	UCSR0B = _BV(RXEN0)|_BV(TXEN0);
-	UBRR0L = (F_CPU / 16 / F_BAUD) - 1;
-	#endif
+	UART_INIT();
 	stdout = &bios_stdio;
 	stdin = &bios_stdio;
 	
@@ -155,13 +90,8 @@ int main() {
 	wdt_enable(WDTO_500MS);
 	
 	// Move interrupt vectors to start of bootloader section and enable interrupts
-	#if defined(__AVR_ATmega8__)
-	GICR = _BV(IVCE);
-	GICR = _BV(IVSEL);
-	#elif defined(__AVR_ATmega88__)
-	MCUCR = _BV(IVCE);
-	MCUCR = _BV(IVSEL);
-	#endif
+	IVSEL_REG = _BV(IVCE);
+	IVSEL_REG = _BV(IVSEL);
 	sei();
 	
 	printf("AVR BIOS\n");

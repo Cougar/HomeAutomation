@@ -3,7 +3,7 @@ OUTPUT_FORMAT("elf32-avr","elf32-avr","elf32-avr")
 OUTPUT_ARCH(avr:4)
 MEMORY
 {
-  text   (rx)   : ORIGIN = 0x1800, LENGTH = 2K
+  text   (rx)   : ORIGIN = 0x0, LENGTH = 8K
   data   (rw!x) : ORIGIN = 0x800100, LENGTH = 1K
   eeprom (rw!x) : ORIGIN = 0x810000, LENGTH = 512
 }
@@ -67,19 +67,22 @@ SECTIONS
   .rel.plt       : { *(.rel.plt)		}
   .rela.plt      : { *(.rela.plt)		}
   /* Internal text space or external memory */
-  .app_vectors 0 :
+  /DISCARD/ :
+  {
+    *(.vectors)
+  }
+  .app_vectors 0x0 :
   {
     *(.app_vectors)
   }
-  .text :
+  .text __bios_start :
   {
-    *(.vectors)
-     __ctors_start = . ;
-     *(.ctors)
-     __ctors_end = . ;
-     __dtors_start = . ;
-     *(.dtors)
-     __dtors_end = . ;
+    __ctors_start = . ;
+    *(.ctors)
+    __ctors_end = . ;
+    __dtors_start = . ;
+    *(.dtors)
+    __dtors_end = . ;
     *(.progmem.gcc*)
     *(.progmem*)
     . = ALIGN(2);
@@ -109,6 +112,13 @@ SECTIONS
     *(.fini0)  /* Infinite loop after program termination.  */
      _etext = . ;
   }  > text
+  .bootloader __boot_start :
+  {
+    *(.boot_vectors)
+    __bootloader_start = . ;
+    *(.bootloader)
+    __bootloader_end = . ;
+  }  > text
   .data	 : AT (ADDR (.text) + SIZEOF (.text))
   {
      PROVIDE (__data_start = .) ;
@@ -135,7 +145,7 @@ SECTIONS
     *(.noinit*)
      PROVIDE (__noinit_end = .) ;
      _end = . ;
-     PROVIDE (__heap_start = .) ;
+     PROVIDE (__bios_ram_end = .) ;
   }  > data
   .eeprom  :
   {

@@ -1,9 +1,11 @@
 PRG            = bios
-OBJ            = bios.o
+OBJ            = vectors.o bios.o flash.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
+BIOS_START     = 0x100
+BOOT_START     = 0x1f00
 
-DEFS           = 
+DEFS           =
 LIBS           =
 
 # You should not have to change anything below here.
@@ -13,7 +15,8 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -Wl,-Map,$(PRG).map,-T$(MCU_TARGET)_bios.ld,--cref
+override LDFLAGS       = -Wl,-Map,$(PRG).map,--defsym,__bios_start=$(BIOS_START),--defsym,__boot_start=$(BOOT_START),-T$(MCU_TARGET)_bios.ld,--cref
+override ASFLAGS       = -x assembler-with-cpp -Wa,-gstabs -mmcu=$(MCU_TARGET) $(DEFS)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
@@ -48,13 +51,13 @@ bin:  $(PRG).bin
 srec: $(PRG).srec
 
 %.hex: %.elf
-	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -O ihex $< $@
 
 %.srec: %.elf
-	$(OBJCOPY) -j .text -j .data -O srec $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -O srec $< $@
 
 %.bin: %.elf
-	$(OBJCOPY) -j .text -j .data -O binary $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -O binary $< $@
 
 # Rules for uploading rom images to flash
 
