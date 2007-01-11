@@ -1,7 +1,10 @@
 PRG            = main
 OBJ            = main.o
-MCU_TARGET     = atmega8
+MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
+# grep bios.map for __bios_ram_end to retreive this value
+BIOS_RAM_END   = 0x008000bd
+# In the future, this should be automatically inserted into *_app.ld at every bios compilation
 
 DEFS           = -I../AVR-Bios
 LIBS           =
@@ -13,7 +16,8 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -Wl,-Map,$(PRG).map,-L../AVR-Bios,-T$(MCU_TARGET)_app.ld
+override LDFLAGS       = -v -Wl,-Map,$(PRG).map,-L../AVR-Bios,--defsym,__bios_ram_end=$(BIOS_RAM_END),-T$(MCU_TARGET)_app.ld
+override ASFLAGS       = -x assembler-with-cpp -Wa,-gstabs -mmcu=$(MCU_TARGET) $(DEFS)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
