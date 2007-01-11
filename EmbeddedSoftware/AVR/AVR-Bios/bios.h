@@ -19,8 +19,6 @@ typedef struct bios{
  
 static bios_t bios_functions __attribute__ ((section (".bios_interface")));
 
-//#ifndef BIOS_BUILDTYPE_BIOS
-static bios_t *bios = (bios_t*)&bios_functions;
-//#endif
+static bios_t *bios __attribute__ ((used)) = (bios_t*)&bios_functions;
 
 #endif /*BIOS_H_*/
