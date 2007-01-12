@@ -1,12 +1,17 @@
 PRG            = bios
 OBJ            = vectors.o bios.o flash.o
-MCU_TARGET     = atmega8
+MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
-BIOS_START     = 0x100
+BIOS_START     = 0x1000
 BOOT_START     = 0x1f00
 
 DEFS           =
 LIBS           =
+
+# fuses, these fuses shuld be used, later this makefile shuld program them for you
+# lfuse 0xE2 (no prescaler, should be set in bios later)		#mega88
+# hfuse default													#mega88
+# efuse 0x06 (BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1)					#mega88
 
 # You should not have to change anything below here.
 
