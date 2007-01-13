@@ -1,6 +1,6 @@
 PRG            = bios
 OBJ            = vectors.o bios.o flash.o
-MCU_TARGET     = atmega88
+MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
 BIOS_START     = 0x1000
 BOOT_START     = 0x1f00
@@ -8,12 +8,18 @@ BOOT_START     = 0x1f00
 DEFS           =
 LIBS           =
 
-# fuses, these fuses shuld be used, later this makefile shuld program them for you
-# lfuse 0xE2 (no prescaler, should be set in bios later)		#mega88
-# hfuse default													#mega88
-# efuse 0x06 (BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1)					#mega88
+TARGET_CLK_SRC = 0xe2
+#TARGET_CLK_SRC for mega88		
+#0xe7		#CKDIV8=1, external crystal
+#0xe0		#CKDIV8=1, external clock
+#0xe2		#CKDIV8=1, internal RC
+#TARGET_CLK_SRC for mega8
+#0x24		#BODLEVEL = 4.0V, BODEN=enabled, internal 8MHz
+#0x20		#BODLEVEL = 4.0V, BODEN=enabled, external clock
 
+#
 # You should not have to change anything below here.
+#
 
 CC             = avr-gcc
 
@@ -30,6 +36,33 @@ SZFLAGS        =
 UPLOAD         = avrdude
 ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
 
+ifeq ($(MCU_TARGET),atmega88)
+#BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1
+EXTFUSE  = 0x06
+#BODLEVEL = 4.3V
+HIGHFUSE = 0xdc
+LOWFUSE  = $(TARGET_CLK_SRC)
+endif
+
+ifeq ($(MCU_TARGET),atmega8)
+#BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1
+HIGHFUSE = 0xd6
+LOWFUSE  = $(TARGET_CLK_SRC)
+endif
+
+AVRDUDE_WRITE_FUSEBITS = -u
+ifdef EXTFUSE
+AVRDUDE_WRITE_FUSEBITS += -U efuse:w:$(EXTFUSE):m
+endif
+ifdef HIGHFUSE
+AVRDUDE_WRITE_FUSEBITS += -U hfuse:w:$(HIGHFUSE):m
+endif
+ifdef LOWFUSE
+AVRDUDE_WRITE_FUSEBITS += -U lfuse:w:$(LOWFUSE):m
+endif
+
+#comment this line for not programming fusebits
+ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
 
 default: $(PRG).elf lst
 	@$(SIZE) $(SZFLAGS) $(PRG).elf
