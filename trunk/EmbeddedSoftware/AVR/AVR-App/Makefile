@@ -5,8 +5,10 @@ OPTIMIZE       = -Os -mcall-prologues
 # grep bios.map for __bios_ram_end to retreive this value
 # In the future, this should be automatically inserted into *_app.ld at every bios compilation
 BIOS_RAM_END   = 0x0080015d
-#uncomment this line if you're using m88, remove line when gcc-bug fixed
-EXTRA_LD        = avr-ld -m avr4 -o $(PRG).elf /usr/avr/lib/avr4/crtm88.o -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/avr/lib/avr4 -Map $(PRG).map -L../AVR-Bios --defsym __bios_ram_end=$(BIOS_RAM_END) -T$(MCU_TARGET)_app.ld $(PRG).o -lgcc -lc -lgcc
+ifeq ($(MCU_TARGET),atmega88)
+	#uncomment this line if you're using m88, remove line when gcc-bug fixed
+	EXTRA_LD        = avr-ld -m avr4 -o $(PRG).elf /usr/avr/lib/avr4/crtm88.o -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/lib/gcc/avr/4.1.0/avr4 -L/usr/avr/lib/avr4 -Map $(PRG).map -L../AVR-Bios --defsym __bios_ram_end=$(BIOS_RAM_END) -T$(MCU_TARGET)_app.ld $(PRG).o -lgcc -lc -lgcc
+endif
 
 DEFS           = -I../AVR-Bios
 LIBS           =
@@ -29,7 +31,7 @@ UPLOAD         = avrdude
 ULFLAGS        = -p $(MCU_TARGET) -D -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
 # -D disables erase!
 
-default: $(PRG).elf lst
+default: $(PRG).elf lst text
 	@$(SIZE) $(SZFLAGS) $(PRG).elf
 
 all: $(PRG).elf lst text eeprom
