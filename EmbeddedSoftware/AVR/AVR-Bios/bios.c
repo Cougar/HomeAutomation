@@ -7,7 +7,8 @@
 #include <avr/pgmspace.h>
 #include <stdio.h>
 #include "flash.h"
-#include "vectors.h" // Must be included after sfr_defs.h
+#include "vectors.h" // Must be included after sfr_defs.h but before any ISR()
+#include "can.h"
 
 //---------------------------------------------------------------------------
 // Globals
@@ -102,5 +103,63 @@ int main() {
 	}
 	
 	printf("No application found.\n");
+	
+	printf("\n------------------------------------------------------------\n");
+	printf(  "   CAN Test: Periodic Transmission\n");
+	printf(  "------------------------------------------------------------\n");
+	
+	printf("CanInit...");
+	if (Can_Init() != CAN_OK) {
+		printf("FAILED!\n");
+	}
+	else {
+		printf("OK!\n");
+	}
+	
+	uint32_t timeStamp = 0;
+	
+	Can_Message_t txMsg;
+	Can_Message_t rxMsg;
+	//The databytes are just what happens to be in the memory. They are never set.
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1; 
+#define NODENUMBER 2
+#if NODENUMBER == 1
+	txMsg.Id = 16;
+	txMsg.DataLength = 2;
+#elif NODENUMBER == 2
+	txMsg.Id = 32;
+	txMsg.DataLength = 5;
+#else
+# error NODENUMBER not set!
+#endif
+	
+	uint8_t i;
+	/* main loop */
+	while (1) {
+		/* service the CAN routines */
+		Can_Service();
+		
+		/* send CAN message and check for CAN errors once every second */
+		if ((timebase_get() - timeStamp) >= 1000) {
+			timeStamp = timebase_get();
+			/* send txMsg */
+			txMsg.Id++;
+			Can_Send(&txMsg);
+		}
+		
+		/* check if any messages have been received */
+		while (Can_Receive(&rxMsg) == CAN_OK) {
+			printf("BIOS Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+    		printf("data={ ");
+    		for (i=0; i<rxMsg.DataLength; i++) {
+    			printf("%x ", rxMsg.Data.bytes[i]);
+    		}
+    		printf("}\n");
+    		
+    		if (rxMsg.Id % 20 == 19) reset();
+		}
+	}
+
 	return 0;
 }
