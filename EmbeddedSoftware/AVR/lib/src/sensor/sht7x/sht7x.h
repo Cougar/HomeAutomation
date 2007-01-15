@@ -10,11 +10,11 @@
 /*-----------------------------------------------------------------------------
  * Defines
  * --------------------------------------------------------------------------*/
-#define HUMIDITY_DDR DDRB
-#define HUMIDITY_PIN PINB
-#define HUMIDITY_PORT PORTB
-#define HUMIDITY_DATA (1<<PB0) //0x10
-#define HUMIDITY_SCK (1<<PB1) //0x20
+#define HUMIDITY_DDR DDRD
+#define HUMIDITY_PIN PIND
+#define HUMIDITY_PORT PORTD
+#define HUMIDITY_DATA (1<<PD4) //0x10
+#define HUMIDITY_SCK (1<<PD5) //0x20
 //adr command r/w
 #define HUMIDITY_STATUS_REG_W 0x06 //000 0011 0
 #define HUMIDITY_STATUS_REG_R 0x07 //000 0011 1
@@ -25,7 +25,7 @@
 #define TRUE 1
 #define FALSE !TRUE
 
-#define ACK 1
+#define ACK 1 /* TODO is this correct? */
 #define noACK !ACK
 
 uint8_t HumiError;
