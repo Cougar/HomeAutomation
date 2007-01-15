@@ -76,30 +76,18 @@ void setPosition(int8_t abs_pos){
  * Interval -128 to 127.
  */
 void alterPosition(int8_t rel_pos){
-    uint16_t temp_pos;
+    int8_t new_pos, current_pos;
 
-    temp_pos = OCR1A;
-    temp_pos = temp_pos + rel_pos*STEP;
-#if DOUBLE_PWM
-    if(temp_pos>=PWM_MAX_PULSE){
-        OCR1A = PWM_MAX_PULSE;
-        OCR1B = PWM_MAX_PULSE;
-    }else if(temp_pos<=PWM_MIN_PULSE){
-        OCR1A = PWM_MIN_PULSE;
-        OCR1B = PWM_MIN_PULSE;
-    }else{
-        OCR1A = temp_pos;
-        OCR1B = temp_pos;
+    current_pos = getPosition();
+    new_pos = current_pos + rel_pos;
+
+    if(rel_pos<0 && current_pos<0 && new_pos>0 ){
+        new_pos = MIN_POSITION;
+    }else if(rel_pos>0 && current_pos>0 && new_pos<0 ){
+        new_pos = MAX_POSITION;
     }
-#else
-    if(temp_pos>=PWM_MAX_PULSE){
-        OCR1A = PWM_MAX_PULSE;
-    }else if(temp_pos<=PWM_MIN_PULSE){
-        OCR1A = PWM_MIN_PULSE;
-    }else{
-        OCR1A = temp_pos;
-    }
-#endif
+
+    setPosition( new_pos );
 }
 
 /*
@@ -107,7 +95,7 @@ void alterPosition(int8_t rel_pos){
  */
 int8_t getPosition(){
 
-    return (OCR1A - PWM_CENTER_PULSE)/STEP;
+    return (int8_t)((int16_t)(OCR1A - PWM_CENTER_PULSE)/STEP);
 }
 
 /*
