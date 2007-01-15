@@ -26,11 +26,35 @@
  */
 void adcTemperatureInit()
 {
-#if PDIP
-    /* Enable ADC0 (for PDIP package) */
+#ifdef ADC0
+    /* Enable ADC0 */
     ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX2)|(1<<MUX3));
-#else
-    /* Enable ADC7 (for TQFP package) */
+#elif ADC1
+    /* Enable ADC1 */
+    ADMUX |= (1<<MUX0);
+    ADMUX &= ~((1<<MUX1)|(1<<MUX2)|(1<<MUX3));
+#elif ADC2
+    /* Enable ADC2 */
+    ADMUX |= (1<<MUX1)|;
+    ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
+#elif ADC3
+    /* Enable ADC3 */
+    ADMUX |= (1<<MUX0)|(1<<MUX1);
+    ADMUX &= ~((1<<MUX2)|(1<<MUX3));
+#elif ADC4
+    /* Enable ADC4 */
+    ADMUX |= (1<<MUX2);
+    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX3));
+#elif ADC5
+    /* Enable ADC5 */
+    ADMUX |= (1<<MUX0)(1<<MUX2);
+    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
+#elif ADC6
+    /* Enable ADC6 */
+    ADMUX |= (1<<MUX1)|(1<<MUX2);
+    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
+#elif ADC7
+    /* Enable ADC7 (only for TQFP package) */
     ADMUX |= (1<<MUX0)|(1<<MUX1)|(1<<MUX2);
     ADMUX &= ~(1<<MUX3);
 #endif
