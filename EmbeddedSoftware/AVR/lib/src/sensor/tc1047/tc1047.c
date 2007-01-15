@@ -13,9 +13,9 @@
  * ---------------------------------------------*/
 #include <avr/io.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include <tc1047.h>
-
+#include "tc1047.h"
 
 /*----------------------------------------------
  * Functions
@@ -26,39 +26,46 @@
  */
 void adcTemperatureInit()
 {
-#ifdef ADC0
+#if defined(ADC0)
     /* Enable ADC0 */
     ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX2)|(1<<MUX3));
-#elif ADC1
+#elif defined(ADC1)
     /* Enable ADC1 */
     ADMUX |= (1<<MUX0);
     ADMUX &= ~((1<<MUX1)|(1<<MUX2)|(1<<MUX3));
-#elif ADC2
+#elif defined(ADC2)
     /* Enable ADC2 */
     ADMUX |= (1<<MUX1)|;
     ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
-#elif ADC3
+#elif defined(ADC3)
     /* Enable ADC3 */
     ADMUX |= (1<<MUX0)|(1<<MUX1);
     ADMUX &= ~((1<<MUX2)|(1<<MUX3));
-#elif ADC4
+#elif defined(ADC4)
     /* Enable ADC4 */
     ADMUX |= (1<<MUX2);
     ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX3));
-#elif ADC5
+#elif defined(ADC5)
     /* Enable ADC5 */
-    ADMUX |= (1<<MUX0)(1<<MUX2);
-    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
-#elif ADC6
+    ADMUX |= (1<<MUX0)|(1<<MUX2);
+    ADMUX &= ~((1<<MUX1)|(1<<MUX3));
+//#error yo helt fel
+#elif defined(ADC6)
     /* Enable ADC6 */
     ADMUX |= (1<<MUX1)|(1<<MUX2);
     ADMUX &= ~((1<<MUX0)|(1<<MUX3));
-#elif ADC7
+#elif defined(ADC7)
     /* Enable ADC7 (only for TQFP package) */
     ADMUX |= (1<<MUX0)|(1<<MUX1)|(1<<MUX2);
     ADMUX &= ~(1<<MUX3);
+#else
+    #error No adc defined
 #endif
 
+#if defined(VREF_INT)
+    #error Internal referens voltage still not implemented and tested
+    // TODO fixa för böfvelen
+#endif
     /* Enable AVcc as Voltage Reference */
     ADMUX |= (1<<REFS0);
     ADMUX &= ~(1<<REFS1);
@@ -89,12 +96,12 @@ uint32_t getTC1047temperature()
     /* Get the result, convert and return */
     temperatureData = ADCW;
 
-#if VREF_INT
-    /* If VREF_INT 1 use 1.1 volt as reference */
+#if defined(VREF_INT)
+    /* Use internal 1.1 volt as reference */
     temperatureData = temperatureData * 11;
     temperatureData = (temperatureData * 10 / 1024) - 50;
 #else
-    /* If VREF_INT 0 use 5 volt as reference */
+    /* Use 5 volt as reference */
     temperatureData = temperatureData * 5;
     temperatureData = (temperatureData * 100 / 1024) - 50;
 #endif
