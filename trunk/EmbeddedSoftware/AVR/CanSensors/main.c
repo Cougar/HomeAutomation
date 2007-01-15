@@ -175,8 +175,6 @@ int main(void) {
         Can_Send(&txMsg);
 #endif
 #ifdef USE_SHT71
-//        HumidityMeasure(HUMIDITY_MEASURE_HUMI);
-//        HumidityMeasure(HUMIDITY_MEASURE_TEMP);
 #endif
 		}
 	}

@@ -4,11 +4,12 @@
  * Sensor: http://www.sensirion.com/en/02_sensors/03_humidity/00_humidity_temperature_sensor/06_humidity_sensor_sht75.htm
  * Origin of code: http://www.avrfreaks.net/index.php?module=PNphpBB2&file=viewtopic&t=31562&highlight=
  *
+ * Copied from avrfreaks and rewritten by Erik Larsson.
+ * Date: 2007-01-14
+ *
  */
 #include <avr/io.h>
 #include <sht7x.h>
-#include <stdlib.h>
-#include <avr/wdt.h>
 
 /*
 Name: void HumidityDelay(void)
@@ -26,7 +27,7 @@ void HumidityDelay(void)
 {
 int i;
 
-for (i=0;i<40;i++) wdt_reset(); //WDR();
+for (i=0;i<40;i++); /* Probably not that important because BIOS will take som time to start */
 }
 
 /******************************************************************************
@@ -311,7 +312,7 @@ HUMIDITY_DDR &= ~HUMIDITY_DATA; //DATA-line in input
 
 for (i=0;i<=65530;i++)
 {
-for (j=0;j<10;j++) wdt_reset(); //WDR();
+for (j=0;j<10;j++); /* Maybe it works */
 if((HUMIDITY_PIN & HUMIDITY_DATA) == 0) break; //wait until sensor
 } //has finished the measure
 if(i > 65530)

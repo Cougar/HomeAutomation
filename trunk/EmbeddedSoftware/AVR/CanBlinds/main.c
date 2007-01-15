@@ -10,7 +10,7 @@
  */
 
 #define DEBUG           0 /* Prints debug messages to uart */
-#define TWO_BUTTON_MODE 0 /* If using two (or just one but nothing more) auxiliary buttons */
+//#define TWO_BUTTON_MODE 0 /* If using two (or just one but nothing more) auxiliary buttons */
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -27,7 +27,7 @@
 #endif
 #include <timebase.h>
 
-#include <tc1047.h>
+#include "tc1047.h"
 #include <rc_servo.h>
 
 /* defines */
