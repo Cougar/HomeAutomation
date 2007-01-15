@@ -27,6 +27,8 @@
 #define PWM_MIN_PULSE   2000
 #define PWM_CENTER_PULSE ((PWM_MAX_PULSE - PWM_MIN_PULSE)/2 + PWM_MIN_PULSE)
 #define STEP            ((PWM_MAX_PULSE - PWM_MIN_PULSE)/256)
+#define MAX_POSITION 127
+#define MIN_POSITION -128
 
 /*-----------------------------------------------
  * Functions
