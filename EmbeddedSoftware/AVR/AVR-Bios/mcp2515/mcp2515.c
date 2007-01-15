@@ -199,6 +199,7 @@ uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 }
 
 
+#if 0
 uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
 	uint8_t set, cfg1, cfg2, cfg3;
 	
@@ -247,7 +248,42 @@ uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
 		return MCP2515_FAIL;
 	}
 } 
+#endif
 
+void MCP2515_ConfigRate() {
+	
+#if CAN_BITRATE	== CAN_BITRATE_125K
+# define MCP_CFG1 MCP_125KBPS_CFG1
+# define MCP_CFG2 MCP_125KBPS_CFG2
+# define MCP_CFG3 MCP_125KBPS_CFG3
+
+#elif CAN_BITRATE	== CAN_BITRATE_250K
+# define MCP_CFG1 MCP_250KBPS_CFG1
+# define MCP_CFG2 MCP_250KBPS_CFG2
+# define MCP_CFG3 MCP_250KBPS_CFG3
+
+#elif CAN_BITRATE	== CAN_BITRATE_500K
+# define MCP_CFG1 MCP_500KBPS_CFG1
+# define MCP_CFG2 MCP_500KBPS_CFG2
+# define MCP_CFG3 MCP_500KBPS_CFG3
+
+#elif CAN_BITRATE	== CAN_BITRATE_1M
+# if MCP_CLOCK_FREQ_MHZ > 8
+#  define MCP_CFG1 MCP_1000KBPS_CFG1
+#  define MCP_CFG2 MCP_1000KBPS_CFG2
+#  define MCP_CFG3 MCP_1000KBPS_CFG3
+# else
+#  error CAN bitrate of 1Mbps only possible with clock freq > 8MHz.
+# endif
+
+#else
+# error CAN_BITRATE not set properly.
+#endif
+
+	MCP2515_SetRegister(MCP_CNF1, MCP_CFG1);
+	MCP2515_SetRegister(MCP_CNF2, MCP_CFG2);
+	MCP2515_SetRegister(MCP_CNF3, MCP_CFG3);
+}
 
 /**
  * Reads a CAN message from the specified buffer base address in the MCP2515. The message
@@ -435,7 +471,7 @@ void MCP2515_InitCanBuffers(void) {
 
 // ---
 
-uint8_t MCP2515_Init(const uint8_t canSpeed) {
+uint8_t MCP2515_Init() {
 	uint8_t res;
 	
 	SPI_Init();		// init SPI-Interface (as "Master")
@@ -453,10 +489,9 @@ uint8_t MCP2515_Init(const uint8_t canSpeed) {
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 	
-	res = MCP2515_ConfigRate(canSpeed);
+	MCP2515_ConfigRate();
 	
-	if (res == MCP2515_OK) {
-		MCP2515_InitCanBuffers();
+	MCP2515_InitCanBuffers();
 
 #if (DEBUG_RXANY==1)
 	#warning DEBUG_RXANY is defined! Bypassing filter.
@@ -483,7 +518,6 @@ uint8_t MCP2515_Init(const uint8_t canSpeed) {
 				MCP_RXB_RX_MASK,
 				MCP_RXB_RX_STDEXT);
 #endif
-	}
 	
 	return res;
 }

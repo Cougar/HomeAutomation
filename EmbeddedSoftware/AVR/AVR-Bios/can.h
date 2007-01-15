@@ -23,6 +23,7 @@
  * Type Definitions
  *---------------------------------------------------------------------------*/
 
+#if 0
 /**
  * CAN Bitrate Type. The supported bitrates.
  */
@@ -32,6 +33,7 @@ typedef enum {
     CAN_BITRATE_500K = 2,			/* Max cable length: 100m */
     CAN_BITRATE_1M = 3				/* Max cable length: 40m */
 } Can_Bitrate_t;
+#endif
 
 
 /**

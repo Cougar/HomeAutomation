@@ -148,7 +148,7 @@ Can_Return_t Can_Init() {
 		/*
 		 * Initialize MCP2515 device.
 		 */
-		if (MCP2515_Init(CAN_BITRATE) != MCP2515_OK) {
+		if (MCP2515_Init() != MCP2515_OK) {
 			return CAN_FAIL;
 		}
 		if (MCP2515_SetCanCtrlMode(MODE_NORMAL) != MCP2515_OK) {
