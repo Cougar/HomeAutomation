@@ -39,8 +39,8 @@ uint8_t MCP2515_RxStatus(void);
 uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode);
 uint8_t MCP2515_SetClkout(const uint8_t newmode);
 
-uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canSpeed);
-uint8_t MCP2515_Init(const uint8_t canSpeed);
+inline void MCP2515_ConfigRate(void);
+uint8_t MCP2515_Init(void);
 
 void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id);
 void MCP2515_ReadCanId(const uint8_t mcp_addr, uint8_t* ext, uint32_t* can_id );
