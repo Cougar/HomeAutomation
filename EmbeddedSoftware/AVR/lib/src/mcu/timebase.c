@@ -27,10 +27,17 @@ volatile uint32_t gMilliSecTick;
 /*-----------------------------------------------------------------------------
  * Interrupt Service Routines
  *---------------------------------------------------------------------------*/
+#if defined(TIMER2)
+ISR(SIG_OVERFLOW2) {
+	TCNT2 = TIMEBASE_RELOAD;
+	gMilliSecTick++;
+}
+#else
 ISR(SIG_OVERFLOW0) {
 	TCNT0 = TIMEBASE_RELOAD;
 	gMilliSecTick++;
 }
+#endif
 
 
 /*-----------------------------------------------------------------------------
@@ -42,7 +49,29 @@ ISR(SIG_OVERFLOW0) {
  * enabled, but global interrupts need to be enabled by the application.
  */
 void Timebase_Init() {
+#if defined(TIMER2)
+	#if defined(__AVR_ATmega8__)
+	#if TIMEBASE_PRESCALE == 64
+	TCCR2 = (1<<CS21) | (1<<CS20);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR2 = (1<<CS22); 				// prescaler: 256
+	#endif
+	TCNT2 = TIMEBASE_RELOAD; // set initial reload-value
+	TIFR  |= (1<<TOV2);  // clear overflow int.
+	TIMSK |= (1<<TOIE2); // enable overflow-interrupt
+	#endif
 	
+	#if defined(__AVR_ATmega88__)
+	#if TIMEBASE_PRESCALE == 64
+	TCCR2B = (1<<CS21) | (1<<CS20);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR2B = (1<<CS22);				// prescaler: 256
+	#endif
+	TCNT2 = TIMEBASE_RELOAD; // set initial reload-value
+	TIFR2  |= (1<<TOV2);  // clear overflow int.
+	TIMSK2 |= (1<<TOIE2); // enable overflow-interrupt
+	#endif
+#else /* Use timer0 */
 	#if defined(__AVR_ATmega8__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR0 = (1<<CS01) | (1<<CS00);	// prescaler: 64
@@ -63,7 +92,8 @@ void Timebase_Init() {
 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR0  |= (1<<TOV0);  // clear overflow int.
 	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
-	#endif
+    #endif
+#endif
 }
 
 

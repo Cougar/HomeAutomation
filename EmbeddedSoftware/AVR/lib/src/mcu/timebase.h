@@ -11,6 +11,9 @@
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
+/* Enable timer2 if you want to use as many PWM outputs as possible */
+#define TIMER2
+
 #define TIMEBASE_PRESCALE (64)
 #define TIMEBASE_HITS_PER_1MS (F_OSC/TIMEBASE_PRESCALE/1000)
 
