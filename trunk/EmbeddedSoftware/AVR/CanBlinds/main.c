@@ -2,14 +2,15 @@
  * CanBlinds.
  * Takes incomming packages and adjusts PWM output.
  * Input: -128 to +127
- * Position msg: <byte0 BLINDS_CMD> <byte1 position>
- * Turning msg: <byte0 START/STOP> <byte 1 direction>
+ * Position msg: <byte0 BLINDS_CMD> <byte1 position> <byte2 servo number>
+ * Turning msg: <byte0 START/STOP> <byte 1 direction> <byte2 servo number>
  *
  * @date    2001-01-01
  * @author  Erik Larsson
+ *
+ * TODO fixa en ordentlig failsafe som kan bryta matningen till servona
  */
 
-#define DEBUG           0 /* Prints debug messages to uart */
 #define TWO_BUTTON_MODE 0 /* If using two (or just one but nothing more) auxiliary buttons */
 
 /*-----------------------------------------------------------------------------
@@ -22,9 +23,6 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-#if DEBUG
-#include <serial.h>
-#endif
 #include <timebase.h>
 
 #include <tc1047.h>
@@ -87,48 +85,30 @@ ISR( PCINT2_vect )
     if( (PIND & (1<<PD6)) == 0){
         /* Button pressed */
         buttonTime[0] = Timebase_CurrentTime();
-#if DEBUG
-        printf("Button 1 pressed\n");
-#endif
     }else if( (PIND & (1<<PD6)) == 1){
         if( Timebase_PassedTimeMillis( buttonTime[0] ) >= BOUNCE_TIME ){
             /* No bounce, send message */
             txMsg_Button.Id = BUTTON_ID;
             txMsg_Button.DataLength = 1;
             txMsg_Button.Data.bytes[0] = BUTTON1;
-#if DEBUG
-            printf("Button 1 pressed: message sent\n");
-#endif
             return;
         }else{
             /* Just bounces, ignore it */
-#if DEBUG
-            printf("Button 1 just bounced\n");
-#endif
             return;
         }
     }
     if( (PIND & (1<<PD7)) == 0){
         /* Button pressed */
         buttonTime[1] = Timebase_CurrentTime();
-#if DEBUG
-        printf("Button 2 pressed\n");
-#endif
     }else if( (PIND & (1<<PD7)) == 1){
         if( Timebase_PassedTimeMillis( buttonTime[1] ) >= BOUNCE_TIME ){
             /* No bounce, send message */
             txMsg_Button.Id = BUTTON_ID;
             txMsg_Button.DataLength = 1;
             txMsg_Button.Data.bytes[0] = BUTTON2;
-#if DEBUG
-            printf("Button 2 pressed: message sent\n");
-#endif
             return;
         }else{
             /* Just bounces, ignore it */
-#if DEBUG
-            printf("Button 2 just bounced\n");
-#endif
             return;
         }
     }
@@ -141,6 +121,7 @@ ISR( PCINT2_vect )
 int main(void) {
 
     uint8_t blindsStatus, /* Position (-128 to 127) */
+            servoToTurn,
             turnDirection = BLINDS_TURN_STOP; /* Specifies direction to turn or stopped */
     uint32_t boardTemperature = 0;
     uint32_t timeStamp = 0, timeStampTurn = 0;
@@ -148,9 +129,6 @@ int main(void) {
     adcTemperatureInit();
     Timebase_Init();
     rcServoInit();
-#if DEBUG
-    Serial_Init();
-#endif
 
 #if TWO_BUTTON_MODE
     /*
@@ -168,20 +146,7 @@ int main(void) {
     PCMSK2 |= (1<<PCINT22) | (1<<PCINT23);
 #endif
     sei();
-#if DEBUG
-    printf("\n------------------------------------------------------------\n");
-    printf(  "   CAN: Blinds\n");
-    printf(  "------------------------------------------------------------\n");
-
-    printf("CanInit...");
-    if (Can_Init() != CAN_OK) {
-        printf("FAILED!\n");
-    }else{
-        printf("OK!\n");
-    }
-#else
     Can_Init();
-#endif
 
     Can_Message_t txMsg;
     Can_Message_t rxMsg;
@@ -202,15 +167,16 @@ int main(void) {
 
                 if( rxMsg.Data.bytes[0] == BLINDS_CMD_ABS ){
                     /* Set absolute position to servo */
-                    setPosition( rxMsg.Data.bytes[1] );
+                    setPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_REL){
                     /* Set relative position to servo */
-                    alterPosition( rxMsg.Data.bytes[1] );
+                    alterPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_START ){
                     /* Start turning the servo */
                     turnDirection = rxMsg.Data.bytes[1];
+                    servoToTurn = rxMsg.Data.bytes[2];
 
                 }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STOP ){
                     /* Stop turning */
@@ -225,8 +191,17 @@ int main(void) {
                     }else{
                         txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
                         txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-                        txMsg.Data.bytes[2] = getPosition();
-
+                        txMsg.Data.bytes[2] = 0x00;
+#if NUMBER_OF_RCS >0
+                        txMsg.Data.bytes[3] = getPosition(1);
+#endif
+#if NUMBER_OF_RCS >1
+                        txMsg.Data.bytes[4] = getPosition(2);
+#endif
+#if NUMBER_OF_RCS >2
+                        txMsg.Data.bytes[5] = getPosition(3);
+#endif
+                        txMsg.DataLength = NUMBER_OF_RCS+3;
                         Can_Send( &txMsg );
                     }
                 }
@@ -244,13 +219,19 @@ int main(void) {
             }else{
                 txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
                 txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-                txMsg.Data.bytes[2] = getPosition();
+                txMsg.Data.bytes[2] = 0x00;
+#if NUMBER_OF_RCS >0
+                txMsg.Data.bytes[3] = getPosition(1);
+#endif
+#if NUMBER_OF_RCS >1
+                txMsg.Data.bytes[4] = getPosition(2);
+#endif
+#if NUMBER_OF_RCS >2
+                txMsg.Data.bytes[5] = getPosition(3);
+#endif
+                txMsg.DataLength = NUMBER_OF_RCS+3;
 
                 Can_Send( &txMsg );
-#if DEBUG
-                printf("Periodic message sent...\n");
-                printf("Temperature: %d\nBlinds status: %u\n", boardTemperature, getPosition());
-#endif
             }
         }
         /* If start turning servo */
@@ -259,9 +240,9 @@ int main(void) {
                 timeStampTurn = Timebase_CurrentTime();
                 /* Clockwise or counterclockwise? */
                 if( turnDirection == BLINDS_TURN_LEFT ){
-                    alterPosition( -STEPS_PER_TURN_PERIOD );
+                    alterPosition( -STEPS_PER_TURN_PERIOD , servoToTurn);
                 }else if( turnDirection == BLINDS_TURN_RIGHT ){
-                    alterPosition( STEPS_PER_TURN_PERIOD );
+                    alterPosition( STEPS_PER_TURN_PERIOD , servoToTurn);
                 }
             }
         }
@@ -299,15 +280,21 @@ void blindsFailsafe() // TODO fixa failsafe, vad ska hända med PWM?
         if( Timebase_PassedTimeMillis(timeStamp) >= FAILSAFE_SEND_PERIOD ){
             timeStamp = Timebase_CurrentTime();
             /* Send relay status to CAN */
-#if DEBUG
-            printf("Failsafe mode!\n");
-#endif
             boardTemperature = getTC1047temperature();
 
             txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
             txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-            txMsg.Data.bytes[2] = getPosition();
-            txMsg.Data.bytes[3] = FAILSAFE_MODE;
+            txMsg.Data.bytes[2] = FAILSAFE_MODE;
+#if NUMBER_OF_RCS >0
+            txMsg.Data.bytes[3] = getPosition(1);
+#endif
+#if NUMBER_OF_RCS >1
+            txMsg.Data.bytes[4] = getPosition(2);
+#endif
+#if NUMBER_OF_RCS >2
+            txMsg.Data.bytes[5] = getPosition(3);
+#endif
+            txMsg.DataLength = NUMBER_OF_RCS+3;
 
             Can_Send( &txMsg );
         }
