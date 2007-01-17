@@ -24,6 +24,7 @@
 #define MCP2515_FAIL       (1)
 #define MCP_ALLTXBUSY      (2)
 
+#if 0
 void MCP2515_Reset(void);
 
 uint8_t MCP2515_ReadRegister(const uint8_t address);
@@ -54,5 +55,11 @@ uint8_t MCP2515_GetNextFreeTXBuf(uint8_t *txbuf_n);
 #ifdef MCP_DEBUGMODE
 void MCP2515_DumpExtendedStatus(void);
 #endif
+#endif
+
+Can_Return_t Can_Init(void);
+Can_Return_t Can_Send(Can_Message_t* msg);
+void Can_Process(Can_Message_t* msg); // Callback from ISR to application code 
+//Can_Return_t Can_Receive(Can_Message_t *msg);
 
 #endif

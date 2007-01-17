@@ -1,14 +1,14 @@
 PRG            = bios
-OBJ            = vectors.o bios.o flash.o can.o mcp2515/mcp2515.o
-MCU_TARGET     = atmega88
+OBJ            = vectors.o bios.o flash.o mcp2515/mcp2515.o
+MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
-BIOS_START     = 0xd00
+BIOS_START     = 0x12c2
 BOOT_START     = 0x1f00
 
 DEFS           =
 LIBS           =
 
-TARGET_CLK_SRC = 0xe2
+TARGET_CLK_SRC = 0x24
 #TARGET_CLK_SRC for mega88		
 #0xe7		#CKDIV8=1, external crystal
 #0xe0		#CKDIV8=1, external clock
@@ -35,7 +35,7 @@ SIZE           = avr-size
 SZFLAGS        = 
 UPLOAD         = avrdude
 #avrispv2 avr910
-ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
+ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyS0 -c avr910 -b 115200 -U flash:w:$(PRG).hex
 
 ifeq ($(MCU_TARGET),atmega88)
 #BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1
