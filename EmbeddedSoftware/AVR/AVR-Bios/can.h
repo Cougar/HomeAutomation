@@ -5,35 +5,11 @@
  * Includes
  *---------------------------------------------------------------------------*/
 #include <inttypes.h>
-#include "can_cfg.h"
-
-
-/*-----------------------------------------------------------------------------
- * Defines
- *---------------------------------------------------------------------------*/
-
-/*
- * The supported CAN controller devices are listed below.
- */
-#define CAN_CONTROLLER_NULL		0		/* Virtual null-device */
-#define CAN_CONTROLLER_MCP2515	1		/* Microchip MCP2515 via SPI */
 
 
 /*-----------------------------------------------------------------------------
  * Type Definitions
  *---------------------------------------------------------------------------*/
-
-#if 0
-/**
- * CAN Bitrate Type. The supported bitrates.
- */
-typedef enum {
-    CAN_BITRATE_125K = 0,			/* Max cable length: 500m */
-    CAN_BITRATE_250K = 1,			/* Max cable length: 250m */
-    CAN_BITRATE_500K = 2,			/* Max cable length: 100m */
-    CAN_BITRATE_1M = 3				/* Max cable length: 40m */
-} Can_Bitrate_t;
-#endif
 
 
 /**
@@ -94,9 +70,9 @@ typedef struct {
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
 
-Can_Return_t Can_Init(void);
-Can_Return_t Can_Send(Can_Message_t* msg);
-void Can_Service(void);
-Can_Return_t Can_Receive(Can_Message_t *msg);
+//Can_Return_t Can_Init(void);
+//Can_Return_t Can_Send(Can_Message_t* msg);
+//void Can_Service(void);
+//Can_Return_t Can_Receive(Can_Message_t *msg);
 
 #endif

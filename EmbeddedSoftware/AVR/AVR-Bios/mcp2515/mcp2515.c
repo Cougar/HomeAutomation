@@ -25,10 +25,12 @@
 #include <inttypes.h>
 //#include <stdio.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "mcp2515.h"
 #include "mcp2515_defs.h"
 #include "mcp2515_bittime.h"
 
+#include "../vectors.h"
 #include "../can.h"
 
 
@@ -49,9 +51,6 @@
 #else
 	#error "SPI pins undefined for this target (see spi.h)"
 #endif
-
-#define SPI_SS_HIGH()	(SPIPORT |= (1<<SPISS))
-#define SPI_SS_LOW()	(SPIPORT &= ~(1<<SPISS))
 
 static void SPI_Init(void);
 static uint8_t SPI_ReadWrite(uint8_t data);
@@ -84,6 +83,7 @@ static uint8_t SPI_Read(void) {
 	return SPI_ReadWrite(SPI_DONTCARE);
 }
 
+static Can_Message_t msgbuf;
 
 void MCP2515_Reset(void) {
 	MCP2515_SELECT();
@@ -198,91 +198,10 @@ uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 	}
 }
 
-
-#if 0
-uint8_t MCP2515_ConfigRate(const Can_Bitrate_t canBitrate) {
-	uint8_t set, cfg1, cfg2, cfg3;
-	
-	set = 0;
-	
-	switch (canBitrate) {
-		case (CAN_BITRATE_125K) :
-			cfg1 = MCP_125KBPS_CFG1;
-			cfg2 = MCP_125KBPS_CFG2;
-			cfg3 = MCP_125KBPS_CFG3;
-			set = 1;
-			break;
-		case (CAN_BITRATE_250K) :
-			cfg1 = MCP_250KBPS_CFG1;
-			cfg2 = MCP_250KBPS_CFG2;
-			cfg3 = MCP_250KBPS_CFG3;
-			set = 1;
-			break;
-		case (CAN_BITRATE_500K) :
-			cfg1 = MCP_500KBPS_CFG1;
-			cfg2 = MCP_500KBPS_CFG2;
-			cfg3 = MCP_500KBPS_CFG3;
-			set = 1;
-			break;
-		/* 1000kbit/s only available with clock freqs above 8MHz */
-		#if MCP_CLOCK_FREQ_MHZ > 8
-		case (CAN_BITRATE_1M) :
-			cfg1 = MCP_1000KBPS_CFG1;
-			cfg2 = MCP_1000KBPS_CFG2;
-			cfg3 = MCP_1000KBPS_CFG3;
-			set = 1;
-			break;
-		#endif
-		default:
-			set = 0;
-			break;
-	}
-	
-	if (set) {
-		MCP2515_SetRegister(MCP_CNF1, cfg1);
-		MCP2515_SetRegister(MCP_CNF2, cfg2);
-		MCP2515_SetRegister(MCP_CNF3, cfg3);
-		return MCP2515_OK;
-	}
-	else {
-		return MCP2515_FAIL;
-	}
-} 
-#endif
-
-void MCP2515_ConfigRate() {
-	
-#if CAN_BITRATE	== CAN_BITRATE_125K
-# define MCP_CFG1 MCP_125KBPS_CFG1
-# define MCP_CFG2 MCP_125KBPS_CFG2
-# define MCP_CFG3 MCP_125KBPS_CFG3
-
-#elif CAN_BITRATE	== CAN_BITRATE_250K
-# define MCP_CFG1 MCP_250KBPS_CFG1
-# define MCP_CFG2 MCP_250KBPS_CFG2
-# define MCP_CFG3 MCP_250KBPS_CFG3
-
-#elif CAN_BITRATE	== CAN_BITRATE_500K
-# define MCP_CFG1 MCP_500KBPS_CFG1
-# define MCP_CFG2 MCP_500KBPS_CFG2
-# define MCP_CFG3 MCP_500KBPS_CFG3
-
-#elif CAN_BITRATE	== CAN_BITRATE_1M
-# if MCP_CLOCK_FREQ_MHZ > 8
-#  define MCP_CFG1 MCP_1000KBPS_CFG1
-#  define MCP_CFG2 MCP_1000KBPS_CFG2
-#  define MCP_CFG3 MCP_1000KBPS_CFG3
-# else
-#  error CAN bitrate of 1Mbps only possible with clock freq > 8MHz.
-# endif
-
-#else
-# error CAN_BITRATE not set properly.
-#endif
-
-	MCP2515_SetRegister(MCP_CNF1, MCP_CFG1);
-	MCP2515_SetRegister(MCP_CNF2, MCP_CFG2);
-	MCP2515_SetRegister(MCP_CNF3, MCP_CFG3);
+inline void MCP2515_ConfigRate() {
+	MCP2515_SetRegister(MCP_CNF1, MCP_BITRATE_CFG1);
+	MCP2515_SetRegister(MCP_CNF2, MCP_BITRATE_CFG2);
+	MCP2515_SetRegister(MCP_CNF3, MCP_BITRATE_CFG3);
 }
 
 /**
@@ -469,6 +388,12 @@ void MCP2515_InitCanBuffers(void) {
 }
 
 
+void MCP2515_InitRXInterrupts(void) {
+	MCP2515_SetRegister(MCP_CANINTF, 0);
+	MCP2515_SetRegister(MCP_CANINTE, MCP_RX_INT);
+	MCP_INT_ENABLE();
+}
+
 // ---
 
 uint8_t MCP2515_Init() {
@@ -518,62 +443,170 @@ uint8_t MCP2515_Init() {
 				MCP_RXB_RX_MASK,
 				MCP_RXB_RX_STDEXT);
 #endif
+
+	MCP2515_InitRXInterrupts();
 	
 	return res;
 }
 
-#ifdef MCP_DEBUGMODE
-void MCP2515_DumpExtendedStatus(void) {
-	uint8_t tec, rec, eflg;
-	
-	tec  = MCP2515_ReadRegister(MCP_TEC);
-	rec  = MCP2515_ReadRegister(MCP_REC);
-	eflg = MCP2515_ReadRegister(MCP_EFLG);
-	
-	printf("MCP2515 Extended Status:\n");
-	printf("MCP Transmit Error Count: %u\n", tec);
-	printf("MCP Receiver Error Count: %u\n", rec);
-	printf("MCP Error Flag: %u\n", eflg);
-	
-	if ( (rec>127) || (tec>127) ) {
-		printf("Error-Passive or Bus-Off\n");
-	}
+static Can_Return_t Can_ReceiveFromController(Can_Message_t *msg, uint8_t rxBuffer);
+Can_Return_t Can_Receive(Can_Message_t *msg);
 
-	if (eflg & MCP_EFLG_RX1OVR) 
-		printf("Receive Buffer 1 Overflow\n");
-	if (eflg & MCP_EFLG_RX0OVR) 
-		printf("Receive Buffer 0 Overflow\n");
-	if (eflg & MCP_EFLG_TXBO) 
-		printf("Bus-Off\n");
-	if (eflg & MCP_EFLG_TXEP) 
-		printf("Receive Error Passive\n");
-	if (eflg & MCP_EFLG_TXWAR) 
-		printf("Transmit Error Warning\n");
-	if (eflg & MCP_EFLG_RXWAR) 
-		printf("Receive Error Warning\n");
-	if (eflg & MCP_EFLG_EWARN ) 
-		printf("Receive Error Warning\n");
-}
-#endif
-
-#if 0 
-// read-modify-write - better: Bit Modify Instruction
-uint8_t MCP2515_SetCanCtrlMode(uint8_t newmode) {
-	uint8_t i;
-	
-	i = MCP2515_ReadRegister(MCP_CANCTRL);
-	i &= ~(MODE_MASK);
-	i |= newmode;
-	MCP2515_SetRegister(MCP_CANCTRL, i);
-	
-	// verify as advised in datasheet
-	i = MCP2515_ReadRegister(MCP_CANCTRL);
-	i &= MODE_MASK;
-	if ( i == newmode ) {
-		return MCP2515_OK; 
-	}
-	else {
-		return MCP2515_FAIL;
+ISR(MCP_INT_VECTOR) {
+	// Get first available message from controller and pass it to
+	// application handler. If both RX buffers contain messages
+	// we will get another interrupt as soon as this one returns.
+	if (Can_Receive(&msgbuf) == CAN_OK) {
+		// Callbacks are run with global interrupts disabled but
+		// with controller flag cleared so another msg can be
+		// received while this one is processed.
+		Can_Process(&msgbuf);
 	}
 }
-#endif
+
+/*-----------------------------------------------------------------------------
+ * Public Functions
+ *---------------------------------------------------------------------------*/
+
+/**
+ * Initializes the CAN interface. Edit can_cfg.h to choose bitrate.
+ * 
+ * @return
+ *		CAN_OK if initialization was successful.
+ * 		CAN_INIT_FAIL_SET_BITRATE if bitrate could not be set correctly.
+ * 		CAN_INIT_FAIL_SET_MODE if the controller could not be set to normal operation mode.
+ * 		CAN_INIT_FAIL in case of general error.
+ */
+Can_Return_t Can_Init() {
+		/*
+		 * Initialize MCP2515 device.
+		 */
+		if (MCP2515_Init() != MCP2515_OK) {
+			return CAN_FAIL;
+		}
+		if (MCP2515_SetCanCtrlMode(MODE_NORMAL) != MCP2515_OK) {
+			return CAN_FAIL;
+		}
+		return CAN_OK;
+	
+	return CAN_FAIL;
+}
+
+
+/**
+ * Receives a CAN message that is waiting in the reception queue. If no
+ * messages have been received, CAN_NO_MSG_AVAILABLE is returned.
+ * Otherwise, a CAN message is copied into the specified message buffer
+ * and deleted from the internal message reception queue. In this case,
+ * CAN_OK is returned.
+ * 
+ * @param msg
+ *          Pointer to the message storage buffer into which the message
+ * 			should be copied.
+ * 
+ * @return
+ * 			CAN_OK if a received message was successfully copied into the buffer.
+ * 			CAN_NO_MSG_AVAILABLE if no messages are available.
+ */ 
+Can_Return_t Can_Receive(Can_Message_t *msg) {
+    
+		/*
+		 * RX queue is disabled, so try to get message from controller.
+		 * We don't know which buffer to get the message from, so best
+		 * we can do is to get from buf0 first time, and then increase
+		 * buffer number at each call, finally wrapping around at
+		 * CAN_CONTROLLER_NR_RX_BUFFERS.
+		 */
+		static uint8_t rxBuffer = 0;
+		uint8_t i;
+		/* worst case is that we need to check all available rx buffers in order to find a message */
+		for (i=0; i<2; i++) {
+			/* is there a message available in this buffer? */
+			if (Can_ReceiveFromController(msg, rxBuffer) == CAN_OK) {
+				/* increase buffer number and return the message */
+				rxBuffer = (rxBuffer + 1) % 2;
+				return CAN_OK;
+			}
+			/* increase buffer number so we can check next buffer */
+			rxBuffer = (rxBuffer + 1) % 2;
+		}
+		/* all buffers were checked, but no message found */
+		return CAN_NO_MSG_AVAILABLE;
+}
+
+
+
+/*-----------------------------------------------------------------------------
+ * Private Functions
+ *---------------------------------------------------------------------------*/  
+
+/**
+ * Sends a CAN message immediately with the controller hardware. If the CAN
+ * controller is busy, the function will return CAN_SEND_FAIL_TX_BUSY.
+ *
+ * @param msg
+ *		Pointer to the CAN message storage buffer.
+ * 
+ * @return
+ *		CAN_OK if the message was successfully sent to the controller.
+ *		CAN_FAIL if the controller is busy.
+ */
+Can_Return_t Can_Send(Can_Message_t *msg) {
+		/*
+		 * Send with MCP2515 device.
+		 */
+		uint8_t res, txbuf_n;
+		res = MCP2515_GetNextFreeTXBuf(&txbuf_n); // info = addr.
+		if (res == MCP_ALLTXBUSY) {
+			return CAN_FAIL;
+		}
+		MCP2515_WriteCanMsg(txbuf_n, msg);
+		MCP2515_StartTransmit(txbuf_n);
+		return CAN_OK;
+}
+
+
+/**
+ * Receives a CAN message from the CAN controller hardware.
+ * 
+ * @param msg
+ *		Pointer to the message storage buffer into which the message should be copied.
+ *
+ * @param rxBuffer
+ * 		Identifies the RX buffer in the controller. Range is [0,CAN_CONTROLLER_NR_RX_BUFFERS-1].
+ * 
+ * @return
+ *		CAN_OK if a received message was successfully copied into the buffer.
+ *		CAN_NO_MSG_AVAILABLE if there are is no message available in the specified buffer.
+ * 		CAN_FAIL if the rxBuffer parameter i out of range for the specified controller.
+ */
+static Can_Return_t Can_ReceiveFromController(Can_Message_t *msg, uint8_t rxBuffer) {
+		/*
+		 * Receive from MCP2515 device.
+		 */
+		uint8_t stat;
+		stat = MCP2515_ReadStatus();
+		if (rxBuffer == 0) {
+			/* check BUF0 */
+			if (stat & MCP_STAT_RX0IF) {
+				/* Msg in Buffer 0 */
+				MCP2515_ReadCanMsg(MCP_RXBUF_0, msg);
+				MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX0IF, 0);
+				return CAN_OK;
+			}
+		}
+		else if (rxBuffer == 1) {
+			/* check BUF1 */
+			if (stat & MCP_STAT_RX1IF) {
+				/* Msg in Buffer 1 */
+				MCP2515_ReadCanMsg(MCP_RXBUF_1, msg);
+				MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX1IF, 0);
+				return CAN_OK;
+			}
+		}
+		else {
+			/* invalid parameters */
+			return CAN_FAIL;
+		}
+		return CAN_NO_MSG_AVAILABLE;
+}
