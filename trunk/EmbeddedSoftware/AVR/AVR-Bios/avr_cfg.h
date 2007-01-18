@@ -24,6 +24,7 @@
 
 
 #define IVSEL_REG GICR
+#define INT1_REG GICR
 
 #elif defined(__AVR_ATmega88__)
 
@@ -50,6 +51,7 @@
 	(_c_) = UDR0;
 
 #define IVSEL_REG MCUCR
+#define INT1_REG EIMSK
 
 #else
 #error AVR specifics not defined!
