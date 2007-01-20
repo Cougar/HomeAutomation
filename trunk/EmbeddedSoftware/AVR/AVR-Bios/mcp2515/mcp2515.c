@@ -58,24 +58,24 @@ static uint8_t SPI_Read(void);
 
 #define SPI_DONTCARE (0x00)
 
-/* init as SPI-Master */
+// init as SPI-Master
 static void SPI_Init(void) {
-	/* SCK, SS!!, MOSI as outputs */
+	// SCK, SS!!, MOSI as outputs
 	SPI_DDR |= (1<<SPI_SCK) | (1<<SPI_SS) | (1<<SPI_MOSI);
-	/* MISO as input */
+	// MISO as input
 	SPI_DDR &= ~(1<<SPI_MISO);
-	/* INIT interface, Master, set clock rate fck/4 */
+	// INIT interface, Master, set clock rate fck/4
 	SPCR = (1<<SPE)|(1<<MSTR)|(0<<SPR0)|(0<<SPR1);
-	/* enable double rate */
-	SPSR = (1<<SPI2X); /* we will now gain fck/2 instead of fck/4 */
+	// enable double rate
+	SPSR = (1<<SPI2X); // we will now gain fck/2 instead of fck/4
 }
 
 static uint8_t SPI_ReadWrite(uint8_t data) {
-	/* set data to send into SPI data register */
+	// set data to send into SPI data register
 	SPDR = data;
-	/* Wait for transmission complete */
+	// Wait for transmission complete
 	while(!(SPSR & (1<<SPIF)));
-	/* return data read from SPI (if any) */
+	// return data read from SPI (if any)
 	return SPDR;
 }
 
@@ -89,7 +89,7 @@ void MCP2515_Reset(void) {
 	MCP2515_SELECT();
 	SPI_ReadWrite(MCP_RESET);
 	MCP2515_UNSELECT();
-	/* delay at least 128 MCP clock cycles */
+	// delay at least 128 MCP clock cycles
 	volatile int16_t i;
 	for (i=0; i<32000; i++) {
 		if (i < 0) break;
@@ -108,18 +108,18 @@ uint8_t MCP2515_ReadRegister(const uint8_t address) {
 	return ret;
 }
 
-void MCP2515_ReadRegisterS(const uint8_t address, uint8_t values[], const uint8_t n) {
+/*
+void MCP2515_ReadRXBuf(const uint8_t buf, uint8_t* data) {
 	uint8_t i;
 	
 	MCP2515_SELECT();
-	SPI_ReadWrite(MCP_READ);
-	SPI_ReadWrite(address);
+	SPI_ReadWrite(MCP_READ_RX0 + ((buf & 0x1) << 2));
 	// mcp2515 has auto-increment of address-pointer
-	for (i=0; i<n; i++) {
-		values[i] = SPI_Read();
+	for (i=0; i<13; i++) {
+		data[i] = SPI_Read();
 	}
 	MCP2515_UNSELECT();
-}
+}*/
 
 void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
 	MCP2515_SELECT();
@@ -129,6 +129,7 @@ void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
 	MCP2515_UNSELECT();
 }
 
+/*
 void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n) {
 	uint8_t i;
 	
@@ -140,7 +141,7 @@ void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const u
 		SPI_ReadWrite(values[i]);
 	}
 	MCP2515_UNSELECT();
-}
+}*/
 
 void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data) {
 	MCP2515_SELECT();
@@ -151,31 +152,31 @@ void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uin
 	MCP2515_UNSELECT();
 }
 
-static uint8_t MCP2515_ReadXXStatus_Helper(const uint8_t cmd) {
+uint8_t MCP2515_ReadStatus() {
 	uint8_t i;
 	
 	MCP2515_SELECT();
-	SPI_ReadWrite(cmd);
+	SPI_ReadWrite(MCP_READ_STATUS);
 	i = SPI_Read();
 	MCP2515_UNSELECT();
 	
 	return i;
 }
 	
-uint8_t MCP2515_ReadStatus(void) {
+/*uint8_t MCP2515_ReadStatus(void) {
 	return MCP2515_ReadXXStatus_Helper(MCP_READ_STATUS);
-}
+}*/
 
-uint8_t MCP2515_RxStatus(void) {
+/*uint8_t MCP2515_RxStatus(void) {
 	return MCP2515_ReadXXStatus_Helper(MCP_RX_STATUS);
-}
+}*/
 
-uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode) {
+uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
 	uint8_t i;
-	MCP2515_ModifyRegister(MCP_CANCTRL, MODE_MASK, newmode);
+	MCP2515_ModifyRegister(MCP_CANCTRL, newmask, newmode);
 	// verify as advised in datasheet
 	i = MCP2515_ReadRegister(MCP_CANCTRL);
-	i &= MODE_MASK;
+	i &= newmask;
 	if ( i == newmode ) {
 		return MCP2515_OK; 
 	}
@@ -184,7 +185,7 @@ uint8_t MCP2515_SetCanCtrlMode(const uint8_t newmode) {
 	}
 }
 
-uint8_t MCP2515_SetClkout(const uint8_t newmode) {
+/*uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 	uint8_t i;
 	MCP2515_ModifyRegister(MCP_CANCTRL, CLK_MASK, newmode);
 	// verify, perhaps not needed?
@@ -196,7 +197,7 @@ uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 	else {
 		return MCP2515_FAIL;
 	}
-}
+}*/
 
 inline void MCP2515_ConfigRate() {
 	MCP2515_SetRegister(MCP_CNF1, MCP_BITRATE_CFG1);
@@ -233,66 +234,69 @@ inline void MCP2515_ConfigRate() {
  * 		Pointer to the message buffer into which the data should be copied.
  * 
  */
-void MCP2515_ReadCanMsg(const uint8_t buffer_sidh_addr, Can_Message_t* msg) {
-	uint8_t tbufdata[13];
-	uint8_t mcp_addr;
+void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
+	uint8_t id[4];
+	uint8_t rtrdlc;
 	uint8_t i;
-	mcp_addr = buffer_sidh_addr;
+
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_READ_RX0 + ((buffer & 0x1) << 2));
+	// mcp2515 has auto-increment of address-pointer
 	
-	/* read ID */
-	MCP2515_ReadRegisterS(mcp_addr, tbufdata, 13);
+	// read ID
+	for (i=0; i<4; i++) {
+		id[i] = SPI_Read();
+	}
 	
-	/* extract SID10-SID0 */
+	
+	// extract SID10-SID0
 	msg->Id = 0;
-	msg->Id = (((uint32_t)(tbufdata[0])) << 3) + (((uint32_t)(tbufdata[1] & 0xE0)) >> 5);
+	msg->Id = (((uint32_t)(id[0])) << 3) + (((uint32_t)(id[1] & 0xE0)) >> 5);
 	
-	if ((tbufdata[1] & MCP_TXB_EXIDE_M) != 0) {
-		/* extended message */
+	if ((id[1] & MCP_TXB_EXIDE_M) != 0) {
+		// extended message
 		msg->ExtendedFlag = 1;
-		/* SID10-SID0 are still most significant, so shift them up
-		 * and make room for 18 extended least significant EID-bits */
+		// SID10-SID0 are still most significant, so shift them up
+		// and make room for 18 extended least significant EID-bits
 		msg->Id = (uint32_t)(msg->Id) << 18;
-		/* exctract EID17-EID16 */ 
-		msg->Id = (uint32_t)msg->Id | ((uint32_t)(((uint32_t)(tbufdata[1] & 0x03))<<16));
-		/* extract EID15-EID8 */
-		msg->Id |= (((uint32_t)tbufdata[2])<<8);
-		/* extract EID7-EID0 */
-		msg->Id |= ((uint32_t)tbufdata[3]);
-		/* mask ID to guarantee 29bit range */
+		// exctract EID17-EID16
+		msg->Id = (uint32_t)msg->Id | ((uint32_t)(((uint32_t)(id[1] & 0x03))<<16));
+		// extract EID15-EID8
+		msg->Id |= (((uint32_t)id[2])<<8);
+		// extract EID7-EID0
+		msg->Id |= ((uint32_t)id[3]);
+		// mask ID to guarantee 29bit range
 		msg->Id &= 0x1FFFFFFF;
     }
     else {
-    	/* standard message */
+    	// standard message
     	msg->ExtendedFlag = 0;
-    	/* mask ID to guarantee 11bit range */
+    	// mask ID to guarantee 11bit range
     	msg->Id &= 0x000007FF;
     }
     
-    /* extract DLC */
-    msg->DataLength = tbufdata[4] & 0x0F;
-    if (msg->DataLength > 8) msg->DataLength = 8;	/* saturate DLC to guarantee 0-8 range */
+    // extract DLC
+    rtrdlc = SPI_Read();
+    msg->DataLength = rtrdlc & 0x0F;
+    if (msg->DataLength > 8) msg->DataLength = 8;	// saturate DLC to guarantee 0-8 range
     
-    /* check RTR flag */
-    if (tbufdata[4] & 0x40) {
-    	msg->RemoteFlag = 1;
-    } else {
-        msg->RemoteFlag = 0;
-    }
+    // check RTR flag
+    msg->RemoteFlag = (rtrdlc & 0x40) ? 1 : 0;
     
-    /* copy data */
+    // read data
     for (i=0; i<msg->DataLength; i++) {
-    	msg->Data.bytes[i] = tbufdata[5+i];
+    	msg->Data.bytes[i] = SPI_Read();
     }
+	MCP2515_UNSELECT();
 }
 
 
-
-void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
-    uint16_t canid;
+void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
+    uint16_t canid = (uint16_t)(can_id & 0x0FFFF);
     uint8_t tbufdata[4];
-	canid = (uint16_t)(can_id & 0x0FFFF);
+	uint8_t i;
     
-	if (ext == 1) {
+	if (ext) {
         tbufdata[3] = (uint8_t) (canid & 0xFF);
         tbufdata[2] = (uint8_t) (canid / 256);
         canid = (uint16_t)( can_id / 0x10000L );
@@ -307,49 +311,54 @@ void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_
         tbufdata[2] = 0;
         tbufdata[3] = 0;
     }
-	MCP2515_SetRegisterS(mcp_addr, tbufdata, 4);
+    for (i=0; i<4; i++) {
+    	SPI_ReadWrite(tbufdata[i]);
+    }
 }
 
-// Buffer can be MCP_TXBUF_0 MCP_TXBUF_1 or MCP_TXBUF_2
-void MCP2515_WriteCanMsg( const uint8_t buffer_sidh_addr, const Can_Message_t* msg) {
-    uint8_t mcp_addr, dlc;
-	mcp_addr = buffer_sidh_addr;
-	dlc = msg->DataLength;
-	MCP2515_SetRegisterS(mcp_addr+5, &(msg->Data.bytes[0]), dlc);  // write data bytes
-    MCP2515_WriteCanId(mcp_addr, msg->ExtendedFlag, msg->Id);  // write CAN id
-    if (msg->RemoteFlag == 1)  dlc |= MCP_RTR_MASK;  // if RTR set bit in byte
-    MCP2515_SetRegister((mcp_addr+4), dlc);  // write the RTR and DLC
+
+void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_WRITE);
+	SPI_ReadWrite(mcp_addr);
+	MCP2515_SPIWriteCanId(ext, can_id);
+	MCP2515_UNSELECT();
 }
 
-/*
- ** Start the transmission from one of the tx buffers.
- */
-// Buffer can be MCP_TXBUF_0 MCP_TXBUF_1 or MCP_TXBUF_2
-void MCP2515_StartTransmit(const uint8_t buffer_sidh_addr) {
-	// TXBnCTRL_addr = TXBnSIDH_addr - 1
-    MCP2515_ModifyRegister( buffer_sidh_addr-1 , MCP_TXB_TXREQ_M, MCP_TXB_TXREQ_M );
+// Buffer can be 0, 1 or 2
+void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
+	uint8_t rtrdlc = msg->DataLength;
+	uint8_t i;
+    MCP2515_SELECT();
+    SPI_ReadWrite(MCP_LOAD_TX0 + buffer * 2);
+    MCP2515_SPIWriteCanId(msg->ExtendedFlag, msg->Id);
+    if (msg->RemoteFlag == 1)  rtrdlc |= MCP_RTR_MASK;  // if RTR set bit in byte
+    SPI_ReadWrite(rtrdlc);
+    for (i=0; i<msg->DataLength; i++) {
+    	SPI_ReadWrite(msg->Data.bytes[i]);
+    }
+    MCP2515_UNSELECT();
 }
 
-uint8_t MCP2515_GetNextFreeTXBuf(uint8_t *txbuf_n) {
-	uint8_t res, i, ctrlval;
-	uint8_t ctrlregs[MCP_N_TXBUFFERS] = { MCP_TXB0CTRL, MCP_TXB1CTRL, MCP_TXB2CTRL };
-	
-	res = MCP_ALLTXBUSY;
-	*txbuf_n = 0x00;
+
+// Start the transmission from one of the tx buffers.
+//
+// Buffer can be 0, 1 or 2
+void MCP2515_StartTransmit(const uint8_t buffer) {
+    MCP2515_SELECT();
+    SPI_ReadWrite(MCP_RTS_TX + (1<<buffer));
+    MCP2515_UNSELECT();
+}
+
+uint8_t MCP2515_GetNextFreeTXBuf() {
+	uint8_t stat;
 	
 	// check all 3 TX-Buffers
-	for (i=0; i<MCP_N_TXBUFFERS; i++) {
-		ctrlval = MCP2515_ReadRegister( ctrlregs[i] );
-		if ((ctrlval & MCP_TXB_TXREQ_M) == 0) {
-#ifdef MCP_DEBUGMODE
-			printf("Selected TX-Buffer: %u\n", i+1);
-#endif
-			*txbuf_n = ctrlregs[i]+1; // return SIDH-address of Buffer
-			res = MCP2515_OK;
-			return res; /* ! function exit */
-		}
-	}
-	return res;
+	stat = MCP2515_ReadStatus();
+	if (!(stat & MCP_STAT_TX0REQ)) return 0;
+	if (!(stat & MCP_STAT_TX1REQ)) return 1;
+	if (!(stat & MCP_STAT_TX2REQ)) return 2;
+	return MCP_ALLTXBUSY;
 }
 
 void MCP2515_InitCanBuffers(void) {
@@ -406,11 +415,11 @@ uint8_t MCP2515_Init() {
 	
 	MCP2515_Reset();
 	
-	res = MCP2515_SetCanCtrlMode(MODE_CONFIG);
+	res = MCP2515_SetCanCtrl(MODE_MASK, MODE_CONFIG);
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 
-	res = MCP2515_SetClkout(CLKOUT_PS1);
+	res = MCP2515_SetCanCtrl(CLK_MASK, CLKOUT_PS1);
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 	
@@ -449,7 +458,6 @@ uint8_t MCP2515_Init() {
 	return res;
 }
 
-static Can_Return_t Can_ReceiveFromController(Can_Message_t *msg, uint8_t rxBuffer);
 Can_Return_t Can_Receive(Can_Message_t *msg);
 
 ISR(MCP_INT_VECTOR) {
@@ -484,7 +492,7 @@ Can_Return_t Can_Init() {
 		if (MCP2515_Init() != MCP2515_OK) {
 			return CAN_FAIL;
 		}
-		if (MCP2515_SetCanCtrlMode(MODE_NORMAL) != MCP2515_OK) {
+		if (MCP2515_SetCanCtrl(MODE_MASK, MODE_NORMAL) != MCP2515_OK) {
 			return CAN_FAIL;
 		}
 		return CAN_OK;
@@ -492,57 +500,9 @@ Can_Return_t Can_Init() {
 	return CAN_FAIL;
 }
 
-
-/**
- * Receives a CAN message that is waiting in the reception queue. If no
- * messages have been received, CAN_NO_MSG_AVAILABLE is returned.
- * Otherwise, a CAN message is copied into the specified message buffer
- * and deleted from the internal message reception queue. In this case,
- * CAN_OK is returned.
- * 
- * @param msg
- *          Pointer to the message storage buffer into which the message
- * 			should be copied.
- * 
- * @return
- * 			CAN_OK if a received message was successfully copied into the buffer.
- * 			CAN_NO_MSG_AVAILABLE if no messages are available.
- */ 
-Can_Return_t Can_Receive(Can_Message_t *msg) {
-    
-		/*
-		 * RX queue is disabled, so try to get message from controller.
-		 * We don't know which buffer to get the message from, so best
-		 * we can do is to get from buf0 first time, and then increase
-		 * buffer number at each call, finally wrapping around at
-		 * CAN_CONTROLLER_NR_RX_BUFFERS.
-		 */
-		static uint8_t rxBuffer = 0;
-		uint8_t i;
-		/* worst case is that we need to check all available rx buffers in order to find a message */
-		for (i=0; i<2; i++) {
-			/* is there a message available in this buffer? */
-			if (Can_ReceiveFromController(msg, rxBuffer) == CAN_OK) {
-				/* increase buffer number and return the message */
-				rxBuffer = (rxBuffer + 1) % 2;
-				return CAN_OK;
-			}
-			/* increase buffer number so we can check next buffer */
-			rxBuffer = (rxBuffer + 1) % 2;
-		}
-		/* all buffers were checked, but no message found */
-		return CAN_NO_MSG_AVAILABLE;
-}
-
-
-
-/*-----------------------------------------------------------------------------
- * Private Functions
- *---------------------------------------------------------------------------*/  
-
 /**
  * Sends a CAN message immediately with the controller hardware. If the CAN
- * controller is busy, the function will return CAN_SEND_FAIL_TX_BUSY.
+ * controller is busy, the function will return CAN_FAIL.
  *
  * @param msg
  *		Pointer to the CAN message storage buffer.
@@ -555,9 +515,10 @@ Can_Return_t Can_Send(Can_Message_t *msg) {
 		/*
 		 * Send with MCP2515 device.
 		 */
-		uint8_t res, txbuf_n;
-		res = MCP2515_GetNextFreeTXBuf(&txbuf_n); // info = addr.
-		if (res == MCP_ALLTXBUSY) {
+		uint8_t txbuf_n;
+		txbuf_n = MCP2515_GetNextFreeTXBuf();
+		if (txbuf_n == MCP_ALLTXBUSY) {
+			// TODO: Maybe we should block until a buffer is available?
 			return CAN_FAIL;
 		}
 		MCP2515_WriteCanMsg(txbuf_n, msg);
@@ -572,41 +533,29 @@ Can_Return_t Can_Send(Can_Message_t *msg) {
  * @param msg
  *		Pointer to the message storage buffer into which the message should be copied.
  *
- * @param rxBuffer
- * 		Identifies the RX buffer in the controller. Range is [0,CAN_CONTROLLER_NR_RX_BUFFERS-1].
- * 
  * @return
  *		CAN_OK if a received message was successfully copied into the buffer.
- *		CAN_NO_MSG_AVAILABLE if there are is no message available in the specified buffer.
- * 		CAN_FAIL if the rxBuffer parameter i out of range for the specified controller.
+ *		CAN_NO_MSG_AVAILABLE if there is no message available in the controller.
  */
-static Can_Return_t Can_ReceiveFromController(Can_Message_t *msg, uint8_t rxBuffer) {
-		/*
-		 * Receive from MCP2515 device.
-		 */
-		uint8_t stat;
-		stat = MCP2515_ReadStatus();
-		if (rxBuffer == 0) {
-			/* check BUF0 */
-			if (stat & MCP_STAT_RX0IF) {
-				/* Msg in Buffer 0 */
-				MCP2515_ReadCanMsg(MCP_RXBUF_0, msg);
-				MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX0IF, 0);
-				return CAN_OK;
-			}
-		}
-		else if (rxBuffer == 1) {
-			/* check BUF1 */
-			if (stat & MCP_STAT_RX1IF) {
-				/* Msg in Buffer 1 */
-				MCP2515_ReadCanMsg(MCP_RXBUF_1, msg);
-				MCP2515_ModifyRegister(MCP_CANINTF, MCP_RX1IF, 0);
-				return CAN_OK;
-			}
-		}
-		else {
-			/* invalid parameters */
-			return CAN_FAIL;
-		}
+Can_Return_t Can_Receive(Can_Message_t *msg) {
+	/*
+	 * Receive from MCP2515 device.
+	 */
+	uint8_t stat;
+	static uint8_t buffer = 0;
+	
+	stat = MCP2515_ReadStatus() & MCP_STAT_RXIF_MASK;
+	
+	if (stat > 2) {
+		// Both buffers contain data, read the one previously not read.
+		// (Bit 0 in buffer selects which buffer to read, no need to take modulus 2)
+		MCP2515_ReadCanMsg(buffer++, msg);
+	} else if (stat > 0) {
+		// One of the buffers contain data, read it
+		MCP2515_ReadCanMsg(stat-1, msg);
+	} else {
+		// Nothing available
 		return CAN_NO_MSG_AVAILABLE;
+	}
+	return CAN_OK;
 }

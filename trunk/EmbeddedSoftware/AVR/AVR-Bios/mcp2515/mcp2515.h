@@ -22,7 +22,7 @@
 
 #define MCP2515_OK         (0)
 #define MCP2515_FAIL       (1)
-#define MCP_ALLTXBUSY      (2)
+#define MCP_ALLTXBUSY      (255)
 
 #if 0
 void MCP2515_Reset(void);
