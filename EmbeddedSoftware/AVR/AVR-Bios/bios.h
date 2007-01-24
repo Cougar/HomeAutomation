@@ -3,6 +3,7 @@
 
 #define F_CPU 8000000UL
 #define F_BAUD  31250UL
+#define NODE_ID 1
 
 #include "can.h"
 

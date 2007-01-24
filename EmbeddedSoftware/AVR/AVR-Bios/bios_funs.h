@@ -2,9 +2,11 @@
 #define BIOS_FUNS_H_
 
 #define BIOS_BUILDTYPE_BIOS
-#define BIOS_VERSION 0x1002
+#define BIOS_VERSION 0x1004
 
 #include "bios.h"
+
+extern uint16_t __bios_start;
 
 //---------------------------------------------------------------------------
 // Function prototypes for the exported interface
@@ -14,7 +16,6 @@ static void bios_putchar(char c);
 static char bios_getchar(void);
 static long timebase_get(void);
 static Can_Return_t can_send(Can_Message_t* msg);
-//static Can_Return_t can_receive(Can_Message_t *msg);
 
 static bios_t bios_functions = {
 	BIOS_VERSION,
@@ -26,14 +27,14 @@ static bios_t bios_functions = {
 	timebase_get
 };
 
-//---------------------------------------------------------------------------
-// Special CAN masks
-
-// completely bogus
-#define CAN_FUNCT_MASK	0x00000F
-#define CAN_MSG_TYPE_BIOS	0x0
-#define CAN_MSG_TYPE_APP	0x1
-#define CAN_MSG_TYPE_BAJS	0x4
-#define CAN_MSG_TYPE_LOPRIO	0xf
+#define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE) \
+                              | (NODE_ID << CAN_SHIFT_NMT_SID))
+#define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE) \
+                              | (NODE_ID << CAN_SHIFT_NMT_SID))
+#define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
+                              | (NODE_ID << CAN_SHIFT_NMT_SID))
 
 #endif /*BIOS_FUNS_H_*/
