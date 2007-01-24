@@ -65,14 +65,45 @@ typedef struct {
     } Data;
 } Can_Message_t;
 
+//---------------------------------------------------------------------------
+// CAN ID definitions
 
-/*-----------------------------------------------------------------------------
- * Public Function Prototypes
- *---------------------------------------------------------------------------*/
-
-//Can_Return_t Can_Init(void);
-//Can_Return_t Can_Send(Can_Message_t* msg);
-//void Can_Service(void);
-//Can_Return_t Can_Receive(Can_Message_t *msg);
+#define CAN_MASK_CLASS		0x1E000000
+#define CAN_SHIFT_CLASS		25
+//------------------------------------
+#define CAN_NMT				0x00UL
+#define CAN_MASK_NMT_TYPE	0x01F00000
+#define CAN_SHIFT_NMT_TYPE	20
+#define CAN_MASK_NMT_NID	0x000F0000
+#define CAN_SHIFT_NMT_NID	16
+#define CAN_MASK_NMT_SID	0x0000FF00
+#define CAN_SHIFT_NMT_SID	8
+#define CAN_MASK_NMT_RID	0x000000FF
+#define CAN_SHIFT_NMT_RID	0
+#define CAN_NMT_RESET		0x00UL
+#define CAN_NMT_BIOS_START	0x01UL	//D0: VER7:0, D1:VER15:8, D2: 0 if no app, >0 if app
+#define CAN_NMT_PGM_START	0x02UL	//D0: ADR7:0, D1:ADR15:8, D2:ADR23:16, D3:ADR31:24
+#define CAN_NMT_PGM_DATA	0x03UL	//D0: OFS7:0, D1: OFS15:8, D(n+2): DATAn7:0 [n=0..x] [x=0..5]
+#define CAN_NMT_PGM_END		0x04UL	//D0: CRC7:0, D1: CRC15:8
+#define CAN_NMT_PGM_ACK		0x05UL	//D0: OFS7:0, D1: OFS15:8
+#define CAN_NMT_PGM_NACK	0x06UL	//D0: OFS7:0, D1: OFS15:8
+#define CAN_NMT_START_APP	0x07UL
+#define CAN_NMT_APP_START	0x08UL	//D0: ID7:0, D1:ID15:8, D2: VER7:0, D3:VER15:8
+#define CAN_NMT_HEARTBEAT	0x09UL
+//------------------------------------
+#define CAN_SNS				0x02UL
+#define CAN_MASK_SNS_FUNCC	0x01FF8000
+#define CAN_SHIFT_SNS_FUNCC	15
+#define CAN_MASK_SNS_NID	0x00007E00
+#define CAN_SHIFT_SNS_NID	9
+#define CAN_MASK_SNS_SID	0x000001FF
+#define CAN_SHIFT_SNS_SID	0
+//------------------------------------
+#define CAN_PKT				0x0c000000
+//------------------------------------
+#define CAN_CON				0x10000000
+//------------------------------------
+#define CAN_TST				0x1E000000
+//------------------------------------
 
 #endif
