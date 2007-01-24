@@ -17,7 +17,7 @@ typedef struct bios{
 	void (*can_callback)(Can_Message_t *msg);
 	void (*debug_putchar)(char c);
 	char (*debug_getchar)(void);
-	long (*timebase_get)(void);
+	unsigned long (*timebase_get)(void);
 } bios_t;
  
 static bios_t bios_functions __attribute__ ((section (".bios_interface")));

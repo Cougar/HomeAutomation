@@ -5,7 +5,9 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
+#ifdef BIOS_UART
 #include <stdio.h>
+#endif
 #include <string.h>
 #include "flash.h"
 #include "vectors.h" // Must be included after sfr_defs.h but before any ISR()
@@ -14,7 +16,7 @@
 //---------------------------------------------------------------------------
 // Globals
 
-volatile long gMilliSecTick;
+volatile uint32_t gMilliSecTick;
 volatile uint8_t bios_msg_full;
 Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .bss space
 
@@ -27,6 +29,7 @@ void reset(void) {
 	while(1);
 }
 
+#ifdef BIOS_UART
 void bios_putchar(char c) {
 	UART_PUTCHAR(c);
 }
@@ -36,10 +39,11 @@ char bios_getchar(void) {
 	UART_GETCHAR(c)
 	return c;
 }
+#endif
 
-long timebase_get(void) {
+unsigned long timebase_get(void) {
 	uint8_t sreg;
-	long res;
+	unsigned long res;
 	
 	//Disable interrupts while reading tick count
 	sreg=SREG;
@@ -60,6 +64,7 @@ Can_Return_t can_send(Can_Message_t* msg) {
 //---------------------------------------------------------------------------
 // Function definitions for the private functions
 
+#ifdef BIOS_UART
 static int console_getchar(FILE *stream) {
 	return bios_getchar();
 }
@@ -71,7 +76,7 @@ static int console_putchar(char c, FILE *stream) {
 
 static FILE bios_stdio = FDEV_SETUP_STREAM(console_putchar, console_getchar,
                                          _FDEV_SETUP_RW);
-    
+#endif
 
 //---------------------------------------------------------------------------
 // Interrupt Service Routines
@@ -125,10 +130,12 @@ int main() {
 	Can_Message_t bios_msg;
 	bios_msg_ptr = &bios_msg;
 	
+#ifdef BIOS_UART
 	// Setup USART for debug channel
 	UART_INIT();
 	stdout = &bios_stdio;
 	stdin = &bios_stdio;
+#endif
 	
 	// Initialize a suitable hardware timer to create a 1KHz interrupt.
 	TIMEBASE_INIT();
@@ -183,6 +190,9 @@ int main() {
 				// Set base address
 				base_addr = bios_msg.Data.words[0];
 				flash_init();
+				//send CAN_NMT_PGM_ACK(offset)
+				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+				tx_msg.Data.words[0] = base_addr;
 				bios_state = BIOS_PGM;
 			}
 			break;
@@ -199,6 +209,7 @@ int main() {
 					for (i=1; i<len; i++) { // Skip first word (offset)
 						data = bios_msg.Data.words[i];
 						flash_write_word(addr, data);
+						addr += 2;
 					}
 					//update crc
 					//send CAN_NMT_PGM_ACK(offset)
