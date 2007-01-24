@@ -35,6 +35,8 @@ void flash_flush_buffer() {
 	SREG = sreg;
 }
 
+#ifdef FLASH_LOAD_BUFFER
+void flash_load_buffer(uint16_t addr) BOOTLOADER;
 void flash_load_buffer(uint16_t addr) {
 	//TODO: Load current flash page contents into temporary buffer to implement
 	// flash read-modify-writes with word granularity. (If possible, the data
@@ -47,13 +49,16 @@ void flash_load_buffer(uint16_t addr) {
 		data = pgm_read_word(page + i);
 		boot_page_fill(page + i, data);
 	}
-} 
+}
+#endif
 
 void flash_write_word(uint16_t addr, uint16_t word) {
 	
 	if ((addr / SPM_PAGESIZE) != (flash_prev_addr / SPM_PAGESIZE)) {
 		flash_flush_buffer();
+#ifdef FLASH_LOAD_BUFFER
 		flash_load_buffer(addr);
+#endif
 	}
 	
 	boot_page_fill(addr, word);
@@ -65,3 +70,14 @@ void flash_init() {
 	flash_prev_addr = 0xffff;
 	flash_buffer_dirty = 0;
 }
+
+#ifdef FLASH_COPY_DATA
+void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
+	uint16_t i;
+	flash_init();
+	for (i = 0; i < len; i+=2) {
+		flash_write_word(dst + i, pgm_read_word(src + i));
+	}
+	flash_flush_buffer();
+}
+#endif

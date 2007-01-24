@@ -3,6 +3,7 @@
 
 #define BIOS_BUILDTYPE_BIOS
 #define BIOS_VERSION 0x1004
+#define BIOS_UART
 
 #include "bios.h"
 
@@ -12,9 +13,11 @@ extern uint16_t __bios_start;
 // Function prototypes for the exported interface
 
 static void reset(void);
+#ifdef BIOS_UART
 static void bios_putchar(char c);
 static char bios_getchar(void);
-static long timebase_get(void);
+#endif
+static unsigned long timebase_get(void);
 static Can_Return_t can_send(Can_Message_t* msg);
 
 static bios_t bios_functions = {
@@ -22,8 +25,13 @@ static bios_t bios_functions = {
 	reset,
 	can_send,
 	0,
+#ifdef BIOS_UART
 	bios_putchar,
 	bios_getchar,
+#else
+	0,
+	0,
+#endif
 	timebase_get
 };
 
