@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinAVR makefile written by Eric B. Weddington, Jï¿½rg Wunsch, et al.
+# WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -50,7 +50,7 @@ MCU = atmega88
 ##F_OSC = 3686400
 ##F_OSC = 4000000
 F_OSC = 8000000
-##F_OSC = 11059200
+#F_OSC = 11059200
 ##F_OSC = 16000000
 
 # Output format. (can be srec, ihex, binary)
@@ -62,7 +62,6 @@ TARGET = main
 
 LIBDIR = ../lib/src/
 
-
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/mcu.c\
@@ -71,12 +70,11 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/timebase.c\
 		$(LIBDIR)can/can.c\
 		$(LIBDIR)can/mcp2515/mcp2515.c\
-		$(LIBDIR)sensor/ds18s20/onewire.c\
-		$(LIBDIR)sensor/ds18s20/delay.c\
 		$(LIBDIR)sensor/ds18s20/ds18x20.c\
 		$(LIBDIR)sensor/ds18s20/crc8.c\
+		$(LIBDIR)sensor/ds18s20/delay.c\
+		$(LIBDIR)sensor/ds18s20/onewire.c\
 		$(LIBDIR)sensor/tc1047/tc1047.c\
-		$(LIBDIR)sensor/sht7x/sht7x.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -98,11 +96,16 @@ OPT = s
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
 #DEBUG = stabs
-DEBUG = 
+DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/sensor/ds18s20 $(LIBDIR)/sensor/tc1047 $(LIBDIR)/sensor/sht7x $(LIBDIR)/../funcdefs
+EXTRAINCDIRS = 	$(LIBDIR)/can\
+				$(LIBDIR)/can/mcp2515\
+				$(LIBDIR)/mcu\
+				$(LIBDIR)/../funcdefs\
+				$(LIBDIR)/sensor/ds18s20 \
+				$(LIBDIR)/sensor/tc1047 \
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -125,7 +128,8 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
+CFLAGS = 
+#CFLAGS += -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
@@ -134,7 +138,6 @@ CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 CFLAGS += -DF_OSC=$(F_OSC)
-
 
 
 # Assembler flags.
@@ -157,7 +160,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 # Floating point printf version (requires MATH_LIB = -lm below)
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
-PRINTF_LIB = 
+PRINTF_LIB = $(PRINTF_LIB_MIN)
 
 # Minimalistic scanf version
 SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
@@ -204,6 +207,7 @@ AVRDUDE_PROGRAMMER = avrispv2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = /dev/ttyUSB0    # programmer connected to serial device
+AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -222,9 +226,9 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
-#-b $(AVRDUDE_BAUD)
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) 
-#AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
+
+AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUD)
+AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 
