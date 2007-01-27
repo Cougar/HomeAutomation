@@ -12,8 +12,8 @@ namespace canBootloader
         public const int PACKET_LENGTH = 17;
         private const int readBufferSize = 8192;
 
-        private Queue<CanPacket> cpq = new Queue<CanPacket>();
-        private System.Threading.Mutex queueMutex = new System.Threading.Mutex();
+        //private Queue<CanPacket> cpq = new Queue<CanPacket>();
+        //private System.Threading.Mutex queueMutex = new System.Threading.Mutex();
         private SerialPort serial_conn = null;
         private byte[] iBuff = new byte[8192];
         private int iBuffPointer = 0;
@@ -45,7 +45,7 @@ namespace canBootloader
                 serial_conn.StopBits = stopbits;
                 serial_conn.DataBits = databits;
                 serial_conn.RtsEnable = rtsEnable;
-                this.serial_conn.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serial_conn_DataReceived);
+                //this.serial_conn.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serial_conn_DataReceived);
             }
             catch (Exception e)
             {
@@ -67,71 +67,114 @@ namespace canBootloader
             return false;
         }
 
-        public bool getPacket(out CanPacket cp) 
-        {
-            queueMutex.WaitOne();
+		public bool getPacket(out CanPacket cp) {
             cp = null;
-            bool had = false;
-            if (cpq.Count > 0)
-            {
-                cp = cpq.Dequeue();
-                had = true;
+            
+            if (serial_conn==null) return false;
+           	int bytesToRead = serial_conn.BytesToRead;
+            if (bytesToRead > 0) {
+            	byte[] data = new byte[bytesToRead];
+            	
+				try {
+					serial_conn.Read(data, 0, data.Length);
+				} catch (Exception e) {
+					Console.WriteLine("Exception " + e + " occured.\n");
+				}
+					
+				Array.Copy(data, 0, iBuff, iBuffPointer, data.Length);
+				iBuffPointer += bytesToRead;
+
+				// Nï¿½r array stï¿½rre eller lika med PACKET_LENGTH...
+				while (iBuffPointer >= PACKET_LENGTH) {
+					int startIndex = 0;
+
+					// Sï¿½k igenom efter start byte frï¿½n bï¿½rjan.
+					for (int i = 0; i < iBuffPointer; i++) {
+						// Poppa alla bytes som inte ï¿½r startbyte.
+						if (iBuff[i] != UART_START_BYTE) startIndex++;
+						else {
+							// Nï¿½r startbyte hittas, kolla om ï¿½terstï¿½ende lï¿½ngd ï¿½r stï¿½rre eller lika med PACKET_LENGTH (inkl startbyte)
+							if ((iBuffPointer - startIndex) >= PACKET_LENGTH) {
+								//om sï¿½, kolla PACKET_LENGTH-1 byte fram.
+								if (iBuff[startIndex + PACKET_LENGTH - 1] == UART_END_BYTE) {
+									// Om byte PACKET_LENGTH-1 ï¿½r slutbyte sï¿½ extraktas startIndex till slutbyteindex.
+									CanPacket cm = new CanPacket(iBuff, (uint)startIndex + 1);
+									//queueMutex.WaitOne();
+									//cpq.Enqueue(cm);
+									//queueMutex.ReleaseMutex();
+									// Sï¿½tt ny startindex och avsluta loop.
+									startIndex += PACKET_LENGTH;
+									cp = cm;
+									// och i slutet gï¿½ra en array copy.
+									// Flytta ner allt efter slutbyte till index 0 i array.
+									Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - PACKET_LENGTH);
+									iBuffPointer -= startIndex;
+									
+									return true;
+								}
+							}
+						}
+					}
+					// och i slutet gï¿½ra en array copy.
+					// Flytta ner allt efter slutbyte till index 0 i array.
+					Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - PACKET_LENGTH);
+					iBuffPointer -= startIndex;
+				}
             }
-            queueMutex.ReleaseMutex();
-            return had;
+            return false;
         }
 
-        private void serial_conn_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-        {
-            System.IO.Ports.SerialPort port = (System.IO.Ports.SerialPort)sender;
-            byte[] data = new byte[port.BytesToRead];
+//        private void serial_conn_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+//        {
+//            System.IO.Ports.SerialPort port = (System.IO.Ports.SerialPort)sender;
+//            byte[] data = new byte[port.BytesToRead];
 
-            int bytesToRead = port.BytesToRead;
+//            int bytesToRead = port.BytesToRead;
 
-            // Fyll på array hela tiden i slutet.
-            port.Read(data, 0, data.Length);
-            Array.Copy(data, 0, iBuff, iBuffPointer, data.Length);
-            iBuffPointer += bytesToRead;
+            // Fyll pï¿½ array hela tiden i slutet.
+//            port.Read(data, 0, data.Length);
+//            Array.Copy(data, 0, iBuff, iBuffPointer, data.Length);
+//            iBuffPointer += bytesToRead;
 
 
-            // När array större eller lika med PACKET_LENGTH...
-            while (iBuffPointer >= PACKET_LENGTH)
-            {
-                int startIndex = 0;
+            // Nï¿½r array stï¿½rre eller lika med PACKET_LENGTH...
+//            while (iBuffPointer >= PACKET_LENGTH)
+//            {
+//                int startIndex = 0;
 
-                // Sök igenom efter start byte från början.
-                for (int i = 0; i < iBuffPointer; i++)
-                {
-                    // Poppa alla bytes som inte är startbyte.
-                    if (iBuff[i] != UART_START_BYTE) startIndex++;
-                    else
-                    {
-                        // När startbyte hittas, kolla om återstående längd är större eller lika med PACKET_LENGTH (inkl startbyte)
-                        if ((iBuffPointer - startIndex) >= PACKET_LENGTH)
-                        {
-                            //om så, kolla PACKET_LENGTH-1 byte fram.
-                            if (iBuff[startIndex + PACKET_LENGTH - 1] == UART_END_BYTE)
-                            {
-                                // Om byte PACKET_LENGTH-1 är slutbyte så extraktas startIndex till slutbyteindex.
-                                CanPacket cm = new CanPacket(iBuff, (uint)startIndex + 1);
-                                queueMutex.WaitOne();
-                                cpq.Enqueue(cm);
-                                queueMutex.ReleaseMutex();
-                                // Sätt ny startindex och avsluta loop.
-                                startIndex += PACKET_LENGTH;
-                                break;
-                            }
-                        }
-                    }
-                }
-                // och i slutet göra en array copy.
+                // Sï¿½k igenom efter start byte frï¿½n bï¿½rjan.
+//                for (int i = 0; i < iBuffPointer; i++)
+//                {
+                    // Poppa alla bytes som inte ï¿½r startbyte.
+//                    if (iBuff[i] != UART_START_BYTE) startIndex++;
+//                    else
+//                    {
+                        // Nï¿½r startbyte hittas, kolla om ï¿½terstï¿½ende lï¿½ngd ï¿½r stï¿½rre eller lika med PACKET_LENGTH (inkl startbyte)
+//                        if ((iBuffPointer - startIndex) >= PACKET_LENGTH)
+//                        {
+                            //om sï¿½, kolla PACKET_LENGTH-1 byte fram.
+//                            if (iBuff[startIndex + PACKET_LENGTH - 1] == UART_END_BYTE)
+//                            {
+                                // Om byte PACKET_LENGTH-1 ï¿½r slutbyte sï¿½ extraktas startIndex till slutbyteindex.
+//                                CanPacket cm = new CanPacket(iBuff, (uint)startIndex + 1);
+//                                queueMutex.WaitOne();
+//                                cpq.Enqueue(cm);
+//                                queueMutex.ReleaseMutex();
+                                // Sï¿½tt ny startindex och avsluta loop.
+//                                startIndex += PACKET_LENGTH;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+                // och i slutet gï¿½ra en array copy.
                 // Flytta ner allt efter slutbyte till index 0 i array.
-                Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - PACKET_LENGTH);
-                iBuffPointer -= startIndex;
-            }
+//                Array.Copy(iBuff, startIndex, iBuff, 0, iBuffPointer - PACKET_LENGTH);
+//                iBuffPointer -= startIndex;
+//            }
 
 
-        }
+//        }
 
     }
 }

@@ -8,7 +8,7 @@ namespace canBootloader
 {
     public class HexFile
     {
-        private const ulong USER_RESET_ADDR = 0x1000;
+        private const ulong USER_RESET_ADDR = 0; //0x1000;	//0x1000 för PIC??
         private const ulong BUFFER_SIZE = 5200000;
         private const ulong LINE_MAX_SIZE = 1024;
         private const ulong ERROR_BUFFER_SIZE = 256;
@@ -46,7 +46,7 @@ namespace canBootloader
 
 
 	        // Try opening file
-	        if (!File.Exists(filepath)) 
+	        if (!File.Exists(this.filepath)) 
 	        {
 		        // The file could not be opened
 		        Console.WriteLine("Error in HexFile: Unable to load file.");
@@ -54,7 +54,7 @@ namespace canBootloader
 	        }
 	        else 
 	        {
-                FileStream file = new FileStream(filepath, FileMode.Open, FileAccess.Read);
+                FileStream file = new FileStream(this.filepath, FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(file);
                 
 		        // Safely use the file stream
@@ -90,7 +90,7 @@ namespace canBootloader
                                 case 4:
                                     lineAddrHigh = ulong.Parse(oneLine.Substring(9, 4), System.Globalization.NumberStyles.HexNumber) & 65535;
                                     break;
-                                case 1: break; break;
+                                case 1: break; 
                             
 				        }
 
