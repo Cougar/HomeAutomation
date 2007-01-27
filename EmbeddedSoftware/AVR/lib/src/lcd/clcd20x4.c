@@ -57,13 +57,32 @@ void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size){
     char buffer[ MAX_LENGTH ];
 
     if( view==MAIN_VIEW ){
-
+        /* No data */
     }else if( view==TEMPSENS_VIEW ){
-
+        for(m=0;m<size/2;m++){
+            if((int8_t)data[m*2]<0){
+                /* Subsero? */
+                snprintf(buffer, MAX_DATA_LENGTH, "-%u.%u   ", -(int8_t)data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
+            }else{
+                snprintf(buffer, MAX_DATA_LENGTH, "%u.%u    ", data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
+            }
+            lcd_gotoxy(dataPos[m][0],dataPos[m][1]);
+            lcd_puts(buffer);
+        }
     }else if( view==RELAYS_VIEW ){
-
+        // FIXME
     }else if( view==DIMMERS_VIEW ){
-
+        // FIXME
+    }else if( view==SERVO_VIEW ){
+        for(m=0;m<size;m++){
+            if((int8_t)data[m]<0){
+                snprintf(buffer, MAX_DATA_LENGTH, "-%u  ", -(int8_t)data[m]);
+            }else{
+                snprintf(buffer, MAX_DATA_LENGTH, "%u   ", data[m]);
+            }
+            lcd_gotoxy(dataPos[m][0], dataPos[m][1]);
+            lcd_puts(buffer);
+        }
     }else{
         /* Do nothing */
         return;
@@ -72,12 +91,4 @@ void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size){
 
 
 
-    for( m=0; m<size; m++ ){
-        lcd_gotoxy( dataPos[m][0],dataPos[m][1] );
-
-
-        snprintf( buffer, MAX_LENGTH, data[ m ] );
-        lcd_puts(buffer);
-        //TODO fixa rätt enheter för olika views
-    }
 }

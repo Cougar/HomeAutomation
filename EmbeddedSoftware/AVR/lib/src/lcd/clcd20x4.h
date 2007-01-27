@@ -16,6 +16,7 @@
  * Defines
  * -----------------------------------------------------------*/
 #define MAX_LENGTH      21
+#define MAX_DATA_LENGTH 7
 #define LINES           4
 #define CHARACTERS      20
 #define EDIT_MODE_SYMBOL "&&"
@@ -24,6 +25,7 @@
 #define TEMPSENS_VIEW   1
 #define RELAYS_VIEW     2
 #define DIMMERS_VIEW    3
+#define SERVO_VIEW      4
 
 /*---------------------------------------------------------------
  * Functions
@@ -41,9 +43,11 @@ static char viewStrings[][ MAX_LENGTH ] = {
     /* Temperature sensors */
     "Temperature Sensors", "1: NA     2: NA", "3: NA     4: NA", "Main", "Relay",
     /* Relay status */
-    "Relay Status", "1: NA     2: NA", "3: NA    4: NA", "Temp", "Dimmer",
+    "Relay Status", "1: NA     2: NA", "3: NA     4: NA", "Temp", "Dimmer",
     /* Dimmer status */
-    "Dimmer Status", "1: NA     2: NA", "3: NA    4: NA", "Relay", "NA"
+    "Dimmer Status", "1: NA     2: NA", "3: NA     4: NA", "Relay", "Servo",
+    /* Servo (blinds) status */
+    "Servo Status", "1: NA     2: NA", "3: NA     4: NA", "Dimmer", "    NA"
 };
 
 static uint8_t dataPos[][2] = {

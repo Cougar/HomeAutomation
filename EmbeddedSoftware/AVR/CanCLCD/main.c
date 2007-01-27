@@ -11,7 +11,7 @@
  *
  */
 
-#define DEBUG 1
+#define DEBUG 0
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -34,12 +34,13 @@
 /* defines */
 #define BUFFER_SIZE 20
 
+#define LCD_CMD_GET 0x1600
+#define VIEW_LEFT 0x01
+#define VIEW_RIGHT 0x02
+#define VIEW_EDIT 0x03
+
+
 uint8_t currentView = MAIN_VIEW;
-/*static const PROGMEM unsigned char symbolThermometer[] =
-{
-    0x04, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0E, 0x0E,
-    0x0E, 0x0E, 0x0E, 0x0A, 0x11, 0x11, 0x0A, 0x04
-};*/ // TODO behövs symbol för termometer?
 
 // TODO ISR() för att använda optoencoders
 ISR( PCINT2_vect ){
@@ -54,8 +55,8 @@ ISR( PCINT2_vect ){
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-    uint8_t subzero; // TODO städa upp
-    uint8_t m, temperatureData[8], relayStatus[4], dimmerStatus[4];
+    uint8_t m, temperatureData[8], servoPosition[4], relayStatus[4], dimmerStatus[4],
+            temperatureLength, servoLength;
 
     /*
      * Initialize optoencoders and buttons
@@ -75,32 +76,15 @@ int main(void) {
 #endif
     sei();
     lcd_init( LCD_DISP_ON );
-#if DEBUG
-    printf("\n------------------------------------------------------------\n");
-    printf(  "   CAN LCD\n");
-    printf(  "------------------------------------------------------------\n");
-#endif
     lcd_clrscr();
     lcd_puts("CAN LCD test\n");
-#if DEBUG
-    printf("CanInit...");
-    lcd_puts("CanInit... ");
-    if (Can_Init() != CAN_OK) {
-        printf("FAILED!\n");
-        lcd_puts("FAILED!\n");
-    }
-    else {
-        printf("OK!\n");
-        lcd_puts("OK!\n");
-    }
-#else
     lcd_puts("CanInit... ");
     if (Can_Init() != CAN_OK) {
         lcd_puts("FAILED!\n");
     }else{
         lcd_puts("OK!\n");
     }
-#endif
+
     uint32_t timeStamp = 0;
 
     Can_Message_t txMsg;
@@ -110,6 +94,7 @@ int main(void) {
     txMsg.ExtendedFlag = 1;
 
     lcd_clrscr();
+    printLCDview( MAIN_VIEW );
 
     /* main loop */
     while (1) {
@@ -128,22 +113,50 @@ int main(void) {
             printf("}\n");
 #endif
             /* Get data from bus and store */
-            if( rxMsg.Id == 0x300 ){
+            if( rxMsg.Id == 0x1502 ){
                 /* Temperature sensor data */
                 for(m=0; m<rxMsg.DataLength; m++){
                     temperatureData[m] = rxMsg.Data.bytes[m];
+                    temperatureLength = rxMsg.DataLength;
                 }
             }else if( rxMsg.Id == 0x1201 ){
                 /* Relay status (ON/OFF) */
                 relayStatus[1] = rxMsg.Data.bytes[2];
-            } /* TODO Add extra messages here */
+            }else if( rxMsg.Id == 0x1301){
+                /* Servo and blinds status */
+                for( m=3; m<rxMsg.DataLength; m++ ){
+                    servoPosition[m-3] = rxMsg.Data.bytes[m];
+                    servoLength=rxMsg.DataLength-3;
+                }
+            }
+            /* TODO Add extra messages here */
+
+            /* Incoming command to change view */
+            if(rxMsg.Id == LCD_CMD_GET){
+                if(rxMsg.Data.bytes[0]== VIEW_LEFT){
+                    if(currentView>MAIN_VIEW){
+                        currentView--;
+                    }
+                }else if(rxMsg.Data.bytes[0]== VIEW_RIGHT){
+                    if(currentView<SERVO_VIEW){ /* TODO increase value if you add views */
+                        currentView++;
+                    }
+                }
+
+                /* Print views skeleton and if existing its data */
+                printLCDview( currentView );
+                if(currentView == TEMPSENS_VIEW){
+                    printLCDviewData( TEMPSENS_VIEW, temperatureData, temperatureLength);
+                }else if(currentView == SERVO_VIEW){
+                    printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
+                }
+            }
         }
 
-        /* Print views */
         // TODO använd optoencoders för att växla view
-        printLCDview( MAIN_VIEW );
+        // också med fjärrkontroll
 
     }
 
-    return 0;
+
 }
