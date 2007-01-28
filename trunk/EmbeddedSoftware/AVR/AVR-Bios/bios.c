@@ -91,7 +91,6 @@ ISR(TIMEBASE_VECTOR) {
 void Can_Process(Can_Message_t* msg) {
 	if (!(msg->ExtendedFlag)) return;
 	
-	//applikationen ska bara ta hand om paket som inte är nmt så else:et nedan kommer om det inte är nmt enbart
 	if ((msg->Id & CAN_MASK_CLASS) == ((uint32_t)CAN_NMT << CAN_SHIFT_CLASS)) {
 		if ((msg->Id & CAN_MASK_NMT_RID) == ((uint32_t)NODE_ID << CAN_SHIFT_NMT_RID)) {
 			//printf("BIOS received msg!\n");
@@ -105,11 +104,11 @@ void Can_Process(Can_Message_t* msg) {
 			if (!(bios_msg_full)) {
 				memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
 				bios_msg_full = 1;
-			}		
-		} else if (bios->can_callback) {
-			//printf("Calling app callback.\n");
-			bios->can_callback(msg);
-		}
+			}
+		}		
+	} else if (bios->can_callback) {
+		//printf("Calling app callback.\n");
+		bios->can_callback(msg);
 	}
 }
 
@@ -195,7 +194,6 @@ int main() {
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				tx_msg.Data.words[0] = base_addr;
 				bios_state = BIOS_PGM;
-				while (Can_Send(&tx_msg) != CAN_OK);
 			}
 			break;
 		case BIOS_PGM:
@@ -234,8 +232,8 @@ int main() {
 				}
 				bios_state = BIOS_NOAPP;
 			}
-			while (Can_Send(&tx_msg) != CAN_OK);
 		}
+		while (Can_Send(&tx_msg) != CAN_OK);
 
 		bios_msg_full = 0; // We're done with this message, ready for the next.
 	}
