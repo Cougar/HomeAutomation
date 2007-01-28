@@ -20,9 +20,9 @@ static int app_getchar(FILE *stream) {
 
 int main(void)
 {
-	long time;
-	long time1 = 0;
-	long time2 = 0;
+	unsigned long time;
+	unsigned long time1 = 0;
+	unsigned long time2 = 0;
 	
 	sei();
 	
