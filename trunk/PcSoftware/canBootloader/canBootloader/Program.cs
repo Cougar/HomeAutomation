@@ -9,6 +9,8 @@ namespace canBootloader {
 		static Downloader dl;
 
 		private const byte CAN_NMT = 0x00;
+		
+		private const byte CAN_NMT_RESET = 0x00;
 		private const byte CAN_NMT_START_APP 	= 0x07;
 		private const byte CAN_NMT_APP_START 	= 0x08;
 		private const byte MY_ID = 0x00;
@@ -59,6 +61,7 @@ namespace canBootloader {
 				Console.WriteLine("load - Load predefined hexfile.");
 				Console.WriteLine("go - download hexfile.");
 				Console.WriteLine("start - start application in node.");
+				Console.WriteLine("reset - reset node.");
 				Console.WriteLine("exit - exit program.");
 	
 				string instr;
@@ -107,7 +110,19 @@ namespace canBootloader {
 				byte[] data = new byte[8];
 				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_START_APP, MY_NID, MY_ID, argReceiverID, 0, data);
 				sc.writePacket(cp);
-
+			}
+			else if (instr.Equals("reset")) {
+				Console.WriteLine("Resetting..");
+				sc = new SerialConnection();
+				try {
+					sc.setConfiguration(Int32.Parse(argBaud), System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
+				}
+				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
+				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
+				
+				byte[] data = new byte[8];
+				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_NID, MY_ID, argReceiverID, 0, data);
+				sc.writePacket(cp);
 			}
 			else if (instr.Equals("abort")) {
 				if (dl != null) dl.abort();
