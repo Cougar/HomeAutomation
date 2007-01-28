@@ -1,5 +1,6 @@
 #include <inttypes.h>
 #include <avr/interrupt.h>
+#include <stdio.h>
 #include <bios.h>
 
 static int app_putchar(char c, FILE *stream);
@@ -9,12 +10,12 @@ static FILE mystdio = FDEV_SETUP_STREAM(app_putchar, app_getchar,
                                          _FDEV_SETUP_RW);
 
 static int app_putchar(char c, FILE *stream) {
-	bios->can_send(c);
+	bios->debug_putchar(c);
 	return 0; 
 }
     
 static int app_getchar(FILE *stream) {
-	return bios->can_receive();
+	return bios->debug_getchar();
 }
 
 int main(void)
