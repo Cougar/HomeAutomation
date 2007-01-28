@@ -91,24 +91,25 @@ ISR(TIMEBASE_VECTOR) {
 void Can_Process(Can_Message_t* msg) {
 	if (!(msg->ExtendedFlag)) return;
 	
-	if ((msg->Id & (CAN_MASK_CLASS | CAN_MASK_NMT_RID)) == 
-				((uint32_t)CAN_NMT << CAN_SHIFT_CLASS | 
-				 (uint32_t)NODE_ID << CAN_SHIFT_NMT_RID)) {
-		//printf("BIOS received msg!\n");
-		if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_RESET) {
-			reset();
+	//applikationen ska bara ta hand om paket som inte är nmt så else:et nedan kommer om det inte är nmt enbart
+	if ((msg->Id & CAN_MASK_CLASS) == ((uint32_t)CAN_NMT << CAN_SHIFT_CLASS)) {
+		if ((msg->Id & CAN_MASK_NMT_RID) == ((uint32_t)NODE_ID << CAN_SHIFT_NMT_RID)) {
+			//printf("BIOS received msg!\n");
+			if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_RESET) {
+				reset();
+			}
+			// Copy message to bios buffer if bios is done with the previous message.
+			// This is also a check to see if bios is still running. When app is
+			// started, bios_msg_full is never reset to 0 so the check fails and all
+			// NMT communication except reset is ignored. 
+			if (!(bios_msg_full)) {
+				memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
+				bios_msg_full = 1;
+			}		
+		} else if (bios->can_callback) {
+			//printf("Calling app callback.\n");
+			bios->can_callback(msg);
 		}
-		// Copy message to bios buffer if bios is done with the previous message.
-		// This is also a check to see if bios is still running. When app is
-		// started, bios_msg_full is never reset to 0 so the check fails and all
-		// NMT communication except reset is ignored. 
-		if (!(bios_msg_full)) {
-			memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
-			bios_msg_full = 1;
-		}		
-	} else if (bios->can_callback) {
-		//printf("Calling app callback.\n");
-		bios->can_callback(msg);
 	}
 }
 
@@ -166,7 +167,8 @@ int main() {
 		// Application exists
 		//send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
 		tx_msg.Data.bytes[2] = 1;
-		bios_state = BIOS_APP;
+		//for now, set state to BIOS_NOAPP to be able to reprogram application
+		bios_state = BIOS_NOAPP;
 	}
 	
 	while (Can_Send(&tx_msg) != CAN_OK);
