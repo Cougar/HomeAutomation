@@ -10,7 +10,7 @@ namespace canBootloader {
 		private Thread down;
 		private byte receiveID;
 
-		private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, DEBUG_STATE1, DEBUG_STATE2 };
+		private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_RESET, DONE, DEBUG_STATE1, DEBUG_STATE2 };
 		
 		private const byte CAN_NMT				= 0x00;
 		
@@ -99,7 +99,7 @@ namespace canBootloader {
 							// Check for timeout, resend start packet in that case..
 							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for start prg ack.");
-								pgs = dState.DONE;
+								pgs = dState.SEND_RESET;
 							}
 
 							// If received ack.
@@ -113,7 +113,7 @@ namespace canBootloader {
 								else if (cm.getType() == CAN_NMT_PGM_NACK ) { 
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_START.");
-									pgs = dState.DONE;
+									pgs = dState.SEND_RESET;
 								}
 							}
 
@@ -142,7 +142,7 @@ namespace canBootloader {
 							if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
 								// Woops, error. 
 								Console.WriteLine("Timeout while waiting for data ack.");
-								pgs = dState.DONE;
+								pgs = dState.SEND_RESET;
 							}
 
 							// If received ack.
@@ -164,7 +164,7 @@ namespace canBootloader {
 								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_DATA.");
-									pgs = dState.DONE;
+									pgs = dState.SEND_RESET;
 								}
 							}
 
@@ -180,13 +180,13 @@ namespace canBootloader {
 							t = Environment.TickCount;
 							pgs = dState.WAIT_DONE;
 							break;
-							
+
 							
 						case dState.WAIT_DONE:
 							// Check for timeout, resend done packet in that case..
 							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for end prg ack.");
-								pgs = dState.DONE;
+								pgs = dState.SEND_RESET;
 							}
 
 							// If received ack.
@@ -196,16 +196,24 @@ namespace canBootloader {
 									Console.WriteLine("Done, successfully programmed application.");
 									// Start sending program data..
 									byteSent = 0;
-									pgs = dState.DONE;
+									pgs = dState.SEND_RESET;
 								}
 								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else resend addr..
 									Console.WriteLine("Nack on CAN_NMT_PGM_END.");
-									pgs = dState.DONE;
+									pgs = dState.SEND_RESET;
 								}
 							}
-
 							break;
+
+						case dState.SEND_RESET:
+							// Send reset
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_NID, MY_ID, receiveID, 0, data);
+							sc.writePacket(outCm);
+							t = Environment.TickCount;
+							pgs = dState.DONE;
+							break;
+							
 
 						case dState.DONE:
 							down.Abort();
