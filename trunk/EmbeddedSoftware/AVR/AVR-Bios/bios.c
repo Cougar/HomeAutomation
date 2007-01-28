@@ -196,6 +196,7 @@ int main() {
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				tx_msg.Data.words[0] = base_addr;
 				bios_state = BIOS_PGM;
+				while (Can_Send(&tx_msg) != CAN_OK);
 			}
 			break;
 		case BIOS_PGM:
