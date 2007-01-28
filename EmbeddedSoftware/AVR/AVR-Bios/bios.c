@@ -167,8 +167,7 @@ int main() {
 		// Application exists
 		//send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
 		tx_msg.Data.bytes[2] = 1;
-		//for now, set state to BIOS_NOAPP to be able to reprogram application
-		bios_state = BIOS_NOAPP;
+		bios_state = BIOS_APP;
 	}
 	
 	while (Can_Send(&tx_msg) != CAN_OK);
