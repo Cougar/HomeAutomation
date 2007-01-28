@@ -20,8 +20,8 @@ CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	18;"	d	line:18
 CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	16;"	d	line:16
 COMPILER_H	F:\MCP\projects\CAN\canBoot\Include\compiler.h	13;"	d	line:13
 DWORD	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	18;"	t	line:18
-EERead	F:\MCP\projects\CAN\Include\EEAccess.c	14;"	f	line:14	signature:(WORD addr)
-EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	25;"	f	line:25	signature:(WORD addr,BYTE data)
+EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
+EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
 FALSE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
 INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	17;"	d	line:17
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canBoot\Include\compiler.h	21;"	d	line:21
