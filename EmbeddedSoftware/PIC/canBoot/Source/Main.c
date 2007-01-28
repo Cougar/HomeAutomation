@@ -92,6 +92,7 @@ void main()
 		MY_NID=EERead(NODE_ID_EE + 3);
 	}
 
+	
 	// Send bootloader startup heatbeat
 	outCmHeart.funct 					= FUNCT_BOOTLOADER;
 	outCmHeart.funcc 					= FUNCC_BOOT_HEARTBEAT;
@@ -100,7 +101,8 @@ void main()
 	outCmHeart.data_length 				= 1;
 	outCmHeart.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_BOOT_STARTUP;
 	while(!canSendMessage(outCmHeart,PRIO_HIGH));
-
+	
+	LED0_IO= 1;
 
 	for(;;)
 	{
@@ -136,6 +138,7 @@ void main()
 				// Bootloader timeout
 				if ((tickGet()-tBoot)>BOOTLOADER_INIT_TIMOUT)
 				{
+					LED0_IO= 0;
 					pgs = pgsDONE;
 				}
 			break;			
@@ -397,38 +400,43 @@ void canInit()
 
 	// BAUD AND TQS
 
-	BRGCON1=0;
+	// 500Khz@40Mhz (new by the book)
+	BRGCON1 = 0x04;
+	BRGCON2 = 0xD1;
+	BRGCON3 = 0x81;
+
+	//BRGCON1=0;
 	
 	// Sync_Seq = 2 x TQ = 1
-	BRGCON1bits.SJW1=0;
-	BRGCON1bits.SJW0=1;
+	//BRGCON1bits.SJW1=0;
+	//BRGCON1bits.SJW0=1;
 	
 	// Setting BRP.
-	BRGCON1=BRGCON1|CAN_BRP;
+	//BRGCON1=BRGCON1|CAN_BRP;
 	
 	// Maximum PHEG1
-	BRGCON2bits.SEG2PHTS = 1;
+	//BRGCON2bits.SEG2PHTS = 1;
 	
 	// Phase_Seg1 = 2 x TQ = 1
-	BRGCON2bits.SEG1PH2 = 0;
-	BRGCON2bits.SEG1PH1 = 0;
-	BRGCON2bits.SEG1PH0 = 1;
+	//BRGCON2bits.SEG1PH2 = 0;
+	//BRGCON2bits.SEG1PH1 = 0;
+	//BRGCON2bits.SEG1PH0 = 1;
 	
 	// Prop_Seq = 2 x TQ = 1
-	BRGCON2bits.PRSEG2 = 0;
-	BRGCON2bits.PRSEG1 = 0;
-	BRGCON2bits.PRSEG0 = 1;
+	//BRGCON2bits.PRSEG2 = 0;
+	//BRGCON2bits.PRSEG1 = 0;
+	//BRGCON2bits.PRSEG0 = 1;
 	
 	//  Enableing bus wake-up
-	BRGCON3bits.WAKDIS = 0;
+	//BRGCON3bits.WAKDIS = 0;
 	
 	// Dont use filter when wakeup
-	BRGCON3bits.WAKFIL = 0;
+	//BRGCON3bits.WAKFIL = 0;
 	
 	// Phase_Seg2 = 2 x TQ = 1
-	BRGCON3bits.SEG2PH2 = 0;
-	BRGCON3bits.SEG2PH1 = 0;
-	BRGCON3bits.SEG2PH0 = 1;
+	//BRGCON3bits.SEG2PH2 = 0;
+	//BRGCON3bits.SEG2PH1 = 0;
+	//BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
 	ECANCONbits.MDSEL1 = 1;
@@ -484,6 +492,7 @@ BOOL canGetPacket()
 		ECANCON=(ECANCON&0b00000)|(0b10000|(CANCON&0x0F)); 
 		if (!RXB0CONbits.RXFUL) return FALSE; 
 	
+
 		//RXB0SIDH 28 27 26 25 24 23 22 21
         //RXB0SIDL 20 19 18 xx xx xx 17 16
         //RXB0EIDH 15 14 13 12 11 10 09 08

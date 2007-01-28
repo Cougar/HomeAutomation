@@ -34,38 +34,63 @@ void canInit()
 
 	// BAUD AND TQS
 
-	BRGCON1=0;
+	//BRGCON1 = 0x03;    //500Kbit@40MHz 1TQ Sync, 2TQ Prop, 4TQ Phase1, 3TQ Phase2
+	//BRGCON2 = 0x99;
+	//BRGCON3 = 0x02;
+
+	//75%, 250Kbps @40MHz
+	//BRGCON1 = 0x09;
+	//BRGCON2 = 0xDB;
+	//BRGCON3 = 0x01;
+
+	//75% ,1 , 500Kbps @40MHz
+	//BRGCON1 = 0x01;
+	//BRGCON2 = (0xB6 | 0x80);
+	//BRGCON3 = 0x04;
+	
+	//75% ,1 , 500Kbps @80MHz
+	//BRGCON1 = 0x03;
+	//BRGCON2 = (0xB6 | 0x80);
+	//BRGCON3 = 0x04;
+
+	// 500Khz@40Mhz (new by the book)
+	BRGCON1 = 0x04;
+	BRGCON2 = 0xD1;
+	BRGCON3 = 0x81;
+
+
+	//BRGCON1=0;
 	
 	// Sync_Seq = 2 x TQ = 1
-	BRGCON1bits.SJW1=0;
-	BRGCON1bits.SJW0=1;
+	//BRGCON1bits.SJW1=0;
+	//BRGCON1bits.SJW0=1;
 	
 	// Setting BRP.
-	BRGCON1=BRGCON1|CAN_BRP;
+	//BRGCON1=BRGCON1|CAN_BRP;
 	
 	// Maximum PHEG1
-	BRGCON2bits.SEG2PHTS = 1;
+	//BRGCON2bits.SEG2PHTS = 1;
 	
 	// Phase_Seg1 = 2 x TQ = 1
-	BRGCON2bits.SEG1PH2 = 0;
-	BRGCON2bits.SEG1PH1 = 0;
-	BRGCON2bits.SEG1PH0 = 1;
+	//BRGCON2bits.SEG1PH2 = 0;
+	//BRGCON2bits.SEG1PH1 = 0;
+	//BRGCON2bits.SEG1PH0 = 1;
 	
 	// Prop_Seq = 2 x TQ = 1
-	BRGCON2bits.PRSEG2 = 0;
-	BRGCON2bits.PRSEG1 = 0;
-	BRGCON2bits.PRSEG0 = 1;
+	//BRGCON2bits.PRSEG2 = 0;
+	//BRGCON2bits.PRSEG1 = 0;
+	//BRGCON2bits.PRSEG0 = 1;
 	
 	//  Enableing bus wake-up
-	BRGCON3bits.WAKDIS = 0;
+	//BRGCON3bits.WAKDIS = 0;
 	
 	// Dont use filter when wakeup
-	BRGCON3bits.WAKFIL = 0;
+	//BRGCON3bits.WAKFIL = 0;
 	
 	// Phase_Seg2 = 2 x TQ = 1
-	BRGCON3bits.SEG2PH2 = 0;
-	BRGCON3bits.SEG2PH1 = 0;
-	BRGCON3bits.SEG2PH0 = 1;
+	//BRGCON3bits.SEG2PH2 = 0;
+	//BRGCON3bits.SEG2PH1 = 0;
+	//BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
 	ECANCONbits.MDSEL1 = 1;
@@ -76,6 +101,8 @@ void canInit()
 	RXB0CONbits.RXM1=1;
 	RXB0CONbits.RXM0=0;
 
+	// Set ressesive VDD
+	CIOCONbits.ENDRHI = 1;
 
 	// INTERRUPTS
 	

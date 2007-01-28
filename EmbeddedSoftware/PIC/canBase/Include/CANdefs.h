@@ -15,7 +15,7 @@
 
 #include <compiler.h>
 
-#define CAN_BAUD 0.500000 //in Mbits/s
+//#define CAN_BAUD 0.500000 //in Mbits/s
 //#define CAN_LOOPBACK_MODE
 
 

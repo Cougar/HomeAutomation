@@ -14,17 +14,52 @@
 #include <stackTasks.h>
 #include <Tick.h>
 #include <funcdefs.h>
-#include <EEaccess.h>
-
-#ifdef USE_CAN
-	#include <CAN.h>
-#endif
+#include <CAN.h>
 
 static void mainInit(void);
 
 
-static int MY_ID = DEFAULT_ID;
-static BYTE MY_NID = DEFAULT_NID;
+/*
+	Features (support upto 8 dimmers).
+
+	need to define funcc to each channel.
+	need to define funcc to all in this node.
+
+	channel = 0 to 7
+	value = 0 to 255
+	place = 1 to 10
+
+	NO FADE
+	set channel to value.
+	set channel off.
+	set channel last.
+	set channel on.
+	set all to value.
+	set all off.
+	set all last.
+	set all on.
+
+	FADE
+	fade channel to value.
+	fade channel off.
+	fade channel last.
+	fade channel on.
+	fade all to value.
+	fade all off.
+	fade all last.
+	fade all on.
+
+	MEMORY:
+	Save current values to M[place].
+	Set current values to M[place].
+	Fade current values to M[place].
+
+
+	settings:
+	buttons, default fadespeed, stepping. (Get and set)
+*/
+
+
 
 void main()
 {
@@ -32,51 +67,15 @@ void main()
 	CAN_MESSAGE outCm;
 
 	// Inits
-
 	mainInit();
 
-	#ifdef USE_CAN
-		canInit();
-	#endif
-
-	tickInit();
-
-	// Read ID and NID if exist.
-	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
-	{
-		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
-		MY_NID=EERead(NODE_ID_EE + 3);
-	}
-
-	// Send user program startup heatbeat
-	outCm.funct 					= FUNCT_BOOTLOADER;
-	outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
-	outCm.nid   					= MY_NID;
-	outCm.sid   					= MY_ID;
-	outCm.data_length 				= 1;
-	outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_USER_STARTUP;
-	while(!canSendMessage(outCm,PRIO_HIGH));
+	canInit();
 
 
 	while(1)
 	{
 		static TICK t = 0;
-		static TICK heartbeat = 0;
 
-		
-		if ((tickGet()-heartbeat)>TICK_SECOND*5)
-		{
-			// Send alive heartbeat
-			outCm.funct 					= FUNCT_BOOTLOADER;
-			outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
-			outCm.nid   					= MY_NID;
-			outCm.sid   					= MY_ID;
-			outCm.data_length 				= 1;
-			outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_ALIVE;
-			while(!canSendMessage(outCm,PRIO_HIGH));
-			
-			heartbeat = tickGet();
-		}
 		if ((tickGet()-t)>TICK_SECOND)
 		{
 			LED0_IO=~LED0_IO;
@@ -89,14 +88,7 @@ void main()
 #pragma interrupt high_isr
 void high_isr(void)
 {
-	ClrWdt();
-
-	#ifdef USE_CAN
-		canISR();
-	#endif
-
-	tickUpdate();
-
+	canISR();
 }
 
 
@@ -140,47 +132,11 @@ void mainInit()
 *	Affects: Sensors/actuators/etc. See code.
 *	Depends: none.
 */
-#ifdef USE_CAN
 void canParse(CAN_MESSAGE cm)
 {
 	CAN_MESSAGE outCm;
 
-	ClrWdt();
-
-	switch(cm.funct)
-	{
-		case FUNCT_BOOTLOADER:
-			if (cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) 
-			{
-				switch(cm.funcc)
-				{
-					case FUNCC_BOOT_INIT: Reset(); break; //User whant to program me, reset me.
-					case FUNCC_BOOT_SET_ID:
-						// Change my ID and NID
-						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW_INDEX];
-						MY_NID=cm.data[BOOT_DATA_NEW_NID_INDEX];
-						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX]);
-						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW_INDEX]);
-						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID_INDEX]);
-						EEWrite(NODE_ID_EE,NODE_HAS_ID);
-						// Send ack with new id.
-						outCm.funct 					= FUNCT_BOOTLOADER;
-						outCm.funcc 					= FUNCC_BOOT_ACK;
-						outCm.nid   					= MY_NID;
-						outCm.sid   					= MY_ID;
-						outCm.data_length 				= 8;
-						outCm.data[BOOT_DATA_ERR_INDEX]	= ACK_ERR_NO_ERROR;
-						while(!canSendMessage(outCm,PRIO_HIGH));
-					break;
-				}
-			}
-
-
-		break;
-	}
 }
-#endif
-
 
 
 // Below are mandantory when using bootloader

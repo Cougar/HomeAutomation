@@ -12,10 +12,16 @@
 #include <CANdefs.h>
 #include <stackTasks.h>
 #include <CAN.h>
+#include <EEaccess.h>
+#include <funcdefs.h>
+#include <Tick.h>
+
+TICK heartbeat;
+static int MY_ID = DEFAULT_ID;
+static BYTE MY_NID = DEFAULT_NID;
+static CAN_MESSAGE outCm;
 
 static void canGetPacket(void);
-
-#ifdef USE_CAN
 
 
 /*
@@ -34,38 +40,43 @@ void canInit()
 
 	// BAUD AND TQS
 
-	BRGCON1=0;
+	// 500Khz@40Mhz (new by the book)
+	BRGCON1 = 0x04;
+	BRGCON2 = 0xD1;
+	BRGCON3 = 0x81;
+
+	//BRGCON1=0;
 	
 	// Sync_Seq = 2 x TQ = 1
-	BRGCON1bits.SJW1=0;
-	BRGCON1bits.SJW0=1;
+	//BRGCON1bits.SJW1=0;
+	//BRGCON1bits.SJW0=1;
 	
 	// Setting BRP.
-	BRGCON1=BRGCON1|CAN_BRP;
+	//BRGCON1=BRGCON1|CAN_BRP;
 	
 	// Maximum PHEG1
-	BRGCON2bits.SEG2PHTS = 1;
+	//BRGCON2bits.SEG2PHTS = 1;
 	
 	// Phase_Seg1 = 2 x TQ = 1
-	BRGCON2bits.SEG1PH2 = 0;
-	BRGCON2bits.SEG1PH1 = 0;
-	BRGCON2bits.SEG1PH0 = 1;
+	//BRGCON2bits.SEG1PH2 = 0;
+	//BRGCON2bits.SEG1PH1 = 0;
+	//BRGCON2bits.SEG1PH0 = 1;
 	
 	// Prop_Seq = 2 x TQ = 1
-	BRGCON2bits.PRSEG2 = 0;
-	BRGCON2bits.PRSEG1 = 0;
-	BRGCON2bits.PRSEG0 = 1;
+	//BRGCON2bits.PRSEG2 = 0;
+	//BRGCON2bits.PRSEG1 = 0;
+	//BRGCON2bits.PRSEG0 = 1;
 	
 	//  Enableing bus wake-up
-	BRGCON3bits.WAKDIS = 0;
+	//BRGCON3bits.WAKDIS = 0;
 	
 	// Dont use filter when wakeup
-	BRGCON3bits.WAKFIL = 0;
+	//BRGCON3bits.WAKFIL = 0;
 	
 	// Phase_Seg2 = 2 x TQ = 1
-	BRGCON3bits.SEG2PH2 = 0;
-	BRGCON3bits.SEG2PH1 = 0;
-	BRGCON3bits.SEG2PH0 = 1;
+	//BRGCON3bits.SEG2PH2 = 0;
+	//BRGCON3bits.SEG2PH1 = 0;
+	//BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
 	ECANCONbits.MDSEL1 = 1; // 0  For mode 1 
@@ -102,6 +113,25 @@ void canInit()
 		while ((CANSTAT & 0xE0) != 0x00 );//wait for normal mode
 	#endif
 
+
+	// Init ticker service
+	tickInit();
+
+
+	// Read ID and NID if exist.
+	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
+	{
+		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
+		MY_NID=EERead(NODE_ID_EE + 3);
+	}
+
+	// Send user program startup heatbeat
+	outCm.funct 					= FUNCT_BOOTLOADER;
+	outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
+	outCm.data_length 				= 1;
+	outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_USER_STARTUP;
+	while(!canSendMessage(outCm,PRIO_HIGH));
+
 }
 
 
@@ -125,6 +155,22 @@ void canISR()
 		if (PIR3bits.RXB1IF) {PIR3bits.RXB1IF = 0; return;}
 		if (PIR3bits.RXB0IF) {PIR3bits.RXB0IF = 0; return;}
 	}
+
+	tickUpdate();
+
+	if ((tickGet()-heartbeat)>TICK_SECOND*5)
+	{
+		// Send alive heartbeat
+		outCm.funct 					= FUNCT_BOOTLOADER;
+		outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
+		outCm.data_length 				= 1;
+		outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_ALIVE;
+		while(!canSendMessage(outCm,PRIO_HIGH));
+			
+		heartbeat = tickGet();
+	}
+
+	ClrWdt();
 }
 
 
@@ -170,6 +216,35 @@ void canGetPacket()
 		// Clear ful status
 		RXB0CONbits.RXFUL=0;
 
+
+
+		// Check if FUNCT_BOOTLOADER specific.
+		// reset and id change
+		if (cm.funct==FUNCT_BOOTLOADER)
+		{
+			if (cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) 
+			{
+				if (cm.funcc==FUNCC_BOOT_INIT) Reset(); // Reset me.
+				if (cm.funcc==FUNCC_BOOT_SET_ID)
+				{
+						// Change my ID and NID
+						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW_INDEX];
+						MY_NID=cm.data[BOOT_DATA_NEW_NID_INDEX];
+						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX]);
+						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW_INDEX]);
+						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID_INDEX]);
+						EEWrite(NODE_ID_EE,NODE_HAS_ID);
+						// Send ack with new id.
+						outCm.funct 					= FUNCT_BOOTLOADER;
+						outCm.funcc 					= FUNCC_BOOT_ACK;
+						outCm.data_length 				= 8;
+						outCm.data[BOOT_DATA_ERR_INDEX]	= ACK_ERR_NO_ERROR;
+						while(!canSendMessage(outCm,PRIO_HIGH));
+				}
+			}
+		}
+
+
 		//Call main parser
 		canParse(cm);
 }
@@ -194,6 +269,10 @@ BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 	else { return FALSE;} 
 
 	if (prio<0 || prio>3) prio = 0;
+
+		// Append my id and nid
+		cm.nid	= MY_NID;
+		cm.sid	= MY_ID;
 
 
 		//RXB0SIDH 28 27 26 25 24 23 22 21
@@ -242,7 +321,3 @@ BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 		return TRUE;
 
 }
-
-
-
-#endif //USE_CAN
