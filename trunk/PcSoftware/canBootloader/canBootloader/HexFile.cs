@@ -4,10 +4,8 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 
-namespace canBootloader
-{
-	public class HexFile
-	{
+namespace canBootloader {
+	public class HexFile {
 		private const ulong USER_RESET_ADDR = 0; //0x1000;	//0x1000 för PIC??
 		private const ulong BUFFER_SIZE = 5200000;
 		private const ulong LINE_MAX_SIZE = 1024;
@@ -25,8 +23,7 @@ namespace canBootloader
 
 		public bool isValid() { return valid; }
 
-		public bool loadHex(string filepath)
-		{
+		public bool loadHex(string filepath) {
 			// Populate buffer
 
 			byte lineDataCount = 0;
@@ -46,42 +43,36 @@ namespace canBootloader
 
 
 			// Try opening file
-			if (!File.Exists(this.filepath)) 
-			{
+			if (!File.Exists(this.filepath)) {
 				// The file could not be opened
 				Console.WriteLine("Error in HexFile: Unable to load file.");
 				return false;
 			}
-			else 
-			{
+			else {
 				FileStream file = new FileStream(this.filepath, FileMode.Open, FileAccess.Read);
 				StreamReader sr = new StreamReader(file);
 				
 				// Safely use the file stream
 
 				// For each line, read until eof.
-				while (!sr.EndOfStream)
-				{
+				while (!sr.EndOfStream) {
 					// read one line
 					string oneLine = sr.ReadLine();
 					
 					// If valid line
-					if (!oneLine.Equals("") && oneLine[0]==':')
-					{
+					if (!oneLine.Equals("") && oneLine[0]==':') {
 						lineDataCount = byte.Parse(oneLine.Substring(1,2), NumberStyles.HexNumber);
 						lineAddr =  ulong.Parse(oneLine.Substring(3,4),NumberStyles.HexNumber) & 65535;	 
 						lineCode = byte.Parse(oneLine.Substring(7,2), NumberStyles.HexNumber);   
 				
 						fullAddr = (lineAddrHigh * 65536) + lineAddr;
 					
-						switch(lineCode)
-						{
+						switch(lineCode) {
 								case 0:
 									this.length +=lineDataCount;
 									if ((fullAddr + lineDataCount - 1) > this.addrUpper) this.addrUpper = fullAddr + lineDataCount - 1;
 									if (lineCode == 0 && fullAddr < this.addrLower) this.addrLower = fullAddr;
-									for (int j = 0; j < lineDataCount; j++)
-									{
+									for (int j = 0; j < lineDataCount; j++) {
 										buff[fullAddr] = byte.Parse(oneLine.Substring(j * 2 + 9, 2), System.Globalization.NumberStyles.HexNumber);
 										buff[fullAddr] &= (byte)255;
 										fullAddr++;
@@ -93,9 +84,7 @@ namespace canBootloader
 								case 1: break; 
 							
 						}
-
 					}
-				
 				}
 
 				this.valid = true;

@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace canBootloader
-{
-	public class CanPacket
-	{
+namespace canBootloader {
+	public class CanPacket {
 		private byte pktclass = 0;
 		private byte type = 0;
 		private byte nid = 0;
@@ -14,8 +12,7 @@ namespace canBootloader
 		private byte data_length = 0;
 		private byte[] data = new byte[8];
 
-		public CanPacket(byte[] raw,uint startIndex)
-		{ 
+		public CanPacket(byte[] raw,uint startIndex) { 
 			// 17 bytes, a packet.
 			// UART_START_BYTE id[0] id[1] id[2] id[3] extended remote_request data_length d[0] d[1] d[2] d[3] d[4] d[5] d[6] d[7] UART_END_BYTE
 			/*
@@ -42,8 +39,7 @@ namespace canBootloader
 			for (int i = 0; i < 8; i++) this.data[i] = raw[startIndex + 7 + i];
 		}
 
-		public CanPacket(byte pktclass, byte type, byte nid, byte sid, byte rid, byte data_length, byte[] data)
-		{ 
+		public CanPacket(byte pktclass, byte type, byte nid, byte sid, byte rid, byte data_length, byte[] data) { 
 			this.pktclass=pktclass;
 			this.type=type;
 			this.nid=nid;
@@ -53,13 +49,11 @@ namespace canBootloader
 			for(int i=0;i<8;i++) this.data[i]=data[i];
 		}
 
-		public override int GetHashCode()
-		{
+		public override int GetHashCode() {
 			return base.GetHashCode();
 		}
 
-		public override bool  Equals(Object obj)
-		{ 
+		public override bool  Equals(Object obj) { 
 			CanPacket cpm = (CanPacket)obj;
 
 			byte[] bytes = cpm.getData();
@@ -78,8 +72,7 @@ namespace canBootloader
 		public byte getDataLength(){ return this.data_length; }
 		public byte[] getData(){ return this.data; }
 
-		public override string ToString()
-		{
+		public override string ToString() {
 			string str = "";
 
 			str = "pktclass: "+pktclass.ToString()+", type: "+type.ToString()+", nid: "+nid.ToString()+", sid: "+sid.ToString()+", rid: "+rid.ToString()+",data_length: "+data_length.ToString()+", data: ";
@@ -89,8 +82,7 @@ namespace canBootloader
 		}
 
 
-		public byte[] getBytes()
-		{
+		public byte[] getBytes() {
 			byte[] bytes = new byte[15];
 
 			// 17 bytes, a packet.

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace canBootloader
-{
-	public class Downloader
-	{
+namespace canBootloader {
+	public class Downloader {
 		private HexFile hf;
 		private SerialConnection sc;
 		private Thread down;
@@ -43,28 +41,24 @@ namespace canBootloader
 		private long timeStart = 0;
 
 
-		public Downloader(HexFile hf, SerialConnection sc, byte receiveID) 
-		{
+		public Downloader(HexFile hf, SerialConnection sc, byte receiveID) {
 			this.hf = hf;
 			this.sc = sc;
 			this.receiveID = receiveID;
 		}
 
-		public bool go() 
-		{
+		public bool go() {
 			if (sc==null || hf==null || hf.getLength()==0 || !sc.isOpen()) return false;
 			down = new Thread(new ThreadStart(downloader));
 			down.Start();
 			return true;
 		}
 
-		public void abort()
-		{
+		public void abort() {
 			if (down != null && down.IsAlive) down.Abort();
 		}
 
-		public void downloader()
-		{
+		public void downloader() {
 			dState pgs = dState.SEND_START;
 			int t = 0;
 			CanPacket outCm = null;
@@ -74,19 +68,15 @@ namespace canBootloader
 			ulong currentAddress = 0;
 
 
-			try
-			{
-				while (true)
-				{
+			try {
+				while (true) {
 					bool hasMessage = sc.getPacket(out cm);
-					if (hasMessage)
-					{
+					if (hasMessage) {
 						Array.Copy(cm.getData(), data, 8);
 					}
 					
 				   
-					switch (pgs)
-					{
+					switch (pgs) {
 						case dState.SEND_START:
 							// Send boot start packet to target.
 							// and wait for ack.
@@ -106,24 +96,20 @@ namespace canBootloader
 
 						case dState.WAIT_ACK_PRG:
 							// Check for timeout, resend start packet in that case..
-							if ((Environment.TickCount - t) > TIMEOUT_MS)
-							{
+							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for start prg ack.");
 								pgs = dState.DONE;
 							}
 
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID)
-							{
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
-								if (cm.getType() == CAN_NMT_PGM_ACK)
-								{
+								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									// Start sending program data..
 									byteSent = 0;
 									pgs = dState.SEND_PGM_DATA;
 								}
-								else if (cm.getType() == CAN_NMT_PGM_NACK )
-								{ 
+								else if (cm.getType() == CAN_NMT_PGM_NACK ) { 
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_START.");
 									pgs = dState.DONE;
@@ -136,8 +122,7 @@ namespace canBootloader
 							//Console.WriteLine("byteSent = "+byteSent);
 							Console.Write(".");
 							// Send program data.
-							for (ulong i = 0; i < 6; i++)
-							{ 
+							for (ulong i = 0; i < 6; i++) { 
 								// Populate data.
 								data[i+2] = hf.getByte(currentAddress + i + byteSent);
 							}
@@ -153,35 +138,29 @@ namespace canBootloader
 
 						case dState.WAIT_ACK_DATA:
 							// Wait for pgm ack.
-							if ((Environment.TickCount - t) > 2*TIMEOUT_MS)
-							{
+							if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
 								// Woops, error. 
 								Console.WriteLine("Timeout while waiting for data ack.");
 								pgs = dState.DONE;
 							}
 
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID)
-							{
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
-								if (cm.getType() == CAN_NMT_PGM_ACK)
-								{
+								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									//currentAddress += 2;
 									// Check if end.
-									if (currentAddress + byteSent > hf.getAddrUpper())
-									{
+									if (currentAddress + byteSent > hf.getAddrUpper()) {
 										// Yes, we are done, send done.
 										pgs = dState.SEND_DONE;
 									}
-									else
-									{ 
+									else { 
 										// More to write.
 										//byteSent = 0;
 										pgs = dState.SEND_PGM_DATA;
 									}
 								}
-								else if (cm.getType() == CAN_NMT_PGM_NACK)
-								{
+								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_DATA.");
 									pgs = dState.DONE;
@@ -204,25 +183,21 @@ namespace canBootloader
 							
 						case dState.WAIT_DONE:
 							// Check for timeout, resend done packet in that case..
-							if ((Environment.TickCount - t) > TIMEOUT_MS)
-							{
+							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for end prg ack.");
 								pgs = dState.DONE;
 							}
 
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID)
-							{
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
-								if (cm.getType() == CAN_NMT_PGM_ACK)
-								{
+								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									Console.WriteLine("Done, successfully programmed application.");
 									// Start sending program data..
 									byteSent = 0;
 									pgs = dState.DONE;
 								}
-								else if (cm.getType() == CAN_NMT_PGM_NACK)
-								{
+								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else resend addr..
 									Console.WriteLine("Nack on CAN_NMT_PGM_END.");
 									pgs = dState.DONE;
@@ -237,8 +212,7 @@ namespace canBootloader
 					}
 				}
 
-			} catch(Exception e) 
-			{
+			} catch(Exception e) {
 				Console.WriteLine("Aborted or done.");
 				//Console.WriteLine(e);
 
