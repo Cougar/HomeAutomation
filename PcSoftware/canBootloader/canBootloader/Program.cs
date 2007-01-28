@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace canBootloader
-{
-	class Program
-	{
+namespace canBootloader {
+	class Program {
 		static HexFile hf;
 		static SerialConnection sc;
 		static Downloader dl;
@@ -15,8 +13,7 @@ namespace canBootloader
 		static private string argHexfile;
 		static private byte argReceiverID;
 				
-		static void Main(string[] args)
-		{
+		static void Main(string[] args) {
 			bool error = false;
 			if (args.Length != 4) {
 				Console.WriteLine("Syntax: program.exe <port> <baudrate> <hexfile> <nodeaddress>");
@@ -58,24 +55,20 @@ namespace canBootloader
 				Console.WriteLine("exit - exit program.");
 	
 				string instr;
-				do
-				{
+				do {
 					Console.Write("> ");
 					instr = Console.ReadLine().ToLower();
 				} while (parseInput(instr));
 			}
 		}
 
-		static private bool parseInput(string instr)
-		{
-			if (instr.Equals("load"))
-			{
+		static private bool parseInput(string instr) {
+			if (instr.Equals("load")) {
 				Console.WriteLine("loading...");
 				//string filepath = "/home/arune/eclipse/c/AVR-App/main.hex";
 				string filepath = argHexfile;
 				hf = new HexFile();
-				if (hf.loadHex(filepath))
-				{
+				if (hf.loadHex(filepath)) {
 					Console.WriteLine("done!");
 					Console.WriteLine("File "+filepath+" loaded.");
 					Console.WriteLine("Size: " + hf.getLength().ToString() + " bytes, end adress " + hf.getAddrUpper().ToString() + "(0x" + hf.getAddrUpper().ToString("X") + ").");
@@ -83,12 +76,10 @@ namespace canBootloader
 				else Console.WriteLine("Error loading " + filepath + "!");
 				
 			}
-			else if (instr.Equals("go"))
-			{
+			else if (instr.Equals("go")) {
 				Console.WriteLine("Connecting..");
 				sc = new SerialConnection();
-				try
-				{
+				try {
 					sc.setConfiguration(Int32.Parse(argBaud), System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
@@ -97,16 +88,13 @@ namespace canBootloader
 				if (!dl.go()) { Console.WriteLine("Error gooing..."); return true; }
 
 			}
-			else if (instr.Equals("abort"))
-			{
+			else if (instr.Equals("abort")) {
 				if (dl != null) dl.abort();
 			}
-			else if (instr.Equals("exit"))
-			{
+			else if (instr.Equals("exit")) {
 				return false;
 			}
-			else
-			{
+			else {
 				Console.WriteLine("Unknown command.");
 			}
 
