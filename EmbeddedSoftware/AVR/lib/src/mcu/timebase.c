@@ -52,9 +52,9 @@ void Timebase_Init() {
 #if defined(TIMER2)
 	#if defined(__AVR_ATmega8__)
 	#if TIMEBASE_PRESCALE == 64
-	TCCR2 = (1<<CS21) | (1<<CS20);	// prescaler: 64
+	TCCR2 = (1<<CS22);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256
-	TCCR2 = (1<<CS22); 				// prescaler: 256
+	TCCR2 = (1<<CS22) | (1<<CS21); // prescaler: 256
 	#endif
 	TCNT2 = TIMEBASE_RELOAD; // set initial reload-value
 	TIFR  |= (1<<TOV2);  // clear overflow int.
