@@ -17,7 +17,7 @@ namespace canBootloader {
 		private const byte MY_NID = 0x0;
 		
 		static private string argPort;
-		static private string argBaud;
+		static private int argBaud;
 		static private string argHexfile;
 		static private byte argReceiverID;
 				
@@ -35,35 +35,39 @@ namespace canBootloader {
                 return;
 			} 
 				
-			//Console.WriteLine("arg0: " + args[0] + "\n");
-			argPort = args[0];
-			argBaud = args[1];
-			argHexfile = args[2];
-			if (args[3].Length > 1) {
-				if (args[3].Substring(0, 2).Equals("0x")) {
-					if (args[3].Length == 3) {
-						argReceiverID = byte.Parse(args[3].Substring(2, 1), System.Globalization.NumberStyles.HexNumber);
-					} else if (args[3].Length == 4) {
-						argReceiverID = byte.Parse(args[3].Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+			if (!error) {
+				//Console.WriteLine("arg0: " + args[0] + "\n");
+				argPort = args[0];
+				argBaud = Int32.Parse(args[1]);
+				argHexfile = args[2];
+				if (args[3].Length > 1) {
+					if (args[3].Substring(0, 2).Equals("0x")) {
+						if (args[3].Length == 3) {
+							argReceiverID = byte.Parse(args[3].Substring(2, 1), System.Globalization.NumberStyles.HexNumber);
+						} else if (args[3].Length == 4) {
+							argReceiverID = byte.Parse(args[3].Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+						} else {
+							Console.WriteLine("nodeadress error!");
+							error = true;
+						}
 					} else {
-						Console.WriteLine("nodeadress error!");
-						error = true;
+						argReceiverID = byte.Parse(args[3]);
 					}
 				} else {
 					argReceiverID = byte.Parse(args[3]);
 				}
-			} else {
-				argReceiverID = byte.Parse(args[3]);
 			}
+
 			if (!error) {
 				Console.WriteLine("canBootloader");
 				Console.WriteLine("Nodeaddress: "+argReceiverID);
+				Console.WriteLine("Baudrate: "+argBaud);
 				Console.WriteLine("Commands:");
-				Console.WriteLine("load - Load predefined hexfile.");
-				Console.WriteLine("go - download hexfile.");
+				Console.WriteLine("load  - Load predefined hexfile.");
+				Console.WriteLine("go    - download hexfile.");
 				Console.WriteLine("start - start application in node.");
 				Console.WriteLine("reset - reset node.");
-				Console.WriteLine("exit - exit program.");
+				Console.WriteLine("exit  - exit program.");
 	
 				string instr;
 				do {
@@ -91,7 +95,7 @@ namespace canBootloader {
 				Console.WriteLine("Connecting..");
 				sc = new SerialConnection();
 				try {
-					sc.setConfiguration(Int32.Parse(argBaud), System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
+					sc.setConfiguration(argBaud, System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
@@ -103,7 +107,7 @@ namespace canBootloader {
 				Console.WriteLine("Starting..");
 				sc = new SerialConnection();
 				try {
-					sc.setConfiguration(Int32.Parse(argBaud), System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
+					sc.setConfiguration(argBaud, System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
@@ -116,7 +120,7 @@ namespace canBootloader {
 				Console.WriteLine("Resetting..");
 				sc = new SerialConnection();
 				try {
-					sc.setConfiguration(Int32.Parse(argBaud), System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
+					sc.setConfiguration(argBaud, System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
