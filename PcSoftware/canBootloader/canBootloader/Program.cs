@@ -32,6 +32,7 @@ namespace canBootloader {
 				Console.WriteLine("");
 				Console.WriteLine("example: program.exe /dev/ttyUSB0 19200 /tmp/program.hex 24");
 				error = true;
+                return;
 			} 
 				
 			//Console.WriteLine("arg0: " + args[0] + "\n");
@@ -96,7 +97,7 @@ namespace canBootloader {
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
 				dl = new Downloader(hf, sc, argReceiverID);
 				if (!dl.go()) { Console.WriteLine("Error gooing..."); return true; }
-
+                sc.close();
 			}
 			else if (instr.Equals("start")) {
 				Console.WriteLine("Starting..");
@@ -106,10 +107,10 @@ namespace canBootloader {
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
-				
 				byte[] data = new byte[8];
 				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_START_APP, MY_NID, MY_ID, argReceiverID, 0, data);
 				sc.writePacket(cp);
+                sc.close();
 			}
 			else if (instr.Equals("reset")) {
 				Console.WriteLine("Resetting..");
@@ -123,6 +124,7 @@ namespace canBootloader {
 				byte[] data = new byte[8];
 				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_NID, MY_ID, argReceiverID, 0, data);
 				sc.writePacket(cp);
+                sc.close();
 			}
 			else if (instr.Equals("abort")) {
 				if (dl != null) dl.abort();

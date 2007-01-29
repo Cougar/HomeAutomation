@@ -7,7 +7,7 @@ namespace canBootloader {
 	public class Downloader {
 		private HexFile hf;
 		private SerialConnection sc;
-		private Thread down;
+		//private Thread down;
 		private byte receiveID;
 
 		private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_RESET, DONE, DEBUG_STATE1, DEBUG_STATE2 };
@@ -50,13 +50,14 @@ namespace canBootloader {
 
 		public bool go() {
 			if (sc==null || hf==null || hf.getLength()==0 || !sc.isOpen()) return false;
-			down = new Thread(new ThreadStart(downloader));
-			down.Start();
+			//down = new Thread(new ThreadStart(downloader));
+			//down.Start();
+            downloader();
 			return true;
 		}
 
 		public void abort() {
-			if (down != null && down.IsAlive) down.Abort();
+			//if (down != null && down.IsAlive) down.Abort();
 		}
 
 		public void downloader() {
@@ -67,16 +68,15 @@ namespace canBootloader {
 			byte[] data = new byte[8];
 			uint byteSent = 0;
 			ulong currentAddress = 0;
-
-
-			try {
-				while (true) {
+            bool done = false;
+            
+            try {
+				while (!done) {
 					bool hasMessage = sc.getPacket(out cm);
 					if (hasMessage) {
 						Array.Copy(cm.getData(), data, 8);
 					}
 					
-				   
 					switch (pgs) {
 						case dState.SEND_START:
 							// Send boot start packet to target.
@@ -216,12 +216,13 @@ namespace canBootloader {
 							
 
 						case dState.DONE:
-							down.Abort();
-							break;
+                            done = true;
+                            //down.Abort();
+                            break;
 					}
 				}
 
-			} catch(Exception e) {
+			} catch(Exception) {
 				Console.WriteLine("Aborted or done.");
 				//Console.WriteLine(e);
 
