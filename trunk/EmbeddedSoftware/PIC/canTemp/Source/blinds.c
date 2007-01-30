@@ -12,9 +12,7 @@
 
 #ifdef USE_BLINDS
 
-typedef enum {OPEN=2,CLOSE=4} MODE;
-
-MODE mode = OPEN;
+BLINDS_DIR mode = MIDDLE;
 WORD numSteps = 0;
 
 BYTE minCounter = 0;
@@ -41,36 +39,21 @@ void blindsInit()
 }
 
 /*
-*	Function: blindsClose
+*	Function: blindsTurn
 *
-*	Input:	Number of steps to perform. 255 equals full close.
+*	Input:	Direction and number of steps to perform.
 *	Output: none.
 *	Pre-conditions: none
 *	Affects: none.
 *	Depends: none.
 */
-void blindsClose(WORD steps)
+void blindsTurn(BLINDS_DIR dir, WORD steps)
 {
-	mode = CLOSE;
+	mode = dir;
 	minCounter = 0;
 	numSteps = steps;
 }
 
-/*
-*	Function: blindsClose
-*
-*	Input:	Number of steps to perform. 255 equals full open.
-*	Output: none.
-*	Pre-conditions: none
-*	Affects: none.
-*	Depends: none.
-*/
-void blindsOpen(WORD steps)
-{
-	mode = OPEN;
-	minCounter = 0;
-	numSteps = steps;
-}
 
 /*
 *	Function: blindsStop
@@ -86,10 +69,11 @@ void blindsStop()
 	numSteps = 0;
 }
 
+
 /*
-*	Function: blindsStop
+*	Function: blindsISR
 *
-*	Input:	Stop blind at current position.
+*	Input:	none.
 *	Output: none.
 *	Pre-conditions: none
 *	Affects: none.

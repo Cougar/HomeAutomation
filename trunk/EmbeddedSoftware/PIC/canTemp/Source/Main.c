@@ -64,7 +64,7 @@ void main()
 
 		if ((tickGet()-blinds)>2*TICK_SECOND)
 		{
-			//blindsOpen(3000);
+			//blindsTurn(MIDDLE,3000);
 			blinds = tickGet();
 		}
 	
