@@ -3,5 +3,7 @@ F:\MCP\projects\CAN\canBase\Source\Tick.c
 F:\MCP\projects\CAN\canTemp\Source\Main.c
 F:\MCP\projects\CAN\Include\EEAccess.c
 F:\MCP\projects\CAN\Include\adc.c
+F:\MCP\projects\CAN\canTemp\Source\blinds.c
 F:\MCP\projects\CAN\canTemp\Include\compiler.h
 F:\MCP\projects\CAN\canTemp\Include\stackTasks.h
+F:\MCP\projects\CAN\canTemp\Include\blinds.h

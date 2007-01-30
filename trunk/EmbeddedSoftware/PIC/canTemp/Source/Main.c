@@ -1,4 +1,4 @@
-﻿/*********************************************************************
+/*********************************************************************
  *
  *                  Main application
  *
@@ -21,20 +21,30 @@
 	#include <adc.h>
 #endif
 
-static void mainInit(void);
+#ifdef USE_BLINDS
+	#include <blinds.h>
+#endif
 
+static void mainInit(void);
 
 void main()
 {
+
 	static TICK t = 0;
 	CAN_MESSAGE outCm;
 
+
 	// Inits
 	mainInit();
+
 	canInit();
 
 	#ifdef USE_ADC
 		adcInit(TRUE,0b1011);
+	#endif
+
+	#ifdef USE_BLINDS
+		blindsInit();
 	#endif
 
 
@@ -44,12 +54,21 @@ void main()
 		static TICK temperature = 0;
 		static BYTE lastTemperature = TEMPERATURE_INSIDE;
 
+		static TICK blinds = 0;
 		
 		if ((tickGet()-t)>TICK_SECOND)
 		{
 			LED0_IO=~LED0_IO;
 			t = tickGet();
 		}
+
+		if ((tickGet()-blinds)>2*TICK_SECOND)
+		{
+			//blindsOpen(3000);
+			blinds = tickGet();
+		}
+	
+
 
 		#ifdef USE_ADC
 		if ((tickGet()-temperature)>TICK_SECOND*2) // Each 2 second, read temperature.
@@ -85,6 +104,10 @@ void main()
 void high_isr(void)
 {
 	canISR();
+
+	#ifdef USE_BLINDS
+		blindsISR();
+	#endif
 }
 
 
@@ -109,7 +132,8 @@ void low_isr(void)
 */
 void mainInit()
 {
-	LED0_TRIS=0;	
+	LED0_TRIS=0;
+	BLINDS0_TRIS=0;
 
 	// Enable Interrupts
     INTCONbits.GIEH = 1;
