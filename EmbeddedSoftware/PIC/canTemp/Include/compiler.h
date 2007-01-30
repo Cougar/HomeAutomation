@@ -20,6 +20,9 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
+#define BLINDS0_TRIS	(TRISCbits.TRISC4)
+#define BLINDS0_IO		(PORTCbits.RC4)
+
 #define TEMPERATURE_INSIDE 0b0000
 #define TEMPERATURE_OUTSIDE 0b0001
 
