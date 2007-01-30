@@ -16,8 +16,11 @@
 #include <delays.h>
 #include <compiler.h>
 
-#define TMR1_VAL 60536
 
+
+typedef enum {OPEN=2,MIDDLE=3,CLOSE=4} BLINDS_DIR;
+
+#define TMR1_VAL 60536
 // 0.5ms
 // Tosc/4 = 10Mhz = 0,0000001
 // .05ms = 5000
@@ -25,9 +28,7 @@
 
 void blindsInit(void);
 
-void blindsClose(WORD steps);
-void blindsOpen(WORD steps);
-
+void blindsTurn(BLINDS_DIR dir,WORD steps);
 void blindsStop(void);
 
 void blindsISR(void);

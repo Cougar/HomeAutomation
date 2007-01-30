@@ -1,5 +1,5 @@
 MPLINK 4.02, Linker
-Linker Map File - Created Tue Jan 30 12:13:00 2007
+Linker Map File - Created Tue Jan 30 12:48:30 2007
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -15,34 +15,34 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
          .code_EEAccess.o       code   0x001d42    program   0x0000ac
                      PROG       code   0x001dee    program   0x0000a6
                _cinit_scn       code   0x001e94    program   0x00009e
-           .code_blinds.o       code   0x001f32    program   0x00009e
-          .code_fxm3232.o       code   0x001fd0    program   0x000070
-         .code_fxd3232u.o       code   0x002040    program   0x000048
-             .code_Tick.o       code   0x002088    program   0x000044
-         .code_fxd1616u.o       code   0x0020cc    program   0x00002c
-             _startup_scn       code   0x0020f8    program   0x000018
-              D10TCYXCODE       code   0x002110    program   0x000016
-      .romdata_fxd1616u.o    romdata   0x002126    program   0x000000
-      .idata_fxd3232u.o_i    romdata   0x002126    program   0x000000
-      .idata_fxd1616u.o_i    romdata   0x002126    program   0x000000
-      .romdata_fxd3232u.o    romdata   0x002126    program   0x000000
-       .idata_fxm3232.o_i    romdata   0x002126    program   0x000000
-       .romdata_fxm3232.o    romdata   0x002126    program   0x000000
-        .romdata_blinds.o    romdata   0x002126    program   0x000000
-        .idata_blinds.o_i    romdata   0x002126    program   0x000004
-           .romdata_adc.o    romdata   0x002126    program   0x000000
-      .romdata_EEAccess.o    romdata   0x002126    program   0x000000
-          .romdata_Main.o    romdata   0x002126    program   0x000000
-          .romdata_Tick.o    romdata   0x002126    program   0x000000
-           .romdata_CAN.o    romdata   0x002126    program   0x000000
-         .romdata_c018i.o    romdata   0x002126    program   0x000000
-         .idata_c018i.o_i    romdata   0x002126    program   0x000000
-           .idata_adc.o_i    romdata   0x00212a    program   0x000001
-          .idata_Tick.o_i    romdata   0x00212b    program   0x000004
-          .idata_Main.o_i    romdata   0x00212f    program   0x000011
-      .idata_EEAccess.o_i    romdata   0x002140    program   0x000000
-           .idata_CAN.o_i    romdata   0x002140    program   0x000003
-            .code_c018i.o       code   0x002144    program   0x000000
+           .code_blinds.o       code   0x001f32    program   0x00007c
+          .code_fxm3232.o       code   0x001fae    program   0x000070
+         .code_fxd3232u.o       code   0x00201e    program   0x000048
+             .code_Tick.o       code   0x002066    program   0x000044
+         .code_fxd1616u.o       code   0x0020aa    program   0x00002c
+             _startup_scn       code   0x0020d6    program   0x000018
+              D10TCYXCODE       code   0x0020ee    program   0x000016
+      .romdata_fxd1616u.o    romdata   0x002104    program   0x000000
+      .idata_fxd3232u.o_i    romdata   0x002104    program   0x000000
+      .idata_fxd1616u.o_i    romdata   0x002104    program   0x000000
+      .romdata_fxd3232u.o    romdata   0x002104    program   0x000000
+       .idata_fxm3232.o_i    romdata   0x002104    program   0x000000
+       .romdata_fxm3232.o    romdata   0x002104    program   0x000000
+        .romdata_blinds.o    romdata   0x002104    program   0x000000
+        .idata_blinds.o_i    romdata   0x002104    program   0x000004
+           .romdata_adc.o    romdata   0x002104    program   0x000000
+      .romdata_EEAccess.o    romdata   0x002104    program   0x000000
+          .romdata_Main.o    romdata   0x002104    program   0x000000
+          .romdata_Tick.o    romdata   0x002104    program   0x000000
+           .romdata_CAN.o    romdata   0x002104    program   0x000000
+         .romdata_c018i.o    romdata   0x002104    program   0x000000
+         .idata_c018i.o_i    romdata   0x002104    program   0x000000
+           .idata_adc.o_i    romdata   0x002108    program   0x000001
+          .idata_Tick.o_i    romdata   0x002109    program   0x000004
+          .idata_Main.o_i    romdata   0x00210d    program   0x000011
+      .idata_EEAccess.o_i    romdata   0x00211e    program   0x000000
+           .idata_CAN.o_i    romdata   0x00211e    program   0x000003
+            .code_c018i.o       code   0x002122    program   0x000000
                 MATH_DATA      udata   0x000000       data   0x000014
                  .tmpdata      udata   0x000014       data   0x00000e
              .udata_CAN.o      udata   0x000060       data   0x000013
@@ -91,33 +91,33 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
                             0x001000    0x001005      
                             0x001008    0x00100d      
                             0x001018    0x00101d      
-                            0x00102a    0x002142      
-            4401 out of 99352 program addresses used, program memory utilization is 4%
+                            0x00102a    0x002120      
+            4367 out of 99352 program addresses used, program memory utilization is 4%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-                    D10_1   0x002120    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-                     D10x   0x002118    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+                    D10_1   0x0020fe    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+                     D10x   0x0020f6    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
                    D1616S   0x001e10    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
                 D1616SNEG   0x001e1e    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
                  D1616SOK   0x001e1a    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
                   D1616SX   0x001e30    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
                   DA1616S   0x001e00    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
-              Delay10TCYx   0x002110    program     extern C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+              Delay10TCYx   0x0020ee    program     extern C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
                    EERead   0x001d42    program     extern F:\MCP\projects\CAN\Include\EEAccess.c
                   EEWrite   0x001d8c    program     extern F:\MCP\projects\CAN\Include\EEAccess.c
                  FXD1616S   0x001dee    program     extern C:\MCC18\SRC\TRADIT~1\MATH\fxd1616s.asm
-                 FXD1616U   0x0020cc    program     extern C:\MCC18\src\TRADIT~1\math\fxd1616u.c
-                 FXD3232U   0x002040    program     extern C:\MCC18\src\TRADIT~1\math\fxd3232u.c
+                 FXD1616U   0x0020aa    program     extern C:\MCC18\src\TRADIT~1\math\fxd1616u.c
+                 FXD3232U   0x00201e    program     extern C:\MCC18\src\TRADIT~1\math\fxd3232u.c
                  FXM1616S   0x001e3a    program     extern C:\MCC18\SRC\TRADIT~1\MATH\fxm1616s.asm
-                  FXM3232   0x001fd0    program     extern C:\MCC18\src\TRADIT~1\math\fxm3232.c
+                  FXM3232   0x001fae    program     extern C:\MCC18\src\TRADIT~1\math\fxm3232.c
                TSIGN1616A   0x001e86    program     static C:\MCC18\SRC\TRADIT~1\MATH\fxm1616s.asm
-        _D10TCYXCODE_000A   0x00211a    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-        _D10TCYXCODE_000C   0x00211c    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-        _D10TCYXCODE_000E   0x00211e    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000A   0x0020f8    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000C   0x0020fa    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000E   0x0020fc    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
          ___else_lbl00031   0x00157c    program     static                          
          ___else_lbl00035   0x0016a2    program     static                          
            ___if_lbl00011   0x001198    program     static                          
@@ -135,11 +135,11 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
            ___if_lbl00030   0x001580    program     static                          
            ___if_lbl00033   0x0015aa    program     static                          
            ___if_lbl00034   0x0016a8    program     static                          
-       ___return_lbl00000   0x00203e    program     static                          
+       ___return_lbl00000   0x00201c    program     static                          
        ___return_lbl00000   0x000004    program     static                          
-       ___return_lbl00000   0x002086    program     static                          
-       ___return_lbl00000   0x0020f6    program     static                          
-       ___return_lbl00001   0x00210e    program     static                          
+       ___return_lbl00000   0x002064    program     static                          
+       ___return_lbl00000   0x0020d4    program     static                          
+       ___return_lbl00001   0x0020ec    program     static                          
        ___return_lbl00002   0x001f30    program     static                          
        ___return_lbl00008   0x00126a    program     static                          
        ___return_lbl00017   0x001004    program     static                          
@@ -162,21 +162,20 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
                __tmplbl_8   0x00159e    program     static                          
                 _do_cinit   0x001e94    program     extern C:\MCC18\src\traditional\startup\c018i.c
                    _entry   0x000000    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                   _false   0x002082    program     static                          
+                   _false   0x002060    program     static                          
                 _high_ISR   0x001008    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
                  _low_ISR   0x001018    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
                    _reset   0x001000    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
-                 _startup   0x0020f8    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                 _startup   0x0020d6    program     extern C:\MCC18\src\traditional\startup\c018i.c
                adcConvert   0x001b20    program     extern F:\MCP\projects\CAN\Include\adc.c
                   adcDone   0x001d3a    program     extern F:\MCP\projects\CAN\Include\adc.c
                    adcISR   0x001a78    program     extern F:\MCP\projects\CAN\Include\adc.c
                   adcInit   0x001a44    program     extern F:\MCP\projects\CAN\Include\adc.c
                   adcRead   0x001b66    program     extern F:\MCP\projects\CAN\Include\adc.c
-              blindsClose   0x001f46    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-                blindsISR   0x001f96    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+                blindsISR   0x001f74    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
                blindsInit   0x001f32    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-               blindsOpen   0x001f6a    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-               blindsStop   0x001f8e    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+               blindsStop   0x001f6c    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+               blindsTurn   0x001f46    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
              canGetPacket   0x00126c    program     static F:\MCP\projects\CAN\canBase\Source\CAN.c
                    canISR   0x001172    program     extern F:\MCP\projects\CAN\canBase\Source\CAN.c
                   canInit   0x001068    program     extern F:\MCP\projects\CAN\canBase\Source\CAN.c
@@ -186,19 +185,19 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
             copy_one_byte   0x001f0c    program     static                          
                      done   0x001f30    program     static                          
              done_copying   0x001f1a    program     static                          
-                  endloop   0x0020f2    program     static                          
+                  endloop   0x0020d0    program     static                          
                  high_isr   0x0018ea    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
-                     loop   0x0020d6    program     static                          
-                     loop   0x00204e    program     static                          
-                     loop   0x002108    program     static                          
+                     loop   0x0020b4    program     static                          
+                     loop   0x00202c    program     static                          
+                     loop   0x0020e6    program     static                          
                   low_isr   0x001984    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
                      main   0x0016fa    program     extern F:\MCP\projects\CAN\canTemp\Source\Main.c
                  mainInit   0x001a1a    program     static F:\MCP\projects\CAN\canTemp\Source\Main.c
           temperatureRead   0x001b76    program     extern F:\MCP\projects\CAN\Include\adc.c
                      test   0x001eae    program     static                          
-                  tickGet   0x00209c    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                 tickInit   0x002088    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-               tickUpdate   0x0020b0    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                  tickGet   0x00207a    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                 tickInit   0x002066    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+               tickUpdate   0x00208e    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
                    ADCON0   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                ADCON0bits   0x000fc2       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
                    ADCON1   0x000fc1       data     extern C:\MCC18\src\traditional\proc\p18f2685.asm
@@ -1039,32 +1038,31 @@ Linker Map File - Created Tue Jan 30 12:13:00 2007
        ___return_lbl00002   0x001f30    program     static                          
                      done   0x001f30    program     static                          
                blindsInit   0x001f32    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-              blindsClose   0x001f46    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-               blindsOpen   0x001f6a    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-               blindsStop   0x001f8e    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-                blindsISR   0x001f96    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
-                  FXM3232   0x001fd0    program     extern C:\MCC18\src\TRADIT~1\math\fxm3232.c
-       ___return_lbl00000   0x00203e    program     static                          
-                 FXD3232U   0x002040    program     extern C:\MCC18\src\TRADIT~1\math\fxd3232u.c
-                     loop   0x00204e    program     static                          
-                   _false   0x002082    program     static                          
-       ___return_lbl00000   0x002086    program     static                          
-                 tickInit   0x002088    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                  tickGet   0x00209c    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-               tickUpdate   0x0020b0    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
-                 FXD1616U   0x0020cc    program     extern C:\MCC18\src\TRADIT~1\math\fxd1616u.c
-                     loop   0x0020d6    program     static                          
-                  endloop   0x0020f2    program     static                          
-       ___return_lbl00000   0x0020f6    program     static                          
-                 _startup   0x0020f8    program     extern C:\MCC18\src\traditional\startup\c018i.c
-                     loop   0x002108    program     static                          
-       ___return_lbl00001   0x00210e    program     static                          
-              Delay10TCYx   0x002110    program     extern C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-                     D10x   0x002118    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-        _D10TCYXCODE_000A   0x00211a    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-        _D10TCYXCODE_000C   0x00211c    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-        _D10TCYXCODE_000E   0x00211e    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
-                    D10_1   0x002120    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+               blindsTurn   0x001f46    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+               blindsStop   0x001f6c    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+                blindsISR   0x001f74    program     extern F:\MCP\projects\CAN\canTemp\Source\blinds.c
+                  FXM3232   0x001fae    program     extern C:\MCC18\src\TRADIT~1\math\fxm3232.c
+       ___return_lbl00000   0x00201c    program     static                          
+                 FXD3232U   0x00201e    program     extern C:\MCC18\src\TRADIT~1\math\fxd3232u.c
+                     loop   0x00202c    program     static                          
+                   _false   0x002060    program     static                          
+       ___return_lbl00000   0x002064    program     static                          
+                 tickInit   0x002066    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                  tickGet   0x00207a    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+               tickUpdate   0x00208e    program     extern F:\MCP\projects\CAN\canBase\Source\Tick.c
+                 FXD1616U   0x0020aa    program     extern C:\MCC18\src\TRADIT~1\math\fxd1616u.c
+                     loop   0x0020b4    program     static                          
+                  endloop   0x0020d0    program     static                          
+       ___return_lbl00000   0x0020d4    program     static                          
+                 _startup   0x0020d6    program     extern C:\MCC18\src\traditional\startup\c018i.c
+                     loop   0x0020e6    program     static                          
+       ___return_lbl00001   0x0020ec    program     static                          
+              Delay10TCYx   0x0020ee    program     extern C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+                     D10x   0x0020f6    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000A   0x0020f8    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000C   0x0020fa    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+        _D10TCYXCODE_000E   0x0020fc    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
+                    D10_1   0x0020fe    program     static C:\MCC18\SRC\TRADIT~1\DELAYS\d10tcyx.asm
                      SIGN   0x000000       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
                 __FPFLAGS   0x000001       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
             __FPFLAGSbits   0x000001       data     extern C:\MCC18\SRC\TRADIT~1\MATH\cmath18.asm
