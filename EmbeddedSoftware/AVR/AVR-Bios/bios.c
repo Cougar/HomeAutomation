@@ -213,6 +213,7 @@ int main() {
 						addr += 2;
 					}
 					//update crc //cannot update crc here, data not written yet /arune
+					offset += bios_msg.DataLength - 2;	//let offset be last address to simplify crc calc later
 					//send CAN_NMT_PGM_ACK(offset)
 					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				} else {
@@ -228,7 +229,7 @@ int main() {
 				for (i=0; i < offset; i++) {
 					calccrc = _crc16_update(calccrc, pgm_read_byte(base_addr+i));
 				}
-				//tx_msg.Data.words[0] = crc;
+				tx_msg.Data.words[0] = calccrc;
 				if (data == calccrc) { //crc ok
 					//send CAN_NMT_PGM_ACK(crc)
 					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
