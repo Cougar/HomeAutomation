@@ -17,19 +17,14 @@
 #include <compiler.h>
 
 
-
-typedef enum {OPEN=2,MIDDLE=3,CLOSE=4} BLINDS_DIR;
-
 #define TMR1_VAL 60536
-// 0.5ms
-// Tosc/4 = 10Mhz = 0,0000001
-// .05ms = 5000
-// 65536-5000 = 
+// 0.05ms
+// Fosc/4 = 10Mhz = 0,0000001
+// 0.1ms = 500
 
 void blindsInit(void);
 
-void blindsTurn(BLINDS_DIR dir,WORD steps);
-void blindsStop(void);
+void blindsTurn(signed int angle);
 
 void blindsISR(void);
 
