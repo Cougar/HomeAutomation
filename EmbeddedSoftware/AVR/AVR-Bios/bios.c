@@ -9,6 +9,7 @@
 #include <stdio.h>
 #endif
 #include <string.h>
+#include <util/crc16.h>
 #include "flash.h"
 #include "vectors.h" // Must be included after sfr_defs.h but before any ISR()
 #include "mcp2515/mcp2515.h"
@@ -156,7 +157,7 @@ int main() {
 	tx_msg.Id = CAN_ID_NMT_BIOS_START;
 	tx_msg.DataLength = 3;
 	tx_msg.Data.words[0] = BIOS_VERSION;
-	 		
+	printf("BOIS start\n");
 	if (pgm_read_word(0) == 0xffff) {
 		// No application in flash
 		//send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
@@ -211,7 +212,7 @@ int main() {
 						flash_write_word(addr, data);
 						addr += 2;
 					}
-					//update crc
+					//update crc //cannot update crc here, data not written yet /arune
 					//send CAN_NMT_PGM_ACK(offset)
 					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				} else {
@@ -222,8 +223,13 @@ int main() {
 			if (nmt_type == CAN_NMT_PGM_END) {
 				flash_flush_buffer();
 				//check crc
+				data = bios_msg.Data.words[0];
+				uint16_t calccrc = 0;
+				for (i=0; i < offset; i++) {
+					calccrc = _crc16_update(calccrc, pgm_read_byte(base_addr+i));
+				}
 				//tx_msg.Data.words[0] = crc;
-				if (1) { //crc ok
+				if (data == calccrc) { //crc ok
 					//send CAN_NMT_PGM_ACK(crc)
 					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				} else {
