@@ -12,10 +12,7 @@
 
 #ifdef USE_BLINDS
 
-BLINDS_DIR mode = MIDDLE;
-WORD numSteps = 0;
-
-BYTE minCounter = 0;
+static unsigned int timerVal = 50536;
 
 /*
 *	Function: blindsInit
@@ -31,8 +28,8 @@ void blindsInit()
 	// setup timer one on 0.5ms.
 	// 16 bit write, system clock, prescale 2 bit, oscillator off, 
 	T1CON = 0b11000001;
-	TMR1H=((TMR1_VAL&0xFF00)>>8);
-	TMR1L=(TMR1_VAL&0xFF);
+	TMR1H=((timerVal&0xFF00)>>8);
+	TMR1L=(timerVal&0xFF);
 	PIR1bits.TMR1IF = 0;
 	PIE1bits.TMR1IE = 1;
 	IPR1bits.TMR1IP = 1; // high prior?
@@ -41,32 +38,25 @@ void blindsInit()
 /*
 *	Function: blindsTurn
 *
-*	Input:	Direction and number of steps to perform.
+*	Input:	Angle to turn to.
 *	Output: none.
 *	Pre-conditions: none
 *	Affects: none.
 *	Depends: none.
 */
-void blindsTurn(BLINDS_DIR dir, WORD steps)
+void blindsTurn(signed int angle)
 {
-	mode = dir;
-	minCounter = 0;
-	numSteps = steps;
-}
+	// 65536-TIME/0,0000001
+	// -90 0.5 ms = 60536 (5000)
+	// 0   1.5 ms = 50536 (15000)
+	// 90  2.5 ms = 40536 (25000)
 
-
-/*
-*	Function: blindsStop
-*
-*	Input:	Stop blind at current position.
-*	Output: none.
-*	Pre-conditions: none
-*	Affects: none.
-*	Depends: none.
-*/
-void blindsStop()
-{
-	numSteps = 0;
+	if (angle<-90) timerVal=60536;
+	else if (angle>90) timerVal=40536;
+	else
+	{
+		timerVal=60536-((90+angle)*111.111);
+	}
 }
 
 
@@ -83,20 +73,10 @@ void blindsISR(void)
 {
 	if (PIR1bits.TMR1IF == 1 && PIE1bits.TMR1IE == 1)
 	{
-		TMR1H=((TMR1_VAL&0xFF00)>>8);
-		TMR1L=(TMR1_VAL&0xFF);
+		TMR1H=((timerVal&0xFF00)>>8);
+		TMR1L=(timerVal&0xFF);
 
-
-		
-		if (numSteps>1)
-		{
-			if ((--minCounter)<1)
-			{
-				numSteps--;
-				BLINDS0_IO=~BLINDS0_IO;
-				minCounter=mode;
-			}	
-		}
+		BLINDS0_IO=~BLINDS0_IO;
 
 		PIR1bits.TMR1IF = 0;
 	}

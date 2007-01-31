@@ -48,12 +48,14 @@ void main()
 	#endif
 
 
+	
+
 	while(1)
 	{
 		static TICK t = 0;
 		static TICK temperature = 0;
 		static BYTE lastTemperature = TEMPERATURE_INSIDE;
-
+		static signed int angle = 90;
 		static TICK blinds = 0;
 		
 		if ((tickGet()-t)>TICK_SECOND)
@@ -62,12 +64,14 @@ void main()
 			t = tickGet();
 		}
 
+		#ifdef USE_BLINDS
 		if ((tickGet()-blinds)>2*TICK_SECOND)
 		{
-			//blindsTurn(MIDDLE,3000);
+			angle = (angle>0?-45:45);
+			blindsTurn(angle);
 			blinds = tickGet();
 		}
-	
+		#endif
 
 
 		#ifdef USE_ADC
