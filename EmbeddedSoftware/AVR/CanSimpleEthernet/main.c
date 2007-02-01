@@ -1,9 +1,9 @@
 /**
- * CAN Test. This program sends a CAN message once every second. The ID of the
- * message is increased each time for testing purposes.
+ * 
+ * 
  * 
  * @date	2006-11-21
- * @author	Jimmy Myhrman
+ * @author	Jimmy Myhrman, Anders Runeson
  *   
  */
 
@@ -17,7 +17,7 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-#include <serial.h>
+//#include <serial.h>
 #include <timebase.h>
 #include <ip_arp_udp_tcp.h>
 #include <enc28j60.h>
@@ -30,7 +30,10 @@
 // two devices:
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
 static uint8_t myip[4] = {193,11,254,22};
-static uint16_t remoteport =1200; // listen port for udp
+static uint16_t rmDumperPrt =1200; // remote port for dumping data
+static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
+static uint16_t locDumperPrt =1200; // listen port 
+static uint16_t locCan2SerPrt =1100; // listen port for Can2Serial-data
 static uint8_t gotserver = 0;
 
 // how did I get the mac addr? Translate the first 3 numbers into ascii is: TUX
@@ -57,7 +60,7 @@ int udp_putchar(char c, FILE* stream) {
         buffpoint++;
         
         if (c == '\n' || buffpoint > SEND_BUFFER_SIZE) {
-        	send_udp(buf, sendbuf, buffpoint, remoteport, remotemac, remoteip);
+        	send_udp(buf, sendbuf, buffpoint, rmDumperPrt, remotemac, remoteip);
         	buffpoint = 0;
         }
 	}
@@ -90,7 +93,7 @@ int main(void) {
 	
 	Mcu_Init();
 	Timebase_Init();
-	Serial_Init();
+	//Serial_Init();
 
     //alla printf ska skriva till udp
     stdout = &mystdout;    //set the output stream 
@@ -205,7 +208,10 @@ int main(void) {
 			        }
 	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V){
                         payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
-                        if (buf[UDP_DATA_P]=='t' && payloadlen==5){
+                        	printf("hej %x %x\n", buf[UDP_DST_PORT_H_P], buf[UDP_DST_PORT_L_P]);
+                        if ((buf[UDP_DST_PORT_H_P]==((locCan2SerPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locCan2SerPrt & 0xff))) {
+                        	printf("hoj\n");
+                        } else if (buf[UDP_DATA_P]=='t' && payloadlen==5){
                 	        uint8_t i=0;
                 	        if (gotserver == 0) {
 				                while(i<6){
@@ -220,9 +226,9 @@ int main(void) {
 	                        	i=0;
 								
 	                        	gotserver = 1;
-	                        	make_udp_reply_from_request(buf,"Got server",10,remoteport);
+	                        	make_udp_reply_from_request(buf,"Got server",10,rmDumperPrt);
                 	        } else {
-                	        	make_udp_reply_from_request(buf,"Already got server",18,remoteport);
+                	        	make_udp_reply_from_request(buf,"Already got server",18,rmDumperPrt);
                 	        }
                         }
 	                }			            
