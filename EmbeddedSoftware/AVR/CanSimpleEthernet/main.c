@@ -48,6 +48,9 @@ static uint8_t buf[BUFFER_SIZE+1];
 static char sendbuf[SEND_BUFFER_SIZE+1];
 static uint8_t buffpoint;
  
+#define C2S_START_BYTE 253
+#define C2S_END_BYTE 250
+
 /*----------------------------------------------------------------------------
  * Putchar for udp
  * Implements a small buffer, sends packet over udp if buffer is full or 
@@ -159,13 +162,29 @@ int main(void) {
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
+			uint8_t i;
 			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
     		printf("data={ ");
-    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
+    		for (i=0; i<rxMsg.DataLength; i++) {
     			printf("%x ", rxMsg.Data.bytes[i]);
     		}
 	   		printf("}\n");
 	   		
+			//skicka också som udppaket till rmCan2SerPrt
+			char sendbuf2[17];
+			sendbuf2[0] = C2S_START_BYTE;
+			sendbuf2[1] = (uint8_t)rxMsg.Id;
+			sendbuf2[2] = (uint8_t)(rxMsg.Id>>8);
+			sendbuf2[3] = (uint8_t)(rxMsg.Id>>16);
+			sendbuf2[4] = (uint8_t)(rxMsg.Id>>24);
+			sendbuf2[5] = rxMsg.ExtendedFlag;
+			sendbuf2[6] = rxMsg.RemoteFlag;
+			sendbuf2[7] = rxMsg.DataLength;
+    		for (uint8_t i=0; i<8; i++) {
+    			sendbuf2[8+i] = rxMsg.Data.bytes[i];
+    		}
+			sendbuf2[16] = C2S_END_BYTE;
+			send_udp(buf, sendbuf2, 17, rmCan2SerPrt, remotemac, remoteip);
 		}
 		
 		//test-debug-kod
@@ -208,9 +227,24 @@ int main(void) {
 			        }
 	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V){
                         payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
-                        	printf("hej %x %x\n", buf[UDP_DST_PORT_H_P], buf[UDP_DST_PORT_L_P]);
+                        //printf("hej %x %x\n", buf[UDP_DST_PORT_H_P], buf[UDP_DST_PORT_L_P]);
                         if ((buf[UDP_DST_PORT_H_P]==((locCan2SerPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locCan2SerPrt & 0xff))) {
-                        	printf("hoj\n");
+							if (payloadlen==17) {	//ifsats ska in i ovan eller nedan ifsats kanske? nedan
+								if (buf[UDP_DATA_P]==C2S_START_BYTE && buf[UDP_DATA_P+16]==C2S_END_BYTE) {
+									Can_Message_t cm;
+									//cm.Id = 0;
+									cm.DataLength = buf[UDP_DATA_P+7];
+									cm.RemoteFlag = buf[UDP_DATA_P+6];
+									cm.ExtendedFlag = buf[UDP_DATA_P+5];
+									cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
+									uint8_t i;
+									for (i = 0; i < cm.DataLength; i++) {
+										cm.Data.bytes[i] = buf[UDP_DATA_P+8+i];
+									}
+									Can_Send(&cm);
+								}
+								printf("hoj\n");
+							}
                         } else if (buf[UDP_DATA_P]=='t' && payloadlen==5){
                 	        uint8_t i=0;
                 	        if (gotserver == 0) {
