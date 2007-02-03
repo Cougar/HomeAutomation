@@ -44,7 +44,7 @@ void blindsInit()
 *	Affects: none.
 *	Depends: none.
 */
-void blindsTurn(signed int angle)
+void blindsTurn(signed char angle)
 {
 	// 65536-TIME/0,0000001
 	// -90 0.5 ms = 60536 (5000)
@@ -55,7 +55,7 @@ void blindsTurn(signed int angle)
 	else if (angle>90) timerVal=40536;
 	else
 	{
-		timerVal=60536-((90+angle)*111.111);
+		timerVal=60536-(unsigned int)((90+(signed int)angle)*111.111);
 	}
 }
 

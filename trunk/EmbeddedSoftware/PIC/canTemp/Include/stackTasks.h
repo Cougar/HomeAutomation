@@ -12,8 +12,8 @@
 #ifndef stackTasks_H
 #define stackTasks_H
 
-#define USE_ADC
-//#define USE_BLINDS
+//#define USE_ADC
+#define USE_BLINDS
 
 #define TICKS_PER_SECOND               (100)        // 10ms
 
