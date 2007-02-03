@@ -1,14 +1,14 @@
 PRG            = bios
 OBJ            = vectors.o bios.o flash.o mcp2515/mcp2515.o
-MCU_TARGET     = atmega8
+MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
-BIOS_START     = 0x1400
+BIOS_START     = 0xd00
 BOOT_START     = 0x1e00
 
 DEFS           =
 LIBS           =
 
-TARGET_CLK_SRC = 0x24
+TARGET_CLK_SRC = 0xe2
 #TARGET_CLK_SRC for mega88		
 #0xe7		#CKDIV8=1, external crystal
 #0xe0		#CKDIV8=1, external clock
@@ -16,6 +16,9 @@ TARGET_CLK_SRC = 0x24
 #TARGET_CLK_SRC for mega8
 #0x24		#BODLEVEL = 4.0V, BODEN=enabled, internal 8MHz
 #0x20		#BODLEVEL = 4.0V, BODEN=enabled, external clock
+
+#uncomment this line for programming fuses 
+#PRGFUSES 	= ok
 
 #
 # You should not have to change anything below here.
@@ -35,19 +38,19 @@ SIZE           = avr-size
 SZFLAGS        = 
 UPLOAD         = avrdude
 #avrispv2 avr910
-ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyS0 -c avr910 -b 115200 -U flash:w:$(PRG).hex
+ULFLAGS        = -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avrispv2 -b 115200 -U flash:w:$(PRG).hex
 
 ifeq ($(MCU_TARGET),atmega88)
-#BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1
-EXTFUSE  = 0x06
+#BOOTRST=0, BOOTSZ0=0, BOOTSZ1=1
+EXTFUSE  = 0x04
 #BODLEVEL = 4.3V
 HIGHFUSE = 0xdc
 LOWFUSE  = $(TARGET_CLK_SRC)
 endif
 
 ifeq ($(MCU_TARGET),atmega8)
-#BOOTRST=0, BOOTSZ0=1, BOOTSZ1=1
-HIGHFUSE = 0xd6
+#BOOTRST=0, BOOTSZ0=0, BOOTSZ1=1
+HIGHFUSE = 0xd4
 LOWFUSE  = $(TARGET_CLK_SRC)
 endif
 
@@ -63,7 +66,9 @@ AVRDUDE_WRITE_FUSEBITS += -U lfuse:w:$(LOWFUSE):m
 endif
 
 #comment this line for not programming fusebits
-#ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
+ifdef PRGFUSES
+ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
+endif
 
 default: $(PRG).elf lst
 	@$(SIZE) $(SZFLAGS) $(PRG).elf
