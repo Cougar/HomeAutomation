@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
+#include <avr/wdt.h>
 #include "flash.h"
 
 static uint16_t flash_prev_addr;
@@ -41,6 +42,12 @@ void flash_load_buffer(uint16_t addr) {
 	//TODO: Load current flash page contents into temporary buffer to implement
 	// flash read-modify-writes with word granularity. (If possible, the data
 	// sheet is a little fuzzy about this.)
+	// Update: It seems it isn't possible to write any location in the temporary
+	// buffer more than once without destroying the buffer. To implement this
+	// functionality, a sram based buffer is probably neccessary. Problem is, 
+	// how should it be allocated? A global buffer uses valuable .bss space.
+	// All functions should probably take a pointer to a buffer allocated by
+	// main code.
 	uint8_t i;
 	uint16_t data;
 	uint16_t page = (addr / SPM_PAGESIZE) * SPM_PAGESIZE;
@@ -75,9 +82,12 @@ void flash_init() {
 void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 	uint16_t i;
 	flash_init();
+	cli(); // From this point we're on our own
 	for (i = 0; i < len; i+=2) {
 		flash_write_word(dst + i, pgm_read_word(src + i));
+		wdt_reset();
 	}
 	flash_flush_buffer();
+	while (1); // Nothing more we can do, hopefully there is a watchdog active
 }
 #endif

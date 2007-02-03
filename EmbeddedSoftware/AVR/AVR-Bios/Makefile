@@ -2,8 +2,8 @@ PRG            = bios
 OBJ            = vectors.o bios.o flash.o mcp2515/mcp2515.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os -mcall-prologues
-BIOS_START     = 0x1562
-BOOT_START     = 0x1f00
+BIOS_START     = 0x1400
+BOOT_START     = 0x1e00
 
 DEFS           =
 LIBS           =

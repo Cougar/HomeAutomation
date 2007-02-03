@@ -90,6 +90,7 @@ typedef struct {
 #define CAN_NMT_START_APP	0x07UL
 #define CAN_NMT_APP_START	0x08UL	//D0: ID7:0, D1:ID15:8, D2: VER7:0, D3:VER15:8
 #define CAN_NMT_HEARTBEAT	0x09UL
+#define CAN_NMT_PGM_COPY	0x0FUL	//D0: SRC7:0, D1:SRC15:8, D0: DST7:0, D1:DST15:8, D0: LEN7:0, D1:LEN15:8
 //------------------------------------
 #define CAN_SNS				0x02UL
 #define CAN_MASK_SNS_FUNCC	0x01FF8000
