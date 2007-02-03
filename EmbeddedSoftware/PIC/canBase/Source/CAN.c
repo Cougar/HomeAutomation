@@ -130,7 +130,7 @@ void canInit()
 	outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
 	outCm.data_length 				= 1;
 	outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_USER_STARTUP;
-	while(!canSendMessage(outCm,PRIO_HIGH));
+	canSendMessage(outCm,PRIO_HIGH);
 
 }
 
@@ -165,7 +165,7 @@ void canISR()
 		outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
 		outCm.data_length 				= 1;
 		outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_ALIVE;
-		while(!canSendMessage(outCm,PRIO_HIGH));
+		canSendMessage(outCm,PRIO_HIGH);
 			
 		heartbeat = tickGet();
 	}

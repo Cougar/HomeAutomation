@@ -24,7 +24,7 @@
 
 void blindsInit(void);
 
-void blindsTurn(signed int angle);
+void blindsTurn(signed char angle);
 
 void blindsISR(void);
 
