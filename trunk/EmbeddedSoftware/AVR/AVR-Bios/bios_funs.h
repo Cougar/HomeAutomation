@@ -2,8 +2,8 @@
 #define BIOS_FUNS_H_
 
 #define BIOS_BUILDTYPE_BIOS
-#define BIOS_VERSION 0x1004
-#define BIOS_UART
+#define BIOS_VERSION 0x1005
+//#define BIOS_UART
 
 #include "bios.h"
 

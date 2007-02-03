@@ -115,6 +115,7 @@ SECTIONS
   .bootloader __boot_start :
   {
     *(.boot_vectors)
+    . = ALIGN(64); /* To locate the bootloader code in a different flash page than the vectors. */
     __bootloader_start = . ;
     *(.bootloader)
     __bootloader_end = . ;

@@ -121,8 +121,9 @@ int main() {
 	void (*app_reset)(void) = 0;
 	uint8_t bios_state;
 	uint8_t nmt_type;
+	// This unneccessary initialization uses 8 bytes flash, just to make the compiler happy!
 	uint16_t base_addr = 0;
-	uint16_t offset;
+	uint16_t offset = 0;
 	uint16_t addr;
 	uint8_t len;
 	uint8_t i;
@@ -157,7 +158,9 @@ int main() {
 	tx_msg.Id = CAN_ID_NMT_BIOS_START;
 	tx_msg.DataLength = 3;
 	tx_msg.Data.words[0] = BIOS_VERSION;
-	printf("BOIS start\n");
+#ifdef BIOS_UART
+	printf("BIOS start\n");
+#endif
 	if (pgm_read_word(0) == 0xffff) {
 		// No application in flash
 		//send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
@@ -195,6 +198,18 @@ int main() {
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				tx_msg.Data.words[0] = base_addr;
 				bios_state = BIOS_PGM;
+			}
+			if (nmt_type == CAN_NMT_PGM_COPY) {
+				// For BIOS updating over CAN. Upload bios to application area,
+				// send this message with correct parameters to copy data from
+				// application to bios area and pray it will come alive again.
+				// Make extra really super sure that the .bootloader section is
+				// EXACTLY the same, except for the vector table (which MUST be
+				// updated) or go get your ISP.
+				flash_copy_data(bios_msg.Data.words[0], 
+				                bios_msg.Data.words[1], 
+				                bios_msg.Data.words[2]);
+				// flash_copy_data will never return.
 			}
 			break;
 		case BIOS_PGM:
