@@ -1,9 +1,6 @@
 /**
  * CAN RGB LED. This application is used to control a RGB LED.
- * It uses the HSL colorspace. Still under heavy development.
- * Still untested with a real RGB-LED, HSV Colorspace might be better suited. We'll see...
-
- * TODO: Use pointers in the HSL_2_RGB functions etc. It's currently a waste of memory.
+ * Still under heavy development
  * 
  * @date	2007-02-04
  * @author	Martin Nordén
@@ -29,17 +26,15 @@
  *---------------------------------------------------------------------------*/
 uint32_t timeStamp;
 
-uint8_t R;		//Current Red PWM dutycycle
-uint8_t G;		//Current Green PWM dutycycle
-uint8_t B;		//Current Blue PWM dutycycle
+uint8_t currR;	//Current Red
+uint8_t currG;	//Current Green
+uint8_t currB;	//Current Blue
 
-double currH;	//HSL går mellan 0 och 1
-double currS;
-double currL;
+uint8_t destR;	//Destination Red
+uint8_t destG;	//Destination Green
+uint8_t destB;	//Destination Blue
 
-double destH;
-double destS;
-double destL;
+uint8_t intensity;	//Current intensity.
 
 uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading
 uint8_t program;		//This variable keeps track of what program is currently running. 0 means no program.
@@ -49,7 +44,7 @@ uint8_t programstate;	//This variable keeps track of where in a program we curre
  * Functions
  * -------------------------------------------------------------------------*/
 void updateLED();
-uint8_t Hue_2_RGB(double v1, double v2, double v3);
+void reformatRGB(uint8_t R, uint8_t G, uint8_t B);
 
 
 /*-----------------------------------------------------------------------------
@@ -69,17 +64,17 @@ int main(void) {
 	DDRB |= (1<<PB1); /* Enable pin as output */
 
 //Initialize variables
-   	fadeSpeed = 20;
+   	fadeSpeed = 250;
 	timeStamp = 0;
 
 	Can_Message_t rxMsg;
-	
-	//Init HSL
-	currH = 0;
-	currS = 1;
-	currL = 0.5;
+	currR = 0x53;
+	currG = 0x15;
+	currB = 0xa0;
 
 	sei();	
+
+	reformatRGB(currR,currG,currB);
 
 	/* main loop */
 	while (1) {
@@ -88,9 +83,8 @@ int main(void) {
 
 		/* Time to see if we want to update our values */
 		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {
+			intensity = intensity -1;
 			timeStamp = Timebase_CurrentTime();
-			currH = currH + 0.01;
-			if (currH > 1) currH = 0;
 			updateLED();
 		}
 
@@ -121,30 +115,22 @@ int main(void) {
 
 void updateLED(){
 
+OCR1A = currR * intensity / 255;
 
-if ( currS == 0 )                       //HSL values = 0 ÷ 1
-{
-   R = currL * 255;                      //RGB results = 0 ÷ 255
-   G = currL * 255;
-   B = currL * 255;
-}
-else
-{
-   double var_1;
-   double var_2;
-   if ( currL < 0.5 ) var_2 = currL * ( 1 + currS );
-   else           var_2 = ( currL + currS ) - ( currS * currL );
+	Can_Message_t txMsg;
+	txMsg.Id = 0x55;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	txMsg.DataLength = 4;
+	
+	txMsg.Data.bytes[0] = currR * intensity / 255;
+	txMsg.Data.bytes[1] = currG * intensity / 255;
+	txMsg.Data.bytes[2] = currB * intensity / 255;
+	txMsg.Data.bytes[3] = intensity;
 
-   var_1 = 2 * currL - var_2;
-
-   R = Hue_2_RGB( var_1, var_2, currH + ( 1 / 3 ) );
-   G = Hue_2_RGB( var_1, var_2, currH );
-   B = Hue_2_RGB( var_1, var_2, currH - ( 1 / 3 ) );
-} 
+	Can_Send(&txMsg);
 
 
-
-OCR1A = R;
 
 //Red
 //Green
@@ -152,12 +138,25 @@ OCR1A = R;
 }
 
 
-uint8_t Hue_2_RGB(double v1, double v2, double vH )             //Function Hue_2_RGB
-{
-   if ( vH < 0 ) vH += 1;
-   if ( vH > 1 ) vH -= 1;
-   if ( ( 6 * vH ) < 1 ) return 255*( v1 + ( v2 - v1 ) * 6 * vH );
-   if ( ( 2 * vH ) < 1 ) return 255*( v2 );
-   if ( ( 3 * vH ) < 2 ) return 255*( v1 + ( v2 - v1 ) * ( ( 2 / 3 ) - vH ) * 6 );
-   return 255*( v1 );
+void reformatRGB(uint8_t R, uint8_t G, uint8_t B){
+	uint8_t maxvalue;
+	uint16_t tempcontainer;
+
+	if ((R>G)&(R>B)){
+		maxvalue = R;
+	} else if ((G>R)&(G>B)){
+		maxvalue = G;
+	} else {
+		maxvalue = B;
+	}
+
+	tempcontainer = R * 255;
+	currR = tempcontainer/maxvalue;
+	tempcontainer = G * 255;
+	currG = tempcontainer/maxvalue;
+	tempcontainer = B * 255;
+	currB = tempcontainer/maxvalue;
+
+	intensity = maxvalue;
+
 }
