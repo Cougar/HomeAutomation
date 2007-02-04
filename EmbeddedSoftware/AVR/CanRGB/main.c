@@ -1,9 +1,12 @@
 /**
- * CAN Test. This program sends a CAN message once every second. The ID of the
- * message is increased each time for testing purposes.
+ * CAN RGB LED. This application is used to control a RGB LED.
+ * It uses the HSL colorspace. Still under heavy development.
+ * Still untested with a real RGB-LED, HSV Colorspace might be better suited. We'll see...
+
+ * TODO: Use pointers in the HSL_2_RGB functions etc. It's currently a waste of memory.
  * 
- * @date	2006-11-21
- * @author	Jimmy Myhrman
+ * @date	2007-02-04
+ * @author	Martin Nordén
  *   
  */
 
@@ -24,14 +27,19 @@
 /*-----------------------------------------------------------------------------
  * Variables
  *---------------------------------------------------------------------------*/
+uint32_t timeStamp;
 
-uint8_t currRed;		//Current Red PWM dutycycle
-uint8_t currGreen;	//Current Green PWM dutycycle
-uint8_t currBlue;		//Current Blue PWM dutycycle
+uint8_t R;		//Current Red PWM dutycycle
+uint8_t G;		//Current Green PWM dutycycle
+uint8_t B;		//Current Blue PWM dutycycle
 
-uint8_t destRed;		//Destination Red PWM dutycycle
-uint8_t destGreen;	//Destination Green PWM dutycycle
-uint8_t destBlue;		//Destination Blue PWM dutycycle
+double currH;	//HSL går mellan 0 och 1
+double currS;
+double currL;
+
+double destH;
+double destS;
+double destL;
 
 uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading
 uint8_t program;		//This variable keeps track of what program is currently running. 0 means no program.
@@ -41,6 +49,7 @@ uint8_t programstate;	//This variable keeps track of where in a program we curre
  * Functions
  * -------------------------------------------------------------------------*/
 void updateLED();
+uint8_t Hue_2_RGB(double v1, double v2, double v3);
 
 
 /*-----------------------------------------------------------------------------
@@ -49,6 +58,7 @@ void updateLED();
 int main(void) {
 	Timebase_Init();
 	Serial_Init();
+	Can_Init();
 
 //Setting up OC1A, 16 bit counter used as 8 bit.
 	/* Use OC1A */
@@ -59,11 +69,15 @@ int main(void) {
 	DDRB |= (1<<PB1); /* Enable pin as output */
 
 //Initialize variables
-	destRed = 128;
-   	fadeSpeed = 10;
-	uint32_t timeStamp = 0;
+   	fadeSpeed = 20;
+	timeStamp = 0;
 
 	Can_Message_t rxMsg;
+	
+	//Init HSL
+	currH = 0;
+	currS = 1;
+	currL = 0.5;
 
 	sei();	
 
@@ -71,73 +85,16 @@ int main(void) {
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
-		
+
 		/* Time to see if we want to update our values */
 		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {
 			timeStamp = Timebase_CurrentTime();
+			currH = currH + 0.01;
+			if (currH > 1) currH = 0;
 			updateLED();
 		}
 
 
-		/* This code really needs cleaning up. Support for fade-programs */
-		/* Maybe create a struct for one program-step? TargetRED, TargetGREEN, TargetBLUE, Speed, NextAction? */
-		if (program != 0){
-			switch(program){
-				case 1:
-					if (destRed != 255){
-						destRed = destRed + 1;
-					}
-					break;
-				case 2:
-					if (destRed != 0){
-						destRed = destRed - 1;
-					}
-					break;
-				case 3:
-					switch(programstate){
-						case 0:
-							destRed = 0;
-							fadeSpeed = 10;
-							if (currRed == 0){
-								programstate = 1;
-							}
-						break;
-						case 1:
-							destRed = 255;
-							fadeSpeed = 100;
-							if (currRed == 255){
-								programstate = 2;
-							}
-						break;
-						case 2:
-							destRed = 60;
-							fadeSpeed = 5;
-							if (currRed == 60){
-								programstate = 3;
-							}
-						break;
-						case 3:
-							destRed = 170;
-							fadeSpeed = 20;
-							if (currRed == 170){
-								programstate = 4;
-							}
-						break;
-						case 4:
-							destRed = 0;
-							fadeSpeed = 40;
-							if (currRed == 40){
-								programstate = 0;
-								program = 0;
-							}
-						break;
-					}
-					break;
-			}
-		}
-
-
-		
 		/* check if any messages have been received */
 		/* A lot of remote control crap going on here now for testing */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
@@ -150,41 +107,6 @@ int main(void) {
 				program = 2;
 				fadeSpeed = 0;
 			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x20)){
-				program = 0;
-
-			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x21)){
-				program = 0;
-			}
-
-
-			//Ready-made programs!
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x01)){
-				destRed = 255;
-			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x02)){
-				destRed = 0;
-			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x04)){
-				destRed = 0;
-				fadeSpeed = 0;
-			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x05)){
-				destRed = 255;
-				fadeSpeed = 10;
-			}
-
-			if ((rxMsg.Data.bytes[0] == 0xf)&(rxMsg.Data.bytes[3] == 0x07)){
-				program = 3;
-				programstate = 0;
-			}
-
 		}
 
 
@@ -198,15 +120,44 @@ int main(void) {
 
 
 void updateLED(){
+
+
+if ( currS == 0 )                       //HSL values = 0 ÷ 1
+{
+   R = currL * 255;                      //RGB results = 0 ÷ 255
+   G = currL * 255;
+   B = currL * 255;
+}
+else
+{
+   double var_1;
+   double var_2;
+   if ( currL < 0.5 ) var_2 = currL * ( 1 + currS );
+   else           var_2 = ( currL + currS ) - ( currS * currL );
+
+   var_1 = 2 * currL - var_2;
+
+   R = Hue_2_RGB( var_1, var_2, currH + ( 1 / 3 ) );
+   G = Hue_2_RGB( var_1, var_2, currH );
+   B = Hue_2_RGB( var_1, var_2, currH - ( 1 / 3 ) );
+} 
+
+
+
+OCR1A = R;
+
 //Red
-	if (currRed < destRed){
-		currRed = currRed + 1;
-		OCR1A = currRed;
-	} else if (currRed > destRed){
-		currRed = currRed - 1;
-		OCR1A = currRed;
-	}
 //Green
 //Blue
 }
 
+
+uint8_t Hue_2_RGB(double v1, double v2, double vH )             //Function Hue_2_RGB
+{
+   if ( vH < 0 ) vH += 1;
+   if ( vH > 1 ) vH -= 1;
+   if ( ( 6 * vH ) < 1 ) return 255*( v1 + ( v2 - v1 ) * 6 * vH );
+   if ( ( 2 * vH ) < 1 ) return 255*( v2 );
+   if ( ( 3 * vH ) < 2 ) return 255*( v1 + ( v2 - v1 ) * ( ( 2 / 3 ) - vH ) * 6 );
+   return 255*( v1 );
+}
