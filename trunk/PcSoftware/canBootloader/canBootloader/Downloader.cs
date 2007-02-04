@@ -50,8 +50,6 @@ namespace canBootloader {
 
 		public bool go() {
 			if (sc==null || hf==null || hf.getLength()==0 || !sc.isOpen()) return false;
-			//down = new Thread(new ThreadStart(downloader));
-			//down.Start();
             downloader();
 			return true;
 		}
@@ -101,7 +99,7 @@ namespace canBootloader {
 								Console.WriteLine("Timeout while waiting for start prg ack.");
 								pgs = dState.SEND_RESET;
 							}
-
+							Thread.Sleep(1);
 							// If received ack.
 							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
@@ -144,7 +142,7 @@ namespace canBootloader {
 								Console.WriteLine("Timeout while waiting for data ack.");
 								pgs = dState.SEND_RESET;
 							}
-
+							Thread.Sleep(1);
 							// If received ack.
 							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
@@ -188,7 +186,7 @@ namespace canBootloader {
 								Console.WriteLine("Timeout while waiting for end prg ack.");
 								pgs = dState.SEND_RESET;
 							}
-
+							Thread.Sleep(1);
 							// If received ack.
 							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
@@ -218,6 +216,20 @@ namespace canBootloader {
 						case dState.DONE:
                             done = true;
                             //down.Abort();
+							long tsecs = ((Environment.TickCount - timeStart) / 1000);
+			
+							double bitRate = hf.getLength() / ((double)(Environment.TickCount - timeStart) / 1000.0);
+			
+							if (tsecs <= 0) tsecs = 1;
+			
+							long mins = tsecs / 60;
+							long secs = tsecs % 60;
+							string pad = "";
+							if (secs < 10) {
+								pad = "0";
+							}
+							Console.WriteLine("Time spent: " + mins + ":" + pad + secs + ", " + Math.Round(bitRate, 2) + " bytes/s");
+							//Console.Write("> ");
                             break;
 					}
 				}
@@ -234,8 +246,11 @@ namespace canBootloader {
 
 				long mins = tsecs / 60;
 				long secs = tsecs % 60;
-
-				Console.WriteLine("Time spent: " + mins + ":" + secs + ", " + Math.Round(bitRate, 2) + " Bps");
+				string pad = "";
+				if (secs < 10) {
+					pad = "0";
+				}
+				Console.WriteLine("Time spent: " + mins + ":" + pad + secs + ", " + Math.Round(bitRate, 2) + " bytes/s");
 				Console.Write("> ");
 			}
 		}

@@ -25,12 +25,13 @@ namespace canBootloader {
 			bool error = false;
 			if (args.Length != 4) {
 				Console.WriteLine("Syntax: program.exe <port> <baudrate> <hexfile> <nodeaddress>");
-				Console.WriteLine("port        - can be in form of /dev/ttyS0 or com2");
-				Console.WriteLine("baudrate    - any baudrate like 19200");
+				Console.WriteLine("port        - can be in form of /dev/ttyS0 or com2 or /udp/ipaddress/port");
+				Console.WriteLine("baudrate    - any baudrate like 19200 (for udp baudrate could be any number)");
 				Console.WriteLine("hexfile     - path to the hexfile to program");
 				Console.WriteLine("nodeaddress - address of the node to program, in hex or decimal");
 				Console.WriteLine("");
 				Console.WriteLine("example: program.exe /dev/ttyUSB0 19200 /tmp/program.hex 24");
+				Console.WriteLine("example: program.exe /udp/192.168.0.10/1100 0 /tmp/program.hex 24");
 				error = true;
                 return;
 			} 
