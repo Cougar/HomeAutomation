@@ -24,27 +24,32 @@
 /*-----------------------------------------------------------------------------
  * Variables
  *---------------------------------------------------------------------------*/
-uint32_t timeStamp;
+uint32_t timeStamp;	//TimeStamp to keep track of time
+uint32_t dimStamp;	//Timestamp to keep track of dimmer changes
 
-uint8_t currR;	//Current Red
-uint8_t currG;	//Current Green
-uint8_t currB;	//Current Blue
+uint8_t currR;	//Current Red 0->255
+uint8_t currG;	//Current Green 0->255
+uint8_t currB;	//Current Blue 0->255
 
 uint8_t destR;	//Destination Red
 uint8_t destG;	//Destination Green
 uint8_t destB;	//Destination Blue
 
-uint8_t intensity;	//Current intensity.
+uint8_t currIntens;	//Current intensity. 0->255
+uint8_t destIntens;	//Destination intensity. 0->255
 
-uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading
-uint8_t program;		//This variable keeps track of what program is currently running. 0 means no program.
-uint8_t programstate;	//This variable keeps track of where in a program we currently are.
+uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading. Sets the speed of colorchange.
+uint8_t dimSpeed;		//Dimmer speed. Sets the speed of intensitychange.
+
+uint8_t program;		//This variable keeps track of what program is currently running. 
+uint8_t programstate;	//This variable keeps track of where in a program we currently are. Will probably be removed later on.
 
 /*----------------------------------------------------------------------------
  * Functions
  * -------------------------------------------------------------------------*/
 void updateLED();
 void reformatRGB(uint8_t R, uint8_t G, uint8_t B);
+uint8_t fade(uint8_t current, uint8_t destination);
 
 
 /*-----------------------------------------------------------------------------
@@ -65,28 +70,46 @@ int main(void) {
 
 //Initialize variables
    	fadeSpeed = 250;
+	dimSpeed = 255;
 	timeStamp = 0;
+	dimStamp = 0;
 
 	Can_Message_t rxMsg;
-	currR = 0x53;
+	currR = 0x3f;
 	currG = 0x15;
-	currB = 0xa0;
+	currB = 0x63;
 
 	sei();	
 
 	reformatRGB(currR,currG,currB);
+
+	destR = 0xff;
+	currIntens = 100;
+	destIntens = 100;
 
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
 
-		/* Time to see if we want to update our values */
+		/* Time to fade color? */
 		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {
-			intensity = intensity -1;
+			currR = fade(currR, destR);
+			currG = fade(currG, destG);
+			currB = fade(currB, destB);
+
 			timeStamp = Timebase_CurrentTime();
 			updateLED();
 		}
+
+
+		/* Time to fade intensity? */
+		if (Timebase_PassedTimeMillis(dimStamp) >= dimSpeed) {
+			currIntens = fade(currIntens, destIntens);
+			dimStamp = Timebase_CurrentTime();
+			updateLED();
+		}
+
 
 
 		/* check if any messages have been received */
@@ -115,18 +138,21 @@ int main(void) {
 
 void updateLED(){
 
-OCR1A = currR * intensity / 255;
+	OCR1A = currR * currIntens / 255;
+	//TODO: Här ska givetvis de andra två färgerna också uppdateras.
 
+	
+	//Bara för debugcrap
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	txMsg.DataLength = 4;
 	
-	txMsg.Data.bytes[0] = currR * intensity / 255;
-	txMsg.Data.bytes[1] = currG * intensity / 255;
-	txMsg.Data.bytes[2] = currB * intensity / 255;
-	txMsg.Data.bytes[3] = intensity;
+	txMsg.Data.bytes[0] = currR * currIntens / 255;
+	txMsg.Data.bytes[1] = currG * currIntens / 255;
+	txMsg.Data.bytes[2] = currB * currIntens / 255;
+	txMsg.Data.bytes[3] = currIntens;
 
 	Can_Send(&txMsg);
 
@@ -136,6 +162,7 @@ OCR1A = currR * intensity / 255;
 //Green
 //Blue
 }
+
 
 
 void reformatRGB(uint8_t R, uint8_t G, uint8_t B){
@@ -157,6 +184,14 @@ void reformatRGB(uint8_t R, uint8_t G, uint8_t B){
 	tempcontainer = B * 255;
 	currB = tempcontainer/maxvalue;
 
-	intensity = maxvalue;
+	currIntens = maxvalue;
+}
 
+uint8_t fade(uint8_t current, uint8_t destination){
+	if (current > destination){
+		return(current - 1);
+	} else if (current < destination){
+		return(current + 1);
+	}
+	return(current);
 }
