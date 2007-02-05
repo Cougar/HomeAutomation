@@ -126,7 +126,7 @@ int main() {
 	uint16_t offset = 0;
 	uint16_t addr;
 	uint8_t len;
-	uint8_t i;
+	uint16_t i;
 	uint16_t data;
 	Can_Message_t tx_msg;
 	Can_Message_t bios_msg;
@@ -239,20 +239,12 @@ int main() {
 			if (nmt_type == CAN_NMT_PGM_END) {
 				flash_flush_buffer();
 				//check crc
-				//data = bios_msg.Data.words[0];
-				//uint16_t calccrc = 0;
-				//for (i=0; i < offset; i++) {
-				//	calccrc = _crc16_update(calccrc, pgm_read_byte(base_addr+i));
-				//}
-				//tx_msg.Data.words[0] = calccrc;
-				//if (data == calccrc) { //crc ok
-				if (1) { //crc ok
-					//send CAN_NMT_PGM_ACK(crc)
-					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
-				} else {
-					//send CAN_NMT_PGM_NACK(crc)
-					tx_msg.Id = CAN_ID_NMT_PGM_NACK;
+				uint16_t calccrc = 0;
+				for (i=0; i < offset; i++) {
+					calccrc = _crc16_update(calccrc, pgm_read_byte(base_addr+i));
 				}
+				tx_msg.Data.words[0] = calccrc;
+				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				bios_state = BIOS_NOAPP;
 			}
 		}
