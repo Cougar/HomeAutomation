@@ -40,12 +40,31 @@ namespace canBootloader {
 		private const int TIMEOUT_MS = 2000;
 
 		private long timeStart = 0;
-
-
+		
 		public Downloader(HexFile hf, SerialConnection sc, byte receiveID) {
 			this.hf = hf;
 			this.sc = sc;
 			this.receiveID = receiveID;
+		}
+
+		public int calcCRC(HexFile hf) {
+			int crc=0;
+			for (ulong i=hf.getAddrLower(); i <= hf.getAddrUpper(); i++) {
+				crc = crc16_update(crc, hf.getByte(i));
+			}
+			return crc;
+		}
+		
+		public int crc16_update(int crc, byte a) {
+			int i;
+			crc ^= a;
+			for (i = 0; i < 8; ++i) {
+				if ((crc & 1) != 0)
+					crc = (crc >> 1) ^ 0xA001;
+				else
+					crc = (crc >> 1);
+			}
+			return crc;
 		}
 
 		public bool go() {
@@ -121,13 +140,18 @@ namespace canBootloader {
 							//Console.WriteLine("byteSent = "+byteSent);
 							Console.Write(".");
 							// Send program data.
+							byte datalength = 2;
 							for (ulong i = 0; i < 6; i++) { 
 								// Populate data.
 								data[i+2] = hf.getByte(currentAddress + i + byteSent);
+								if (currentAddress + i + byteSent > hf.getAddrUpper()) {
+									break;	//then done
+								}
+								datalength++;
 							}
 							data[0] = (byte)(byteSent & 0x00FF);
 							data[1] = (byte)((byteSent & 0xFF00) >> 8);
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_DATA, MY_NID, MY_ID, receiveID, 8, data);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_DATA, MY_NID, MY_ID, receiveID, datalength, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							byteSent += 6;
@@ -191,8 +215,21 @@ namespace canBootloader {
 							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
 								// If no error
 								if (cm.getType() == CAN_NMT_PGM_ACK) {
-									Console.WriteLine("Done, successfully programmed application.");
-									// Start sending program data..
+									Console.WriteLine("");
+									//
+									int crc = calcCRC(hf);
+									
+									if (cm.getDataLength() == 2) {
+										byte[] cmdata = cm.getData();
+										if ((cmdata[0] == (crc & 0xFF)) && (cmdata[1] == (crc>>8))) {
+											Console.WriteLine("Done, successfully programmed application.");
+										} else {
+											Console.WriteLine("CRC failed.");
+										}
+									}
+									//Console.WriteLine("crc: " + crc + " " + (crc>>8) + " " + (crc & 0xFF));
+									//Console.WriteLine("ACKpkg with CRC: " + cm.ToString());
+									// 
 									byteSent = 0;
 									pgs = dState.SEND_RESET;
 								}
