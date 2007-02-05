@@ -128,6 +128,7 @@ int main() {
 	uint8_t len;
 	uint16_t i;
 	uint16_t data;
+	uint8_t send_msg = 0;
 	Can_Message_t tx_msg;
 	Can_Message_t bios_msg;
 	bios_msg_ptr = &bios_msg;
@@ -197,6 +198,7 @@ int main() {
 				//send CAN_NMT_PGM_ACK(offset)
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				tx_msg.Data.words[0] = base_addr;
+				send_msg = 1;
 				bios_state = BIOS_PGM;
 			}
 			if (nmt_type == CAN_NMT_PGM_COPY) {
@@ -235,6 +237,7 @@ int main() {
 					//send CAN_NMT_PGM_NACK(offset)
 					tx_msg.Id = CAN_ID_NMT_PGM_NACK;
 				}
+				send_msg = 1;
 			}
 			if (nmt_type == CAN_NMT_PGM_END) {
 				flash_flush_buffer();
@@ -245,10 +248,15 @@ int main() {
 				}
 				tx_msg.Data.words[0] = calccrc;
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+				send_msg = 1;
 				bios_state = BIOS_NOAPP;
 			}
 		}
-		while (Can_Send(&tx_msg) != CAN_OK);
+		
+		if (send_msg) {
+			while (Can_Send(&tx_msg) != CAN_OK);
+			send_msg = 0;
+		}
 
 		bios_msg_full = 0; // We're done with this message, ready for the next.
 	}
