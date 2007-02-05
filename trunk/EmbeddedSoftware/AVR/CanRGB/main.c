@@ -65,8 +65,19 @@ int main(void) {
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
 	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
 	ICR1 = 256; //8 bit precision to match the other two counters.
-	OCR1A = 128;  //50% as standard
+	OCR1A = 1;  //50% as standard
 	DDRB |= (1<<PB1); /* Enable pin as output */
+
+/* Use OC0A */
+    TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
+    TCCR0B |= (1<<CS02);//(1<<CS02)|(1<<CS00); /* Prescaler 1/1024 */
+    OCR0A = 40;
+    DDRD |= (1<<PD6);
+
+/* Use OC0B */
+    TCCR0A |= (1<<COM0B1);
+    OCR0B = 40;
+    DDRD |= (1<<PD5);
 
 //Initialize variables
    	fadeSpeed = 250;
@@ -75,7 +86,7 @@ int main(void) {
 	dimStamp = 0;
 
 	Can_Message_t rxMsg;
-	currR = 0x3f;
+	currR = 0x64;
 	currG = 0x15;
 	currB = 0x63;
 
@@ -83,9 +94,8 @@ int main(void) {
 
 	reformatRGB(currR,currG,currB);
 
-	destR = 0xff;
-	currIntens = 100;
-	destIntens = 100;
+	currIntens = 20;
+	destIntens = 200;
 
 	/* main loop */
 	while (1) {
@@ -138,7 +148,7 @@ int main(void) {
 
 void updateLED(){
 
-	OCR1A = currR * currIntens / 255;
+//	OCR1A = currR * currIntens / 255;
 	//TODO: Här ska givetvis de andra två färgerna också uppdateras.
 
 	
@@ -162,7 +172,6 @@ void updateLED(){
 //Green
 //Blue
 }
-
 
 
 void reformatRGB(uint8_t R, uint8_t G, uint8_t B){
