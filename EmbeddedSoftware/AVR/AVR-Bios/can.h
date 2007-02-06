@@ -72,10 +72,8 @@ typedef struct {
 #define CAN_SHIFT_CLASS		25
 //------------------------------------
 #define CAN_NMT				0x00UL
-#define CAN_MASK_NMT_TYPE	0x01F00000
-#define CAN_SHIFT_NMT_TYPE	20
-#define CAN_MASK_NMT_NID	0x000F0000
-#define CAN_SHIFT_NMT_NID	16
+#define CAN_MASK_NMT_TYPE	0x00FF0000
+#define CAN_SHIFT_NMT_TYPE	16
 #define CAN_MASK_NMT_SID	0x0000FF00
 #define CAN_SHIFT_NMT_SID	8
 #define CAN_MASK_NMT_RID	0x000000FF
