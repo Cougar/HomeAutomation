@@ -104,7 +104,7 @@ namespace canBootloader {
 							data[ADDR1_INDEX] = (byte)((currentAddress & 0x00FF00) >> 8);
 							data[ADDR2_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
 							data[ADDR3_INDEX] = 0;
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_NID, MY_ID, receiveID, 4, data);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							pgs = dState.WAIT_ACK_PRG;
@@ -120,7 +120,7 @@ namespace canBootloader {
 							}
 							Thread.Sleep(1);
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getSid() == receiveID) {
 								// If no error
 								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									// Start sending program data..
@@ -151,7 +151,7 @@ namespace canBootloader {
 							}
 							data[0] = (byte)(byteSent & 0x00FF);
 							data[1] = (byte)((byteSent & 0xFF00) >> 8);
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_DATA, MY_NID, MY_ID, receiveID, datalength, data);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_DATA, MY_ID, receiveID, datalength, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							byteSent += 6;
@@ -168,7 +168,7 @@ namespace canBootloader {
 							}
 							Thread.Sleep(1);
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getSid() == receiveID) {
 								// If no error
 								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									//currentAddress += 2;
@@ -197,7 +197,7 @@ namespace canBootloader {
 							// Send done with crc
 							data[0] = 0;
 							data[1] = 0;
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_END, MY_NID, MY_ID, receiveID, 2, data);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_END, MY_ID, receiveID, 2, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							pgs = dState.WAIT_DONE;
@@ -212,7 +212,7 @@ namespace canBootloader {
 							}
 							Thread.Sleep(1);
 							// If received ack.
-							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getNid() == MY_NID && cm.getSid() == receiveID) {
+							if (hasMessage && cm.getPktClass() == CAN_NMT && cm.getSid() == receiveID) {
 								// If no error
 								if (cm.getType() == CAN_NMT_PGM_ACK) {
 									Console.WriteLine("");
@@ -243,7 +243,7 @@ namespace canBootloader {
 
 						case dState.SEND_RESET:
 							// Send reset
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_NID, MY_ID, receiveID, 0, data);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_ID, receiveID, 0, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							pgs = dState.DONE;

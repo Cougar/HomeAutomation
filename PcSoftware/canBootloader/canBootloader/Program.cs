@@ -113,7 +113,7 @@ namespace canBootloader {
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
 				byte[] data = new byte[8];
-				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_START_APP, MY_NID, MY_ID, argReceiverID, 0, data);
+				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_START_APP, MY_ID, argReceiverID, 0, data);
 				sc.writePacket(cp);
                 sc.close();
 			}
@@ -127,7 +127,7 @@ namespace canBootloader {
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
 				
 				byte[] data = new byte[8];
-				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_NID, MY_ID, argReceiverID, 0, data);
+				CanPacket cp = new CanPacket(CAN_NMT, CAN_NMT_RESET, MY_ID, argReceiverID, 0, data);
 				sc.writePacket(cp);
                 sc.close();
 			}
