@@ -98,11 +98,11 @@ typedef struct {
 #define CAN_MASK_SNS_SID	0x000001FF
 #define CAN_SHIFT_SNS_SID	0
 //------------------------------------
-#define CAN_PKT				0x0c000000
+#define CAN_PKT				0x06UL
 //------------------------------------
-#define CAN_CON				0x10000000
+#define CAN_CON				0x08UL
 //------------------------------------
-#define CAN_TST				0x1E000000
+#define CAN_TST				0x0FUL
 //------------------------------------
 
 #endif
