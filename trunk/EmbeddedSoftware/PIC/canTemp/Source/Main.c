@@ -47,6 +47,7 @@ void main()
 		blindsInit();
 	#endif
 
+	BLINDS0P_IO=1;
 
 	while(1)
 	{
@@ -136,6 +137,7 @@ void mainInit()
 {
 	LED0_TRIS=0;
 	BLINDS0_TRIS=0;
+	BLINDS0P_TRIS=0;
 
 	// Enable Interrupts
     INTCONbits.GIEH = 1;
