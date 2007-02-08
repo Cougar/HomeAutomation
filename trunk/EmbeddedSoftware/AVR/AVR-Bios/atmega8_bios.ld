@@ -115,10 +115,14 @@ SECTIONS
   .bootloader __boot_start :
   {
     *(.boot_vectors)
-    . = ALIGN(64); /* To locate the bootloader code in a different flash page than the vectors. */
     __bootloader_start = . ;
     *(.bootloader)
     __bootloader_end = . ;
+  }  > text
+  .flash_code 0x1f80 : /* Locate code for BIOS update in the last two pages of flash */
+  {
+    __flash_code_start = . ;
+    *(.flash_code)
   }  > text
   .data	 : AT (ADDR (.text) + SIZEOF (.text))
   {
