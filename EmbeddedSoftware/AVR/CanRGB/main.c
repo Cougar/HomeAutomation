@@ -39,27 +39,30 @@ typedef struct
  * Programs! This will most likely be improooved, but I have to start somewhere.
  *---------------------------------------------------------------------------*/
 
-/*
-struct Color pgm1[] = {
-{0x10,0x20,0x30,0x40},
-{0x10,0x20,0x30,0x40},
-{0x10,0x20,0x30,0x40}
+//0x00, 0x00, 0x00, 0x00 means end of program. This combination is useless for lighting anyway.
+
+Color pgm1[] PROGMEM = {
+{0xff,0x00,0x00,0x00},
+{0xff,0xff,0x00,0x00},
+{0x00,0xff,0x00,0x00},
+{0x00,0xff,0xff,0x00},
+{0x00,0x00,0xff,0x00},
+{0xff,0x00,0xff,0x00},
+{0x00,0x00,0x00,0x00}
 };
 
-struct Color pgm2[] = {
+Color pgm2[] PROGMEM = {
 {0x20,0x20,0x30,0x50},
 {0x20,0x20,0x30,0x50},
 {0x20,0x20,0x30,0x50}
 };
 
-struct Color* programs[] PROGMEM = {
-(struct Color*)pgm1,
-(struct Color*)pgm2
+Color* programs[] PROGMEM = {
+(Color*)pgm1,
+(Color*)pgm2
 };
 
 
-uint16_t temp_address = pgm_read_word(&programs[1]);
-*/
 
 /*-----------------------------------------------------------------------------
  * Variables
@@ -91,6 +94,7 @@ void fade(uint8_t* current, uint8_t* destination);
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
+
 	Timebase_Init();
 	Serial_Init();
 	Can_Init();
@@ -128,6 +132,7 @@ int main(void) {
 //Just temporary for now, they keep track of some kind of demo-program.
 	program = 1;
 	temp = 1;
+	uint16_t temp_adress = pgm_read_word(&programs[0]); //Get adress for program 0
 
 
 	sei();
@@ -166,30 +171,8 @@ int main(void) {
 		/* Just a nice fade-demo */
 		if ((Timebase_PassedTimeMillis(tempStamp) >= 2500)&(program == 1)) {
 			tempStamp = Timebase_CurrentTime();
-			
-			switch(temp){
-			case 1:
-				reformatRGB(0xff,0x00,0x00,0);
-				break;
-			case 2:
-				reformatRGB(0xff,0xff,0x00,0);
-				break;
-			case 3:
-				reformatRGB(0x00,0xff,0x00,0);
-				break;
-			case 4:
-				reformatRGB(0x00,0xff,0xff,0);
-				break;
-			case 5:
-				reformatRGB(0x00,0x00,0xff,0);
-				break;
-			case 6:
-				reformatRGB(0xff,0x00,0xff,0);
-				temp = 255;
-				break;
-			}
-			temp++;
-				
+			reformatRGB(pgm_read_byte(temp_adress),pgm_read_byte(temp_adress + 1),pgm_read_byte(temp_adress + 2),0);
+			temp_adress = temp_adress + 4;
 		}
 
 
@@ -206,7 +189,6 @@ int main(void) {
 				fadeSpeed = 0;
 			}
 		}
-
 
 	}
 	
