@@ -274,20 +274,8 @@ namespace canBootloader {
 			} catch(Exception) {
 				Console.WriteLine("Aborted or done.");
 				//Console.WriteLine(e);
-
-				long tsecs = ((Environment.TickCount - timeStart) / 1000);
-
-				double bitRate = hf.getLength() / ((double)(Environment.TickCount - timeStart) / 1000.0);
-
-				if (tsecs <= 0) tsecs = 1;
-
-				long mins = tsecs / 60;
-				long secs = tsecs % 60;
-				string pad = "";
-				if (secs < 10) {
-					pad = "0";
-				}
-				Console.WriteLine("Time spent: " + mins + ":" + pad + secs + ", " + Math.Round(bitRate, 2) + " bytes/s");
+				//skriva ut antal bytes skrivna vore bra här, kanske nån annan form av hjälp för debug, något gick snett liksom
+				
 				Console.Write("> ");
 			}
 		}
