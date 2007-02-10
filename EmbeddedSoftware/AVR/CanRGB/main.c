@@ -5,6 +5,7 @@
  * @date	2007-02-04
  * @author	Martin Nordén
  *   
+ * TODO: A lot, including. Using my new precious struct Color for currColor, destColor and some basic programfunctionality
  */
 
 /*-----------------------------------------------------------------------------
@@ -21,6 +22,18 @@
 #include <timebase.h>
 #include <math.h>
 
+
+/*----------------------------------------------------------------------------
+ * Ehm, struct?
+ * -------------------------------------------------------------------------*/
+struct Color
+{
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+	uint8_t Intens;
+};
+
 /*-----------------------------------------------------------------------------
  * Variables
  *---------------------------------------------------------------------------*/
@@ -30,16 +43,8 @@ uint32_t dimStamp;	//Timestamp to keep track of dimmer changes
 uint32_t tempStamp;	//Timestamp to keep track of temp things during development
 uint8_t temp;
 
-uint8_t currR;	//Current Red 0->255
-uint8_t currG;	//Current Green 0->255
-uint8_t currB;	//Current Blue 0->255
-
-uint8_t destR;	//Destination Red
-uint8_t destG;	//Destination Green
-uint8_t destB;	//Destination Blue
-
-uint8_t currIntens;	//Current intensity. 0->255
-uint8_t destIntens;	//Destination intensity. 0->255
+struct Color currColor;  //Current color
+struct Color destColor;  //Destination color
 
 uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading. Sets the speed of colorchange.
 uint8_t dimSpeed;		//Dimmer speed. Sets the speed of intensitychange.
@@ -51,13 +56,9 @@ uint8_t programstate;	//This variable keeps track of where in a program we curre
  * Functions
  * -------------------------------------------------------------------------*/
 void updateLED();
-void reformatRGB(uint8_t R, uint8_t G, uint8_t B);
-void setDestRGB(uint8_t R, uint8_t G, uint8_t B);
-
+void reformatRGB(uint8_t R, uint8_t G, uint8_t B, uint8_t setBright);
 void changeColor(int8_t amount, uint8_t* color);
-
 uint8_t fade(uint8_t current, uint8_t destination);
-
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -69,14 +70,14 @@ int main(void) {
 
 //Setting up OC1A, 16 bit counter used as 8 bit.
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
-	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
+	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS12); /* Timer uses main system clock with ? prescale */
 	ICR1 = 256; //8 bit precision to match the other two counters.
 	OCR1A = 0;  //0% as standard
 	DDRB |= (1<<PB1); /* Enable pin as output */
 
 //Setting up OC0A
     TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
-    TCCR0B |= (1<<CS01)|(1<<CS00); /* Prescaler ???? Check datasheet */
+    TCCR0B |= (1<<CS02); /* Prescaler updating now */
     OCR0A = 0;	//0% standard
     DDRD |= (1<<PD6);
 
@@ -91,21 +92,18 @@ int main(void) {
 	dimSpeed = 255;
 	timeStamp = 0;
 	dimStamp = 0;
-	Can_Message_t rxMsg;
+	Can_Message_t rxMsg;	
 
-	temp = 0;
-	
-	sei();	
+	reformatRGB(0x00,0xff,0x00,1);
+	destColor.Intens = 100;
+	currColor = destColor;
 
-	reformatRGB(0x00,0xff,0x00);
-	currR = destR;
-	currG = destG;
-	currB = destB;
-	currIntens = 100;
-	destIntens = 100;
+//Just temporary for now, they keep track of some kind of demo-program.
+	program = 1;
+	temp = 1;
 
-	program = 0;
 
+	sei();
 
 	/* main loop */
 	while (1) {
@@ -113,14 +111,10 @@ int main(void) {
 		Can_Service();
 
 		/* Time to fade color? */
-		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {			
-
-			changeColor(1, &destB);
-			changeColor(-1, &destG);
-
-			currR = fade(currR, destR);
-			currG = fade(currG, destG);
-			currB = fade(currB, destB);
+		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {
+			currColor.R = fade(currColor.R, destColor.R);			
+			currColor.G = fade(currColor.G, destColor.G);
+			currColor.B = fade(currColor.B, destColor.B);
 
 			timeStamp = Timebase_CurrentTime();
 			updateLED();
@@ -129,7 +123,7 @@ int main(void) {
 
 		/* Time to fade intensity? */
 		if (Timebase_PassedTimeMillis(dimStamp) >= dimSpeed) {
-			currIntens = fade(currIntens, destIntens);
+			currColor.Intens = fade(currColor.Intens, destColor.Intens);
 			dimStamp = Timebase_CurrentTime();
 			updateLED();
 		}
@@ -141,22 +135,22 @@ int main(void) {
 			
 			switch(temp){
 			case 1:
-				setDestRGB(0xff,0x00,0x00);
+				reformatRGB(0xff,0x00,0x00,0);
 				break;
 			case 2:
-				setDestRGB(0xff,0xff,0x00);
+				reformatRGB(0xff,0xff,0x00,0);
 				break;
 			case 3:
-				setDestRGB(0x00,0xff,0x00);
+				reformatRGB(0x00,0xff,0x00,0);
 				break;
 			case 4:
-				setDestRGB(0x00,0xff,0xff);
+				reformatRGB(0x00,0xff,0xff,0);
 				break;
 			case 5:
-				setDestRGB(0x00,0x00,0xff);
+				reformatRGB(0x00,0x00,0xff,0);
 				break;
 			case 6:
-				setDestRGB(0xff,0x00,0xff);
+				reformatRGB(0xff,0x00,0xff,0);
 				temp = 255;
 				break;
 			}
@@ -188,37 +182,43 @@ int main(void) {
 
 
 
-
+/************************************************************************************************
+ *     updateLED updates the PWM counter values and thus changes the color of the RGBLED.       *
+ *     It doesn't reculculate anything, except the values to write to the PWM registers.        *
+ *     TODO: Get rid of the tempcontainer!									*
+ ************************************************************************************************/
 void updateLED(){
-	uint16_t tempcontainer;
-
-	tempcontainer = currR * currIntens / 255;	
-	OCR1A = tempcontainer;
-	tempcontainer = currG * currIntens / 255;	
-      OCR0A = tempcontainer;
-	tempcontainer = currB * currIntens / 255;		
-	OCR0B = tempcontainer;
-
-	
 	//Bara för debugcrap
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	txMsg.DataLength = 4;
-	
-	txMsg.Data.bytes[0] = currR;// * currIntens / 255;
-	txMsg.Data.bytes[1] = currG;// * currIntens / 255;
-	txMsg.Data.bytes[2] = currB;// * currIntens / 255;
-	txMsg.Data.bytes[3] = currIntens;
+
+
+	uint8_t tempcontainer;
+
+	tempcontainer = currColor.R * currColor.Intens / 255;	//I really want to skip this, don't know how yet though.
+	OCR1A = tempcontainer;	
+      OCR0A = currColor.G * currColor.Intens / 255;
+	OCR0B = currColor.B * currColor.Intens / 255;		
+		
+	txMsg.Data.bytes[0] = currColor.R * currColor.Intens / 255;
+	txMsg.Data.bytes[1] = currColor.G * currColor.Intens / 255;
+	txMsg.Data.bytes[2] = currColor.B * currColor.Intens / 255;
+	txMsg.Data.bytes[3] = currColor.Intens;
 	Can_Send(&txMsg);
 }
 
 
-/* setDestRGB sets a new target RGB triplet to fade to. Note that the brightness is kept at approximatly the same level
- * even though the color changes */
 
-void setDestRGB(uint8_t R, uint8_t G, uint8_t B){
+/************************************************************************************************
+ *     reformatRGB sets a new target RGB triplet to fade to. It reformats it so that            *
+ *     the highest color always gets 0xff. Brightness is recalculated.                          *
+ *     if setBright is set to 0, the brightness will not be updated.					*
+ *     TODO: Smarter 16-bit arithmetics would be nice. Also a pointer to struct to be updated.	*
+ ************************************************************************************************/
+void reformatRGB(uint8_t R, uint8_t G, uint8_t B, uint8_t setBright){
 	uint8_t maxvalue;
 	uint16_t tempcontainer;
 
@@ -231,38 +231,23 @@ void setDestRGB(uint8_t R, uint8_t G, uint8_t B){
 	}
 
 	tempcontainer = R * 255;
-	destR = tempcontainer/maxvalue;
+	destColor.R = tempcontainer/maxvalue;
 	tempcontainer = G * 255;
-	destG = tempcontainer/maxvalue;
+	destColor.G = tempcontainer/maxvalue;
 	tempcontainer = B * 255;
-	destB = tempcontainer/maxvalue;
+	destColor.B = tempcontainer/maxvalue;
 
-}
-
-/* reformatRGB sets a new target RGB triplet to fade to. Note that the brightness is recalculated. */
-
-void reformatRGB(uint8_t R, uint8_t G, uint8_t B){
-	uint8_t maxvalue;
-	uint16_t tempcontainer;
-
-	if ((R>=G)&(R>=B)){
-		maxvalue = R;
-	} else if ((G>=R)&(G>=B)){
-		maxvalue = G;
-	} else {
-		maxvalue = B;
+	if (setBright){
+		destColor.Intens = maxvalue;
 	}
-
-	tempcontainer = R * 255;
-	destR = tempcontainer/maxvalue;
-	tempcontainer = G * 255;
-	destG = tempcontainer/maxvalue;
-	tempcontainer = B * 255;
-	destB = tempcontainer/maxvalue;
-
-	destIntens = maxvalue;
 }
 
+
+/************************************************************************************************
+ *     fade tar in två värden, current och destination och för current ett steg                 *
+ *     närmare destination.			                                                      *
+ *     Ev. TODO: skicka in två pekare och jämna ut dom istället.						*
+ ************************************************************************************************/
 uint8_t fade(uint8_t current, uint8_t destination){
 	if (current > destination){
 		return(current - 1);
@@ -272,11 +257,14 @@ uint8_t fade(uint8_t current, uint8_t destination){
 	return(current);
 }
 
-/*
- * changeColor ändrar en färg mängden amount. -127>127.
- * color kan vara dest eller curr R,G,B.
- * Ev. TODO: om t.ex. röd är på max och man vill öka röd ska de andra färgerna minskas.	*/
+
+/************************************************************************************************
+ *     changeColor ändrar en färg mängden amount. -127>127.                                     *
+ *     color kan vara dest eller curr R,G,B.                                                    *
+ *     Ev. TODO: om t.ex. röd är på max och man vill öka röd ska de andra färgerna minskas.	*
+ ************************************************************************************************/
 void changeColor(int8_t amount, uint8_t* color){
 	if ( ((amount > 0)&(*color < 255)) || ((amount < 0)&(*color > 0)) ) //Se till att vi inte slår över *color
 	*color = *color + amount;
 }
+
