@@ -39,7 +39,11 @@ typedef struct
  * Programs! This will most likely be improooved, but I have to start somewhere.
  *---------------------------------------------------------------------------*/
 
-//0x00, 0x00, 0x00, 0x00 means end of program. This combination is useless for lighting anyway.
+//Special combinations that means something special
+//The combinations are useless for lighting anyway
+//So we might as well use them!
+//0x00, 0x00, 0x00, 0x00 means end of program, keep looping it
+//0x00, 0x00, 0x00, 0x01 means end of program, halt 
 
 Color pgm1[] PROGMEM = {
 {0xff,0x00,0x00,0x00},
@@ -70,17 +74,13 @@ Color* programs[] PROGMEM = {
 uint32_t timeStamp;	//TimeStamp to keep track of time
 uint32_t dimStamp;	//Timestamp to keep track of dimmer changes
 
-uint32_t tempStamp;	//Timestamp to keep track of temp things during development
-uint8_t temp;
-
 Color currColor;  //Current color
 Color destColor;  //Destination color
 
 uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading. Sets the speed of colorchange.
 uint8_t dimSpeed;		//Dimmer speed. Sets the speed of intensitychange.
 
-uint8_t program;		//This variable keeps track of what program is currently running. 
-uint8_t programstate;	//This variable keeps track of where in a program we currently are. Will probably be removed later on.
+uint8_t currProgram;		//This variable keeps track of what program is currently running. 
 
 /*----------------------------------------------------------------------------
  * Functions
@@ -130,9 +130,8 @@ int main(void) {
 	currColor = destColor;
 
 //Just temporary for now, they keep track of some kind of demo-program.
-	program = 1;
-	temp = 1;
-	uint16_t temp_adress = pgm_read_word(&programs[0]); //Get adress for program 0
+	currProgram = 1;
+	uint16_t temp_adress = pgm_read_word(&programs[currProgram-1]); //Get adress for program 0
 
 
 	sei();
@@ -162,31 +161,37 @@ int main(void) {
 
 
 		/* Program management */
-		if (program != 0){ //Check if a program is currently running
-			//if (currColor == destColor){ //Is the current sequence finished?
-				//Set next state.
-			//}
+		if (currProgram != 0){ //Check if a program is currently running
+			if ((currColor.R == destColor.R)&(currColor.G == destColor.G)&(currColor.B == destColor.B)&(currColor.Intens == destColor.Intens)){//Is the current sequence finished?
+				//Now we have to check if the program is finished and if we should loop
+				if ((pgm_read_byte(temp_adress)==0)&(pgm_read_byte(temp_adress+1)==0)&(pgm_read_byte(temp_adress+2)==0)){
+					//The program has ended! Shall we loop it?
+					if (pgm_read_byte(temp_adress+3)==0){
+						//Yes, let's loop it
+						temp_adress = pgm_read_word(&programs[currProgram-1]);
+					} else {
+						//No, halt!
+						currProgram = 0;
+					}
+				} else {
+					//The program has not ended, let's get the next RGB-triplet!
+					reformatRGB(pgm_read_byte(temp_adress),pgm_read_byte(temp_adress + 1),pgm_read_byte(temp_adress + 2),0);
+					temp_adress = temp_adress + 4;					
+				}
+			}
 		}
-
-		/* Just a nice fade-demo */
-		if ((Timebase_PassedTimeMillis(tempStamp) >= 2500)&(program == 1)) {
-			tempStamp = Timebase_CurrentTime();
-			reformatRGB(pgm_read_byte(temp_adress),pgm_read_byte(temp_adress + 1),pgm_read_byte(temp_adress + 2),0);
-			temp_adress = temp_adress + 4;
-		}
-
 
 		/* check if any messages have been received */
 		/* A lot of remote control crap going on here now for testing */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
 			if ((rxMsg.Data.bytes[0] == 0x0)&(rxMsg.Data.bytes[3] == 0x20)){
-				program = 1;
-				fadeSpeed = 0;
+				//program = 1;
+				//fadeSpeed = 0;
 			}
 
 			if ((rxMsg.Data.bytes[0] == 0x0)&(rxMsg.Data.bytes[3] == 0x21)){
-				program = 2;
-				fadeSpeed = 0;
+				//program = 2;
+				//fadeSpeed = 0;
 			}
 		}
 
@@ -216,11 +221,12 @@ void updateLED(){
 	txMsg.Id = 0x55;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
-	txMsg.DataLength = 4;
-	txMsg.Data.bytes[0] = currColor.R * currColor.Intens / 255;
-	txMsg.Data.bytes[1] = currColor.G * currColor.Intens / 255;
-	txMsg.Data.bytes[2] = currColor.B * currColor.Intens / 255;
+	txMsg.DataLength = 8;
+	txMsg.Data.bytes[0] = currColor.R;
+	txMsg.Data.bytes[1] = currColor.G;
+	txMsg.Data.bytes[2] = currColor.B;
 	txMsg.Data.bytes[3] = currColor.Intens;
+
 	Can_Send(&txMsg);
 }
 
