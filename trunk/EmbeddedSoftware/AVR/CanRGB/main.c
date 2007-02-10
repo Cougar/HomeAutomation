@@ -5,7 +5,7 @@
  * @date	2007-02-04
  * @author	Martin Nordén
  *   
- * TODO: A lot, including. Using my new precious struct Color for currColor, destColor and some basic programfunctionality
+ * TODO: A lot, currently trying to get some kind of ready-made programs to work.
  */
 
 /*-----------------------------------------------------------------------------
@@ -20,19 +20,46 @@
 #include <can.h>
 #include <serial.h>
 #include <timebase.h>
-#include <math.h>
+#include <math.h> //Not sure this is needed anymore..
+#include <avr/pgmspace.h> //To allow read/write from flash
 
 
 /*----------------------------------------------------------------------------
  * Ehm, struct?
  * -------------------------------------------------------------------------*/
-struct Color
+typedef struct
 {
 	uint8_t R;
 	uint8_t G;
 	uint8_t B;
 	uint8_t Intens;
+} Color;
+
+/*-----------------------------------------------------------------------------
+ * Programs! This will most likely be improooved, but I have to start somewhere.
+ *---------------------------------------------------------------------------*/
+
+/*
+struct Color pgm1[] = {
+{0x10,0x20,0x30,0x40},
+{0x10,0x20,0x30,0x40},
+{0x10,0x20,0x30,0x40}
 };
+
+struct Color pgm2[] = {
+{0x20,0x20,0x30,0x50},
+{0x20,0x20,0x30,0x50},
+{0x20,0x20,0x30,0x50}
+};
+
+struct Color* programs[] PROGMEM = {
+(struct Color*)pgm1,
+(struct Color*)pgm2
+};
+
+
+uint16_t temp_address = pgm_read_word(&programs[1]);
+*/
 
 /*-----------------------------------------------------------------------------
  * Variables
@@ -43,8 +70,8 @@ uint32_t dimStamp;	//Timestamp to keep track of dimmer changes
 uint32_t tempStamp;	//Timestamp to keep track of temp things during development
 uint8_t temp;
 
-struct Color currColor;  //Current color
-struct Color destColor;  //Destination color
+Color currColor;  //Current color
+Color destColor;  //Destination color
 
 uint16_t fadeSpeed;	//Fadingspeed. 16bit for reaaaally slow fading. Sets the speed of colorchange.
 uint8_t dimSpeed;		//Dimmer speed. Sets the speed of intensitychange.
@@ -58,7 +85,7 @@ uint8_t programstate;	//This variable keeps track of where in a program we curre
 void updateLED();
 void reformatRGB(uint8_t R, uint8_t G, uint8_t B, uint8_t setBright);
 void changeColor(int8_t amount, uint8_t* color);
-uint8_t fade(uint8_t current, uint8_t destination);
+void fade(uint8_t* current, uint8_t* destination);
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -76,15 +103,15 @@ int main(void) {
 	DDRB |= (1<<PB1); /* Enable pin as output */
 
 //Setting up OC0A
-    TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
-    TCCR0B |= (1<<CS02); /* Prescaler updating now */
-    OCR0A = 0;	//0% standard
-    DDRD |= (1<<PD6);
+	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
+	TCCR0B |= (1<<CS02); /* Prescaler updating now */
+	OCR0A = 0;	//0% standard
+	DDRD |= (1<<PD6);
 
 //Setting up OC0B
-    TCCR0A |= (1<<COM0B1);
-    OCR0B = 0;
-    DDRD |= (1<<PD5);
+	TCCR0A |= (1<<COM0B1);
+	OCR0B = 0;
+	DDRD |= (1<<PD5);
 
 
 //Initialize variables
@@ -112,9 +139,9 @@ int main(void) {
 
 		/* Time to fade color? */
 		if (Timebase_PassedTimeMillis(timeStamp) >= fadeSpeed) {
-			currColor.R = fade(currColor.R, destColor.R);			
-			currColor.G = fade(currColor.G, destColor.G);
-			currColor.B = fade(currColor.B, destColor.B);
+			fade(&currColor.R, &destColor.R);			
+			fade(&currColor.G, &destColor.G);
+			fade(&currColor.B, &destColor.B);
 
 			timeStamp = Timebase_CurrentTime();
 			updateLED();
@@ -123,11 +150,18 @@ int main(void) {
 
 		/* Time to fade intensity? */
 		if (Timebase_PassedTimeMillis(dimStamp) >= dimSpeed) {
-			currColor.Intens = fade(currColor.Intens, destColor.Intens);
+			fade(&currColor.Intens, &destColor.Intens);
 			dimStamp = Timebase_CurrentTime();
 			updateLED();
 		}
 
+
+		/* Program management */
+		if (program != 0){ //Check if a program is currently running
+			//if (currColor == destColor){ //Is the current sequence finished?
+				//Set next state.
+			//}
+		}
 
 		/* Just a nice fade-demo */
 		if ((Timebase_PassedTimeMillis(tempStamp) >= 2500)&(program == 1)) {
@@ -188,14 +222,6 @@ int main(void) {
  *     TODO: Get rid of the tempcontainer!									*
  ************************************************************************************************/
 void updateLED(){
-	//Bara för debugcrap
-	Can_Message_t txMsg;
-	txMsg.Id = 0x55;
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
-	txMsg.DataLength = 4;
-
-
 	uint8_t tempcontainer;
 
 	tempcontainer = currColor.R * currColor.Intens / 255;	//I really want to skip this, don't know how yet though.
@@ -203,6 +229,12 @@ void updateLED(){
       OCR0A = currColor.G * currColor.Intens / 255;
 	OCR0B = currColor.B * currColor.Intens / 255;		
 		
+	//Bara för debugcrap
+	Can_Message_t txMsg;
+	txMsg.Id = 0x55;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	txMsg.DataLength = 4;
 	txMsg.Data.bytes[0] = currColor.R * currColor.Intens / 255;
 	txMsg.Data.bytes[1] = currColor.G * currColor.Intens / 255;
 	txMsg.Data.bytes[2] = currColor.B * currColor.Intens / 255;
@@ -246,15 +278,13 @@ void reformatRGB(uint8_t R, uint8_t G, uint8_t B, uint8_t setBright){
 /************************************************************************************************
  *     fade tar in två värden, current och destination och för current ett steg                 *
  *     närmare destination.			                                                      *
- *     Ev. TODO: skicka in två pekare och jämna ut dom istället.						*
  ************************************************************************************************/
-uint8_t fade(uint8_t current, uint8_t destination){
-	if (current > destination){
-		return(current - 1);
-	} else if (current < destination){
-		return(current + 1);
+void fade(uint8_t* current, uint8_t* destination){
+	if (*current > *destination){
+		*current = *current - 1;
+	} else if (*current < *destination){
+		*current = *current + 1;
 	}
-	return(current);
 }
 
 
