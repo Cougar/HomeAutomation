@@ -101,8 +101,8 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 #endif
 	uint16_t data;
 
-	eeprom_busy_wait();		// Make sure any current writes to eeprom
-	boot_spm_busy_wait();	// or flash has completed before updating.
+	//eeprom_busy_wait();		// Make sure any current writes to eeprom
+	//boot_spm_busy_wait();	// or flash has completed before updating.
 
 	cli(); // From this point we're on our own
 	
@@ -117,6 +117,7 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 			
 			boot_page_write(dst + offset);     // Store buffer in flash page.
 			boot_spm_busy_wait();       // Wait until the memory is written.
+			boot_rww_enable();
 		}
 			
 		wdt_reset();
@@ -129,7 +130,6 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 
 		data = pgm_read_word(src); // Read source word
 		boot_page_fill_safe(dst, data); // Write word to destination
-		boot_spm_busy_wait();      // Make sure spm is ready.
 		
 		if (((uint8_t)dst + 2) % SPM_PAGESIZE == 0) { // If we just wrote the last word of a page
 			boot_page_erase(dst);
@@ -141,6 +141,8 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 		 
 		src += 2;
 		dst += 2;
+		
+		if (dst >= (uint16_t)&__flash_code_start) break;
 	}
 		 
 #endif
