@@ -99,18 +99,21 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 	uint16_t offset;
 	uint16_t data;
 
+	eeprom_busy_wait();		// Make sure any current writes to eeprom
+	boot_spm_busy_wait();	// or flash has completed before updating.
+
 	cli(); // From this point we're on our own
 	
-	for (offset = 0; offset < len; offset += 2) {
+	for (offset = 0; offset < ((len | (SPM_PAGESIZE - 1)) + 1); offset += 2) {
 		if (dst + offset >= (uint16_t)&__flash_code_start) break;
 		data = pgm_read_word(src + offset);
 		boot_page_fill(dst + offset, data);
 		if ((dst + offset + 2) % SPM_PAGESIZE == 0) {
 			boot_page_erase(dst + offset);
-			//boot_spm_busy_wait();      // Wait until the memory is erased.
+			boot_spm_busy_wait();      // Wait until the memory is erased.
 			
 			boot_page_write(dst + offset);     // Store buffer in flash page.
-			//boot_spm_busy_wait();       // Wait until the memory is written.
+			boot_spm_busy_wait();       // Wait until the memory is written.
 		}
 			
 		wdt_reset();

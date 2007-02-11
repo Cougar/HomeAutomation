@@ -117,12 +117,10 @@ SECTIONS
     *(.boot_vectors)
     __bootloader_start = . ;
     *(.bootloader)
-    __bootloader_end = . ;
-  }  > text
-  .flash_code 0x1f80 : /* Locate code for BIOS update in the last two pages of flash */
-  {
+    . = 0x2000 - __boot_start - 0x80; /* Locate code for BIOS update in the last two pages of flash */
     __flash_code_start = . ;
     *(.flash_code)
+    __bootloader_end = . ;
   }  > text
   .data	 : AT (ADDR (.text) + SIZEOF (.text))
   {
