@@ -7,10 +7,12 @@ namespace canBootloader {
 	public class Downloader {
 		private HexFile hf;
 		private SerialConnection sc;
+		private bool isBiosUpdate;
+		private ulong dlOffset = 0;
 		//private Thread down;
 		private byte receiveID;
 
-		private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_RESET, DONE, DEBUG_STATE1, DEBUG_STATE2 };
+		private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_BIOS_UPDATE, SEND_RESET, DONE, DEBUG_STATE2 };
 		
 		private const byte CAN_NMT				= 0x00;
 		
@@ -24,6 +26,7 @@ namespace canBootloader {
 		private const byte CAN_NMT_START_APP 	= 0x07;
 		private const byte CAN_NMT_APP_START 	= 0x08;
 		private const byte CAN_NMT_HEARTBEAT 	= 0x09;
+		private const byte CAN_NMT_PGM_COPY		= 0x0F;
 		
 		private const byte MY_ID = 0x00;
 		//private const byte TARGET_ID = 0x78;
@@ -41,10 +44,11 @@ namespace canBootloader {
 
 		private long timeStart = 0;
 		
-		public Downloader(HexFile hf, SerialConnection sc, byte receiveID) {
+		public Downloader(HexFile hf, SerialConnection sc, byte receiveID, bool isBiosUpdate) {
 			this.hf = hf;
 			this.sc = sc;
 			this.receiveID = receiveID;
+			this.isBiosUpdate = isBiosUpdate;
 		}
 
 		public int calcCRC(HexFile hf) {
@@ -86,8 +90,14 @@ namespace canBootloader {
 			uint byteSent = 0;
 			ulong currentAddress = 0;
             bool done = false;
+            bool errorOccured = false;
             
             try {
+            	if (isBiosUpdate) {
+            		dlOffset = hf.getAddrLower();
+            		//Console.WriteLine(dlOffset);
+            		//dlOffset = 200;
+            	}
 				while (!done) {
 					bool hasMessage = sc.getPacket(out cm);
 					if (hasMessage) {
@@ -100,9 +110,9 @@ namespace canBootloader {
 							// and wait for ack.
 							currentAddress = hf.getAddrLower();
 							//data[RID_INDEX] = TARGET_ID;
-							data[ADDR0_INDEX] = (byte)(currentAddress & 0x0000FF);
-							data[ADDR1_INDEX] = (byte)((currentAddress & 0x00FF00) >> 8);
-							data[ADDR2_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
+							data[ADDR0_INDEX] = (byte)((currentAddress-dlOffset) & 0x0000FF);
+							data[ADDR1_INDEX] = (byte)(((currentAddress-dlOffset) & 0x00FF00) >> 8);
+							data[ADDR2_INDEX] = (byte)(((currentAddress-dlOffset) & 0xFF0000) >> 16);
 							data[ADDR3_INDEX] = 0;
 							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
 							sc.writePacket(outCm);
@@ -116,6 +126,7 @@ namespace canBootloader {
 							// Check for timeout, resend start packet in that case..
 							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for start prg ack.");
+								errorOccured = true;
 								pgs = dState.SEND_RESET;
 							}
 							Thread.Sleep(1);
@@ -130,6 +141,7 @@ namespace canBootloader {
 								else if (cm.getType() == CAN_NMT_PGM_NACK ) { 
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_START.");
+									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
 							}
@@ -164,6 +176,7 @@ namespace canBootloader {
 							if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
 								// Woops, error. 
 								Console.WriteLine("Timeout while waiting for data ack.");
+								errorOccured = true;
 								pgs = dState.SEND_RESET;
 							}
 							Thread.Sleep(1);
@@ -186,6 +199,7 @@ namespace canBootloader {
 								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else ..
 									Console.WriteLine("Nack on CAN_NMT_PGM_DATA.");
+									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
 							}
@@ -194,10 +208,10 @@ namespace canBootloader {
 
 
 						case dState.SEND_DONE:
-							// Send done with crc
-							data[0] = 0;
-							data[1] = 0;
-							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_END, MY_ID, receiveID, 2, data);
+							// Send done
+							//data[0] = 0;
+							//data[1] = 0;
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_END, MY_ID, receiveID, 0, data);
 							sc.writePacket(outCm);
 							t = Environment.TickCount;
 							pgs = dState.WAIT_DONE;
@@ -208,6 +222,7 @@ namespace canBootloader {
 							// Check for timeout, resend done packet in that case..
 							if ((Environment.TickCount - t) > TIMEOUT_MS) {
 								Console.WriteLine("Timeout while waiting for end prg ack.");
+								errorOccured = true;
 								pgs = dState.SEND_RESET;
 							}
 							Thread.Sleep(1);
@@ -222,23 +237,46 @@ namespace canBootloader {
 									if (cm.getDataLength() == 2) {
 										byte[] cmdata = cm.getData();
 										if ((cmdata[0] == (crc & 0xFF)) && (cmdata[1] == (crc>>8))) {
-											Console.WriteLine("Done, successfully programmed application.");
+											if (!isBiosUpdate) {
+												Console.WriteLine("Done, successfully programmed application.");
+												pgs = dState.SEND_RESET;
+											} else {
+												Console.WriteLine("Done, successfully programmed bios to application space.");
+												pgs = dState.SEND_BIOS_UPDATE;
+											}
 										} else {
 											Console.WriteLine("CRC failed.");
+											errorOccured = true;
+											pgs = dState.SEND_RESET;
 										}
+
+										byteSent = 0;
 									}
 									//Console.WriteLine("crc: " + crc + " " + (crc>>8) + " " + (crc & 0xFF));
 									//Console.WriteLine("ACKpkg with CRC: " + cm.ToString());
 									// 
-									byteSent = 0;
-									pgs = dState.SEND_RESET;
 								}
 								else if (cm.getType() == CAN_NMT_PGM_NACK) {
 									// else resend addr..
 									Console.WriteLine("Nack on CAN_NMT_PGM_END.");
+									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
 							}
+							break;
+
+						case dState.SEND_BIOS_UPDATE:
+							data[0] = (byte)(0 & 0x00FF);
+							data[1] = (byte)((0 & 0xFF00) >> 8);
+							data[2] = (byte)(dlOffset & 0x00FF);
+							data[3] = (byte)((dlOffset & 0xFF00) >> 8);
+							data[4] = (byte)((hf.getAddrUpper()-hf.getAddrLower()+1) & 0x00FF);
+							data[5] = (byte)(((hf.getAddrUpper()-hf.getAddrLower()+1) & 0xFF00) >> 8);
+							outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_COPY, MY_ID, receiveID, 6, data);
+							Console.WriteLine("Now say a prayer, moving bios");
+							sc.writePacket(outCm);
+							t = Environment.TickCount;
+							pgs = dState.DONE;
 							break;
 
 						case dState.SEND_RESET:
@@ -253,19 +291,19 @@ namespace canBootloader {
 						case dState.DONE:
                             done = true;
                             //down.Abort();
-							long tsecs = ((Environment.TickCount - timeStart) / 1000);
-			
-							double bitRate = hf.getLength() / ((double)(Environment.TickCount - timeStart) / 1000.0);
-			
-							if (tsecs <= 0) tsecs = 1;
-			
-							long mins = tsecs / 60;
-							long secs = tsecs % 60;
-							string pad = "";
-							if (secs < 10) {
-								pad = "0";
+                            if (!errorOccured) {
+								long tsecs = ((Environment.TickCount - timeStart) / 1000);
+								double bitRate = hf.getLength() / ((double)(Environment.TickCount - timeStart) / 1000.0);
+								
+								if (tsecs <= 0) tsecs = 1;
+								long mins = tsecs / 60;
+								long secs = tsecs % 60;
+								string pad = "";
+								if (secs < 10) {
+									pad = "0";
+								}
+								Console.WriteLine("Time spent: " + mins + ":" + pad + secs + ", " + Math.Round(bitRate, 2) + " bytes/s");
 							}
-							Console.WriteLine("Time spent: " + mins + ":" + pad + secs + ", " + Math.Round(bitRate, 2) + " bytes/s");
 							//Console.Write("> ");
                             break;
 					}

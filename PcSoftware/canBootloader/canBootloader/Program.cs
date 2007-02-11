@@ -100,7 +100,19 @@ namespace canBootloader {
 				}
 				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
 				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
-				dl = new Downloader(hf, sc, argReceiverID);
+				dl = new Downloader(hf, sc, argReceiverID, false);
+				if (!dl.go()) { Console.WriteLine("Error gooing..."); return true; }
+                sc.close();
+			}
+			else if (instr.Equals("go bios")) {
+				Console.WriteLine("Connecting..");
+				sc = new SerialConnection();
+				try {
+					sc.setConfiguration(argBaud, System.IO.Ports.Parity.None, argPort, System.IO.Ports.StopBits.One, 8, false);
+				}
+				catch (Exception e) { Console.WriteLine("Error: " + e.Message); return true; }
+				if (!sc.open()) { Console.WriteLine("Error opening port."); return true; }
+				dl = new Downloader(hf, sc, argReceiverID, true);
 				if (!dl.go()) { Console.WriteLine("Error gooing..."); return true; }
                 sc.close();
 			}

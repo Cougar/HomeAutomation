@@ -64,7 +64,6 @@ namespace canBootloader {
 						lineDataCount = byte.Parse(oneLine.Substring(1,2), NumberStyles.HexNumber);
 						lineAddr =  ulong.Parse(oneLine.Substring(3,4),NumberStyles.HexNumber) & 65535;	 
 						lineCode = byte.Parse(oneLine.Substring(7,2), NumberStyles.HexNumber);   
-				
 						fullAddr = (lineAddrHigh * 65536) + lineAddr;
 					
 						switch(lineCode) {
@@ -84,6 +83,7 @@ namespace canBootloader {
 								case 1: break; 
 							
 						}
+						//Console.WriteLine("lineDataCount: " + lineCode + " lineAddr: " + lineAddr + " lineCode: " + lineCode + " addrLower: " + this.addrLower);
 					}
 				}
 
@@ -92,7 +92,7 @@ namespace canBootloader {
 			}
 
 			// Force lower addr to start
-			this.addrLower = USER_RESET_ADDR;
+			//this.addrLower = USER_RESET_ADDR;
 
 			return true;
 		}
