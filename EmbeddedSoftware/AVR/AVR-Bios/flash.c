@@ -96,14 +96,17 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 extern uint16_t __flash_code_start;
 
 void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
+#if 0
 	uint16_t offset;
+#endif
 	uint16_t data;
 
 	eeprom_busy_wait();		// Make sure any current writes to eeprom
-	boot_spm_busy_wait();	// or flash has completed before updating.
+	//boot_spm_busy_wait();	// or flash has completed before updating.
 
 	cli(); // From this point we're on our own
 	
+#if 0
 	for (offset = 0; offset < ((len | (SPM_PAGESIZE - 1)) + 1); offset += 2) {
 		if (dst + offset >= (uint16_t)&__flash_code_start) break;
 		data = pgm_read_word(src + offset);
@@ -118,6 +121,29 @@ void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 			
 		wdt_reset();
 	}
+#else
+	len = (len | (SPM_PAGESIZE - 1)) + 3; // Round len up to a whole page + 2
+	
+	while (len -= 2) {
+		wdt_reset();
+
+		boot_spm_busy_wait();      // Wait until the memory is erased.
+		data = pgm_read_word(src); // Read source word
+		boot_spm_busy_wait();      // Wait until the memory is erased.
+		boot_page_fill_safe(dst, data); // Write word to destination
+		
+		if ((dst + 2) % SPM_PAGESIZE == 0) { // If we just wrote the last word of a page
+			boot_spm_busy_wait();      // Wait until the memory is erased.
+			boot_page_erase(dst);
+			boot_spm_busy_wait();       // Wait until the memory is written.
+			boot_page_write(dst); // Store buffer in flash page.
+		}
+		 
+		src += 2;
+		dst += 2;
+	}
+		 
+#endif
 	while (1); // Nothing more we can do, hopefully there is a watchdog active
 }
 #endif
