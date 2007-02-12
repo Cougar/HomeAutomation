@@ -65,7 +65,7 @@ void flash_write_word(uint16_t addr, uint16_t word) {
 		flash_load_buffer(addr); // Read new page contents into buffer
 	}
 	
-	buf[addr % SPM_PAGESIZE] = word;
+	buf[(addr % SPM_PAGESIZE)/2] = word;
 	flash_prev_addr = addr;
 	flash_buffer_dirty = 1;
 }     

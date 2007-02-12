@@ -223,6 +223,9 @@ int main() {
 			}
 			break;
 		case BIOS_PGM:
+			// Default to send CAN_NMT_PGM_ACK(offset)
+			tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+			
 			if (nmt_type == CAN_NMT_PGM_DATA) {
 				// Set address = base address + offset.
 				offset = bios_msg.Data.words[0];
@@ -231,8 +234,6 @@ int main() {
 				// One of ACK and NACK will be sent, both have offset as data.
 				tx_msg.Data.words[0] = offset;
 				send_msg = 1;
-				// Default to send CAN_NMT_PGM_ACK(offset)
-				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 
 				// Flash all data sent, beginning at addr.
 				len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
@@ -267,7 +268,6 @@ int main() {
 				}
 				
 				tx_msg.Data.words[0] = crc;
-				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				send_msg = 1;
 				bios_state = BIOS_NOAPP;
 			}
