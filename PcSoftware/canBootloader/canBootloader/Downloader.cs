@@ -245,7 +245,9 @@ namespace canBootloader {
 												pgs = dState.SEND_BIOS_UPDATE;
 											}
 										} else {
-											Console.WriteLine("CRC failed.");
+											string nodecrc = String.Format("{0:x2}", (int)cmdata[0] + (int)(cmdata[1]<<8));
+											string realcrc = String.Format("{0:x2}", (int)(crc & 0xFF) + (int)(crc & 0xFF00));
+											Console.WriteLine("CRC failed. Node sent CRC "+nodecrc+" but should be "+realcrc+".");
 											errorOccured = true;
 											pgs = dState.SEND_RESET;
 										}
