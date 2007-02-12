@@ -25,7 +25,7 @@ Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .
 // Function definitions for the exported interface
 
 void reset(void) {
-	//Just loop and let the watchdog reset
+	// Just loop and let the watchdog reset
 	cli(); 
 	while(1);
 }
@@ -46,7 +46,7 @@ unsigned long timebase_get(void) {
 	uint8_t sreg;
 	unsigned long res;
 	
-	//Disable interrupts while reading tick count
+	// Disable interrupts while reading tick count
 	sreg=SREG;
 	cli();
 	
@@ -90,11 +90,20 @@ ISR(TIMEBASE_VECTOR) {
 }
 
 void Can_Process(Can_Message_t* msg) {
-	if (!(msg->ExtendedFlag)) return;
+	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
 	
-	if ((msg->Id & CAN_MASK_CLASS) == ((uint32_t)CAN_NMT << CAN_SHIFT_CLASS)) {
-		if ((msg->Id & CAN_MASK_NMT_RID) == ((uint32_t)NODE_ID << CAN_SHIFT_NMT_RID)) {
-			//printf("BIOS received msg!\n");
+	if ((msg->Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS == CAN_NMT) {
+		
+		if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_TIME) {
+			// Reset watchdog as long as time messages from the master node
+			// are received periodically. If anything hangs the CAN communication
+			// or the master node is not up, the node will be reset.
+			wdt_reset();
+			//TODO: Don't care about time right now... Figure out what to do with it. 
+		}
+		
+		if ((msg->Id & CAN_MASK_NMT_RID)>>CAN_SHIFT_NMT_RID == NODE_ID) {
+
 			if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_RESET) {
 				reset();
 			}
@@ -118,15 +127,15 @@ void Can_Process(Can_Message_t* msg) {
 #define BIOS_PGM	3
 
 int main() {
-	void (*app_reset)(void) = 0;
+	void (*app_reset)(void) = 0; // Function pointer to jump to application reset vector.
 	uint8_t bios_state;
 	uint8_t nmt_type;
-	// This unneccessary initialization uses 8 bytes flash, just to make the compiler happy!
+	uint8_t pagebuf[SPM_PAGESIZE];
+	// These unneccessary initializations uses 12 bytes flash, just to make the compiler happy!
 	uint16_t base_addr = 0;
 	uint16_t offset = 0;
-	uint16_t addr;
+	uint16_t addr = 0;
 	uint8_t len;
-	uint16_t i;
 	uint16_t data;
 	uint8_t send_msg = 0;
 	Can_Message_t tx_msg;
@@ -141,11 +150,12 @@ int main() {
 #endif
 	
 	// Initialize a suitable hardware timer to create a 1KHz interrupt.
+	//TODO: Any point in having timebase in bios after wdt_reset() is moved to Can_Process?
 	TIMEBASE_INIT();
 	
 	// Enable watchdog timer to protect against an application locking the
 	// node by leaving interrupts disabled. 
-	wdt_enable(WDTO_500MS);
+	wdt_enable(WDTO_2S);
 	
 	// Move interrupt vectors to start of bootloader section and enable interrupts
 	IVSEL_REG = _BV(IVCE);
@@ -164,24 +174,25 @@ int main() {
 #endif
 	if (pgm_read_word(0) == 0xffff) {
 		// No application in flash
-		//send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
+		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
 		tx_msg.Data.bytes[2] = 0;
 		bios_state = BIOS_NOAPP;
 	} else {
 		// Application exists
-		//send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
+		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
 		tx_msg.Data.bytes[2] = 1;
 		bios_state = BIOS_APP;
 	}
 	
 	while (Can_Send(&tx_msg) != CAN_OK);
 
-	tx_msg.DataLength = 2;
+	tx_msg.DataLength = 2; // All msg sent after BIOS_START are length 2 so set it once.
 	
-	// main loop
+	// Main loop
 	while (1) {
 		// Wait for message
 		while (!bios_msg_full);
+		
 		nmt_type = (bios_msg.Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE;
 		
 		switch (bios_state) {
@@ -194,7 +205,7 @@ int main() {
 			if (nmt_type == CAN_NMT_PGM_START) {
 				// Set base address
 				base_addr = bios_msg.Data.words[0];
-				flash_init();
+				flash_init(pagebuf);
 				//send CAN_NMT_PGM_ACK(offset)
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				tx_msg.Data.words[0] = base_addr;
@@ -205,9 +216,6 @@ int main() {
 				// For BIOS updating over CAN. Upload bios to application area,
 				// send this message with correct parameters to copy data from
 				// application to bios area and pray it will come alive again.
-				// Make extra really super sure that the .bootloader section is
-				// EXACTLY the same, except for the vector table (which MUST be
-				// updated) or go get your ISP.
 				flash_copy_data(bios_msg.Data.words[0], 
 				                bios_msg.Data.words[1], 
 				                bios_msg.Data.words[2]);
@@ -216,37 +224,49 @@ int main() {
 			break;
 		case BIOS_PGM:
 			if (nmt_type == CAN_NMT_PGM_DATA) {
-				// Set address = base address + offset
+				// Set address = base address + offset.
 				offset = bios_msg.Data.words[0];
 				addr = base_addr + offset;
+				
+				// One of ACK and NACK will be sent, both have offset as data.
 				tx_msg.Data.words[0] = offset;
-				// TODO: Check (addr + dlc) valid instead
-				if (addr < (uint16_t)&__bios_start) { //address valid
-					//flash data at address
-					len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
-					for (i=1; i<len; i++) { // Skip first word (offset)
-						data = bios_msg.Data.words[i];
-						flash_write_word(addr, data);
-						addr += 2;
-					}
-					//update crc //cannot update crc here, data not written yet /arune
-					offset += bios_msg.DataLength - 2;	//let offset be last address to simplify crc calc later
-					//send CAN_NMT_PGM_ACK(offset)
-					tx_msg.Id = CAN_ID_NMT_PGM_ACK;
-				} else {
-					//send CAN_NMT_PGM_NACK(offset)
-					tx_msg.Id = CAN_ID_NMT_PGM_NACK;
-				}
 				send_msg = 1;
+				// Default to send CAN_NMT_PGM_ACK(offset)
+				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+
+				// Flash all data sent, beginning at addr.
+				len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
+				uint8_t i;
+				for (i=1; i<len; i++) { // Skip first word (offset).
+					
+					// Abort if trying to write in BIOS area.
+					if (addr >= (uint16_t)&__bios_start) {
+						// Send CAN_NMT_PGM_NACK(offset).
+						tx_msg.Id = CAN_ID_NMT_PGM_NACK;
+						break; //for loop
+					}
+
+					data = bios_msg.Data.words[i];
+					flash_write_word(addr, data);
+					addr += 2;
+				}
+				// Adjust addr if an odd number of bytes were sent, for use in crc calc.
+				addr -= bios_msg.DataLength & 1; 
 			}
 			if (nmt_type == CAN_NMT_PGM_END) {
+				// Make sure a partly filled page will be flashed.
 				flash_flush_buffer();
-				//check crc
-				uint16_t calccrc = 0;
-				for (i=0; i < offset; i++) {
-					calccrc = _crc16_update(calccrc, pgm_read_byte(base_addr+i));
+				
+				// Calculate crc on written data.
+				//TODO: This will not work if data is not sent sequentially without
+				// holes, starting with offset=0. We might want to send a NACK if the
+				// offset in a CAN_NMT_PGM_DATA msg differs from the expected offset.
+				uint16_t loc, crc = 0;
+				for (loc = base_addr; loc < addr - 2; loc++) { // addr will be last location written + 2.
+					crc = _crc16_update(crc, pgm_read_byte(loc));
 				}
-				tx_msg.Data.words[0] = calccrc;
+				
+				tx_msg.Data.words[0] = crc;
 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
 				send_msg = 1;
 				bios_state = BIOS_NOAPP;

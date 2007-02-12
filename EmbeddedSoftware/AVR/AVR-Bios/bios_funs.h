@@ -7,7 +7,7 @@
 
 #include "bios.h"
 
-extern uint16_t __bios_start;
+extern void __bios_start; // Start of BIOS area in flash, from ld-script.
 
 //---------------------------------------------------------------------------
 // Function prototypes for the exported interface
