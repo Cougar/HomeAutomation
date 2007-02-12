@@ -18,7 +18,6 @@
 /* system files */
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/wdt.h>
 #include <stdio.h>
 /* lib files */
 #include <bios.h>
@@ -28,7 +27,6 @@
 #include <eqlazer_funcdefs.h>
 
 /* defines */
-#define NUMBER_OF_RCS 1
 #define NODE_ID		0x03L // FIXME ändras för varje nod
 #define GROUP_ID	0x01L // ^
 
@@ -48,7 +46,7 @@
 
 #define STEPS_PER_TURN_PERIOD   10 /* number of steps for each adjustment */
 #define TURN_PERIOD             100 /* ms */
-#define STATUS_SEND_PERIOD      10000 /* ms */
+#define STATUS_SEND_PERIOD      5000 /* ms */
 #define FAILSAFE_SEND_PERIOD    10000 /* ms */
 #define BOUNCE_TIME             10 /* ms */
 #define SERVO_FEED_TIME			2000 /* ms */
@@ -158,6 +156,7 @@ int main(void) {
     uint32_t boardTemperature = 0;
     uint32_t timeStamp = 0, timeStampTurn = 0, servoFeed_timeStamp = 0;
 
+	sei();
 	adcTemperatureInit();
 	rcServoInit();
 
@@ -180,7 +179,7 @@ int main(void) {
 	DDRC |= (1<<DDC0);
 	PORTC &= ~(1<<PC0);
 
-	sei();
+//	sei();
 
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
@@ -241,7 +240,7 @@ int main(void) {
 				msg_received = FALSE;
         }
 
-		if( bios->timebase_get() - timeStamp  >= STATUS_SEND_PERIOD ){
+		if( (bios->timebase_get() - timeStamp)  >= STATUS_SEND_PERIOD ){
 			timeStamp = bios->timebase_get();
             /* Send blinds status to CAN */
 
