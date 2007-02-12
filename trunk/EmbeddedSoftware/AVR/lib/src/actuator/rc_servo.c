@@ -37,20 +37,20 @@ void rcServoInit(){
     TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
     ICR1 = 20000; /* Used for TOP, makes for 50 Hz PWM */
     OCR1A = PWM1_CENTER_PULSE; /* Servo at center */
-    DDRB |= (1<<PB1); /* Enable pin as output */
+    DDRB |= (1<<DDB1); /* Enable pin as output */
 #endif
 #if NUMBER_OF_RCS > 1
     /* Use OC0A */
     TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
-    TCCR0B |= (1<<CS02);//(1<<CS02)|(1<<CS00); /* Prescaler 1/1024 */
+    TCCR0B |= (1<<CS02); /* Prescaler 1/256 */
     OCR0A = PWM2_CENTER_PULSE;
-    DDRD |= (1<<PD6);
+    DDRD |= (1<<DDD6);
 #endif
 #if NUMBER_OF_RCS > 2
     /* Use OC0B */
     TCCR0A |= (1<<COM0B1);
     OCR0B = PWM3_CENTER_PULSE;
-    DDRD |= (1<<PD5);
+    DDRD |= (1<<DDD5);
 #endif
 
 }
