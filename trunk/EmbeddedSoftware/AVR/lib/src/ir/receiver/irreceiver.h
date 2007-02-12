@@ -6,7 +6,7 @@
  * Includes
  *---------------------------------------------------------------------------*/
 #include <stdio.h>
-
+#include <bios.h>
 
 /*-----------------------------------------------------------------------------
  * Defines
@@ -22,7 +22,7 @@
 #define IR_TIME_OVFL		3
 #define IR_NO_DATA 			4
 
-#define CYCLES_PER_US       (F_OSC/1000000)
+#define CYCLES_PER_US       (F_CPU/1000000)
 
 #define IR_PROTO_RC5		0
 #define IR_RC5_ST_BIT		864*CYCLES_PER_US		//us

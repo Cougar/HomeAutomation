@@ -27,8 +27,7 @@
 #include <eqlazer_funcdefs.h>
 
 /* defines */
-#define NODE_ID		0x03L // FIXME ändras för varje nod
-#define GROUP_ID	0x01L // ^
+#define GROUP_ID	0x01L // FIXME
 
 #define FAILSAFE_MODE       0x0F
 #define FAILSAFE_TRESHOLD   60  /* Degrees celcius when nodeBlinds goes into failsafe mode */
