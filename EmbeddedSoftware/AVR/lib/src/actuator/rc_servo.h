@@ -18,7 +18,7 @@
  * They will be named RCS0-RCS2.
  * Define how many that will be used.
  */
-#define NUMBER_OF_RCS 3
+#define NUMBER_OF_RCS 2
 
 /* 
  * For width of the pulse that control the RC servo.

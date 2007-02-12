@@ -31,7 +31,7 @@ void rcServoInit(){
     // we want OC1A and B to be set on reaching BOTTOM, clear on reaching
     // compare match, use ICR1 as TOP and have a prescale of 8.
 
-#if NUMBER_OF_RCS > 0
+#if NUMBER_OF_RCS >= 1
     /* Use OC1A */
     TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
     TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
@@ -39,14 +39,14 @@ void rcServoInit(){
     OCR1A = PWM1_CENTER_PULSE; /* Servo at center */
     DDRB |= (1<<DDB1); /* Enable pin as output */
 #endif
-#if NUMBER_OF_RCS > 1
+#if NUMBER_OF_RCS >= 2
     /* Use OC0A */
     TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
     TCCR0B |= (1<<CS02); /* Prescaler 1/256 */
     OCR0A = PWM2_CENTER_PULSE;
     DDRD |= (1<<DDD6);
 #endif
-#if NUMBER_OF_RCS > 2
+#if NUMBER_OF_RCS >= 3
     /* Use OC0B */
     TCCR0A |= (1<<COM0B1);
     OCR0B = PWM3_CENTER_PULSE;
