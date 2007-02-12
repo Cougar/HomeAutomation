@@ -16,17 +16,17 @@ namespace canBootloader {
 		
 		private const byte CAN_NMT				= 0x00;
 		
-		private const byte CAN_NMT_RESET = 0x00;
-		private const byte CAN_NMT_BIOS_START 	= 0x01;
-		private const byte CAN_NMT_PGM_START 	= 0x02;
-		private const byte CAN_NMT_PGM_DATA 	= 0x03;
-		private const byte CAN_NMT_PGM_END 		= 0x04;
-		private const byte CAN_NMT_PGM_ACK 		= 0x05;
-		private const byte CAN_NMT_PGM_NACK 	= 0x06;
-		private const byte CAN_NMT_START_APP 	= 0x07;
-		private const byte CAN_NMT_APP_START 	= 0x08;
-		private const byte CAN_NMT_HEARTBEAT 	= 0x09;
-		private const byte CAN_NMT_PGM_COPY		= 0x0F;
+		private const byte CAN_NMT_RESET 		= 0x04;
+		private const byte CAN_NMT_BIOS_START 	= 0x08;
+		private const byte CAN_NMT_PGM_START 	= 0x0C;
+		private const byte CAN_NMT_PGM_DATA 	= 0x10;
+		private const byte CAN_NMT_PGM_END 		= 0x14;
+		private const byte CAN_NMT_PGM_COPY		= 0x18;
+		private const byte CAN_NMT_PGM_ACK 		= 0x1C;
+		private const byte CAN_NMT_PGM_NACK 	= 0x20;
+		private const byte CAN_NMT_START_APP 	= 0x24;
+		private const byte CAN_NMT_APP_START 	= 0x28;
+		private const byte CAN_NMT_HEARTBEAT 	= 0x2C;
 		
 		private const byte MY_ID = 0x00;
 		//private const byte TARGET_ID = 0x78;
