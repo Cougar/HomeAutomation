@@ -52,6 +52,10 @@
 #define BUTTON1                 1
 #define BUTTON2                 2
 
+#define SERVO_FEED_PORT			PORTC
+#define SERVO_FEED_DDR			DDRC
+#define SERVO_FEED_PIN			PC0
+
 #define TRUE 1
 #define FALSE !TRUE
 
@@ -77,7 +81,6 @@ void can_receive(Can_Message_t *msg){
 	uint32_t act;
 	uint8_t m, act_type, group, node;
 	if( ((msg->Id & CLASS_MASK) >> CLASS_MASK_BITS) == CLASS_ACT ){
-		/* Parse message */
 		act = (msg->Id & TYPE_MASK) >> TYPE_MASK_BITS;
 		act_type = (act & ACT_TYPE_MASK) >> ACT_TYPE_BITS;
 		group = (act & ACT_GROUP_MASK) >> ACT_GROUP_BITS;
@@ -171,14 +174,12 @@ int main(void) {
 
     /* Enable IO-pin interrupt */
     PCICR |= (1<<PCIE2);
-    /* Unmask PD1 and PD2 */
+    /* Unmask PD1 and SERVO_FEED_PIN */
     PCMSK2 |= (1<<PCINT16) | (1<<PCINT17);
 #endif
 	/* Set output and turn off the servo current feed */
-	DDRC |= (1<<DDC0);
-	PORTC &= ~(1<<PC0);
-
-//	sei();
+	SERVO_FEED_DDR |= (1<<SERVO_FEED_PIN);
+	SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
@@ -192,22 +193,21 @@ int main(void) {
 		/* check if any messages have been received */
 		if(msg_received){
 			/* This node that control a servo is adressed */
-
 			if( rxMsg.Data.bytes[0] == BLINDS_CMD_ABS ){
 				/* Set absolute position to servo */
 				setPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
-				timeStampTurn = bios->timebase_get();
+				servoFeed_timeStamp = bios->timebase_get();
 
 			}else if(rxMsg.Data.bytes[0] == BLINDS_CMD_REL){
                 /* Set relative position to servo */
                 alterPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
-				timeStampTurn = bios->timebase_get();
+				servoFeed_timeStamp = bios->timebase_get();
 
             }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_START ){
                 /* Start turning the servo */
                 turnDirection = rxMsg.Data.bytes[1];
                 servoToTurn = rxMsg.Data.bytes[2];
-				timeStampTurn = bios->timebase_get();
+				servoFeed_timeStamp = bios->timebase_get();
 
             }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STOP ){
                 /* Stop turning */
@@ -279,9 +279,9 @@ int main(void) {
         }
 		/* Turn off the servo current feed */
 		if( bios->timebase_get() - servoFeed_timeStamp >= SERVO_FEED_TIME ){
-			PORTC &= ~(1<<PC0);
+			SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 		}else{
-			PORTC |= (1<<PC0);
+			SERVO_FEED_PORT |= (1<<SERVO_FEED_PIN);
 		}
     }
     return 0;
@@ -293,7 +293,7 @@ void blindsFailsafe()
 	uint32_t boardTemperature = 0, timeStamp = 0;
 
 	/* Turn of servo current feed */
-	PORTC &= ~(1<<PC0);
+	SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 
 
 	while(1){
