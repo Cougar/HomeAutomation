@@ -263,7 +263,7 @@ int main() {
 				// holes, starting with offset=0. We might want to send a NACK if the
 				// offset in a CAN_NMT_PGM_DATA msg differs from the expected offset.
 				uint16_t loc, crc = 0;
-				for (loc = base_addr; loc < addr - 2; loc++) { // addr will be last location written + 2.
+				for (loc = base_addr; loc < addr; loc++) { // addr will be last location written + 2.
 					crc = _crc16_update(crc, pgm_read_byte(loc));
 				}
 				
