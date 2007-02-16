@@ -5,6 +5,10 @@
 #include <inttypes.h>
 #include <avr/io.h>
 
+/* For compatibility with bios. If standalone app comment these two lines */
+#include <bios.h>
+#define F_OSC F_CPU
+
 /* delay function for microsec
    4 cpu cycles per loop + 1 cycles(?) overhead 
    when a constant is passed. */

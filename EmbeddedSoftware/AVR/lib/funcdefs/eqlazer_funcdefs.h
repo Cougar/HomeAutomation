@@ -37,11 +37,11 @@
  * <SNS_ID>, 9 bits = Sensor ID. Ex outdoor ds18s20, NodeRelay tc1047.
  */
 /* SNS masking */
-#define SNS_TYPE_MASK	0x1FE00L	/* bit[16..9] */
-#define SNS_ID_MASK		0x001FFL	/* bit[8..0] */
+#define SNS_TYPE_MASK	0x1FE0000L	/* bit[24..17] */
+#define SNS_ID_MASK		0x001FF00L	/* bit[16..8] */
 
-#define SNS_TYPE_BITS	9
-#define SNS_ID_BITS		0
+#define SNS_TYPE_BITS	17
+#define SNS_ID_BITS		8
 
 /* <SNS_TYPE> 8 bits 0xFFL */
 #define SNS_TEMP_DS18S20		0x08L
@@ -53,6 +53,11 @@
 
 /* <SNS_ID> 9 bits 0x1FFL */
 //idn för alla sensorer
+//eqlazers idn:
+#define SNS_DS18S20_OUTSIDE		0x001L
+#define SNS_DS18S20_FREEZER		0x002L
+#define SNS_DS18S20_INSIDE1		0x003L
+#define SNS_DS18S20_INSIDE2		0x004L
 
 /* ACT: Actuator data */
 
