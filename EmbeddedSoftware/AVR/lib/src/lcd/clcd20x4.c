@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <clcd20x4.h>
 #include <lcd_HD44780.h>
+#include <avr/interrupt.h>
 
 /*-----------------------------------------------------
  * Functions
@@ -66,11 +67,18 @@ void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size){
             }else{
                 snprintf(buffer, MAX_DATA_LENGTH, "%u.%u    ", data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
             }
+			cli();
+            lcd_gotoxy(dataPos[m][0],dataPos[m][1]);
+            lcd_puts(buffer);
+			sei();
+        }
+    }else if( view==RELAYS_VIEW ){
+        for(m=0;m<size;m++){
+            /* Relay status, on or off */
+            snprintf(buffer, MAX_DATA_LENGTH, (data[m]==0x01)?"ON   ":"OFF   ");
             lcd_gotoxy(dataPos[m][0],dataPos[m][1]);
             lcd_puts(buffer);
         }
-    }else if( view==RELAYS_VIEW ){
-        // FIXME
     }else if( view==DIMMERS_VIEW ){
         // FIXME
     }else if( view==SERVO_VIEW ){
@@ -87,8 +95,8 @@ void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size){
         /* Do nothing */
         return;
     }
+}
 
-
-
+void printLCDedit(uint8_t view){
 
 }

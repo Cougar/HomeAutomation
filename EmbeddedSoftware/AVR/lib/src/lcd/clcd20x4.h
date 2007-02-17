@@ -27,6 +27,8 @@
 #define DIMMERS_VIEW    3
 #define SERVO_VIEW      4
 
+#define LAST_VIEW SERVO_VIEW /* To keep track on last view */
+
 /*---------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------*/
@@ -47,7 +49,13 @@ static char viewStrings[][ MAX_LENGTH ] = {
     /* Dimmer status */
     "Dimmer Status", "1: NA     2: NA", "3: NA     4: NA", "Relay", "Servo",
     /* Servo (blinds) status */
-    "Servo Status", "1: NA     2: NA", "3: NA     4: NA", "Dimmer", "    NA"
+    "Servo Status", "1: NA     2: NA", "3: NA     4: NA", "Dimmer", "Mail",
+    /* Mail status, to interface with a mail account */
+    "Mail status","New mail: ","","Servo","   NA"
+};
+
+static char editStrings[][MAX_LENGTH] = {
+
 };
 
 static uint8_t dataPos[][2] = {
