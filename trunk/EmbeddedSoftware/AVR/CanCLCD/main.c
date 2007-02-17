@@ -34,9 +34,10 @@
 
 uint8_t currentView = MAIN_VIEW, msg_received = FALSE, encoderPosition, rot = FALSE;
 Can_Message_t rxMsg;
-uint8_t temperatureData[8], //servoPosition[4], relayStatus[4], dimmerStatus[4],
-            temperatureLength=8;//, servoLength=0, relayLength=0;
+uint8_t temperatureData[8], servoPosition[4], //relayStatus[4], dimmerStatus[4],
+            temperatureLength = 8, servoLength = 0; //, relayLength=0; //TODO mer generaliserat
 uint32_t rot_timeStamp;
+char buf[10];
 
 ISR( PCINT2_vect ){
 
@@ -47,7 +48,7 @@ ISR( PCINT2_vect ){
 }
 
 void can_receive(Can_Message_t *msg){
-	uint8_t temp;
+	uint8_t temp, m;
 	/* Check for incoming messages from IR-receiver node */
 	if( CLASS_SNS == ((msg->Id & CLASS_MASK) >> CLASS_MASK_BITS) ){
 		/* FIXME detta är väldigt fult och borde fixas
@@ -70,12 +71,19 @@ void can_receive(Can_Message_t *msg){
 		/* DS18S20 sensors */
 		if( SNS_TEMP_DS18S20 == (msg->Id & SNS_TYPE_MASK)>>SNS_TYPE_BITS ){
 			temp = (msg->Id & SNS_ID_MASK)>>SNS_ID_BITS;
-			temperatureData[ temp ] = msg->Data.bytes[0];
-			temperatureData[ temp+1 ] = msg->Data.bytes[1];
-//			if(temp == 1){
-//				lcd_puts("ute ");
-//			}
+			temperatureData[ (temp-1)*2 ] = msg->Data.bytes[0];
+			temperatureData[ (temp-1)*2+1 ] = msg->Data.bytes[1];
 		}
+
+		/* Servo controllers */
+		if( SNS_ACT_STATUS_SERVO == (msg->Id & TYPE_MASK)>>TYPE_MASK_BITS ){ // TODO annan struktur på statusmeddelanden från servo
+			temp = msg->DataLength - 3;
+			for(m=0;m<temp;m++){
+				servoPosition[ m ] = msg->Data.bytes[m+3];
+			}
+			servoLength = temp;
+		}
+
 	}
 }
 
@@ -86,10 +94,6 @@ void can_receive(Can_Message_t *msg){
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-//	uint8_t a=0, b=0;
-/*  uint8_t m, temperatureData[8], servoPosition[4], relayStatus[4], dimmerStatus[4],
-            temperatureLength, servoLength, relayLength;
-*/
     /*
      * Initialize rotaryencoders and buttons
      */
@@ -106,7 +110,6 @@ int main(void) {
 
 	lcd_init( LCD_DISP_ON );
 	lcd_clrscr();
-//    lcd_puts("CAN LCD\n");
 
     lcd_clrscr();
     printLCDview( MAIN_VIEW );
@@ -116,14 +119,14 @@ int main(void) {
         /* check if any messages have been received */
 		if(msg_received){
                 /* Print views skeleton and if existing its data */
-                printLCDview( currentView );
-                if(currentView == TEMPSENS_VIEW){
-                    printLCDviewData( TEMPSENS_VIEW, temperatureData, temperatureLength);
-            //    }else if(currentView == SERVO_VIEW){
-            //        printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
-                }
-				msg_received = FALSE;
-            }
+			printLCDview( currentView );
+			if(currentView == TEMPSENS_VIEW){
+				printLCDviewData( TEMPSENS_VIEW, temperatureData, temperatureLength);
+			}else if(currentView == SERVO_VIEW){
+				printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
+			}
+			msg_received = FALSE;
+		}
 
         // TODO använd rotary encoders för att växla view
         // också med fjärrkontroll
