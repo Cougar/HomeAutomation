@@ -1,5 +1,10 @@
 #ifndef LCD_H
 #define LCD_H
+
+/* For compatibility with BIOS */
+#include <bios.h>
+#define F_OSC F_CPU
+
 /*************************************************************************
  Title	:   C include file for the HD44780U LCD library (lcd.c)
  Author:    Peter Fleury <pfleury@gmx.ch>  http://jump.to/fleury

@@ -11,43 +11,74 @@
  *
  */
 
-#define DEBUG 0
-
 /*-----------------------------------------------------------------------------
  * Includes
  *---------------------------------------------------------------------------*/
 /* system files */
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/wdt.h>
 #include <stdio.h>
 /* lib files */
-#include <can.h>
-#include <serial.h>
-#include <timebase.h>
+#include <bios.h>
 #include <lcd_HD44780.h>
 #include <clcd20x4.h>
 /* funcdefs */
-#include <global_funcdefs.h>
+//#include <global_funcdefs.h>
 #include <eqlazer_funcdefs.h>
 
 /* defines */
 #define BUFFER_SIZE 20
+#define BOUNCE_TIME 10
+#define TRUE 1
+#define FALSE 0
 
-#define LCD_CMD_GET 0x1600
-#define VIEW_LEFT 0x01
-#define VIEW_RIGHT 0x02
-#define VIEW_EDIT 0x03
+uint8_t currentView = MAIN_VIEW, msg_received = FALSE, encoderPosition, rot = FALSE;
+Can_Message_t rxMsg;
+uint8_t temperatureData[8], //servoPosition[4], relayStatus[4], dimmerStatus[4],
+            temperatureLength=8;//, servoLength=0, relayLength=0;
+uint32_t rot_timeStamp;
 
-
-uint8_t currentView = MAIN_VIEW;
-
-// TODO ISR() för att använda optoencoders
 ISR( PCINT2_vect ){
-    // TODO do the magic stuff
-    // vriden medurs currentView++
-    // moturs currentView--
-} // TODO lägga denna koden i ett eget lib?
+
+	rot_timeStamp = bios->timebase_get();
+	rot = TRUE;
+	/* stäng av interrupt på pinnarna */
+	PCICR &= ~(1<<PCIE2);
+}
+
+void can_receive(Can_Message_t *msg){
+	uint8_t temp;
+	/* Check for incoming messages from IR-receiver node */
+	if( CLASS_SNS == ((msg->Id & CLASS_MASK) >> CLASS_MASK_BITS) ){
+		/* FIXME detta är väldigt fult och borde fixas
+		 * knapp 4 på fjärren bläddrar åt vänster
+		 * knapp 6 åt höger
+		 */
+		if( SNS_IR_RECEIVE == (msg->Id & TYPE_MASK)>>TYPE_MASK_BITS){
+			if(msg->Data.bytes[0] == 0 && msg->Data.bytes[1] == 0 && msg->Data.bytes[2] == 0){
+				if(msg->Data.bytes[3] == 4 && currentView>0){
+					currentView--;
+					msg_received = TRUE;
+				}else if(msg->Data.bytes[3] == 6 && currentView<LAST_VIEW){
+					currentView++;
+					msg_received = TRUE;
+				}
+			}
+		}
+		/* Other sensor messages should be placed here */
+
+		/* DS18S20 sensors */
+		if( SNS_TEMP_DS18S20 == (msg->Id & SNS_TYPE_MASK)>>SNS_TYPE_BITS ){
+			temp = (msg->Id & SNS_ID_MASK)>>SNS_ID_BITS;
+			temperatureData[ temp ] = msg->Data.bytes[0];
+			temperatureData[ temp+1 ] = msg->Data.bytes[1];
+//			if(temp == 1){
+//				lcd_puts("ute ");
+//			}
+		}
+	}
+}
+
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -55,108 +86,52 @@ ISR( PCINT2_vect ){
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-    uint8_t m, temperatureData[8], servoPosition[4], relayStatus[4], dimmerStatus[4],
-            temperatureLength, servoLength;
-
+//	uint8_t a=0, b=0;
+/*  uint8_t m, temperatureData[8], servoPosition[4], relayStatus[4], dimmerStatus[4],
+            temperatureLength, servoLength, relayLength;
+*/
     /*
-     * Initialize optoencoders and buttons
+     * Initialize rotaryencoders and buttons
      */
-    /* Set as input and enable pull-up */ // TODO fixa rätt ingångar
+    /* Set as input and enable pull-up */
     DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
-    PORTD |= (1<<PD6)|(1<<PD7);
+//    PORTD |= (1<<PD6)|(1<<PD7);
     /* Enable IO-pin interrupt */
-    PCICR |= (1<<PCIE1);
+//    PCICR |= (1<<PCIE2);
     /* Unmask PD6 and PD7 */
     PCMSK2 |= (1<<PCINT22)|(1<<PCINT23);
 
-
-    Timebase_Init();
-#if DEBUG
-    Serial_Init();
-#endif
     sei();
-    lcd_init( LCD_DISP_ON );
-    lcd_clrscr();
-    lcd_puts("CAN LCD test\n");
-    lcd_puts("CanInit... ");
-    if (Can_Init() != CAN_OK) {
-        lcd_puts("FAILED!\n");
-    }else{
-        lcd_puts("OK!\n");
-    }
+	bios->can_callback = &can_receive;
 
-    uint32_t timeStamp = 0;
-
-    Can_Message_t txMsg;
-    Can_Message_t rxMsg;
-    txMsg.Id = 0;
-    txMsg.RemoteFlag = 0;
-    txMsg.ExtendedFlag = 1;
+	lcd_init( LCD_DISP_ON );
+	lcd_clrscr();
+//    lcd_puts("CAN LCD\n");
 
     lcd_clrscr();
     printLCDview( MAIN_VIEW );
 
     /* main loop */
-    while (1) {
-        /* service the CAN routines */
-        Can_Service();
-
-        /* check if any messages have been received and print to uart */
-        while (Can_Receive(&rxMsg) == CAN_OK) {
-#if DEBUG
-            printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-            printf("data={ ");
-
-            for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-                printf("%x ", rxMsg.Data.bytes[i]);
-            }
-            printf("}\n");
-#endif
-            /* Get data from bus and store */
-            if( rxMsg.Id == 0x1502 ){
-                /* Temperature sensor data */
-                for(m=0; m<rxMsg.DataLength; m++){
-                    temperatureData[m] = rxMsg.Data.bytes[m];
-                    temperatureLength = rxMsg.DataLength;
-                }
-            }else if( rxMsg.Id == 0x1201 ){
-                /* Relay status (ON/OFF) */
-                relayStatus[1] = rxMsg.Data.bytes[2];
-            }else if( rxMsg.Id == 0x1301){
-                /* Servo and blinds status */
-                for( m=3; m<rxMsg.DataLength; m++ ){
-                    servoPosition[m-3] = rxMsg.Data.bytes[m];
-                    servoLength=rxMsg.DataLength-3;
-                }
-            }
-            /* TODO Add extra messages here */
-
-            /* Incoming command to change view */
-            if(rxMsg.Id == LCD_CMD_GET){
-                if(rxMsg.Data.bytes[0]== VIEW_LEFT){
-                    if(currentView>MAIN_VIEW){
-                        currentView--;
-                    }
-                }else if(rxMsg.Data.bytes[0]== VIEW_RIGHT){
-                    if(currentView<SERVO_VIEW){ /* TODO increase value if you add views */
-                        currentView++;
-                    }
-                }
-
+	while(1){
+        /* check if any messages have been received */
+		if(msg_received){
                 /* Print views skeleton and if existing its data */
                 printLCDview( currentView );
                 if(currentView == TEMPSENS_VIEW){
                     printLCDviewData( TEMPSENS_VIEW, temperatureData, temperatureLength);
-                }else if(currentView == SERVO_VIEW){
-                    printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
+            //    }else if(currentView == SERVO_VIEW){
+            //        printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
                 }
+				msg_received = FALSE;
             }
-        }
 
-        // TODO använd optoencoders för att växla view
+        // TODO använd rotary encoders för att växla view
         // också med fjärrkontroll
-
-    }
+/*		if((bios->timebase_get() - rot_timeStamp >= BOUNCE_TIME) && rot == TRUE){
+			PCICR |= (1<<PCIE2);
+			rot = FALSE;
+		}*/
+	}
 
 
 }
