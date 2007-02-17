@@ -63,14 +63,12 @@ void printLCDviewData(uint8_t view, uint8_t *data, uint8_t size){
         for(m=0;m<size/2;m++){
             if((int8_t)data[m*2]<0){
                 /* Subsero? */
-                snprintf(buffer, MAX_DATA_LENGTH, "-%u.%u   ", -(int8_t)data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
+				snprintf(buffer, MAX_DATA_LENGTH, "-%u.%u   ", -(int8_t)data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
             }else{
                 snprintf(buffer, MAX_DATA_LENGTH, "%u.%u    ", data[m*2], (int8_t)(data[m*2+1]>>4)/10 );
             }
-			cli();
             lcd_gotoxy(dataPos[m][0],dataPos[m][1]);
             lcd_puts(buffer);
-			sei();
         }
     }else if( view==RELAYS_VIEW ){
         for(m=0;m<size;m++){
