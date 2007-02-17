@@ -5,11 +5,9 @@
  * @date	2007-02-10
  * @author	Martin Nordén
  *
- * Set RGB: <byte0 RGBLED_CMD_SETRGB> <byte 1 Set/Fade> <byte2 R> <byte3 G> <byte4 B>
- * Change RGB: <byte 0 RGBLED_CMD_CHANGERGB> <byte 1 int R> <byte 2 int G> <byte 3 int B>  (Note that they are all signed)
- * Set Intens: <byte0 RGBLED_CMD_SETINTENS> <byte1 Set/Fade> <byte2 Intens> (<byte3 dimSpeed>)
- *
  * TODO: Better CAN Integration, Failsafe mode, Tempsensors etc.
+ * Also, check current/destination intensity better when in a program?
+ *
  */
 
 
@@ -20,28 +18,33 @@
 #include <avr/interrupt.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include <bios.h>
 #include <avr/pgmspace.h> //To allow read/write from flash
 
 /* lib files */
-//#include <can.h>
-//#include <serial.h>
-//#include <timebase.h>
-//#include <math.h> //Not sure this is needed anymore..
+#include <bios.h>
+#include <noddan_funcdefs.h>
 
 /*----------------------------------------------------------------------------
  * Defines
  * -------------------------------------------------------------------------*/
 
-//Not implemented yet. Will be implementet when I build a canUSB :)
+//Working on implementing all of these...
 
-#define RGBLED_CMD_GET      0x1400
-#define RGBLED_CMD_SEND     0x1401
+#define RGBLED_CMD_STATUS   		0x00	/* Get status */
+#define RGBLED_CMD_SETRGB   		0x01	/* Set RGB Triplet */
+#define RGBLED_CMD_CHANGERGB  		0x02	/* Change RGB +/- */
+#define RGBLED_CMD_SETPROGRAM 		0x03  /* Set program */
+#define RGBLED_CMD_SETFADESPEED 	0x04  /* Set fadespeed */
+#define RGBLED_CMD_SETDIMSPEED		0x05  /* Set dimspeed */
+#define RGBLED_CMD_SETINTENS  		0x10  /* Set intensity */
 
-#define RGBLED_CMD_STATUS   	0x00	/* Get status */
-#define RGBLED_CMD_SETRGB   	0x01	/* Set RGB Triplet */
-#define RGBLED_CMD_CHANGERGB  0x02	/* Change RGB +/- */
-#define RGBLED_CMD_SETINTENS  0x10  /* Set intensity */
+#define APP_TYPE    0xf001
+#define APP_VERSION 0x0001
+
+#define GROUP_ID	0x01L // FIXME
+#define TRUE 1
+#define FALSE !TRUE
+
 
 /*----------------------------------------------------------------------------
  * Ehm, struct?
@@ -97,11 +100,10 @@ Color* programs[] PROGMEM = {
 
 
 /*-----------------------------------------------------------------------------
- * Variables
+ * Global variables
  *---------------------------------------------------------------------------*/
 uint32_t timeStamp;	//TimeStamp to keep track of time
 uint32_t dimStamp;	//Timestamp to keep track of dimmer changes
-uint32_t time;		//Temptime for converting (TODO)
 
 Color currColor;  	//Current color
 Color destColor;  	//Destination color
@@ -112,6 +114,11 @@ uint8_t dimSpeed;		//Dimmer speed. Sets the speed of intensitychange.
 uint8_t currProgram;	//This variable keeps track of what program is currently running. 
 uint8_t programMode;	//This keeps track of what mode we are currently using. 0: the program obeyes the current brightness, 1: the program is allowed to set it's own brightness
 
+uint8_t msg_received = FALSE;
+
+Can_Message_t txMsg;
+Can_Message_t rxMsg;
+
 /*----------------------------------------------------------------------------
  * Functions
  * -------------------------------------------------------------------------*/
@@ -121,17 +128,33 @@ void changeColor(int8_t amount, uint8_t* color);
 void fade(uint8_t* current, uint8_t* destination);
 
 
-void can_receive(Can_Message_t *msg) {
-	//What should we do when can recieve?
+/* Takes care about incoming messages and parses them if this node is adressed */
+void can_receive(Can_Message_t *msg){
+	uint32_t act;
+	uint8_t m, act_type, group, node;
+	if( ((msg->Id & CLASS_MASK) >> CLASS_MASK_BITS) == CLASS_ACT ){
+		act = (msg->Id & TYPE_MASK) >> TYPE_MASK_BITS;
+		act_type = (act & ACT_TYPE_MASK) >> ACT_TYPE_BITS;
+		group = (act & ACT_GROUP_MASK) >> ACT_GROUP_BITS;
+		node = (act & ACT_NODE_MASK) >> ACT_NODE_BITS;
+
+		/* Check if it is command to control this servo */
+		if(act_type == ACT_TYPE_RGB){
+			if(group == GROUP_ID || node == NODE_ID){
+				for(m=0;m<msg->DataLength;m++){
+					rxMsg.Data.bytes[m] = msg->Data.bytes[m];
+				}
+				msg_received = TRUE;
+			}
+		}
+	}
 }
+
 
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-//	Timebase_Init();
-//	Serial_Init();
-//	Can_Init();
 
 //Setting up OC1A, 16 bit counter used as 8 bit.
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
@@ -154,9 +177,8 @@ int main(void) {
 	dimSpeed = 10;
 	timeStamp = 0;
 	dimStamp = 0;
-//	Can_Message_t rxMsg;	
 
-	reformatRGB(0x00,0xff,0x00,1);
+	reformatRGB(0x00,0x00,0x00,1);
 	destColor.Intens = 100;
 	currColor = destColor;
 
@@ -169,28 +191,21 @@ int main(void) {
 
 	bios->can_callback = &can_receive;
 
-//Lets send out that we're alive
-	Can_Message_t txMsg;
-	txMsg.Id = 0x42; //booted!
+//Send a message that we are alive!
+	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
 	txMsg.DataLength = 4;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
-	txMsg.Data.words[0] = 0x13;
-	txMsg.Data.words[1] = 0x13;
+	txMsg.Data.words[0] = APP_TYPE;
+	txMsg.Data.words[1] = APP_VERSION;
 	bios->can_send(&txMsg);
-//Data sent.
-
-//Just temporary
-//	currColor.R = 0;
-//	destColor.R = 100;
 
 
 	/* main loop */
 	while (1) {
 		
 		/* Time to fade color? */
-		time = bios->timebase_get();
-		if ((time - timeStamp) >= fadeSpeed) {
+		if ((bios->timebase_get() - timeStamp) >= fadeSpeed) {
 			fade(&currColor.R, &destColor.R);			
 			fade(&currColor.G, &destColor.G);
 			fade(&currColor.B, &destColor.B);
@@ -201,11 +216,11 @@ int main(void) {
 
 
 		/* Time to fade intensity? */
-//		if (Timebase_PassedTimeMillis(dimStamp) >= dimSpeed) {
-//			fade(&currColor.Intens, &destColor.Intens);
-//			dimStamp = Timebase_CurrentTime();
-//			updateLED();
-//		}
+		if (bios->timebase_get() - dimStamp >= dimSpeed) {
+			fade(&currColor.Intens, &destColor.Intens);
+			dimStamp = bios->timebase_get();
+			updateLED();
+		}
 
 
 		/* Program management */
@@ -237,6 +252,43 @@ int main(void) {
 
 		}
 
+		/* check if any messages have been received */
+		if(msg_received){
+			/* This node that controls a RGB LED is adressed */
+			if( rxMsg.Data.bytes[0] == RGBLED_CMD_SETPROGRAM ){
+				/* Set a program! */
+				currProgram = rxMsg.Data.bytes[1];
+				temp_adress = pgm_read_word(&programs[currProgram-1]);				
+			}else if( rxMsg.Data.bytes[0] == RGBLED_CMD_SETINTENS ){
+				/* Set intensity! */
+				if (rxMsg.Data.bytes[1] == TRUE){
+					currColor.Intens = rxMsg.Data.bytes[2];					
+				}
+				destColor.Intens = rxMsg.Data.bytes[2];
+				if (rxMsg.Data.bytes[3] != 0){
+					dimSpeed = rxMsg.Data.bytes[3];
+				}
+				currProgram = rxMsg.Data.bytes[1];
+				temp_adress = pgm_read_word(&programs[currProgram-1]);
+			} else if( rxMsg.Data.bytes[0] == RGBLED_CMD_SETRGB) {
+				/* Set RGB-triplet! */
+				reformatRGB(rxMsg.Data.bytes[2],rxMsg.Data.bytes[3],rxMsg.Data.bytes[4],0);
+				if (rxMsg.Data.bytes[5] != 0){
+					destColor.Intens = rxMsg.Data.bytes[5];
+				}
+				if (rxMsg.Data.bytes[1] == TRUE){
+					currColor = destColor;
+				}
+
+				if (rxMsg.Data.bytes[7] != 0){
+					fadeSpeed = rxMsg.Data.bytes[6] * 255 + rxMsg.Data.bytes[7];
+				}
+				currProgram = 0;
+				
+			}
+			msg_received = FALSE; //Let's clear the flag yes.
+		}
+
 	}
 	
 	return 0;
@@ -258,7 +310,7 @@ void updateLED(){
       OCR0A = currColor.G * currColor.Intens / 255;
 	OCR0B = currColor.B * currColor.Intens / 255;		
 
-		
+/*		
 	//Bara för debugcrap
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
@@ -271,7 +323,7 @@ void updateLED(){
 	txMsg.Data.bytes[3] = currColor.Intens;
 
 	bios->can_send(&txMsg);
-
+*/
 }
 
 
@@ -280,7 +332,7 @@ void updateLED(){
  *     reformatRGB sets a new target RGB triplet to fade to. It reformats it so that            *
  *     the highest color always gets 0xff. Brightness is recalculated.                          *
  *     if setBright is set to 0, the brightness will not be updated.					*
- *     TODO: Smarter 16-bit arithmetics would be nice. Also a pointer to struct to be updated.	*
+ *     TODO: Smarter 16-bit arithmetics would be nice. 							*
  ************************************************************************************************/
 void reformatRGB(uint8_t R, uint8_t G, uint8_t B, uint8_t setBright){
 	uint8_t maxvalue;
@@ -329,3 +381,4 @@ void changeColor(int8_t amount, uint8_t* color){
 	if ( ((amount > 0)&(*color < 255)) || ((amount < 0)&(*color > 0)) ) //Se till att vi inte slår över *color
 	*color = *color + amount;
 }
+
