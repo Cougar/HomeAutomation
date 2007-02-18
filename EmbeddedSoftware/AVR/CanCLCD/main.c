@@ -1,13 +1,12 @@
 /**
- * CAN LCD.
+ * CanCLCD.
  * For HD44780- and KS0073-based LCD displays
- * This is the early version that only prints temperature sensor data.
+ * Prints sensor data and other interesting things.
  *
  * @date    2006-12-11
  * @author  Erik Larsson
  *
  * TODO Fix more types of output: relay status, mail recieved etc.
- * Make it configurable to use UART, because it's not necessary on the final PCB
  *
  */
 
@@ -28,23 +27,55 @@
 
 /* defines */
 #define BUFFER_SIZE 20
-#define BOUNCE_TIME 10
 #define TRUE 1
 #define FALSE 0
 
-uint8_t currentView = MAIN_VIEW, msg_received = FALSE, encoderPosition, rot = FALSE;
 Can_Message_t rxMsg;
-uint8_t temperatureData[8], servoPosition[4], //relayStatus[4], dimmerStatus[4],
-            temperatureLength = 8, servoLength = 0; //, relayLength=0; //TODO mer generaliserat
-uint32_t rot_timeStamp;
-char buf[10];
+
+uint8_t currentView = MAIN_VIEW,
+		msg_received = FALSE;
+
+uint8_t temperatureData[8],
+		servoPosition[4],
+		//relayStatus[4],
+		//dimmerStatus[4],
+		temperatureLength = 8,
+		servoLength = 0;
+		//, relayLength=0; //TODO mer generaliserat
+
+uint8_t rot_lastdir = 0,
+		rot_laststate = 0;
 
 ISR( PCINT2_vect ){
+	uint8_t rot_data = 0;
 
-	rot_timeStamp = bios->timebase_get();
-	rot = TRUE;
-	/* stäng av interrupt på pinnarna */
-	PCICR &= ~(1<<PCIE2);
+	if(PIND&(1<<PD6)){
+		rot_data |= 0x01;
+	}
+	if(PIND&(1<<PD7)){
+		rot_data |= 0x02;
+	}
+
+	if( rot_data==3 && rot_laststate!=3 ){
+		if( rot_lastdir&0x01 ){
+			// Moving left
+			if(currentView>0){
+				currentView--;
+				msg_received = TRUE;
+			}
+		}else{
+			// Moving right
+			if(currentView<LAST_VIEW){
+				currentView++;
+				msg_received = TRUE;
+			}
+		}
+		rot_laststate=3;
+	}else if( rot_data==0 && rot_laststate!=0 ){
+		rot_laststate = 0;
+	}else if( rot_data==1 || rot_data==2 ){
+		rot_lastdir = rot_data;
+	}
 }
 
 void can_receive(Can_Message_t *msg){
@@ -94,18 +125,17 @@ void can_receive(Can_Message_t *msg){
 int main(void) {
 
     char buffer[ BUFFER_SIZE ];
-    /*
-     * Initialize rotaryencoders and buttons
-     */
-    /* Set as input and enable pull-up */
-    DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
-//    PORTD |= (1<<PD6)|(1<<PD7);
-    /* Enable IO-pin interrupt */
-//    PCICR |= (1<<PCIE2);
-    /* Unmask PD6 and PD7 */
-    PCMSK2 |= (1<<PCINT22)|(1<<PCINT23);
+	/*
+	 * Initialize rotaryencoders and buttons
+	 */
+	/* Set as input */
+	DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
+	/* Enable IO-pin interrupt */
+	PCICR |= (1<<PCIE2);
+	/* Unmask PD6 and PD7 */
+	PCMSK2 |= (1<<PCINT22)|(1<<PCINT23);
 
-    sei();
+	sei();
 	bios->can_callback = &can_receive;
 
 	lcd_init( LCD_DISP_ON );
@@ -127,14 +157,5 @@ int main(void) {
 			}
 			msg_received = FALSE;
 		}
-
-        // TODO använd rotary encoders för att växla view
-        // också med fjärrkontroll
-/*		if((bios->timebase_get() - rot_timeStamp >= BOUNCE_TIME) && rot == TRUE){
-			PCICR |= (1<<PCIE2);
-			rot = FALSE;
-		}*/
 	}
-
-
 }
