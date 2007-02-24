@@ -5,7 +5,14 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#define DEVICE "/dev/midi1"
+#define BAUDRATE B115200
+#define TRIG_LEVEL 128
+#define SAMPLE_FREQ 1000
+
 #define SAMPLES_PER_PLOT 200
+
+struct termios oldtio,newtio;
 
 int main(int argc, char* argv[]) {
 	int input;
@@ -13,11 +20,29 @@ int main(int argc, char* argv[]) {
 	int i;
 	float out_data;
 	unsigned char buf[SAMPLES_PER_PLOT];
-	unsigned char trig = 128;
-	unsigned freq = 1000;
+	unsigned char trig = TRIG_LEVEL;
+	unsigned freq = SAMPLE_FREQ;
 	
-	input = open("/dev/midi1", O_RDONLY);
+	input = open(DEVICE, O_RDONLY | O_NOCTTY);
+	if (input <0) {perror(DEVICE); return -1; }
 	gnuplot = popen("gnuplot", "w");
+	
+	tcgetattr(input,&oldtio); /* save current port settings */
+	
+	// bzero not defined? moving newtio outside main to zero it. 
+	//bzero(&newtio, sizeof(newtio));
+	newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
+	newtio.c_iflag = IGNPAR;
+	newtio.c_oflag = 0;
+	
+	/* set input mode (non-canonical, no echo,...) */
+	newtio.c_lflag = 0;
+	
+	newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
+	newtio.c_cc[VMIN]     = SAMPLES_PER_PLOT;   /* blocking read until all samples received */
+	
+	tcflush(input, TCIFLUSH);
+    tcsetattr(input,TCSANOW,&newtio);
 	
 	fprintf(gnuplot, "set yrange [-0.1:5.1]\n");
 	while(1) {
@@ -45,6 +70,7 @@ int main(int argc, char* argv[]) {
 		fflush(gnuplot);
 	}
 	
+	tcsetattr(input,TCSANOW,&oldtio);
 	close(input);
 	pclose(gnuplot);
 	printf("\n");
