@@ -13,9 +13,11 @@
 #include <stackTasks.h>
 #include <CANdefs.h>
 #include <CAN.h>
+#include <crc16.h>
 #include <boot.h>
 #include <funcdefs.h>
 #include <EEaccess.h>
+#include <reset.h>
 
 /** V E C T O R  R E M A P P I N G *******************************************/
 
@@ -34,11 +36,8 @@ void _low_ISR (void)
 #pragma code
 
 
-#ifdef USE_CAN
-	#include <CAN.h>
-#endif
 
-static CAN_PROTO_MESSAGE cm;
+static CAN_PACKET cp;
 static DWORD cnt =0;
 
 static void mainInit(void);
@@ -57,58 +56,55 @@ DWORD tickSubCounter = 0;
 DWORD tickGet(void);
 
 static int MY_ID = DEFAULT_ID;
-static BYTE MY_NID = DEFAULT_NID;
 
 void main()
 {
-	static PROGRAM_STATE pgs = pgsWATING_START;
-	static DWORD t = 0;
-	static WORD programmerSid=0;
-	
-	static BYTE errMsg = ACK_ERR_NO_ERROR;
-	static PROGRAM_STATE afterAckPgs = pgsWATING_START;
-	static DWORD pgmAddress = 0;
-	static BYTE bytesReceived = 0;
+	static PROGRAM_STATE pgs = pgsWAITING_START;
+	static PROGRAM_STATE pgsAckNext = pgsWAITING_START;
 
-	DWORD tBoot;
-	
+	static BYTE programmerId=0;
 	static BYTE pgmData[64];
 
-	CAN_PROTO_MESSAGE outCmHeart;
+	static BOOT_TYPE ackType = btACK;
+	
+	static DWORD pgmAddress = 0;
+	static DWORD newPgmAddress = 0;
+	static DWORD tBoot;
+	static DWORD t = 0;
+	
+	CAN_PACKET outCp;
 
 	// Inits
 	mainInit();
 
-	#ifdef USE_CAN
-		canInit();
-	#endif
+	canInit();
 
 	tBoot = tickGet();
 	
-	// Read ID and NID if exist.
+	// Read ID if exist.
 	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
 	{
-		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
-		MY_NID=EERead(NODE_ID_EE + 3);
+		MY_ID=EERead(NODE_ID_EE + 1);
 	}
-
 	
-	// Send bootloader startup heatbeat
-	outCmHeart.funct 					= FUNCT_BOOTLOADER;
-	outCmHeart.funcc 					= FUNCC_BOOT_HEARTBEAT;
-	outCmHeart.nid   					= MY_NID;
-	outCmHeart.sid   					= MY_ID;
-	outCmHeart.data_length 				= 1;
-	outCmHeart.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_BOOT_STARTUP;
-	while(!canSendMessage(outCmHeart,PRIO_HIGH));
+	for(t=0;t<64;t++) pgmData[t]=0x0;
+
+	// Send bootloader startup
+	outCp.type=ptPGM;
+	outCp.pgm.class=pcCTRL;
+	outCp.pgm.id=pctBOOTBOOT;
+	outCp.length=1;
+	outCp.data[0] = (isBOR()<<7)+(isLVD()<<6)+(isMCLR()<<5)+(isPOR()<<4)+(isWDTTO()<<3)+(isWDTWU()<<2)+(isWU()<<1);
+	StatusReset();
+	while(!canSendMessage(outCp));
 	
 	LED0_IO= 1;
 
 	for(;;)
 	{
 		BYTE i;
-		CAN_PROTO_MESSAGE outCm;
-		BOOL hasPacket = canGetPacket();
+		CAN_PACKET outCm;
+		BOOL hasPacket = canGetPacket() && (cp.type == ptBOOT && cp.boot.rid == MY_ID);
 
 		tickSubCounter++;
 		if (tickSubCounter>TICK_SUB_COUNTER_10MS)
@@ -120,138 +116,126 @@ void main()
 
 		switch(pgs)
 		{
-			case pgsWATING_START:
-				// Check if there is bootloader start packet
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_INIT && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID && cm.nid==MY_NID)
+			case pgsWAITING_START:
+				// Wait for first addresspacket.
+				// Set startAddress to data[2]:[0].
+				// Send ack. Goto next state.
+				if (hasPacket==TRUE && cp.boot.type==btADDR)
 				{
-					// Has new start packet
-					pgmAddress 		= (((DWORD)cm.data[BOOT_DATA_ADDRU_INDEX])<<16)+(((DWORD)cm.data[BOOT_DATA_ADDRH_INDEX])<<8)+((DWORD)cm.data[BOOT_DATA_ADDRL_INDEX]);
-					programmerSid 	= cm.sid;
-					t 				= tickGet();
-					errMsg			= ACK_ERR_NO_ERROR;
-					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
-					pgs 			= pgsSEND_ACK;
-					// save pgm adress.
-					
-				}
+					programmerId = cp.sid;
+					pgmAddress = (((DWORD)cp.data[2])<<16)+(((DWORD)cp.data[1])<<8)+((DWORD)cp.data[0]);
+					t = tickGet();
+					ackType = btACK;
+					pgsAckNext = pgsWAIT_FIRST_DATA;
+					pgs = pgsSEND_ACK;
+				}	
 
 				// Bootloader timeout
 				if ((tickGet()-tBoot)>BOOTLOADER_INIT_TIMOUT)
 				{
-					LED0_IO= 0;
 					pgs = pgsDONE;
 				}
-			break;			
+				break;
 
 			case pgsSEND_ACK:
 				// send ack
-				outCm.funct 			= FUNCT_BOOTLOADER;
-				outCm.funcc 			= FUNCC_BOOT_ACK;
-				outCm.nid   			= MY_NID;
-				outCm.sid   			= MY_ID;
-				outCm.data_length 		= 8;
-				outCm.data[BOOT_DATA_ERR_INDEX]	= errMsg;
-				t						= tickGet();
-				pgs						= afterAckPgs;
+				outCp.type = ptBOOT;
+				outCp.boot.rid = programmerId;
+				outCp.boot.type = ackType;
+				outCp.length=0;
+				t = tickGet();
+				pgs	= pgsAckNext;
 
-				while(!canSendMessage(outCm,PRIO_HIGH));
-			break;
+				while(!canSendMessage(outCp));
+				break;
 
 
-			case pgsWAIT_FIRST_PGM_PACKET:
-				// wait for first pgm packet.
+
+			case pgsWAIT_FIRST_DATA:
+				// Wait for first pgm packet. use offset to determine data index.
+				// When receiving crc from host, check crc for offsets bytes.
+				
 				if ((tickGet()-t)>PACKET_TIMEOUT)
 				{
-					// Timeout, resend ack.
-					errMsg			= ACK_ERR_NO_ERROR;
-					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
-					pgs 			= pgsSEND_ACK;
+					// Timeout, resend ack/nack.
+					pgsAckNext = pgsWAIT_FIRST_DATA;
+					pgs = pgsSEND_ACK;
+				}				
+
+				if (hasPacket==TRUE && cp.boot.type==btPGM)
+				{
+					BYTE localIndex = cp.boot.offset;
+					pgmData[localIndex+0]=cp.data[0]; pgmData[localIndex+1]=cp.data[1]; pgmData[localIndex+2]=cp.data[2]; pgmData[localIndex+3]=cp.data[3];
+					pgmData[localIndex+4]=cp.data[4]; pgmData[localIndex+5]=cp.data[5]; pgmData[localIndex+6]=cp.data[6]; pgmData[localIndex+7]=cp.data[7];
+					pgs = pgsWAIT_DATA_OR_CRC;
 				}
 
-				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3E3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cp.boot.type==btADDR)
 				{
-					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
+					tBoot = tickGet();
+					pgs   = pgsWAITING_START;
+				}
 
-					// Save bytes in memory, setup start adress etc..
-					bytesReceived 	= 8;		
-					pgmData[localIndex+0]=cm.data[0]; pgmData[localIndex+1]=cm.data[1]; pgmData[localIndex+2]=cm.data[2]; pgmData[localIndex+3]=cm.data[3];
-					pgmData[localIndex+4]=cm.data[4]; pgmData[localIndex+5]=cm.data[5]; pgmData[localIndex+6]=cm.data[6]; pgmData[localIndex+7]=cm.data[7];
+				if (hasPacket==TRUE && cp.boot.type==btCRC)
+				{
+					pgs   = pgsWAIT_DATA_OR_CRC;
+				}
+
+				if (hasPacket==TRUE && cp.boot.type==btDONE)
+				{
+					pgs = pgsDONE;
+				}
+
+
+				break;
+
+			case pgsWAIT_DATA_OR_CRC:
+				// Wait for pgm packet. use offset to determine data index.
+				// When receiving crc from host, check crc for offsets bytes.
 				
-					pgs 			= pgsWAIT_PGM_PACKET;
-				}
-
-
-			break;
-
-
-			case pgsWAIT_PGM_PACKET:
-		
-			
-				// If programming packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && (cm.funcc & 0x3E3)==FUNCC_BOOT_PGM && cm.nid==MY_NID && cm.sid==programmerSid)
+				if (hasPacket==TRUE && cp.boot.type==btCRC)
 				{
-					BYTE localIndex = (BYTE)((cm.funcc & 0x1C)>>2)*8;
-					// Save bytes in memory, inc received bytes.
-					pgmData[localIndex+0]=cm.data[0]; pgmData[localIndex+1]=cm.data[1]; pgmData[localIndex+2]=cm.data[2]; pgmData[localIndex+3]=cm.data[3];
-					pgmData[localIndex+4]=cm.data[4]; pgmData[localIndex+5]=cm.data[5]; pgmData[localIndex+6]=cm.data[6]; pgmData[localIndex+7]=cm.data[7];
-					
-					bytesReceived 	+= 8;
-					pgs 			 = pgsWAIT_PGM_PACKET;
-				}
+					WORD crc16 = (((WORD)cp.data[4])<<8)+((WORD)cp.data[3]);
+					WORD crc16calc = calc_crc(pgmData,64);
 
-				// If adress packet (control packet)..
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_ADDR && cm.nid==MY_NID && cm.sid==programmerSid)
-				{
-					// Send ack and goto wait first packet.
-					// save adress.
-					errMsg			= ACK_ERR_NO_ERROR;
-					afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
-					pgs 			= pgsSEND_ACK;
-				}
-				
-				// If end packet...
-				if (hasPacket==TRUE && cm.funct==FUNCT_BOOTLOADER && cm.funcc==FUNCC_BOOT_DONE && cm.nid==MY_NID && cm.sid==programmerSid)
-				{
-					// write program.
-					// If no bytes received at all, assume end.
-					// If not 64 bytes received, send error ack and wait for first packet.
-					// If 64, write.
-
-					if (bytesReceived==0)
+					// check CRC.
+					if (crc16calc==crc16)
 					{
-						// No received, done.
-						errMsg			= ACK_ERR_NO_ERROR;
-						afterAckPgs		= pgsDONE;
-						pgs 			= pgsSEND_ACK;
-					}
-					else if (bytesReceived!=64)
-					{
-						errMsg			= ACK_ERR_ERROR;
-						afterAckPgs		= pgsWAIT_FIRST_PGM_PACKET;
-						pgs 			= pgsSEND_ACK;
+						newPgmAddress = (((DWORD)cp.data[2])<<16)+(((DWORD)cp.data[1])<<8)+((DWORD)cp.data[0]);
+						pgsAckNext = pgsWAIT_FIRST_DATA;
+						pgs = pgsWRITE_DATA;
 					}
 					else
 					{
-						pgs 			 = pgsWRITE_PROGRAM;
-						afterAckPgs		= pgsDONE;
+						t = tickGet();
+						ackType = btNACK;
+						pgsAckNext = pgsWAIT_FIRST_DATA;
+						pgs = pgsSEND_ACK;
 					}
 				}
-
-				// If bytes received 64, write..
-				if (bytesReceived==64)
+				
+				if (hasPacket==TRUE && cp.boot.type==btPGM)
 				{
-					LED0_IO=~LED0_IO;
-					pgs 			 = pgsWRITE_PROGRAM;
-					afterAckPgs		= pgsWAIT_PGM_PACKET;
-					// TODO! Send ack more than once..
+					BYTE localIndex = cp.boot.offset;
+					pgmData[localIndex+0]=cp.data[0]; pgmData[localIndex+1]=cp.data[1]; pgmData[localIndex+2]=cp.data[2]; pgmData[localIndex+3]=cp.data[3];
+					pgmData[localIndex+4]=cp.data[4]; pgmData[localIndex+5]=cp.data[5]; pgmData[localIndex+6]=cp.data[6]; pgmData[localIndex+7]=cp.data[7];
 				}
 
+				if (hasPacket==TRUE && cp.boot.type==btADDR)
+				{
+					tBoot = tickGet();
+					pgs   = pgsWAITING_START;
+				}
 
-			break;
+				if (hasPacket==TRUE && cp.boot.type==btDONE)
+				{
+					pgs = pgsDONE;
+				}
+
+				break;
 
 
-			case pgsWRITE_PROGRAM:
+			case pgsWRITE_DATA:
 
 				ClrWdt();
 
@@ -259,11 +243,12 @@ void main()
 
 				// Check addr limit
 				if (pgmAddress<RM_RESET_VECTOR)
-				{				
-					errMsg			= ACK_ERR_ERROR;
+				{		
+					ackType = btNACK;
+					pgsAckNext = pgsWAIT_FIRST_DATA;		
 					pgs 			= pgsSEND_ACK;
 					//Not allowed to write here!
-					
+					break;
 				}
 
 				//Load Table pointer registers with base address to erase.
@@ -299,6 +284,7 @@ void main()
 				for(i=0;i<63;i++)
 				{
 					TABLAT=pgmData[i];
+					pgmData[i]=0x0;
 					TBLWTPOSTINC_Func();
 				}
 				TABLAT=pgmData[63];	
@@ -325,23 +311,20 @@ void main()
 				// disable write to memory
 				EECON1bits.WREN = 0;
 
-				pgmAddress	   += 64;
-				bytesReceived 	= 0;
-				errMsg			= ACK_ERR_NO_ERROR;
+				pgmAddress	   = newPgmAddress;
+				ackType = btACK;		
 				pgs 			= pgsSEND_ACK;
 
 			break;
 
-
 			case pgsDONE:
+				LED0_IO= 0;
 				_asm  goto RM_RESET_VECTOR _endasm
 			break;
 
 		
-
-
 			default:
-				pgs = pgsWATING_START;
+				pgs = pgsWAITING_START;
 			break;
 		}
 	
@@ -380,10 +363,6 @@ void mainInit()
 
 /// CAN-------------------------------------------------------
 
-
-#ifdef USE_CAN
-
-
 /*
 *	Function: canInit
 *
@@ -404,39 +383,6 @@ void canInit()
 	BRGCON1 = 0x04;
 	BRGCON2 = 0xD1;
 	BRGCON3 = 0x81;
-
-	//BRGCON1=0;
-	
-	// Sync_Seq = 2 x TQ = 1
-	//BRGCON1bits.SJW1=0;
-	//BRGCON1bits.SJW0=1;
-	
-	// Setting BRP.
-	//BRGCON1=BRGCON1|CAN_BRP;
-	
-	// Maximum PHEG1
-	//BRGCON2bits.SEG2PHTS = 1;
-	
-	// Phase_Seg1 = 2 x TQ = 1
-	//BRGCON2bits.SEG1PH2 = 0;
-	//BRGCON2bits.SEG1PH1 = 0;
-	//BRGCON2bits.SEG1PH0 = 1;
-	
-	// Prop_Seq = 2 x TQ = 1
-	//BRGCON2bits.PRSEG2 = 0;
-	//BRGCON2bits.PRSEG1 = 0;
-	//BRGCON2bits.PRSEG0 = 1;
-	
-	//  Enableing bus wake-up
-	//BRGCON3bits.WAKDIS = 0;
-	
-	// Dont use filter when wakeup
-	//BRGCON3bits.WAKFIL = 0;
-	
-	// Phase_Seg2 = 2 x TQ = 1
-	//BRGCON3bits.SEG2PH2 = 0;
-	//BRGCON3bits.SEG2PH1 = 0;
-	//BRGCON3bits.SEG2PH0 = 1;
 
 	ECANCON=0;
 	ECANCONbits.MDSEL1 = 1;
@@ -498,26 +444,31 @@ BOOL canGetPacket()
         //RXB0EIDH 15 14 13 12 11 10 09 08
         //RXB0EIDL 07 06 05 04 03 02 01 00
 
-		//funct xx xx xx xx 28 27 26 25
-		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
-		//nid   xx xx 14 13 12 11 10 09 
-		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
+		cp.type = ((RXB0SIDH&0xC)>>6);
 
 
-       	cm.funct=((RXB0SIDH & 0xF0)>>4);
-        cm.funcc=(((WORD)(RXB0SIDH & 0x0F))<<6)+(((WORD)(RXB0SIDL & 0xE0))>>2)+(((WORD)(RXB0SIDL & 0x03))<<1)+(((WORD)(RXB0EIDH & 0x80))>>7);
-        cm.nid=((RXB0EIDH & 0x7E)>>1);
-        cm.sid=(((WORD)(RXB0EIDH & 0x01))<<8)+RXB0EIDL;
+		if (cp.type==ptBOOT)
+		{
+			cp.boot.type  = ((RXB0SIDH&0x38)>>3);
+			cp.boot.offset= ((RXB0SIDH&0x7)<<5)+((RXB0SIDL&0xE0)>>3)+(RXB0SIDL&0x3);
+			cp.boot.rid   = RXB0EIDH;
+		}
+		else
+		{
+			cp.pgm.class= ((RXB0SIDH&0x3C)>>2);
+			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+((RXB0SIDL&0x3)<<8)+RXB0EIDH;
+		}
+		cp.sid   = RXB0EIDL;
 
 
 		// Data length
-		cm.data_length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
+		cp.length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
 
 		// Data one bye one, for speed
-		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;
-		cm.data[2]=RXB0D2; 	cm.data[3]=RXB0D3;
-		cm.data[4]=RXB0D4; 	cm.data[5]=RXB0D5;
-		cm.data[6]=RXB0D6; 	cm.data[7]=RXB0D7;
+		cp.data[0]=RXB0D0;	cp.data[1]=RXB0D1;
+		cp.data[2]=RXB0D2; 	cp.data[3]=RXB0D3;
+		cp.data[4]=RXB0D4; 	cp.data[5]=RXB0D5;
+		cp.data[6]=RXB0D6; 	cp.data[7]=RXB0D7;
 
 		// Clear ful status
 		RXB0CONbits.RXFUL=0;
@@ -535,16 +486,15 @@ BOOL canGetPacket()
 *	Affects: ..
 *	Depends: ..
 */
-BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
+BOOL canSendMessage(CAN_PACKET cp)
 {
-	
+	BYTE prio = 3;	
+
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
 	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
 	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
 	// None of the transmit buffers were empty. 
 	else { return FALSE;} 
-
-	if (prio<0 || prio>3) prio = 0;
 
 
 		//RXB0SIDH 28 27 26 25 24 23 22 21
@@ -552,19 +502,23 @@ BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
         //RXB0EIDH 15 14 13 12 11 10 09 08
         //RXB0EIDL 07 06 05 04 03 02 01 00
 
-		//funct xx xx xx xx 28 27 26 25
-		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
-		//nid   xx xx 14 13 12 11 10 09 
-		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
-
-		RXB0SIDH = (BYTE)((cm.funct & 0x0F)<<4)+(BYTE)((cm.funcc & 0x03C0)>>6);
-		RXB0SIDL = (BYTE)((cm.funcc & 0x003F)<<2)+(BYTE)((cm.funcc & 0x0006)>>1);
-		RXB0EIDH = (BYTE)((cm.funcc & 0x0001)<<7)+(BYTE)((cm.nid & 0x3F)<<1)+(BYTE)((cm.sid & 0x0100)>>8);
-		RXB0EIDL = (BYTE)((cm.sid & 0x00FF));
+		if (cp.type==ptBOOT)
+		{
+			RXB0SIDH = ((cp.type&0x3)<<6)+((cp.boot.type&0x7)<<3)+((cp.boot.offset&0xE0)>>5);
+			RXB0SIDL = ((cp.boot.offset&0x1C)<<3)+(cp.boot.offset&0x3);
+			RXB0EIDH = cp.boot.rid;
+		}
+		else
+		{
+			RXB0SIDH = ((cp.type&0x3)<<6)+((cp.pgm.class&0xF)<<2)+((cp.pgm.id&0x6000)>>13);
+			RXB0SIDL = ((cp.pgm.id&0x1C00)>>5)+((cp.pgm.id&0x300)>>8);
+			RXB0EIDH = (cp.pgm.id&0xFF);
+		}
+		RXB0EIDL = MY_ID;
 
 		// Data length
 		RXB0DLC = 0;
-		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;
+		if (cp.length>8) RXB0DLC=8; else RXB0DLC=cp.length;
 		
 		// NOT Remote request
 		_asm 
@@ -573,10 +527,10 @@ BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
 
 
 		// Data one bye one, for speed
-		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];
-		RXB0D2=cm.data[2]; 	RXB0D3=cm.data[3];
-		RXB0D4=cm.data[4]; 	RXB0D5=cm.data[5];
-		RXB0D6=cm.data[6]; 	RXB0D7=cm.data[7];
+		RXB0D0=cp.data[0];	RXB0D1=cp.data[1];
+		RXB0D2=cp.data[2]; 	RXB0D3=cp.data[3];
+		RXB0D4=cp.data[4]; 	RXB0D5=cp.data[5];
+		RXB0D6=cp.data[6]; 	RXB0D7=cp.data[7];
 
 		// set extended or not
 		RXB0SIDLbits.EXID=1;
@@ -592,12 +546,6 @@ BOOL canSendMessage(CAN_PROTO_MESSAGE cm,CAN_PRIORITY prio)
 		return TRUE;
 
 }
-
-
-
-#endif //USE_CAN
-
-
 
 
 void TBLRD_Func()

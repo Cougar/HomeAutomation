@@ -16,23 +16,9 @@
 #include <CANdefs.h>
 #include <compiler.h>
 #include <typedefs.h>
-
-
-typedef struct _CAN_PROTO_MESSAGE
-{
-	BYTE funct; //4
-	WORD funcc; //10
-	BYTE nid; //6
-	WORD sid; //9
-	BYTE data_length;//5
-	BYTE data[8];
-} CAN_PROTO_MESSAGE;
-
-
-typedef enum {PRIO_LOWEST=0,PRIO_LOW=1,PRIO_HIGH=2,PRIO_HIGEST=3} CAN_PRIORITY;
-
+#include <funcdefs.h>
 
 void canInit(void);
-BOOL canSendMessage(CAN_PROTO_MESSAGE cm, CAN_PRIORITY prio);
+BOOL canSendMessage(CAN_PACKET cp);
 
 #endif //CAN.h

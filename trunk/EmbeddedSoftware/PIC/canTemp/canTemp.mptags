@@ -6,32 +6,53 @@
 !_TAG_PROGRAM_VERSION	5.5.4	//
 !_TAG_REVISION_NAME	MCHPTags	//
 !_TAG_REVISION_VERSION	6.0.1	//
+ANGLE_MAX::=60	F:\MCP\projects\CAN\canTemp\Include\blinds.h	21;"	d	line:21
+ANGLE_MIN::=-50	F:\MCP\projects\CAN\canTemp\Include\blinds.h	20;"	d	line:20
 BLINDS0P_IO::(PORTCbits.RC5)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	27;"	d	line:27
 BLINDS0P_TRIS::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	26;"	d	line:26
 BLINDS0_IO::(PORTCbits.RC4)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	24;"	d	line:24
 BLINDS0_TRIS::(TRISCbits.TRISC4)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	23;"	d	line:23
 BLINDS_H	F:\MCP\projects\CAN\canTemp\Include\blinds.h	12;"	d	line:12
+BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	t	line:15
+BOOT_H	F:\MCP\projects\CAN\canBoot\Include\boot.h	13;"	d	line:13
+BYTE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	t	line:16
+CANDEFS_H	F:\MCP\projects\CAN\canBase\Include\CANdefs.h	14;"	d	line:14
+CAN_H	F:\MCP\projects\CAN\canBase\Include\CAN.h	13;"	d	line:13
+CAN_PRIORITY	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	t	line:20
 CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	18;"	d	line:18
 CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	16;"	d	line:16
 COMPILER_H	F:\MCP\projects\CAN\canTemp\Include\compiler.h	13;"	d	line:13
+DWORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	18;"	t	line:18
 EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
 EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
+FALSE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
 INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	17;"	d	line:17
+IO_TIMEOUT::700	F:\MCP\projects\CAN\canTemp\Include\blinds.h	24;"	d	line:24
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	21;"	d	line:21
 LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	20;"	d	line:20
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
-MY_NID	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
 PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	63;"	d	line:63	file:
-TEMPERATURE_INSIDE::0b0001	F:\MCP\projects\CAN\canTemp\Include\compiler.h	29;"	d	line:29
-TEMPERATURE_OUTSIDE::0b0002	F:\MCP\projects\CAN\canTemp\Include\compiler.h	30;"	d	line:30
+PRIO_HIGEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_HIGH	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_LOW	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_LOWEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+RM_HIGH_INTERRUPT_VECTOR::0x003008	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
+RM_LOW_INTERRUPT_VECTOR::0x003018	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
+RM_RESET_VECTOR::0x003000	F:\MCP\projects\CAN\canBoot\Include\boot.h	15;"	d	line:15
+TEMPERATURE_INSIDE::0x1	F:\MCP\projects\CAN\canTemp\Include\compiler.h	29;"	d	line:29
+TEMPERATURE_OUTSIDE::0x2	F:\MCP\projects\CAN\canTemp\Include\compiler.h	30;"	d	line:30
 TEMP_COUNT	F:\MCP\projects\CAN\Include\adc.c	16;"	v	line:16	file:
 TEMP_DONE	F:\MCP\projects\CAN\Include\adc.c	18;"	v	line:18
 TEMP_VALUE	F:\MCP\projects\CAN\Include\adc.c	15;"	v	line:15	file:
+TICK	F:\MCP\projects\CAN\canBase\Include\Tick.h	17;"	t	line:17
 TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	18;"	d	line:18
 TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	26;"	d	line:26	file:
 TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
+TICK_H	F:\MCP\projects\CAN\canBase\Include\Tick.h	13;"	d	line:13
 TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
+TICK_PERIOD_MS::10	F:\MCP\projects\CAN\canBase\Include\Tick.h	27;"	d	line:27
 TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	28;"	d	line:28
+TICK_SECOND::((TICK)TICKS_PER_SECOND)	F:\MCP\projects\CAN\canBase\Include\Tick.h	28;"	d	line:28
 TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	24;"	d	line:24	file:
 TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	d	line:17	file:
 TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	d	line:30	file:
@@ -42,53 +63,68 @@ TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	38;"	d	line:38	fil
 TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	40;"	d	line:40	file:
 TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	file:
 TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
-TMR1_VAL::60536	F:\MCP\projects\CAN\canTemp\Include\blinds.h	20;"	d	line:20
+TMR1_VAL::60536	F:\MCP\projects\CAN\canTemp\Include\blinds.h	25;"	d	line:25
+TRUE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
+TYPEDEFS_H	F:\MCP\projects\CAN\canBase\Include\typedefs.h	13;"	d	line:13
 TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
-USE_BLINDS	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	16;"	d	line:16
-_reset	F:\MCP\projects\CAN\canTemp\Source\Main.c	175;"	f	line:175	signature:(void)
-_startup	F:\MCP\projects\CAN\canTemp\Source\Main.c	173;"	p	line:173	file:	signature:(void)
+WORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	17;"	t	line:17
+_BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	g	line:15
+_reset	F:\MCP\projects\CAN\canTemp\Source\Main.c	189;"	f	line:189	signature:(void)
+_startup	F:\MCP\projects\CAN\canTemp\Source\Main.c	187;"	p	line:187	file:	signature:(void)
 adcConvert	F:\MCP\projects\CAN\Include\adc.c	86;"	f	line:86	signature:(BYTE channel)
-adcDone	F:\MCP\projects\CAN\Include\adc.c	159;"	f	line:159	signature:(void)
+adcDone	F:\MCP\projects\CAN\Include\adc.c	163;"	f	line:163	signature:(void)
+adcGetRaw	F:\MCP\projects\CAN\Include\adc.c	148;"	f	line:148
 adcISR	F:\MCP\projects\CAN\Include\adc.c	53;"	f	line:53	signature:(void)
 adcInit	F:\MCP\projects\CAN\Include\adc.c	29;"	f	line:29	signature:(BOOL useExtRef,BYTE portCfg)
 adcRead	F:\MCP\projects\CAN\Include\adc.c	112;"	f	line:112	signature:(void)
-angle	F:\MCP\projects\CAN\canTemp\Source\Main.c	57;"	l	line:57	file:
-blinds	F:\MCP\projects\CAN\canTemp\Source\Main.c	58;"	l	line:58	file:
-blindsISR	F:\MCP\projects\CAN\canTemp\Include\blinds.h	29;"	p	line:29	signature:(void)
-blindsISR	F:\MCP\projects\CAN\canTemp\Source\blinds.c	72;"	f	line:72	signature:(void)
-blindsInit	F:\MCP\projects\CAN\canTemp\Include\blinds.h	25;"	p	line:25	signature:(void)
-blindsInit	F:\MCP\projects\CAN\canTemp\Source\blinds.c	26;"	f	line:26
-blindsTurn	F:\MCP\projects\CAN\canTemp\Include\blinds.h	27;"	p	line:27	signature:(signed char angle)
-blindsTurn	F:\MCP\projects\CAN\canTemp\Source\blinds.c	47;"	f	line:47	signature:(signed char angle)
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	186;"	f	line:186
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	24;"	p	line:24	file:	signature:(void)
-canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	147;"	f	line:147
-canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	36;"	f	line:36
-canParse	F:\MCP\projects\CAN\canTemp\Source\Main.c	162;"	f	line:162	signature:(CAN_MESSAGE cm)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	262;"	f	line:262	signature:(CAN_MESSAGE cm,CAN_PRIORITY prio)
-cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	188;"	l	line:188
-decimal	F:\MCP\projects\CAN\canTemp\Source\Main.c	89;"	l	line:89
+blinds	F:\MCP\projects\CAN\canTemp\Source\Main.c	60;"	l	line:60	file:
+blindsGetPrecent	F:\MCP\projects\CAN\canTemp\Include\blinds.h	36;"	p	line:36	signature:(void)
+blindsGetPrecent	F:\MCP\projects\CAN\canTemp\Source\blinds.c	49;"	f	line:49
+blindsISR	F:\MCP\projects\CAN\canTemp\Include\blinds.h	34;"	p	line:34	signature:(void)
+blindsISR	F:\MCP\projects\CAN\canTemp\Source\blinds.c	109;"	f	line:109	signature:(void)
+blindsInit	F:\MCP\projects\CAN\canTemp\Include\blinds.h	30;"	p	line:30	signature:(void)
+blindsInit	F:\MCP\projects\CAN\canTemp\Source\blinds.c	28;"	f	line:28
+blindsTurn	F:\MCP\projects\CAN\canTemp\Include\blinds.h	32;"	p	line:32	signature:(BYTE precent)
+blindsTurn	F:\MCP\projects\CAN\canTemp\Source\blinds.c	64;"	f	line:64	signature:(BYTE precent)
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	185;"	f	line:185
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Include\CAN.h	24;"	p	line:24	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	144;"	f	line:144
+canInit	F:\MCP\projects\CAN\canBase\Include\CAN.h	23;"	p	line:23	signature:(void)
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
+canParse	F:\MCP\projects\CAN\canBase\Include\CAN.h	25;"	p	line:25	signature:(CAN_PACKET cp)
+canParse	F:\MCP\projects\CAN\canTemp\Source\Main.c	172;"	f	line:172	signature:(CAN_PACKET cp)
+canSendMessage	F:\MCP\projects\CAN\canBase\Include\CAN.h	26;"	p	line:26	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	263;"	f	line:263	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	187;"	l	line:187
+currentPrecent	F:\MCP\projects\CAN\canTemp\Source\blinds.c	17;"	v	line:17	file:
+decimal	F:\MCP\projects\CAN\canTemp\Source\Main.c	97;"	l	line:97
+getNewTemperature	F:\MCP\projects\CAN\canTemp\Source\Main.c	58;"	l	line:58	file:
 heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19
-high_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	107;"	f	line:107	signature:(void)
+high_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	119;"	f	line:119	signature:(void)
 i	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
-lastTemperature	F:\MCP\projects\CAN\canTemp\Source\Main.c	56;"	l	line:56	file:
-low_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	118;"	f	line:118	signature:(void)
-main	F:\MCP\projects\CAN\canTemp\Source\Main.c	30;"	f	line:30
-mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	136;"	f	line:136
-mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	28;"	p	line:28	file:	signature:(void)
-outCm	F:\MCP\projects\CAN\canBase\Source\CAN.c	22;"	v	line:22	file:
-outCm	F:\MCP\projects\CAN\canTemp\Source\Main.c	164;"	l	line:164
-outCm	F:\MCP\projects\CAN\canTemp\Source\Main.c	34;"	l	line:34
+lastTemperature	F:\MCP\projects\CAN\canTemp\Source\Main.c	59;"	l	line:59	file:
+low_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	126;"	f	line:126	signature:(void)
+main	F:\MCP\projects\CAN\canTemp\Source\Main.c	31;"	f	line:31
+mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	148;"	f	line:148
+mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	29;"	p	line:29	file:	signature:(void)
+outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
+outCp	F:\MCP\projects\CAN\canTemp\Source\Main.c	35;"	l	line:35
+q	F:\MCP\projects\CAN\canTemp\Source\Main.c	99;"	l	line:99
 stackTasks_H	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	13;"	d	line:13
-t	F:\MCP\projects\CAN\canTemp\Source\Main.c	33;"	l	line:33	file:
-t	F:\MCP\projects\CAN\canTemp\Source\Main.c	54;"	l	line:54	file:
-temperature	F:\MCP\projects\CAN\canTemp\Source\Main.c	55;"	l	line:55	file:
+t	F:\MCP\projects\CAN\canTemp\Source\Main.c	34;"	l	line:34	file:
+t	F:\MCP\projects\CAN\canTemp\Source\Main.c	56;"	l	line:56	file:
+temperature	F:\MCP\projects\CAN\canTemp\Source\Main.c	57;"	l	line:57	file:
 temperatureRead	F:\MCP\projects\CAN\Include\adc.c	128;"	f	line:128	signature:(signed char *tenth, BYTE *decimal)
-tenth	F:\MCP\projects\CAN\canTemp\Source\Main.c	90;"	l	line:90
+tenth	F:\MCP\projects\CAN\canTemp\Source\Main.c	98;"	l	line:98
 tfloat	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
+tickGet	F:\MCP\projects\CAN\canBase\Include\Tick.h	40;"	p	line:40	signature:(void)
 tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	89;"	f	line:89	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Include\Tick.h	39;"	p	line:39	signature:(void)
 tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	f	line:64	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Include\Tick.h	41;"	p	line:41	signature:(void)
 tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	104;"	f	line:104	signature:(void)
 timerVal	F:\MCP\projects\CAN\canTemp\Source\blinds.c	15;"	v	line:15	file:
+turnOffIO	F:\MCP\projects\CAN\canTemp\Source\blinds.c	16;"	v	line:16	file:
 v01	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
 v11	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131

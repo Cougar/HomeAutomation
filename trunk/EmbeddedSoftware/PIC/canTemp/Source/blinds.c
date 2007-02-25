@@ -13,6 +13,8 @@
 #ifdef USE_BLINDS
 
 static unsigned int timerVal = 50536;
+static unsigned int turnOffIO = 0;
+static signed char currentPrecent = 0;
 
 /*
 *	Function: blindsInit
@@ -32,8 +34,23 @@ void blindsInit()
 	TMR1L=(timerVal&0xFF);
 	PIR1bits.TMR1IF = 0;
 	PIE1bits.TMR1IE = 1;
-	IPR1bits.TMR1IP = 1; // high prior?
+	IPR1bits.TMR1IP = 0; // Low prior
 }
+
+/*
+*	Function: blindsGetAngle
+*
+*	Input:	none.
+*	Output: angle.
+*	Pre-conditions: none
+*	Affects: none.
+*	Depends: none.
+*/
+BYTE blindsGetPrecent()
+{
+	return currentPrecent;
+}
+
 
 /*
 *	Function: blindsTurn
@@ -44,19 +61,39 @@ void blindsInit()
 *	Affects: none.
 *	Depends: none.
 */
-void blindsTurn(signed char angle)
+void blindsTurn(BYTE precent)
 {
 	// 65536-TIME/0,0000001
 	// -90 0.5 ms = 60536 (5000)
 	// 0   1.5 ms = 50536 (15000)
 	// 90  2.5 ms = 40536 (25000)
 
-	if (angle<-90) timerVal=60536;
-	else if (angle>90) timerVal=40536;
-	else
-	{
-		timerVal=60536-(unsigned int)((90+(signed int)angle)*111.111);
-	}
+	BLINDS0P_IO=1;
+	turnOffIO = IO_TIMEOUT;
+	/*
+		if (angle<ANGLE_MIN) {timerVal=ANGLE_MIN_TIMER; currentAngle=ANGLE_MIN; }
+		else if (angle>ANGLE_MAX) {timerVal=ANGLE_MAX_TIMER; currentAngle=ANGLE_MAX; }
+		else
+		{
+			timerVal=60536-(unsigned int)((90+(signed int)angle)*111.111);
+		    currentAngle=angle;
+		}
+	*/
+
+	/*
+	angle=precent*
+
+    -50=k*100+m
+    60=k*0+m
+    angle=-1.1x+60
+	*/
+
+	currentPrecent=precent;
+	if (precent>100) { currentPrecent=100; }
+	if (precent<0) { currentPrecent=0; }
+
+	
+	timerVal=60536-(unsigned int)((90+(-1.05*(signed int)currentPrecent+60))*111.111);
 }
 
 
@@ -77,6 +114,11 @@ void blindsISR(void)
 		TMR1L=(timerVal&0xFF);
 
 		BLINDS0_IO=~BLINDS0_IO;
+
+		if (turnOffIO--<1)
+		{
+			BLINDS0P_IO=0;
+		}
 
 		PIR1bits.TMR1IF = 0;
 	}
