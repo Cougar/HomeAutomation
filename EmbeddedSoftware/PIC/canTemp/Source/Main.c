@@ -15,6 +15,7 @@
 #include <Tick.h>
 #include <funcdefs.h>
 #include <CAN.h>
+#include "..\canBoot\Include\boot.h"
 
 
 #ifdef USE_ADC
@@ -31,8 +32,7 @@ void main()
 {
 
 	static TICK t = 0;
-	CAN_MESSAGE outCm;
-
+	CAN_PACKET outCp;
 
 	// Inits
 	mainInit();
@@ -45,16 +45,18 @@ void main()
 
 	#ifdef USE_BLINDS
 		blindsInit();
+		blindsTurn(0);
+	#else
+		BLINDS0P_IO=0;
 	#endif
 
-	BLINDS0P_IO=1;
 
 	while(1)
 	{
 		static TICK t = 0;
 		static TICK temperature = 0;
+		static BOOL getNewTemperature = TRUE;
 		static BYTE lastTemperature = TEMPERATURE_INSIDE;
-		static signed char angle = 70;
 		static TICK blinds = 0;
 		
 		if ((tickGet()-t)>TICK_SECOND)
@@ -63,22 +65,28 @@ void main()
 			t = tickGet();
 		}
 
+		
 		#ifdef USE_BLINDS
-		if ((tickGet()-blinds)>2*TICK_SECOND)
+		if ((tickGet()-blinds)>3*TICK_SECOND)
 		{
-			angle = (angle>0?-70:70);
-			blindsTurn(angle);
+			outCp.type=ptPGM;
+			outCp.pgm.class=pcSENSOR;
+			outCp.pgm.id=pstBLIND_TR;
+			outCp.length=1;
+			outCp.data[0]=blindsGetPrecent();
+			while(!canSendMessage(outCp,PRIO_HIGH));
 			blinds = tickGet();
 		}
 		#endif
-
+		
 
 		#ifdef USE_ADC
-		if ((tickGet()-temperature)>TICK_SECOND*2) // Each 2 second, read temperature.
+		if ((tickGet()-temperature)>TICK_SECOND*2 && getNewTemperature==TRUE) // Each 2 second, read temperature.
 		{
 			if (lastTemperature==TEMPERATURE_INSIDE) lastTemperature=TEMPERATURE_OUTSIDE; else lastTemperature=TEMPERATURE_INSIDE;
 			adcConvert(lastTemperature);
 			temperature = tickGet();
+			getNewTemperature=FALSE;
 		}
 		#endif
 
@@ -88,13 +96,17 @@ void main()
 		{
 			BYTE decimal;
 			signed char tenth;
+			unsigned long q;
 			temperatureRead(&tenth,&decimal);
+			q = adcGetRaw();
+			getNewTemperature=TRUE;
 
-			outCm.funct 					= FUNCT_SENSORS;
-			outCm.funcc 					= (lastTemperature==TEMPERATURE_INSIDE?FUNCC_SENSORS_TEMPERATURE_INSIDE:FUNCC_SENSORS_TEMPERATURE_OUTSIDE);
-			outCm.data_length 				= 2;
-			outCm.data[1]					= tenth; //  signed 10 an 1 decimal.
-			outCm.data[0]					= decimal; //  Decimal value, 0-9
+			outCp.type=ptPGM;
+			outCp.pgm.class	=pcSENSOR;
+			outCp.pgm.id	=(lastTemperature==TEMPERATURE_INSIDE?pstTEMP_INSIDE:pstTEMP_OUTSIDE);
+			outCp.length	=2;
+			outCm.data[1]	= tenth; //  signed 10 an 1 decimal.
+			outCm.data[0]	= decimal; //  Decimal value, 0-9
 			while(!canSendMessage(outCm,PRIO_HIGH));
 		}
 		#endif
@@ -107,10 +119,6 @@ void main()
 void high_isr(void)
 {
 	canISR();
-
-	#ifdef USE_BLINDS
-		blindsISR();
-	#endif
 }
 
 
@@ -119,6 +127,10 @@ void low_isr(void)
 {
 	#ifdef USE_ADC
 		adcISR();
+	#endif
+
+	#ifdef USE_BLINDS
+		blindsISR();
 	#endif
 }
 
@@ -145,8 +157,6 @@ void mainInit()
 
 	// Enable interrupt prirority
 	RCONbits.IPEN=1;
-	
-
 }
 
 /*
@@ -159,10 +169,14 @@ void mainInit()
 *	Depends: none.
 */
 
-void canParse(CAN_MESSAGE cm)
+void canParse(CAN_PACKET cp)
 {
-	CAN_MESSAGE outCm;
-
+	#ifdef USE_BLINDS
+	if (cp.pgm.class==pcACTUATOR && cp.pgm.id==patBLIND_TR)
+	{
+		blindsTurn(cp.data[0]);
+	}
+	#endif
 }
 
 
@@ -171,7 +185,7 @@ void canParse(CAN_MESSAGE cm)
 
 #ifndef DEBUG_MODE
 extern void _startup (void); 
-#pragma code _RESET_INTERRUPT_VECTOR = 0x001000
+#pragma code _RESET_INTERRUPT_VECTOR = RM_RESET_VECTOR
 void _reset (void)
 {
     _asm goto _startup _endasm
@@ -179,14 +193,14 @@ void _reset (void)
 #pragma code
 #endif
 
-#pragma code _HIGH_INTERRUPT_VECTOR = 0x001008
+#pragma code _HIGH_INTERRUPT_VECTOR = RM_HIGH_INTERRUPT_VECTOR
 void _high_ISR (void)
 {
 	_asm GOTO high_isr _endasm
 }
 #pragma code
 
-#pragma code _LOW_INTERRUPT_VECTOR = 0x001018
+#pragma code _LOW_INTERRUPT_VECTOR = RM_LOW_INTERRUPT_VECTOR
 void _low_ISR (void)
 {
     _asm GOTO low_isr _endasm

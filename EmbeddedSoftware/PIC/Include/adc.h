@@ -24,5 +24,6 @@ BOOL adcConvert(BYTE channel);
 void temperatureRead(char *tenth, BYTE *decimal);
 int adcRead(void);
 BOOL adcDone(void);
+unsigned long adcGetRaw(void);
 
 #endif

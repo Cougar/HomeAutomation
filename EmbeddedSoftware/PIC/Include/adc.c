@@ -139,11 +139,15 @@ void temperatureRead(signed char *tenth, BYTE *decimal)
 	else if (v01>=3 && v01<=7) v01 = 5;
 	else  { v01 = 0; v11++;}
 
-	tenth = (signed char *)v11;
-	decimal = (BYTE *)v01;
-
+	*tenth = (signed char)v11;
+	*decimal = (BYTE)v01;
 
 		TEMP_DONE=FALSE;
+}
+
+unsigned long adcGetRaw()
+{
+	return TEMP_VALUE;
 }
 
 

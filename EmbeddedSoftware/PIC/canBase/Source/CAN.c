@@ -18,8 +18,7 @@
 
 TICK heartbeat;
 static int MY_ID = DEFAULT_ID;
-static BYTE MY_NID = DEFAULT_NID;
-static CAN_MESSAGE outCm;
+static CAN_PACKET outCp;
 
 static void canGetPacket(void);
 
@@ -121,17 +120,15 @@ void canInit()
 	// Read ID and NID if exist.
 	if (EERead(NODE_ID_EE)==NODE_HAS_ID)
 	{
-		MY_ID=(((WORD)EERead(NODE_ID_EE + 1))<<8)+EERead(NODE_ID_EE + 2);
-		MY_NID=EERead(NODE_ID_EE + 3);
+		MY_ID=+EERead(NODE_ID_EE + 1);
 	}
 
 	// Send user program startup heatbeat
-	outCm.funct 					= FUNCT_BOOTLOADER;
-	outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
-	outCm.data_length 				= 1;
-	outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_USER_STARTUP;
-	canSendMessage(outCm,PRIO_HIGH);
-
+	outCp.type=ptPGM;
+	outCp.pgm.class=pcCTRL;
+	outCp.pgm.id=pctAPPBOOT;
+	outCp.length=0;
+	while(!canSendMessage(outCp,PRIO_HIGH));
 }
 
 
@@ -146,6 +143,8 @@ void canInit()
 */
 void canISR()
 {
+	ClrWdt();
+
 	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)
 	{
 		ECANCON=(ECANCON&0b00000)|(0b10000|(CANCON&0x0F)); 
@@ -161,16 +160,16 @@ void canISR()
 	if ((tickGet()-heartbeat)>TICK_SECOND*5)
 	{
 		// Send alive heartbeat
-		outCm.funct 					= FUNCT_BOOTLOADER;
-		outCm.funcc 					= FUNCC_BOOT_HEARTBEAT;
-		outCm.data_length 				= 1;
-		outCm.data[BOOT_DATA_HEARTBEAT_INDEX] = HEARTBEAT_ALIVE;
-		canSendMessage(outCm,PRIO_HIGH);
+		outCp.type=ptPGM;
+		outCp.pgm.class=pcCTRL;
+		outCp.pgm.id=pctHEARTBEAT;
+		outCp.length=0;
+		canSendMessage(outCp,PRIO_HIGH);
 			
 		heartbeat = tickGet();
 	}
 
-	ClrWdt();
+	
 }
 
 
@@ -185,68 +184,70 @@ void canISR()
 */
 void canGetPacket()
 {
-		CAN_MESSAGE cm;
+		CAN_PACKET cp;
 
 		//RXB0SIDH 28 27 26 25 24 23 22 21
         //RXB0SIDL 20 19 18 xx xx xx 17 16
         //RXB0EIDH 15 14 13 12 11 10 09 08
         //RXB0EIDL 07 06 05 04 03 02 01 00
 
-		//funct xx xx xx xx 28 27 26 25
-		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
-		//nid   xx xx 14 13 12 11 10 09 
-		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
+
+		cp.type = ((RXB0SIDH&0xC)>>6);
 
 
-       	cm.funct=((RXB0SIDH & 0xF0)>>4);
-        cm.funcc=(((WORD)(RXB0SIDH & 0x0F))<<6)+(((WORD)(RXB0SIDL & 0xE0))>>2)+(((WORD)(RXB0SIDL & 0x03))<<1)+(((WORD)(RXB0EIDH & 0x80))>>7);
-        cm.nid=((RXB0EIDH & 0x7E)>>1);
-        cm.sid=(((WORD)(RXB0EIDH & 0x01))<<8)+RXB0EIDL;
+		if (cp.type==ptBOOT)
+		{
+			cp.boot.type  = ((RXB0SIDH&0x38)>>3);
+			cp.boot.offset= ((RXB0SIDH&0x7)<<5)+((RXB0SIDL&0xE0)>>3)+(RXB0SIDL&0x3);
+			cp.boot.rid   = RXB0EIDH;
+		}
+		else
+		{
+			cp.pgm.class= ((RXB0SIDH&0x3C)>>2);
+			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+((RXB0SIDL&0x3)<<8)+RXB0EIDH;
+		}
+		cp.sid   = RXB0EIDL;
 
 
 		// Data length
-		cm.data_length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
+		cp.length=(RXB0DLCbits.DLC3<<3)+(RXB0DLCbits.DLC2<<2)+(RXB0DLCbits.DLC1<<1)+RXB0DLCbits.DLC0;
 
 		// Data one bye one, for speed
-		cm.data[0]=RXB0D0;	cm.data[1]=RXB0D1;
-		cm.data[2]=RXB0D2; 	cm.data[3]=RXB0D3;
-		cm.data[4]=RXB0D4; 	cm.data[5]=RXB0D5;
-		cm.data[6]=RXB0D6; 	cm.data[7]=RXB0D7;
+		cp.data[0]=RXB0D0;	cp.data[1]=RXB0D1;
+		cp.data[2]=RXB0D2; 	cp.data[3]=RXB0D3;
+		cp.data[4]=RXB0D4; 	cp.data[5]=RXB0D5;
+		cp.data[6]=RXB0D6; 	cp.data[7]=RXB0D7;
 
 		// Clear ful status
 		RXB0CONbits.RXFUL=0;
 
 
 
-		// Check if FUNCT_BOOTLOADER specific.
+		// Check if bootloader request specific.
 		// reset and id change
-		if (cm.funct==FUNCT_BOOTLOADER)
+		if (cp.type==ptBOOT)
 		{
-			if (cm.nid==MY_NID && ((((unsigned int)cm.data[BOOT_DATA_RID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_RID_LOW_INDEX])==MY_ID) 
+			if (cp.boot.rid==MY_ID)
 			{
-				if (cm.funcc==FUNCC_BOOT_INIT) Reset(); // Reset me.
-				if (cm.funcc==FUNCC_BOOT_SET_ID)
+				if (cp.boot.type==btADDR) Reset(); // Reset me.
+				if (cp.boot.type==btCHANGEID)
 				{
 						// Change my ID and NID
-						MY_ID=(((WORD)cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX])<<8)+cm.data[BOOT_DATA_NEW_ID_LOW_INDEX];
-						MY_NID=cm.data[BOOT_DATA_NEW_NID_INDEX];
-						EEWrite(NODE_ID_EE+1,cm.data[BOOT_DATA_NEW_ID_HIGH_INDEX]);
-						EEWrite(NODE_ID_EE+2,cm.data[BOOT_DATA_NEW_ID_LOW_INDEX]);
-						EEWrite(NODE_ID_EE+3,cm.data[BOOT_DATA_NEW_NID_INDEX]);
+						MY_ID=cp.data[0];
+						EEWrite(NODE_ID_EE+1,cp.data[0]);
 						EEWrite(NODE_ID_EE,NODE_HAS_ID);
 						// Send ack with new id.
-						outCm.funct 					= FUNCT_BOOTLOADER;
-						outCm.funcc 					= FUNCC_BOOT_ACK;
-						outCm.data_length 				= 8;
-						outCm.data[BOOT_DATA_ERR_INDEX]	= ACK_ERR_NO_ERROR;
-						while(!canSendMessage(outCm,PRIO_HIGH));
+						outCp.type=ptBOOT;
+						outCp.boot.type=btACK;
+						outCp.length=0;
+						while(!canSendMessage(outCp,PRIO_HIGH));
 				}
 			}
 		}
 
 
 		//Call main parser
-		canParse(cm);
+		if (cp.type==ptPGM) canParse(cp);
 }
 
 
@@ -259,7 +260,7 @@ void canGetPacket()
 *	Affects: ..
 *	Depends: ..
 */
-BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
+BOOL canSendMessage(CAN_PACKET cp, CAN_PRIORITY prio)
 {
 	
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
@@ -270,54 +271,53 @@ BOOL canSendMessage(CAN_MESSAGE cm,CAN_PRIORITY prio)
 
 	if (prio<0 || prio>3) prio = 0;
 
-		// Append my id and nid
-		cm.nid	= MY_NID;
-		cm.sid	= MY_ID;
+
+	//RXB0SIDH 28 27 26 25 24 23 22 21
+	//RXB0SIDL 20 19 18 xx xx xx 17 16
+	//RXB0EIDH 15 14 13 12 11 10 09 08
+	//RXB0EIDL 07 06 05 04 03 02 01 00
 
 
-		//RXB0SIDH 28 27 26 25 24 23 22 21
-        //RXB0SIDL 20 19 18 xx xx xx 17 16
-        //RXB0EIDH 15 14 13 12 11 10 09 08
-        //RXB0EIDL 07 06 05 04 03 02 01 00
+	if (cp.type==ptBOOT)
+	{
+		RXB0SIDH = ((cp.type&0x3)<<6)+((cp.boot.type&0x7)<<3)+((cp.boot.offset&0xE0)>>5);
+		RXB0SIDL = ((cp.boot.offset&0x1C)<<3)+(cp.boot.offset&0x3);
+		RXB0EIDH = cp.boot.rid;
+	}
+	else
+	{
+		RXB0SIDH = ((cp.type&0x3)<<6)+((cp.pgm.class&0xF)<<2)+((cp.pgm.id&0x6000)>>13);
+		RXB0SIDL = ((cp.pgm.id&0x1C00)>>5)+((cp.pgm.id&0x300)>>8);
+		RXB0EIDH = (cp.pgm.id&0xFF);
+	}
+	RXB0EIDL = MY_ID;
 
-		//funct xx xx xx xx 28 27 26 25
-		//funcc xx xx xx xx xx xx 24 23 22 21 20 19 18 17 16 15 
-		//nid   xx xx 14 13 12 11 10 09 
-		//sid   xx xx xx xx xx xx xx 08 07 06 05 04 03 02 01 00
-
-		RXB0SIDH = (BYTE)((cm.funct & 0x0F)<<4)+(BYTE)((cm.funcc & 0x03C0)>>6);
-		RXB0SIDL = (BYTE)((cm.funcc & 0x003F)<<2)+(BYTE)((cm.funcc & 0x0006)>>1);
-		RXB0EIDH = (BYTE)((cm.funcc & 0x0001)<<7)+(BYTE)((cm.nid & 0x3F)<<1)+(BYTE)((cm.sid & 0x0100)>>8);
-		RXB0EIDL = (BYTE)((cm.sid & 0x00FF));
-
-		// Data length
-		RXB0DLC = 0;
-		if (cm.data_length>8) RXB0DLC=8; else RXB0DLC=cm.data_length;
-		
-
-		// NOT Remote request
-		_asm 
-			bcf RXB0DLC, 6, 0
-		_endasm 
-		
-
-		// Data one bye one, for speed
-		RXB0D0=cm.data[0];	RXB0D1=cm.data[1];
-		RXB0D2=cm.data[2]; 	RXB0D3=cm.data[3];
-		RXB0D4=cm.data[4]; 	RXB0D5=cm.data[5];
-		RXB0D6=cm.data[6]; 	RXB0D7=cm.data[7];
-
-		// set extended
-		RXB0SIDLbits.EXID=1;
-
-		// Priority
-		RXB0CON = (RXB0CON & 0b11111100) | prio;
-
-		// mark as redy to transmit
-		_asm 
-			bsf RXB0CON, 3, 0
-		_endasm 
-
-		return TRUE;
+	// Data length
+	RXB0DLC = 0;
+	if (cp.length>8) RXB0DLC=8; else RXB0DLC=cp.length;
+	
+	// NOT Remote request
+	_asm 
+		bcf RXB0DLC, 6, 0
+	_endasm 
+	
+	
+	// Data one bye one, for speed
+	RXB0D0=cp.data[0];	RXB0D1=cp.data[1];
+	RXB0D2=cp.data[2]; 	RXB0D3=cp.data[3];
+	RXB0D4=cp.data[4]; 	RXB0D5=cp.data[5];
+	RXB0D6=cp.data[6]; 	RXB0D7=cp.data[7];
+	// set extended
+	RXB0SIDLbits.EXID=1;
+	
+	// Priority
+	RXB0CON = (RXB0CON & 0b11111100) | prio;
+	
+	// mark as redy to transmit
+	_asm 
+		bsf RXB0CON, 3, 0
+	_endasm 
+	
+	return TRUE;
 
 }

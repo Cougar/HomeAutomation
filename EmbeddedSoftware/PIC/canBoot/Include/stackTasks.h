@@ -12,7 +12,5 @@
 #ifndef stackTasks_H
 #define stackTasks_H
 
-#define USE_CAN
-
 
 #endif
