@@ -15,6 +15,7 @@
 #include <Tick.h>
 #include <funcdefs.h>
 #include <CAN.h>
+#include "..\canBoot\Include\boot.h"
 
 
 #ifdef USE_IREC
@@ -27,7 +28,7 @@ static void mainInit(void);
 void main()
 {
 	static TICK t = 0;
-	CAN_MESSAGE outCm;
+	CAN_PACKET outCp;
 
 	// Inits
 
@@ -105,9 +106,8 @@ void mainInit()
 *	Depends: none.
 */
 
-void canParse(CAN_MESSAGE cm)
+void canParse(CAN_PACKET cp)
 {
-	CAN_MESSAGE outCm;
 
 }
 
@@ -125,16 +125,17 @@ void canParse(CAN_MESSAGE cm)
 #ifdef USE_IREC
 void irecParse(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 {
-	CAN_MESSAGE outCm;
-	outCm.funct 		= FUNCT_SENSORS;
-	outCm.funcc 		= FUNCC_SENSORS_IR;
-	outCm.data_length 	= 4;
-	outCm.data[3]		= type;
-	outCm.data[2]		= toggle;
-	outCm.data[1]		= addr;
-	outCm.data[0]		= data;
-	
-	while(!canSendMessage(outCm,PRIO_HIGH));
+	CAN_PACKET outCp;
+
+	outCp.type 		= ptPGM;
+	outCp.pgm.class = pcSENSOR;
+	outCp.pgm.id 	= pstIR;
+	outCp.length 	= 4;
+	outCp.data[3]	= type;
+	outCp.data[2]	= toggle;
+	outCp.data[1]	= addr;
+	outCp.data[0]	= data;
+	while(!canSendMessage(outCp,PRIO_HIGH));
 
 
 }
@@ -145,7 +146,7 @@ void irecParse(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 
 #ifndef DEBUG_MODE
 extern void _startup (void); 
-#pragma code _RESET_INTERRUPT_VECTOR = 0x001000
+#pragma code _RESET_INTERRUPT_VECTOR = RM_RESET_VECTOR
 void _reset (void)
 {
     _asm goto _startup _endasm
@@ -153,14 +154,14 @@ void _reset (void)
 #pragma code
 #endif
 
-#pragma code _HIGH_INTERRUPT_VECTOR = 0x001008
+#pragma code _HIGH_INTERRUPT_VECTOR = RM_HIGH_INTERRUPT_VECTOR
 void _high_ISR (void)
 {
 	_asm GOTO high_isr _endasm
 }
 #pragma code
 
-#pragma code _LOW_INTERRUPT_VECTOR = 0x001018
+#pragma code _LOW_INTERRUPT_VECTOR = RM_LOW_INTERRUPT_VECTOR
 void _low_ISR (void)
 {
     _asm GOTO low_isr _endasm
