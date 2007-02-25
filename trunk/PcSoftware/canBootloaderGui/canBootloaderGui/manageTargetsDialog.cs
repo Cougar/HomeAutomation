@@ -10,7 +10,7 @@ namespace canBootloader
 {
     public partial class manageTargetsDialog : Form
     {
-        public enum manageMode {ADD_TARGET,EDIT_TARGET,CHANGE_ID_NID };
+        public enum manageMode {ADD_TARGET,EDIT_TARGET,CHANGE_ID };
 
         main m;
         LinkedList<nodeTarget> targets;
@@ -30,25 +30,23 @@ namespace canBootloader
         private void setMode(manageMode mmode)
         {
             this.mmode = mmode;
-            if (mmode == manageMode.CHANGE_ID_NID)
+            if (mmode == manageMode.CHANGE_ID)
             {
                 txt_expl.Enabled = false;
-                this.Text = "Enter new ID and NID";
+                this.Text = "Enter new ID";
             }
             if (mmode == manageMode.ADD_TARGET || mmode == manageMode.EDIT_TARGET)
             {
-                this.Text = "Add/edit target ID, NID and description";
+                this.Text = "Add/edit target ID and description";
             }
         }
 
 
         private void cmd_save_Click(object sender, EventArgs e)
         {
-            uint tid; byte nid;
-            if (!uint.TryParse(txt_tid.Text, System.Globalization.NumberStyles.HexNumber, null, out tid) || tid > 0x1FFFFFFF)
-            { MessageBox.Show("Target id need to be a hexadecimal number between 0 and 0x1FFFFFFF.","Format error",MessageBoxButtons.OK,MessageBoxIcon.Error); return; }
-            if (!byte.TryParse(txt_nid.Text, System.Globalization.NumberStyles.HexNumber, null, out nid) || nid > 0xF)
-            { MessageBox.Show("Network id need to be a hexadecimal number between 0 and 0xF.", "Format error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            byte tid;
+            if (!byte.TryParse(txt_tid.Text, System.Globalization.NumberStyles.HexNumber, null, out tid) || tid > 0xFF)
+            { MessageBox.Show("Target id need to be a hexadecimal number between 0 and 0xFF.","Format error",MessageBoxButtons.OK,MessageBoxIcon.Error); return; }
 
             if (mmode == manageMode.EDIT_TARGET)
             {
@@ -57,14 +55,14 @@ namespace canBootloader
 
             if (mmode == manageMode.ADD_TARGET || mmode == manageMode.EDIT_TARGET)
             {
-                targets.AddFirst(new nodeTarget(txt_expl.Text, tid, nid));
+                targets.AddFirst(new nodeTarget(txt_expl.Text, tid));
                 m.saveSettings();
                 m.refreshTargets();
             }
 
-            if (mmode == manageMode.CHANGE_ID_NID)
+            if (mmode == manageMode.CHANGE_ID)
             {
-                m.changeIdNid(tid,nid);
+                m.changeId(tid);
             }
 
             this.Close();

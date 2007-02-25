@@ -8,7 +8,7 @@ namespace canBootloader
 {
     public class HexFile
     {
-        private const ulong USER_RESET_ADDR = 0x1000;
+        private const ulong USER_RESET_ADDR = 0x3000;
         private const ulong BUFFER_SIZE = 5200000;
         private const ulong LINE_MAX_SIZE = 1024;
         private const ulong ERROR_BUFFER_SIZE = 256;
