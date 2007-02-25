@@ -25,6 +25,7 @@ file_005=no
 file_006=no
 file_007=no
 file_008=no
+file_009=no
 [FILE_INFO]
 file_000=Source\Main.c
 file_001=F:\MCP\projects\CAN\canBase\Source\Tick.c
@@ -34,7 +35,8 @@ file_004=Source\IRec.c
 file_005=Include\compiler.h
 file_006=Include\stackTasks.h
 file_007=Include\IRec.h
-file_008=F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr
+file_008=F:\MCP\projects\CAN\canBoot\Include\boot.h
+file_009=F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=

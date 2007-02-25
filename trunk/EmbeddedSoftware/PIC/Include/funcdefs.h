@@ -1,4 +1,4 @@
-/*********************************************************************
+﻿/*********************************************************************
  *
  *   Defines functs and funccs and other global definitions.
  *
@@ -77,10 +77,15 @@ typedef enum _PGM_SENSOR_TYPE 	{
 				} PGM_SENSOR_TYPE;
 // When CAN_PGM_PACKET.type==pcSENSOR
 //	When CAN_PGM_PACKET.id==pstIR
-//		data[0]...
+//		data[3] = type
+//		data[2] = toogle
+//		data[1] = addr
+//		data[0] = data
+
 //	When CAN_PGM_PACKET.id==pstTEMP_*
 //		data[1] = integer value -127 to 127
 //		data[0] = decimal value 0-9
+
 //	When CAN_PGM_PACKET.id==pstBLIND_*
 //		data[0] = Precent value 0-100
 
