@@ -21,10 +21,9 @@ namespace canBootloader
         private Downloader dl;
         private string currentLoadedFile = "";
         private nodeTarget currentTarget;
-        private uint myid;
+        private byte myid;
 
-        private uint tmp_new_id = 0;
-        private byte tmp_new_nid = 0;
+        private byte tmp_new_id = 0;
 
         private enum TrayIcon {NORMAL,DOWNLOADING,FAIL,OK};
         private System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(trayIcons));
@@ -222,7 +221,7 @@ namespace canBootloader
             catch (Exception e) { log("Error setting serial connection settings: " + e.Message); setTrayIcon(TrayIcon.FAIL); return; }
             if (!sc.open()) { log("Error opening port."); setTrayIcon(TrayIcon.FAIL); return; }
 
-            dl = new Downloader(hf, sc, myid, currentTarget.getNid(), currentTarget.getTargetId(), downloadmode, tmp_new_id, tmp_new_nid);
+            dl = new Downloader(hf, sc, myid, currentTarget.getTargetId(), downloadmode, tmp_new_id);
             if (!dl.go()) { log("Error downloading/ID change..."); setTrayIcon(TrayIcon.FAIL); return; }
             setTrayIcon(TrayIcon.DOWNLOADING);
             downloadTimeout.Stop();
@@ -232,9 +231,9 @@ namespace canBootloader
             {
                 log("Downloading...");
             }
-            else if (downloadmode == Downloader.downloadMode.CHANGE_ID_NID) 
+            else if (downloadmode == Downloader.downloadMode.CHANGE_ID) 
             {
-                log("Changeing ID/NID.");
+                log("Changeing ID.");
             }
             dl.threadAbort += new EventHandler(dl_threadAbort);
 
@@ -275,7 +274,7 @@ namespace canBootloader
                     threadAbortEvent e2 = (threadAbortEvent)e;
                     switch(e2.getAbortMode())
                     {
-                        case Downloader.abortMode.CHANGE_ID_NID:
+                        case Downloader.abortMode.CHANGE_ID:
                             log("ID and NID changed.");
                             setTrayIcon(TrayIcon.OK);
                             break;
@@ -341,7 +340,7 @@ namespace canBootloader
                     targets = (LinkedList<nodeTarget>)saveblock["targets"];
                     currentTarget = (nodeTarget)saveblock["currentTarget"];
                     currentLoadedFile = (string)saveblock["currentLoadedFile"];
-                    myid = (uint)saveblock["myid"];
+                    myid = (byte)saveblock["myid"];
                 }
                 catch (Exception) { }
             }
@@ -382,8 +381,8 @@ namespace canBootloader
 
         private void menu_settings_myid_DropDownClosed(object sender, EventArgs e)
         {
-            if (!uint.TryParse(menu_settings_myid_txt.Text, System.Globalization.NumberStyles.HexNumber, null, out myid) || myid > 0x1FFFFFFF)
-            { MessageBox.Show("Id need to be a hexadecimal number between 0 and 0x1FFFFFFF.", "Format error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            if (!byte.TryParse(menu_settings_myid_txt.Text, System.Globalization.NumberStyles.HexNumber, null, out myid) || myid > 0xFF)
+            { MessageBox.Show("Id need to be a hexadecimal number between 0 and 0xFF.", "Format error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             saveSettings();
         }
 
@@ -404,16 +403,15 @@ namespace canBootloader
 
         private void menu_action_change_target_idnid_Click(object sender, EventArgs e)
         {
-            manageTargetsDialog mtd = new manageTargetsDialog(this, targets, manageTargetsDialog.manageMode.CHANGE_ID_NID, null);
+            manageTargetsDialog mtd = new manageTargetsDialog(this, targets, manageTargetsDialog.manageMode.CHANGE_ID, null);
             mtd.ShowDialog();
         }
 
 
-        internal void changeIdNid(uint tid, byte nid)
+        internal void changeId(byte tid)
         {
             tmp_new_id = tid;
-            tmp_new_nid = nid;
-            download(Downloader.downloadMode.CHANGE_ID_NID);
+            download(Downloader.downloadMode.CHANGE_ID);
         }
     }
 
@@ -428,25 +426,22 @@ namespace canBootloader
     public class nodeTarget
     {
         private string expl;
-        private uint targetId;
-        private byte nid;
+        private byte targetId;
         public nodeTarget() { expl = "(NULL)";  }
-        public nodeTarget(string expl, uint targetId, byte nid) 
+        public nodeTarget(string expl, byte targetId) 
         {
             this.expl = expl;
             this.targetId = targetId;
-            this.nid = nid;
         }
         public string getExpl() { return this.expl; }
         public void setExpl(string expl) { this.expl = expl; }
-        public uint getTargetId() { return this.targetId; }
-        public byte getNid() { return this.nid; }
+        public byte getTargetId() { return this.targetId; }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
             nodeTarget ti = (nodeTarget)obj;
-            return (ti.getTargetId() == this.targetId && ti.getNid() == this.nid);
+            return (ti.getTargetId() == this.targetId);
         }
         public override int GetHashCode()
         {
@@ -489,7 +484,7 @@ namespace canBootloader
 
         public override string ToString()
         {
-            return this.nt.getExpl() + " (0x " + this.nt.getNid().ToString("X").PadLeft(1, '0') + ", 0x" + this.nt.getTargetId().ToString("X").PadLeft(3, '0') + ")";
+            return this.nt.getExpl() + " 0x" + this.nt.getTargetId().ToString("X").PadLeft(2, '0') + ")";
         }
         public override string Text
         {

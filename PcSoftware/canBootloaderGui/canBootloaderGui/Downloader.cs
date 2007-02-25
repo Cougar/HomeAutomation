@@ -7,34 +7,13 @@ namespace canBootloader
 {
     public class Downloader
     {
-        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2,CHANGE_ID_START,CHANGE_ID_WAIT_ACK_PACKET,CHANGE_ID_DONE };
-        public enum downloadMode { PROGRAM, CHANGE_ID_NID };
-        public enum abortMode { USER, PROGRAM, CHANGE_ID_NID };
+        private enum dState { SEND_START, WAIT_ACK, SEND_PGM_DATA, WAIT_OWN_PACKET, WAIT_PGM_ACK, RESEND_ADDR, WAIT_DONE, SEND_DONE, DONE, WAIT_ADDR_ACK, DEBUG_STATE1, DEBUG_STATE2, CHANGE_ID_START, CHANGE_ID_WAIT_ACK_PACKET, CHANGE_ID_DONE, SEND_CRC, WAIT_CRC_ACK };
+        public enum downloadMode { PROGRAM, CHANGE_ID };
+        public enum abortMode { USER, PROGRAM, CHANGE_ID };
 
-        private const byte FUNCT_BOOTLOADER     = 0x0;
-        private const uint FUNCC_BOOT_INIT = 0x01; //för att initiera en programmering/erase/etc.
-        private const uint FUNCC_BOOT_SET_ID = 0x06;
-        private const uint FUNCC_BOOT_ADDR = 0x02;  // For att ändra adress.
-        private const uint FUNCC_BOOT_DONE = 0x05; //för att avsluta en programmering/erase/etc.
-        private const uint FUNCC_BOOT_PGM = 0x03; //för att indikera att detta är programdata som ska skrivas.
-        private const uint FUNCC_BOOT_ACK = 0x04; //för att indikera att detta är en ACK.
-
-        private uint MY_ID = 0;
-        private uint TARGET_ID = 0;
-        private byte MY_NID = 0;
+        private byte MY_ID = 0;
+        private byte TARGET_ID = 0;
         
-        private const byte ADDRL_INDEX = 0;
-        private const byte ADDRH_INDEX = 1;
-        private const byte ADDRU_INDEX = 2;
-        private const byte RID_LOW_INDEX = 4;
-        private const byte RID_HIGH_INDEX = 5;
-        private const byte ERR_INDEX = 4;
-        private const byte BOOT_DATA_NEW_ID_LOW = 0; 
-        private const byte BOOT_DATA_NEW_ID_HIGH = 1;
-        private const byte BOOT_DATA_NEW_NID = 2;
-        private const byte ERR_NO_ERROR = 0x00; //= inget fel
-        private const byte ERR_ERROR = 0x01; //= fel
-
         private HexFile hf;
         private SerialConnection sc;
         private Thread down;
@@ -48,21 +27,18 @@ namespace canBootloader
         private abortMode abortmode;
         private bool hasFoundNode = false;
 
-        private uint tmp_new_id = 0;
-        private byte tmp_new_nid = 0;
+        private byte tmp_new_id = 0;
 
         public string lastError = "";
 
-        public Downloader(HexFile hf, SerialConnection sc, uint myId, byte nid, uint targetId, downloadMode downloadmode, uint tmp_new_id, byte tmp_new_nid) 
+        public Downloader(HexFile hf, SerialConnection sc, byte myId, byte targetId, downloadMode downloadmode, byte tmp_new_id) 
         {
             this.hf = hf;
             this.sc = sc;
             this.MY_ID = myId;
-            this.MY_NID = nid;
             this.TARGET_ID = targetId;
             this.downloadmode = downloadmode;
             this.tmp_new_id = tmp_new_id;
-            this.tmp_new_nid = tmp_new_nid;
         }
 
         ~Downloader() { if (down.IsAlive) abortmode = abortMode.USER; down.Abort(); }
@@ -80,7 +56,7 @@ namespace canBootloader
                 
                 pgs = dState.SEND_START;
             }
-            else if (downloadmode == downloadMode.CHANGE_ID_NID)
+            else if (downloadmode == downloadMode.CHANGE_ID)
             {
                 pgs = dState.CHANGE_ID_START;
             }
@@ -97,21 +73,23 @@ namespace canBootloader
         public void downloader()
         {
             int t = 0;
-            CanPacket outCm = null;
-            CanPacket cm = null;
+            CanPacket outCp = null;
+            CanPacket cp = null;
             byte[] data = new byte[8];
-            byte byteSent = 0;
+            byte offset = 0;
             ulong currentAddress = 0;
 
             try
             {
                 while (true)
                 {
-                    bool hasMessage = sc.getPacket(out cm);
+                    bool hasMessage = sc.getPacket(out cp);
                     if (hasMessage)
                     {
-                        Array.Copy(cm.getData(), data, 8);
+                        Array.Copy(cp.data, data, 8);
                     }
+                    bool hasMessageFromTarget = (hasMessage && cp.type== CanPacket.PACKET_TYPE.ptBOOT && cp.boot.rid==MY_ID && cp.sid == TARGET_ID);
+
                     
                    
                     switch (pgs)
@@ -120,13 +98,12 @@ namespace canBootloader
                             // Send boot start packet to target.
                             // and wait for ack.
                             currentAddress = hf.getAddrLower();
-                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID>>8);
-                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
-                            data[ADDRU_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
-                            data[ADDRH_INDEX] = (byte)((currentAddress & 0xFF00) >> 8);
-                            data[ADDRL_INDEX] = (byte)(currentAddress & 0xFF);
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_INIT, (byte)MY_NID, (uint)MY_ID, 8, data);
-                            sc.writePacket(outCm);
+                            data[2] = (byte)((currentAddress & 0xFF0000) >> 16);
+                            data[1] = (byte)((currentAddress & 0xFF00) >> 8);
+                            data[0] = (byte)(currentAddress & 0xFF);
+                            outCp = new CanPacket(new CanPacket.canBOOTPacket(CanPacket.BOOT_TYPE.btADDR, 0, TARGET_ID),MY_ID,3,data);
+
+                            sc.writePacket(outCp);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_ACK;
                             timeStart = Environment.TickCount;
@@ -134,8 +111,9 @@ namespace canBootloader
                             break;
 
 
+
                         case dState.WAIT_ACK:
-                            
+
                             // Check for timeout, resend start packet in that case..
                             if ((Environment.TickCount - t) > TIMEOUT_MS)
                             {
@@ -143,34 +121,32 @@ namespace canBootloader
                             }
 
                             // If received ack.
-                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == MY_NID && cm.getSid() == TARGET_ID)
+                            if (hasMessageFromTarget && cp.boot.type== CanPacket.BOOT_TYPE.btACK)
                             {
-                                // If no error
-                                if (data[ERR_INDEX] == ERR_NO_ERROR)
-                                {
-                                    // Start sending program data..
-                                    byteSent = 0;
-                                    pgs = dState.SEND_PGM_DATA;
-                                    hasFoundNode = true;
-                                }
-                                else 
-                                { 
-                                    // else resend start..
-                                    pgs = dState.SEND_START;
-                                }
+                                // Start sending program data..
+                                offset = 0;
+                                pgs = dState.SEND_PGM_DATA;
+                                hasFoundNode = true;
+                            }
+                            // if nack
+                            if (hasMessageFromTarget && cp.boot.type == CanPacket.BOOT_TYPE.btNACK)
+                            {    
+                                // else resend start..
+                                pgs = dState.SEND_START;
                             }
 
                             break;
 
+
                         case dState.SEND_PGM_DATA:
                             // Send program data.
                             for (ulong i = 0; i < 8; i++)
-                            { 
+                            {
                                 // Populate data.
-                                data[i] = hf.getByte(currentAddress + i + byteSent);
+                                data[i] = hf.getByte(currentAddress + i + offset);
                             }
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, (uint)((uint)((uint)(Math.Floor(((double)byteSent/8.0)))<<2) + (FUNCC_BOOT_PGM)), (byte)MY_NID, (byte)MY_ID, 8, data);
-                            sc.writePacket(outCm);
+                            outCp = new CanPacket(new CanPacket.canBOOTPacket(CanPacket.BOOT_TYPE.btPGM, offset, TARGET_ID), MY_ID, 8, data);
+                            sc.writePacket(outCp);
                             t = Environment.TickCount;
                             pgs = dState.WAIT_OWN_PACKET;
                             break;
@@ -180,24 +156,23 @@ namespace canBootloader
                             // Wait reciving own packet, if timeout, resend last.
                             if ((Environment.TickCount - t) > TIMEOUT_MS)
                             {
-                                //pgs = dState.SEND_PGM_DATA;
-                                pgs = dState.RESEND_ADDR;
+                                pgs = dState.SEND_PGM_DATA;
                             }
 
                             // If received own packet..
-                            if (hasMessage && outCm.Equals(cm))
+                            if (hasMessage && outCp.Equals(cp))
                             {
-                                byteSent += 8;
+                                offset += 8;
 
                                 // Check if 64 bytes sent or not..
-                                if (byteSent == 64)
+                                if (offset % 64 == 0)
                                 {
-                                    // Yes, wait for ack.
+                                    // Yes, send crc.
                                     t = Environment.TickCount;
-                                    pgs = dState.WAIT_PGM_ACK;
+                                    pgs = dState.SEND_CRC;
                                 }
                                 else
-                                { 
+                                {
                                     // No, send more.
                                     pgs = dState.SEND_PGM_DATA;
                                 }
@@ -206,116 +181,64 @@ namespace canBootloader
                             break;
 
 
-                        case dState.WAIT_PGM_ACK:
-                            // Wait for pgm ack.
-                            if ((Environment.TickCount - t) > 2*TIMEOUT_MS)
+                        case dState.SEND_CRC:
+                            byte[] pgmData = new byte[64];
+                            for(ulong i=0;i<64;i++) pgmData[i] = hf.getByte(i+currentAddress);
+
+                            ushort crc = crc16.calc_crc(pgmData, 64);
+                            data[4] = (byte)((crc & 0xFF00) >> 8);
+                            data[3] = (byte)(crc & 0xFF);
+                            data[2] = (byte)(((currentAddress + offset) & 0xFF0000) >> 16);
+                            data[1] = (byte)(((currentAddress + offset) & 0xFF00) >> 8);
+                            data[0] = (byte)((currentAddress + offset) & 0xFF);
+                            outCp = new CanPacket(new CanPacket.canBOOTPacket(CanPacket.BOOT_TYPE.btCRC, offset, TARGET_ID), MY_ID, 8, data);
+                            sc.writePacket(outCp);
+                            t = Environment.TickCount;
+                            pgs = dState.WAIT_CRC_ACK;
+                            break;
+
+
+                        case dState.WAIT_CRC_ACK:
+                            // Check for timeout, resend start packet in that case..
+                            if ((Environment.TickCount - t) > TIMEOUT_MS)
                             {
-                                // Woops, error. Resend address and start over.
-                                pgs = dState.RESEND_ADDR;
+                                pgs = dState.SEND_CRC;
                             }
 
                             // If received ack.
-                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == MY_NID && cm.getSid() == TARGET_ID)
+                            if (hasMessageFromTarget && cp.boot.type == CanPacket.BOOT_TYPE.btACK)
                             {
-                                // If no error
-                                if (data[ERR_INDEX] == ERR_NO_ERROR)
+                                // Start send more program data..
+                                currentAddress += offset;
+
+                                offset = 0;
+                                pgs = dState.SEND_PGM_DATA;
+                                hasFoundNode = true;
+ 
+                                if (currentAddress > hf.getAddrUpper())
                                 {
-                                    currentAddress += 64;
-                                    // Check if end.
-                                    if (currentAddress > hf.getAddrUpper())
-                                    {
-                                        // Yes, we are done, send done.
-                                        pgs = dState.SEND_DONE;
-                                    }
-                                    else
-                                    { 
-                                        // More to write.
-                                        byteSent = 0;
-                                        pgs = dState.SEND_PGM_DATA;
-                                    }
+                                    // Yes, we are done, send done.
+                                    pgs = dState.SEND_DONE;
                                 }
-                                else
-                                {
-                                    // else resend start..
-                                    pgs = dState.RESEND_ADDR;
-                                }
+                            }
+                            // if nack
+                            if (hasMessageFromTarget && cp.boot.type == CanPacket.BOOT_TYPE.btNACK)
+                            {
+                                // else resend pgm data...
+                                offset = 0;
+                                pgs = dState.SEND_PGM_DATA;
                             }
 
                             break;
 
 
                         case dState.SEND_DONE:
-                            // Send done
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_DONE, (byte)MY_NID, (uint)MY_ID, 8, data);
-                            sc.writePacket(outCm);
+                            outCp = new CanPacket(new CanPacket.canBOOTPacket(CanPacket.BOOT_TYPE.btDONE, offset, TARGET_ID), MY_ID, 8, data);
+                            sc.writePacket(outCp);
                             t = Environment.TickCount;
-                            pgs = dState.WAIT_DONE;
+                            pgs = dState.DONE;
                             break;
 
-                        case dState.RESEND_ADDR:
-                            // Resend addr.
-                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID>>8);
-                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
-                            data[ADDRU_INDEX] = (byte)((currentAddress & 0xFF0000) >> 16);
-                            data[ADDRH_INDEX] = (byte)((currentAddress & 0xFF00) >> 8);
-                            data[ADDRL_INDEX] = (byte)(currentAddress & 0xFF);
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_ADDR, (byte)MY_NID, (uint)MY_ID, 8, data);
-                            sc.writePacket(outCm);
-                            t = Environment.TickCount;
-                            pgs = dState.WAIT_ADDR_ACK;
-                            break;
-
-
-                        case dState.WAIT_ADDR_ACK:
-                            // Check for timeout, resend addr packet in that case..
-                            if ((Environment.TickCount - t) > TIMEOUT_MS)
-                            {
-                                pgs = dState.RESEND_ADDR;
-                            }
-
-                            // If received ack.
-                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == MY_NID && cm.getSid() == TARGET_ID)
-                            {
-                                // If no error
-                                if (data[ERR_INDEX] == ERR_NO_ERROR)
-                                {
-                                    // Start sending program data..
-                                    byteSent = 0;
-                                    pgs = dState.SEND_PGM_DATA;
-                                }
-                                else
-                                {
-                                    // else resend addr..
-                                    pgs = dState.RESEND_ADDR;
-                                }
-                            }
-                            break;
-
-                        case dState.WAIT_DONE:
-                            // Check for timeout, resend done packet in that case..
-                            if ((Environment.TickCount - t) > TIMEOUT_MS)
-                            {
-                                pgs = dState.SEND_DONE;
-                            }
-
-                            // If received ack.
-                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == MY_NID && cm.getSid() == TARGET_ID)
-                            {
-                                // If no error
-                                if (data[ERR_INDEX] == ERR_NO_ERROR)
-                                {
-                                    // Start sending program data..
-                                    byteSent = 0;
-                                    pgs = dState.DONE;
-                                }
-                                else
-                                {
-                                    // else resend addr..
-                                    pgs = dState.RESEND_ADDR;
-                                }
-                            }
-
-                            break;
 
                         case dState.DONE:
                             abortmode = abortMode.PROGRAM;
@@ -325,16 +248,15 @@ namespace canBootloader
 
  // -------------------------------- CHANGE ID NID ------------------------------------
 
+
+                            
                         case dState.CHANGE_ID_START:
                             // Send change id packet
                             // and wait for own packet.
-                            data[RID_HIGH_INDEX] = (byte)(TARGET_ID >> 8);
-                            data[RID_LOW_INDEX] = (byte)TARGET_ID;
-                            data[BOOT_DATA_NEW_ID_HIGH] = (byte)(tmp_new_id>>8);
-                            data[BOOT_DATA_NEW_ID_LOW] = (byte)tmp_new_id;
-                            data[BOOT_DATA_NEW_NID]=tmp_new_nid;
-                            outCm = new CanPacket(FUNCT_BOOTLOADER, FUNCC_BOOT_SET_ID, (byte)MY_NID, (uint)MY_ID, 8, data);
-                            sc.writePacket(outCm);
+                            data[0] = tmp_new_id;
+                            outCp = new CanPacket(new CanPacket.canBOOTPacket(CanPacket.BOOT_TYPE.btCHANGEID, 0, TARGET_ID), MY_ID, 1, data);
+
+                            sc.writePacket(outCp);
                             t = Environment.TickCount;
                             pgs = dState.CHANGE_ID_WAIT_ACK_PACKET;
                             timeStart = Environment.TickCount;
@@ -347,27 +269,18 @@ namespace canBootloader
                                 pgs = dState.CHANGE_ID_START;
                             }
 
-                            if (hasMessage && cm.getFunct() == FUNCT_BOOTLOADER && cm.getFuncc() == FUNCC_BOOT_ACK && cm.getNid() == tmp_new_nid && cm.getSid() == tmp_new_id)
+                            if (hasMessage && cp.type == CanPacket.PACKET_TYPE.ptBOOT && cp.sid == tmp_new_id && cp.boot.type == CanPacket.BOOT_TYPE.btACK)
                             {
-                                // If no error
-                                if (data[ERR_INDEX] == ERR_NO_ERROR)
-                                {
-                                    pgs = dState.CHANGE_ID_DONE;
-                                }
-                                else
-                                {
-                                    // else resend change.
-                                    pgs = dState.CHANGE_ID_START;
-                                }
+                                pgs = dState.CHANGE_ID_DONE;
                             }
 
                             break;
 
                         case dState.CHANGE_ID_DONE:
-                            abortmode = abortMode.CHANGE_ID_NID;
+                            abortmode = abortMode.CHANGE_ID;
                             down.Abort();
                             break;
-
+                            
 
                     }
                 }
