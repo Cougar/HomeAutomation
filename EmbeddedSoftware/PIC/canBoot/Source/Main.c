@@ -36,7 +36,6 @@ void _low_ISR (void)
 #pragma code
 
 
-
 static CAN_PACKET cp;
 static DWORD cnt =0;
 
@@ -93,8 +92,10 @@ void main()
 	outCp.type=ptPGM;
 	outCp.pgm.class=pcCTRL;
 	outCp.pgm.id=pctBOOTBOOT;
-	outCp.length=1;
-	outCp.data[0] = (isBOR()<<7)+(isLVD()<<6)+(isMCLR()<<5)+(isPOR()<<4)+(isWDTTO()<<3)+(isWDTWU()<<2)+(isWU()<<1);
+	outCp.length=3;
+	outCp.data[2] = (isBOR()<<7)+(isLVD()<<6)+(isMCLR()<<5)+(isPOR()<<4)+(isWDTTO()<<3)+(isWDTWU()<<2)+(isWU()<<1);
+	outCp.data[1]=(BYTE)((BOOT_VERSION & 0xFF00)>>8);
+	outCp.data[0]=(BOOT_VERSION & 0xFF);
 	StatusReset();
 	while(!canSendMessage(outCp));
 	
@@ -456,7 +457,7 @@ BOOL canGetPacket()
 		else
 		{
 			cp.pgm.class= ((RXB0SIDH&0x3C)>>2);
-			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+((RXB0SIDL&0x3)<<8)+RXB0EIDH;
+			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+(((WORD)RXB0SIDL&0x3)<<8)+(WORD)RXB0EIDH;
 		}
 		cp.sid   = RXB0EIDL;
 

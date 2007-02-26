@@ -20,5 +20,6 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
+#define APP_VERSION 0x01
 
 #endif //compiler.h

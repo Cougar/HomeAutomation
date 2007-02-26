@@ -67,7 +67,12 @@ typedef struct _CAN_PACKET
 typedef enum _PGM_CTRL_TYPE {pctBOOTBOOT=0x0,pctAPPBOOT=0x1,pctHEARTBEAT=0x2} PGM_CTRL_TYPE;
 // When CAN_PGM_PACKET.type==pcCTRL
 // 	When CAN_PGM_PACKET.id==pctBOOTBOOT
-//		data[0] = startup reason
+//		data[2] = startup reason
+//		data[1] = Bootloader version high byte.
+//		data[0] = Bootloader version low byte.
+// 	When CAN_PGM_PACKET.id==pctAPPBOOT
+//		data[1] = Application version high byte.
+//		data[0] = Application version low byte.
 
 typedef enum _PGM_SENSOR_TYPE 	{	
 					pstIR=0x0,

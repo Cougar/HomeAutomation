@@ -6,6 +6,7 @@
 !_TAG_PROGRAM_VERSION	5.5.4	//
 !_TAG_REVISION_NAME	MCHPTags	//
 !_TAG_REVISION_VERSION	6.0.1	//
+APP_VERSION::0x01	F:\MCP\projects\CAN\canIR\Include\compiler.h	23;"	d	line:23
 BOOT_H	F:\MCP\projects\CAN\canBoot\Include\boot.h	13;"	d	line:13
 CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canIR\Include\compiler.h	18;"	d	line:18
 CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canIR\Include\compiler.h	16;"	d	line:16
@@ -43,17 +44,18 @@ TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	fil
 TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
 TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
 USE_IREC	F:\MCP\projects\CAN\canIR\Include\stackTasks.h	15;"	d	line:15
+_high_ISR	F:\MCP\projects\CAN\canIR\Source\Main.c	158;"	f	line:158	signature:(void)
 _reset	F:\MCP\projects\CAN\canIR\Source\Main.c	150;"	f	line:150	signature:(void)
 _startup	F:\MCP\projects\CAN\canIR\Source\Main.c	148;"	p	line:148	file:	signature:(void)
 addr	F:\MCP\projects\CAN\canIR\Source\IRec.c	20;"	v	line:20	file:
 bitIndex	F:\MCP\projects\CAN\canIR\Source\IRec.c	22;"	v	line:22	file:
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	185;"	f	line:185
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	187;"	f	line:187
 canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
-canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	144;"	f	line:144
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	146;"	f	line:146
 canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
 canParse	F:\MCP\projects\CAN\canIR\Source\Main.c	109;"	f	line:109	signature:(CAN_PACKET cp)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	263;"	f	line:263	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
-cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	187;"	l	line:187
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	265;"	f	line:265	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	l	line:189
 data	F:\MCP\projects\CAN\canIR\Source\IRec.c	21;"	v	line:21	file:
 heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19
 high_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	57;"	f	line:57	signature:(void)

@@ -127,7 +127,9 @@ void canInit()
 	outCp.type=ptPGM;
 	outCp.pgm.class=pcCTRL;
 	outCp.pgm.id=pctAPPBOOT;
-	outCp.length=0;
+	outCp.length=2;
+	outCp.data[1]=(BYTE)((APP_VERSION & 0xFF00)>>8);
+	outCp.data[0]=(BYTE)(APP_VERSION & 0xFF);
 	while(!canSendMessage(outCp,PRIO_HIGH));
 }
 
@@ -192,7 +194,7 @@ void canGetPacket()
         //RXB0EIDL 07 06 05 04 03 02 01 00
 
 
-		cp.type = ((RXB0SIDH&0xC)>>6);
+		cp.type = (BYTE)((RXB0SIDH&0xC0)>>6);
 
 
 		if (cp.type==ptBOOT)
@@ -204,7 +206,7 @@ void canGetPacket()
 		else
 		{
 			cp.pgm.class= ((RXB0SIDH&0x3C)>>2);
-			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+((RXB0SIDL&0x3)<<8)+RXB0EIDH;
+			cp.pgm.id   = (((WORD)RXB0SIDH&0x3)<<13)+(((WORD)RXB0SIDL&0xE0)<<5)+(((WORD)RXB0SIDL&0x3)<<8)+(WORD)RXB0EIDH;
 		}
 		cp.sid   = RXB0EIDL;
 
