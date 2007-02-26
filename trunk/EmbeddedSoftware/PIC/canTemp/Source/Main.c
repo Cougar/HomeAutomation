@@ -105,9 +105,9 @@ void main()
 			outCp.pgm.class	=pcSENSOR;
 			outCp.pgm.id	=(lastTemperature==TEMPERATURE_INSIDE?pstTEMP_INSIDE:pstTEMP_OUTSIDE);
 			outCp.length	=2;
-			outCm.data[1]	= tenth; //  signed 10 an 1 decimal.
-			outCm.data[0]	= decimal; //  Decimal value, 0-9
-			while(!canSendMessage(outCm,PRIO_HIGH));
+			outCp.data[1]	= tenth; //  signed 10 an 1 decimal.
+			outCp.data[0]	= decimal; //  Decimal value, 0-9
+			while(!canSendMessage(outCp,PRIO_HIGH));
 		}
 		#endif
 

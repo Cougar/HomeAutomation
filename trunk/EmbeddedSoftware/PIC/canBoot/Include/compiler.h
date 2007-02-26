@@ -21,4 +21,6 @@
 #define LED0_IO			(PORTCbits.RC1)
 
 
+#define BOOT_VERSION 0x4
+
 #endif //compiler.h
