@@ -1,7 +1,7 @@
 PRG            = main
 OBJ            = main.o\
-				../lib/src/lcd/clcd20x4.o\
 				../lib/src/lcd/lcd_HD44780.o\
+#				../lib/src/lcd/clcd20x4.o\
 
 MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
@@ -16,8 +16,8 @@ endif
 BIOS_RAM_END   = 0x0080012a
 
 DEFS           = -I../AVR-Bios\
-				-I../lib/funcdefs\
 				-I../lib/src/lcd\
+#				-I../lib/funcdefs\
 
 LIBS           =
 
@@ -53,7 +53,7 @@ else
 endif
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
+	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak $(OBJ)
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 lst:  $(PRG).lst

@@ -20,120 +20,97 @@
 /* lib files */
 #include <bios.h>
 #include <lcd_HD44780.h>
-#include <clcd20x4.h>
 /* funcdefs */
-//#include <global_funcdefs.h>
-#include <eqlazer_funcdefs.h>
+//#include <eqlazer_funcdefs.h>
 
 /* defines */
-#define BUFFER_SIZE 20
+#define SIZE_X	20
+#define SIZE_Y	4
+
+//#define BUFFER_SIZE 20
 #define TRUE 1
 #define FALSE 0
 
+#define LEFT	0x01
+#define RIGHT	0x02
+
 Can_Message_t rxMsg;
+Can_Message_t txMsg;
 
-uint8_t currentView = MAIN_VIEW,
-		msg_received = FALSE;
 
-uint8_t temperatureData[8],
-		servoPosition[4],
-		//relayStatus[4],
-		//dimmerStatus[4],
-		temperatureLength = 8,
-		servoLength = 0;
-		//, relayLength=0; //TODO mer generaliserat
+uint8_t		msg_received = FALSE;
 
 uint8_t rot_lastdir = 0,
 		rot_laststate = 0;
 
-ISR( PCINT2_vect ){
+
+void can_receive(Can_Message_t *msg){
+// FIXME
+}
+
+
+ISR( PCINT0_vect ){ // For ROTENC_A and ROTENC_B
 	uint8_t rot_data = 0;
 
-	if(PIND&(1<<PD6)){
+	txMsg.Id=0xA000000;
+	txMsg.DataLength=2;
+
+	if(PINB&(1<<PB7)){
 		rot_data |= 0x01;
 	}
-	if(PIND&(1<<PD7)){
+	if(PINB&(1<<PB0)){
 		rot_data |= 0x02;
 	}
 
-	if( rot_data==3 && rot_laststate!=3 ){
-		if( rot_lastdir&0x01 ){
-			// Moving left
-			if(currentView>0){
-				currentView--;
-				msg_received = TRUE;
-			}
-		}else{
-			// Moving right
-			if(currentView<LAST_VIEW){
-				currentView++;
-				msg_received = TRUE;
+	if( rot_data==0 || rot_data==3 ){
+		if( rot_data==0 && rot_laststate!=rot_data ){
+			if( rot_lastdir&0x01 ){
+				// Moving right
+				txMsg.Data.bytes[0]=RIGHT;
+				txMsg.Data.bytes[1] = (PIND&(1<<PD2))?0:1;
+				bios->can_send(&txMsg);
+			}else{
+				// Moving left
+				txMsg.Data.bytes[0]=LEFT;
+				txMsg.Data.bytes[1] = (PIND&(1<<PD2))?0:1;
+				bios->can_send(&txMsg);
 			}
 		}
-		rot_laststate=3;
-	}else if( rot_data==0 && rot_laststate!=0 ){
-		rot_laststate = 0;
-	}else if( rot_data==1 || rot_data==2 ){
+		rot_laststate = rot_data;
+	}else{
 		rot_lastdir = rot_data;
 	}
 }
 
-void can_receive(Can_Message_t *msg){
-	uint8_t temp, m;
-	/* Check for incoming messages from IR-receiver node */
-	if( CLASS_SNS == ((msg->Id & CLASS_MASK) >> CLASS_MASK_BITS) ){
-		/* FIXME detta är väldigt fult och borde fixas
-		 * knapp 4 på fjärren bläddrar åt vänster
-		 * knapp 6 åt höger
-		 */
-		if( SNS_IR_RECEIVE == (msg->Id & TYPE_MASK)>>TYPE_MASK_BITS){
-			if(msg->Data.bytes[0] == 0 && msg->Data.bytes[1] == 0 && msg->Data.bytes[2] == 0){
-				if(msg->Data.bytes[3] == 4 && currentView>0){
-					currentView--;
-					msg_received = TRUE;
-				}else if(msg->Data.bytes[3] == 6 && currentView<LAST_VIEW){
-					currentView++;
-					msg_received = TRUE;
-				}
-			}
-		}
-		/* Other sensor messages should be placed here */
-
-		/* DS18S20 sensors */
-		if( SNS_TEMP_DS18S20 == (msg->Id & SNS_TYPE_MASK)>>SNS_TYPE_BITS ){
-			temp = (msg->Id & SNS_ID_MASK)>>SNS_ID_BITS;
-			temperatureData[ (temp-1)*2 ] = msg->Data.bytes[0];
-			temperatureData[ (temp-1)*2+1 ] = msg->Data.bytes[1];
-		}
-
-		/* Servo controllers */
-		if( SNS_ACT_STATUS_SERVO == (msg->Id & TYPE_MASK)>>TYPE_MASK_BITS ){ // TODO annan struktur på statusmeddelanden från servo
-			temp = msg->DataLength - 3;
-			for(m=0;m<temp;m++){
-				servoPosition[ m ] = msg->Data.bytes[m+3];
-			}
-			servoLength = temp;
-		}
-
-	}
+ISR( PCINT2_vect ){ // For ROTENC_BTN
+	lcd_puts("a");
 }
 
+	void send_dimensions();
 
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
 
-    char buffer[ BUFFER_SIZE ];
+//    char buffer[ BUFFER_SIZE ];
 	/*
 	 * Initialize rotaryencoders and buttons
 	 */
 	/* Set as input */
-	DDRD &= ~( (1<<DDD6)|(1<<DDD7) );
+	DDRD &= ~(1<<DDD2);
+	DDRB &= ~((1<<DDB7)|(1<<DDB0));
+	/* Enable pull-up */
+	PORTD |= (1<<PD2);
+	PORTB |= (1<<PB7)|(1<<PB0);
 	/* Enable IO-pin interrupt */
-	PCICR |= (1<<PCIE2);
-	/* Unmask PD6 and PD7 */
-	PCMSK2 |= (1<<PCINT22)|(1<<PCINT23);
+	PCICR |= (1<<PCIE2)|(1<<PCIE0);
+	/* Unmask PB7, PB0 and PD2 */
+	PCMSK2 |= (1<<PCINT18);
+	PCMSK0 |= (1<<PCINT7)|(1<<PCINT0);
+
+	txMsg.ExtendedFlag=1;
+	txMsg.RemoteFlag=0;
 
 	sei();
 	bios->can_callback = &can_receive;
@@ -141,21 +118,22 @@ int main(void) {
 	lcd_init( LCD_DISP_ON );
 	lcd_clrscr();
 
-    lcd_clrscr();
-    printLCDview( MAIN_VIEW );
+	send_dimensions();
 
     /* main loop */
 	while(1){
         /* check if any messages have been received */
 		if(msg_received){
-                /* Print views skeleton and if existing its data */
-			printLCDview( currentView );
-			if(currentView == TEMPSENS_VIEW){
-				printLCDviewData( TEMPSENS_VIEW, temperatureData, temperatureLength);
-			}else if(currentView == SERVO_VIEW){
-				printLCDviewData( SERVO_VIEW, servoPosition, servoLength);
-			}
+
 			msg_received = FALSE;
 		}
 	}
+}
+
+void send_dimensions(){
+	txMsg.Id=0xA000001;
+	txMsg.Data.bytes[0] = SIZE_X;
+	txMsg.Data.bytes[1] = SIZE_Y;
+	txMsg.DataLength = 2;
+	bios->can_send(&txMsg);
 }

@@ -1,6 +1,5 @@
 /*
  * Defines functs, funccs and other global definitions
- * This is the one for eqnet :)
  *
  * IDENT: <CLASS><TYPE><SID> DATA: <data7>...<data0>
  *
@@ -84,6 +83,30 @@
 #define ACT_TYPE_LCD		0x04L
 #define ACT_TYPE_IRTRANS	0x05L
 
+/* ACT LCD 12 bits <ACTION><SIZE> 0xFFFL
+ *
+ * <ACTION>, 4 bits = Type och action.
+ * <SIZE>, 8 bits = Size of display.
+ */
+#define LCD_ACTION_MASK 0xF00L /* bit[12..8] */
+#define LCD_ACTION_MASK 0x0FFL /* bit[7..0] */
+
+#define LCD_ACTION_BITS 8
+#define LCD_ACTION_BITS 0
+
+
+/* <ACTION> 4 bits 0xFL */
+
+#define LCD_ACTION_CLR		0x0L
+#define LCD_ACTION_CURS		0x1L
+#define LCD_ACTION_TEXT		0x2L
+#define LCD_ACTION_SIZE		0x3L
+
+
+/* <SIZE> 8 bits 0xFFL */
+#define LCD_SIZE_ALL	0x00L
+#define LCD_SIZE_2x16	0x02L
+#define LCD_SIZE_4x20	0x10L
 
 /*************************************************************
  * <SID> 8 bits 0xFFL 
