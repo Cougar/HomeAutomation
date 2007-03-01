@@ -152,8 +152,9 @@ void mainInit()
 	BLINDS0P_TRIS=0;
 
 	// Enable Interrupts
+	INTCONbits.GIEL = 1;
     INTCONbits.GIEH = 1;
-    INTCONbits.GIEL = 1;
+    
 
 	// Enable interrupt prirority
 	RCONbits.IPEN=1;

@@ -29,6 +29,6 @@
 #define TEMPERATURE_INSIDE 0x1
 #define TEMPERATURE_OUTSIDE 0x2
 
-#define APP_VERSION 0x01
+#define APP_VERSION 0x0002
 
 #endif //compiler.h
