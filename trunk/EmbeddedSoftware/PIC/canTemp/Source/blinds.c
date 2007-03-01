@@ -12,9 +12,10 @@
 
 #ifdef USE_BLINDS
 
-static unsigned int timerVal = 50536;
-static unsigned int turnOffIO = 0;
+static WORD timerVal = 50536;
+static WORD turnOffIO = 0;
 static signed char currentPrecent = 0;
+static BYTE dutyOffCounter = 0;
 
 /*
 *	Function: blindsInit
@@ -70,29 +71,12 @@ void blindsTurn(BYTE precent)
 
 	BLINDS0P_IO=1;
 	turnOffIO = IO_TIMEOUT;
-	/*
-		if (angle<ANGLE_MIN) {timerVal=ANGLE_MIN_TIMER; currentAngle=ANGLE_MIN; }
-		else if (angle>ANGLE_MAX) {timerVal=ANGLE_MAX_TIMER; currentAngle=ANGLE_MAX; }
-		else
-		{
-			timerVal=60536-(unsigned int)((90+(signed int)angle)*111.111);
-		    currentAngle=angle;
-		}
-	*/
 
-	/*
-	angle=precent*
+	currentPrecent = precent;
+	if (precent>100) { currentPrecent = 100; }
+	if (precent<0)   { currentPrecent =   0; }
+	dutyOffCounter = 0;
 
-    -50=k*100+m
-    60=k*0+m
-    angle=-1.1x+60
-	*/
-
-	currentPrecent=precent;
-	if (precent>100) { currentPrecent=100; }
-	if (precent<0) { currentPrecent=0; }
-
-	
 	timerVal=60536-(unsigned int)((90+(-1.05*(signed int)currentPrecent+60))*111.111);
 }
 
@@ -110,10 +94,26 @@ void blindsISR(void)
 {
 	if (PIR1bits.TMR1IF == 1 && PIE1bits.TMR1IE == 1)
 	{
-		TMR1H=((timerVal&0xFF00)>>8);
-		TMR1L=(timerVal&0xFF);
+		WORD timerValBuffer = timerVal;
 
-		BLINDS0_IO=~BLINDS0_IO;
+		dutyOffCounter++;
+
+		if (BLINDS0_IO==0 && dutyOffCounter>4)
+		{
+			BLINDS0_IO=1;
+			dutyOffCounter=0;	
+		}
+		else if (BLINDS0_IO==0 && dutyOffCounter<=4)
+		{
+			timerValBuffer = DUTY_OFF_DELAY;
+		}
+		else if (BLINDS0_IO==1)
+		{
+			BLINDS0_IO=0;
+		}
+
+		TMR1H=((timerValBuffer&0xFF00)>>8);
+		TMR1L=(timerValBuffer&0xFF);
 
 		if (turnOffIO--<1)
 		{
