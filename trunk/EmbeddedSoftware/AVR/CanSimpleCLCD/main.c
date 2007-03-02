@@ -1,6 +1,8 @@
 /**
- * CanCLCD. Simple version.
+ * CanSimpleCLCD. Simple version.
  * For HD44780- and KS0073-based LCD displays
+ *
+ * Contains no intelligence. It just prints what it is told to.
  *
  * @date    2006-12-11
  * @author  Erik Larsson
@@ -20,7 +22,9 @@
 /* funcdefs */
 #include <funcdefs.h>
 
-/* defines */
+/*-----------------------------------------------------------------------------
+ * Defines
+ *---------------------------------------------------------------------------*/
 #define SIZE_X	20
 #define SIZE_Y	4
 #define SIZE_LCD LCD_SIZE_20x4
@@ -40,7 +44,7 @@ uint8_t msg_received = FALSE;
 uint8_t rot_lastdir = 0,
 		rot_laststate = 0;
 
-	char buffer[ BUFFER_SIZE ];
+char buffer[ BUFFER_SIZE ];
 
 void send_dimensions();
 
@@ -107,7 +111,6 @@ void can_receive(Can_Message_t *msg){
 	}
 }
 
-
 ISR( PCINT0_vect ){ // For ROTENC_A and ROTENC_B
 	uint8_t rot_data = 0;
 
@@ -155,7 +158,6 @@ ISR( PCINT2_vect ){ // For ROTENC_BTN
 	txMsg.DataLength=1;
 	bios->can_send(&txMsg);
 }
-
 
 /*-----------------------------------------------------------------------------
  * Main Program
