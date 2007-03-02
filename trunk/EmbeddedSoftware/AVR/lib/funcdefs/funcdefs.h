@@ -49,6 +49,7 @@
 #define SNS_ACT_STATUS_RELAY	0x0BL
 #define SNS_ACT_STATUS_SERVO	0x0CL
 #define SNS_ACT_STATUS_DIMMER	0x0DL
+#define SNS_ACT_BUTTON			0x0EL
 
 /* <SNS_ID> 9 bits 0x1FFL */
 //idn för alla sensorer
@@ -89,24 +90,32 @@
  * <SIZE>, 8 bits = Size of display.
  */
 #define LCD_ACTION_MASK 0xF00L /* bit[12..8] */
-#define LCD_ACTION_MASK 0x0FFL /* bit[7..0] */
+#define LCD_SIZE_MASK 0x0FFL /* bit[7..0] */
 
 #define LCD_ACTION_BITS 8
-#define LCD_ACTION_BITS 0
+#define LCD_SIZE_BITS 0
 
 
 /* <ACTION> 4 bits 0xFL */
 
-#define LCD_ACTION_CLR		0x0L
-#define LCD_ACTION_CURS		0x1L
-#define LCD_ACTION_TEXT		0x2L
-#define LCD_ACTION_SIZE		0x3L
+#define LCD_ACTION_CLR			0x0L
+#define LCD_ACTION_CURS			0x1L
+#define LCD_ACTION_TEXT			0x2L
+#define LCD_ACTION_GET_SIZE		0x3L
+#define LCD_ACTION_SET_CONT		0x4L
+#define LCD_ACTION_SET_BLIGHT	0x5L
+#define LCD_ACTION_GET_CONT		0x6L
+#define LCD_ACTION_GET_BLIGHT	0x7L
+
+#define LCD_ACTION_SEND_CONT	0x8L
+#define LCD_ACTION_SEND_BLIGHT	0x9L
+
 
 
 /* <SIZE> 8 bits 0xFFL */
 #define LCD_SIZE_ALL	0x00L
-#define LCD_SIZE_2x16	0x02L
-#define LCD_SIZE_4x20	0x10L
+#define LCD_SIZE_16x2	0x02L
+#define LCD_SIZE_20x4	0x10L
 
 /*************************************************************
  * <SID> 8 bits 0xFFL 
