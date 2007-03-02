@@ -17,7 +17,7 @@ BIOS_RAM_END   = 0x0080012a
 
 DEFS           = -I../AVR-Bios\
 				-I../lib/src/lcd\
-#				-I../lib/funcdefs\
+				-I../lib/funcdefs\
 
 LIBS           =
 
