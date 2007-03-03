@@ -9,14 +9,12 @@
  * Revision:		$Revision$
  ********************************************************************/
 
-
 #include <compiler.h>
 #include <stackTasks.h>
 #include <Tick.h>
 #include <funcdefs.h>
 #include <CAN.h>
 #include "..\canBoot\Include\boot.h"
-
 
 #ifdef USE_ADC
 	#include <adc.h>
@@ -30,10 +28,6 @@ static void mainInit(void);
 
 void main()
 {
-
-	static TICK t = 0;
-	CAN_PACKET outCp;
-
 	// Inits
 	mainInit();
 
@@ -53,40 +47,46 @@ void main()
 
 	while(1)
 	{
-		static TICK t = 0;
-		static TICK temperature = 0;
+		TICK currentTick = tickGet();
+
+		static TICK tick_led = 0;
+		static TICK tick_temperature = 0;
+		static TICK tick_blinds = 0;	
+
 		static BOOL getNewTemperature = TRUE;
 		static BYTE lastTemperature = TEMPERATURE_INSIDE;
-		static TICK blinds = 0;
 		
-		if ((tickGet()-t)>TICK_SECOND)
+
+		if ((currentTick-tick_led)>(1*TICK_1S))
 		{
 			LED0_IO=~LED0_IO;
-			t = tickGet();
+			tick_led = currentTick;
 		}
 
 		
 		#ifdef USE_BLINDS
-		if ((tickGet()-blinds)>3*TICK_SECOND)
+		if ((currentTick-tick_blinds)>(3*TICK_1S))
 		{
+			CAN_PACKET outCp;
 			outCp.type=ptPGM;
 			outCp.pgm.class=pcSENSOR;
 			outCp.pgm.id=pstBLIND_TR;
 			outCp.length=1;
 			outCp.data[0]=blindsGetPrecent();
 			while(!canSendMessage(outCp,PRIO_HIGH));
-			blinds = tickGet();
+
+			tick_blinds = currentTick;			
 		}
 		#endif
 		
 
 		#ifdef USE_ADC
-		if ((tickGet()-temperature)>TICK_SECOND*2 && getNewTemperature==TRUE) // Each 2 second, read temperature.
+		if ((currentTick-tick_temperature)>(2*TICK_1S) && getNewTemperature==TRUE) // Each 2 second, read temperature.
 		{
 			if (lastTemperature==TEMPERATURE_INSIDE) lastTemperature=TEMPERATURE_OUTSIDE; else lastTemperature=TEMPERATURE_INSIDE;
 			adcConvert(lastTemperature);
-			temperature = tickGet();
 			getNewTemperature=FALSE;
+			tick_temperature = currentTick;
 		}
 		#endif
 
@@ -94,13 +94,12 @@ void main()
 		#ifdef USE_ADC
 		if (adcDone()) // Has temperature, send it to the bus
 		{
+			CAN_PACKET outCp;
 			BYTE decimal;
 			signed char tenth;
-			unsigned long q;
-			temperatureRead(&tenth,&decimal);
-			q = adcGetRaw();
-			getNewTemperature=TRUE;
 
+			temperatureRead(&tenth,&decimal);
+			
 			outCp.type=ptPGM;
 			outCp.pgm.class	=pcSENSOR;
 			outCp.pgm.id	=(lastTemperature==TEMPERATURE_INSIDE?pstTEMP_INSIDE:pstTEMP_OUTSIDE);
@@ -108,30 +107,36 @@ void main()
 			outCp.data[1]	= tenth; //  signed 10 an 1 decimal.
 			outCp.data[0]	= decimal; //  Decimal value, 0-9
 			while(!canSendMessage(outCp,PRIO_HIGH));
+
+			getNewTemperature=TRUE;
+			tick_temperature = currentTick;
 		}
 		#endif
-
-	}
-}
+	
+	} // end while
+	
+} // end main
 
 
 #pragma interrupt high_isr
 void high_isr(void)
 {
 	canISR();
+
+	#ifdef USE_BLINDS
+		blindsISR();
+	#endif
+
+	#ifdef USE_ADC
+		adcISR();
+	#endif
 }
 
 
 #pragma interrupt low_isr
 void low_isr(void)
 {
-	#ifdef USE_ADC
-		adcISR();
-	#endif
 
-	#ifdef USE_BLINDS
-		blindsISR();
-	#endif
 }
 
 
@@ -151,13 +156,12 @@ void mainInit()
 	BLINDS0_TRIS=0;
 	BLINDS0P_TRIS=0;
 
+	// Enable interrupt prirority
+	RCONbits.IPEN=1;
+
 	// Enable Interrupts
 	INTCONbits.GIEL = 1;
     INTCONbits.GIEH = 1;
-    
-
-	// Enable interrupt prirority
-	RCONbits.IPEN=1;
 }
 
 /*
@@ -183,6 +187,8 @@ void canParse(CAN_PACKET cp)
 
 // Below are mandantory when using bootloader
 // define DEBUG_MODE to use without bootloader.
+
+
 
 #ifndef DEBUG_MODE
 extern void _startup (void); 

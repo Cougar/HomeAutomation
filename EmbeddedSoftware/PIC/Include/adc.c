@@ -12,8 +12,8 @@
 
 #ifdef USE_ADC
 
-static unsigned long TEMP_VALUE;
-static unsigned int TEMP_COUNT;
+unsigned long TEMP_VALUE;
+WORD TEMP_COUNT;
 
 BOOL TEMP_DONE = FALSE;
 
@@ -37,7 +37,7 @@ void adcInit(BOOL useExtRef,BYTE portCfg)
 	ADCON0bits.ADON = 1;
 	PIR1bits.ADIF = 0;
 	PIE1bits.ADIE = 1;
-	IPR1bits.ADIP = 0; // Low priority
+	IPR1bits.ADIP = 1; // high priority
 }
 
 
@@ -52,11 +52,11 @@ void adcInit(BOOL useExtRef,BYTE portCfg)
 */
 void adcISR(void)
 {
-	if (PIE1bits.ADIE && PIR1bits.ADIF)
+	if (PIE1bits.ADIE==1 && PIR1bits.ADIF==1)
 	{
 		PIR1bits.ADIF = 0;
 
-		TEMP_VALUE+=((int)ADRESH)<<8 | ADRESL;
+		TEMP_VALUE+=((WORD)ADRESH<<8) | ADRESL;
 		TEMP_COUNT++;
 
 		if (TEMP_COUNT>=TEMP_SAMPLES)

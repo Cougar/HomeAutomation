@@ -27,11 +27,7 @@ static void mainInit(void);
 
 void main()
 {
-	static TICK t = 0;
-	CAN_PACKET outCp;
-
 	// Inits
-
 	mainInit();
 	canInit();
 
@@ -41,13 +37,16 @@ void main()
 
 
 	while(1)
-	{
-		static TICK t = 0;
+	{	
+		TICK currentTick = tickGet();
 
-		if ((tickGet()-t)>TICK_SECOND)
+		static TICK tick_led = 0;
+
+
+		if ((currentTick-tick_led)>(1*TICK_1S))
 		{
 			LED0_IO=~LED0_IO;
-			t = tickGet();
+			tick_led = currentTick;
 		}
 	}
 }

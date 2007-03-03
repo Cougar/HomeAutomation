@@ -15,18 +15,5 @@
 #define USE_ADC
 #define USE_BLINDS
 
-#define TICKS_PER_SECOND               (100)        // 10ms
-
-#if (TICKS_PER_SECOND < 10 || TICKS_PER_SECOND > 255)
-#error Invalid TICKS_PER_SECONDS specified.
-#endif
-
-/*
- * Manually select prescale value to achieve necessary tick period
- * for a given clock frequency.
- */
-#define TICK_PRESCALE_VALUE             (256)
-
-
 
 #endif

@@ -11,7 +11,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File001]
 Location=F:\MCP\projects\CAN\canTemp\_output\Tick.o
@@ -23,7 +23,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File002]
 Location=F:\MCP\projects\CAN\canTemp\_output\Main.o
@@ -35,7 +35,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File003]
 Location=F:\MCP\projects\CAN\canTemp\_output\EEAccess.o
@@ -47,7 +47,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File004]
 Location=F:\MCP\projects\CAN\canTemp\_output\adc.o
@@ -59,7 +59,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File005]
 Location=F:\MCP\projects\CAN\canTemp\_output\blinds.o
@@ -71,7 +71,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mcc18.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=-Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-
+ToolArgsString=--verbose -Opa-
 TraceCmdString=
 [File006]
 Location=F:\MCP\projects\CAN\canTemp\_output\canTemp.cof
@@ -83,7 +83,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mplink.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=/o"$(TARGETBASE).cof" /M"$(BINDIR_)$(TARGETBASE).map"
+ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /o"$(TARGETBASE).cof"
 TraceCmdString=
 [File007]
 Location=F:\MCP\projects\CAN\canTemp\_output\canTemp.cod
@@ -95,7 +95,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mplink.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=/o"$(TARGETBASE).cof" /M"$(BINDIR_)$(TARGETBASE).map"
+ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /o"$(TARGETBASE).cof"
 TraceCmdString=
 [File008]
 Location=F:\MCP\projects\CAN\canTemp\_output\canTemp.hex
@@ -107,7 +107,7 @@ LanguageToolLocation=E:\program\MCC18\bin\mplink.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=/o"$(TARGETBASE).cof" /M"$(BINDIR_)$(TARGETBASE).map"
+ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /o"$(TARGETBASE).cof"
 TraceCmdString=
 [File009]
 Location=F:\MCP\projects\CAN\canTemp\_output\canTemp.lst
@@ -119,7 +119,19 @@ LanguageToolLocation=E:\program\MCC18\bin\mplink.exe
 PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
 SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
 SuiteArgsString=
-ToolArgsString=/o"$(TARGETBASE).cof" /M"$(BINDIR_)$(TARGETBASE).map"
+ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /o"$(TARGETBASE).cof"
+TraceCmdString=
+[File010]
+Location=F:\MCP\projects\CAN\canTemp\_output\canTemp.map
+Folder=Output
+DeviceName=PIC18F2685
+LanguageToolSuiteID={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
+LanguageToolID={96C98149-AA1B-4CF9-B967-FAE79CAB663C}
+LanguageToolLocation=E:\program\MCC18\bin\mplink.exe
+PPAD=$(BINDIR)|F:\MCP\projects\CAN\canTemp\_output||$(TMPDIR)|F:\MCP\projects\CAN\canTemp\_output||$(AINDIR)||$(INCDIR)|F:\MCP\projects\CAN\canTemp\Include;F:\MCP\projects\CAN\canBase\Include;F:\MCP\projects\CAN\Include||$(LIBDIR)|E:\program\MCC18\lib||$(LKRDIR)||
+SOLK=<src>|F:\MCP\projects\CAN\canBase\Source\CAN.c|F:\MCP\projects\CAN\canBase\Source\Tick.c|Source\Main.c|F:\MCP\projects\CAN\Include\EEAccess.c|F:\MCP\projects\CAN\Include\adc.c|Source\blinds.c||<obj>||<lib>||<lkr>|F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr||
+SuiteArgsString=
+ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /o"$(TARGETBASE).cof"
 TraceCmdString=
 [TOOL_LOC_STAMPS]
 tool_loc{96C98149-AA1B-4CF9-B967-FAE79CAB663C}=E:\program\MCC18\bin\mplink.exe
