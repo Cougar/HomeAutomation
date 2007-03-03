@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR makefile written by Eric B. Weddington, Jï¿½rg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -44,13 +44,14 @@ MCU = atmega8
 
 
 # Main Oscillator Frequency
+F_CPU = 9216000
 ##F_OSC = 1000000
 ##F_OSC = 1843200
 ##F_OSC = 2000000
 ##F_OSC = 3686400
 ##F_OSC = 4000000
 ##F_OSC = 8000000
-F_OSC = 11059200
+##F_OSC = 11059200
 ##F_OSC = 16000000
 
 # Output format. (can be srec, ihex, binary)
@@ -128,7 +129,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-CFLAGS += -DF_OSC=$(F_OSC)
+CFLAGS += -DF_CPU=$(F_CPU)
 
 
 
@@ -195,10 +196,10 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = avrispv2
+AVRDUDE_PROGRAMMER = avr910
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = com1    # programmer connected to serial device
+AVRDUDE_PORT = /dev/ttyS0    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
