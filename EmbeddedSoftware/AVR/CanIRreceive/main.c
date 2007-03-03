@@ -18,7 +18,7 @@
 /* lib files */
 #include <bios.h>
 #include <irreceiver.h>
-#include <eqlazer_funcdefs.h>
+#include <funcdefs.h>
 
 #define STATE_IDLE		0
 #define STATE_IR_REPEAT	1
