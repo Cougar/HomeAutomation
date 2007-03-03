@@ -23,69 +23,56 @@ IR_TYPE	F:\MCP\projects\CAN\canIR\Include\IRec.h	20;"	t	line:20
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canIR\Include\compiler.h	21;"	d	line:21
 LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canIR\Include\compiler.h	20;"	d	line:20
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
-PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	63;"	d	line:63	file:
-RM_HIGH_INTERRUPT_VECTOR::0x003008	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
-RM_LOW_INTERRUPT_VECTOR::0x003018	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
-RM_RESET_VECTOR::0x003000	F:\MCP\projects\CAN\canBoot\Include\boot.h	15;"	d	line:15
-TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canIR\Include\stackTasks.h	17;"	d	line:17
-TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	26;"	d	line:26	file:
-TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
+RM_HIGH_INTERRUPT_VECTOR::0x000008	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
+RM_HIGH_INTERRUPT_VECTOR::0x003008	F:\MCP\projects\CAN\canBoot\Include\boot.h	21;"	d	line:21
+RM_LOW_INTERRUPT_VECTOR::0x000018	F:\MCP\projects\CAN\canBoot\Include\boot.h	18;"	d	line:18
+RM_LOW_INTERRUPT_VECTOR::0x003018	F:\MCP\projects\CAN\canBoot\Include\boot.h	22;"	d	line:22
+RM_RESET_VECTOR::0x000000	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
+RM_RESET_VECTOR::0x003000	F:\MCP\projects\CAN\canBoot\Include\boot.h	20;"	d	line:20
 TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
-TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canIR\Include\stackTasks.h	27;"	d	line:27
-TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	24;"	d	line:24	file:
-TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	d	line:17	file:
-TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	d	line:30	file:
-TIMER_PRESCALE::(1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	32;"	d	line:32	file:
-TIMER_PRESCALE::(2)	F:\MCP\projects\CAN\canBase\Source\Tick.c	34;"	d	line:34	file:
-TIMER_PRESCALE::(3)	F:\MCP\projects\CAN\canBase\Source\Tick.c	36;"	d	line:36	file:
-TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	38;"	d	line:38	file:
-TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	40;"	d	line:40	file:
-TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	file:
-TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
-TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	v	line:17	file:
 USE_IREC	F:\MCP\projects\CAN\canIR\Include\stackTasks.h	15;"	d	line:15
-_high_ISR	F:\MCP\projects\CAN\canIR\Source\Main.c	158;"	f	line:158	signature:(void)
-_reset	F:\MCP\projects\CAN\canIR\Source\Main.c	150;"	f	line:150	signature:(void)
-_startup	F:\MCP\projects\CAN\canIR\Source\Main.c	148;"	p	line:148	file:	signature:(void)
+_high_ISR	F:\MCP\projects\CAN\canIR\Source\Main.c	157;"	f	line:157	signature:(void)
+_reset	F:\MCP\projects\CAN\canIR\Source\Main.c	149;"	f	line:149	signature:(void)
+_startup	F:\MCP\projects\CAN\canIR\Source\Main.c	147;"	p	line:147	file:	signature:(void)
 addr	F:\MCP\projects\CAN\canIR\Source\IRec.c	20;"	v	line:20	file:
 bitIndex	F:\MCP\projects\CAN\canIR\Source\IRec.c	22;"	v	line:22	file:
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	187;"	f	line:187
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	f	line:189
 canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
 canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	146;"	f	line:146
 canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
-canParse	F:\MCP\projects\CAN\canIR\Source\Main.c	109;"	f	line:109	signature:(CAN_PACKET cp)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	265;"	f	line:265	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
-cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	l	line:189
+canParse	F:\MCP\projects\CAN\canIR\Source\Main.c	108;"	f	line:108	signature:(CAN_PACKET cp)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	267;"	f	line:267	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	l	line:191
+currentTick	F:\MCP\projects\CAN\canIR\Source\Main.c	41;"	l	line:41
 data	F:\MCP\projects\CAN\canIR\Source\IRec.c	21;"	v	line:21	file:
-heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19
-high_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	57;"	f	line:57	signature:(void)
+heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19	file:
+high_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	56;"	f	line:56	signature:(void)
 irecISR	F:\MCP\projects\CAN\canIR\Include\IRec.h	31;"	p	line:31	signature:(void)
 irecISR	F:\MCP\projects\CAN\canIR\Source\IRec.c	64;"	f	line:64
 irecInit	F:\MCP\projects\CAN\canIR\Include\IRec.h	30;"	p	line:30	signature:(void)
 irecInit	F:\MCP\projects\CAN\canIR\Source\IRec.c	34;"	f	line:34
 irecParse	F:\MCP\projects\CAN\canIR\Include\IRec.h	32;"	p	line:32	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
-irecParse	F:\MCP\projects\CAN\canIR\Source\Main.c	126;"	f	line:126	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
+irecParse	F:\MCP\projects\CAN\canIR\Source\Main.c	125;"	f	line:125	signature:(IR_TYPE type, BYTE toggle, BYTE addr, BYTE data)
 lastbit	F:\MCP\projects\CAN\canIR\Source\IRec.c	68;"	l	line:68	file:
-low_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	69;"	f	line:69	signature:(void)
+low_isr	F:\MCP\projects\CAN\canIR\Source\Main.c	68;"	f	line:68	signature:(void)
 main	F:\MCP\projects\CAN\canIR\Source\Main.c	28;"	f	line:28
 mainInit	F:\MCP\projects\CAN\canIR\Source\Main.c	25;"	p	line:25	file:	signature:(void)
-mainInit	F:\MCP\projects\CAN\canIR\Source\Main.c	85;"	f	line:85
+mainInit	F:\MCP\projects\CAN\canIR\Source\Main.c	84;"	f	line:84
 outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
-outCp	F:\MCP\projects\CAN\canIR\Source\Main.c	128;"	l	line:128
-outCp	F:\MCP\projects\CAN\canIR\Source\Main.c	31;"	l	line:31
+outCp	F:\MCP\projects\CAN\canIR\Source\Main.c	127;"	l	line:127
 second	F:\MCP\projects\CAN\canIR\Source\IRec.c	69;"	l	line:69	file:
 stackTasks_H	F:\MCP\projects\CAN\canIR\Include\stackTasks.h	13;"	d	line:13
 started	F:\MCP\projects\CAN\canIR\Source\IRec.c	67;"	l	line:67	file:
-t	F:\MCP\projects\CAN\canIR\Source\Main.c	30;"	l	line:30	file:
-t	F:\MCP\projects\CAN\canIR\Source\Main.c	45;"	l	line:45	file:
 t1::534	F:\MCP\projects\CAN\canIR\Include\IRec.h	22;"	d	line:22
 t2::1069	F:\MCP\projects\CAN\canIR\Include\IRec.h	23;"	d	line:23
 t3::1638	F:\MCP\projects\CAN\canIR\Include\IRec.h	24;"	d	line:24
 t4::2185	F:\MCP\projects\CAN\canIR\Include\IRec.h	25;"	d	line:25
 t6::3204	F:\MCP\projects\CAN\canIR\Include\IRec.h	26;"	d	line:26
-tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	89;"	f	line:89	signature:(void)
-tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	f	line:64	signature:(void)
-tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	104;"	f	line:104	signature:(void)
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	52;"	f	line:52	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	f	line:30	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	67;"	f	line:67	signature:(void)
+tick_led	F:\MCP\projects\CAN\canIR\Source\Main.c	43;"	l	line:43	file:
 timediff	F:\MCP\projects\CAN\canIR\Source\IRec.c	66;"	l	line:66	file:
 toggle	F:\MCP\projects\CAN\canIR\Source\IRec.c	19;"	v	line:19	file:
 type	F:\MCP\projects\CAN\canIR\Source\IRec.c	23;"	v	line:23	file:

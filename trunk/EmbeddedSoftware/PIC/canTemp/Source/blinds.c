@@ -14,7 +14,7 @@
 
 static WORD timerVal = 50536;
 static WORD turnOffIO = 0;
-static signed char currentPrecent = 0;
+static BYTE currentPrecent = 0;
 static BYTE dutyOffCounter = 0;
 
 /*
@@ -31,11 +31,11 @@ void blindsInit()
 	// setup timer one on 0.5ms.
 	// 16 bit write, system clock, prescale 2 bit, oscillator off, 
 	T1CON = 0b11000001;
-	TMR1H=((timerVal&0xFF00)>>8);
+	TMR1H=(BYTE)((timerVal&0xFF00)>>8);
 	TMR1L=(timerVal&0xFF);
 	PIR1bits.TMR1IF = 0;
 	PIE1bits.TMR1IE = 1;
-	IPR1bits.TMR1IP = 0; // Low prior
+	IPR1bits.TMR1IP = 1; // high prior
 }
 
 /*
@@ -64,6 +64,7 @@ BYTE blindsGetPrecent()
 */
 void blindsTurn(BYTE precent)
 {
+	
 	// 65536-TIME/0,0000001
 	// -90 0.5 ms = 60536 (5000)
 	// 0   1.5 ms = 50536 (15000)
@@ -77,7 +78,8 @@ void blindsTurn(BYTE precent)
 	if (precent<0)   { currentPrecent =   0; }
 	dutyOffCounter = 0;
 
-	timerVal=60536-(unsigned int)((90+(-1.05*(signed int)currentPrecent+60))*111.111);
+	timerVal=60536-(unsigned int)((90+(-1.05*(unsigned int)currentPrecent+60))*111.111);
+	
 }
 
 
@@ -94,8 +96,9 @@ void blindsISR(void)
 {
 	if (PIR1bits.TMR1IF == 1 && PIE1bits.TMR1IE == 1)
 	{
+		
 		WORD timerValBuffer = timerVal;
-
+		
 		dutyOffCounter++;
 
 		if (BLINDS0_IO==0 && dutyOffCounter>4)
@@ -111,14 +114,16 @@ void blindsISR(void)
 		{
 			BLINDS0_IO=0;
 		}
-
-		TMR1H=((timerValBuffer&0xFF00)>>8);
+		
+		TMR1H=(BYTE)((timerValBuffer&0xFF00)>>8);
 		TMR1L=(timerValBuffer&0xFF);
 
+		
 		if (turnOffIO--<1)
 		{
 			BLINDS0P_IO=0;
 		}
+		
 
 		PIR1bits.TMR1IF = 0;
 	}

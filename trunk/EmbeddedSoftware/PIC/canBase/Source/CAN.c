@@ -16,7 +16,7 @@
 #include <funcdefs.h>
 #include <Tick.h>
 
-TICK heartbeat;
+static TICK heartbeat;
 static int MY_ID = DEFAULT_ID;
 static CAN_PACKET outCp;
 
@@ -147,6 +147,8 @@ void canISR()
 {
 	ClrWdt();
 
+	tickUpdate();
+
 	if (PIR3bits.RXBnIF || PIR3bits.RXB1IF || PIR3bits.RXB0IF)
 	{
 		ECANCON=(ECANCON&0b00000)|(0b10000|(CANCON&0x0F)); 
@@ -157,9 +159,9 @@ void canISR()
 		if (PIR3bits.RXB0IF) {PIR3bits.RXB0IF = 0; return;}
 	}
 
-	tickUpdate();
+	
 
-	if ((tickGet()-heartbeat)>TICK_SECOND*5)
+	if ((tickGet()-heartbeat)>TICK_1S*5)
 	{
 		// Send alive heartbeat
 		outCp.type=ptPGM;
@@ -266,10 +268,9 @@ BOOL canSendMessage(CAN_PACKET cp, CAN_PRIORITY prio)
 {
 	
 	if ( TXB0CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00011; } 
-	if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
-	if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
-	// None of the transmit buffers were empty. 
-	else { return FALSE;} 
+	else if ( TXB1CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00100; } 
+	else if ( TXB2CONbits.TXREQ == 0 )  { ECANCON=(ECANCON&0b00000)|0b00101; } 
+	else { return FALSE;}  // None of the transmit buffers were empty. 
 
 	if (prio<0 || prio>3) prio = 0;
 

@@ -12,29 +12,17 @@
 #ifndef TICK_H
 #define TICK_H
 
+#include <Compiler.h>
 #include <stackTasks.h>
+#include <typedefs.h>
 
 typedef unsigned long TICK;
 
-#if !defined(TICKS_PER_SECOND)
-    #error TICKS_PER_SECOND must be defined.
-#endif
+#define TICK_1S    (TICK)100
+#define TICK_100MS  (TICK)10
 
-#if !defined(TICK_PRESCALE_VALUE)
-    #error TICK_PRESCALE_VALUE must be defined.
-#endif
-
-#define TICK_PERIOD_MS          10
-#define TICK_SECOND             ((TICK)TICKS_PER_SECOND)
-
-
-/*
- * Only Tick.c defines TICK_INCLUDE and thus defines Seconds
- * and TickValue storage.
- */
-#ifndef TICK_INCLUDE
-extern TICK TickCount;
-#endif
+#define TICK_COUNTER 62411
+#define TICK_PRESCALE 0b100 //32
 
 void tickInit(void);
 TICK tickGet(void);
