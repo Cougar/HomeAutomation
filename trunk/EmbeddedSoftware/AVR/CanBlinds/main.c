@@ -24,7 +24,7 @@
 #include <tc1047.h>
 #include <rc_servo.h>
 
-#include <eqlazer_funcdefs.h>
+#include <funcdefs.h>
 
 /* defines */
 #define GROUP_ID	0x01L // FIXME

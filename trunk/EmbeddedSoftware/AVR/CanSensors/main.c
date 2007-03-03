@@ -17,10 +17,11 @@
 #define USE_DS18S20
 //#define USE_TC1047
 
-#define DS_SEND_PERIOD 10000
-#define TC_SEND_PERIOD 10000
+#define DS_SEND_PERIOD	10000
+#define DS_SEND_DELAY	2000
+#define TC_SEND_PERIOD	10000
 
-#include <eqlazer_funcdefs.h>
+#include <funcdefs.h>
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -50,7 +51,7 @@ int main(void) {
 #if defined(USE_DS18S20)
     uint8_t nSensors, i;
     uint8_t subzero, cel, cel_frac_bits;
-    uint32_t timeStamp_DS = 0;
+    uint32_t timeStamp_DS = 0, timeStamp_DS_del = 0;
 	/* This is to identify and give the sensors correct ID (For eqlazers net)
 	 * TODO read ds18s20 serial id and that way give the "can id" */
 	uint16_t sensor_ds_id[] = {SNS_DS18S20_FREEZER, SNS_DS18S20_INSIDE1, SNS_DS18S20_OUTSIDE, SNS_DS18S20_INSIDE2};
@@ -98,6 +99,10 @@ int main(void) {
                             txMsg.Data.bytes[1] = (cel_frac_bits<<4);
                         }
                     }
+					/* Delay */
+					timeStamp_DS_del = bios->timebase_get();
+					while(bios->timebase_get() - timeStamp_DS_del < DS_SEND_DELAY){}
+
 					/* send txMsg */
 					txMsg.Id &= ~SNS_ID_MASK; /* Clear sensor id */
 					txMsg.Id |= ( sensor_ds_id[i] << SNS_ID_BITS); /* Set sesor id */

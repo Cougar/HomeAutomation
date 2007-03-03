@@ -192,7 +192,6 @@ int main(void) {
 	OCR1A = 0x20;
 	DDRB |= (1<<DDB1);
 
-
 	txMsg.ExtendedFlag=1;
 	txMsg.RemoteFlag=0;
 
