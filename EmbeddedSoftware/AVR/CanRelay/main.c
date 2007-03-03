@@ -22,24 +22,25 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <avr/wdt.h>
 /* lib files */
 #include <bios.h>
 #include <tc1047.h>
 #include <funcdefs.h>
 
 /* defines */
-#define GROUP_ID		0x01
+#define GROUP_ID		0x01UL
 
-#define RELAY_OFF			0x01
-#define RELAY_ON			0x02
-#define FAILSAFE_MODE		0x0F
+#define RELAY_OFF			0x01UL
+#define RELAY_ON			0x02UL
+#define FAILSAFE_MODE		0x0FUL
 #define FAILSAFE_TRESHOLD	60  /* Degrees when nodeRelay goes into failsafe mode */
 
-#define RELAY_CMD_ON		0x01
-#define RELAY_CMD_OFF		0x02
-#define RELAY_CMD_TOGGLE	0x03
-#define RELAY_CMD_STATUS	0x04
-#define RELAY_CMD_RESET		0x05
+#define RELAY_CMD_ON		0x01UL
+#define RELAY_CMD_OFF		0x02UL
+#define RELAY_CMD_TOGGLE	0x03UL
+#define RELAY_CMD_STATUS	0x04UL
+#define RELAY_CMD_RESET		0x05UL
 #define STATUS_SEND_PERIOD	10000 /* milliseconds */
 #define FAILSAFE_SEND_PERIOD	10000 /* milliseconds */
 #define BOUNCE_TIME			10 /* milliseconds */
@@ -53,7 +54,7 @@
 Can_Message_t txMsg_Button;
 #endif
 
-uint8_t relayStatus, failsafe_flag;
+uint8_t relayStatus, failsafe_flag = 0;
 uint32_t boardTemperature = 0;
 Can_Message_t txMsg;
 
@@ -66,7 +67,7 @@ void relayFailsafe();
 
 void can_receive(Can_Message_t *msg){
 	uint32_t act;
-	uint8_t m, act_type, group, node;
+	uint32_t m, act_type, group, node;
 
 	if( ((msg->Id & CLASS_MASK)>>CLASS_MASK_BITS) == CLASS_ACT){
 
@@ -76,23 +77,27 @@ void can_receive(Can_Message_t *msg){
 		node = (act & ACT_NODE_MASK) >> ACT_NODE_BITS;
 
 		if( act_type == ACT_TYPE_RELAY && (group == GROUP_ID || node == NODE_ID) ){
-			if(msg->Data.bytes[0] == RELAY_CMD_ON){
+			if(msg->Data.bytes[0] == RELAY_CMD_ON && !failsafe_flag){
 				// Turn relay on
 				relayStatus = relayOn();
 
-			}else if(msg->Data.bytes[0] == RELAY_CMD_OFF){
+			}else if(msg->Data.bytes[0] == RELAY_CMD_OFF && !failsafe_flag){
 				// Turn relay off
 				relayStatus = relayOff();
+				txMsg.Id = 0x8000111UL; // FIXME
+				bios->can_send(&txMsg);
 
-			}else if(msg->Data.bytes[0] == RELAY_CMD_TOGGLE ){
+			}else if(msg->Data.bytes[0] == RELAY_CMD_TOGGLE && !failsafe_flag){
 					// Toggle relay
 					if(relayStatus == RELAY_OFF){
 						relayStatus = relayOn();
 					}else{
 						relayStatus = relayOff();
+						txMsg.Id = 0x8000113UL; // FIXME
+						bios->can_send(&txMsg);
 					}
 
-			}else if(msg->Data.bytes[0] == RELAY_CMD_STATUS){
+			}else if(msg->Data.bytes[0] == RELAY_CMD_STATUS && !failsafe_flag){
 				// Send relay status to CAN
 				boardTemperature = getTC1047temperature();
 
@@ -104,12 +109,13 @@ void can_receive(Can_Message_t *msg){
 					txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
 					txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
 					txMsg.Data.bytes[2] = relayStatus;
-					txMsg.DataLength = 3;
+					txMsg.Data.bytes[3] = 0;
+					txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
 					bios->can_send( &txMsg );
 				}
 			}else if(msg->Data.bytes[0] == RELAY_CMD_RESET){
 				// Return to normal operation
-				failsafe_flag = 1;
+				failsafe_flag = 0;
 			}
 		}
 	}
@@ -193,16 +199,19 @@ int main(void) {
 	// Set up callback for CAN messages
 	bios->can_callback = &can_receive;
 
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	txMsg.DataLength = 4;
+
 	sei();
 
 	// Turn relay off
 	relayStatus = relayOff();
+	txMsg.Id = 0x8000110UL; // FIXME
+	bios->can_send(&txMsg);
 
 	uint32_t timeStamp = 0;
 
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
-	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
 
 	// Main loop
 	while (1) {
@@ -219,7 +228,8 @@ int main(void) {
 				txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
 				txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
 				txMsg.Data.bytes[2] = relayStatus;
-				txMsg.DataLength = 3;
+				txMsg.Data.bytes[3] = 0;
+				txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
 				bios->can_send( &txMsg );
 			}
 		}
@@ -231,6 +241,7 @@ uint8_t relayOff()
 {
 	// Turn off relay
 	PORTC &= ~(1<<PC1);
+	DDRC |= (1<<DDC1); // FIXME
 
 	return RELAY_OFF;
 }
@@ -238,6 +249,7 @@ uint8_t relayOff()
 uint8_t relayOn()
 {
 	// Turn on relay
+	DDRC &= ~(1<<DDC1); // FIXME
 	PORTC |= (1<<PC1);
 
 	return RELAY_ON;
@@ -248,11 +260,11 @@ void relayFailsafe()
 	uint32_t timeStamp = 0;
 
 	relayStatus = relayOff();
-	failsafe_flag = 0;
+	failsafe_flag = 1;
 
 	while(1){
 
-		if( failsafe_flag ){
+		if( !failsafe_flag ){
 			// Return from failsafe mode
 			return;
 		}
@@ -266,6 +278,7 @@ void relayFailsafe()
 			txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
 			txMsg.Data.bytes[2] = relayStatus;
 			txMsg.Data.bytes[3] = FAILSAFE_MODE;
+			txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
 
 			bios->can_send( &txMsg );
 		}
