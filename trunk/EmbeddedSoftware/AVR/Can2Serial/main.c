@@ -14,6 +14,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/eeprom.h>
 #include <stdio.h>
 /* lib files */
 #include <can.h>
@@ -28,7 +29,45 @@
 #define UART_START_BYTE 253
 #define UART_END_BYTE 250
 
+const uint8_t days[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
 
+union {
+	uint32_t packed;
+	struct date_t {
+		unsigned ss:6;
+		unsigned mm:6;
+		unsigned hh:5;
+		unsigned DD:5;
+		unsigned MM:4;
+		unsigned YY:6;
+	} unpacked;
+} date;
+
+void IncTime(void) {
+	static uint8_t YY=07, MM=03, DD=02, hh=23, mm=58, ss=00;
+	
+	if (ss++ > 59) {
+		ss=0;
+		if (mm++ > 59) {
+			mm=0;
+			if (hh++ > 23) {
+				hh=0;
+				if (DD++ > days[MM-1] + ((YY%4) & (MM==2)) ? 1 : 0))) {
+					DD=1;
+					if (MM++ > 12) {
+						MM=1; YY++;
+					}
+				}
+			}
+		}
+	}
+	date.unpacked.YY = YY;
+	date.unpacked.MM = MM;
+	date.unpacked.DD = DD;
+	date.unpacked.hh = hh;
+	date.unpacked.mm = mm;
+	date.unpacked.ss = ss;
+}
 /*-----------------------------------------------------------------------------
  * Functions
  *---------------------------------------------------------------------------*/
@@ -110,6 +149,7 @@ void UartParseByte(uint8_t c) {
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
+	OSCCAL = eeprom_read_byte(0);
 	Timebase_Init();
 	Serial_Init();
 	Can_Init();
@@ -120,8 +160,18 @@ int main(void) {
 	sei();
 	
 	Can_Message_t rxMsg;
+	Can_Message_t timeMsg;
+	uint32_t time = Timebase_CurrentTime();
+	uint32_t time1 = time;
+	uint32_t unixtime = 0;
 	uint16_t rxByte;
 	uint8_t i = 0;
+	
+	timeMsg.ExtendedFlag = 1;
+	timeMsg.RemoteFlag = 0;
+	//timeMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
+	timeMsg.Id = 0; //Same thing, and lib's can.h is not updated.
+	timeMsg.DataLength = 8;
 	
 	/* main loop */
 	while (1) {
@@ -153,6 +203,15 @@ int main(void) {
 			UartParseByte((uint8_t)(rxByte & 0x00FF));
 			/* receive next */
 			rxByte = uart_getc();
+		}
+		
+		time1 = Timebase_CurrentTime();
+		if ((time1 - time) > 1000) {
+			time = time1;
+			timeMsg.Data.dwords[0] = ++unixtime;
+			IncTime();
+			timeMsg.Data.dwords[1] = date.packed;
+			Can_Send(&timeMsg);
 		}
 	}
 	
