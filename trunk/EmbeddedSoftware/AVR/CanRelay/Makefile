@@ -6,7 +6,7 @@ MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -mcall-prologues
 # grep bios.map for __bios_ram_end to retreive this value
 # In the future, this should be automatically inserted into *_app.ld at every bios compilation
-BIOS_RAM_END   = 0x0080012a
+BIOS_RAM_END   = 0x0080012c
 #0x0080015d
 ifeq ($(MCU_TARGET),atmega88)
 	#uncomment this line if you're using m88, remove line when gcc-bug fixed

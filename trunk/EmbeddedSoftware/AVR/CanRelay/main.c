@@ -54,6 +54,7 @@
 Can_Message_t txMsg_Button;
 #endif
 
+
 uint8_t relayStatus, failsafe_flag = 0;
 uint32_t boardTemperature = 0;
 Can_Message_t txMsg;
@@ -197,7 +198,7 @@ int main(void) {
 	DDRC |= (1<<DDC1);
 
 	// Set up callback for CAN messages
-	bios->can_callback = &can_receive;
+//	bios->can_callback = &can_receive;
 
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
@@ -210,28 +211,29 @@ int main(void) {
 	txMsg.Id = 0x8000110UL; // FIXME
 	bios->can_send(&txMsg);
 
-	uint32_t timeStamp = 0;
+	uint32_t timeStamp = bios->timebase_get(), temp;
 
 
 	// Main loop
 	while (1) {
 
-		if( bios->timebase_get() - timeStamp >= STATUS_SEND_PERIOD ){
-			timeStamp = bios->timebase_get();
+		temp = bios->timebase_get();
+		if( temp - timeStamp >= STATUS_SEND_PERIOD ){
+			timeStamp = temp;
 			// Send relay status to CAN
 
-			boardTemperature = getTC1047temperature();
+//			boardTemperature = getTC1047temperature();
 
-			if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
-				relayFailsafe();
-			}else{
-				txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
-				txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
-				txMsg.Data.bytes[2] = relayStatus;
-				txMsg.Data.bytes[3] = 0;
+//			if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
+//				relayFailsafe();
+//			}else{
+				txMsg.Data.bytes[0] = timeStamp & 0x000000FF; //boardTemperature & 0x00FF;
+				txMsg.Data.bytes[1] = (timeStamp & 0x0000FF00)>>8; //(boardTemperature & 0xFF00)>>8;
+				txMsg.Data.bytes[2] = (timeStamp & 0x00FF0000)>>16; //relayStatus;
+				txMsg.Data.bytes[3] = (timeStamp & 0xFF000000)>>24; //0;
 				txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
 				bios->can_send( &txMsg );
-			}
+//			}
 		}
 	}
 	return 0;
