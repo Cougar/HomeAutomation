@@ -44,7 +44,7 @@ MCU = atmega8
 
 
 # Main Oscillator Frequency
-F_OSC = 8000000
+F_CPU = 8000000
 ##F_OSC = 1000000
 ##F_OSC = 1843200
 ##F_OSC = 2000000
@@ -127,7 +127,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-CFLAGS += -DF_OSC=$(F_OSC)
+CFLAGS += -DF_CPU=$(F_CPU)
 
 
 
