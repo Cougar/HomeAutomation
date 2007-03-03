@@ -15,7 +15,6 @@ int main(void)
 {
 	unsigned long time;
 	unsigned long time1 = bios->timebase_get();
-	unsigned long time2 = bios->timebase_get();
 	
 	sei();
 	
@@ -38,14 +37,18 @@ int main(void)
 	printf("Using AVR BIOS version %x\n", bios->version);
 	
 	txMsg.Id = (CAN_TST << CAN_SHIFT_CLASS) | NODE_ID;
-	txMsg.Data.dwords[0] = 0x01020304;
-	txMsg.Data.dwords[1] = 0xfffefdfc;
-	txMsg.DataLength = 8;
+	//txMsg.Data.dwords[0] = 0x01020304;
+	//txMsg.Data.dwords[1] = 0xfffefdfc;
+	txMsg.DataLength = 4;
 
 	while (1) {
 		time = bios->timebase_get();
 		if ((time - time1) >= 2000) {
 			//test-send a canmessage
+			txMsg.Data.bytes[0] = time & 0x000000FF;
+			txMsg.Data.bytes[1] = (time & 0x0000FF00)>>8;
+			txMsg.Data.bytes[2] = (time & 0x00FF0000)>>16;
+			txMsg.Data.bytes[3] = (time & 0xFF000000)>>24;
 			bios->can_send(&txMsg);
 			time1 = time;
 			printf("Two seconds passed, time is now %ld.\n", time);
