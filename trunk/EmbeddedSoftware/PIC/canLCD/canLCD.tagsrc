@@ -2,7 +2,7 @@ F:\MCP\projects\CAN\canBase\Source\CAN.c
 F:\MCP\projects\CAN\canBase\Source\Tick.c
 F:\MCP\projects\CAN\canLCD\Source\Main.c
 F:\MCP\projects\CAN\Include\EEAccess.c
-F:\MCP\projects\CAN\canLCD\Source\lcd.c
+F:\MCP\projects\CAN\canLCD\Source\glcd.c
 F:\MCP\projects\CAN\canLCD\Include\compiler.h
 F:\MCP\projects\CAN\canLCD\Include\stackTasks.h
-F:\MCP\projects\CAN\canLCD\Include\lcd.h
+F:\MCP\projects\CAN\canLCD\Include\glcd.h

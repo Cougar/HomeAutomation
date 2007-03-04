@@ -30,10 +30,10 @@ file_000=F:\MCP\projects\CAN\canBase\Source\CAN.c
 file_001=F:\MCP\projects\CAN\canBase\Source\Tick.c
 file_002=Source\Main.c
 file_003=F:\MCP\projects\CAN\Include\EEAccess.c
-file_004=Source\lcd.c
+file_004=Source\glcd.c
 file_005=Include\compiler.h
 file_006=Include\stackTasks.h
-file_007=Include\lcd.h
+file_007=Include\glcd.h
 file_008=F:\MCP\projects\CAN\canBase\lkr\18f2685_bootclient.lkr
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}

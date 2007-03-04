@@ -22,7 +22,20 @@
 #define LED0_TRIS		(TRISCbits.TRISC1)
 #define LED0_IO			(PORTCbits.RC1)
 
+// GLCD
+#define GLCD_CS_TRIS (PORTCbits.RC0)
+#define GLCD_CS_IO 	(TRISCbits.TRISC0)
+#define GLCD_RES_TRIS (PORTCbits.RC1)
+#define GLCD_RES_IO 	(TRISCbits.TRISC1)
+#define GLCD_A0_TRIS (PORTCbits.RC2)
+#define GLCD_A0_IO 	(TRISCbits.TRISC2)
+#define GLCD_SCL_TRIS (PORTCbits.RC3)
+#define GLCD_SCL_IO 	(TRISCbits.TRISC3)
+#define GLCD_SI_TRIS (PORTCbits.RC5)
+#define GLCD_SI_IO 	(TRISCbits.TRISC5)
+
 // LCD
+/*
 #define LCD_DATA_4_TRIS (PORTCbits.RC0)
 #define LCD_DATA_4_IO 	(TRISCbits.TRISC0)
 #define LCD_DATA_5_TRIS (PORTCbits.RC1)
@@ -40,5 +53,9 @@
 #define LCD_LINE1 0
 #define LCD_LINE2 40
 #define LCD_LINE_LENGTH 24
+*/
+
+#define APP_VERSION 0x0002
+
 
 #endif //compiler.h
