@@ -21,6 +21,10 @@
 	#include "glcd.h"
 #endif
 
+#ifdef USE_ADC
+	#include <adc.h>
+#endif
+
 #ifdef USE_GLCD
 	const rom BYTE pic[]={
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -441,11 +445,21 @@ void main()
 		GLCD_CS_IO = 1;
 	#endif
 
+	#ifdef USE_ADC
+		adcInit(TRUE,0b1011);
+	#endif
+
 	while(1)
 	{
 		TICK currentTick = tickGet();
 		static TICK tick_led = 0;
 		static TICK tick_pic = 0;
+		static TICK tick_temperature = 0;
+		static TICK tick_door = 0;
+		static TICK bounce_door = 0;
+		
+		static BOOL lastDoorValue = FALSE;
+		static BOOL getNewTemperature = TRUE;
 
 		static BYTE picCnt = 0;
 
@@ -483,6 +497,60 @@ void main()
 		}
 		#endif
 
+		#ifdef USE_ADC
+		if ((currentTick-tick_temperature)>(2*TICK_1S) && getNewTemperature==TRUE) // Each 2 second, read temperature.
+		{
+			adcConvert(TEMPERATURE_OUTSIDE);
+			getNewTemperature=FALSE;
+			tick_temperature = currentTick;
+		}
+		#endif
+
+		#ifdef USE_ADC
+		if (adcDone()) // Has temperature, send it to the bus
+		{
+			CAN_PACKET outCp;
+			BYTE decimal;
+			signed char tenth;
+
+			temperatureRead(&tenth,&decimal);
+			
+			outCp.type=ptPGM;
+			outCp.pgm.class	=pcSENSOR;
+			outCp.pgm.id	= pstTEMP_DOOR_OUTSIDE;
+			outCp.length	=2;
+			outCp.data[1]	= tenth; //  signed 10 an 1 decimal.
+			outCp.data[0]	= decimal; //  Decimal value, 0-9
+			while(!canSendMessage(outCp,PRIO_HIGH));
+
+			getNewTemperature=TRUE;
+			tick_temperature = currentTick;
+		}
+		#endif
+
+		#ifdef USE_DOOR_SW
+		if ((currentTick-bounce_door)>(3*TICK_100MS) && lastDoorValue != SW1_IO)
+		{
+			lastDoorValue = SW1_IO;
+			tick_door = 0;
+			bounce_door = currentTick;
+		}
+
+		if ((currentTick-tick_door)>(3*TICK_1S))
+		{
+			CAN_PACKET outCp;	
+			outCp.type 		= ptPGM;
+			outCp.pgm.class = pcSENSOR;
+			outCp.pgm.id 	= pstDOOR_OUTSIDE;
+			outCp.length 	= 1;
+			outCp.data[0]	= SW1_IO;
+			while(!canSendMessage(outCp,PRIO_HIGH));
+
+			tick_door = currentTick;
+		}
+		#endif
+
+
 	}
 }
 
@@ -491,13 +559,67 @@ void main()
 void high_isr(void)
 {
 	canISR();
+
+	#ifdef USE_ROTARY
+		if (INTCONbits.INT0IE == 1 && INTCONbits.INT0IF == 1)
+		{
+			// ROTARY_A_IO panel (nobuss)
+			// ROTARY_B_IO panel (nobuss)
+			static TICK tick_lastRotation = 0;
+
+			if ((tickGet()-tick_lastRotation)>(5*TICK_100MS))
+			{	
+			     if (ROTARY_A_IO==1 && ROTARY_B_IO==0)
+				{ 
+					// action
+					// left
+				}
+				else if (ROTARY_A_IO==0 && ROTARY_B_IO==1)
+				{ 
+					// action
+					// Right
+				}
+				tick_lastRotation=tickGet();
+			}
+				
+			INTCONbits.INT0IF = 0;
+		}
+	#endif
+
+	#ifdef USE_ADC
+		adcISR();
+	#endif
+
 }
 
 
 #pragma interrupt low_isr
 void low_isr(void)
 {
+	#ifdef USE_PANEL_SW
+		if (INTCON3bits.INT1IE == 1 && INTCON3bits.INT1IF == 1)
+		{
+			// SW0_IO == panel (nobuss)
+			// ROTARY_SW_IO == panel (nobuss)
 
+			TICK currentTick = tickGet();
+			static TICK tick_lastPanelSw = 0;
+			static TICK tick_lastRotSw   = 0;
+				
+			if (SW0_IO == 0 && (currentTick-tick_lastPanelSw)>(5*TICK_100MS))
+			{
+				// action
+				tick_lastPanelSw = currentTick;
+			}
+			else if (ROTARY_SW_IO == 0 && (currentTick-tick_lastRotSw)>(5*TICK_100MS))
+			{
+				// action
+				tick_lastRotSw = currentTick;
+			}
+
+			INTCON3bits.INT1IF = 0;
+		}
+	#endif
 }
 
 
@@ -522,6 +644,28 @@ void mainInit()
 	// Enable interrupt prirority
 	RCONbits.IPEN=1;
 	
+	#ifdef USE_ROTARY
+		ROTARY_A_TRIS = 1;
+		ROTARY_B_TRIS = 1;
+		INTCONbits.INT0IF  = 0;
+		INTCONbits.INT0IE  = 1;
+		INTCON2bits.INTEDG0 = 1; // rising
+		// Always high prio
+	#endif
+
+	#ifdef USE_PANEL_SW
+		ROTARY_SW_TRIS = 1;
+		SW0_TRIS = 1;
+		INTCON3bits.INT1IF = 0;
+		INTCON3bits.INT1IE = 1;
+		INTCON2bits.INTEDG1 = 0; // falling
+		INTCON3bits.INT1IP  = 0; // low
+	#endif
+
+
+	#ifdef USE_DOOR_SW
+		SW1_TRIS = 1;
+	#endif
 
 }
 
