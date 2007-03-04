@@ -458,7 +458,7 @@ void main()
 		static TICK tick_door = 0;
 		static TICK bounce_door = 0;
 		
-		static BOOL lastDoorValue = FALSE;
+		static BYTE lastDoorValue = DOOR_CLOSED;
 		static BOOL getNewTemperature = TRUE;
 
 		static BYTE picCnt = 0;
@@ -543,7 +543,7 @@ void main()
 			outCp.pgm.class = pcSENSOR;
 			outCp.pgm.id 	= pstDOOR_OUTSIDE;
 			outCp.length 	= 1;
-			outCp.data[0]	= SW1_IO;
+			outCp.data[0]	= (SW1_IO==DOOR_CLOSED?0:1);
 			while(!canSendMessage(outCp,PRIO_HIGH));
 
 			tick_door = currentTick;

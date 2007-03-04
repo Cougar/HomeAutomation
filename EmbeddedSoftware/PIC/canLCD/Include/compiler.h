@@ -14,6 +14,8 @@
 
 #define APP_VERSION 0x0001
 
+#define DOOR_OPEN 1
+#define DOOR_CLOSED 0
 
 #include <p18cxxx.h>
 #define CLOCK_FREQ		(40000000)      // Hz

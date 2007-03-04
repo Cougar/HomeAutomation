@@ -6,68 +6,76 @@
 !_TAG_PROGRAM_VERSION	5.5.4	//
 !_TAG_REVISION_NAME	MCHPTags	//
 !_TAG_REVISION_VERSION	6.0.1	//
-CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	18;"	d	line:18
-CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	16;"	d	line:16
+APP_VERSION::0x0001	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	15;"	d	line:15
+CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	20;"	d	line:20
+CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	18;"	d	line:18
 COMPILER_H	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	13;"	d	line:13
-DOOR_CLOSED::0	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	24;"	d	line:24
-DOOR_FREEZER_IO::(PORTAbits.RA4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	27;"	d	line:27
-DOOR_FREEZER_TRIS::(TRISAbits.TRISA4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	26;"	d	line:26
-DOOR_OPEN::1	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	23;"	d	line:23
-DOOR_REFRIGERATOR_IO::(PORTAbits.RA5)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	29;"	d	line:29
-DOOR_REFRIGERATOR_TRIS::(TRISAbits.TRISA5)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	28;"	d	line:28
+DOOR_CLOSED::0	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	26;"	d	line:26
+DOOR_FREEZER_IO::(PORTAbits.RA4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	29;"	d	line:29
+DOOR_FREEZER_TRIS::(TRISAbits.TRISA4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	28;"	d	line:28
+DOOR_OPEN::1	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	25;"	d	line:25
+DOOR_REFRIGERATOR_IO::(PORTAbits.RA5)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	31;"	d	line:31
+DOOR_REFRIGERATOR_TRIS::(TRISAbits.TRISA5)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	30;"	d	line:30
 EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
 EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
-INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	17;"	d	line:17
-LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	21;"	d	line:21
-LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	20;"	d	line:20
+INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	19;"	d	line:19
+LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	23;"	d	line:23
+LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	22;"	d	line:22
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
-MY_NID	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
-PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	63;"	d	line:63	file:
-TEMPERATURE_FREEZER::0b0000	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	32;"	d	line:32
-TEMPERATURE_REFRIGERATOR::0b0001	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	33;"	d	line:33
-TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h	15;"	d	line:15
-TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	26;"	d	line:26	file:
-TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
+TEMPERATURE_FREEZER::0b0000	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	34;"	d	line:34
+TEMPERATURE_REFRIGERATOR::0b0001	F:\MCP\projects\CAN\canFreezer\Include\compiler.h	35;"	d	line:35
+TEMP_COUNT	F:\MCP\projects\CAN\Include\adc.c	16;"	v	line:16
+TEMP_DONE	F:\MCP\projects\CAN\Include\adc.c	18;"	v	line:18
+TEMP_VALUE	F:\MCP\projects\CAN\Include\adc.c	15;"	v	line:15
 TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
-TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h	25;"	d	line:25
-TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	24;"	d	line:24	file:
-TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	d	line:17	file:
-TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	d	line:30	file:
-TIMER_PRESCALE::(1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	32;"	d	line:32	file:
-TIMER_PRESCALE::(2)	F:\MCP\projects\CAN\canBase\Source\Tick.c	34;"	d	line:34	file:
-TIMER_PRESCALE::(3)	F:\MCP\projects\CAN\canBase\Source\Tick.c	36;"	d	line:36	file:
-TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	38;"	d	line:38	file:
-TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	40;"	d	line:40	file:
-TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	file:
-TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
-TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
-_reset	F:\MCP\projects\CAN\canFreezer\Source\Main.c	173;"	f	line:173	signature:(void)
-_startup	F:\MCP\projects\CAN\canFreezer\Source\Main.c	171;"	p	line:171	file:	signature:(void)
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	186;"	f	line:186
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	24;"	p	line:24	file:	signature:(void)
-canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	147;"	f	line:147
-canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	36;"	f	line:36
-canParse	F:\MCP\projects\CAN\canFreezer\Source\Main.c	161;"	f	line:161	signature:(CAN_MESSAGE cm)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	262;"	f	line:262	signature:(CAN_MESSAGE cm,CAN_PRIORITY prio)
-cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	188;"	l	line:188
-decimal	F:\MCP\projects\CAN\canFreezer\Source\Main.c	92;"	l	line:92
-heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19
-high_isr	F:\MCP\projects\CAN\canFreezer\Source\Main.c	110;"	f	line:110	signature:(void)
-lastFreezerDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	45;"	l	line:45	file:
-lastRefrigeratorDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	46;"	l	line:46	file:
-lastTemperature	F:\MCP\projects\CAN\canFreezer\Source\Main.c	44;"	l	line:44	file:
-low_isr	F:\MCP\projects\CAN\canFreezer\Source\Main.c	117;"	f	line:117	signature:(void)
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	v	line:17	file:
+USE_ADC	F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h	15;"	d	line:15
+USE_DOORS	F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h	16;"	d	line:16
+_high_ISR	F:\MCP\projects\CAN\canFreezer\Source\Main.c	210;"	f	line:210	signature:(void)
+_reset	F:\MCP\projects\CAN\canFreezer\Source\Main.c	202;"	f	line:202	signature:(void)
+_startup	F:\MCP\projects\CAN\canFreezer\Source\Main.c	200;"	p	line:200	file:	signature:(void)
+adcConvert	F:\MCP\projects\CAN\Include\adc.c	86;"	f	line:86	signature:(BYTE channel)
+adcDone	F:\MCP\projects\CAN\Include\adc.c	163;"	f	line:163	signature:(void)
+adcGetRaw	F:\MCP\projects\CAN\Include\adc.c	148;"	f	line:148
+adcISR	F:\MCP\projects\CAN\Include\adc.c	53;"	f	line:53	signature:(void)
+adcInit	F:\MCP\projects\CAN\Include\adc.c	29;"	f	line:29	signature:(BOOL useExtRef,BYTE portCfg)
+adcRead	F:\MCP\projects\CAN\Include\adc.c	112;"	f	line:112	signature:(void)
+bounce_FreezerDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	44;"	l	line:44	file:
+bounce_RefrigeratorDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	45;"	l	line:45	file:
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	f	line:189
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	146;"	f	line:146
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
+canParse	F:\MCP\projects\CAN\canFreezer\Source\Main.c	190;"	f	line:190	signature:(CAN_PACKET cp)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	267;"	f	line:267	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	l	line:191
+currentTick	F:\MCP\projects\CAN\canFreezer\Source\Main.c	39;"	l	line:39
+decimal	F:\MCP\projects\CAN\canFreezer\Source\Main.c	116;"	l	line:116
+getNewTemperature	F:\MCP\projects\CAN\canFreezer\Source\Main.c	51;"	l	line:51	file:
+heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19	file:
+high_isr	F:\MCP\projects\CAN\canFreezer\Source\Main.c	138;"	f	line:138	signature:(void)
+i	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
+lastFreezerDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	48;"	l	line:48	file:
+lastRefrigeratorDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	49;"	l	line:49	file:
+lastTemperature	F:\MCP\projects\CAN\canFreezer\Source\Main.c	47;"	l	line:47	file:
+low_isr	F:\MCP\projects\CAN\canFreezer\Source\Main.c	148;"	f	line:148	signature:(void)
 main	F:\MCP\projects\CAN\canFreezer\Source\Main.c	27;"	f	line:27
-mainInit	F:\MCP\projects\CAN\canFreezer\Source\Main.c	135;"	f	line:135
+mainInit	F:\MCP\projects\CAN\canFreezer\Source\Main.c	164;"	f	line:164
 mainInit	F:\MCP\projects\CAN\canFreezer\Source\Main.c	24;"	p	line:24	file:	signature:(void)
-outCm	F:\MCP\projects\CAN\canBase\Source\CAN.c	22;"	v	line:22	file:
-outCm	F:\MCP\projects\CAN\canFreezer\Source\Main.c	163;"	l	line:163
-outCm	F:\MCP\projects\CAN\canFreezer\Source\Main.c	30;"	l	line:30
+outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
+outCp	F:\MCP\projects\CAN\canFreezer\Source\Main.c	115;"	l	line:115
+outCp	F:\MCP\projects\CAN\canFreezer\Source\Main.c	71;"	l	line:71
+outCp	F:\MCP\projects\CAN\canFreezer\Source\Main.c	84;"	l	line:84
 stackTasks_H	F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h	13;"	d	line:13
-t	F:\MCP\projects\CAN\canFreezer\Source\Main.c	29;"	l	line:29	file:
-t	F:\MCP\projects\CAN\canFreezer\Source\Main.c	42;"	l	line:42	file:
-temperature	F:\MCP\projects\CAN\canFreezer\Source\Main.c	43;"	l	line:43	file:
-tenth	F:\MCP\projects\CAN\canFreezer\Source\Main.c	93;"	l	line:93
-tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	89;"	f	line:89	signature:(void)
-tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	f	line:64	signature:(void)
-tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	104;"	f	line:104	signature:(void)
+temperatureRead	F:\MCP\projects\CAN\Include\adc.c	128;"	f	line:128	signature:(signed char *tenth, BYTE *decimal)
+tenth	F:\MCP\projects\CAN\canFreezer\Source\Main.c	117;"	l	line:117
+tfloat	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	52;"	f	line:52	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	f	line:30	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	67;"	f	line:67	signature:(void)
+tick_FreezerDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	42;"	l	line:42	file:
+tick_RefrigeratorDoor	F:\MCP\projects\CAN\canFreezer\Source\Main.c	43;"	l	line:43	file:
+tick_led	F:\MCP\projects\CAN\canFreezer\Source\Main.c	40;"	l	line:40	file:
+tick_temperature	F:\MCP\projects\CAN\canFreezer\Source\Main.c	41;"	l	line:41	file:
+v01	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131
+v11	F:\MCP\projects\CAN\Include\adc.c	131;"	l	line:131

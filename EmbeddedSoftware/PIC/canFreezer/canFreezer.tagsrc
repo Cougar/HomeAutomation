@@ -2,5 +2,6 @@ F:\MCP\projects\CAN\canBase\Source\CAN.c
 F:\MCP\projects\CAN\canBase\Source\Tick.c
 F:\MCP\projects\CAN\canFreezer\Source\Main.c
 F:\MCP\projects\CAN\Include\EEAccess.c
+F:\MCP\projects\CAN\Include\adc.c
 F:\MCP\projects\CAN\canFreezer\Include\compiler.h
 F:\MCP\projects\CAN\canFreezer\Include\stackTasks.h
