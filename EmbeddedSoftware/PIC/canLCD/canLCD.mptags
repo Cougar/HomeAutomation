@@ -6,88 +6,88 @@
 !_TAG_PROGRAM_VERSION	5.5.4	//
 !_TAG_REVISION_NAME	MCHPTags	//
 !_TAG_REVISION_VERSION	6.0.1	//
+APP_VERSION::0x0002	F:\MCP\projects\CAN\canLCD\Include\compiler.h	58;"	d	line:58
 CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	18;"	d	line:18
 CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	16;"	d	line:16
 COMPILER_H	F:\MCP\projects\CAN\canLCD\Include\compiler.h	13;"	d	line:13
 EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
 EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
+FONT_WIDTH::6	F:\MCP\projects\CAN\canLCD\Source\glcd.c	16;"	d	line:16	file:
+Font8x6	F:\MCP\projects\CAN\canLCD\Source\glcd.c	18;"	v	line:18
+GLCD_A0_IO::(TRISCbits.TRISC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	31;"	d	line:31
+GLCD_A0_TRIS::(PORTCbits.RC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	30;"	d	line:30
+GLCD_CS_IO::(TRISCbits.TRISC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	27;"	d	line:27
+GLCD_CS_TRIS::(PORTCbits.RC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	26;"	d	line:26
+GLCD_RES_IO::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	29;"	d	line:29
+GLCD_RES_TRIS::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	28;"	d	line:28
+GLCD_SCL_IO::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	33;"	d	line:33
+GLCD_SCL_TRIS::(PORTCbits.RC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	32;"	d	line:32
+GLCD_SI_IO::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	35;"	d	line:35
+GLCD_SI_TRIS::(PORTCbits.RC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	34;"	d	line:34
 INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	17;"	d	line:17
-LCD_DATA_4_IO::(TRISCbits.TRISC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	27;"	d	line:27
-LCD_DATA_4_TRIS::(PORTCbits.RC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	26;"	d	line:26
-LCD_DATA_5_IO::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	29;"	d	line:29
-LCD_DATA_5_TRIS::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	28;"	d	line:28
-LCD_DATA_6_IO::(TRISCbits.TRISC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	31;"	d	line:31
-LCD_DATA_6_TRIS::(PORTCbits.RC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	30;"	d	line:30
-LCD_DATA_7_IO::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	33;"	d	line:33
-LCD_DATA_7_TRIS::(PORTCbits.RC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	32;"	d	line:32
-LCD_EN_IO::(TRISAbits.TRISA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	38;"	d	line:38
-LCD_EN_TRIS::(PORTAbits.RA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	37;"	d	line:37
-LCD_LINE1::0	F:\MCP\projects\CAN\canLCD\Include\compiler.h	40;"	d	line:40
-LCD_LINE2::40	F:\MCP\projects\CAN\canLCD\Include\compiler.h	41;"	d	line:41
-LCD_LINE_LENGTH::24	F:\MCP\projects\CAN\canLCD\Include\compiler.h	42;"	d	line:42
-LCD_RS_IO::(TRISAbits.TRISA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	36;"	d	line:36
-LCD_RS_TRIS::(PORTAbits.RA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	35;"	d	line:35
-LCD_STROBE::((LCD_EN_IO=1),(LCD_EN_IO=0))	F:\MCP\projects\CAN\canLCD\Source\lcd.c	18;"	d	line:18	file:
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	23;"	d	line:23
 LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	22;"	d	line:22
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
-MY_NID	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
 NUM_CYK_1ms::10000	F:\MCP\projects\CAN\canLCD\Include\compiler.h	20;"	d	line:20
 NUM_CYK_1us::10	F:\MCP\projects\CAN\canLCD\Include\compiler.h	19;"	d	line:19
-PERIOD::(INSTR_FREQ/256/1000)*TICK_PER	F:\MCP\projects\CAN\canBase\Source\Tick.c	63;"	d	line:63	file:
-TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	17;"	d	line:17
-TICK_COUNTER_HIGH::((TICK_TEMP_VALUE>>8)&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	26;"	d	line:26	file:
-TICK_COUNTER_LOW::(TICK_TEMP_VALUE&0xff)	F:\MCP\projects\CAN\canBase\Source\Tick.c	27;"	d	line:27	file:
 TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
-TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	27;"	d	line:27
-TICK_TEMP_VALUE::(65535-TICK_TEMP_VALUE_1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	24;"	d	line:24	file:
-TICK_TEMP_VALUE_1::((INSTR_FREQ)/(TICKS_PER_SECON	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	d	line:17	file:
-TIMER_PRESCALE::(0)	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	d	line:30	file:
-TIMER_PRESCALE::(1)	F:\MCP\projects\CAN\canBase\Source\Tick.c	32;"	d	line:32	file:
-TIMER_PRESCALE::(2)	F:\MCP\projects\CAN\canBase\Source\Tick.c	34;"	d	line:34	file:
-TIMER_PRESCALE::(3)	F:\MCP\projects\CAN\canBase\Source\Tick.c	36;"	d	line:36	file:
-TIMER_PRESCALE::(4)	F:\MCP\projects\CAN\canBase\Source\Tick.c	38;"	d	line:38	file:
-TIMER_PRESCALE::(5)	F:\MCP\projects\CAN\canBase\Source\Tick.c	40;"	d	line:40	file:
-TIMER_PRESCALE::(6)	F:\MCP\projects\CAN\canBase\Source\Tick.c	42;"	d	line:42	file:
-TIMER_PRESCALE::(7)	F:\MCP\projects\CAN\canBase\Source\Tick.c	44;"	d	line:44	file:
-TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	50;"	v	line:50
-USE_LCD	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	15;"	d	line:15
-__LCD_H	F:\MCP\projects\CAN\canLCD\Include\lcd.h	14;"	d	line:14
-_reset	F:\MCP\projects\CAN\canLCD\Source\Main.c	115;"	f	line:115	signature:(void)
-_startup	F:\MCP\projects\CAN\canLCD\Source\Main.c	113;"	p	line:113	file:	signature:(void)
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	186;"	f	line:186
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	24;"	p	line:24	file:	signature:(void)
-canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	147;"	f	line:147
-canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	36;"	f	line:36
-canParse	F:\MCP\projects\CAN\canLCD\Source\Main.c	103;"	f	line:103	signature:(CAN_MESSAGE cm)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	262;"	f	line:262	signature:(CAN_MESSAGE cm,CAN_PRIORITY prio)
-cm	F:\MCP\projects\CAN\canBase\Source\CAN.c	188;"	l	line:188
-heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19
-high_isr	F:\MCP\projects\CAN\canLCD\Source\Main.c	57;"	f	line:57	signature:(void)
-lcdClear	F:\MCP\projects\CAN\canLCD\Include\lcd.h	21;"	p	line:21	signature:(void)
-lcdClear	F:\MCP\projects\CAN\canLCD\Source\lcd.c	72;"	f	line:72	signature:(void)
-lcdGoto	F:\MCP\projects\CAN\canLCD\Include\lcd.h	25;"	p	line:25	signature:(BYTE pos)
-lcdGoto	F:\MCP\projects\CAN\canLCD\Source\lcd.c	137;"	f	line:137	signature:(BYTE pos)
-lcdInit	F:\MCP\projects\CAN\canLCD\Include\lcd.h	26;"	p	line:26	signature:(void)
-lcdInit	F:\MCP\projects\CAN\canLCD\Source\lcd.c	153;"	f	line:153	signature:(void)
-lcdPutc	F:\MCP\projects\CAN\canLCD\Include\lcd.h	24;"	p	line:24	signature:(char c)
-lcdPutc	F:\MCP\projects\CAN\canLCD\Source\lcd.c	120;"	f	line:120	signature:(char c)
-lcdPutrs	F:\MCP\projects\CAN\canLCD\Include\lcd.h	23;"	p	line:23	signature:(const rom char *s)
-lcdPutrs	F:\MCP\projects\CAN\canLCD\Source\lcd.c	105;"	f	line:105	signature:(const rom char *s)
-lcdPuts	F:\MCP\projects\CAN\canLCD\Include\lcd.h	22;"	p	line:22	signature:(char * s)
-lcdPuts	F:\MCP\projects\CAN\canLCD\Source\lcd.c	90;"	f	line:90	signature:(char * s)
-lcdWrite	F:\MCP\projects\CAN\canLCD\Source\lcd.c	16;"	p	line:16	file:	signature:(BYTE c)
-lcdWrite	F:\MCP\projects\CAN\canLCD\Source\lcd.c	47;"	f	line:47	signature:(BYTE c)
-low_isr	F:\MCP\projects\CAN\canLCD\Source\Main.c	64;"	f	line:64	signature:(void)
-main	F:\MCP\projects\CAN\canLCD\Source\Main.c	27;"	f	line:27
-mainInit	F:\MCP\projects\CAN\canLCD\Source\Main.c	24;"	p	line:24	file:	signature:(void)
-mainInit	F:\MCP\projects\CAN\canLCD\Source\Main.c	80;"	f	line:80
-outCm	F:\MCP\projects\CAN\canBase\Source\CAN.c	22;"	v	line:22	file:
-outCm	F:\MCP\projects\CAN\canLCD\Source\Main.c	105;"	l	line:105
-outCm	F:\MCP\projects\CAN\canLCD\Source\Main.c	30;"	l	line:30
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	v	line:17	file:
+USE_GLCD	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	15;"	d	line:15
+__GLCD_H	F:\MCP\projects\CAN\canLCD\Include\glcd.h	14;"	d	line:14
+_high_ISR	F:\MCP\projects\CAN\canLCD\Source\Main.c	557;"	f	line:557	signature:(void)
+_reset	F:\MCP\projects\CAN\canLCD\Source\Main.c	549;"	f	line:549	signature:(void)
+_startup	F:\MCP\projects\CAN\canLCD\Source\Main.c	547;"	p	line:547	file:	signature:(void)
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	f	line:189
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	146;"	f	line:146
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
+canParse	F:\MCP\projects\CAN\canLCD\Source\Main.c	537;"	f	line:537	signature:(CAN_PACKET cp)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	267;"	f	line:267	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	l	line:191
+currentTick	F:\MCP\projects\CAN\canLCD\Source\Main.c	446;"	l	line:446
+glcdClearScr	F:\MCP\projects\CAN\canLCD\Include\glcd.h	23;"	p	line:23	signature:(void)
+glcdClearScr	F:\MCP\projects\CAN\canLCD\Source\glcd.c	386;"	f	line:386
+glcdCommand	F:\MCP\projects\CAN\canLCD\Source\glcd.c	287;"	p	line:287	file:
+glcdCommand	F:\MCP\projects\CAN\canLCD\Source\glcd.c	353;"	f	line:353	signature:(BYTE command)
+glcdDataWrite	F:\MCP\projects\CAN\canLCD\Source\glcd.c	288;"	p	line:288	file:
+glcdDataWrite	F:\MCP\projects\CAN\canLCD\Source\glcd.c	361;"	f	line:361	signature:(BYTE data)
+glcdDisplayPic	F:\MCP\projects\CAN\canLCD\Include\glcd.h	25;"	p	line:25	signature:(BYTE,BYTE,const rom BYTE*)
+glcdDisplayPic	F:\MCP\projects\CAN\canLCD\Source\glcd.c	400;"	f	line:400	signature:(BYTE page, BYTE column, const rom BYTE * pic)
+glcdInit	F:\MCP\projects\CAN\canLCD\Include\glcd.h	21;"	p	line:21	signature:(void)
+glcdInit	F:\MCP\projects\CAN\canLCD\Source\glcd.c	301;"	f	line:301	signature:(void)
+glcdPutc	F:\MCP\projects\CAN\canLCD\Include\glcd.h	28;"	p	line:28	signature:(BYTE)
+glcdPutc	F:\MCP\projects\CAN\canLCD\Source\glcd.c	414;"	f	line:414	signature:(BYTE c)
+glcdPutrs	F:\MCP\projects\CAN\canLCD\Include\glcd.h	26;"	p	line:26	signature:(BYTE, BYTE, const rom BYTE *)
+glcdPutrs	F:\MCP\projects\CAN\canLCD\Source\glcd.c	423;"	f	line:423	signature:(BYTE page, BYTE column, const rom BYTE * s)
+glcdPuts	F:\MCP\projects\CAN\canLCD\Include\glcd.h	27;"	p	line:27	signature:(BYTE, BYTE, BYTE *)
+glcdPuts	F:\MCP\projects\CAN\canLCD\Source\glcd.c	430;"	f	line:430	signature:(BYTE page, BYTE column, BYTE * s)
+glcdSetColumn	F:\MCP\projects\CAN\canLCD\Source\glcd.c	290;"	p	line:290	file:
+glcdSetColumn	F:\MCP\projects\CAN\canLCD\Source\glcd.c	380;"	f	line:380	signature:(BYTE column)
+glcdSetPage	F:\MCP\projects\CAN\canLCD\Source\glcd.c	289;"	p	line:289	file:
+glcdSetPage	F:\MCP\projects\CAN\canLCD\Source\glcd.c	375;"	f	line:375	signature:(BYTE page)
+glcdSetStartLine	F:\MCP\projects\CAN\canLCD\Include\glcd.h	22;"	p	line:22	signature:(BYTE)
+glcdSetStartLine	F:\MCP\projects\CAN\canLCD\Source\glcd.c	370;"	f	line:370	signature:(BYTE startline)
+heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19	file:
+high_isr	F:\MCP\projects\CAN\canLCD\Source\Main.c	491;"	f	line:491	signature:(void)
+i	F:\MCP\projects\CAN\canLCD\Source\glcd.c	388;"	l	line:388
+i	F:\MCP\projects\CAN\canLCD\Source\glcd.c	402;"	l	line:402
+i	F:\MCP\projects\CAN\canLCD\Source\glcd.c	416;"	l	line:416
+j	F:\MCP\projects\CAN\canLCD\Source\glcd.c	388;"	l	line:388
+j	F:\MCP\projects\CAN\canLCD\Source\glcd.c	402;"	l	line:402
+low_isr	F:\MCP\projects\CAN\canLCD\Source\Main.c	498;"	f	line:498	signature:(void)
+main	F:\MCP\projects\CAN\canLCD\Source\Main.c	431;"	f	line:431
+mainInit	F:\MCP\projects\CAN\canLCD\Source\Main.c	425;"	p	line:425	file:	signature:(void)
+mainInit	F:\MCP\projects\CAN\canLCD\Source\Main.c	514;"	f	line:514
+outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
+outCp	F:\MCP\projects\CAN\canLCD\Source\Main.c	461;"	l	line:461
+pic	F:\MCP\projects\CAN\canLCD\Source\Main.c	25;"	v	line:25
+pic2	F:\MCP\projects\CAN\canLCD\Source\Main.c	156;"	v	line:156
+pic3	F:\MCP\projects\CAN\canLCD\Source\Main.c	287;"	v	line:287
+picCnt	F:\MCP\projects\CAN\canLCD\Source\Main.c	450;"	l	line:450	file:
 stackTasks_H	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	13;"	d	line:13
-t	F:\MCP\projects\CAN\canLCD\Source\Main.c	29;"	l	line:29	file:
-t	F:\MCP\projects\CAN\canLCD\Source\Main.c	45;"	l	line:45	file:
-tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	89;"	f	line:89	signature:(void)
-tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	64;"	f	line:64	signature:(void)
-tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	104;"	f	line:104	signature:(void)
+str	F:\MCP\projects\CAN\canLCD\Source\Main.c	421;"	v	line:421
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	52;"	f	line:52	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	f	line:30	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	67;"	f	line:67	signature:(void)
+tick_led	F:\MCP\projects\CAN\canLCD\Source\Main.c	447;"	l	line:447	file:
+tick_pic	F:\MCP\projects\CAN\canLCD\Source\Main.c	448;"	l	line:448	file:
