@@ -1,4 +1,4 @@
-﻿/*********************************************************************
+/*********************************************************************
  *
  *                  Stack specific like which modules to use.
  *
@@ -13,5 +13,9 @@
 #define stackTasks_H
 
 #define USE_GLCD
+#define USE_ROTARY
+#define USE_PANEL_SW
+#define USE_DOOR
+#define USE_ADC
 
 #endif
