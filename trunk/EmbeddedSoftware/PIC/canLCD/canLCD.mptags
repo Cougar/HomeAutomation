@@ -8,51 +8,53 @@
 !_TAG_REVISION_VERSION	6.0.1	//
 ADC_H	F:\MCP\projects\CAN\Include\adc.h	12;"	d	line:12
 APP_VERSION::0x0001	F:\MCP\projects\CAN\canLCD\Include\compiler.h	15;"	d	line:15
-CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	21;"	d	line:21
-CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	19;"	d	line:19
+CLOCK_FOSC::(40)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	23;"	d	line:23
+CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	21;"	d	line:21
 COMPILER_H	F:\MCP\projects\CAN\canLCD\Include\compiler.h	13;"	d	line:13
+DOOR_CLOSED::0	F:\MCP\projects\CAN\canLCD\Include\compiler.h	18;"	d	line:18
+DOOR_OPEN::1	F:\MCP\projects\CAN\canLCD\Include\compiler.h	17;"	d	line:17
 EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
 EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
-EE_CS_IO::(PORTCbits.RC6)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	65;"	d	line:65
-EE_CS_TRIS::(TRISCbits.TRISC6)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	66;"	d	line:66
-EE_SI_IO::(PORTCbits.RC4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	67;"	d	line:67
-EE_SI_TRIS::(TRISCbits.TRISC4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	68;"	d	line:68
+EE_CS_IO::(PORTCbits.RC6)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	67;"	d	line:67
+EE_CS_TRIS::(TRISCbits.TRISC6)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	68;"	d	line:68
+EE_SI_IO::(PORTCbits.RC4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	69;"	d	line:69
+EE_SI_TRIS::(TRISCbits.TRISC4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	70;"	d	line:70
 FONT_WIDTH::6	F:\MCP\projects\CAN\canLCD\Source\glcd.c	16;"	d	line:16	file:
 Font8x6	F:\MCP\projects\CAN\canLCD\Source\glcd.c	18;"	v	line:18
-GLCD_A0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	33;"	d	line:33
-GLCD_A0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	34;"	d	line:34
-GLCD_BAL_IO::(PORTCbits.RC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	40;"	d	line:40
-GLCD_BAL_TRIS::(TRISCbits.TRISC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	41;"	d	line:41
-GLCD_CS_IO::(PORTCbits.RC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	29;"	d	line:29
-GLCD_CS_TRIS::(TRISCbits.TRISC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	30;"	d	line:30
-GLCD_RES_IO::(PORTCbits.RC7)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	31;"	d	line:31
-GLCD_RES_TRIS::(TRISCbits.TRISC7)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	32;"	d	line:32
-GLCD_SCL_IO::(PORTCbits.RC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	35;"	d	line:35
-GLCD_SCL_TRIS::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	36;"	d	line:36
-GLCD_SI_IO::(PORTCbits.RC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	37;"	d	line:37
-GLCD_SI_TRIS::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	38;"	d	line:38
-INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	20;"	d	line:20
-LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	25;"	d	line:25
-LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	26;"	d	line:26
+GLCD_A0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	35;"	d	line:35
+GLCD_A0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	36;"	d	line:36
+GLCD_BAL_IO::(PORTCbits.RC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	42;"	d	line:42
+GLCD_BAL_TRIS::(TRISCbits.TRISC2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	43;"	d	line:43
+GLCD_CS_IO::(PORTCbits.RC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	31;"	d	line:31
+GLCD_CS_TRIS::(TRISCbits.TRISC0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	32;"	d	line:32
+GLCD_RES_IO::(PORTCbits.RC7)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	33;"	d	line:33
+GLCD_RES_TRIS::(TRISCbits.TRISC7)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	34;"	d	line:34
+GLCD_SCL_IO::(PORTCbits.RC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	37;"	d	line:37
+GLCD_SCL_TRIS::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	38;"	d	line:38
+GLCD_SI_IO::(PORTCbits.RC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	39;"	d	line:39
+GLCD_SI_TRIS::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	40;"	d	line:40
+INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	22;"	d	line:22
+LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	27;"	d	line:27
+LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	28;"	d	line:28
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
-NUM_CYK_1ms::10000	F:\MCP\projects\CAN\canLCD\Include\compiler.h	23;"	d	line:23
-NUM_CYK_1us::10	F:\MCP\projects\CAN\canLCD\Include\compiler.h	22;"	d	line:22
-ROTARY_A_IO::(PORTBbits.RB4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	44;"	d	line:44
-ROTARY_A_TRIS::(TRISBbits.TRISB4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	45;"	d	line:45
-ROTARY_B_IO::(PORTBbits.RB5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	46;"	d	line:46
-ROTARY_B_TRIS::(TRISBbits.TRISB5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	47;"	d	line:47
-ROTARY_SW_IO::(PORTAbits.RA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	49;"	d	line:49
-ROTARY_SW_TRIS::(TRISAbits.TRISA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	50;"	d	line:50
-SW0_IO::(PORTAbits.RA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	51;"	d	line:51
-SW0_TRIS::(TRISAbits.TRISA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	52;"	d	line:52
-SW1_IO::(PORTAbits.RA2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	55;"	d	line:55
-SW1_TRIS::(TRISAbits.TRISA2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	56;"	d	line:56
-TEMPERATURE_OUTSIDE::0x0	F:\MCP\projects\CAN\canLCD\Include\compiler.h	92;"	d	line:92
+NUM_CYK_1ms::10000	F:\MCP\projects\CAN\canLCD\Include\compiler.h	25;"	d	line:25
+NUM_CYK_1us::10	F:\MCP\projects\CAN\canLCD\Include\compiler.h	24;"	d	line:24
+ROTARY_A_IO::(PORTBbits.RB4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	46;"	d	line:46
+ROTARY_A_TRIS::(TRISBbits.TRISB4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	47;"	d	line:47
+ROTARY_B_IO::(PORTBbits.RB5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	48;"	d	line:48
+ROTARY_B_TRIS::(TRISBbits.TRISB5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	49;"	d	line:49
+ROTARY_SW_IO::(PORTAbits.RA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	51;"	d	line:51
+ROTARY_SW_TRIS::(TRISAbits.TRISA4)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	52;"	d	line:52
+SW0_IO::(PORTAbits.RA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	53;"	d	line:53
+SW0_TRIS::(TRISAbits.TRISA5)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	54;"	d	line:54
+SW1_IO::(PORTAbits.RA2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	57;"	d	line:57
+SW1_TRIS::(TRISAbits.TRISA2)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	58;"	d	line:58
+TEMPERATURE_OUTSIDE::0x0	F:\MCP\projects\CAN\canLCD\Include\compiler.h	94;"	d	line:94
 TEMP_COUNT	F:\MCP\projects\CAN\Include\adc.c	16;"	v	line:16
 TEMP_DONE	F:\MCP\projects\CAN\Include\adc.c	18;"	v	line:18
-TEMP_IO::(PORTAbits.RA0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	61;"	d	line:61
+TEMP_IO::(PORTAbits.RA0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	63;"	d	line:63
 TEMP_SAMPLES::50	F:\MCP\projects\CAN\Include\adc.h	19;"	d	line:19
-TEMP_TRIS::(TRISAbits.TRISA0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	62;"	d	line:62
+TEMP_TRIS::(TRISAbits.TRISA0)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	64;"	d	line:64
 TEMP_VALUE	F:\MCP\projects\CAN\Include\adc.c	15;"	v	line:15
 TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
 TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	v	line:17	file:
@@ -61,8 +63,8 @@ USE_DOOR	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	18;"	d	line:18
 USE_GLCD	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	15;"	d	line:15
 USE_PANEL_SW	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	17;"	d	line:17
 USE_ROTARY	F:\MCP\projects\CAN\canLCD\Include\stackTasks.h	16;"	d	line:16
-VREF_IO::(PORTAbits.RA3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	59;"	d	line:59
-VREF_TRIS::(TRISAbits.TRISA3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	60;"	d	line:60
+VREF_IO::(PORTAbits.RA3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	61;"	d	line:61
+VREF_TRIS::(TRISAbits.TRISA3)	F:\MCP\projects\CAN\canLCD\Include\compiler.h	62;"	d	line:62
 __GLCD_H	F:\MCP\projects\CAN\canLCD\Include\glcd.h	14;"	d	line:14
 _high_ISR	F:\MCP\projects\CAN\canLCD\Source\Main.c	701;"	f	line:701	signature:(void)
 _reset	F:\MCP\projects\CAN\canLCD\Source\Main.c	693;"	f	line:693	signature:(void)

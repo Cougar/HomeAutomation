@@ -1,4 +1,4 @@
-﻿/*********************************************************************
+/*********************************************************************
  *
  *                  Main application
  *
@@ -15,7 +15,7 @@
 #include <Tick.h>
 #include <funcdefs.h>
 #include <CAN.h>
-
+#include "..\canBoot\Include\boot.h"
 
 #ifdef USE_ADC
 	#include <adc.h>
@@ -26,9 +26,6 @@ static void mainInit(void);
 
 void main()
 {
-	static TICK t = 0;
-	CAN_MESSAGE outCm;
-
 	// Inits
 	mainInit();
 	canInit();
@@ -39,49 +36,75 @@ void main()
 
 	while(1)
 	{
-		static TICK t = 0;
-		static TICK temperature = 0;
+		TICK currentTick = tickGet();
+		static TICK tick_led = 0;
+		static TICK tick_temperature = 0;
+		static TICK tick_FreezerDoor = 0;
+		static TICK tick_RefrigeratorDoor = 0;
+		static TICK bounce_FreezerDoor = 0;
+		static TICK bounce_RefrigeratorDoor = 0;
+
 		static BYTE lastTemperature = TEMPERATURE_FREEZER;
 		static BYTE lastFreezerDoor = DOOR_CLOSED;
 		static BYTE lastRefrigeratorDoor = DOOR_CLOSED;
 
+		static BOOL getNewTemperature = TRUE;
 
-		//Poll doors freezer door
-		if (lastFreezerDoor!=DOOR_FREEZER_IO)
-		{	
-			lastFreezerDoor=DOOR_FREEZER_IO;
-			// Send door status change
-			outCm.funct 					= FUNCT_SENSORS;
-			outCm.funcc 					= FUNCC_SENSORS_DOORS_FREEZER;
-			outCm.data_length 				= 1;
-			outCm.data[0]					= (lastFreezerDoor==DOOR_OPEN?0:1);
-			while(!canSendMessage(outCm,PRIO_HIGH));
+
+		#ifdef USE_DOOR_SW
+		if ((currentTick-bounce_FreezerDoor)>(3*TICK_100MS) && lastFreezerDoor != DOOR_FREEZER_IO)
+		{
+			lastFreezerDoor = DOOR_FREEZER_IO;
+			tick_FreezerDoor = 0;
+			bounce_FreezerDoor = currentTick;
 		}
 
-		//Poll doors refrigerator door
-		if (lastRefrigeratorDoor!=DOOR_REFRIGERATOR_IO)
-		{	
-			lastRefrigeratorDoor=DOOR_REFRIGERATOR_IO;
-			// Send door status change
-			outCm.funct 					= FUNCT_SENSORS;
-			outCm.funcc 					= FUNCC_SENSORS_DOORS_REFRIGERATOR;
-			outCm.data_length 				= 1;
-			outCm.data[0]					= (lastRefrigeratorDoor==DOOR_OPEN?0:1);
-			while(!canSendMessage(outCm,PRIO_HIGH));
+		if ((currentTick-bounce_RefrigeratorDoor)>(3*TICK_100MS) && lastRefrigeratorDoor != DOOR_REFRIGERATOR_IO)
+		{
+			lastRefrigeratorDoor = DOOR_REFRIGERATOR_IO;
+			tick_RefrigeratorDoor = 0;
+			bounce_RefrigeratorDoor = currentTick;
 		}
 
-		if ((tickGet()-t)>TICK_SECOND)
+		if ((currentTick-tick_FreezerDoor)>(3*TICK_1S))
+		{
+			CAN_PACKET outCp;	
+			outCp.type 		= ptPGM;
+			outCp.pgm.class = pcSENSOR;
+			outCp.pgm.id 	= pstDOOR_FREEZER;
+			outCp.length 	= 1;
+			outCp.data[0]	= (DOOR_FREEZER_IO==DOOR_CLOSED?0:1);
+			while(!canSendMessage(outCp,PRIO_HIGH));
+
+			tick_FreezerDoor = currentTick;
+		}
+
+		if ((currentTick-tick_RefrigeratorDoor)>(3*TICK_1S))
+		{
+			CAN_PACKET outCp;	
+			outCp.type 		= ptPGM;
+			outCp.pgm.class = pcSENSOR;
+			outCp.pgm.id 	= pstDOOR_REFRIGERATOR;
+			outCp.length 	= 1;
+			outCp.data[0]	= (DOOR_REFRIGERATOR_IO==DOOR_CLOSED?0:1);
+			while(!canSendMessage(outCp,PRIO_HIGH));
+
+			tick_RefrigeratorDoor = currentTick;
+		}
+		#endif
+
+		if ((currentTick-tick_led)>TICK_1S)
 		{
 			LED0_IO=~LED0_IO;
-			t = tickGet();
+			tick_led = currentTick;
 		}
 
 		#ifdef USE_ADC
-		if ((tickGet()-temperature)>TICK_SECOND*2) // Each 2 second, read temperature.
+		if ((currentTick-tick_temperature)>(2*TICK_1S) && getNewTemperature==TRUE) // Each 2 second, read temperature.
 		{
 			if (lastTemperature==TEMPERATURE_FREEZER) lastTemperature=TEMPERATURE_REFRIGERATOR; else lastTemperature=TEMPERATURE_FREEZER;
 			adcConvert(lastTemperature);
-			temperature = tickGet();
+			tick_temperature = currentTick;
 		}
 		#endif
 
@@ -89,16 +112,21 @@ void main()
 		#ifdef USE_ADC
 		if (adcDone()) // Has temperature, send it to the bus
 		{
+			CAN_PACKET outCp;
 			BYTE decimal;
 			signed char tenth;
 			temperatureRead(&tenth,&decimal);
-
-			outCm.funct 					= FUNCT_SENSORS;
-			outCm.funcc 					= (lastTemperature==TEMPERATURE_FREEZER?FUNCC_SENSORS_TEMPERATURE_FREEZER:FUNCC_SENSORS_TEMPERATURE_REFRIGERATOR);
-			outCm.data_length 				= 2;
-			outCm.data[1]					= tenth; //  signed 10 an 1 decimal.
-			outCm.data[0]					= decimal; //  Decimal value, 0-9
-			while(!canSendMessage(outCm,PRIO_HIGH));
+			
+			outCp.type 		= ptPGM;
+			outCp.pgm.class = pcSENSOR;
+			outCp.pgm.id 	= (lastTemperature==TEMPERATURE_FREEZER?pstTEMP_FREEZER:pstTEMP_REFRIGERATOR);
+			outCp.length 	= 2;
+			outCp.data[1]	= tenth; //  signed 10 an 1 decimal.
+			outCp.data[0]	= decimal; //  Decimal value, 0-9
+			while(!canSendMessage(outCp,PRIO_HIGH));
+			
+			tick_temperature = currentTick;
+			getNewTemperature = TRUE;
 		}
 		#endif
 
@@ -110,15 +138,16 @@ void main()
 void high_isr(void)
 {
 	canISR();
+	#ifdef USE_ADC
+		adcISR();
+	#endif
 }
 
 
 #pragma interrupt low_isr
 void low_isr(void)
 {
-	#ifdef USE_ADC
-		adcISR();
-	#endif
+
 }
 
 
@@ -158,9 +187,9 @@ void mainInit()
 *	Affects: Sensors/actuators/etc. See code.
 *	Depends: none.
 */
-void canParse(CAN_MESSAGE cm)
+void canParse(CAN_PACKET cp)
 {
-	CAN_MESSAGE outCm;
+
 }
 
 
@@ -169,7 +198,7 @@ void canParse(CAN_MESSAGE cm)
 
 #ifndef DEBUG_MODE
 extern void _startup (void); 
-#pragma code _RESET_INTERRUPT_VECTOR = 0x001000
+#pragma code _RESET_INTERRUPT_VECTOR = RM_RESET_VECTOR
 void _reset (void)
 {
     _asm goto _startup _endasm
@@ -177,14 +206,14 @@ void _reset (void)
 #pragma code
 #endif
 
-#pragma code _HIGH_INTERRUPT_VECTOR = 0x001008
+#pragma code _HIGH_INTERRUPT_VECTOR = RM_HIGH_INTERRUPT_VECTOR
 void _high_ISR (void)
 {
 	_asm GOTO high_isr _endasm
 }
 #pragma code
 
-#pragma code _LOW_INTERRUPT_VECTOR = 0x001018
+#pragma code _LOW_INTERRUPT_VECTOR = RM_LOW_INTERRUPT_VECTOR
 void _low_ISR (void)
 {
     _asm GOTO low_isr _endasm

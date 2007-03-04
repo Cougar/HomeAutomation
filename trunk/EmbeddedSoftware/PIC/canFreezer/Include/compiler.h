@@ -12,6 +12,8 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
+#define APP_VERSION 0x0001
+
 #include <p18cxxx.h>
 #define CLOCK_FREQ		(40000000)      // Hz
 #define INSTR_FREQ			(CLOCK_FREQ/4)
