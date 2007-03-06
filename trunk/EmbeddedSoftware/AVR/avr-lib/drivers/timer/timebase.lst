@@ -1,0 +1,281 @@
+   1               		.file	"timebase.c"
+   2               		.arch atmega8
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  64               	.global	__vector_4
+  66               	__vector_4:
+   1:../avr-lib/drivers/timer/timebase.c **** /**
+   2:../avr-lib/drivers/timer/timebase.c ****  * Timebase software module. Utilizes timer0 to provide a 32bit timebase with
+   3:../avr-lib/drivers/timer/timebase.c ****  * millisecond-granularity to the application.
+   4:../avr-lib/drivers/timer/timebase.c ****  * 
+   5:../avr-lib/drivers/timer/timebase.c ****  * @author	Martin Thomas
+   6:../avr-lib/drivers/timer/timebase.c ****  * @author	Jimmy Myhrman
+   7:../avr-lib/drivers/timer/timebase.c ****  * 
+   8:../avr-lib/drivers/timer/timebase.c ****  * @date	2006-11-19
+   9:../avr-lib/drivers/timer/timebase.c ****  */
+  10:../avr-lib/drivers/timer/timebase.c **** 
+  11:../avr-lib/drivers/timer/timebase.c **** /*-----------------------------------------------------------------------------
+  12:../avr-lib/drivers/timer/timebase.c ****  * Includes
+  13:../avr-lib/drivers/timer/timebase.c ****  *---------------------------------------------------------------------------*/
+  14:../avr-lib/drivers/timer/timebase.c **** #include <inttypes.h>
+  15:../avr-lib/drivers/timer/timebase.c **** #include <avr/io.h>
+  16:../avr-lib/drivers/timer/timebase.c **** #include <avr/interrupt.h>
+  17:../avr-lib/drivers/timer/timebase.c **** 
+  18:../avr-lib/drivers/timer/timebase.c **** #include <config.h>
+  19:../avr-lib/drivers/timer/timebase.c **** #include <drivers/timer/timebase.h>
+  20:../avr-lib/drivers/timer/timebase.c **** 
+  21:../avr-lib/drivers/timer/timebase.c **** 
+  22:../avr-lib/drivers/timer/timebase.c **** /*-----------------------------------------------------------------------------
+  23:../avr-lib/drivers/timer/timebase.c ****  * Globals
+  24:../avr-lib/drivers/timer/timebase.c ****  *---------------------------------------------------------------------------*/
+  25:../avr-lib/drivers/timer/timebase.c **** volatile uint32_t gMilliSecTick;
+  26:../avr-lib/drivers/timer/timebase.c **** 
+  27:../avr-lib/drivers/timer/timebase.c **** 
+  28:../avr-lib/drivers/timer/timebase.c **** /*-----------------------------------------------------------------------------
+  29:../avr-lib/drivers/timer/timebase.c ****  * Interrupt Service Routines
+  30:../avr-lib/drivers/timer/timebase.c ****  *---------------------------------------------------------------------------*/
+  31:../avr-lib/drivers/timer/timebase.c **** #if defined(TIMER2)
+  32:../avr-lib/drivers/timer/timebase.c **** ISR(SIG_OVERFLOW2) {
+  68               	.LM0:
+  69               	/* prologue: frame size=0 */
+  70 0000 1F92      		push __zero_reg__
+  71 0002 0F92      		push __tmp_reg__
+  72 0004 0FB6      		in __tmp_reg__,__SREG__
+  73 0006 0F92      		push __tmp_reg__
+  74 0008 1124      		clr __zero_reg__
+  75 000a 8F93      		push r24
+  76 000c 9F93      		push r25
+  77 000e AF93      		push r26
+  78 0010 BF93      		push r27
+  79               	/* prologue end (size=9) */
+  33:../avr-lib/drivers/timer/timebase.c **** 	TCNT2 = TIMEBASE_RELOAD;
+  81               	.LM1:
+  82 0012 83E8      		ldi r24,lo8(-125)
+  83 0014 84BD      		out 68-0x20,r24
+  34:../avr-lib/drivers/timer/timebase.c **** 	gMilliSecTick++;
+  85               	.LM2:
+  86 0016 8091 0000 		lds r24,gMilliSecTick
+  87 001a 9091 0000 		lds r25,(gMilliSecTick)+1
+  88 001e A091 0000 		lds r26,(gMilliSecTick)+2
+  89 0022 B091 0000 		lds r27,(gMilliSecTick)+3
+  90 0026 0196      		adiw r24,1
+  91 0028 A11D      		adc r26,__zero_reg__
+  92 002a B11D      		adc r27,__zero_reg__
+  93 002c 8093 0000 		sts gMilliSecTick,r24
+  94 0030 9093 0000 		sts (gMilliSecTick)+1,r25
+  95 0034 A093 0000 		sts (gMilliSecTick)+2,r26
+  96 0038 B093 0000 		sts (gMilliSecTick)+3,r27
+  97               	/* epilogue: frame size=0 */
+  98 003c BF91      		pop r27
+  99 003e AF91      		pop r26
+ 100 0040 9F91      		pop r25
+ 101 0042 8F91      		pop r24
+ 102 0044 0F90      		pop __tmp_reg__
+ 103 0046 0FBE      		out __SREG__,__tmp_reg__
+ 104 0048 0F90      		pop __tmp_reg__
+ 105 004a 1F90      		pop __zero_reg__
+ 106 004c 1895      		reti
+ 107               	/* epilogue end (size=9) */
+ 108               	/* function __vector_4 size 39 (21) */
+ 110               	.Lscope0:
+ 112               	.global	Timebase_Init
+ 114               	Timebase_Init:
+  35:../avr-lib/drivers/timer/timebase.c **** }
+  36:../avr-lib/drivers/timer/timebase.c **** #else
+  37:../avr-lib/drivers/timer/timebase.c **** ISR(SIG_OVERFLOW0) {
+  38:../avr-lib/drivers/timer/timebase.c **** 	TCNT0 = TIMEBASE_RELOAD;
+  39:../avr-lib/drivers/timer/timebase.c **** 	gMilliSecTick++;
+  40:../avr-lib/drivers/timer/timebase.c **** }
+  41:../avr-lib/drivers/timer/timebase.c **** #endif
+  42:../avr-lib/drivers/timer/timebase.c **** 
+  43:../avr-lib/drivers/timer/timebase.c **** 
+  44:../avr-lib/drivers/timer/timebase.c **** /*-----------------------------------------------------------------------------
+  45:../avr-lib/drivers/timer/timebase.c ****  * Public Functions
+  46:../avr-lib/drivers/timer/timebase.c ****  *---------------------------------------------------------------------------*/
+  47:../avr-lib/drivers/timer/timebase.c **** 
+  48:../avr-lib/drivers/timer/timebase.c **** /**
+  49:../avr-lib/drivers/timer/timebase.c ****  * Initializes the timebase. The hardware timer interrupt source will be
+  50:../avr-lib/drivers/timer/timebase.c ****  * enabled, but global interrupts need to be enabled by the application.
+  51:../avr-lib/drivers/timer/timebase.c ****  */
+  52:../avr-lib/drivers/timer/timebase.c **** void Timebase_Init() {
+ 116               	.LM3:
+ 117               	/* prologue: frame size=0 */
+ 118               	/* prologue end (size=0) */
+  53:../avr-lib/drivers/timer/timebase.c **** #if defined(TIMER2)
+  54:../avr-lib/drivers/timer/timebase.c **** 	#if defined(__AVR_ATmega8__)
+  55:../avr-lib/drivers/timer/timebase.c **** 	#if TIMEBASE_PRESCALE == 64
+  56:../avr-lib/drivers/timer/timebase.c **** 	TCCR2 = (1<<CS22);	// prescaler: 64
+ 120               	.LM4:
+ 121 004e 84E0      		ldi r24,lo8(4)
+ 122 0050 85BD      		out 69-0x20,r24
+  57:../avr-lib/drivers/timer/timebase.c **** 	#elif TIMEBASE_PRESCALE == 256
+  58:../avr-lib/drivers/timer/timebase.c **** 	TCCR2 = (1<<CS22) | (1<<CS21); // prescaler: 256
+  59:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  60:../avr-lib/drivers/timer/timebase.c **** 	TCNT2 = TIMEBASE_RELOAD; // set initial reload-value
+ 124               	.LM5:
+ 125 0052 83E8      		ldi r24,lo8(-125)
+ 126 0054 84BD      		out 68-0x20,r24
+  61:../avr-lib/drivers/timer/timebase.c **** 	TIFR  |= (1<<TOV2);  // clear overflow int.
+ 128               	.LM6:
+ 129 0056 88B7      		in r24,88-0x20
+ 130 0058 8064      		ori r24,lo8(64)
+ 131 005a 88BF      		out 88-0x20,r24
+  62:../avr-lib/drivers/timer/timebase.c **** 	TIMSK |= (1<<TOIE2); // enable overflow-interrupt
+ 133               	.LM7:
+ 134 005c 89B7      		in r24,89-0x20
+ 135 005e 8064      		ori r24,lo8(64)
+ 136 0060 89BF      		out 89-0x20,r24
+ 137               	/* epilogue: frame size=0 */
+ 138 0062 0895      		ret
+ 139               	/* epilogue end (size=1) */
+ 140               	/* function Timebase_Init size 11 (10) */
+ 142               	.Lscope1:
+ 144               	.global	Timebase_CurrentTime
+ 146               	Timebase_CurrentTime:
+  63:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  64:../avr-lib/drivers/timer/timebase.c **** 	
+  65:../avr-lib/drivers/timer/timebase.c **** 	#if defined(__AVR_ATmega88__)
+  66:../avr-lib/drivers/timer/timebase.c **** 	#if TIMEBASE_PRESCALE == 64
+  67:../avr-lib/drivers/timer/timebase.c **** 	TCCR2B = (1<<CS22);	// prescaler: 64
+  68:../avr-lib/drivers/timer/timebase.c **** 	#elif TIMEBASE_PRESCALE == 256
+  69:../avr-lib/drivers/timer/timebase.c **** 	TCCR2B = (1<<CS22)|(1<<CS21);				// prescaler: 256
+  70:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  71:../avr-lib/drivers/timer/timebase.c **** 	TCNT2 = TIMEBASE_RELOAD; // set initial reload-value
+  72:../avr-lib/drivers/timer/timebase.c **** 	TIFR2  |= (1<<TOV2);  // clear overflow int.
+  73:../avr-lib/drivers/timer/timebase.c **** 	TIMSK2 |= (1<<TOIE2); // enable overflow-interrupt
+  74:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  75:../avr-lib/drivers/timer/timebase.c **** #else /* Use timer0 */
+  76:../avr-lib/drivers/timer/timebase.c **** 	#if defined(__AVR_ATmega8__)
+  77:../avr-lib/drivers/timer/timebase.c **** 	#if TIMEBASE_PRESCALE == 64
+  78:../avr-lib/drivers/timer/timebase.c **** 	TCCR0 = (1<<CS01) | (1<<CS00);	// prescaler: 64
+  79:../avr-lib/drivers/timer/timebase.c **** 	#elif TIMEBASE_PRESCALE == 256
+  80:../avr-lib/drivers/timer/timebase.c **** 	TCCR0 = (1<<CS02); 				// prescaler: 256
+  81:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  82:../avr-lib/drivers/timer/timebase.c **** 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
+  83:../avr-lib/drivers/timer/timebase.c **** 	TIFR  |= (1<<TOV0);  // clear overflow int.
+  84:../avr-lib/drivers/timer/timebase.c **** 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
+  85:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  86:../avr-lib/drivers/timer/timebase.c **** 	
+  87:../avr-lib/drivers/timer/timebase.c **** 	#if defined(__AVR_ATmega88__)
+  88:../avr-lib/drivers/timer/timebase.c **** 	#if TIMEBASE_PRESCALE == 64
+  89:../avr-lib/drivers/timer/timebase.c **** 	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
+  90:../avr-lib/drivers/timer/timebase.c **** 	#elif TIMEBASE_PRESCALE == 256
+  91:../avr-lib/drivers/timer/timebase.c **** 	TCCR0B = (1<<CS02);				// prescaler: 256
+  92:../avr-lib/drivers/timer/timebase.c **** 	#endif
+  93:../avr-lib/drivers/timer/timebase.c **** 	TCNT0 = TIMEBASE_RELOAD; // set initial reload-value
+  94:../avr-lib/drivers/timer/timebase.c **** 	TIFR0  |= (1<<TOV0);  // clear overflow int.
+  95:../avr-lib/drivers/timer/timebase.c **** 	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
+  96:../avr-lib/drivers/timer/timebase.c ****     #endif
+  97:../avr-lib/drivers/timer/timebase.c **** #endif
+  98:../avr-lib/drivers/timer/timebase.c **** }
+  99:../avr-lib/drivers/timer/timebase.c **** 
+ 100:../avr-lib/drivers/timer/timebase.c **** 
+ 101:../avr-lib/drivers/timer/timebase.c **** /**
+ 102:../avr-lib/drivers/timer/timebase.c ****  * Reads the current time.
+ 103:../avr-lib/drivers/timer/timebase.c ****  * 
+ 104:../avr-lib/drivers/timer/timebase.c ****  * @return
+ 105:../avr-lib/drivers/timer/timebase.c ****  * 		The current time in milliseconds (32bit value).
+ 106:../avr-lib/drivers/timer/timebase.c ****  */
+ 107:../avr-lib/drivers/timer/timebase.c **** uint32_t Timebase_CurrentTime(void) {
+ 148               	.LM8:
+ 149               	/* prologue: frame size=0 */
+ 150               	/* prologue end (size=0) */
+ 108:../avr-lib/drivers/timer/timebase.c **** 	uint8_t sreg;
+ 109:../avr-lib/drivers/timer/timebase.c **** 	uint16_t res;
+ 110:../avr-lib/drivers/timer/timebase.c **** 	sreg=SREG;
+ 152               	.LM9:
+ 153 0064 2FB7      		in r18,95-0x20
+ 111:../avr-lib/drivers/timer/timebase.c **** 	cli();
+ 155               	.LM10:
+ 156               	/* #APP */
+ 157 0066 F894      		cli
+ 112:../avr-lib/drivers/timer/timebase.c **** 	res = gMilliSecTick;
+ 159               	.LM11:
+ 160               	/* #NOAPP */
+ 161 0068 6091 0000 		lds r22,gMilliSecTick
+ 162 006c 7091 0000 		lds r23,(gMilliSecTick)+1
+ 163 0070 8091 0000 		lds r24,(gMilliSecTick)+2
+ 164 0074 9091 0000 		lds r25,(gMilliSecTick)+3
+ 113:../avr-lib/drivers/timer/timebase.c **** 	SREG=sreg;
+ 166               	.LM12:
+ 167 0078 2FBF      		out 95-0x20,r18
+ 168 007a 8827      		clr r24
+ 169 007c 9927      		clr r25
+ 170               	/* epilogue: frame size=0 */
+ 171 007e 0895      		ret
+ 172               	/* epilogue end (size=1) */
+ 173               	/* function Timebase_CurrentTime size 15 (14) */
+ 178               	.Lscope2:
+ 181               	.global	Timebase_PassedTimeMillis
+ 183               	Timebase_PassedTimeMillis:
+ 114:../avr-lib/drivers/timer/timebase.c **** 	return res;
+ 115:../avr-lib/drivers/timer/timebase.c **** }
+ 116:../avr-lib/drivers/timer/timebase.c **** 
+ 117:../avr-lib/drivers/timer/timebase.c **** 
+ 118:../avr-lib/drivers/timer/timebase.c **** /**
+ 119:../avr-lib/drivers/timer/timebase.c ****  * Checks how much time has passed since a given timestamp.
+ 120:../avr-lib/drivers/timer/timebase.c ****  * 
+ 121:../avr-lib/drivers/timer/timebase.c ****  * @param t0
+ 122:../avr-lib/drivers/timer/timebase.c ****  * 		The timestamp.
+ 123:../avr-lib/drivers/timer/timebase.c ****  * @return
+ 124:../avr-lib/drivers/timer/timebase.c ****  * 		Number of milliseconds that have passed since t0.
+ 125:../avr-lib/drivers/timer/timebase.c ****  */ 
+ 126:../avr-lib/drivers/timer/timebase.c **** uint32_t Timebase_PassedTimeMillis(uint32_t t0) {
+ 185               	.LM13:
+ 186               	/* prologue: frame size=0 */
+ 187               	/* prologue end (size=0) */
+ 127:../avr-lib/drivers/timer/timebase.c **** 	uint8_t sreg;
+ 128:../avr-lib/drivers/timer/timebase.c **** 	uint16_t res;
+ 129:../avr-lib/drivers/timer/timebase.c **** 	sreg=SREG;
+ 189               	.LM14:
+ 190 0080 EFB7      		in r30,95-0x20
+ 130:../avr-lib/drivers/timer/timebase.c **** 	cli();
+ 192               	.LM15:
+ 193               	/* #APP */
+ 194 0082 F894      		cli
+ 131:../avr-lib/drivers/timer/timebase.c **** 	res = (uint16_t)(gMilliSecTick-t0);
+ 196               	.LM16:
+ 197               	/* #NOAPP */
+ 198 0084 2091 0000 		lds r18,gMilliSecTick
+ 199 0088 3091 0000 		lds r19,(gMilliSecTick)+1
+ 200 008c 4091 0000 		lds r20,(gMilliSecTick)+2
+ 201 0090 5091 0000 		lds r21,(gMilliSecTick)+3
+ 132:../avr-lib/drivers/timer/timebase.c **** 	SREG=sreg;
+ 203               	.LM17:
+ 204 0094 EFBF      		out 95-0x20,r30
+ 205 0096 261B      		sub r18,r22
+ 206 0098 370B      		sbc r19,r23
+ 207 009a B901      		movw r22,r18
+ 208 009c 8827      		clr r24
+ 209 009e 9927      		clr r25
+ 210               	/* epilogue: frame size=0 */
+ 211 00a0 0895      		ret
+ 212               	/* epilogue end (size=1) */
+ 213               	/* function Timebase_PassedTimeMillis size 18 (17) */
+ 218               	.Lscope3:
+ 219               		.comm gMilliSecTick,4,1
+ 222               	.Letext0:
+ 223               	/* File "../avr-lib/drivers/timer/timebase.c": code   83 = 0x0053 (  62), prologues   9, epilogues 
+DEFINED SYMBOLS
+                            *ABS*:00000000 timebase.c
+     /tmp/ccrzEiEW.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccrzEiEW.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccrzEiEW.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccrzEiEW.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccrzEiEW.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccrzEiEW.s:66     .text:00000000 __vector_4
+                            *COM*:00000004 gMilliSecTick
+     /tmp/ccrzEiEW.s:114    .text:0000004e Timebase_Init
+     /tmp/ccrzEiEW.s:146    .text:00000064 Timebase_CurrentTime
+     /tmp/ccrzEiEW.s:183    .text:00000080 Timebase_PassedTimeMillis
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

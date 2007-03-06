@@ -1,0 +1,115 @@
+   1               		.file	"mcu.c"
+   2               		.arch atmega8
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  70               	.global	Mcu_Init
+  72               	Mcu_Init:
+   1:../avr-lib/drivers/mcu/mcu.c **** /**
+   2:../avr-lib/drivers/mcu/mcu.c ****  * MCU driver.
+   3:../avr-lib/drivers/mcu/mcu.c ****  * 
+   4:../avr-lib/drivers/mcu/mcu.c ****  * @date	2006-11-19
+   5:../avr-lib/drivers/mcu/mcu.c ****  * 
+   6:../avr-lib/drivers/mcu/mcu.c ****  * @author	Jimmy Myhrman
+   7:../avr-lib/drivers/mcu/mcu.c ****  *   
+   8:../avr-lib/drivers/mcu/mcu.c ****  */
+   9:../avr-lib/drivers/mcu/mcu.c **** 
+  10:../avr-lib/drivers/mcu/mcu.c **** /*-----------------------------------------------------------------------------
+  11:../avr-lib/drivers/mcu/mcu.c ****  * Includes
+  12:../avr-lib/drivers/mcu/mcu.c ****  *---------------------------------------------------------------------------*/
+  13:../avr-lib/drivers/mcu/mcu.c **** #include <avr/interrupt.h>
+  14:../avr-lib/drivers/mcu/mcu.c **** #include <config.h>
+  15:../avr-lib/drivers/mcu/mcu.c **** #include <drivers/mcu/mcu.h>
+  16:../avr-lib/drivers/mcu/mcu.c **** 
+  17:../avr-lib/drivers/mcu/mcu.c **** 
+  18:../avr-lib/drivers/mcu/mcu.c **** /*-----------------------------------------------------------------------------
+  19:../avr-lib/drivers/mcu/mcu.c ****  * Public Functions
+  20:../avr-lib/drivers/mcu/mcu.c ****  *---------------------------------------------------------------------------*/
+  21:../avr-lib/drivers/mcu/mcu.c **** 
+  22:../avr-lib/drivers/mcu/mcu.c **** /**
+  23:../avr-lib/drivers/mcu/mcu.c ****  * Initialize MCU. If the MCU is mega88, the internal clock frequency will be
+  24:../avr-lib/drivers/mcu/mcu.c ****  * set to 8MHz. Interrupts must not be enabled when calling this function!
+  25:../avr-lib/drivers/mcu/mcu.c ****  */
+  26:../avr-lib/drivers/mcu/mcu.c **** void Mcu_Init() {
+  74               	.LM0:
+  75               	/* prologue: frame size=0 */
+  76               	/* prologue end (size=0) */
+  77               	/* epilogue: frame size=0 */
+  78 0000 0895      		ret
+  79               	/* epilogue end (size=1) */
+  80               	/* function Mcu_Init size 1 (0) */
+  82               	.Lscope0:
+  84               	.global	Mcu_EnableIRQ
+  86               	Mcu_EnableIRQ:
+  27:../avr-lib/drivers/mcu/mcu.c **** 	#if defined(__AVR_ATmega88__)
+  28:../avr-lib/drivers/mcu/mcu.c **** 	// set the clock speed to 8MHz
+  29:../avr-lib/drivers/mcu/mcu.c **** 	// set the clock prescaler. First write CLKPCE to enable setting of clock the
+  30:../avr-lib/drivers/mcu/mcu.c **** 	// next four instructions.
+  31:../avr-lib/drivers/mcu/mcu.c **** 	CLKPR=(1<<CLKPCE);
+  32:../avr-lib/drivers/mcu/mcu.c **** 	CLKPR=0; // 8 MHZ
+  33:../avr-lib/drivers/mcu/mcu.c **** 	#endif
+  34:../avr-lib/drivers/mcu/mcu.c **** }
+  35:../avr-lib/drivers/mcu/mcu.c **** 
+  36:../avr-lib/drivers/mcu/mcu.c **** /**
+  37:../avr-lib/drivers/mcu/mcu.c ****  * Enable interrupts.
+  38:../avr-lib/drivers/mcu/mcu.c ****  */
+  39:../avr-lib/drivers/mcu/mcu.c **** void Mcu_EnableIRQ() {
+  88               	.LM1:
+  89               	/* prologue: frame size=0 */
+  90               	/* prologue end (size=0) */
+  40:../avr-lib/drivers/mcu/mcu.c **** 	#if MCU == atmega8
+  41:../avr-lib/drivers/mcu/mcu.c **** 		sei();
+  92               	.LM2:
+  93               	/* #APP */
+  94 0002 7894      		sei
+  95               	/* #NOAPP */
+  96               	/* epilogue: frame size=0 */
+  97 0004 0895      		ret
+  98               	/* epilogue end (size=1) */
+  99               	/* function Mcu_EnableIRQ size 3 (2) */
+ 101               	.Lscope1:
+ 103               	.global	Mcu_DisableIRQ
+ 105               	Mcu_DisableIRQ:
+  42:../avr-lib/drivers/mcu/mcu.c **** 	#endif
+  43:../avr-lib/drivers/mcu/mcu.c **** }
+  44:../avr-lib/drivers/mcu/mcu.c **** 
+  45:../avr-lib/drivers/mcu/mcu.c **** /**
+  46:../avr-lib/drivers/mcu/mcu.c ****  * Disable interrupts.
+  47:../avr-lib/drivers/mcu/mcu.c ****  */
+  48:../avr-lib/drivers/mcu/mcu.c **** void Mcu_DisableIRQ() {
+ 107               	.LM3:
+ 108               	/* prologue: frame size=0 */
+ 109               	/* prologue end (size=0) */
+  49:../avr-lib/drivers/mcu/mcu.c **** 	#if MCU == atmega8
+  50:../avr-lib/drivers/mcu/mcu.c **** 		cli();
+ 111               	.LM4:
+ 112               	/* #APP */
+ 113 0006 F894      		cli
+ 114               	/* #NOAPP */
+ 115               	/* epilogue: frame size=0 */
+ 116 0008 0895      		ret
+ 117               	/* epilogue end (size=1) */
+ 118               	/* function Mcu_DisableIRQ size 3 (2) */
+ 120               	.Lscope2:
+ 122               	.Letext0:
+ 123               	/* File "../avr-lib/drivers/mcu/mcu.c": code    7 = 0x0007 (   4), prologues   0, epilogues   3 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 mcu.c
+     /tmp/ccGZPB2w.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccGZPB2w.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccGZPB2w.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccGZPB2w.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccGZPB2w.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccGZPB2w.s:72     .text:00000000 Mcu_Init
+     /tmp/ccGZPB2w.s:86     .text:00000002 Mcu_EnableIRQ
+     /tmp/ccGZPB2w.s:105    .text:00000006 Mcu_DisableIRQ
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

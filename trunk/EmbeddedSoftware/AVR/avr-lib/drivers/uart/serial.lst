@@ -1,0 +1,137 @@
+   1               		.file	"serial.c"
+   2               		.arch atmega8
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  80               	.global	Serial_Init
+  82               	Serial_Init:
+   1:../avr-lib/drivers/uart/serial.c **** /**
+   2:../avr-lib/drivers/uart/serial.c ****  * Serial communication software module.
+   3:../avr-lib/drivers/uart/serial.c ****  * 
+   4:../avr-lib/drivers/uart/serial.c ****  * @author	Jimmy Myhrman
+   5:../avr-lib/drivers/uart/serial.c ****  * 
+   6:../avr-lib/drivers/uart/serial.c ****  * @date	2006-11-22
+   7:../avr-lib/drivers/uart/serial.c ****  */
+   8:../avr-lib/drivers/uart/serial.c **** 
+   9:../avr-lib/drivers/uart/serial.c **** /*-----------------------------------------------------------------------------
+  10:../avr-lib/drivers/uart/serial.c ****  * Includes
+  11:../avr-lib/drivers/uart/serial.c ****  *---------------------------------------------------------------------------*/
+  12:../avr-lib/drivers/uart/serial.c **** #include <stdlib.h>
+  13:../avr-lib/drivers/uart/serial.c **** #include <stdio.h>
+  14:../avr-lib/drivers/uart/serial.c **** #include <config.h>
+  15:../avr-lib/drivers/uart/serial.c **** #include <drivers/uart/serial.h>
+  16:../avr-lib/drivers/uart/serial.c **** #include <drivers/uart/uart.h>
+  17:../avr-lib/drivers/uart/serial.c **** 
+  18:../avr-lib/drivers/uart/serial.c **** 
+  19:../avr-lib/drivers/uart/serial.c **** /*-----------------------------------------------------------------------------
+  20:../avr-lib/drivers/uart/serial.c ****  * Private Function Prototypes
+  21:../avr-lib/drivers/uart/serial.c ****  *---------------------------------------------------------------------------*/
+  22:../avr-lib/drivers/uart/serial.c **** static int serial_putchar(char c, FILE *stream);
+  23:../avr-lib/drivers/uart/serial.c **** 
+  24:../avr-lib/drivers/uart/serial.c **** 
+  25:../avr-lib/drivers/uart/serial.c **** /*-----------------------------------------------------------------------------
+  26:../avr-lib/drivers/uart/serial.c ****  * Variables
+  27:../avr-lib/drivers/uart/serial.c ****  *---------------------------------------------------------------------------*/
+  28:../avr-lib/drivers/uart/serial.c **** static FILE myStdOut = FDEV_SETUP_STREAM(serial_putchar, NULL,_FDEV_SETUP_WRITE);
+  29:../avr-lib/drivers/uart/serial.c **** 
+  30:../avr-lib/drivers/uart/serial.c **** 
+  31:../avr-lib/drivers/uart/serial.c **** /*-----------------------------------------------------------------------------
+  32:../avr-lib/drivers/uart/serial.c ****  * Public Functions
+  33:../avr-lib/drivers/uart/serial.c ****  *---------------------------------------------------------------------------*/
+  34:../avr-lib/drivers/uart/serial.c **** 
+  35:../avr-lib/drivers/uart/serial.c **** /**
+  36:../avr-lib/drivers/uart/serial.c ****  * Initializes the serial communication. Sets the baudrate and redirects
+  37:../avr-lib/drivers/uart/serial.c ****  * STDOUT to the serial communication channel.
+  38:../avr-lib/drivers/uart/serial.c ****  */
+  39:../avr-lib/drivers/uart/serial.c **** void Serial_Init() {
+  84               	.LM0:
+  85               	/* prologue: frame size=0 */
+  86               	/* prologue end (size=0) */
+  40:../avr-lib/drivers/uart/serial.c **** 	uart_init((UART_BAUD_SELECT((SERIAL_BAUDRATE),F_CPU)));
+  88               	.LM1:
+  89 0000 8FE0      		ldi r24,lo8(15)
+  90 0002 90E0      		ldi r25,hi8(15)
+  91 0004 00D0      		rcall uart_init
+  41:../avr-lib/drivers/uart/serial.c **** 	
+  42:../avr-lib/drivers/uart/serial.c **** 	stdout = &myStdOut;
+  93               	.LM2:
+  94 0006 80E0      		ldi r24,lo8(myStdOut)
+  95 0008 90E0      		ldi r25,hi8(myStdOut)
+  96 000a 9093 0000 		sts (__iob+2)+1,r25
+  97 000e 8093 0000 		sts __iob+2,r24
+  98               	/* epilogue: frame size=0 */
+  99 0012 0895      		ret
+ 100               	/* epilogue end (size=1) */
+ 101               	/* function Serial_Init size 10 (9) */
+ 103               	.Lscope0:
+ 108               	serial_putchar:
+  43:../avr-lib/drivers/uart/serial.c **** }
+  44:../avr-lib/drivers/uart/serial.c **** 
+  45:../avr-lib/drivers/uart/serial.c **** 
+  46:../avr-lib/drivers/uart/serial.c **** /*-----------------------------------------------------------------------------
+  47:../avr-lib/drivers/uart/serial.c ****  * Private Functions
+  48:../avr-lib/drivers/uart/serial.c ****  *---------------------------------------------------------------------------*/
+  49:../avr-lib/drivers/uart/serial.c **** 
+  50:../avr-lib/drivers/uart/serial.c **** static int serial_putchar(char c, FILE *stream) {
+ 110               	.LM3:
+ 111               	/* prologue: frame size=0 */
+ 112 0014 1F93      		push r17
+ 113               	/* prologue end (size=1) */
+ 114 0016 182F      		mov r17,r24
+  51:../avr-lib/drivers/uart/serial.c **** 	if (c == '\n') serial_putchar('\r', stream);
+ 116               	.LM4:
+ 117 0018 8A30      		cpi r24,lo8(10)
+ 118 001a 11F4      		brne .L4
+ 120               	.LM5:
+ 121 001c 8DE0      		ldi r24,lo8(13)
+ 122 001e FADF      		rcall serial_putchar
+ 123               	.L4:
+  52:../avr-lib/drivers/uart/serial.c **** 	uart_putc(c);
+ 125               	.LM6:
+ 126 0020 812F      		mov r24,r17
+ 127 0022 00D0      		rcall uart_putc
+  53:../avr-lib/drivers/uart/serial.c **** 	return 0;
+  54:../avr-lib/drivers/uart/serial.c **** }
+ 129               	.LM7:
+ 130 0024 80E0      		ldi r24,lo8(0)
+ 131 0026 90E0      		ldi r25,hi8(0)
+ 132               	/* epilogue: frame size=0 */
+ 133 0028 1F91      		pop r17
+ 134 002a 0895      		ret
+ 135               	/* epilogue end (size=2) */
+ 136               	/* function serial_putchar size 12 (9) */
+ 138               	.Lscope1:
+ 139               		.data
+ 142               	myStdOut:
+ 143 0000 0000 00   		.skip 3,0
+ 144 0003 02        		.byte	2
+ 145 0004 0000 0000 		.skip 4,0
+ 146 0008 0000      		.word	pm(serial_putchar)
+ 147 000a 0000      		.word	0
+ 148 000c 0000      		.word	0
+ 150               		.text
+ 152               	.Letext0:
+ 153               	/* File "../avr-lib/drivers/uart/serial.c": code   22 = 0x0016 (  18), prologues   1, epilogues   3
+DEFINED SYMBOLS
+                            *ABS*:00000000 serial.c
+     /tmp/ccLo5G8X.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccLo5G8X.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccLo5G8X.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccLo5G8X.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccLo5G8X.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccLo5G8X.s:82     .text:00000000 Serial_Init
+     /tmp/ccLo5G8X.s:142    .data:00000000 myStdOut
+     /tmp/ccLo5G8X.s:108    .text:00000014 serial_putchar
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+uart_init
+__iob
+uart_putc
