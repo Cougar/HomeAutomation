@@ -147,6 +147,7 @@ SECTIONS
    . = __boot_start - (__data_load_end - __bios_start) - 0x3f;
    __bios_optimal_start = ALIGN(0x40);
    . = __temp ;
+   __bios_size = 0x2000 - __bios_start;
   /* Global data not cleared after reset.  */
   .noinit  SIZEOF(.bss) + ADDR(.bss) :
   {

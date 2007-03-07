@@ -89,6 +89,13 @@
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 </target>
+<target name="Reinstall" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>make</buildCommand>
+<buildArguments></buildArguments>
+<buildTarget>reinstall</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
 <target name="appdata" path="drivers" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
 <buildArguments></buildArguments>

@@ -106,7 +106,7 @@ void Timebase_Init() {
  */
 uint32_t Timebase_CurrentTime(void) {
 	uint8_t sreg;
-	uint16_t res;
+	uint32_t res;
 	sreg=SREG;
 	cli();
 	res = gMilliSecTick;
@@ -125,10 +125,10 @@ uint32_t Timebase_CurrentTime(void) {
  */ 
 uint32_t Timebase_PassedTimeMillis(uint32_t t0) {
 	uint8_t sreg;
-	uint16_t res;
+	uint32_t res;
 	sreg=SREG;
 	cli();
-	res = (uint16_t)(gMilliSecTick-t0);
+	res = (uint32_t)(gMilliSecTick-t0);
 	SREG=sreg;
 	return res;
 }
