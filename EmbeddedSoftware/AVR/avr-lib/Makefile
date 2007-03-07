@@ -58,7 +58,7 @@ clean: cleanintermediate cleantemplate
 	-rm -f $(PRG).elf $(PRG).lst $(PRG).map *.hex
 
 cleanintermediate:
-	-rm -f $(OBJ) $(PRG)_pass1.elf $(LIBNAME).[So] *.d $(BIOSDIR)/config.h
+	-rm -f $(OBJ) $(LIBNAME).[So] *.d $(BIOSDIR)/config.h
 
 cleantemplate:
 	-rm -f $(TEMPLATEDIR)/bios.* $(TEMPLATEDIR)/$(LIBNAME).a
@@ -72,8 +72,8 @@ lst:  $(PRG).lst
 $(PRG).elf: $(PRG)_pass1.elf
 	@echo Linking pass 2: Optimizing flash usage
 	@rm -f $(PRG)_pass1.elf
-	$(MAKE) BIOS_START=$(shell awk '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map) $(PRG)_pass1.elf
-	@cp $(PRG)_pass1.elf $(PRG).elf
+	@$(MAKE) BIOS_START=$(shell awk '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map) $(PRG)_pass1.elf
+	@mv $(PRG)_pass1.elf $(PRG).elf
 
 $(LIBNAME).S: $(PRG).elf
 	@echo Generating $@
@@ -117,6 +117,10 @@ hex:  $(PRG).hex
 
 install: hex
 	$(UPLOAD) $(ULFLAGS)
+
+reinstall: hex
+	$(OBJCOPY) -I ihex -O ihex --change-addresses=-$(shell awk '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map) bios.hex bios_offset.hex
+	$(CANMANAGER) $(CANMANFLAGS) -n $(NODE_ID) -u bios_offset.hex --flashcopy 0,$(shell awk '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map),$(shell awk '/0x[0-9a-f]+.*__bios_size/ { print $$1 }' bios.map)
 
 # Rules for building the eeprom images
 
