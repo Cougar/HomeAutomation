@@ -22,6 +22,8 @@ static CAN_PACKET outCp;
 
 static void canGetPacket(void);
 
+BYTE myId() { return MY_ID; }
+
 
 /*
 *	Function: canInit
@@ -188,7 +190,7 @@ void canISR()
 */
 void canGetPacket()
 {
-		CAN_PACKET cp;
+		auto CAN_PACKET cp;
 
 		//RXB0SIDH 28 27 26 25 24 23 22 21
         //RXB0SIDL 20 19 18 xx xx xx 17 16

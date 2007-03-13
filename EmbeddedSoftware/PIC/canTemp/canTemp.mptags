@@ -27,7 +27,7 @@ EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD add
 EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
 FALSE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
 INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	17;"	d	line:17
-IO_TIMEOUT::700	F:\MCP\projects\CAN\canTemp\Include\blinds.h	21;"	d	line:21
+IO_TIMEOUT::200	F:\MCP\projects\CAN\canTemp\Include\blinds.h	21;"	d	line:21
 LED0_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	21;"	d	line:21
 LED0_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canTemp\Include\compiler.h	20;"	d	line:20
 MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
@@ -61,9 +61,9 @@ USE_ADC	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	15;"	d	line:15
 USE_BLINDS	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	16;"	d	line:16
 WORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	17;"	t	line:17
 _BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	g	line:15
-_high_ISR	F:\MCP\projects\CAN\canTemp\Source\Main.c	204;"	f	line:204	signature:(void)
-_reset	F:\MCP\projects\CAN\canTemp\Source\Main.c	196;"	f	line:196	signature:(void)
-_startup	F:\MCP\projects\CAN\canTemp\Source\Main.c	194;"	p	line:194	file:	signature:(void)
+_high_ISR	F:\MCP\projects\CAN\canTemp\Source\Main.c	212;"	f	line:212	signature:(void)
+_reset	F:\MCP\projects\CAN\canTemp\Source\Main.c	204;"	f	line:204	signature:(void)
+_startup	F:\MCP\projects\CAN\canTemp\Source\Main.c	202;"	p	line:202	file:	signature:(void)
 adcConvert	F:\MCP\projects\CAN\Include\adc.c	86;"	f	line:86	signature:(BYTE channel)
 adcDone	F:\MCP\projects\CAN\Include\adc.c	163;"	f	line:163	signature:(void)
 adcGetRaw	F:\MCP\projects\CAN\Include\adc.c	148;"	f	line:148
@@ -78,17 +78,17 @@ blindsInit	F:\MCP\projects\CAN\canTemp\Include\blinds.h	29;"	p	line:29	signature
 blindsInit	F:\MCP\projects\CAN\canTemp\Source\blinds.c	29;"	f	line:29
 blindsTurn	F:\MCP\projects\CAN\canTemp\Include\blinds.h	31;"	p	line:31	signature:(BYTE precent)
 blindsTurn	F:\MCP\projects\CAN\canTemp\Source\blinds.c	65;"	f	line:65	signature:(BYTE precent)
-canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	189;"	f	line:189
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	f	line:191
 canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
 canISR	F:\MCP\projects\CAN\canBase\Include\CAN.h	24;"	p	line:24	signature:(void)
-canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	146;"	f	line:146
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	148;"	f	line:148
 canInit	F:\MCP\projects\CAN\canBase\Include\CAN.h	23;"	p	line:23	signature:(void)
-canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	35;"	f	line:35
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	37;"	f	line:37
 canParse	F:\MCP\projects\CAN\canBase\Include\CAN.h	25;"	p	line:25	signature:(CAN_PACKET cp)
 canParse	F:\MCP\projects\CAN\canTemp\Source\Main.c	177;"	f	line:177	signature:(CAN_PACKET cp)
 canSendMessage	F:\MCP\projects\CAN\canBase\Include\CAN.h	26;"	p	line:26	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
-canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	267;"	f	line:267	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
-cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	l	line:191
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	269;"	f	line:269	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	193;"	l	line:193
 currentPrecent	F:\MCP\projects\CAN\canTemp\Source\blinds.c	17;"	v	line:17	file:
 currentTick	F:\MCP\projects\CAN\canTemp\Source\Main.c	50;"	l	line:50
 decimal	F:\MCP\projects\CAN\canTemp\Source\Main.c	98;"	l	line:98
@@ -102,9 +102,12 @@ low_isr	F:\MCP\projects\CAN\canTemp\Source\Main.c	137;"	f	line:137	signature:(vo
 main	F:\MCP\projects\CAN\canTemp\Source\Main.c	29;"	f	line:29
 mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	153;"	f	line:153
 mainInit	F:\MCP\projects\CAN\canTemp\Source\Main.c	27;"	p	line:27	file:	signature:(void)
+myId	F:\MCP\projects\CAN\canBase\Include\CAN.h	27;"	p	line:27	signature:(void)
+myId	F:\MCP\projects\CAN\canBase\Source\CAN.c	25;"	f	line:25
 outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
 outCp	F:\MCP\projects\CAN\canTemp\Source\Main.c	70;"	l	line:70
 outCp	F:\MCP\projects\CAN\canTemp\Source\Main.c	97;"	l	line:97
+pre	F:\MCP\projects\CAN\canTemp\Source\Main.c	184;"	l	line:184
 stackTasks_H	F:\MCP\projects\CAN\canTemp\Include\stackTasks.h	13;"	d	line:13
 temperatureRead	F:\MCP\projects\CAN\Include\adc.c	128;"	f	line:128	signature:(signed char *tenth, BYTE *decimal)
 tenth	F:\MCP\projects\CAN\canTemp\Source\Main.c	99;"	l	line:99

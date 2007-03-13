@@ -24,5 +24,6 @@ void canInit(void);
 void canISR(void);
 void canParse(CAN_PACKET cp);
 BOOL canSendMessage(CAN_PACKET cp, CAN_PRIORITY prio);
+BYTE myId(void);
 
 #endif //CAN.h

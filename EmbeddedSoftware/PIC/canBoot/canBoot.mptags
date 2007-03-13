@@ -29,9 +29,12 @@ MY_ID	F:\MCP\projects\CAN\canBoot\Source\Main.c	57;"	v	line:57	file:
 NOT_RBPU::RBPU	E:\Program\MCC18\h\reset.h	13;"	d	line:13
 PACKET_TIMEOUT::14	F:\MCP\projects\CAN\canBoot\Source\Main.c	49;"	d	line:49	file:
 PROGRAM_STATE	F:\MCP\projects\CAN\canBoot\Include\typedefs.h	29;"	t	line:29
-RM_HIGH_INTERRUPT_VECTOR::0x003008	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
-RM_LOW_INTERRUPT_VECTOR::0x003018	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
-RM_RESET_VECTOR::0x003000	F:\MCP\projects\CAN\canBoot\Include\boot.h	15;"	d	line:15
+RM_HIGH_INTERRUPT_VECTOR::0x000008	F:\MCP\projects\CAN\canBoot\Include\boot.h	17;"	d	line:17
+RM_HIGH_INTERRUPT_VECTOR::0x003008	F:\MCP\projects\CAN\canBoot\Include\boot.h	21;"	d	line:21
+RM_LOW_INTERRUPT_VECTOR::0x000018	F:\MCP\projects\CAN\canBoot\Include\boot.h	18;"	d	line:18
+RM_LOW_INTERRUPT_VECTOR::0x003018	F:\MCP\projects\CAN\canBoot\Include\boot.h	22;"	d	line:22
+RM_RESET_VECTOR::0x000000	F:\MCP\projects\CAN\canBoot\Include\boot.h	16;"	d	line:16
+RM_RESET_VECTOR::0x003000	F:\MCP\projects\CAN\canBoot\Include\boot.h	20;"	d	line:20
 STKOVF::STKFUL	E:\Program\MCC18\src\traditional\pmc\reset\ismclr.c	17;"	d	line:17	file:
 STVR_ENABLED::	E:\Program\MCC18\h\reset.h	8;"	d	line:8
 StatusReset	E:\Program\MCC18\h\reset.h	18;"	p	line:18	signature:(void)
