@@ -179,7 +179,15 @@ void canParse(CAN_PACKET cp)
 	#ifdef USE_BLINDS
 	if (cp.pgm.class==pcACTUATOR && cp.pgm.id==patBLIND_TR)
 	{
-		blindsTurn(cp.data[0]);
+		if (cp.data[1]==0x1)
+		{
+			signed char pre = (signed char)blindsGetPrecent()+(signed char)cp.data[0];
+			blindsTurn((pre<0?0:pre));
+		}
+		else if (cp.data[1]==0x0)
+		{
+			blindsTurn(cp.data[0]);
+		}
 	}
 	#endif
 }

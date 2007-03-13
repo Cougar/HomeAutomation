@@ -18,7 +18,7 @@
 
 
 
-#define IO_TIMEOUT 700
+#define IO_TIMEOUT 200//700
 #define TMR1_VAL 60536
 // 0.05ms
 // Fosc/4 = 10Mhz = 0,0000001

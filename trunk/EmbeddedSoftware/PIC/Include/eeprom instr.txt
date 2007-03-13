@@ -1,0 +1,54 @@
+
+
+EE_START
+// data[4] = RID
+// data[3] = 1 = external, 0 = internal eeprom
+// data[2] = ADDRU
+// data[1] = ADDRH
+// data[0] = ADDRL
+
+
+EE_ACK
+
+EE_NACK
+
+EE_CRC
+// data[4] = CRCH
+// data[3] = CRCL
+// data[2] = ADDRU
+// data[1] = ADDRH
+// data[0] = ADDRL
+
+EE_DONE
+
+
+EE_PGM
+// data[7] = offset
+// data[6-0] = DATA
+
+
+H = Hostprogramvara.
+N = Nod att programmera.
+
+
+P1: H skickar EE_START, data[4]=N.id, data[3]=0/1, data[2]=ADDRH, data[1]=ADDRL, data[0]=ADDR.
+H väntar på EE_ACK SID=N.id, RID=H.id.
+	P2: När N mottagit P1 skickar den EE_ACL SID=N.id, RID=H.id.
+	N sätter startaddress till data[2]:[0];
+Om H ej mottar P2 innom tid skickas P1 igen.	
+annars
+P4: H skickar EE_PGM data[6..0], data[7]=addroffset.
+	H skickar åtta (eller hur mycket som finns kvar) sådana här paket, med ökande offset.
+	P5: När åtta paket skickade skickas EE_CRC SID=H.id, RID=N.id, OFFSET=numpacket data[7..0]=CRC
+	H väntar på EE_ACK, SID=N.id, RID=H.id.
+
+	N tar emot varje skickat P4 paket och sparar undan chunk av sju byte.
+	När N får ett P5 paket beräknas crc på OFFSET mottagna paket.
+	P6: om ok, skicka EE_ACK, SID=N.id, RID=H.id.
+	P7: annars skicka EE_NACK, SID=N.id, RID=H.id. 
+	
+Om H får P6, forsätt med P4.
+Om H får P7 eller timeout, skicka om senast åtta P4.
+
+P8: När H har slut på data, skickas EE_DONE, SID=H.id, RID=N.id.
+	H skickar detta paket 5 gånger med 100ms intervall.
