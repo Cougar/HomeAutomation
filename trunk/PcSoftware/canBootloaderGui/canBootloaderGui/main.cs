@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using canConfigurator;
 
 namespace canBootloader
 {
@@ -484,7 +485,7 @@ namespace canBootloader
 
         public override string ToString()
         {
-            return this.nt.getExpl() + " 0x" + this.nt.getTargetId().ToString("X").PadLeft(2, '0') + ")";
+            return this.nt.getExpl() + " 0x" + this.nt.getTargetId().ToString("X").PadLeft(2, '0');
         }
         public override string Text
         {

@@ -1,0 +1,11 @@
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\canConfigurator.frmTypedefs.resources
+obj\Debug\canConfigurator.main.resources
+obj\Debug\canConfigurator.Properties.Resources.resources
+obj\Debug\canConfigurator.csproj.GenerateResource.Cache
+bin\Debug\canConfigurator.exe
+bin\Debug\canConfigurator.pdb
+obj\Debug\canConfigurator.exe
+obj\Debug\canConfigurator.pdb
+obj\Debug\canConfigurator.frmIrtable.resources
+obj\Debug\canConfigurator.serialSettingsDialog.resources
