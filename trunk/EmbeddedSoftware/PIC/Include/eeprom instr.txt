@@ -1,3 +1,21 @@
+[IR: repeat count] [IR: addr] [IR: data] [pgm: CLASS] [pgm: IDH] [pgm: HDL] [pgm: DATA1] [pgm: DATA0]
+
+
+
+struct _IR_COMMAND
+{
+	BOOL valid;
+	BYTE repeat;
+	BYTE addr;
+	BYTE data;
+	BYTE pgm_class;
+	WORD pgm_id;
+	BYTE pgm_data[2];
+} IR_COMMAND;
+
+
+IR_COMMAND irCommand[128];
+
 
 
 EE_START
@@ -20,7 +38,9 @@ EE_CRC
 // data[0] = ADDRL
 
 EE_DONE
-
+// data[2] = number of valid bytes U
+// data[1] = number of valid bytes H
+// data[0] = number of valid bytes L
 
 EE_PGM
 // data[7] = offset
@@ -51,4 +71,4 @@ Om H får P6, forsätt med P4.
 Om H får P7 eller timeout, skicka om senast åtta P4.
 
 P8: När H har slut på data, skickas EE_DONE, SID=H.id, RID=N.id.
-	H skickar detta paket 5 gånger med 100ms intervall.
+	H skickar detta paket 10 gånger med 100ms intervall.
