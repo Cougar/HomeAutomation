@@ -2,46 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO.Ports;
-using canConfigurator;
+using System.IO;
 
-namespace canBootloader
+namespace canConfigurator
 {
-    public class SerialConnection
+    public class serialCanConnection
     {
+        const int readBufferSize = 1024;
+        SerialPort serial_conn;
+
         public const byte UART_START_BYTE = 253;
         public const byte UART_END_BYTE = 250;
+
         public const int PACKET_LENGTH = 17;
-        private const int readBufferSize = 8192;
 
-        private Queue<CanPacket> cpq = new Queue<CanPacket>();
-        private System.Threading.Mutex queueMutex = new System.Threading.Mutex();
-        private SerialPort serial_conn = null;
-        private byte[] iBuff = new byte[8192];
-        private int iBuffPointer = 0;
+        byte[] iBuff = new byte[8192];
+        int iBuffPointer = 0;
 
-        public SerialConnection() {  }
-        ~SerialConnection() { serial_conn.Close();  }
-        public bool open() 
-        { 
-            if (serial_conn==null) return false;
-            try
-            {
-                if (!serial_conn.IsOpen) serial_conn.Open();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-            return true; 
-        }
-        public bool close() 
-        {
-            if (serial_conn == null) return false;
-            if (serial_conn.IsOpen) serial_conn.Close();
-            return true; 
-        }
-        public bool isOpen() { return serial_conn.IsOpen; }
-        public void setConfiguration(int baudRate, Parity parity, string portName, StopBits stopbits, int databits, bool rtsEnable) 
+        Queue<CanPacket> cmQueue = new Queue<CanPacket>();
+
+        public serialCanConnection(int baudRate,Parity parity,string portName,StopBits stopbits,int databits,bool rtsEnable)
         {
             try
             {
@@ -57,40 +37,99 @@ namespace canBootloader
             }
             catch (Exception e)
             {
+                
                 throw e;
             }
         }
-       
-        public bool writePacket(CanPacket cp) 
+
+        ~serialCanConnection()
         {
-            if (serial_conn.IsOpen)
+            if (serial_conn != null)
             {
-                byte[] bytes = new byte[PACKET_LENGTH];
-                Array.Copy(cp.getBytes(), 0, bytes, 1, PACKET_LENGTH - 2);
-                bytes[0] = UART_START_BYTE;
-                bytes[PACKET_LENGTH - 1] = UART_END_BYTE;
-                serial_conn.Write(bytes, 0, PACKET_LENGTH);
+                serial_conn.Close();
+                serial_conn = null;
+            }
+        }
+
+        public bool isConnected()
+        {
+            return (serial_conn.IsOpen);
+        }
+
+        public bool connect(out string err)
+        {
+            err = "";
+            if (serial_conn.IsOpen) { err = "Port alredy open."; return false; }
+            try
+            {
+                serial_conn.Open();
+            }
+            catch (Exception e)
+            {
+
+                err = e.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool disconnect(out string err)
+        {
+            err = "";
+            try
+            {
+                serial_conn.Close();
+            }
+            catch (Exception e)
+            {
+
+                err = e.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool getPacket(out CanPacket cm)
+        {
+            cm = null;
+            if (cmQueue.Count > 0)
+            {
+                cm = cmQueue.Dequeue();
                 return true;
             }
             return false;
         }
 
-        public bool getPacket(out CanPacket cp) 
+        public bool sendPacket(CanPacket cm)
         {
-            queueMutex.WaitOne();
-            cp = null;
-            bool had = false;
-            if (cpq.Count > 0)
+            if (serial_conn.IsOpen)
             {
-                cp = cpq.Dequeue();
-                had = true;
+                byte[] b = new byte[PACKET_LENGTH];
+                b[0] = UART_START_BYTE;
+                Array.Copy(cm.getBytes(), 0, b, 1, PACKET_LENGTH-2);
+                b[PACKET_LENGTH-1] = UART_END_BYTE;
+                serial_conn.Write(b, 0, PACKET_LENGTH);
+                return true;
             }
-            queueMutex.ReleaseMutex();
-            return had;
+            return false;
         }
+
+        public bool writeRaw(byte[] b, int length)
+        {
+            if (serial_conn.IsOpen)
+            {
+                serial_conn.Write(b, 0, length);
+                return true;
+            }
+            return false;
+        }
+
 
         private void serial_conn_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
+
             System.IO.Ports.SerialPort port = (System.IO.Ports.SerialPort)sender;
             byte[] data = new byte[port.BytesToRead];
 
@@ -118,13 +157,14 @@ namespace canBootloader
                         if ((iBuffPointer - startIndex) >= PACKET_LENGTH)
                         {
                             //om så, kolla PACKET_LENGTH-1 byte fram.
-                            if (iBuff[startIndex + PACKET_LENGTH - 1] == UART_END_BYTE)
+                            if (iBuff[startIndex + PACKET_LENGTH-1] == UART_END_BYTE)
                             {
                                 // Om byte PACKET_LENGTH-1 är slutbyte så extraktas startIndex till slutbyteindex.
                                 CanPacket cm = new CanPacket(iBuff, (uint)startIndex + 1);
-                                queueMutex.WaitOne();
-                                cpq.Enqueue(cm);
-                                queueMutex.ReleaseMutex();
+                                cmQueue.Enqueue(cm);
+
+                                if (newIncommingCanMessage != null) newIncommingCanMessage.Invoke(this, EventArgs.Empty);
+
                                 // Sätt ny startindex och avsluta loop.
                                 startIndex += PACKET_LENGTH;
                                 break;
@@ -138,8 +178,12 @@ namespace canBootloader
                 iBuffPointer -= startIndex;
             }
 
-
         }
+
+        public event EventHandler newIncommingCanMessage;
+
+
+
 
     }
 }
