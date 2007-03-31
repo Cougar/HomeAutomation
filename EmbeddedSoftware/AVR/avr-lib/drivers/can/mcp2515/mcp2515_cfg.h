@@ -19,9 +19,7 @@
 
 #if defined(__AVR_ATmega8__)
 #define INT1_REG GICR
-#elif defined(__AVR_ATmega88__)
-#define INT1_REG EIMSK
-#elif defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 #define INT1_REG EIMSK
 #else
 #error AVR device not supported!
