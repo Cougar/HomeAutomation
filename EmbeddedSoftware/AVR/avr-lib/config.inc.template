@@ -1,4 +1,5 @@
 ## Node specific configuration file
+#This configuration sets up a NodeEssential, v2 with ID 2. The AVR is using external clock source, 20MHz (taken from MCP2515, using it's clock output. 
 
 HW_NAME=NodeEssential
 HW_VERSION=2
@@ -22,7 +23,6 @@ BOOT_START=0x1e00
 CAN_CONTROLLER=MCP2515
 MCP_CLOCK_FREQ_MHZ=20
 MCP_CAN_BITRATE_KBPS=250
-
 
 #Some usual settings of fuses
 #LOWFUSE for mega88		
