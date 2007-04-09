@@ -289,11 +289,11 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
-ifeq ($(MCU),atmega88)
+ifneq (,$(filter atmega88 atmega168, $(MCU)))
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	@echo GCC bug workaround for ATmega88:
+	@echo GCC bug workaround for ATmega88/ATmega168:
 	eval $$($(CC) -v $(CFLAGS) -o $@ $^ $(LDFLAGS) 2>&1 | awk '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
 else
 %.elf: $(OBJ)
