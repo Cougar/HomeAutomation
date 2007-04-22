@@ -34,12 +34,16 @@ static uint16_t rmDumperPrt =1200; // remote port for dumping data
 static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
 static uint16_t locDumperPrt =1200; // listen port 
 static uint16_t locCan2SerPrt =1100; // listen port for Can2Serial-data
-static uint8_t gotserver = 0;
+static uint8_t gotdumpserver = 0;
+static uint8_t gotcan2serserver = 0;
 
 // how did I get the mac addr? Translate the first 3 numbers into ascii is: TUX
 
 static uint8_t remotemac[6];
 static uint8_t remoteip[4];
+
+static uint8_t prgremotemac[6];
+static uint8_t prgremoteip[4];
 
 #define BUFFER_SIZE 250
 static uint8_t buf[BUFFER_SIZE+1];
@@ -58,7 +62,7 @@ static uint8_t buffpoint;
  * Needs a timeout to force send. 
  *--------------------------------------------------------------------------*/
 int udp_putchar(char c, FILE* stream) {
-	if (gotserver != 0) {
+	if (gotdumpserver != 0) {
         sendbuf[buffpoint] = c;
         buffpoint++;
         
@@ -163,28 +167,35 @@ int main(void) {
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
 			uint8_t i;
-			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		printf("data={ ");
-    		for (i=0; i<rxMsg.DataLength; i++) {
-    			printf("%x ", rxMsg.Data.bytes[i]);
-    		}
-	   		printf("}\n");
+
+			if (gotdumpserver != 0) {
+				printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
+	    		printf("data={ ");
+	    		for (i=0; i<rxMsg.DataLength; i++) {
+	    			printf("%x ", rxMsg.Data.bytes[i]);
+	    		}
+		   		printf("}\n");
+			}
 	   		
-			//skicka också som udppaket till rmCan2SerPrt
-			char sendbuf2[17];
-			sendbuf2[0] = C2S_START_BYTE;
-			sendbuf2[1] = (uint8_t)rxMsg.Id;
-			sendbuf2[2] = (uint8_t)(rxMsg.Id>>8);
-			sendbuf2[3] = (uint8_t)(rxMsg.Id>>16);
-			sendbuf2[4] = (uint8_t)(rxMsg.Id>>24);
-			sendbuf2[5] = rxMsg.ExtendedFlag;
-			sendbuf2[6] = rxMsg.RemoteFlag;
-			sendbuf2[7] = rxMsg.DataLength;
-    		for (uint8_t i=0; i<8; i++) {
-    			sendbuf2[8+i] = rxMsg.Data.bytes[i];
-    		}
-			sendbuf2[16] = C2S_END_BYTE;
-			send_udp(buf, sendbuf2, 17, rmCan2SerPrt, remotemac, remoteip);
+	   		if (gotcan2serserver != 0) {
+				//skicka ocksï¿½ som udppaket till rmCan2SerPrt
+				char sendbuf2[17];
+				
+				sendbuf2[0] = C2S_START_BYTE;
+				sendbuf2[1] = (uint8_t)rxMsg.Id;
+				sendbuf2[2] = (uint8_t)(rxMsg.Id>>8);
+				sendbuf2[3] = (uint8_t)(rxMsg.Id>>16);
+				sendbuf2[4] = (uint8_t)(rxMsg.Id>>24);
+				sendbuf2[5] = rxMsg.ExtendedFlag;
+				sendbuf2[6] = rxMsg.RemoteFlag;
+				sendbuf2[7] = rxMsg.DataLength;
+	    		for (i=0; i<8; i++) {
+	    			sendbuf2[8+i] = rxMsg.Data.bytes[i];
+	    		}
+				sendbuf2[16] = C2S_END_BYTE;
+				
+				send_udp(buf, sendbuf2, 18, rmCan2SerPrt, prgremotemac, prgremoteip);
+	   		}
 		}
 		
 		//test-debug-kod
@@ -227,27 +238,46 @@ int main(void) {
 			        }
 	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V){
                         payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
-                        //printf("hej %x %x\n", buf[UDP_DST_PORT_H_P], buf[UDP_DST_PORT_L_P]);
+						uint8_t i = 0;
+                        
+                        //om port 1100 (programmeringsporten)
                         if ((buf[UDP_DST_PORT_H_P]==((locCan2SerPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locCan2SerPrt & 0xff))) {
-							if (payloadlen==17) {	//ifsats ska in i ovan eller nedan ifsats kanske? nedan
-								if (buf[UDP_DATA_P]==C2S_START_BYTE && buf[UDP_DATA_P+16]==C2S_END_BYTE) {
-									Can_Message_t cm;
-									//cm.Id = 0;
-									cm.DataLength = buf[UDP_DATA_P+7];
-									cm.RemoteFlag = buf[UDP_DATA_P+6];
-									cm.ExtendedFlag = buf[UDP_DATA_P+5];
-									cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
-									uint8_t i;
-									for (i = 0; i < cm.DataLength; i++) {
-										cm.Data.bytes[i] = buf[UDP_DATA_P+8+i];
-									}
-									Can_Send(&cm);
+			                while(i<6){
+				                prgremotemac[i]=buf[ETH_SRC_MAC +i];
+				                i++;
+					        }
+					        i=0;
+			                while(i<4){
+				                prgremoteip[i]=buf[IP_SRC_P +i];
+				                i++;
+					        }
+					        gotcan2serserver = 1;
+
+							if ((buf[UDP_DATA_P]==C2S_START_BYTE) && (buf[UDP_DATA_P+16]==C2S_END_BYTE) && (payloadlen==17)) {
+								Can_Message_t cm;
+								//cm.Id = 0;
+								cm.DataLength = buf[UDP_DATA_P+7];
+								cm.RemoteFlag = buf[UDP_DATA_P+6];
+								cm.ExtendedFlag = buf[UDP_DATA_P+5];
+								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
+								uint8_t i;
+								for (i = 0; i < cm.DataLength; i++) {
+									cm.Data.bytes[i] = buf[UDP_DATA_P+8+i];
 								}
-								printf("hoj\n");
+								Can_Send(&cm);
+								
+								if (gotdumpserver != 0) {
+									printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", cm.Id, (uint16_t)(cm.DataLength), (uint16_t)(cm.ExtendedFlag), (uint16_t)(cm.RemoteFlag));
+									printf("data={ ");
+									for (i=0; i<cm.DataLength; i++) {
+										printf("%x ", cm.Data.bytes[i]);
+									}
+	   								printf("}\n");
+								}
 							}
-                        } else if (buf[UDP_DATA_P]=='t' && payloadlen==5){
-                	        uint8_t i=0;
-                	        if (gotserver == 0) {
+						//om port 1200 (dumparporten) 
+                        } else if ((buf[UDP_DST_PORT_H_P]==((locDumperPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locDumperPrt & 0xff))) {
+                	        if (gotdumpserver == 0) {
 				                while(i<6){
 					                remotemac[i]=buf[ETH_SRC_MAC +i];
 					                i++;
@@ -259,7 +289,7 @@ int main(void) {
 						        }
 	                        	i=0;
 								
-	                        	gotserver = 1;
+	                        	gotdumpserver = 1;
 	                        	make_udp_reply_from_request(buf,"Got server",10,rmDumperPrt);
                 	        } else {
                 	        	make_udp_reply_from_request(buf,"Already got server",18,rmDumperPrt);
