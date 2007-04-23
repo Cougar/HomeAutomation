@@ -1,6 +1,6 @@
 /**
- * CAN Test. This program sends a CAN message once every second. The ID of the
- * message is increased each time for testing purposes.
+ * CAN Test.
+ * Tests if sending CAN messages is ok. 
  * 
  * @date	2006-11-21
  * @author	Jimmy Myhrman
@@ -17,71 +17,40 @@
 #include <stdio.h>
 /* lib files */
 #include <can.h>
-#include <serial.h>
 #include <timebase.h>
 
-
+#define INTERVAL 1000
+#define SENDER_ID 0xff
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	Mcu_Init();
 	Timebase_Init();
-	Serial_Init();
 	
 	sei();
 	
-	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN Test: Periodic Transmission\n");
-	printf(  "------------------------------------------------------------\n");
-	
-	printf("CanInit...");
-	if (Can_Init() != CAN_OK) {
-		printf("FAILED!\n");
-	}
-	else {
-		printf("OK!\n");
-	}
+	Can_Init();
 	
 	uint32_t timeStamp = 0;
 	
 	Can_Message_t txMsg;
-	Can_Message_t rxMsg;
-	//The databytes are just what happens to be in the memory. They are never set.
+	
+	txMsg.Id = SENDER_ID;
 	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1; 
-#define NODENUMBER 1
-#if NODENUMBER == 1
-	txMsg.Id = 16;
-	txMsg.DataLength = 2;
-#elif NODENUMBER == 2
-	txMsg.Id = 32;
-	txMsg.DataLength = 5;
-#else
-# error NODENUMBER not set!
-#endif
+	txMsg.ExtendedFlag = 1;
+	txMsg.DataLength = 1;
+	txMsg.Data.bytes[0] = 0xff; 
 	
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
 		Can_Service();
 		
-		/* send CAN message and check for CAN errors once every second */
-		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
+		/* send CAN message */
+		if (Timebase_PassedTimeMillis(timeStamp) >= INTERVAL) {
 			timeStamp = Timebase_CurrentTime();
 			/* send txMsg */
-			txMsg.Id++;
 			Can_Send(&txMsg);
-		}
-		
-		/* check if any messages have been received */
-		while (Can_Receive(&rxMsg) == CAN_OK) {
-			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-    		printf("data={ ");
-    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-    			printf("%x ", rxMsg.Data.bytes[i]);
-    		}
-    		printf("}\n");
 		}
 	}
 	
