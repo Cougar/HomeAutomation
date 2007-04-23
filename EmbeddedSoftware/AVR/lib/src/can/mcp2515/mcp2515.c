@@ -36,7 +36,7 @@
 #define SPI_PIN		PINB
 #define SPI_DDR		DDRB
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	#define SPI_SCK   PB5  
 	#define SPI_MISO  PB4 
 	#define SPI_MOSI  PB3  
