@@ -61,7 +61,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<TOIE2); // enable overflow-interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR2B = (1<<CS22);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256
@@ -83,7 +83,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256
