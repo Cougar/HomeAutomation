@@ -3,7 +3,7 @@
  * 
  * @target	AVR
  * @date	2006-10-29
- * @author	Jimmy Myhrman
+ * @author	Jimmy Myhrman, Andreas Fritiofsson
  *   
  */
 
@@ -52,7 +52,7 @@ void IncTime(void) {
 			mm=0;
 			if (hh++ > 23) {
 				hh=0;
-				if (DD++ > days[MM-1] + ((YY%4) & (MM==2)) ? 1 : 0))) {
+				if (DD++ > days[MM-1] + ((YY%4) & (MM==2)) ? 1 : 0) {
 					DD=1;
 					if (MM++ > 12) {
 						MM=1; YY++;
@@ -149,7 +149,8 @@ void UartParseByte(uint8_t c) {
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	OSCCAL = eeprom_read_byte(0);
+//	For calibrating internal oscillator
+//	OSCCAL = eeprom_read_byte(0);
 	Timebase_Init();
 	Serial_Init();
 	Can_Init();
@@ -180,6 +181,7 @@ int main(void) {
 		
 		/* any new CAN messages received? */
 		if (Can_Receive(&rxMsg) == CAN_OK) {
+			// Toggle activity LED
 			PORTC ^= (1<<PC1);
 			/* send message to CanWatcher */
 			uart_putc(UART_START_BYTE);
