@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR makefile written by Eric B. Weddington, Jrg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -38,20 +38,16 @@
 
 
 # MCU name
-#MCU = atmega32
-MCU = atmega88
-#MCU = atmega16
+#MCU = atmega8
+#MCU = atmega88
+MCU = atmega168
 
 
 # Main Oscillator Frequency
-##F_OSC = 1000000
-##F_OSC = 1843200
-##F_OSC = 2000000
-##F_OSC = 3686400
-##F_OSC = 4000000
-F_OSC = 8000000
-##F_OSC = 11059200
-##F_OSC = 16000000
+#F_CPU = 1000000
+F_CPU = 8000000
+#F_CPU = 16000000
+#F_CPU = 20000000
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -66,8 +62,6 @@ LIBDIR = ../lib/src/
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
 		$(LIBDIR)mcu/mcu.c\
-		$(LIBDIR)mcu/serial.c\
-		$(LIBDIR)mcu/uart.c\
 		$(LIBDIR)mcu/timebase.c\
 		$(LIBDIR)can/can.c\
 		$(LIBDIR)can/mcp2515/mcp2515.c
@@ -128,7 +122,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-CFLAGS += -DF_OSC=$(F_OSC)
+CFLAGS += -DF_CPU=$(F_CPU)
 
 
 
@@ -141,7 +135,7 @@ CFLAGS += -DF_OSC=$(F_OSC)
 #             files -- see avr-libc docs [FIXME: not yet described there]
 ##ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
-ASFLAGS += -DF_OSC=$(F_OSC)
+ASFLAGS += -DF_CPU=$(F_CPU)
 
 
 #Additional libraries.
