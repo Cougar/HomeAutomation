@@ -18,7 +18,7 @@
  * They will be named RCS0-RCS2.
  * Define how many that will be used.
  */
-#define NUMBER_OF_RCS 2
+#define NUMBER_OF_RCS 1
 
 /* 
  * For width of the pulse that control the RC servo.
@@ -33,23 +33,23 @@
 #define PWM3_MAX_PULSE   50
 
 //#define PWM1_CENTER_PULSE ((PWM1_MAX_PULSE - PWM1_MIN_PULSE)/2 + PWM1_MIN_PULSE) /* Pretty much standard to use 1500 */
-#define PWM1_CENTER_PULSE 1500
+/*#define PWM1_CENTER_PULSE 1500
 #define PWM2_CENTER_PULSE 35
 #define PWM3_CENTER_PULSE 35
-
+*/
 #define STEP1   ((PWM1_MAX_PULSE - PWM1_MIN_PULSE)/256)
 #define STEP2   1
 #define STEP3   1
 
-#define MAX_POSITION 127
-#define MIN_POSITION -128
+#define MAX_POSITION 0
+#define MIN_POSITION 255
 
 /*-----------------------------------------------
  * Functions
  * ---------------------------------------------*/
 void rcServoInit();
-void setPosition(int8_t abs_pos, uint8_t servo);
+void setPosition(uint8_t abs_pos, uint8_t servo);
 void alterPosition(int8_t rel_pos, uint8_t servo);
-int8_t getPosition(uint8_t servo);
+uint8_t getPosition(uint8_t servo);
 
 #endif

@@ -36,7 +36,8 @@ void rcServoInit(){
     TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
     TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
     ICR1 = 20000; /* Used for TOP, makes for 50 Hz PWM */
-    OCR1A = PWM1_CENTER_PULSE; /* Servo at center */
+    OCR1A = PWM1_MIN_PULSE; /* Servo at min position */
+//    OCR1A = PWM1_CENTER_PULSE; /* Servo at center */
     DDRB |= (1<<DDB1); /* Enable pin as output */
 #endif
 #if NUMBER_OF_RCS >= 2
@@ -57,18 +58,19 @@ void rcServoInit(){
 
 /*
  * Set the servo to an absolute position.
- * Interval -128 to 127.
+ * Interval 0 to 255.
  */
-void setPosition(int8_t abs_pos, uint8_t servo){
+void setPosition(uint8_t abs_pos, uint8_t servo){
     uint16_t temp_pos;
 
     switch( servo ){
 #if NUMBER_OF_RCS > 0
         case 1:
-            temp_pos = (uint16_t)PWM1_CENTER_PULSE + abs_pos*STEP1;
-            if(temp_pos<PWM1_MIN_PULSE){
+            //temp_pos = (uint16_t)PWM1_CENTER_PULSE + (int8_t)abs_pos*STEP1;
+			temp_pos = PWM1_MIN_PULSE + abs_pos*STEP1;
+            /*if(temp_pos<PWM1_MIN_PULSE){
                 OCR1A = PWM1_MIN_PULSE;
-            }else if(temp_pos>PWM1_MAX_PULSE){
+            }else*/ if(temp_pos>PWM1_MAX_PULSE){
                 OCR1A = PWM1_MAX_PULSE;
             }else{
                 OCR1A = temp_pos;
@@ -108,6 +110,7 @@ void setPosition(int8_t abs_pos, uint8_t servo){
  * Alter the position rel_pos steps.
  * Interval -128 to 127.
  */
+ // FIXME inte ändrat här än
 void alterPosition(int8_t rel_pos, uint8_t servo){
     int8_t new_pos, current_pos;
 
@@ -126,12 +129,13 @@ void alterPosition(int8_t rel_pos, uint8_t servo){
 /*
  * Get current position of the servo.
  */
-int8_t getPosition(uint8_t servo){
-    switch( servo ){
-        case 1: return (int8_t)((int16_t)(OCR1A - PWM1_CENTER_PULSE)/STEP1); break;
+uint8_t getPosition(uint8_t servo){
+	switch( servo ){
+		case 1: return ((OCR1A - PWM1_MIN_PULSE)/STEP1); break;
+ /*       case 1: return ((int16_t)(OCR1A - PWM1_CENTER_PULSE)/STEP1); break;
         case 2: return (int8_t)((OCR0A*8 - PWM2_CENTER_PULSE*8)/STEP2); break;
         case 3: return (int8_t)((OCR0B*8 - PWM3_CENTER_PULSE*8)/STEP3); break;
-    }
+   */ }
 }
 
 /*
