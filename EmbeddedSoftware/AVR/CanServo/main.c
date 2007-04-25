@@ -1,7 +1,7 @@
 /**
- * CanBlinds.
+ * CanServo.
  * Takes incomming packages and adjusts PWM output.
- * Input: -128 to +127
+ * Input: 0 to 255
  * Position msg: <byte0 BLINDS_CMD> <byte1 position> <byte2 servo number>
  * Turning msg: <byte0 START/STOP> <byte 1 direction> <byte2 servo number>
  *
@@ -21,6 +21,8 @@
 #include <stdio.h>
 /* lib files */
 #include <bios.h>
+#include <config.h>
+#include <drivers/timer/timebase.h>
 #include <tc1047.h>
 #include <rc_servo.h>
 
@@ -52,12 +54,10 @@
 #define BUTTON1                 1
 #define BUTTON2                 2
 
-#define SERVO_FEED_PORT			PORTC
-#define SERVO_FEED_DDR			DDRC
-#define SERVO_FEED_PIN			PC0
+#define SERVO_FEED_PORT			PORTD
+#define SERVO_FEED_DDR			DDRD
+#define SERVO_FEED_PIN			PD2
 
-#define TRUE 1
-#define FALSE !TRUE
 
 /*-------------------------------------------------------------------------
  * Global variables
@@ -66,7 +66,7 @@
 Can_Message_t txMsg_Button;
 #endif*/
 
-uint8_t msg_received = FALSE;
+uint8_t msg_received = 0;
 
 Can_Message_t txMsg;
 Can_Message_t rxMsg;
@@ -92,12 +92,11 @@ void can_receive(Can_Message_t *msg){
 				for(m=0;m<msg->DataLength;m++){
 					rxMsg.Data.bytes[m] = msg->Data.bytes[m];
 				}
-				msg_received = TRUE;
+			msg_received = 1;
 			}
 		}
 	}
 }
-
 /*----------------------------------------------------------------------------
  * Interrupt routines
  * -------------------------------------------------------------------------*/
@@ -150,7 +149,7 @@ ISR( PCINT2_vect )
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
-int main(void) {
+int main(viod) {
 
     uint8_t //blindsStatus, /* Position (-128 to 127) */
             servoToTurn,
@@ -159,6 +158,8 @@ int main(void) {
     uint32_t timeStamp = 0, timeStampTurn = 0, servoFeed_timeStamp = 0;
 
 	sei();
+	
+	Timebase_Init();
 	adcTemperatureInit();
 	rcServoInit();
 
@@ -186,7 +187,7 @@ int main(void) {
 	txMsg.Id = (CLASS_SNS << CLASS_MASK_BITS)|(SNS_ACT_STATUS_SERVO << TYPE_MASK_BITS)|(NODE_ID << SID_MASK_BITS);
 
 	/* Set up callback for CAN messages */
-	bios->can_callback = &can_receive;
+	BIOS_CanCallback = &can_receive;
 
     /* main loop */
 	while (1) {
@@ -196,18 +197,18 @@ int main(void) {
 			if( rxMsg.Data.bytes[0] == BLINDS_CMD_ABS ){
 				/* Set absolute position to servo */
 				setPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
-				servoFeed_timeStamp = bios->timebase_get();
+				servoFeed_timeStamp = Timebase_CurrentTime();
 
 			}else if(rxMsg.Data.bytes[0] == BLINDS_CMD_REL){
                 /* Set relative position to servo */
                 alterPosition( rxMsg.Data.bytes[1], rxMsg.Data.bytes[2] );
-				servoFeed_timeStamp = bios->timebase_get();
+				servoFeed_timeStamp = Timebase_CurrentTime();
 
             }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_START ){
                 /* Start turning the servo */
                 turnDirection = rxMsg.Data.bytes[1];
                 servoToTurn = rxMsg.Data.bytes[2];
-				servoFeed_timeStamp = bios->timebase_get();
+				servoFeed_timeStamp = Timebase_CurrentTime();
 
             }else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STOP ){
                 /* Stop turning */
@@ -233,14 +234,14 @@ int main(void) {
                     txMsg.Data.bytes[5] = getPosition(3);
 #endif
                     txMsg.DataLength = NUMBER_OF_RCS+3;
-					bios->can_send(&txMsg);
+					BIOS_CanSend(&txMsg);
                     }
                 }
-				msg_received = FALSE;
+				msg_received = 0;
         }
 
-		if( (bios->timebase_get() - timeStamp)  >= STATUS_SEND_PERIOD ){
-			timeStamp = bios->timebase_get();
+		if( (Timebase_CurrentTime() - timeStamp)  >= STATUS_SEND_PERIOD ){
+			timeStamp = Timebase_CurrentTime();
             /* Send blinds status to CAN */
 
             boardTemperature = getTC1047temperature();
@@ -262,13 +263,13 @@ int main(void) {
 #endif
                 txMsg.DataLength = NUMBER_OF_RCS+3;
 
-				bios->can_send(&txMsg);
+				BIOS_CanSend(&txMsg);
             }
         }
         /* If start turning servo */
 		if( turnDirection ){
-            if( bios->timebase_get() - timeStampTurn >= TURN_PERIOD ){
-				timeStampTurn = bios->timebase_get();
+            if( Timebase_CurrentTime() - timeStampTurn >= TURN_PERIOD ){
+				timeStampTurn = Timebase_CurrentTime();
                 /* Clockwise or counterclockwise? */
                 if( turnDirection == BLINDS_TURN_LEFT ){
                     alterPosition( -STEPS_PER_TURN_PERIOD , servoToTurn);
@@ -278,7 +279,7 @@ int main(void) {
             }
         }
 		/* Turn off the servo current feed */
-		if( bios->timebase_get() - servoFeed_timeStamp >= SERVO_FEED_TIME ){
+		if( Timebase_CurrentTime() - servoFeed_timeStamp >= SERVO_FEED_TIME ){
 			SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 		}else{
 			SERVO_FEED_PORT |= (1<<SERVO_FEED_PIN);
@@ -289,7 +290,6 @@ int main(void) {
 
 void blindsFailsafe()
 {
-	uint8_t relayStatus;
 	uint32_t boardTemperature = 0, timeStamp = 0;
 
 	/* Turn of servo current feed */
@@ -306,8 +306,8 @@ void blindsFailsafe()
 			}
 		}
 
-        if( bios->timebase_get() - timeStamp >= FAILSAFE_SEND_PERIOD ){
-            timeStamp = bios->timebase_get();
+        if( Timebase_CurrentTime() - timeStamp >= FAILSAFE_SEND_PERIOD ){
+            timeStamp = Timebase_CurrentTime();
             /* Send relay status to CAN */
             boardTemperature = getTC1047temperature();
 
@@ -325,7 +325,7 @@ void blindsFailsafe()
 #endif
             txMsg.DataLength = NUMBER_OF_RCS+3;
 
-			bios->can_send(&txMsg);
+			BIOS_CanSend(&txMsg);
         }
     }
 }
