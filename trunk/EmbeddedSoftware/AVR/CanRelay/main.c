@@ -24,6 +24,8 @@
 #include <stdio.h>
 /* lib files */
 #include <bios.h>
+#include <config.h>
+#include <drivers/timer/timebase.h>
 #include <tc1047.h>
 #include <funcdefs.h>
 
@@ -33,7 +35,7 @@
 #define RELAY_OFF			0x01
 #define RELAY_ON			0x02
 #define FAILSAFE_MODE		0x0F
-#define FAILSAFE_TRESHOLD	60  /* Degrees when nodeRelay goes into failsafe mode */
+#define FAILSAFE_TRESHOLD	0xFF  /* Degrees when nodeRelay goes into failsafe mode */
 
 #define RELAY_CMD_ON		0x01
 #define RELAY_CMD_OFF		0x02
@@ -46,13 +48,10 @@
 #define BUTTON1				1
 #define BUTTON2				2
 
-#define TRUE	1
-#define FALSE	0
-
 /*-------------------------------------------------------------------------
  * Global variables
  * -----------------------------------------------------------------------*/
-uint8_t relayStatus, failsafe_flag = FALSE, rxMsg_Data_bytes[8], msg_received = FALSE;
+uint8_t relayStatus, failsafe_flag = 0, rxMsg_Data_bytes[8], msg_received = 0;
 uint32_t boardTemperature = 0;
 
 
@@ -87,7 +86,7 @@ void can_receive(Can_Message_t *msg)
 			for(m=0;m<(msg->DataLength);m++){
 				rxMsg_Data_bytes[m] = msg->Data.bytes[m];
 			}
-			msg_received = TRUE; // Tell application that message has arrived
+			msg_received = 1; // Tell application that message has arrived
 		}
 	}
 }
@@ -107,7 +106,7 @@ ISR( PCINT2_vect )
  *---------------------------------------------------------------------------*/
 int main(void) {
 
-	uint32_t timeStamp = bios->timebase_get(), temp = timeStamp;
+	uint32_t timeStamp = Timebase_CurrentTime(), temp = timeStamp;
 
 	Can_Message_t txMsg;
 	txMsg.RemoteFlag = 0;
@@ -117,9 +116,11 @@ int main(void) {
 	adcTemperatureInit();
 
 	// Set up callback for CAN messages
-	bios->can_callback = &can_receive;
+	BIOS_CanCallback = &can_receive;
 
 	sei();
+	
+	Timebase_Init();
 
 	// Turn relay off
 	relayStatus = relayOff();
@@ -151,10 +152,10 @@ int main(void) {
 				// Send relay status to CAN
 				sendStatus();
 			}
-			msg_received = FALSE;
+			msg_received = 0;
 		}
 
-		temp = bios->timebase_get();
+		temp = Timebase_CurrentTime();
 		if( temp - timeStamp >= STATUS_SEND_PERIOD ){
 			timeStamp = temp;
 /*			txMsg.Id = 0x8000111;
@@ -225,6 +226,6 @@ void sendStatus()
 		statusMsg.Data.bytes[2] = relayStatus;
 		statusMsg.Data.bytes[3] = failsafe_flag;
 
-		bios->can_send( &statusMsg );
+		BIOS_CanSend( &statusMsg );
 	}
 }
