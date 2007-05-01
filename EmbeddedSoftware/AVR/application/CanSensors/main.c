@@ -6,7 +6,7 @@
  * 
  * @target	AVR
  * @date	2007-01-16
- * @author	Jimmy Myhrman, Anders Runeson, Erik Larsson
+ * @author	Anders Runeson, Erik Larsson
  *
  * TODO: SHTxx
  */
@@ -16,12 +16,14 @@
  * --------------------------------------------------------------------------*/
 #define USE_DS18S20
 //#define USE_TC1047
+#define USE_LDR
 
 #define DS_SEND_PERIOD	10000
 #define DS_SEND_DELAY	2000
 #define TC_SEND_PERIOD	10000
+#define LDR_SEND_PERIOD	10000
 
-#include <funcdefs.h>
+#include <funcdefs/funcdefs.h>
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -29,10 +31,11 @@
 /* system files */
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/wdt.h>
 #include <stdio.h>
 /* lib files */
 #include <bios.h>
+#include <config.h>
+#include <timebase.h>
 
 #if defined(USE_DS18S20)
 #include <ds18x20.h>
@@ -42,6 +45,10 @@
 
 #if defined(USE_TC1047)
 #include <tc1047.h>
+#endif
+
+#if defined(USE_LDR)
+#include <ldr.h>
 #endif
 
 /*-----------------------------------------------------------------------------
@@ -60,7 +67,14 @@ int main(void) {
     uint32_t tcTemperature = 0, timeStamp_TC = 0;
     adcTemperatureInit();
 #endif
+#if defined(USE_LDR)
+	uint32_t timeStamp_LDR = 0;
+	uint8_t ldr;
+	LDR_SensorInit();
+#endif
     sei();
+
+	Timebase_Init();
 
 #if defined(USE_DS18S20)
     /* Make sure there is no more then 4 DS-sensors. */
@@ -79,8 +93,8 @@ int main(void) {
     while (1) {
 #if defined(USE_DS18S20)
         /* check temperature and send on CAN */
-		if( bios->timebase_get() - timeStamp_DS >= DS_SEND_PERIOD ){
-			timeStamp_DS = bios->timebase_get();
+		if( Timebase_PassedTimeMillis(timeStamp_DS) >= DS_SEND_PERIOD ){
+			timeStamp_DS = Timebase_CurrentTime();
 
 			txMsg.Id &= ~TYPE_MASK; /* Clear TYPE */
 			txMsg.Id |= (SNS_TEMP_DS18S20 << SNS_TYPE_BITS); /* Set SNS_TYPE */
@@ -100,19 +114,19 @@ int main(void) {
                         }
                     }
 					/* Delay */
-					timeStamp_DS_del = bios->timebase_get();
-					while(bios->timebase_get() - timeStamp_DS_del < DS_SEND_DELAY){}
+					timeStamp_DS_del = Timebase_CurrentTime();
+					while(Timebase_PassedTimeMillis(timeStamp_DS_del) < DS_SEND_DELAY){}
 
 					/* send txMsg */
 					txMsg.Id &= ~SNS_ID_MASK; /* Clear sensor id */
-					txMsg.Id |= ( sensor_ds_id[i] << SNS_ID_BITS); /* Set sesor id */
-					bios->can_send(&txMsg);
+					txMsg.Id |= ( sensor_ds_id[i] << SNS_ID_BITS); /* Set sensor id */
+					BIOS_CanSend(&txMsg);
                 }
             }
         }
 #endif
 #if defined(USE_TC1047)
-#error msg id is still not correct // FIXME
+#error tc1047 id is still not correct // FIXME
             /* check temperature and send on CAN */
 		if( bios->timebase_get() - timeStamp_TC >= TC_SEND_PERIOD ){
 			timeStamp_TC = bios->timebase_get();
@@ -125,8 +139,24 @@ int main(void) {
 			txMsg.Id &= ~TYPE_MASK; // rensa type
 			txMsg.Id |= (SNS_TEMP_TC1047 << TYPE_MASK_BITS); // sätt korrekt type
 
-            //Can_Send(&txMsg);
-			bios->can_send(&txMsg);
+            BIOS_CanSend(&txMsg);
+        }
+#endif
+#if defined(USE_LDR)
+            /* check light and send on CAN */
+		if( Timebase_PassedTimeMillis(timeStamp_LDR) >= LDR_SEND_PERIOD ){
+			timeStamp_LDR = Timebase_CurrentTime();
+
+            ldr = (uint8_t)LDR_GetData(0);
+            txMsg.Data.bytes[0] = ldr;
+            txMsg.DataLength = 1;
+
+			txMsg.Id &= ~TYPE_MASK; /* Clear TYPE */
+			txMsg.Id |= (SNS_LIGHT_LDR << SNS_TYPE_BITS); /* Set SNS_TYPE */
+			txMsg.Id &= ~SNS_ID_MASK; /* Clear sensor id */
+			txMsg.Id |= ( SNS_LDR_TEST1 << SNS_ID_BITS); /* Set sensor id */
+
+			BIOS_CanSend(&txMsg);
         }
 #endif
     }
