@@ -13,6 +13,9 @@
 	.weak	__vector_default_\number
 	.set	__vector_default_\number, .
 	.word	0xffff
+#if __AVR_MEGA__
+	.word	0xffff		; interrupt vectors is 2 words in architectures with bigger flash
+#endif
 	.endif
 	.endm
 
@@ -85,6 +88,9 @@ __boot_vectors:
 	.func	__vector_defaults
 __vector_defaults:
 	.word	0xffff		; Application reset vector
+#if __AVR_MEGA__
+	.word	0xffff		; reset vector is 2 words in architectures with bigger flash
+#endif
 	vector_default	1
 	vector_default	2
 	vector_default	3
