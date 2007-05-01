@@ -10,7 +10,8 @@
 /*-----------------------------------------------------------------------------
  * Includes
  *---------------------------------------------------------------------------*/
-#include "irreceiver.h"
+#include <config.h>
+#include <drivers/ir/receiver/irreceiver.h>
 #include <avr/io.h>
 
 /*-----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ void initTimer(void) {
 	TIFR  |= (1<<TOV1);  			// clear overflow flag.
 	TCNT1 = 0;
 	#endif
-	#if defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	TCCR1B = (0<<CS11) | (1<<CS10); // prescaler: 1
 	TIFR1  |= (1<<TOV1);  			// clear overflow flag.
 	TCNT1 = 0;
@@ -46,7 +47,7 @@ int isTimerOvfl(void) {
 	#if defined(__AVR_ATmega8__)
 	if (TIFR  & (1<<TOV1)) return 1;
 	#endif
-	#if defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	if (TIFR1  & (1<<TOV1)) return 1;
 	#endif
 
@@ -54,7 +55,7 @@ int isTimerOvfl(void) {
 }
 
 uint16_t getTimerVal(void) {
-	#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	return TCNT1;
 	#endif
 }
@@ -64,7 +65,7 @@ void setTimerVal(uint16_t value) {
 	TCNT1 = value;
 	TIFR |= (1<<TOV1);  // clear overflow flag.
 	#endif
-	#if defined(__AVR_ATmega88__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	TCNT1 = value;
 	TIFR1 |= (1<<TOV1);  // clear overflow flag.
 	#endif
