@@ -14,6 +14,9 @@
 /* Enable timer2 if you want to use as many PWM outputs as possible */
 #define TIMER2
 
+// Uncomment the following line to test the improved timebase implementation
+//#define TIMEBASE_NEW_IMPLEMENTATION
+
 #define TIMEBASE_PRESCALE (64)
 #define TIMEBASE_HITS_PER_1MS (F_CPU/TIMEBASE_PRESCALE/1000)
 
