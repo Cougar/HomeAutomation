@@ -28,6 +28,22 @@ volatile uint32_t gMilliSecTick;
 /*-----------------------------------------------------------------------------
  * Interrupt Service Routines
  *---------------------------------------------------------------------------*/
+#if defined(TIMEBASE_NEW_IMPLEMENTATION)
+
+#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#if defined(TIMER2)
+ISR(TIMER2_COMPA_vect) {
+#else //!defined(TIMER2)
+ISR(TIMER0_COMPA_vect) {
+#endif //defined(TIMER2)
+#else //!defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+ISR(TIMER2_COMP_vect) {
+#endif //defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	gMilliSecTick++;
+}
+
+#else //!defined(TIMEBASE_NEW_IMPLEMENTATION)
+
 #if defined(TIMER2)
 ISR(SIG_OVERFLOW2) {
 	TCNT2 = TIMEBASE_RELOAD;
@@ -40,6 +56,8 @@ ISR(SIG_OVERFLOW0) {
 }
 #endif
 
+#endif //defined(TIMEBASE_NEW_IMPLEMENTATION)
+
 
 /*-----------------------------------------------------------------------------
  * Public Functions
@@ -50,6 +68,53 @@ ISR(SIG_OVERFLOW0) {
  * enabled, but global interrupts need to be enabled by the application.
  */
 void Timebase_Init() {
+#if defined(TIMEBASE_NEW_IMPLEMENTATION)
+
+#if defined(TIMER2)
+	#if defined(__AVR_ATmega8__)
+	TCCR2 = (1<<WGM21); // CTC mode
+	#if TIMEBASE_PRESCALE == 64
+	TCCR2 = (1<<CS22);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR2 = (1<<CS22) | (1<<CS21); // prescaler: 256
+	#endif
+	OCR2 = TIMEBASE_HITS_PER_1MS; // set timer period
+	TIFR  |= (1<<OCF2);  // clear ouput compare match flag
+	TIMSK |= (1<<OCIE2); // enable output compare match interrupt
+	#endif
+	
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	TCCR2A = (1<<WGM21); // CTC mode
+	#if TIMEBASE_PRESCALE == 64
+	TCCR2B = (1<<CS22);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR2B = (1<<CS22)|(1<<CS21);				// prescaler: 256
+	#endif
+	OCR2A = TIMEBASE_HITS_PER_1MS; // set timer period
+	TIFR2  |= (1<<OCF2A);  // clear ouput compare match flag
+	TIMSK2 |= (1<<OCIE2); // enable output compare match interrupt
+	#endif
+#else /* Use timer0 */
+	#if defined(__AVR_ATmega8__)
+	#error TIMER0 not supported in ATmega8 with TIMEBASE_NEW_IMPLEMENTATION set!
+	#endif
+	
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	TCCR0A = (1<<WGM01); // CTC mode
+	#if TIMEBASE_PRESCALE == 64
+	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
+	#elif TIMEBASE_PRESCALE == 256
+	TCCR0B = (1<<CS02);				// prescaler: 256
+	#endif
+	OCR0A = TIMEBASE_HITS_PER_1MS; // set timer period
+	TIFR0  |= (1<<OCF0A);  // clear ouput compare match flag
+	TIMSK0 |= (1<<OCIE0); // enable output compare match interrupt
+    #endif
+#endif
+
+
+#else //!defined(TIMEBASE_NEW_IMPLEMENTATION)
+
 #if defined(TIMER2)
 	#if defined(__AVR_ATmega8__)
 	#if TIMEBASE_PRESCALE == 64
@@ -95,6 +160,8 @@ void Timebase_Init() {
 	TIMSK0 |= (1<<TOIE0); // enable overflow-interrupt
     #endif
 #endif
+
+#endif //defined(TIMEBASE_NEW_IMPLEMENTATION)
 }
 
 
