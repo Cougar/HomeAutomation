@@ -21,9 +21,14 @@
 #include <stdio.h>
 #include <avr/pgmspace.h> //To allow read/write from flash
 
+#include <drivers/timer/timebase.h>
+
+#include <config.h> // All configuration parameters
+#include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
+
 /* lib files */
 #include <bios.h>
-#include <noddan_funcdefs.h>
+#include <funcdefs/funcdefs.h>
 
 /*----------------------------------------------------------------------------
  * Defines
@@ -140,7 +145,7 @@ void can_receive(Can_Message_t *msg){
 		node = (act & ACT_NODE_MASK) >> ACT_NODE_BITS;
 
 		/* Check if it is command to control this servo */
-		if(act_type == ACT_TYPE_RGB){
+		if(act_type == ACT_TYPE_RGBLED){
 			if(group == GROUP_ID || node == NODE_ID){
 				for(m=0;m<msg->DataLength;m++){
 					rxMsg.Data.bytes[m] = msg->Data.bytes[m];
@@ -180,7 +185,7 @@ int main(void) {
 	dimStamp = 0;
 
 	reformatRGB(0x00,0x00,0x00,1);
-	destColor.Intens = 100;
+	destColor.Intens = 50;
 	currColor = destColor;
 
 //Just temporary for now, they keep track of some kind of demo-program.
@@ -190,7 +195,7 @@ int main(void) {
 
 	sei();
 
-	bios->can_callback = &can_receive;
+	BIOS_CanCallback = &can_receive;
 
 //Send a message that we are alive!
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -199,27 +204,30 @@ int main(void) {
 	txMsg.ExtendedFlag = 1;
 	txMsg.Data.words[0] = APP_TYPE;
 	txMsg.Data.words[1] = APP_VERSION;
-	bios->can_send(&txMsg);
+	BIOS_CanSend(&txMsg);
+
+//Lets get timebase up and running
+	Timebase_Init();
 
 
 	/* main loop */
 	while (1) {
 		
 		/* Time to fade color? */
-		if ((bios->timebase_get() - timeStamp) >= fadeSpeed) {
+		if ((Timebase_CurrentTime() - timeStamp) >= fadeSpeed) {
 			fade(&currColor.R, &destColor.R);			
 			fade(&currColor.G, &destColor.G);
 			fade(&currColor.B, &destColor.B);
 
-			timeStamp = bios->timebase_get();
+			timeStamp = Timebase_CurrentTime();
 			updateLED();
 		}
 
 
 		/* Time to fade intensity? */
-		if (bios->timebase_get() - dimStamp >= dimSpeed) {
+		if (Timebase_CurrentTime() - dimStamp >= dimSpeed) {
 			fade(&currColor.Intens, &destColor.Intens);
-			dimStamp = bios->timebase_get();
+			dimStamp = Timebase_CurrentTime();
 			updateLED();
 		}
 
@@ -311,7 +319,7 @@ void updateLED(){
       OCR0A = currColor.G * currColor.Intens / 255;
 	OCR0B = currColor.B * currColor.Intens / 255;		
 
-/*		
+		
 	//Bara för debugcrap
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
@@ -323,8 +331,8 @@ void updateLED(){
 	txMsg.Data.bytes[2] = currColor.B;
 	txMsg.Data.bytes[3] = currColor.Intens;
 
-	bios->can_send(&txMsg);
-*/
+	BIOS_CanSend(&txMsg);
+
 }
 
 
