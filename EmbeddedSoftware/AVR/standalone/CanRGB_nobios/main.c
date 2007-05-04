@@ -1,6 +1,6 @@
 /**
- * CAN RGB LED. This application is used to control a RGB LED.
- * Still under heavy development
+ * CAN RGB LED. This version is not using BIOS and is therefor obselete. New version with bios is
+ * quite a lot better.
  * 
  * @date	2007-02-10
  * @author	Martin Nordén
