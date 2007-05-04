@@ -92,7 +92,7 @@ void Timebase_Init() {
 	#endif
 	OCR2A = TIMEBASE_HITS_PER_1MS; // set timer period
 	TIFR2  |= (1<<OCF2A);  // clear ouput compare match flag
-	TIMSK2 |= (1<<OCIE2); // enable output compare match interrupt
+	TIMSK2 |= (1<<OCIE2A); // enable output compare match interrupt
 	#endif
 #else /* Use timer0 */
 	#if defined(__AVR_ATmega8__)
