@@ -328,15 +328,23 @@ void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_
 void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 	uint8_t rtrdlc = msg->DataLength;
 	uint8_t i;
+	
+	MCP_INT_DISABLE();
     MCP2515_SELECT();
     SPI_ReadWrite(MCP_LOAD_TX0 + buffer * 2);
     MCP2515_SPIWriteCanId(msg->ExtendedFlag, msg->Id);
     if (msg->RemoteFlag == 1)  rtrdlc |= MCP_RTR_MASK;  // if RTR set bit in byte
     SPI_ReadWrite(rtrdlc);
+    //MCP2515_UNSELECT();
+    //MCP_INT_ENABLE();
+
+	//MCP_INT_DISABLE();
+   	//MCP2515_SELECT();
     for (i=0; i<msg->DataLength; i++) {
     	SPI_ReadWrite(msg->Data.bytes[i]);
     }
-    MCP2515_UNSELECT();
+   	MCP2515_UNSELECT();
+    MCP_INT_ENABLE();
 }
 
 
@@ -344,16 +352,20 @@ void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 //
 // Buffer can be 0, 1 or 2
 void MCP2515_StartTransmit(const uint8_t buffer) {
+	MCP_INT_DISABLE();
     MCP2515_SELECT();
     SPI_ReadWrite(MCP_RTS_TX + (1<<buffer));
     MCP2515_UNSELECT();
+    MCP_INT_ENABLE();
 }
 
 uint8_t MCP2515_GetNextFreeTXBuf() {
 	uint8_t stat;
 	
 	// check all 3 TX-Buffers
+	MCP_INT_DISABLE();
 	stat = MCP2515_ReadStatus();
+    MCP_INT_ENABLE();
 	if (!(stat & MCP_STAT_TX0REQ)) return 0;
 	if (!(stat & MCP_STAT_TX1REQ)) return 1;
 	if (!(stat & MCP_STAT_TX2REQ)) return 2;
