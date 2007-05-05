@@ -1,4 +1,7 @@
 # System specific configuration file
+# Rename this file to system.inc and then modify the params below, 
+# make sure the last row is uncommented first time you program a node with bios
+
 
 # Define the command used to upload BIOS to the node
 # It will be executed as $(UPLOAD) $(ULFLAGS).
@@ -19,4 +22,4 @@ AVRDUDE_WRITE_FUSEBITS += -U lfuse:w:$(LOWFUSE):m
 endif
 
 #comment this line for not programming fusebits
-#ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
+ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
