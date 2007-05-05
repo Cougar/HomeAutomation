@@ -64,11 +64,12 @@ namespace canBootloader {
 				Console.WriteLine("Nodeaddress: "+argReceiverID);
 				Console.WriteLine("Baudrate: "+argBaud);
 				Console.WriteLine("Commands:");
-				Console.WriteLine("load  - Load predefined hexfile.");
-				Console.WriteLine("go    - download hexfile.");
-				Console.WriteLine("start - start application in node.");
-				Console.WriteLine("reset - reset node.");
-				Console.WriteLine("exit  - exit program.");
+				Console.WriteLine("load    - Load predefined hexfile.");
+				Console.WriteLine("go      - download hexfile.");
+				Console.WriteLine("go bios - download the hexfile as a bios, use with caution.");
+				Console.WriteLine("start   - start application in node.");
+				Console.WriteLine("reset   - reset node.");
+				Console.WriteLine("exit    - exit program.");
 	
 				string instr;
 				do {
