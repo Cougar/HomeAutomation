@@ -247,17 +247,9 @@ namespace canBootloader {
 												pgs = dState.SEND_BIOS_UPDATE;
 											}
 										} else {
-											string nodecrc = String.Format("{0:x2}", (int)cmdata[0] + (int)(cmdata[1]<<8));
-											if (nodecrc.Length == 0) { nodecrc = "0000"+nodecrc;}
-											if (nodecrc.Length == 1) { nodecrc = "000"+nodecrc;}
-											if (nodecrc.Length == 2) { nodecrc = "00"+nodecrc;}
-											if (nodecrc.Length == 3) { nodecrc = "0"+nodecrc;}
+											string nodecrc = String.Format("{0:x4}", (int)cmdata[0] + (int)(cmdata[1]<<8));
 											nodecrc = "0x"+nodecrc;
-											string realcrc = String.Format("{0:x2}", (int)(crc & 0xFF) + (int)(crc & 0xFF00));
-											if (realcrc.Length == 0) { realcrc = "0000"+realcrc;}
-											if (realcrc.Length == 1) { realcrc = "000"+realcrc;}
-											if (realcrc.Length == 2) { realcrc = "00"+realcrc;}
-											if (realcrc.Length == 3) { realcrc = "0"+realcrc;}
+											string realcrc = String.Format("{0:x4}", (int)(crc & 0xFF) + (int)(crc & 0xFF00));
 											realcrc = "0x"+realcrc;
 											Console.WriteLine("CRC failed. Node sent CRC "+nodecrc+" but should be "+realcrc+".");
 											errorOccured = true;
