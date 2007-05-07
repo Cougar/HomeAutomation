@@ -2,7 +2,7 @@
 PRG            = bios
 ASRC           = $(BIOSDIR)/vectors.S
 CSRC           = $(BIOSDIR)/bios_export.c $(BIOSDIR)/bios.c $(BIOSDIR)/flash.c
-BIOS_VERSION   = 0x1337
+BIOS_VERSION   = 0x1338
 OPTIMIZE       = -Os -mcall-prologues
 LIBNAME        = libbios
 BIOSDIR        = bios
