@@ -7,7 +7,7 @@ HW_VERSION=2
 
 # NODE_ID should be allocated from a database and not specified here (not done yet though)
 # This number should be unique on your network
-NODE_ID=2
+NODE_ID=0x02
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
 
