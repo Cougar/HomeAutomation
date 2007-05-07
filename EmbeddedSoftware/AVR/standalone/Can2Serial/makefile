@@ -58,7 +58,7 @@ FORMAT = ihex
 # Target file name (without extension).
 TARGET = main
 
-LIBDIR = ../lib/src/
+LIBDIR = ../../lib/src/
 
 
 # List C source files here. (C dependencies are automatically generated.)

@@ -50,16 +50,8 @@ int main(void) {
 	//The databytes are just what happens to be in the memory. They are never set.
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1; 
-#define NODENUMBER 1
-#if NODENUMBER == 1
-	txMsg.Id = 16;
+	txMsg.Id = 1600000;
 	txMsg.DataLength = 2;
-#elif NODENUMBER == 2
-	txMsg.Id = 32;
-	txMsg.DataLength = 5;
-#else
-# error NODENUMBER not set!
-#endif
 	
 	/* main loop */
 	while (1) {

@@ -39,19 +39,19 @@
 
 # MCU name
 #MCU = atmega32
-MCU = atmega88
+MCU = atmega168
 #MCU = atmega16
 
 
 # Main Oscillator Frequency
-##F_OSC = 1000000
-##F_OSC = 1843200
-##F_OSC = 2000000
-##F_OSC = 3686400
-##F_OSC = 4000000
-F_OSC = 8000000
-##F_OSC = 11059200
-##F_OSC = 16000000
+##F_CPU = 1000000
+##F_CPU = 1843200
+##F_CPU = 2000000
+##F_CPU = 3686400
+##F_CPU = 4000000
+F_CPU = 8000000
+##F_CPU = 11059200
+##F_CPU = 16000000
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -60,7 +60,7 @@ FORMAT = ihex
 # Target file name (without extension).
 TARGET = main
 
-LIBDIR = ../lib/src/
+LIBDIR = ../../lib/src/
 
 
 # List C source files here. (C dependencies are automatically generated.)
@@ -128,7 +128,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-CFLAGS += -DF_OSC=$(F_OSC)
+CFLAGS += -DF_CPU=$(F_CPU)
 
 
 
