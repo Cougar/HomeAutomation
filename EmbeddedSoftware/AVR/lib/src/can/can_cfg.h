@@ -20,7 +20,7 @@
 /**
  * CAN bitrate. Possible bitrates are listed in can.h.
  */
-#define CAN_BITRATE			CAN_BITRATE_1M
+#define CAN_BITRATE			CAN_BITRATE_250K
 
 
 /**
