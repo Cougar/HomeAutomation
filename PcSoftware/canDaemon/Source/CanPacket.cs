@@ -4,9 +4,9 @@ using System.Text;
 
 public class CanPacket {
 	private byte pktclass = 0;
-	private byte type = 0;
-	private byte sid = 0;
-	private byte rid = 0;
+//	private byte type = 0;
+//	private byte sid = 0;
+//	private byte rid = 0;
 	private byte data_length = 0;
 	private ulong id = 0;
 	private byte[] data = new byte[8];
@@ -31,9 +31,9 @@ public class CanPacket {
 		
 		this.id = addr;
 		this.pktclass = (byte)((addr & 0x1E000000) >> 25);
-		this.type =	 (byte)((addr & 0x00FF0000) >> 16);
-		this.sid =	  (byte)((addr & 0x0000FF00) >> 8);
-		this.rid =	  (byte)((addr & 0x000000FF));
+//		this.type =	 (byte)((addr & 0x00FF0000) >> 16);
+//		this.sid =	  (byte)((addr & 0x0000FF00) >> 8);
+//		this.rid =	  (byte)((addr & 0x000000FF));
 		this.data_length = raw[startIndex + 6];
 		
 		ext = (byte)(0x0f & raw[startIndex + 4]);
@@ -47,16 +47,16 @@ public class CanPacket {
 		
 	}
 	
-	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data, byte rtr, byte ext) { 
-		this.pktclass=pktclass;
-		this.type=type;
-		this.sid=sid;
-		this.rid=rid;
-		this.data_length=data_length;
-		for(int i=0;i<8;i++) this.data[i]=data[i];
-		this.ext = (byte)(0x0f & ext);
-		this.rtr = (byte)(0x0f & rtr);
-	}
+//	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data, byte rtr, byte ext) { 
+//		this.pktclass=pktclass;
+//		this.type=type;
+//		this.sid=sid;
+//		this.rid=rid;
+//		this.data_length=data_length;
+//		for(int i=0;i<8;i++) this.data[i]=data[i];
+//		this.ext = (byte)(0x0f & ext);
+//		this.rtr = (byte)(0x0f & rtr);
+//	}
 	
 	public override int GetHashCode() {
 		return base.GetHashCode();
@@ -69,26 +69,26 @@ public class CanPacket {
 		
 		for(int i=0;i<8;i++) if (this.data[i]!=bytes[i]) return false;
 		
-		return (this.pktclass==cpm.getPktClass() && this.type==cpm.getType() && this.sid==cpm.getSid() && this.sid==cpm.getRid() && this.data_length==cpm.getDataLength());
+		return (this.id==cpm.getId() && this.data_length==cpm.getDataLength());
 		
 	}
 	
 	public ulong getId() { return this.id; }
 	public byte getPktClass(){ return this.pktclass; }
-	public uint getType(){ return this.type; }
-	public uint getSid(){ return this.sid; }
-	public uint getRid(){ return this.sid; }
+//	public uint getType(){ return this.type; }
+//	public uint getSid(){ return this.sid; }
+//	public uint getRid(){ return this.sid; }
 	public byte getDataLength(){ return this.data_length; }
 	public byte[] getData(){ return this.data; }
 	
-	public override string ToString() {
-		string str = "";
+//	public override string ToString() {
+//		string str = "";
 		
-		str = "pktclass: "+pktclass.ToString()+", type: "+type.ToString()+", sid: "+sid.ToString()+", rid: "+rid.ToString()+",data_length: "+data_length.ToString()+", data: ";
-		for (int i = 0; i < 8; i++) str+=data[i].ToString()+" ";
+//		str = "pktclass: "+pktclass.ToString()+", type: "+type.ToString()+", sid: "+sid.ToString()+", rid: "+rid.ToString()+",data_length: "+data_length.ToString()+", data: ";
+//		for (int i = 0; i < 8; i++) str+=data[i].ToString()+" ";
 		
-		return str;
-	}
+//		return str;
+//	}
 	
 	public string toRawString() {
 
@@ -116,14 +116,13 @@ public class CanPacket {
 		* 
 		*/
 		
-		ulong addr = (((ulong)this.pktclass)<<25)+(((ulong)this.type)<<16)+(((ulong)this.sid)<<8)+((ulong)this.rid);
 		
-		bytes[3] = (byte)((addr & 0xFF000000) >> 24);
-		bytes[2] = (byte)((addr & 0x00FF0000) >> 16);
-		bytes[1] = (byte)((addr & 0x0000FF00) >> 8);
-		bytes[0] = (byte)((addr & 0x000000FF));
-		bytes[4]=1;
-		bytes[5]=0;
+		bytes[3] = (byte)((id & 0xFF000000) >> 24);
+		bytes[2] = (byte)((id & 0x00FF0000) >> 16);
+		bytes[1] = (byte)((id & 0x0000FF00) >> 8);
+		bytes[0] = (byte)((id & 0x000000FF));
+		bytes[4]=ext;
+		bytes[5]=rtr;
 		bytes[6]=this.data_length;
 		for(int i=0;i<8;i++) bytes[i+7]=this.data[i];
 		
