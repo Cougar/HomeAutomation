@@ -12,6 +12,7 @@ public class TcpServer {
 	private int port;
 	private ArrayList clients;
 	const byte DEBUG_LEVEL = 2;	//0, 1, 2, 3
+	//private ulong connid;
 	
 	public TcpServer(int port) {
 		running = true;
@@ -19,38 +20,43 @@ public class TcpServer {
 		listener.Start();
 		this.port = port;
 		clients = new ArrayList();
+		
+		//connid=0;
 	}
 	
 	public void thread() {
 		if (DEBUG_LEVEL>1) { Console.WriteLine("Waiting for clients on port {0}", port); }
 		while (running) {
-			while (!listener.Pending() && running) {
-					Thread.Sleep(20);
-					foreach (Connection client in clients) {
-						//... hämta data från client...
-						//om ny data så skicka till alla i clients utom client
-						string data;
-						bool hasData = client.getData(out data);
-						if (hasData) {
-							foreach (Connection sendclient in clients) {
-								if (sendclient != client) {
-									sendclient.sendDataDummy(data);
-								}
-							}
+			Thread.Sleep(10);
+			foreach (Connection client in clients) {
+				//... hämta data från client...
+				//om ny data så skicka till alla i clients utom client
+				string data;
+				bool hasData = client.getData(out data);
+				if (hasData) {
+					//ulong fromid = client.getId();
+					foreach (Connection sendclient in clients) {
+						if (sendclient != client) {
+							sendclient.sendDataDummy(data);
+							//ulong toid = sendclient.getId();
 						}
 					}
-					
-					foreach (Connection client in clients) {
-						if (!client.isConnected()) {
-							clients.Remove(client);
-							if (DEBUG_LEVEL>1) { Console.WriteLine("Client dropped"); }
-							break;
-						}
-					}
+					//Console.WriteLine("fromid: {0}", fromid);
+				}
 			}
-         	if (running) {
+			
+			foreach (Connection client in clients) {
+				if (!client.isConnected()) {
+					clients.Remove(client);
+					if (DEBUG_LEVEL>1) { Console.WriteLine("Client dropped"); }
+					break;
+				}
+			}
+			
+         	if (running && listener.Pending()) {
          		if (DEBUG_LEVEL>1) { Console.WriteLine("Client connected on port {0}", port); }
 				TcpClient handler = listener.AcceptTcpClient();
+				//Connection newconn = new Connection(handler, connid++);
 				Connection newconn = new Connection(handler);
 				clients.Add(newconn);
 				Thread t = new Thread(newconn.thread);
@@ -79,12 +85,20 @@ class Connection {
 	private TcpClient client;
 	private NetworkStream ns;
 	private bool connected;
+	//ulong id;
 	
-	private static Queue CanPackets = Queue.Synchronized(new Queue());
+	private Queue CanPackets = Queue.Synchronized(new Queue());
 	
+	//public Connection(TcpClient client, ulong id) {
 	public Connection(TcpClient client) {
 		this.client = client;
+		ns = client.GetStream();
+		//this.id = id;
 	}
+	
+	//public ulong getId() {
+	//	return id;
+	//}
 	
 	public bool getData (out string data) {
 		data = null;
@@ -97,7 +111,6 @@ class Connection {
 	
 	public void thread() {
 		//läs och lagra så att en funktion kan läsa från mig
-		ns = client.GetStream();
 		byte[] data = new byte[1024];
 		int recv;
 		connected = true;
@@ -113,6 +126,7 @@ class Connection {
 				//split = tcpdata.Split(" ");
 
 				//if (split.Length ) {
+				//Console.WriteLine("Data arrived on client {0}", id);
 					CanPackets.Enqueue(tcpdata);
 				//}
 				//Console.WriteLine(System.Text.Encoding.ASCII.GetString(data));
