@@ -23,3 +23,6 @@ endif
 
 #comment this line for not programming fusebits
 ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
+
+# Path to where you would like to put your personal node directorys
+PERSONALDIR = ../personal
