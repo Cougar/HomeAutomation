@@ -54,6 +54,12 @@ all: $(PRG).elf lst hex eeprom template
 $(PRG)_pass1.elf: $(BIOSDIR)/config.h $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+# Copy template to personal dir
+.PHONY: move
+move:
+	- cp -r $(TEMPLATEDIR) $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
+	- rm -rf $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/.svn
+
 .PHONY: clean cleanintermediate cleantemplate
 clean: cleanintermediate cleantemplate
 	-rm -f $(PRG).elf $(PRG).lst $(PRG).map *.hex
