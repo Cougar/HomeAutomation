@@ -54,11 +54,18 @@ all: $(PRG).elf lst hex eeprom template
 $(PRG)_pass1.elf: $(BIOSDIR)/config.h $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+# Get old node config and build new bios "make update NODE_ID=0x01"
+.PHONY: update oldconfig move
+update: clean oldconfig all move
+
+oldconfig:
+	- cp $(PERSONALDIR)/*$(NODE_ID)*/bios.inc config.inc
+
 # Copy template to personal dir
-.PHONY: move
 move:
-	- cp -r $(TEMPLATEDIR) $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
-	- rm -rf $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/.svn
+	- mkdir -p $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
+	- cp $(TEMPLATEDIR)/bios.h $(TEMPLATEDIR)/bios.inc $(TEMPLATEDIR)/config.inc $(TEMPLATEDIR)/libbios.a $(TEMPLATEDIR)/main.c $(TEMPLATEDIR)/Makefile $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/
+
 
 .PHONY: clean cleanintermediate cleantemplate
 clean: cleanintermediate cleantemplate
