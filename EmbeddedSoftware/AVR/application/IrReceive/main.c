@@ -11,10 +11,11 @@
 #define APP_TYPE    0xf010
 #define APP_VERSION 0x0001
 
-#define CAN_IR 0x12;
+#define CAN_IR 0x12
 
 #define STATE_IDLE		0
 #define STATE_IR_REPEAT	1
+
 
 // A simple message "queue", with space for one message only.
 // These are declared volatile to tell the compiler not to optimize away accesses.
@@ -50,11 +51,12 @@ int main(void)
 	BIOS_CanCallback = &can_receive;
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
+
+	txMsg.Id = CAN_ID_SNS_IRDATA;	// ((CAN_SNS << CAN_SHIFT_CLASS) | (NODE_ID << CAN_SHIFT_SNS_SID))
 	
 	//printf("AVR Test Application\n");
 	//printf("Using AVR BIOS version %x\n", BIOS_VERSION);
 
-	txMsg.Id = CAN_ID_SNS_IRDATA;	// ((CAN_SNS << CAN_SHIFT_CLASS) | (NODE_ID << CAN_SHIFT_SNS_SID))
 	//txMsg.Id = (CAN_SNS << CAN_SHIFT_CLASS) | ((CAN_IR & CAN_MASK_SNS_FUNCC) << CAN_SHIFT_SNS_FUNCC) | (NODE_ID << CAN_SHIFT_SNS_SID);
 	//txMsg.Data.dwords[0] = 0x01020304;
 	//txMsg.DataLength = 4;
@@ -92,15 +94,6 @@ int main(void)
 			}
 		}
 
-
-
-		/*if ((time - time1) >= 2000) {
-			time1 = time;
-			// Send a CAN message
-			txMsg.Data.dwords[1] = time;
-			BIOS_CanSend(&txMsg);
-			printf("Two seconds passed, time is now %ld.\n", time);
-		}*/
 		
 		if (rxMsgFull) {
 			// Flush the received message
