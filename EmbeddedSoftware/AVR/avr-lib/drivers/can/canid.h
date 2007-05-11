@@ -55,4 +55,8 @@
                               | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
                               | (NODE_ID << CAN_SHIFT_NMT_SID))
 
+#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
+                              | (CAN_IR << CAN_SHIFT_SNS_FUNCC) \
+                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+
 #endif /*CANID_H_*/
