@@ -1,4 +1,4 @@
-SOURCES			= Source/Daemon.cs Source/TcpServer.cs Source/CanPacket.cs Source/Program.cs Source/SerialConnection.cs Source/Properties/AssemblyInfo.cs
+SOURCES			= Source/Daemon.cs Source/TcpServer.cs ../csharp-lib/CanPacket.cs Source/Program.cs Source/SerialConnection.cs Source/Properties/AssemblyInfo.cs
 # Source/Downloader.cs Source/HexFile.cs 
 #OUT				= canBootloader.exe
 PRG				= canDaemon
