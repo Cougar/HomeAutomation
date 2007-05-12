@@ -7,7 +7,7 @@ public class Daemon {
 	
 	private SerialConnection sc;
 	private bool running;
-	const byte DEBUG_LEVEL = 2;	//0, 1, 2, 3
+	const byte DEBUG_LEVEL = 3;	//0, 1, 2, 3
 	private TcpServer tcps;
 	
 	public Daemon(SerialConnection sc) {
@@ -40,7 +40,20 @@ public class Daemon {
 			if (hasMessage) {
 				tcps.sendCanPacket(cp);
 				
-				if (DEBUG_LEVEL>2) { Console.WriteLine(cp.toRawString()); }
+				if (DEBUG_LEVEL>2) { Console.WriteLine(">"+cp.toRawString()); }
+			}
+			
+			string tcpdata;
+			bool hasData = tcps.getData(out tcpdata);
+			if (hasData) {
+				if (tcpdata.Length>3) {
+					//string canraw = tcpdata.Substring(4);
+					cp = new CanPacket(tcpdata.Substring(4));
+					//cp.setData(tcpdata.Substring(4));
+					if (sc.writePacket(cp)) {
+						if (DEBUG_LEVEL>2) { Console.WriteLine("<"+cp.toRawString()); }
+					}
+				}
 			}
 		}
 	}

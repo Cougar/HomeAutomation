@@ -129,7 +129,6 @@ public class SerialConnection {
 			bytes[PACKET_LENGTH - 1] = UART_END_BYTE;
 			
 			udpserver.SendTo(bytes, bytes.Length, SocketFlags.None, new IPEndPoint(IPAddress.Parse(remoteIP), remotePort));
-			
 			return true;
 		} else {
 			return false;
