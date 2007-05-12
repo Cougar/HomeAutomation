@@ -3,16 +3,16 @@ include bios.inc
 # Target file name (without extension).
 TARGET = main
 
-LIBDIR = ../avr-lib
+LIBDIR = ../../avr-lib
 
 # List C source files here. (C dependencies are automatically generated.)
 CSRC =	$(TARGET).c\
 		$(LIBDIR)/drivers/timer/timebase.c\
-		$(LIBDIR)/drivers/uart/serial.c\
-		$(LIBDIR)/drivers/uart/uart.c\
+		$(LIBDIR)/drivers/actuator/rc-servo/rc_servo.c\
+		$(LIBDIR)/drivers/sensor/tc1047/tc1047.c\
 		$(LIBDIR)/drivers/mcu/mcu.c\
-		../lib/src/sensor/tc1047/tc1047.c\
-		../lib/src/actuator/rc_servo.c
+#		../../lib/src/sensor/tc1047/tc1047.c\
+#		../../lib/src/actuator/rc_servo.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -39,9 +39,9 @@ DEBUG = stabs
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
 EXTRAINCDIRS = $(LIBDIR)\
-		../lib/funcdefs\
-		../lib/src/actuator\
-		../lib/src/sensor/tc1047\
+		$(LIBDIR)/funcdefs\
+		$(LIBDIR)/drivers/actuator/rc-servo\
+		$(LIBDIR)/drivers/sensor/tc1047\
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
