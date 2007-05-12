@@ -32,7 +32,7 @@
 #define GROUP_ID	0x01L // FIXME
 
 #define FAILSAFE_MODE       0x0F
-#define FAILSAFE_TRESHOLD   60  /* Degrees celcius when nodeBlinds goes into failsafe mode */
+#define FAILSAFE_TRESHOLD   0x60  /* Degrees celcius when nodeBlinds goes into failsafe mode */
 
 #define BLINDS_CMD_ABS      0x01 /* Absolute position */
 #define BLINDS_CMD_REL      0x02 /* Relative position */
