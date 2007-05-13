@@ -5,25 +5,20 @@ using System.Text;
 
 class Program {
 	const byte DEBUG_LEVEL = 3;	//0, 1, 2, 3
-	//static SerialConnection sc;
+	
+	//connects to candaemon on tcp to send and receive packets
 	static DaemonConnection dc;
+	//a commandline arguments parser
 	static Arguments CommandLine;
-	//static TcpServer tcps;
+	//functions for downloading hex to target
 	static Downloader dl;
-	
-	//private const byte CAN_NMT = 0x00;
-	
-	//private const byte CAN_NMT_RESET = 0x04;
-	//private const byte CAN_NMT_START_APP 	= 0x24;
-	//private const byte CAN_NMT_APP_START 	= 0x28;
-	private const byte MY_ID = 0x00;
-	private const byte MY_NID = 0x0;
-
+	//maintains a hexfile
 	private static HexFile hf;
-	static bool aBios=false;
-	static bool aReset=false;
-	static bool aStart=false;
-	static bool aTerminal=false;
+	
+	static bool aBios=false;		//if commandline says it is a bios update
+	static bool aReset=false;		//if commandline says a reset should be sent before downloading to target
+	static bool aStart=false;		//if commandline says a start should be sent after downloading to target
+	static bool aTerminal=false;	//if commandline says we should start in interactive mode
 		
 	static bool sNodeid=false;
 	static bool sHexfile=false;
@@ -111,16 +106,17 @@ class Program {
 			Console.WriteLine("");
 		}
 		
+		//connect to candaemon
+		dc = new DaemonConnection();
+		if (dc.init(host, port)) {
+			Console.WriteLine("Connected to candaemon");
+		} else { 
+			Console.WriteLine("Connection to candaemon could not be established");
+			error = true; 
+		}
+			
 		if (!error && aTerminal) {
 			bool success = true;
-			
-			dc = new DaemonConnection();
-			if (dc.init(host, port)) {
-				Console.WriteLine("Connected to candaemon");
-			} else { 
-				Console.WriteLine("Connection to candaemon could not be established, I quit");
-				success = false; 
-			}
 			
 			hf = new HexFile();
 			if (sHexfile && success) {
@@ -144,7 +140,6 @@ class Program {
 				} while (parseInput(instr));
 				
 				//exit command
-				dc.stop();
 			}
 		}
 
@@ -159,17 +154,6 @@ class Program {
 			} else { 
 				success = false;
 				Console.WriteLine("Hexfile could not be loaded, I quit");
-			}
-			
-			//connect to candaemon
-			dc = new DaemonConnection();
-			if (success) {
-				if (dc.init(host, port)) {
-					Console.WriteLine("Connected to candaemon");
-				} else { 
-					Console.WriteLine("Connection to candaemon could not be established, I quit");
-					success = false; 
-				}
 			}
 			
 			//if a hexfile is loaded and we are connected to candaemon then start autodownloading sequence
@@ -187,8 +171,11 @@ class Program {
 				
 				if (autosuccess) {
 					//send application
-					Console.WriteLine("Programming not implemented yet, I quit");
-					autosuccess = false;
+					dl = new Downloader(hf, dc, nodeid, aBios);
+					if (!dl.go()) { 
+						Console.WriteLine("Error occured during download"); 
+						autosuccess = false;
+					}
 				}
 				
 				if (autosuccess && aStart) {
@@ -198,6 +185,7 @@ class Program {
 				
 			}
 		}
+		dc.stop();
 	}
 	
 	static private void printHelp() {
