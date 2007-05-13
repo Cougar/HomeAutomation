@@ -35,7 +35,7 @@ public class TcpServer {
 	public void thread() {
 		if (DEBUG_LEVEL>1) { Console.WriteLine("Waiting for clients on port {0}", port); }
 		while (running) {
-			Thread.Sleep(10);
+			Thread.Sleep(1);
 			foreach (Connection client in clients) {
 				//... hämta data från client...
 				//om ny data så skicka till alla i clients utom client
@@ -117,7 +117,7 @@ class Connection {
 		int recv;
 		connected = true;
 		while (connected) {
-			Thread.Sleep(20);
+			Thread.Sleep(1);
 			if (ns.DataAvailable) {
 				recv = ns.Read(data, 0, data.Length);
 				if (recv == 0)
