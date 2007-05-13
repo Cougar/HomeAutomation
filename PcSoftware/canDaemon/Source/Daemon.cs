@@ -35,7 +35,7 @@ public class Daemon {
 	public void thread() {
 		CanPacket cp = null;
 		while (running) {
-			Thread.Sleep(5);
+			Thread.Sleep(1);
 			bool hasMessage = sc.getPacket(out cp);
 			if (hasMessage) {
 				tcps.sendCanPacket(cp);

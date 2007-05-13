@@ -11,14 +11,6 @@ class Program {
 	static TcpServer tcps;
 	//static Downloader dl;
 	
-	//private const byte CAN_NMT = 0x00;
-	
-	//private const byte CAN_NMT_RESET = 0x04;
-	//private const byte CAN_NMT_START_APP 	= 0x24;
-	//private const byte CAN_NMT_APP_START 	= 0x28;
-	private const byte MY_ID = 0x00;
-	private const byte MY_NID = 0x0;
-	
 	static private string argPort;
 	static private int argBaud;
 	
