@@ -55,10 +55,23 @@ public class CanPacket {
 		if ((split.Length >= 3) && (split.Length <= 11)) {
 			try {
 				id = System.Convert.ToUInt32(split[0].Trim(), 16);
-
+			}
+			catch {
+				Console.WriteLine("overflow 1");
+			}
+			try {
 				ext = (byte)(System.Convert.ToUInt32(split[1].Trim(), 16)&0xFF);
+			}
+			catch {
+				Console.WriteLine("overflow 2");
+			}
+			try {
 				rtr = (byte)(System.Convert.ToUInt32(split[2].Trim(), 16)&0xFF);
-				
+			}
+			catch {
+				Console.WriteLine("overflow 3");
+			}
+			try {
 				//testa ext och rtr!
 				
 				for (int i = 0; i < split.Length-3; i++) {
@@ -70,31 +83,11 @@ public class CanPacket {
 				}
 			}
 			catch {
-				Console.WriteLine("overflow ");
+				Console.WriteLine("overflow 4");
 			}
 		}
 		
 	}
-
-//	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data) { 
-//		//keep for compability for a while (Downloader.cs)
-//		this.id = ((uint)pktclass<<24)|((uint)type<<16)|((uint)sid<<8)|((uint)rid);
-//		this.data_length=data_length;
-//		ext = 1;
-//		rtr = 0;
-//		for(int i=0;i<8;i++) this.data[i]=data[i];
-//	}
-	
-//	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data, byte rtr, byte ext) { 
-//		this.pktclass=pktclass;
-//		this.type=type;
-//		this.sid=sid;
-//		this.rid=rid;
-//		this.data_length=data_length;
-//		for(int i=0;i<8;i++) this.data[i]=data[i];
-//		this.ext = (byte)(0x0f & ext);
-//		this.rtr = (byte)(0x0f & rtr);
-//	}
 	
 	public override int GetHashCode() {
 		return base.GetHashCode();
@@ -113,10 +106,7 @@ public class CanPacket {
 	
 	public uint getId() { return this.id; }
 	public void setId(uint id) { this.id = id; }
-	//public byte getPktClass(){ return this.pktclass; }
-//	public uint getType(){ return this.type; }
-//	public uint getSid(){ return this.sid; }
-//	public uint getRid(){ return this.sid; }
+	public byte getPktClass(){ return this.pktclass; }
 	public void setDataLength(byte datalength){ this.data_length=datalength; }
 	public byte getDataLength(){ return this.data_length; }
 	public byte[] getData(){ return this.data; }
