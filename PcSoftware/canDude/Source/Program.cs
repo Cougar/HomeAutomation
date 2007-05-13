@@ -73,8 +73,10 @@ class Program {
 			
 			string node = CommandLine["n"];
 			
-			if (!parseNodeId(node)) {
-				error = true;
+			if (node != null) {
+				if (!parseNodeId(node)) {
+					error = true;
+				}
 			}
 			
 			if (!aTerminal && !sNodeid) {
@@ -98,7 +100,7 @@ class Program {
 		if  (!error) {
 			//commandline feedback output (use debuglevel for hiding these)
 			Console.WriteLine("canDude settings:");
-			Console.WriteLine("Nodeaddress: 0x" + String.Format("{0:x2}", nodeid));
+			if (sNodeid) { Console.WriteLine("Nodeaddress: 0x" + String.Format("{0:x2}", nodeid)); }
 			Console.WriteLine("Host: {0}:{1}", host, port);
 			if (hexfile != null) { Console.WriteLine("Hexfile: {0}", hexfile); }
 			Console.Write("Parameters: ");
@@ -146,7 +148,7 @@ class Program {
 				string instr;
 				do {
 					Console.Write("> ");
-					instr = Console.ReadLine().ToLower();
+					instr = Console.ReadLine();
 				} while (parseInput(instr));
 				
 				//exit command
