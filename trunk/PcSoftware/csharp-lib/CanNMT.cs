@@ -23,6 +23,30 @@ public class CanNMT {
 		cp = new CanPacket();
 		cp.setExt(1);
 	}
+
+	public CanNMT(CanPacket cp) {
+		this.cp = cp;
+		this.cp.setExt(1);
+	}
+	
+	public byte getSender() {
+		return (byte)((cp.getId()>>8)&0xFF);
+	}
+	
+	public bool isNMTPacket() {
+		if (((cp.getId()>>24)&0xFF) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public byte getType() {
+		return (byte)((cp.getId()>>16)&0xFF);
+	}
+	
+	public byte getReceiver() {
+		return (byte)((cp.getId()>>0)&0xFF);
+	}
 	
 	public void setSender(byte id) {
 		cp.setId( ( ( cp.getId()&0x00FF00FF )|((uint)id<<8) ) ); 
@@ -40,6 +64,33 @@ public class CanNMT {
 	public CanPacket getStartPacket() {
 		cp.setId( ( cp.getId()&0x0000FFFF )|( CAN_NMT_START_APP<<16 ) ); 
 		cp.setDataLength(0);
+		return cp;
+	}
+
+	public CanPacket getPgmStartPacket(byte[] data) {
+		cp.setId( ( cp.getId()&0x0000FFFF )|( CAN_NMT_PGM_START<<16 ) ); 
+		cp.setData(data);
+		cp.setDataLength(4);
+		return cp;
+	}
+
+	public CanPacket getPgmDataPacket(byte[] data, byte datalen) {
+		cp.setId( ( cp.getId()&0x0000FFFF )|( CAN_NMT_PGM_DATA<<16 ) ); 
+		cp.setData(data);
+		cp.setDataLength(datalen);
+		return cp;
+	}
+
+	public CanPacket getPgmEndPacket() {
+		cp.setId( ( cp.getId()&0x0000FFFF )|( CAN_NMT_PGM_END<<16 ) ); 
+		cp.setDataLength(0);
+		return cp;
+	}
+
+	public CanPacket getPgmCopyPacket(byte[] data) {
+		cp.setId( ( cp.getId()&0x0000FFFF )|( CAN_NMT_PGM_COPY<<16 ) ); 
+		cp.setData(data);
+		cp.setDataLength(6);
 		return cp;
 	}
 	

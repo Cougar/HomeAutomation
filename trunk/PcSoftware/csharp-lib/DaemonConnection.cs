@@ -9,8 +9,8 @@ using System.IO;
 public class DaemonConnection {
 	private TcpClient tc;
 	private bool running;
-	private string host;
-	private int port;
+//	private string host;
+//	private int port;
 	private NetworkStream ns;
 	
 	const byte DEBUG_LEVEL = 2;	//0, 1, 2, 3
@@ -57,7 +57,7 @@ public class DaemonConnection {
 		byte[] data = new byte[1024];
 		int recv;
 		while (running) {
-			Thread.Sleep(20);
+			Thread.Sleep(1);
 			//Console.Write(".");
 			if (ns.DataAvailable) {
 				recv = ns.Read(data, 0, data.Length);

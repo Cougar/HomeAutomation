@@ -75,6 +75,15 @@ public class CanPacket {
 		}
 		
 	}
+
+//	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data) { 
+//		//keep for compability for a while (Downloader.cs)
+//		this.id = ((uint)pktclass<<24)|((uint)type<<16)|((uint)sid<<8)|((uint)rid);
+//		this.data_length=data_length;
+//		ext = 1;
+//		rtr = 0;
+//		for(int i=0;i<8;i++) this.data[i]=data[i];
+//	}
 	
 //	public CanPacket(byte pktclass, byte type, byte sid, byte rid, byte data_length, byte[] data, byte rtr, byte ext) { 
 //		this.pktclass=pktclass;
@@ -112,6 +121,8 @@ public class CanPacket {
 	public byte getDataLength(){ return this.data_length; }
 	public byte[] getData(){ return this.data; }
 	public void setExt(byte ext) { this.ext = ext; }
+
+	public void setData(byte[] data){ this.data = data; }
 	
 //	public override string ToString() {
 //		string str = "";
