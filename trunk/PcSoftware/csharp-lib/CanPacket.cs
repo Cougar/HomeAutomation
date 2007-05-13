@@ -10,8 +10,12 @@ public class CanPacket {
 	private byte data_length = 0;
 	private uint id = 0;
 	private byte[] data = new byte[8];
-	private byte ext = 0;
+	private byte ext = 1;
 	private byte rtr = 0;
+	
+	public CanPacket() {
+		
+	}
 	
 	public CanPacket(byte[] raw,uint startIndex) { 
 		// 17 bytes, a packet.
@@ -43,8 +47,8 @@ public class CanPacket {
 	}
 	
 	public CanPacket(string raw) {
-//	}
-//	public void setData(string raw) {
+		//denna funktion fungerar sådär, se till att bygga en bättre parser
+		
 		//1e00007f 1 0 04 03 02 01 96 3f 76 15
 		string [] split = null;
 		split = raw.Split( new Char [] {' '} );
@@ -66,7 +70,7 @@ public class CanPacket {
 				}
 			}
 			catch {
-				Console.WriteLine("overflow");
+				Console.WriteLine("overflow ");
 			}
 		}
 		
@@ -99,12 +103,15 @@ public class CanPacket {
 	}
 	
 	public uint getId() { return this.id; }
-	public byte getPktClass(){ return this.pktclass; }
+	public void setId(uint id) { this.id = id; }
+	//public byte getPktClass(){ return this.pktclass; }
 //	public uint getType(){ return this.type; }
 //	public uint getSid(){ return this.sid; }
 //	public uint getRid(){ return this.sid; }
+	public void setDataLength(byte datalength){ this.data_length=datalength; }
 	public byte getDataLength(){ return this.data_length; }
 	public byte[] getData(){ return this.data; }
+	public void setExt(byte ext) { this.ext = ext; }
 	
 //	public override string ToString() {
 //		string str = "";
