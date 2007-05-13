@@ -27,9 +27,18 @@
 #include <serial.h>
 #include <timebase.h>
 
+//#define UART_OUTPUT /* If you got the node connected to a computer enable this */
+//#define LED_OUTPUT /* If you havent got any connection to a computer but still got some IOs free */
+
 #define SENDING_ID	0x1600000UL // FIXME vilka idn kan vara lämpliga?
 #define ECHO_RECEIVE_ID		0x1700000UL
 #define ECHO_SENDING_ID		0x17000FFUL
+
+/* LED 1 blinks
+#define LED1_PORT	PORTC
+#define LED1_DDR	DDRC
+#define LED2_PORT	PORTC
+#define LED2_DDR	PORTC
 
 
 
@@ -39,9 +48,9 @@
 int main(void) {
 	Mcu_Init();
 	Timebase_Init();
-	Serial_Init();
-
 	sei();
+#if defined(UART_OUTPUT)
+	Serial_Init();
 
 	printf("\n------------------------------------------------------------\n");
 	printf(  "   CAN Test:\n");
@@ -59,6 +68,11 @@ int main(void) {
 		printf("OK!\n");
 		printf("MCP2515 working fine\n");
 	}
+#elif defined(LED_OUTPUT)
+	Can_Init();
+#else
+	Can_Init();
+#endif
 	
 	uint32_t timeStamp = 0;
 	
@@ -86,21 +100,26 @@ int main(void) {
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
+#if defined(UART_OUTPUT)
 			/* Dump message data on uart */
-			printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-			printf("data={ ");
+			printf("\nPKT %#lx %u %u", rxMsg.Id, (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
 			for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-				printf("%x ", rxMsg.Data.bytes[i]);
+				printf(" %#x", rxMsg.Data.bytes[i]);
 			}
-			printf("}\n");
-
+#endif
 			/* Echo function */
 			if(rxMsg.Id == ECHO_RECEIVE_ID){
-				printf("\"ping\" received\n");
+#if defined(UART_OUTPUT)
+				printf("\n\"ping\" received");
 				txMsg.Id = ECHO_SENDING_ID;
 				/* Send reply */
 				Can_Send(&txMsg);
-				printf("reply sent\n");
+				printf("\nreply sent");
+#else
+				txMsg.Id = ECHO_SENDING_ID;
+				/* Send reply */
+				Can_Send(&txMsg);
+#endif
 			}
 		}
 	}
