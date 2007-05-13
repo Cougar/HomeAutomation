@@ -132,15 +132,7 @@ class Program {
 			if (success) {
 				if (DEBUG_LEVEL>0) {
 					Console.WriteLine("");
-					Console.WriteLine("canDude commands:");
-					//Console.WriteLine("reset - reset communication.");
-					Console.WriteLine("exit             - exit program");
-					Console.WriteLine("load [<hexfile>] - reload hexfile or load new hexfile");
-					Console.WriteLine("node <nodeid>    - specify id of target node, hex or decimal");
-					Console.WriteLine("reset            - reset node");
-					Console.WriteLine("start            - start application in node (no feedback yet)");
-					Console.WriteLine("go               - start download application to target");
-					Console.WriteLine("go bios          - start download bios to target, use with caution");
+					printHelp();
 					Console.WriteLine("");
 					//Thread.Sleep(1000);
 				}
@@ -207,6 +199,19 @@ class Program {
 			}
 		}
 	}
+	
+	static private void printHelp() {
+		Console.WriteLine("canDude commands:");
+		//Console.WriteLine("reset - reset communication.");
+		Console.WriteLine("load [<hexfile>] - reload hexfile or load new hexfile");
+		Console.WriteLine("node <nodeid>    - specify id of target node, hex or decimal");
+		Console.WriteLine("reset            - reset node");
+		Console.WriteLine("start            - start application in node (no feedback yet)");
+		Console.WriteLine("go               - start download application to target");
+		Console.WriteLine("go bios          - start download bios to target, use with caution");
+		Console.WriteLine("help             - prints this help");
+		Console.WriteLine("exit or quit     - exit program");
+	}	
 	
 	static private bool parseNodeId(string node) {
 		sNodeid = false;
@@ -337,7 +342,10 @@ class Program {
 			}
 			Console.WriteLine("NodeId is 0x"+ String.Format("{0:x2}", nodeid));
 		}
-		else if (instr.Equals("exit")) {
+		else if (instr.Equals("help")) {
+			printHelp();
+		}
+		else if (instr.Equals("exit") || instr.Equals("quit")) {
 			return false;
 		}
 		else {
