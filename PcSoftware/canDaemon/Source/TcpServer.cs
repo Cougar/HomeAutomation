@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+//using System.Net.;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -17,7 +18,8 @@ public class TcpServer {
 	
 	public TcpServer(int port) {
 		running = true;
-		listener = new TcpListener(port);
+		listener = new TcpListener(IPAddress.Parse("127.0.0.1"),port);
+		//listener = new TcpListener(port);
 		listener.Start();
 		this.port = port;
 		clients = new ArrayList();
@@ -64,12 +66,15 @@ public class TcpServer {
 			}
 			
          	if (running && listener.Pending()) {
-         		if (DEBUG_LEVEL>1) { Console.WriteLine("Client connected on port {0}", port); }
 				TcpClient handler = listener.AcceptTcpClient();
 				Connection newconn = new Connection(handler);
 				clients.Add(newconn);
 				Thread t = new Thread(newconn.thread);
 				t.Start();
+				EndPoint ipend = handler.Client.RemoteEndPoint;
+				string sipend = ipend.ToString();
+				//string sipend = IPAddress.Parse(handler.Client.RemoteEndPoint.Address.ToString());
+         		if (DEBUG_LEVEL>1) { Console.WriteLine("Client {0} connected on port {1}",sipend ,port); }
 			}
 		}
 	}
