@@ -72,9 +72,7 @@ public class TcpServer {
 				Thread t = new Thread(newconn.thread);
 				t.Start();
 				EndPoint ipend = handler.Client.RemoteEndPoint;
-				string sipend = ipend.ToString();
-				//string sipend = IPAddress.Parse(handler.Client.RemoteEndPoint.Address.ToString());
-         		if (DEBUG_LEVEL>1) { Console.WriteLine("Client {0} connected on port {1}",sipend ,port); }
+         		if (DEBUG_LEVEL>1) { Console.WriteLine("Client {0} connected on port {1}",ipend.ToString() ,port); }
 			}
 		}
 	}
