@@ -20,124 +20,120 @@ class Program {
 	static bool aStart=false;		//if commandline says a start should be sent after downloading to target
 	static bool aTerminal=false;	//if commandline says we should start in interactive mode
 		
-	static bool sNodeid=false;
-	static bool sHexfile=false;
+	static bool sNodeid=false;		//true when a nodeid has been parsed
+	static bool sHexfile=false;		//true when a hexfile has been specified
 		
-	static string hexfile=null;
-	static byte nodeid=0;
-	static string host=null;
-	static int port=1200;
+	static string hexfile=null;		//path to a hexfile
+	static byte nodeid=0;			//id of current node
+	static string host=null;		//address of candaemon-host
+	static int port=1200;			//port of candaemon-host
 	
 	static void Main(string[] args) {
-
 		bool error = false;
 		if (args.Length < 4) {
-			Console.WriteLine("Syntax: program.exe [options] -h <host> -p <port>");
-			Console.WriteLine("Host and port are host and port of canDaemon, most likely localhost and 1200.");
-			Console.WriteLine("Options:");
-			Console.WriteLine("  -f <hexfile>   Specify a file to be loaded to target.");
-			Console.WriteLine("  -n <nodeid>    Id of target node, hex or decimal.");
-			Console.WriteLine("  -t             Enter terminal mode.");
-			Console.WriteLine("  -r             Reset node before loading target.");
-			Console.WriteLine("  -s             Start node after loading target.");
-			Console.WriteLine("  -b             Program hex as bios, use with caution.");
+			//if to few arguments then print info and quit
+			printSyntax();
 			error = true;
-            return;
 		} 
 
 		if (!error) {
-			//Console.WriteLine("arg0: " + args[0] + "\n");
-			//argPort = args[0];
-			//argBaud = Int32.Parse(args[1]);
+			//parse commandline arguments
 			CommandLine=new Arguments(args);
 			
+			//check single arguments
 			if (CommandLine["b"] == "true") { aBios = true; }
 			if (CommandLine["r"] == "true") { aReset = true; }
 			if (CommandLine["s"] == "true") { aStart = true; }
 			if (CommandLine["t"] == "true") { aTerminal = true; }
-
-			hexfile = CommandLine["f"];
 			
+			//check hexfile argument
+			hexfile = CommandLine["f"];
 			if (hexfile != null) {
 				sHexfile = true;
 			}
 			if (!aTerminal && !sHexfile) {
-				Console.WriteLine("When not in terminal mode a hexfile must be supplied");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a hexfile must be supplied, I quit"); }
 				error = true;
 			} 
 			
+			//check nodeid argument
 			string node = CommandLine["n"];
-			
 			if (node != null) {
 				if (!parseNodeId(node)) {
 					error = true;
 				}
 			}
-			
 			if (!aTerminal && !sNodeid) {
-				Console.WriteLine("When not in terminal mode a nodeid must be supplied");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a nodeid must be supplied, I quit"); }
 				error = true;
 			} 
 			
+			//check host and port arguments
 			host = CommandLine["h"];
 			string sPort = CommandLine["p"];
 			if ((host == null) || (sPort.Length == 0)) {
+				if (DEBUG_LEVEL>0) { printSyntax(); }
 				error = true;
 			} else {
 				try {
 					port = int.Parse(sPort);
 				} catch {
+					if (DEBUG_LEVEL>0) { Console.WriteLine("Was not able to parse port, I quit"); }
 					error = true;
 				}
 			}
 		}
 		
 		if  (!error) {
-			//commandline feedback output (use debuglevel for hiding these)
-			Console.WriteLine("canDude settings:");
-			if (sNodeid) { Console.WriteLine("Nodeaddress: 0x" + String.Format("{0:x2}", nodeid)); }
-			Console.WriteLine("Host: {0}:{1}", host, port);
-			if (hexfile != null) { Console.WriteLine("Hexfile: {0}", hexfile); }
-			Console.Write("Parameters: ");
-			if (aBios) { Console.Write("Bios "); }
-			if (aReset) { Console.Write("Reset "); }
-			if (aStart) { Console.Write("Start "); }
-			if (aTerminal) { Console.Write("Terminal"); }
-			Console.WriteLine("");
+			//commandline feedback output
+			if (DEBUG_LEVEL>2) { 
+				Console.WriteLine("canDude settings:");
+				if (sNodeid) { Console.WriteLine("Nodeaddress: 0x" + String.Format("{0:x2}", nodeid)); }
+				Console.WriteLine("Host: {0}:{1}", host, port);
+				if (hexfile != null) { Console.WriteLine("Hexfile: {0}", hexfile); }
+				Console.Write("Parameters: ");
+				if (aBios) { Console.Write("Bios "); }
+				if (aReset) { Console.Write("Reset "); }
+				if (aStart) { Console.Write("Start "); }
+				if (aTerminal) { Console.Write("Terminal"); }
+				Console.WriteLine("");
+			}
 		}
 		
-		//connect to candaemon
-		dc = new DaemonConnection();
-		if (dc.init(host, port)) {
-			Console.WriteLine("Connected to candaemon");
-		} else { 
-			Console.WriteLine("Connection to candaemon could not be established");
-			error = true; 
+		if (!error) {
+			//connect to candaemon
+			dc = new DaemonConnection();
+			if (dc.init(host, port)) {
+				if (DEBUG_LEVEL>1) { Console.WriteLine("Connected to candaemon"); }
+			} else { 
+				if (DEBUG_LEVEL>0) { Console.WriteLine("Connection to candaemon could not be established, I quit"); }
+				error = true; 
+			}
 		}
 			
 		if (!error && aTerminal) {
+			//terminal mode (==interactive mode)
 			bool success = true;
-			
+			//load hexfile if one has been specified as commandline argument
 			hf = new HexFile();
 			if (sHexfile && success) {
 				if (hf.loadHex(hexfile)) {
-					Console.WriteLine("Hexfile loaded");
+					if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile loaded"); }
 				} else { success = false; }
 			}
 			
 			if (success) {
-				if (DEBUG_LEVEL>0) {
+				if (DEBUG_LEVEL>1) {
 					Console.WriteLine("");
-					printHelp();
+					printHelp();		//print available commands
 					Console.WriteLine("");
-					//Thread.Sleep(1000);
 				}
 				
 				string instr;
 				do {
-					Console.Write("> ");
-					instr = Console.ReadLine();
-				} while (parseInput(instr));
+					Console.Write("> ");			//a command has been executed, print a new console char
+					instr = Console.ReadLine();		//read std in
+				} while (parseInput(instr));		//parse a line from std in
 				
 				//exit command
 			}
@@ -150,13 +146,13 @@ class Program {
 			//load hexfile (a hexfile must be supplied as commandline argument)
 			hf = new HexFile();
 			if (hf.loadHex(hexfile)) {
-				Console.WriteLine("Hexfile loaded");
+				if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile loaded"); }
 			} else { 
 				success = false;
-				Console.WriteLine("Hexfile could not be loaded, I quit");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("Hexfile could not be loaded, I quit"); }
 			}
 			
-			//if a hexfile is loaded and we are connected to candaemon then start autodownloading sequence
+			//if a hexfile is loaded then start autodownloading sequence
 			if (success) {
 				bool autosuccess = true;
 				
@@ -164,7 +160,7 @@ class Program {
 				if (aReset) {
 					//send a reset command (and wait for feedback)
 					if (!cpn.doReset(dc, nodeid)) {
-						Console.WriteLine("Target node did not respond to reset, I quit");
+						if (DEBUG_LEVEL>0) { Console.WriteLine("Target node did not respond to reset, I quit"); }
 						autosuccess = false;
 					}
 				}
@@ -173,24 +169,38 @@ class Program {
 					//send application
 					dl = new Downloader(hf, dc, nodeid, aBios);
 					if (!dl.go()) { 
-						Console.WriteLine("Error occured during download"); 
+						if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 						autosuccess = false;
 					}
 				}
 				
 				if (autosuccess && aStart) {
-					//start applikation
+					//start application
 					cpn.doStart(dc, nodeid);
 				}
 				
 			}
 		}
-		dc.stop();
+		if (dc != null) {
+			//stop tcp client thread
+			dc.stop();
+		}
+	}
+	
+	static private void printSyntax() {
+		Console.WriteLine("Syntax: program.exe [options] -h <host> -p <port>");
+		Console.WriteLine("Host and port are host and port of canDaemon, most likely localhost and 1200.");
+		Console.WriteLine("Options:");
+		Console.WriteLine("  -f <hexfile>   Specify a file to be loaded to target.");
+		Console.WriteLine("  -n <nodeid>    Id of target node, hex or decimal.");
+		Console.WriteLine("  -t             Enter terminal mode.");
+		Console.WriteLine("  -r             Reset node before loading target.");
+		Console.WriteLine("  -s             Start node after loading target.");
+		Console.WriteLine("  -b             Program hex as bios, use with caution.");
 	}
 	
 	static private void printHelp() {
 		Console.WriteLine("canDude commands:");
-		//Console.WriteLine("reset - reset communication.");
 		Console.WriteLine("load [<hexfile>] - reload hexfile or load new hexfile");
 		Console.WriteLine("node <nodeid>    - specify id of target node, hex or decimal");
 		Console.WriteLine("reset            - reset node");
@@ -202,6 +212,8 @@ class Program {
 	}	
 	
 	static private bool parseNodeId(string node) {
+		// the goal here is to find a byte from 0-255 in a string, format in decimal (0-255) or in hex (0x0-0xff)
+		// this is probably not done very neat
 		sNodeid = false;
 		if (node.Length > 0) {
 			try {
@@ -216,7 +228,7 @@ class Program {
 						nodeid = byte.Parse(node.Substring(2, 1), System.Globalization.NumberStyles.HexNumber);
 						sNodeid = true;
 					} catch {
-						Console.WriteLine("nodeadress error!");
+						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 1"); }
 						return false;
 					}
 				} else if (node.Length == 4) {
@@ -224,11 +236,11 @@ class Program {
 						nodeid = byte.Parse(node.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
 						sNodeid = true;
 					} catch {
-						Console.WriteLine("nodeadress error!");
+						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 2"); }
 						return false;
 					}
 				} else {
-					Console.WriteLine("nodeadress error!");
+					if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 3"); }
 					return false;
 				}
 			}
@@ -238,46 +250,47 @@ class Program {
 	}
 	
 	static private bool parseInput(string instr) {
-		if (instr.Equals("reset")) {
+		//parse commands entered on std in
+		if (instr.Equals("reset")) {		//reset command, send a reset to current node
 			if (sNodeid) {
 				CanNMT cpn = new CanNMT();
 				cpn.doReset(dc, nodeid);
 			} else {
-				Console.WriteLine("No nodeid has been specified");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
 			}
 		}
-		else if (instr.Equals("start")) {
+		else if (instr.Equals("start")) {	//start command, send a start to current node
 			if (sNodeid) {
 				CanNMT cpn = new CanNMT();
 				cpn.doStart(dc, nodeid);
 			} else {
-				Console.WriteLine("No nodeid has been specified");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
 			}
 		}
-		else if (instr.StartsWith("go")) {
+		else if (instr.StartsWith("go")) {	//downloading command
 			bool dlBios = false;
 			bool error = true;
-			if (instr.Equals("go bios")) {
+			if (instr.Equals("go bios")) {	//if bios should be downloaded
 				dlBios = true;
 				error = false;
-			} else if (instr.Equals("go")) {
+			} else if (instr.Equals("go")) {	//is an application should be downloaded
 				error = false;
 			}
 			
 			if (!sNodeid) {
-				Console.WriteLine("No nodeid has been specified");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
 				error = true;
 			}
 			if (!sHexfile) {
-				Console.WriteLine("No hexfile has been specified");
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No hexfile has been specified"); }
 				error = true;
 			}
 			
 			CanNMT cpn = new CanNMT();
-			if (!error && aReset) {
+			if (!error && aReset) {				//commandline arguments specified that a reset should be done before download
 				//send a reset command (and wait for feedback)
 				if (!cpn.doReset(dc, nodeid)) {
-					Console.WriteLine("Target node did not respond to reset");
+					if (DEBUG_LEVEL>0) { Console.WriteLine("Target node did not respond to reset"); }
 					error = true;
 				}
 			}
@@ -286,37 +299,37 @@ class Program {
 				//send application
 				dl = new Downloader(hf, dc, nodeid, dlBios);
 				if (!dl.go()) { 
-					Console.WriteLine("Error occured during download"); 
+					if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 					error = true;
 				}
 			}
 				
-			if (!error && aStart) {
+			if (!error && aStart) {				//commandline arguments specified that a start should be done after download
 				//start applikation
 				cpn.doStart(dc, nodeid);
 			}
 			
 		}
-		else if (instr.StartsWith("load")) {
+		else if (instr.StartsWith("load")) {	//load hexfile or reload current hexfile
 			if (instr.Length > 5) {
 				//second argument is a hexfile, this file should be loaded
 				hexfile = instr.Substring(5);
 				if (hf.loadHex(hexfile)) {
 					sHexfile = true;
-					Console.WriteLine("Hexfile loaded");
+					if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile loaded"); }
 				} else { 
-					Console.WriteLine("Hexfile could not be loaded");
+					if (DEBUG_LEVEL>0) { Console.WriteLine("Hexfile could not be loaded"); }
 				}
 			} else {
 				//reload current hexfile. if a hexfile already has been specified
 				if (sHexfile) {
 					if (hf.loadHex(hexfile)) {
-						Console.WriteLine("Hexfile reloaded");
+						if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile reloaded"); }
 					} else { 
-						Console.WriteLine("Hexfile could not be reloaded");
+						if (DEBUG_LEVEL>0) { Console.WriteLine("Hexfile could not be reloaded"); }
 					}
 				} else {
-					Console.WriteLine("No hexfile has been specified");
+					if (DEBUG_LEVEL>0) { Console.WriteLine("No hexfile has been specified"); }
 				}
 				
 			}
@@ -328,12 +341,12 @@ class Program {
 				string node = instr.Substring(5);
 				parseNodeId(node);
 			}
-			Console.WriteLine("NodeId is 0x"+ String.Format("{0:x2}", nodeid));
+			if (DEBUG_LEVEL>1) { Console.WriteLine("NodeId is 0x"+ String.Format("{0:x2}", nodeid)); }
 		}
 		else if (instr.Equals("help")) {
 			printHelp();
 		}
-		else if (instr.Equals("exit") || instr.Equals("quit")) {
+		else if (instr.Equals("exit") || instr.Equals("quit") || instr.Equals("q")) {
 			return false;
 		}
 		else {
