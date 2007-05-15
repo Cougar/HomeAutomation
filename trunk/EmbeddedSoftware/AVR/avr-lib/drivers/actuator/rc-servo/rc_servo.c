@@ -8,6 +8,7 @@
  * Date: 2007-01-04
  *
  * TODO anpassa för fler hastigheter än 8 MHz
+ * fixa annan typ av pwm för att bättre styra servo 2 och 3
  */
 
 /*-----------------------------------------------
@@ -94,26 +95,20 @@ void setPosition(uint8_t abs_pos, uint8_t servo){
 			break;
 #endif
     }
-
-
 }
 
 /*
  * Alter the position rel_pos steps.
  * Interval -128 to 127.
  */
- // FIXME inte ändrat här än
 void alterPosition(int8_t rel_pos, uint8_t servo){
-	int8_t new_pos, current_pos;
+	int16_t current_pos, move_pos = rel_pos, new_pos;
 
 	current_pos = getPosition( servo );
-	new_pos = current_pos + rel_pos;
+	new_pos = current_pos + move_pos;
 
-	if(rel_pos<0 && current_pos<new_pos ){
-		new_pos = MIN_POSITION;
-	}else if(rel_pos>0 && current_pos>new_pos ){
-		new_pos = MAX_POSITION;
-	}
+	if(new_pos < MIN_POSITION ) new_pos = MIN_POSITION;
+	if(new_pos > MAX_POSITION ) new_pos = MAX_POSITION;
 
 	setPosition( new_pos, servo );
 }
@@ -125,7 +120,7 @@ uint8_t getPosition(uint8_t servo){
 	switch( servo ){
 		case 1: return ((OCR1A - PWM1_MIN_PULSE)/STEP1); break;
 		case 2: return (int8_t)((OCR0A*8 - PWM2_MIN_PULSE*8)/STEP2); break;
-		case 3: return (int8_t)((OCR0B*8 - PWM3_CENTER_PULSE*8)/STEP3); break;
+		case 3: return (int8_t)((OCR0B*8 - PWM3_MIN_PULSE*8)/STEP3); break;
 	}
 }
 
