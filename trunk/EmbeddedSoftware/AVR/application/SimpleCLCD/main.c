@@ -49,6 +49,7 @@ char buffer[ BUFFER_SIZE ];
 void send_dimensions();
 
 void can_receive(Can_Message_t *msg){
+Can_Message_t txMsg;
 	uint32_t act;
 	uint8_t m, act_type, lcd_action, lcd_size;
 	if( ((msg->Id & CLASS_MASK)>> CLASS_MASK_BITS) == CLASS_ACT ){
@@ -95,14 +96,14 @@ void can_receive(Can_Message_t *msg){
 				txMsg.DataLength = 1;
 				txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_CONT<<LCD_ACTION_BITS )|NODE_ID;
 				txMsg.Data.bytes[0] = OCR0B;
-				bios->can_send(&txMsg);
+				BIOS_CanSend(&txMsg);
 				break;
 			case LCD_ACTION_GET_BLIGHT:
 				// Get backlight
 				txMsg.DataLength = 1;
 				txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_BLIGHT<<LCD_ACTION_BITS )|NODE_ID;
 				txMsg.Data.bytes[0] = OCR1AL;
-				bios->can_send(&txMsg);
+				BIOS_CanSend(&txMsg);
 				break;
 			default:
 				// Take over the world
@@ -111,16 +112,16 @@ void can_receive(Can_Message_t *msg){
 	}
 }
 
-ISR( PCINT0_vect ){ // For ROTENC_A and ROTENC_B
-	uint8_t rot_data = 0;
+ISR( PCINT2_vect ){ // For ROTENC_A and ROTENC_B
+/*	uint8_t rot_data = 0;
 
 	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x01<<SNS_ID_BITS )| NODE_ID;
 	txMsg.DataLength=2;
 
-	if(PINB&(1<<PB7)){
+	if(PINB&(1<<PB0)){
 		rot_data |= 0x01;
 	}
-	if(PINB&(1<<PB0)){
+	if(PIND&(1<<PD2)){
 		rot_data |= 0x02;
 	}
 
@@ -129,20 +130,86 @@ ISR( PCINT0_vect ){ // For ROTENC_A and ROTENC_B
 			if( rot_lastdir&0x01 ){
 				// Moving right
 				txMsg.Data.bytes[0]=RIGHT;
-				txMsg.Data.bytes[1] = (PIND&(1<<PD2))?0:1;
-				bios->can_send(&txMsg);
+				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
+				BIOS_CanSend(&txMsg);
 				// For testing TODO remove
 				if(OCR1A<0xFF){
 					OCR1A++;
 				}
+				if(OCR0B<0xFF){
+					OCR0B++;
+				}
 			}else{
 				// Moving left
 				txMsg.Data.bytes[0]=LEFT;
-				txMsg.Data.bytes[1] = (PIND&(1<<PD2))?0:1;
-				bios->can_send(&txMsg);
+				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
+				BIOS_CanSend(&txMsg);
 				// For testing TODO remove
 				if(OCR1A>0){
 					OCR1A--;
+				}
+				if(OCR0B>0){
+					OCR0B--;
+				}
+			}
+		}
+		rot_laststate = rot_data;
+	}else{
+		rot_lastdir = rot_data;
+	}*/
+	rotenc();
+}
+
+ISR( PCINT0_vect ){ // For ROTENC_BTN
+//	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x02<<SNS_ID_BITS )| NODE_ID;
+//	txMsg.Data.bytes[0] = (PINB&(1<<PB7))?0:1; // Check if buton is pressed or not
+//	txMsg.DataLength=1;
+//	BIOS_CanSend(&txMsg);
+	rotenc();
+}
+
+void rotenc(){
+	uint8_t rot_data = 0;
+Can_Message_t txMsg;
+	txMsg.ExtendedFlag=1;
+	txMsg.RemoteFlag=0;
+	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x01<<SNS_ID_BITS )| NODE_ID;
+	txMsg.DataLength=2;
+
+	if(PINB&(1<<PB0)){
+		rot_data |= 0x01;
+	}
+	if(PIND&(1<<PD2)){
+		rot_data |= 0x02;
+	}
+
+	if( rot_data==0 || rot_data==3 ){
+		if( rot_data==0 && rot_laststate!=rot_data ){
+			if( rot_lastdir&0x01 ){
+				// Moving right
+				txMsg.Data.bytes[0]=RIGHT;
+				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
+	txMsg.DataLength=2;
+				BIOS_CanSend(&txMsg);
+				// For testing TODO remove
+				if(OCR1A<0xFF){
+					OCR1A++;
+				}
+				if(OCR0B<0xFF){
+					OCR0B++;
+				}
+			}else{
+				// Moving left
+				txMsg.Data.bytes[0]=LEFT;
+				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
+	txMsg.DataLength=2;
+				BIOS_CanSend(&txMsg);
+				// For testing TODO remove
+				if(OCR1A>0){
+					OCR1A--;
+				}
+				if(OCR0B>0){
+					OCR0B--;
 				}
 			}
 		}
@@ -152,12 +219,6 @@ ISR( PCINT0_vect ){ // For ROTENC_A and ROTENC_B
 	}
 }
 
-ISR( PCINT2_vect ){ // For ROTENC_BTN
-	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x02<<SNS_ID_BITS )| NODE_ID;
-	txMsg.Data.bytes[0] = (PIND&(1<<PD2))?0:1; // Check if buton is pressed or not
-	txMsg.DataLength=1;
-	bios->can_send(&txMsg);
-}
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -192,11 +253,12 @@ int main(void) {
 	OCR1A = 0x20;
 	DDRB |= (1<<DDB1);
 
+	Can_Message_t txMsg;
 	txMsg.ExtendedFlag=1;
 	txMsg.RemoteFlag=0;
 
 	sei();
-	bios->can_callback = &can_receive;
+	BIOS_CanCallback = &can_receive;
 
 	lcd_init( LCD_DISP_ON );
 	lcd_clrscr();
@@ -212,13 +274,17 @@ int main(void) {
 
 			msg_received = FALSE;
 		}
+		lcd_puts("test");
 	}
 }
 
 void send_dimensions(){
+	Can_Message_t txMsg;
+	txMsg.ExtendedFlag=1;
+	txMsg.RemoteFlag=0;
 	txMsg.Id=0xA000001;
 	txMsg.Data.bytes[0] = SIZE_X;
 	txMsg.Data.bytes[1] = SIZE_Y;
 	txMsg.DataLength = 2;
-	bios->can_send(&txMsg);
+	BIOS_CanSend(&txMsg);
 }
