@@ -55,16 +55,26 @@ $(PRG)_pass1.elf: $(BIOSDIR)/config.h $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 # Get old node config and build new bios "make update NODE_ID=0x01"
-.PHONY: update oldconfig move
-update: clean oldconfig all move
+# this is now done in two steps, first make oldconfig and then make update
+# this due to re-reading the configfile
+.PHONY: update oldconfig move updateconfig
+update: clean all updateconfig
 
+# Move config from a node-folder to avr-lib dir to be able to compile a new version of bios
+# this removes the lines starting with BIOS_RAM_END and BIOS_VERSION becasue they are added in make template
 oldconfig:
-	- cp $(PERSONALDIR)/*$(NODE_ID)*/bios.inc config.inc
+	@$(AWK) '!/^BIOS_RAM_END*/ && !/^BIOS_VERSION*/ { print }' $(PERSONALDIR)/*$(NODE_ID)*/bios.inc > config.inc
+#	- cp $(PERSONALDIR)/*$(NODE_ID)*/bios.inc config.inc
 
 # Copy template to personal dir
 move:
 	- mkdir -p $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
 	- cp $(TEMPLATEDIR)/bios.h $(TEMPLATEDIR)/bios.inc $(TEMPLATEDIR)/config.inc $(TEMPLATEDIR)/libbios.a $(TEMPLATEDIR)/main.c $(TEMPLATEDIR)/Makefile $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/
+
+# Copy template to personal dir but dont copy makefile and main.c as you dont want these files replaced generally 
+updateconfig:
+	- mkdir -p $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
+	- cp $(TEMPLATEDIR)/bios.h $(TEMPLATEDIR)/bios.inc $(TEMPLATEDIR)/config.inc $(TEMPLATEDIR)/libbios.a $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/
 
 
 .PHONY: clean cleanintermediate cleantemplate
@@ -91,7 +101,7 @@ $(PRG).elf: $(PRG)_pass1.elf
 
 $(LIBNAME).S: $(PRG).elf
 	@echo Generating $@
-	@awk '$$1 ~ /0x[0-9a-f]+/ && /BIOS_/ { print "\t.set "$$2","$$1"\n\t.global "$$2 }' $(PRG).map > $@
+	@$(AWK) '$$1 ~ /0x[0-9a-f]+/ && /BIOS_/ { print "\t.set "$$2","$$1"\n\t.global "$$2 }' $(PRG).map > $@
 
 $(BIOSDIR)/config.h: config.inc
 	@echo Generating $@
@@ -132,9 +142,13 @@ hex:  $(PRG).hex
 install: hex
 	$(UPLOAD) $(ULFLAGS)
 
-reinstall: hex
-	$(OBJCOPY) -I ihex -O ihex --change-addresses=-$(shell $(AWK) '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map) bios.hex bios_offset.hex
-	$(CANMANAGER) $(CANMANFLAGS) -n $(NODE_ID) -u bios_offset.hex --flashcopy 0,$(shell $(AWK) '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map),$(shell $(AWK) '/0x[0-9a-f]+.*__bios_size/ { print $$1 }' bios.map)
+# Update bios over can, get config from old node config and build new bios "make reinstall NODE_ID=0x01"
+# this is now done in two steps, first make oldconfig and then make reinstall
+# this due to re-reading the configfile
+reinstall: update
+#next row not needed when using candude
+#	$(OBJCOPY) -I ihex -O ihex --change-addresses=-$(shell $(AWK) '/0x[0-9a-f]+.*__bios_optimal_start/ { print $$1 }' bios.map) bios.hex bios_offset.hex
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(PRG).hex -r -b
 
 # Rules for building the eeprom images
 
