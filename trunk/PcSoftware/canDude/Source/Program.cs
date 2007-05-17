@@ -253,6 +253,7 @@ class Program {
 		//parse commands entered on std in
 		if (instr.Equals("reset")) {		//reset command, send a reset to current node
 			if (sNodeid) {
+				dc.flushData();
 				CanNMT cpn = new CanNMT();
 				cpn.doReset(dc, nodeid);
 			} else {
@@ -297,6 +298,7 @@ class Program {
 				
 			if (!error) {
 				//send application
+				dc.flushData();
 				dl = new Downloader(hf, dc, nodeid, dlBios);
 				if (!dl.go()) { 
 					if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
