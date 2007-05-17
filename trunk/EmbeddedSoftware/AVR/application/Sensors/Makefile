@@ -4,6 +4,7 @@ include bios.inc
 TARGET = main
 
 LIBDIR = ../../avr-lib
+include $(LIBDIR)/system.inc
 
 # List C source files here. (C dependencies are automatically generated.)
 CSRC =	$(TARGET).c\
@@ -213,6 +214,8 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 config: config.h
 
+install: 
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(TARGET).hex -r
 
 # Eye candy.
 # AVR Studio 3.x does not check make's exit code but relies on
