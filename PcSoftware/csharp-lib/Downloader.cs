@@ -128,7 +128,7 @@ public class Downloader {
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
 						}
-						Thread.Sleep(1);
+						//Thread.Sleep(1);
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
@@ -184,7 +184,7 @@ public class Downloader {
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
 						}
-						Thread.Sleep(1);
+						//Thread.Sleep(1);
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
@@ -232,7 +232,7 @@ public class Downloader {
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
 						}
-						Thread.Sleep(1);
+						//Thread.Sleep(1);
 						
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
