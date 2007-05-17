@@ -3,7 +3,8 @@ include bios.inc
 # Target file name (without extension).
 TARGET = main
 
-LIBDIR = ../avr-lib
+LIBDIR = ../../avr-lib
+include $(LIBDIR)/system.inc
 
 # List C source files here. (C dependencies are automatically generated.)
 CSRC =	$(TARGET).c\
@@ -204,6 +205,8 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 config: config.h
 
+install: 
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(PRG).hex -r
 
 # Eye candy.
 # AVR Studio 3.x does not check make's exit code but relies on
@@ -258,8 +261,6 @@ extcoff: $(TARGET).elf
 	@echo
 	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
 	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
-
-
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
