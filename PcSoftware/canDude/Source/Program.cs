@@ -3,6 +3,10 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Text;
 
+///TODO:
+// argument -v # (debuglevel)
+// argument till konstruktor på alla objekt: debuglevel
+
 class Program {
 	const byte DEBUG_LEVEL = 3;	//0, 1, 2, 3
 	
@@ -51,8 +55,8 @@ class Program {
 			if (hexfile != null) {
 				sHexfile = true;
 			}
-			if (!aTerminal && !sHexfile) {
-				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a hexfile must be supplied, I quit"); }
+			if (!aTerminal && !sHexfile && !aReset && !aStart) {
+				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a hexfile, a reset or a start parameter must be supplied, I quit"); }
 				error = true;
 			} 
 			
@@ -143,13 +147,15 @@ class Program {
 			//not terminal mode
 			bool success = true;
 			
-			//load hexfile (a hexfile must be supplied as commandline argument)
-			hf = new HexFile();
-			if (hf.loadHex(hexfile)) {
-				if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile loaded"); }
-			} else { 
-				success = false;
-				if (DEBUG_LEVEL>0) { Console.WriteLine("Hexfile could not be loaded, I quit"); }
+			if (sHexfile) {
+				//load hexfile (a hexfile must be supplied as commandline argument)
+				hf = new HexFile();
+				if (hf.loadHex(hexfile)) {
+					if (DEBUG_LEVEL>1) { Console.WriteLine("Hexfile loaded"); }
+				} else { 
+					success = false;
+					if (DEBUG_LEVEL>0) { Console.WriteLine("Hexfile could not be loaded, I quit"); }
+				}
 			}
 			
 			//if a hexfile is loaded then start autodownloading sequence
@@ -165,7 +171,7 @@ class Program {
 					}
 				}
 				
-				if (autosuccess) {
+				if (sHexfile && autosuccess) {
 					//send application
 					dl = new Downloader(hf, dc, nodeid, aBios);
 					if (!dl.go()) { 
