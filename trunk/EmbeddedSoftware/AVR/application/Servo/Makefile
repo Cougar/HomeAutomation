@@ -209,7 +209,7 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 config: config.h
 
-install: 
+install: hex
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(TARGET).hex -r
 
 reset: 
