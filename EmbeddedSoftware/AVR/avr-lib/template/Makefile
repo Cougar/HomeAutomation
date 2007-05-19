@@ -206,7 +206,7 @@ sym: $(TARGET).sym
 config: config.h
 
 install: 
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(PRG).hex -r
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(TARGET).hex -r
 
 reset: 
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -r
