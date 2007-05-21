@@ -23,15 +23,12 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 /* lib files */
-#include <bios.h>
 #include <config.h>
+#include <bios.h>
 #include <drivers/timer/timebase.h>
-#include <tc1047.h>
-#include <funcdefs.h>
+//#include <funcdefs.h>
 
 /* defines */
-#define GROUP_ID		0x01UL
-
 #define RELAY_OFF			0x01
 #define RELAY_ON			0x02
 #define FAILSAFE_MODE		0x0F
@@ -51,8 +48,11 @@
 /*-------------------------------------------------------------------------
  * Global variables
  * -----------------------------------------------------------------------*/
-uint8_t relayStatus, failsafe_flag = 0, rxMsg_Data_bytes[8], msg_received = 0;
+uint8_t relayStatus, failsafe_flag = 0;
 uint32_t boardTemperature = 0;
+
+volatile Can_Message_t rxMsg; // Message storage
+volatile uint8_t rxMsgFull;   // Synchronization flag
 
 
 /*----------------------------------------------------------------------------
@@ -65,29 +65,9 @@ void sendStatus();
 
 void can_receive(Can_Message_t *msg)
 { // CAN callback function
-	uint32_t act;
-	uint8_t m, act_type, group, node;
-
-	if( ((msg->Id & CLASS_MASK)>>CLASS_MASK_BITS) == CLASS_ACT){
-		// Actuator package
-		act = (msg->Id & TYPE_MASK) >> TYPE_MASK_BITS;
-		act_type =(uint8_t)((act & ACT_TYPE_MASK) >> ACT_TYPE_BITS);
-		group = (uint8_t)((act & ACT_GROUP_MASK) >> ACT_GROUP_BITS);
-		node = (uint8_t)((act & ACT_NODE_MASK) >> ACT_NODE_BITS);
-
-		if( act_type == ACT_TYPE_RELAY && (group == GROUP_ID || node == NODE_ID) ){
-			// This is a message for this node
-
-			if(rxMsg_Data_bytes[0] == RELAY_CMD_RESET){
-				// Return to normal operation
-				failsafe_flag = 0;
-			}
-
-			for(m=0;m<(msg->DataLength);m++){
-				rxMsg_Data_bytes[m] = msg->Data.bytes[m];
-			}
-			msg_received = 1; // Tell application that message has arrived
-		}
+	if (!rxMsgFull) {
+		memcpy((void*)&rxMsg, msg, sizeof(rxMsg));
+		rxMsgFull = 1;
 	}
 }
 
@@ -108,11 +88,6 @@ int main(void) {
 
 	uint32_t timeStamp = Timebase_CurrentTime(), temp = timeStamp;
 
-	Can_Message_t txMsg;
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
-	txMsg.DataLength = 4;
-
 	adcTemperatureInit();
 
 	// Set up callback for CAN messages
@@ -124,49 +99,61 @@ int main(void) {
 
 	// Turn relay off
 	relayStatus = relayOff();
-//	txMsg.Id = 0x8000110; // FIXME
-//	bios->can_send(&txMsg);
 
 	// Main loop
 	while (1) {
 
-		if(msg_received && !failsafe_flag ){
-
-			if( rxMsg_Data_bytes[0] == RELAY_CMD_ON ){
-				// Turn relay on
-				relayStatus = relayOn();
-
-			}else if(rxMsg_Data_bytes[0] == RELAY_CMD_OFF ){
-				// Turn relay off
-				relayStatus = relayOff();
-
-			}else if(rxMsg_Data_bytes[0] == RELAY_CMD_TOGGLE ){
-					// Toggle relay
-					if(relayStatus == RELAY_OFF){
-						relayStatus = relayOn();
-					}else{
-						relayStatus = relayOff();
-					}
-
-			}else if(rxMsg_Data_bytes[0] == RELAY_CMD_STATUS ){
-				// Send relay status to CAN
-				sendStatus();
-			}
-			msg_received = 0;
-		}
-
 		temp = Timebase_CurrentTime();
 		if( temp - timeStamp >= STATUS_SEND_PERIOD ){
 			timeStamp = temp;
-/*			txMsg.Id = 0x8000111;
-			txMsg.Data.bytes[0] = timeStamp & 0x000000FF;
-			txMsg.Data.bytes[0] = (timeStamp & 0x0000FF00)>>8;
-			txMsg.Data.bytes[0] = (timeStamp & 0x00FF0000)>>16;
-			txMsg.Data.bytes[0] = (timeStamp & 0xFF000000)>>24;
-			bios->can_send(&txMsg);
-*/			// Send relay status to CAN
+			// Send relay status to CAN
 			sendStatus();
 		}
+
+		if (rxMsgFull) {
+			uint8_t acttype;
+			uint16_t servoid;
+		
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){
+				// Actuator package
+				acttype =(uint8_t)((rxMsg.Id & CAN_MASK_ACT_FUNCC) >> CAN_SHIFT_ACT_FUNCC);
+				servoid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_NID) >> CAN_SHIFT_ACT_NID);
+				
+				if ((acttype == ACT_FUNCC_RELAY) && (servoid == NODE_ID)) {
+					// This is a message for this relay
+					if (rxMsg.Data.bytes[0] == RELAY_CMD_RESET) {
+						// Return to normal operation
+						failsafe_flag = 0;
+					}
+					
+					if (!failsafe_flag) {
+						if (rxMsg.Data.bytes[0] == RELAY_CMD_ON ){
+							// Turn relay on
+							relayStatus = relayOn();
+			
+						} else if (rxMsg.Data.bytes[0] == RELAY_CMD_OFF ){
+							// Turn relay off
+							relayStatus = relayOff();
+			
+						} else if (rxMsg.Data.bytes[0] == RELAY_CMD_TOGGLE ){
+								// Toggle relay
+								if(relayStatus == RELAY_OFF){
+									relayStatus = relayOn();
+								}else{
+									relayStatus = relayOff();
+								}
+			
+						}else if(rxMsg.Data.bytes[0] == RELAY_CMD_STATUS ){
+							// Send relay status to CAN
+							sendStatus();
+						}
+					}
+				}
+			}
+    		rxMsgFull = 0; //  
+
+		}
+		
 	}
 	return 0;
 }
@@ -213,8 +200,8 @@ void sendStatus()
 	statusMsg.RemoteFlag = 0;
 	statusMsg.ExtendedFlag = 1;
 	statusMsg.DataLength = 4;
-	statusMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_STATUS_RELAY<<TYPE_MASK_BITS )|(NODE_ID);
-
+	statusMsg.Id = ( CAN_SNS<<CAN_SHIFT_CLASS )|( SNS_FUNCC_RELAY_STATUS<<CAN_SHIFT_ACT_FUNCC )|( NODE_ID<<CAN_SHIFT_SNS_SID );
+	
 	temperature = getTC1047temperature();
 	if( (int32_t)temperature >= FAILSAFE_TRESHOLD && !failsafe_flag ){
 		// Goto failsafe mode
