@@ -35,6 +35,14 @@
 #define CAN_MASK_SNS_SID	0x000001FF
 #define CAN_SHIFT_SNS_SID	0
 //------------------------------------
+#define CAN_ACT				0x04UL
+#define CAN_MASK_ACT_FUNCC	0x01FF8000
+#define CAN_SHIFT_ACT_FUNCC	15
+#define CAN_MASK_ACT_NID	0x00007E00
+#define CAN_SHIFT_ACT_NID	9
+#define CAN_MASK_ACT_SID	0x000001FF
+#define CAN_SHIFT_ACT_SID	0
+//------------------------------------
 #define CAN_PKT				0x06UL
 //------------------------------------
 #define CAN_CON				0x08UL
@@ -55,8 +63,23 @@
                               | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
                               | (NODE_ID << CAN_SHIFT_NMT_SID))
 
-#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
-                              | (CAN_IR << CAN_SHIFT_SNS_FUNCC) \
-                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+// CAN ID definitions for SNS messages
+#define SNS_FUNCC_RELAY_STATUS         0x0BL
+#define SNS_FUNCC_CAN_IR               0x12L
+
+//#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
+//                              | (SNS_FUNCC_CAN_IR << CAN_SHIFT_SNS_FUNCC) \
+//                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+
+//#define CAN_ID_SNS_RELAYDATA  ((CAN_SNS << CAN_SHIFT_CLASS) \
+//                              | (SNS_RELAY_STATUS << CAN_SHIFT_SNS_FUNCC) \
+//                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+
+// CAN ID definitions for ACT messages
+#define ACT_FUNCC_RELAY         0x01L
+
+//#define CAN_ID_ACT_RELAY     ((CAN_ACT << CAN_SHIFT_CLASS) \
+//                              | (CAN_RELAY << CAN_SHIFT_ACT_FUNCC) \
+//                              | (NODE_ID << CAN_SHIFT_ACT_SID))
 
 #endif /*CANID_H_*/
