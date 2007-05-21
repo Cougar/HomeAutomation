@@ -9,11 +9,9 @@ include $(LIBDIR)/system.inc
 # List C source files here. (C dependencies are automatically generated.)
 CSRC =	$(TARGET).c\
 		$(LIBDIR)/drivers/timer/timebase.c\
-		$(LIBDIR)/drivers/uart/serial.c\
-		$(LIBDIR)/drivers/uart/uart.c\
 		$(LIBDIR)/drivers/mcu/mcu.c\
 		$(LIBDIR)/drivers/ir/receiver/irreceiver.c\
-		
+
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
 # will not be considered source files but generated files (assembler
@@ -268,8 +266,6 @@ extcoff: $(TARGET).elf
 	@echo
 	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
 	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
-
-
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
