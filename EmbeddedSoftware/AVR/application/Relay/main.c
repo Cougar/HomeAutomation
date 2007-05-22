@@ -45,6 +45,9 @@
 #define BUTTON1				1
 #define BUTTON2				2
 
+#define APP_TYPE    CAN_APPTYPES_RELAY
+#define APP_VERSION 0x0001
+
 /*-------------------------------------------------------------------------
  * Global variables
  * -----------------------------------------------------------------------*/
@@ -96,6 +99,15 @@ int main(void) {
 	sei();
 	
 	Timebase_Init();
+
+	Can_Message_t txMsg;
+	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
+	txMsg.DataLength = 4;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	txMsg.Data.words[0] = APP_TYPE;
+	txMsg.Data.words[1] = APP_VERSION;
+	BIOS_CanSend(&txMsg);
 
 	// Turn relay off
 	relayStatus = relayOff();

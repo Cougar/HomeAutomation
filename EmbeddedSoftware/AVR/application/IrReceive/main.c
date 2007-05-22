@@ -8,10 +8,8 @@
 #include <drivers/timer/timebase.h>
 #include <drivers/ir/receiver/irreceiver.h>
 
-#define APP_TYPE    0xf010
+#define APP_TYPE    CAN_APPTYPES_IRRECEIVER
 #define APP_VERSION 0x0001
-
-#define CAN_IR 0x12
 
 #define STATE_IDLE		0
 #define STATE_IR_REPEAT	1
