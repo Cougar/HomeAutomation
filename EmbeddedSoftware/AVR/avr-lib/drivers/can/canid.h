@@ -63,6 +63,9 @@
                               | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
                               | (NODE_ID << CAN_SHIFT_NMT_SID))
 
+#define CAN_APPTYPES_IRRECEIVER     0xf010
+#define CAN_APPTYPES_RELAY          0xf015
+
 // CAN ID definitions for SNS messages
 #define SNS_FUNCC_RELAY_STATUS         0x0BL
 #define SNS_FUNCC_CAN_IR               0x12L
