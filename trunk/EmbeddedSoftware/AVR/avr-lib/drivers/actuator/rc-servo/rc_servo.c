@@ -32,28 +32,23 @@ void rcServoInit(){
 // we want OC1A and B to be set on reaching BOTTOM, clear on reaching
 // compare match, use ICR1 as TOP and have a prescale of 8.
 
-#if NUMBER_OF_RCS >= 1
 	/* Use OC1A */
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
 	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
 	ICR1 = 20000; /* Used for TOP, makes for 50 Hz PWM */
 	OCR1A = PWM1_MIN_PULSE; /* Servo at min position */
 	DDRB |= (1<<DDB1); /* Enable pin as output */
-#endif
-#if NUMBER_OF_RCS >= 2
+
 	/* Use OC0A */
 	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
 	TCCR0B |= (1<<CS02); /* Prescaler 1/256 */
 	OCR0A = PWM2_MIN_PULSE;
 	DDRD |= (1<<DDD6);
-#endif
-#if NUMBER_OF_RCS >= 3
+
 	/* Use OC0B */
 	TCCR0A |= (1<<COM0B1);
 	OCR0B = PWM3_MIN_PULSE;
 	DDRD |= (1<<DDD5);
-#endif
-
 }
 
 /*
@@ -64,7 +59,6 @@ void setPosition(uint8_t abs_pos, uint8_t servo){
 	uint16_t temp_pos;
 
 	switch( servo ){
-#if NUMBER_OF_RCS > 0
 		case 1:
 			temp_pos = PWM1_MIN_PULSE + abs_pos*STEP1;
 			if(temp_pos>PWM1_MAX_PULSE){
@@ -73,8 +67,6 @@ void setPosition(uint8_t abs_pos, uint8_t servo){
 				OCR1A = temp_pos;
 			}
 			break;
-#endif
-#if NUMBER_OF_RCS > 1
 		case 2:
 			temp_pos = PWM2_MIN_PULSE + abs_pos*STEP2;
 			if(temp_pos>PWM2_MAX_PULSE){
@@ -83,8 +75,6 @@ void setPosition(uint8_t abs_pos, uint8_t servo){
 				OCR0A = temp_pos;
 			}
 			break;
-#endif
-#if NUMBER_OF_RCS > 2
 		case 3:
 			temp_pos = PWM3_MIN_PULSE + abs_pos*STEP3;
 			if(temp_pos>PWM3_MAX_PULSE){
@@ -93,8 +83,7 @@ void setPosition(uint8_t abs_pos, uint8_t servo){
 				OCR0B = temp_pos;
 			}
 			break;
-#endif
-    }
+	}
 }
 
 /*
@@ -123,6 +112,18 @@ uint8_t getPosition(uint8_t servo){
 		case 3: return (int8_t)((OCR0B*8 - PWM3_MIN_PULSE*8)/STEP3); break;
 	}
 }
+
+void servoDisable(void){
+	TCCR1A &= ~(1<<COM1A1)|(1<<COM1A0);
+	TCCR0A &= ~(1<<COM0A1)|(1<<COM0A0);
+	TCCR0B &= ~(1<<COM0B1)|(1<<COM0B0);
+}
+void servoEnable(void){
+	TCCR1A |= (1<<COM1A1);
+	TCCR0A |= (1<<COM0A1);
+	TCCR0B |= (1<<COM0B1);
+}
+
 
 /*
 http://members.shaw.ca/climber/avrtimers.html
