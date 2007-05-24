@@ -12,14 +12,6 @@
  * Defines
  * --------------------------------------------*/
 
-/*
- * It is possible to use up to three PWM outputs.
- * In order: OC1A, OC0A and OC0B.
- * They will be named RCS0-RCS2.
- * Define how many that will be used.
- */
-#define NUMBER_OF_RCS 2
-
 /* 
  * For width of the pulse that control the RC servo.
  * Clock pulses.
@@ -46,5 +38,7 @@ void rcServoInit();
 void setPosition(uint8_t abs_pos, uint8_t servo);
 void alterPosition(int8_t rel_pos, uint8_t servo);
 uint8_t getPosition(uint8_t servo);
+void servoDisable(void);
+void servoEnable(void);
 
 #endif
