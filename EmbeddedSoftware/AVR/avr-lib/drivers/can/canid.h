@@ -65,9 +65,11 @@
 
 #define CAN_APPTYPES_IRRECEIVER     0xf010
 #define CAN_APPTYPES_RELAY          0xf015
+#define CAN_APPTYPES_SERVO          0xf020
 
 // CAN ID definitions for SNS messages
 #define SNS_FUNCC_RELAY_STATUS         0x0BL
+#define SNS_FUNCC_SERVO_STATUS         0x0dL
 #define SNS_FUNCC_CAN_IR               0x12L
 
 //#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
@@ -83,6 +85,12 @@
 
 //#define CAN_ID_ACT_RELAY     ((CAN_ACT << CAN_SHIFT_CLASS) \
 //                              | (CAN_RELAY << CAN_SHIFT_ACT_FUNCC) \
+//                              | (NODE_ID << CAN_SHIFT_ACT_SID))
+
+#define ACT_FUNCC_SERVO         0x02L
+
+//#define CAN_ID_ACT_SERVO     ((CAN_ACT << CAN_SHIFT_CLASS) \
+//                              | (CAN_SERVO << CAN_SHIFT_ACT_FUNCC) \
 //                              | (NODE_ID << CAN_SHIFT_ACT_SID))
 
 #endif /*CANID_H_*/
