@@ -108,7 +108,7 @@ void Timebase_Init() {
 	#endif
 	OCR0A = TIMEBASE_HITS_PER_1MS; // set timer period
 	TIFR0  |= (1<<OCF0A);  // clear ouput compare match flag
-	TIMSK0 |= (1<<OCIE0); // enable output compare match interrupt
+	TIMSK0 |= (1<<OCIE0A); // enable output compare match interrupt
     #endif
 #endif
 
