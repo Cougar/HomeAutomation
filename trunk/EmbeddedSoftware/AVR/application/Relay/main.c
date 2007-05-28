@@ -45,6 +45,9 @@
 #define BUTTON1				1
 #define BUTTON2				2
 
+#define THISRELAYID			NODE_ID		/* application software should not depend on the id of the physical node
+											but for now lets do it like this */
+
 #define APP_TYPE    CAN_APPTYPES_RELAY
 #define APP_VERSION 0x0001
 
@@ -124,14 +127,14 @@ int main(void) {
 
 		if (rxMsgFull) {
 			uint8_t acttype;
-			uint16_t servoid;
+			uint16_t relayid;
 		
 			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){
 				// Actuator package
-				acttype =(uint8_t)((rxMsg.Id & CAN_MASK_ACT_FUNCC) >> CAN_SHIFT_ACT_FUNCC);
-				servoid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_NID) >> CAN_SHIFT_ACT_NID);
+				acttype =(uint8_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+				relayid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 				
-				if ((acttype == ACT_FUNCC_RELAY) && (servoid == NODE_ID)) {
+				if ((acttype == ACT_TYPE_RELAY) && (relayid == THISRELAYID)) {
 					// This is a message for this relay
 					if (rxMsg.Data.bytes[0] == RELAY_CMD_RESET) {
 						// Return to normal operation
@@ -212,7 +215,7 @@ void sendStatus()
 	statusMsg.RemoteFlag = 0;
 	statusMsg.ExtendedFlag = 1;
 	statusMsg.DataLength = 4;
-	statusMsg.Id = ( CAN_SNS<<CAN_SHIFT_CLASS )|( SNS_FUNCC_RELAY_STATUS<<CAN_SHIFT_ACT_FUNCC )|( NODE_ID<<CAN_SHIFT_SNS_SID );
+	statusMsg.Id = ( CAN_SNS<<CAN_SHIFT_CLASS )|( SNS_TYPE_RELAY_STATUS<<CAN_SHIFT_ACT_TYPE )|( NODE_ID<<CAN_SHIFT_SNS_SID );
 	
 	temperature = getTC1047temperature();
 	if( (int32_t)temperature >= FAILSAFE_TRESHOLD && !failsafe_flag ){
