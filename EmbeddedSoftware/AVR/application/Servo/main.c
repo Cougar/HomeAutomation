@@ -202,11 +202,11 @@ int main(void) {
 		if(rxMsgFull){
 			if( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT ){
 				// Actuator package
-				acttype = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_FUNCC) >> CAN_SHIFT_ACT_FUNCC);
-				servoid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_NID) >> CAN_SHIFT_ACT_NID);
+				acttype = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+				servoid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 
 		// Check if it is command to control this servo
-				if(acttype == ACT_FUNCC_SERVO && (servoid == SERVOID_1 || servoid == SERVOID_2 || servoid == SERVOID_3)){
+				if(acttype == ACT_TYPE_SERVO && (servoid == SERVOID_1 || servoid == SERVOID_2 || servoid == SERVOID_3)){
 					// This node that control a servo is adressed
 					if(servoid == SERVOID_1){
 						temp_id = 1; // First servo

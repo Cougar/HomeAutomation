@@ -50,12 +50,12 @@ int main(void)
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
 
-	txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_FUNCC_CAN_IR << CAN_SHIFT_SNS_FUNCC) | (NODE_ID << CAN_SHIFT_SNS_SID));
+	txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_CAN_IR << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID));
 		
 	//printf("AVR Test Application\n");
 	//printf("Using AVR BIOS version %x\n", BIOS_VERSION);
 
-	//txMsg.Id = (CAN_SNS << CAN_SHIFT_CLASS) | ((CAN_IR & CAN_MASK_SNS_FUNCC) << CAN_SHIFT_SNS_FUNCC) | (NODE_ID << CAN_SHIFT_SNS_SID);
+	//txMsg.Id = (CAN_SNS << CAN_SHIFT_CLASS) | ((CAN_IR & CAN_MASK_SNS_TYPE) << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID);
 	//txMsg.Data.dwords[0] = 0x01020304;
 	//txMsg.DataLength = 4;
 
