@@ -28,18 +28,18 @@
 #define CAN_NMT_HEARTBEAT	0x2CUL
 //------------------------------------
 #define CAN_SNS				0x02UL
-#define CAN_MASK_SNS_FUNCC	0x01FF8000
-#define CAN_SHIFT_SNS_FUNCC	15
-#define CAN_MASK_SNS_NID	0x00007E00
-#define CAN_SHIFT_SNS_NID	9
+#define CAN_MASK_SNS_TYPE	0x01FF8000
+#define CAN_SHIFT_SNS_TYPE	15
+#define CAN_MASK_SNS_ID		0x00007E00
+#define CAN_SHIFT_SNS_ID	9
 #define CAN_MASK_SNS_SID	0x000001FF
 #define CAN_SHIFT_SNS_SID	0
 //------------------------------------
 #define CAN_ACT				0x04UL
-#define CAN_MASK_ACT_FUNCC	0x01FF8000
-#define CAN_SHIFT_ACT_FUNCC	15
-#define CAN_MASK_ACT_NID	0x00007E00
-#define CAN_SHIFT_ACT_NID	9
+#define CAN_MASK_ACT_TYPE	0x01FF8000
+#define CAN_SHIFT_ACT_TYPE	15
+#define CAN_MASK_ACT_ID		0x00007E00
+#define CAN_SHIFT_ACT_ID	9
 #define CAN_MASK_ACT_SID	0x000001FF
 #define CAN_SHIFT_ACT_SID	0
 //------------------------------------
@@ -68,9 +68,9 @@
 #define CAN_APPTYPES_SERVO          0xf020
 
 // CAN ID definitions for SNS messages
-#define SNS_FUNCC_RELAY_STATUS         0x0BL
-#define SNS_FUNCC_SERVO_STATUS         0x0dL
-#define SNS_FUNCC_CAN_IR               0x12L
+#define SNS_TYPE_RELAY_STATUS         0x0BL
+#define SNS_TYPE_SERVO_STATUS         0x0dL
+#define SNS_TYPE_CAN_IR               0x12L
 
 //#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
 //                              | (SNS_FUNCC_CAN_IR << CAN_SHIFT_SNS_FUNCC) \
@@ -81,13 +81,13 @@
 //                              | (NODE_ID << CAN_SHIFT_SNS_SID))
 
 // CAN ID definitions for ACT messages
-#define ACT_FUNCC_RELAY         0x01L
+#define ACT_TYPE_RELAY         0x01L
 
 //#define CAN_ID_ACT_RELAY     ((CAN_ACT << CAN_SHIFT_CLASS) \
 //                              | (CAN_RELAY << CAN_SHIFT_ACT_FUNCC) \
 //                              | (NODE_ID << CAN_SHIFT_ACT_SID))
 
-#define ACT_FUNCC_SERVO         0x02L
+#define ACT_TYPE_SERVO         0x02L
 
 //#define CAN_ID_ACT_SERVO     ((CAN_ACT << CAN_SHIFT_CLASS) \
 //                              | (CAN_SERVO << CAN_SHIFT_ACT_FUNCC) \
