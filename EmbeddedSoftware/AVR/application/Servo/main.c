@@ -10,8 +10,6 @@
  *
  */
 
-//#define TWO_BUTTON_MODE /* If using two (or just one but nothing more) auxiliary buttons */
-
 /*-----------------------------------------------------------------------------
  * Includes
  *---------------------------------------------------------------------------*/
@@ -20,23 +18,20 @@
 #include <avr/interrupt.h>
 #include <inttypes.h>
 #include <stdio.h>
+
 /* lib files */
 #include <bios.h>
 #include <config.h>
+#include <settings.h>
+
 #include <drivers/timer/timebase.h>
+#include <drivers/sensor/tc1047/tc1047.h>
+#include <drivers/actuator/rc-servo/rc_servo.h>
 
-//#include <funcdefs.h>
-
-/* defines */
-#define SERVOID_1 0x1
-#define SERVOID_2 0x2
-#define SERVOID_3 0x3
-
-//#define GROUP_ID	0x01L // FIXME
-
+/*-----------------------------------------------------------------------------
+ * Defines 
+ *---------------------------------------------------------------------------*/
 #define FAILSAFE_MODE       0x0F
-#define FAILSAFE_TRESHOLD   50  // Degrees celcius when nodeBlinds goes into failsafe mode
-
 #define BLINDS_CMD_ABS      0x01 // Absolute position
 #define BLINDS_CMD_REL      0x02 // Relative position
 #define BLINDS_CMD_START    0x03 // Start turning RC-servo
@@ -44,16 +39,15 @@
 #define BLINDS_CMD_RESET    0x05
 #define BLINDS_CMD_STATUS   0x06
 
-#define BLINDS_TURN_STOP    0x00
-#define BLINDS_TURN_LEFT    0x01
-#define BLINDS_TURN_RIGHT   0x02
+#define BLINDS_TURN_STOP	0x00
+#define BLINDS_TURN_CCW		0x01
+#define BLINDS_TURN_CW		0x02
 
 #define STEPS_PER_TURN_PERIOD   10 // number of steps for each adjustment
 #define TURN_PERIOD             100 // ms
 #define STATUS_SEND_PERIOD      5000 // ms
 #define FAILSAFE_SEND_PERIOD    10000 // ms
 #define BOUNCE_TIME             10 // ms
-#define SERVO_FEED_TIME			5000 // ms
 #define BUTTON1                 1
 #define BUTTON2                 2
 
@@ -79,7 +73,7 @@ volatile Can_Message_t rxMsg;
 /*----------------------------------------------------------------------------
  * Functions
  * -------------------------------------------------------------------------*/
-void blindsFailsafe();
+void blindsFailsafe(void);
 
 void can_receive(Can_Message_t *msg){
 // CAN callback function
@@ -141,11 +135,8 @@ ISR( PCINT2_vect )
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	uint32_t act;
-	int8_t m;
-
-	uint8_t acttype, temp_id;
-	uint16_t servoid;
+	uint8_t temp_id;
+	uint16_t acttype, servoid;
 
     uint8_t //blindsStatus, /* Position (-128 to 127) */
             servoToTurn,
@@ -212,6 +203,8 @@ int main(void) {
 						temp_id = 2; // and so on
 					}else if(servoid == SERVOID_3){
 						temp_id = 3;
+					}else{
+						temp_id = 0;
 					}
 
 					if(rxMsg.DataLength == 1 || (rxMsg.DataLength == 2 && rxMsg.Data.bytes[1] == BLINDS_CMD_ABS)){
@@ -230,7 +223,7 @@ int main(void) {
 						}else if(rxMsg.Data.bytes[1] == BLINDS_CMD_START ){
 							// Start turning the servo
 
-							turnDirection = rxMsg.Data.bytes[0]; // FIXME riktning beroende på positivt eller negativt tal?
+							turnDirection = (rxMsg.Data.bytes[0]&0x80)?BLINDS_TURN_CW:BLINDS_TURN_CCW; // FIXME riktning beroende på positivt eller negativt tal?
 							servoToTurn = temp_id;
 							servoFeed_timeStamp = Timebase_CurrentTime();
 
@@ -283,25 +276,27 @@ int main(void) {
 			}
 		}
         // If start turning servo
-/*		if( turnDirection ){
+		if( turnDirection ){
 			if( Timebase_CurrentTime() - timeStampTurn >= TURN_PERIOD ){
 				timeStampTurn = Timebase_CurrentTime();
 				// Clockwise or counterclockwise?
-				if( turnDirection == BLINDS_TURN_LEFT ){
+				if( turnDirection == BLINDS_TURN_CCW ){
 					alterPosition( -STEPS_PER_TURN_PERIOD , servoToTurn);
-				}else if( turnDirection == BLINDS_TURN_RIGHT ){
+				}else if( turnDirection == BLINDS_TURN_CW ){
 					alterPosition( STEPS_PER_TURN_PERIOD , servoToTurn);
 				}
+				servoFeed_timeStamp = Timebase_CurrentTime();
 			}
 		}
-		// Turn off the servo current feed
+
+		// Turn off the servo current feed after timeout
 		if( Timebase_CurrentTime() - servoFeed_timeStamp >= SERVO_FEED_TIME ){
 			SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 			servoDisable();
 		}else{
 			SERVO_FEED_PORT |= (1<<SERVO_FEED_PIN);
 			servoEnable();
-		}*/
+		}
 	}
 	return 0;
 }
