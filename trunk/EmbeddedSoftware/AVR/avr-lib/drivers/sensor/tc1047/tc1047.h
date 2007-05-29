@@ -23,8 +23,8 @@
 /*-----------------------------------------------
  * Functions
  * ---------------------------------------------*/
-void adcTemperatureInit();
-uint32_t getTC1047temperature();
+void adcTemperatureInit(void);
+uint32_t getTC1047temperature(void);
 #else
     #error Library still not compatible with others than mega88 or mega168
 #endif
