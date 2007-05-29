@@ -34,7 +34,7 @@
 /*-----------------------------------------------
  * Functions
  * ---------------------------------------------*/
-void rcServoInit();
+void rcServoInit(void);
 void setPosition(uint8_t abs_pos, uint8_t servo);
 void alterPosition(int8_t rel_pos, uint8_t servo);
 uint8_t getPosition(uint8_t servo);
