@@ -1,0 +1,12 @@
+
+/* Help and description here?
+ * Copy this file to settings.h and modify by need
+ * 
+ * 	
+ */
+
+/* If using two (or just one but nothing more) auxiliary buttons */
+#define TWO_BUTTON_MODE 0 
+
+/* application software should not depend on the id of the physical node but for now lets do it like this */
+#define THISRELAYID			NODE_ID		

@@ -13,7 +13,6 @@
  *
  */
 
-#define TWO_BUTTON_MODE 0 /* If using two (or just one but nothing more) auxiliary buttons */
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -26,7 +25,9 @@
 #include <config.h>
 #include <bios.h>
 #include <drivers/timer/timebase.h>
-//#include <funcdefs.h>
+#include <drivers/sensor/tc1047/tc1047.h>
+
+#include "settings.h"
 
 /* defines */
 #define RELAY_OFF			0x01
@@ -45,9 +46,6 @@
 #define BUTTON1				1
 #define BUTTON2				2
 
-#define THISRELAYID			NODE_ID		/* application software should not depend on the id of the physical node
-											but for now lets do it like this */
-
 #define APP_TYPE    CAN_APPTYPES_RELAY
 #define APP_VERSION 0x0001
 
@@ -64,10 +62,10 @@ volatile uint8_t rxMsgFull;   // Synchronization flag
 /*----------------------------------------------------------------------------
  * Functions
  * -------------------------------------------------------------------------*/
-uint8_t relayOff();
-uint8_t relayOn();
-void relayFailsafe();
-void sendStatus();
+uint8_t relayOff(void);
+uint8_t relayOn(void);
+void relayFailsafe(void);
+void sendStatus(void);
 
 void can_receive(Can_Message_t *msg)
 { // CAN callback function
@@ -126,13 +124,13 @@ int main(void) {
 		}
 
 		if (rxMsgFull) {
-			uint8_t acttype;
-			uint16_t relayid;
+			uint16_t acttype;
+			uint8_t relayid;
 		
 			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){
 				// Actuator package
-				acttype =(uint8_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
-				relayid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
+				acttype =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+				relayid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 				
 				if ((acttype == ACT_TYPE_RELAY) && (relayid == THISRELAYID)) {
 					// This is a message for this relay
