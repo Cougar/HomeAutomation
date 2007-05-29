@@ -40,9 +40,6 @@ DEBUG = stabs
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
 EXTRAINCDIRS = $(LIBDIR)\
-		$(LIBDIR)/funcdefs\
-		$(LIBDIR)/drivers/actuator/rc-servo\
-		$(LIBDIR)/drivers/sensor/tc1047\
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C

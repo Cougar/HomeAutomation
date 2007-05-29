@@ -24,15 +24,13 @@
 #include <bios.h>
 #include <config.h>
 #include <drivers/timer/timebase.h>
-#include <tc1047.h>
-#include <rc_servo.h>
 
 //#include <funcdefs.h>
 
 /* defines */
-#define SERVOID_1 0xabc
-#define SERVOID_2 0xbcd
-#define SERVOID_3 0xcde
+#define SERVOID_1 0x1
+#define SERVOID_2 0x2
+#define SERVOID_3 0x3
 
 //#define GROUP_ID	0x01L // FIXME
 
@@ -202,8 +200,8 @@ int main(void) {
 		if(rxMsgFull){
 			if( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT ){
 				// Actuator package
-				acttype = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
-				servoid = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
+				acttype = (uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+				servoid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 
 		// Check if it is command to control this servo
 				if(acttype == ACT_TYPE_SERVO && (servoid == SERVOID_1 || servoid == SERVOID_2 || servoid == SERVOID_3)){
