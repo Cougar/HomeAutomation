@@ -17,7 +17,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <rc_servo.h>
+#include "rc_servo.h"
 
 
 /*----------------------------------------------
