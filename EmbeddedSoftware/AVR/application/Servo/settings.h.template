@@ -20,4 +20,6 @@
 /* How long time after turning pwm should be active */
 #define SERVO_FEED_TIME 5000 // milliseconds
 
+#define STEPS_PER_TURN_PERIOD   1 // number of steps for each adjustment
+#define TURN_PERIOD             9 // ms
 

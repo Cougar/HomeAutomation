@@ -43,17 +43,15 @@
 #define BLINDS_TURN_CCW		0x01
 #define BLINDS_TURN_CW		0x02
 
-#define STEPS_PER_TURN_PERIOD   10 // number of steps for each adjustment
-#define TURN_PERIOD             100 // ms
 #define STATUS_SEND_PERIOD      5000 // ms
 #define FAILSAFE_SEND_PERIOD    10000 // ms
 #define BOUNCE_TIME             10 // ms
 #define BUTTON1                 1
 #define BUTTON2                 2
 
-#define SERVO_FEED_PORT			PORTD
-#define SERVO_FEED_DDR			DDRD
-#define SERVO_FEED_PIN			PD2
+#define SERVO_FEED_PORT			PORTC
+#define SERVO_FEED_DDR			DDRC
+#define SERVO_FEED_PIN			PC0
 
 #define APP_TYPE	CAN_APPTYPES_SERVO
 #define APP_VERSION	0x0001
@@ -135,8 +133,8 @@ ISR( PCINT2_vect )
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	uint8_t temp_id;
-	uint16_t acttype, servoid;
+	uint8_t temp_id, servoid;
+	uint16_t acttype;
 
     uint8_t //blindsStatus, /* Position (-128 to 127) */
             servoToTurn,
@@ -171,8 +169,8 @@ int main(void) {
     PCMSK2 |= (1<<PCINT16) | (1<<PCINT17);
 #endif
 	/* Set output and turn off the servo current feed */
-	SERVO_FEED_DDR |= (1<<SERVO_FEED_PIN);
-	SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
+	//SERVO_FEED_DDR |= (1<<SERVO_FEED_PIN);
+	//SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
 
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
 	txMsg.RemoteFlag = 0;
@@ -227,7 +225,7 @@ int main(void) {
 							servoToTurn = temp_id;
 							servoFeed_timeStamp = Timebase_CurrentTime();
 
-						}else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STOP ){
+						}else if(rxMsg.Data.bytes[1] == BLINDS_CMD_STOP ){
 							// Stop turning
 
 							turnDirection = BLINDS_TURN_STOP;
