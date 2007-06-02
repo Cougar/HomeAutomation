@@ -31,7 +31,7 @@ void rcServoInit(){
 // set up counter 1 (16 bit) to act as a dual channel PWM generator
 // we want OC1A and B to be set on reaching BOTTOM, clear on reaching
 // compare match, use ICR1 as TOP and have a prescale of 8.
-
+	
 	/* Use OC1A */
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
 	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11); /* Timer uses main system clock with 1/8 prescale */
@@ -96,10 +96,14 @@ void alterPosition(int8_t rel_pos, uint8_t servo){
 	current_pos = getPosition( servo );
 	new_pos = current_pos + move_pos;
 
-	if(new_pos < MIN_POSITION ) new_pos = MIN_POSITION;
-	if(new_pos > MAX_POSITION ) new_pos = MAX_POSITION;
+	if(new_pos < MIN_POSITION ) {
+		new_pos = MIN_POSITION;
+	}
+	if(new_pos > MAX_POSITION ) {
+		new_pos = MAX_POSITION;
+	}
 
-	setPosition( new_pos, servo );
+	setPosition( (uint8_t)(new_pos&0xff), servo );
 }
 
 /*
@@ -111,6 +115,9 @@ uint8_t getPosition(uint8_t servo){
 		case 2: return (int8_t)((OCR0A*8 - PWM2_MIN_PULSE*8)/STEP2); break;
 		case 3: return (int8_t)((OCR0B*8 - PWM3_MIN_PULSE*8)/STEP3); break;
 	}
+	
+	/* If not defined */
+	return 0;
 }
 
 void servoDisable(void){

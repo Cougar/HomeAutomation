@@ -28,8 +28,8 @@
 #define STEP2   1
 #define STEP3   1
 
-#define MAX_POSITION 0
-#define MIN_POSITION 255
+#define MAX_POSITION 255
+#define MIN_POSITION 0
 
 /*-----------------------------------------------
  * Functions
