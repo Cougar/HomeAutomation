@@ -156,6 +156,34 @@ while (<LOGFILE>) {
 			$parsedLine =~ s/\n//g;
 			$parsedLine =~ s/\r//g;
 			#$parsedLine = $parsedLine;
+
+			$nickLine = $parsedLine;
+			if ($nickLine =~ m/.*<(\w{1,9})>.*/) {
+				$nick = $1;
+				$nickVal = 0;
+				for ($i = 0; $i < length($nick); $i++) {
+					$nickVal += ord(substr($nick, $i, 1));
+				}
+				$nickVal = ($nickVal) % 512;
+				$nickB = sprintf("%x", ((($nickVal & 7)**2)*2.3+5));
+				$nickG = sprintf("%x", (((($nickVal >> 3) & 7)**2.3)*2+5));
+				$nickR = sprintf("%x", (((($nickVal >> 6) & 7)**2.3)*2+5));
+				if (length($nickB) == 1) {
+					$nickB = "0".$nickB;
+				}
+				if (length($nickG) == 1) {
+					$nickG = "0".$nickG;
+				}
+				if (length($nickR) == 1) {
+					$nickR = "0".$nickR;
+				}
+				
+				#print "$nick $nickR$nickG$nickB\n";
+				$color = "#$nickR$nickG$nickB";
+				$parsedLine =~ s/<$nick>/<color $color><$nick><\/color>/;
+				#print $nick." ".$nickVal."\n";
+				#print $parsedLine ."\n";
+			}
 			
 			$parsedLine =~ s/\x{e5}/å/g;
 			$parsedLine =~ s/\x{e4}/ä/g;
