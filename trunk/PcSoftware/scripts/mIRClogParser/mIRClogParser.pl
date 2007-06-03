@@ -7,8 +7,9 @@ $linenrpath = "linenr.txt";
 $contentspath = "contents.txt";
 $currentfilepath = "currentfile.txt";
 $logfilepath = "#hobby.log";
-
-
+$contentsfileoutput = "./";
+$contentsfilename = "hobby.txt";
+$contentsheader = "====== Log of #hobby-channel ======\n";
 
 $numArgs = $#ARGV + 1;
 if ($numArgs == 1) {
@@ -187,6 +188,29 @@ if ($debugmode == 0) {
 		close(CURRFILE);
 	} else {
 		print "Could not open ".$currentfilepath;
+		exit;
+	}
+}
+
+if ($debugmode == 0) {
+	$fileopenerr = 0;
+	open (CONTENTSFILE, "<".$contentspath) or $fileopenerr = 1;
+	if ($fileopenerr == 0) {
+		open (NICECONTENTSFILE, ">".$contentsfileoutput.$contentsfilename) or $fileopenerr = 1;
+		if ($fileopenerr == 0) {
+			@contentsfilecontents = <CONTENTSFILE>;
+			print NICECONTENTSFILE $contentsheader;
+			foreach (@contentsfilecontents) {
+							print NICECONTENTSFILE $_;
+			}
+			close(NICECONTENTSFILE);
+		} else {
+			print "Could not open ".$contentsfileoutput.$contentsfilename;
+			exit;
+		}
+		close(CONTENTSFILE);
+	} else {
+		print "Could not open ".$contentspath;
 		exit;
 	}
 }
