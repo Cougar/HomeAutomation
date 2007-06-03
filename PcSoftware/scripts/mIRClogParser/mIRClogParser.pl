@@ -1,15 +1,18 @@
 #!/usr/bin/perl -w
 
+use Encode;
+    
 $debugmode = 0;
 
-$outputpath = "outp/";
+$outputpath = "H:/shared/www/projekt/data/pages/common/irc/hobby/";
 $linenrpath = "linenr.txt";
 $contentspath = "contents.txt";
 $currentfilepath = "currentfile.txt";
-$logfilepath = "#hobby.log";
-$contentsfileoutput = "./";
+$logfilepath = "C:/Prgm/mIRC/logs/EFnet/#hobby.log";
+$contentsfileoutput = "H:/shared/www/projekt/data/pages/common/irc/";
 $contentsfilename = "hobby.txt";
 $contentsheader = "====== Log of #hobby-channel ======\n";
+$namespace = "common:irc:hobby:";
 
 $numArgs = $#ARGV + 1;
 if ($numArgs == 1) {
@@ -113,6 +116,7 @@ while (<LOGFILE>) {
 			$datetime =~ s/\n//g;
 			$datetime =~ s/\r//g;
 			$datetime =~ s/ /_/g;
+			$datetime = lc($datetime);
 
 			$currentfile = $datetime .".txt";
 			# skriv $datetimenice och $datetime till $contentspath
@@ -124,7 +128,7 @@ while (<LOGFILE>) {
 				if ($debugmode == 0) {
 					open (CONTENTSFILE, ">".$contentspath) or $fileopenerr = 1;
 					if ($fileopenerr == 0) {
-						print CONTENTSFILE "[[$datetime|$datetimenice]] \\\\ \n";
+						print CONTENTSFILE "[[$namespace$datetime|$datetimenice]] \\\\ \n";
 						foreach (@contentsfilecontents) {
 							print CONTENTSFILE $_;
 						}
@@ -151,14 +155,17 @@ while (<LOGFILE>) {
 			$parsedLine = $line;
 			$parsedLine =~ s/\n//g;
 			$parsedLine =~ s/\r//g;
-			$parsedLine =~ s/å/&aring;/g;
-			$parsedLine =~ s/ä/&auml;/g;
-			$parsedLine =~ s/ö/&ouml;/g;
-			$parsedLine =~ s/Å/&Aring;/g;
-			$parsedLine =~ s/Ä/&Auml;/g;
-			$parsedLine =~ s/Ö/&Ouml;/g;
-			$parsedLine =~ s/</&lt;/g;
-			$parsedLine =~ s/>/&gt;/g;
+			#$parsedLine = $parsedLine;
+			
+			$parsedLine =~ s/\x{e5}/å/g;
+			$parsedLine =~ s/\x{e4}/ä/g;
+			$parsedLine =~ s/\x{f6}/ö/g;
+			$parsedLine =~ s/\x{c5}/Å/g;
+			$parsedLine =~ s/\x{c4}/Ä/g;
+			$parsedLine =~ s/\x{d6}/Ö/g;
+
+			$parsedLine =~ s/\[wiki\]/**[wiki]**/g;
+			$parsedLine =~ s/\[svn\]/**[svn]**/g;
 			
 			$parsedLine .= "\\\\"."\n";
 			if ($debugmode == 0) {
