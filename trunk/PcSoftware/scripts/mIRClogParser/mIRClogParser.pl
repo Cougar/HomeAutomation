@@ -1,15 +1,13 @@
 #!/usr/bin/perl -w
 
-use Encode;
-    
 $debugmode = 0;
 
-$outputpath = "H:/shared/www/projekt/data/pages/common/irc/hobby/";
+$outputpath = "outp/";
 $linenrpath = "linenr.txt";
 $contentspath = "contents.txt";
 $currentfilepath = "currentfile.txt";
-$logfilepath = "C:/Prgm/mIRC/logs/EFnet/#hobby.log";
-$contentsfileoutput = "H:/shared/www/projekt/data/pages/common/irc/";
+$logfilepath = "#hobby_small.log";
+$contentsfileoutput = "outp/";
 $contentsfilename = "hobby.txt";
 $contentsheader = "====== Log of #hobby-channel ======\n";
 $namespace = "common:irc:hobby:";
@@ -44,7 +42,6 @@ if ($numArgs == 1) {
 		exit;
 	}
 }
-
 
 $startAtLine = 0;
 $currentfile = "";
@@ -96,6 +93,9 @@ if ($currentfile) {
 		}
 	}
 }
+
+@colors = ("#2F4F4F","#696969","#A0522D","#D2691E","#DAA520","#191970","#0000CD","#4682B4","#7FFFD4","#556B2F","#008B8B","#808000","#2E8B57","#32CD32","#483D8B","#6A5ACD","#8A2BE2","#BDB76B","#FF4500","#C71585","#8B0000","#DC143C","#E9967A","#CD5C5C","#B0E0E6","#FFEFD5");
+$nrofcolors = @colors;
 
 $linecnt = 0;
 while (<LOGFILE>) {
@@ -157,30 +157,39 @@ while (<LOGFILE>) {
 			$parsedLine =~ s/\r//g;
 			#$parsedLine = $parsedLine;
 
+			#<color #aaaaaa>
+			#</color>	
+			
 			$nickLine = $parsedLine;
 			if ($nickLine =~ m/.*<(\w{1,9})>.*/) {
 				$nick = $1;
 				$nickVal = 0;
-				for ($i = 0; $i < length($nick); $i++) {
-					$nickVal += ord(substr($nick, $i, 1));
+				my @chars = split //, $nick;
+				foreach my $char (@chars) {
+				#for ($i = 0; $i < length($nick); $i++) {
+					#$charval = ord(substr($nick, $i, 1));
+					$nickVal += ord($char);
+					#$nickVal += $charval;
+					
 				}
-				$nickVal = ($nickVal) % 512;
-				$nickB = sprintf("%x", ((($nickVal & 7)**2)*2.3+5));
-				$nickG = sprintf("%x", (((($nickVal >> 3) & 7)**2.3)*2+5));
-				$nickR = sprintf("%x", (((($nickVal >> 6) & 7)**2.3)*2+5));
-				if (length($nickB) == 1) {
-					$nickB = "0".$nickB;
-				}
-				if (length($nickG) == 1) {
-					$nickG = "0".$nickG;
-				}
-				if (length($nickR) == 1) {
-					$nickR = "0".$nickR;
-				}
+				$temp = $nickVal;
+				$nickVal = ($nickVal) % $nrofcolors;
+				#$nickB = sprintf("%x", ((($nickVal & 7)**2)*2.3+5));
+				#$nickG = sprintf("%x", (((($nickVal >> 3) & 7)**2.3)*2+5));
+				#$nickR = sprintf("%x", (((($nickVal >> 6) & 7)**2.3)*2+5));
+				#if (length($nickB) == 1) {
+				#	$nickB = "0".$nickB;
+				#}
+				#if (length($nickG) == 1) {
+				#	$nickG = "0".$nickG;
+				#}
+				#if (length($nickR) == 1) {
+				#	$nickR = "0".$nickR;
+				#}
 				
-				#print "$nick $nickR$nickG$nickB\n";
-				$color = "#$nickR$nickG$nickB";
-				$parsedLine =~ s/<$nick>/<color $color><$nick><\/color>/;
+				print "$nick $temp $nickVal $colors[$nickVal] \n";
+				#$color = "#$nickR$nickG$nickB";
+				$parsedLine =~ s/<$nick>/<color $colors[$nickVal]><$nick><\/color>/;
 				#print $nick." ".$nickVal."\n";
 				#print $parsedLine ."\n";
 			}
