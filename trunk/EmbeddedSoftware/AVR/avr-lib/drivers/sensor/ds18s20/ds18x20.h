@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 #include <inttypes.h>
-#include <onewire.h>
+
+#include "onewire.h"
 
 // enable DS18x20 EERPROM support
 //#define DS18X20_EEPROMSUPPORT
