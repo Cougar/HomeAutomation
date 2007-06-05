@@ -180,8 +180,9 @@ int main(void) {
 	txMsg.Data.words[1] = APP_VERSION;
 
 	BIOS_CanSend(&txMsg); // Send startup message
-
-	txMsg.Id = 0x08000c0b; //(CLASS_SNS << CLASS_MASK_BITS)|(SNS_ACT_STATUS_SERVO << TYPE_MASK_BITS)|(NODE_ID << SID_MASK_BITS);
+	
+	//set up status message
+	txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_STATUS << CAN_SHIFT_SNS_TYPE) | (SNS_ID_SERVO_STATUS << CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
 
     // Main loop
 	while (1) {
