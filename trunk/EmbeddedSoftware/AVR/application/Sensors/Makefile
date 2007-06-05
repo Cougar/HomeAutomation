@@ -10,12 +10,12 @@ include $(LIBDIR)/system.inc
 CSRC =	$(TARGET).c\
 		$(LIBDIR)/drivers/timer/timebase.c\
 		$(LIBDIR)/drivers/mcu/mcu.c\
-		$(LIBDIR)/drivers/sensor/ldr/ldr.c\
 		$(LIBDIR)/drivers/sensor/ds18s20/ds18x20.c\
 		$(LIBDIR)/drivers/sensor/ds18s20/onewire.c\
 		$(LIBDIR)/drivers/sensor/ds18s20/delay.c\
 		$(LIBDIR)/drivers/sensor/ds18s20/crc8.c\
 #		$(LIBDIR)/drivers/sensor/tc1047/tc1047.c\
+#		$(LIBDIR)/drivers/sensor/ldr/ldr.c\
 
 
 # List Assembler source files here.
@@ -43,10 +43,8 @@ DEBUG = stabs
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
 EXTRAINCDIRS = $(LIBDIR)\
-			$(LIBDIR)/funcdefs\
-			$(LIBDIR)/drivers/sensor/ldr\
-			$(LIBDIR)/drivers/timer\
-			$(LIBDIR)/drivers/sensor/ds18s20\
+#			$(LIBDIR)/funcdefs\
+
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
