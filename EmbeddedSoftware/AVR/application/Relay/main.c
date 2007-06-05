@@ -213,7 +213,7 @@ void sendStatus()
 	statusMsg.RemoteFlag = 0;
 	statusMsg.ExtendedFlag = 1;
 	statusMsg.DataLength = 4;
-	statusMsg.Id = ( CAN_SNS<<CAN_SHIFT_CLASS )|( SNS_TYPE_RELAY_STATUS<<CAN_SHIFT_ACT_TYPE )|( NODE_ID<<CAN_SHIFT_SNS_SID );
+	statusMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_STATUS << CAN_SHIFT_SNS_TYPE) | (SNS_ID_RELAY_STATUS << CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
 	
 	temperature = getTC1047temperature();
 	if( (int32_t)temperature >= FAILSAFE_TRESHOLD && !failsafe_flag ){
