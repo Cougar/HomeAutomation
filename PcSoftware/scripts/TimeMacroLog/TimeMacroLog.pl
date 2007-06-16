@@ -10,15 +10,35 @@ $sendtime = 0;
 $timestamp = 1;
 
 #define filters for id of messages, passed messages will be printed on stdout
-@acceptmask_ones =  (0x00080000, 0x00240000, 0x00040000);
-@acceptmask_zeros = (0xfff70000, 0xffdb0000, 0xfffb0000);
+@acceptmask_ones =  (0x00080000, 0x00240000, 0x00040000, 0x00280000);
+@acceptmask_zeros = (0xfff70000, 0xffdb0000, 0xfffb0000, 0xffd70000);
 @denymask_ones = ();
 @denymask_zeros = ();
 
-#define makros, when an input sting is sent on can this perl-script will send the corresponding output string
-@input =   ("PKT 04000005 1 0 00 00 05 01");
-@output =  ("PKT 0a100601 1 0 03"         );
+@input = ();
+@output = ();
 
+#define makros, when an input sting is sent on can this perl-script will send the corresponding output string
+
+# Remote button 1 => desktoplamp toggle
+push(@input , "PKT 0409000a 1 0 00 00 05 01");
+push(@output, "PKT 08008c00 1 0 03");
+
+# Remote button 4 down => blinds darker
+push(@input , "PKT 0409000a 1 0 00 00 05 04");
+push(@output, "PKT 08010200 1 0 00 03");
+
+# Remote button 4 up => blinds stop
+push(@input , "PKT 0409000a 1 0 0f 00 05 04");
+push(@output, "PKT 08010200 1 0 00 04");
+
+# Remote button 6 down => blinds lighter
+push(@input , "PKT 0409000a 1 0 00 00 05 06");
+push(@output, "PKT 08010200 1 0 80 03");
+
+# Remote button 6 up => blinds stop
+push(@input , "PKT 0409000a 1 0 0f 00 05 06");
+push(@output, "PKT 08010200 1 0 00 04");
 
 
 $remote = IO::Socket::INET->new(
