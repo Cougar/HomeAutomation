@@ -17,7 +17,6 @@
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
-volatile uint16_t lastProtoTimeout = 0;
 
 
 /*-----------------------------------------------------------------------------
@@ -29,6 +28,7 @@ volatile uint16_t lastProtoTimeout = 0;
  * Public Functions
  *---------------------------------------------------------------------------*/
 
+//TODO: skriv doxygen-header som för de andra funktionerna
 void initTimer(void) {
 	//sätt upp timer
 	#if defined(__AVR_ATmega8__)
@@ -43,7 +43,8 @@ void initTimer(void) {
 	#endif
 }
 
-int isTimerOvfl(void) {
+//TODO: skriv doxygen-header som för de andra funktionerna
+uint8_t isTimerOvfl(void) {
 	#if defined(__AVR_ATmega8__)
 	if (TIFR  & (1<<TOV1)) return 1;
 	#endif
@@ -54,12 +55,14 @@ int isTimerOvfl(void) {
 	return 0;
 }
 
+//TODO: skriv doxygen-header som för de andra funktionerna
 uint16_t getTimerVal(void) {
 	#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 	return TCNT1;
 	#endif
 }
 
+//TODO: skriv doxygen-header som för de andra funktionerna
 void setTimerVal(uint16_t value) {
 	#if defined(__AVR_ATmega8__)
 	TCNT1 = value;
@@ -72,14 +75,16 @@ void setTimerVal(uint16_t value) {
 }
 
 /**
- * Receive RC5 data
+ * Receive RC5 data, http://www.sbprojects.com/knowledge/ir/rc5.htm
  * 
  * @param address
  * 		Pointer to store the address of the received data
  * @param command
  * 		Pointer to store the command of the received data
+ * @return
+ * 		IR_OK if data received successfully, one of several errormessages if not
  */
-int receiveRC5(uint8_t *address, uint8_t *command) {
+uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 	//printf("startbit of RC5!\n");
 	uint8_t i;
 	//read second startbit, togglebit and the 5 addressbits
@@ -95,7 +100,7 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 			*address |= (1<<(6-i));
 			//wait for negative slope, while checking timer overflow
 			while ((IRPIN & (1<<IRBIT))) {
-				//om timeout (om timer-ovflow-flaggan sätt)
+				//if timeout (if timer-ovflow-flaggan is set)
 				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 			}
 		} else {
@@ -103,7 +108,7 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 			
 			//wait for positiv slope
 			while (!(IRPIN & (1<<IRBIT))) {
-				//om timeout (om timer-ovflow-flaggan sätt)
+				//if timeout (if timer-ovflow-flaggan is set)
 				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 			}
 		}
@@ -126,7 +131,7 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 			*command |= (1<<(5-i));
 			//wait for negative slope, while checking timer overflow
 			while ((IRPIN & (1<<IRBIT))) {
-				//om timeout (om timer-ovflow-flaggan sätt).
+				//if timeout (if timer-ovflow-flaggan is set)
 				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 			}
 		} else {
@@ -134,7 +139,7 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 			
 			//wait for positiv slope
 			while (!(IRPIN & (1<<IRBIT))) {
-				//om timeout (om timer-ovflow-flaggan sätt)
+				//if timeout (if timer-ovflow-flaggan is set)
 				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 			}
 		}
@@ -147,11 +152,12 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 	//wait for positiv slope to ensure that ir sequence is over
 	setTimerVal(0);
 	while (!(IRPIN & (1<<IRBIT))) {
-		//om timeout (om timer-ovflow-flaggan sätt)
+		//if timeout (if timer-ovflow-flaggan is set)
 		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 	}
 	
 	//support RC5-extended by putting the inversion of startbit 2 as the 7th commandbit
+	//hmm, not really supported because of startbit length in function IrReceive_CheckIR
 	*command |= (~(*address) & 0x40);
 	*address &= 0x1f;
 	//printf("address %i\n", *address);
@@ -160,9 +166,97 @@ int receiveRC5(uint8_t *address, uint8_t *command) {
 	return IR_OK;
 }
 
-uint16_t getLastProtoTimeout(void) {
-	return lastProtoTimeout;
+/**
+ * Receive SIRC data, http://www.sbprojects.com/knowledge/ir/sirc.htm
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ * @return
+ * 		IR_OK if data received successfully, one of several errormessages if not
+ */
+uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
+	//printf("startbit of SIRC!\n");
+	
+	uint8_t i;
+	//read the 7 command bits
+	for (i=0; i<7; i++) {
+		setTimerVal(0);
+		//wait for negative slope, while checking timer overflow
+		while ((IRPIN & (1<<IRBIT))) {
+			//om timeout (om timer-ovflow-flaggan sätt)
+			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+		}
+		
+		setTimerVal(0);
+		//wait for positiv slope, while checking timer overflow
+		while (!(IRPIN & (1<<IRBIT))) {
+			//if timeout (if timer-ovflow-flaggan is set)
+			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+		}
+		
+		uint16_t timerVal = getTimerVal();
+		
+		if (timerVal > IR_SIRC_ZERO_LOW && timerVal < IR_SIRC_ZERO_HIGH) {
+			//write a zero
+		} else if (timerVal > IR_SIRC_ONE_LOW && timerVal < IR_SIRC_ONE_HIGH) {
+			//write a one
+			*command |= (1<<i);
+		} else {
+			//return IR_NOT_CORRECT_DATA;
+		}
+	}
+	
+	//read 5 address bits
+	for (i=0; i<5; i++) {
+		setTimerVal(0);
+		//wait for negative slope, while checking timer overflow
+		while ((IRPIN & (1<<IRBIT))) {
+			//om timeout (om timer-ovflow-flaggan sätt)
+			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+		}
+		
+		setTimerVal(0);
+		//wait for positiv slope, while checking timer overflow
+		while (!(IRPIN & (1<<IRBIT))) {
+			//if timeout (if timer-ovflow-flaggan is set)
+			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+		}
+		
+		uint16_t timerVal = getTimerVal();
+		
+		if (timerVal > IR_SIRC_ZERO_LOW && timerVal < IR_SIRC_ZERO_HIGH) {
+			//write a zero
+		} else if (timerVal > IR_SIRC_ONE_LOW && timerVal < IR_SIRC_ONE_HIGH) {
+			//write a one
+			*address |= (1<<i);
+		} else {
+			//return IR_NOT_CORRECT_DATA;
+		}
+	}
+
+	// check/wait for positiv to ensure that ir sequence is over
+	setTimerVal(0);
+	while (!(IRPIN & (1<<IRBIT))) {
+		//if timeout (if timer-ovflow-flaggan is set)
+		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
+	}
+	
+	return IR_OK;
 }
+
+//TODO: skriv doxygen-header som för de andra funktionerna
+/**
+ * 
+ * 
+ * 
+ * 
+ */
+void IrReceive_Init(void) {
+	IRDDR &= ~(1<<IRBIT);
+}
+
 
 /**
  * Checks if ir-receiver is outputting data, if so then receive it 
@@ -173,10 +267,12 @@ uint16_t getLastProtoTimeout(void) {
  * 		Pointer to store the address of the received data
  * @param command
  * 		Pointer to store the command of the received data
+ * @param timeout
+ * 		Pointer to store the timout, in ms, between two ir-pulsetrains
  * @return
- * 		IR_OK if data received successfully, one of several errormessages if not 
+ * 		IR_OK if data received successfully, one of several errormessages if not
  */
-int checkIr(uint8_t *proto, uint8_t *address, uint8_t *command) {
+uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout) {
 	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
 	
 	//nu lägger irmodulen ut en nolla, "startbiten" alltså
@@ -202,15 +298,21 @@ int checkIr(uint8_t *proto, uint8_t *address, uint8_t *command) {
 	
 	if ((timerVal < IR_RC5_ST_BIT+500) && (timerVal > IR_RC5_ST_BIT-500)) {
 		*proto = IR_PROTO_RC5;
+		*timeout = IR_RC5_TIMEOUT;
 		return receiveRC5(&*address, &*command);
-	} //else if ...
+	} else if ((timerVal < IR_SIRC_ST_BIT+500) && (timerVal > IR_SIRC_ST_BIT-500)) {
+		*proto = IR_PROTO_SIRC;
+		*timeout = IR_SIRC_TIMEOUT;
+		return receiveSIRC(&*address, &*command);
+	}
 	
 	
 	return IR_NO_PROTOCOL;
 }
 
-
-int checkIrIdle(void) {
+//varför är denna funktion så komplex?
+//TODO: skriv doxygen-header som för de andra funktionerna
+uint8_t IrReceive_CheckIdle(void) {
 	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
 	
 	//nu lägger irmodulen ut en nolla, "startbiten" alltså
