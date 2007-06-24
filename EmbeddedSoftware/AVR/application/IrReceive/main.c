@@ -9,7 +9,7 @@
 #include <drivers/ir/receiver/irreceiver.h>
 
 #define APP_TYPE    CAN_APPTYPES_IRRECEIVER
-#define APP_VERSION 0x0001
+#define APP_VERSION 0x0002
 
 #define STATE_IDLE		0
 #define STATE_IR_REPEAT	1
@@ -36,6 +36,7 @@ int main(void)
 	
 	Timebase_Init();
 	//Serial_Init();
+	IrReceive_Init();
 	
 	Can_Message_t txMsg;
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -51,26 +52,18 @@ int main(void)
 	BIOS_CanSend(&txMsg);
 
 	txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_IR << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID));
-		
-	//printf("AVR Test Application\n");
-	//printf("Using AVR BIOS version %x\n", BIOS_VERSION);
-
-	//txMsg.Id = (CAN_SNS << CAN_SHIFT_CLASS) | ((CAN_IR & CAN_MASK_SNS_TYPE) << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID);
-	//txMsg.Data.dwords[0] = 0x01020304;
-	//txMsg.DataLength = 4;
-
-	IRDDR &= ~(1<<IRBIT);
-
+	
 	unsigned long time = Timebase_CurrentTime();
-	unsigned long irTimeoutTime;
+	unsigned long irTimeoutTime = 100;
 	
 	uint8_t ir_protocol, ir_address, ir_command;
+	uint16_t ir_timeout;
 	uint8_t state = STATE_IDLE;
 
 	while (1) {
 		time = Timebase_CurrentTime();
 		if (state == STATE_IDLE) {
-			if (checkIr(&ir_protocol, &ir_address, &ir_command) == IR_OK) {
+			if (IrReceive_CheckIR(&ir_protocol, &ir_address, &ir_command, &ir_timeout) == IR_OK) {
 				txMsg.Data.bytes[0] = 0x00;
 				txMsg.Data.bytes[1] = ir_protocol;
 				txMsg.Data.bytes[2] = ir_address;
@@ -82,12 +75,12 @@ int main(void)
 			}
 		} else if (state == STATE_IR_REPEAT) {
 			//kolla efter ny ir, om ingen ny ir och timeout så sätt state till IDLE
-			if (time - irTimeoutTime >= 105) {		//getLastProtoTimeout()
+			if (time - irTimeoutTime >= ir_timeout) {		
 				state = STATE_IDLE;
 				txMsg.Data.bytes[0] = 0x0f;
 				BIOS_CanSend(&txMsg);
 			}
-			if (checkIrIdle() == IR_OK) {		//funktion som borde finnas i irreceiver.c
+			if (IrReceive_CheckIdle() == IR_OK) {
 				irTimeoutTime = Timebase_CurrentTime();
 			}
 		}
