@@ -298,11 +298,11 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	
 	if ((timerVal < IR_RC5_ST_BIT+500) && (timerVal > IR_RC5_ST_BIT-500)) {
 		*proto = IR_PROTO_RC5;
-		*timeout = IR_RC5_TIMEOUT;
+		*timeout = IR_RC5_REPETITION;
 		return receiveRC5(&*address, &*command);
 	} else if ((timerVal < IR_SIRC_ST_BIT+500) && (timerVal > IR_SIRC_ST_BIT-500)) {
 		*proto = IR_PROTO_SIRC;
-		*timeout = IR_SIRC_TIMEOUT;
+		*timeout = IR_SIRC_REPETITION;
 		return receiveSIRC(&*address, &*command);
 	}
 	
