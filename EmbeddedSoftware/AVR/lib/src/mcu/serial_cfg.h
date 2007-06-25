@@ -11,7 +11,7 @@
  *---------------------------------------------------------------------------*/
 
 /** Baudrate */
-#define SERIAL_BAUDRATE			115200
+#define SERIAL_BAUDRATE			9600
 
 /** Size of the circular receive buffer, must be power of 2 */
 #define SERIAL_RX_BUFFER_SIZE	2
