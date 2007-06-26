@@ -87,8 +87,9 @@ void setTimerVal(uint16_t value) {
 uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 	//printf("startbit of RC5!\n");
 	uint8_t i;
-	//read second startbit, togglebit and the 5 addressbits
-	for (i=0; i<7; i++) {
+	uint16_t rawbits=0;
+	//read second startbit, togglebit, the 5 addressbits and the 6 commandbits
+	for (i=0; i<13; i++) {
 		//set up a quarter of a bit period time
 		setTimerVal(0xFFFF-(IR_RC5_BIT/4));
 		//and wait for time to elapse
@@ -97,7 +98,7 @@ uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 		setTimerVal(0);
 		if (IRPIN & (1<<IRBIT)) {
 			//save a one
-			*address |= (1<<(6-i));
+			rawbits |= (1<<(12-i));
 			//wait for negative slope, while checking timer overflow
 			while ((IRPIN & (1<<IRBIT))) {
 				//if timeout (if timer-ovflow-flaggan is set)
@@ -118,36 +119,8 @@ uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 		while(!isTimerOvfl());
 	}
 	
-	//read 5 command bits
-	for (i=0; i<6; i++) {
-		//set up a quarter of a bit period time
-		setTimerVal(0xFFFF-(IR_RC5_BIT/4));
-		//and wait for time to elapse
-		while(!isTimerOvfl());
-		//reset timer ovfl flag
-		setTimerVal(0);
-		if (IRPIN & (1<<IRBIT)) {
-			//save a one
-			*command |= (1<<(5-i));
-			//wait for negative slope, while checking timer overflow
-			while ((IRPIN & (1<<IRBIT))) {
-				//if timeout (if timer-ovflow-flaggan is set)
-				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
-			}
-		} else {
-			//save a zero
-			
-			//wait for positiv slope
-			while (!(IRPIN & (1<<IRBIT))) {
-				//if timeout (if timer-ovflow-flaggan is set)
-				if (isTimerOvfl() == 1) return IR_TIME_OVFL;
-			}
-		}
-		//set up a half a bit period time
-		setTimerVal(0xFFFF-(IR_RC5_BIT/2));
-		//and wait for time to elapse
-		while(!isTimerOvfl());
-	}
+	*command = ((uint8_t)rawbits&0x3f);
+	*address = ((uint8_t)(rawbits>>6)&0x7f);	
 	
 	//wait for positiv slope to ensure that ir sequence is over
 	setTimerVal(0);
@@ -159,7 +132,7 @@ uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 	//support RC5-extended by putting the inversion of startbit 2 as the 7th commandbit
 	//hmm, not really supported because of startbit length in function IrReceive_CheckIR
 	*command |= (~(*address) & 0x40);
-	*address &= 0x1f;
+	*address &= 0x1f;		//remove togglebit and second startbit from address
 	//printf("address %i\n", *address);
 	//printf("command %i\n", *command);
 	
@@ -180,8 +153,9 @@ uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
 	//printf("startbit of SIRC!\n");
 	
 	uint8_t i;
-	//read the 7 command bits
-	for (i=0; i<7; i++) {
+	uint16_t rawbits=0;
+	//read the 12 bits
+	for (i=0; i<12; i++) {
 		setTimerVal(0);
 		//wait for negative slope, while checking timer overflow
 		while ((IRPIN & (1<<IRBIT))) {
@@ -202,40 +176,15 @@ uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
 			//write a zero
 		} else if (timerVal > IR_SIRC_ONE_LOW && timerVal < IR_SIRC_ONE_HIGH) {
 			//write a one
-			*command |= (1<<i);
+			rawbits |= (1<<i);
 		} else {
-			//return IR_NOT_CORRECT_DATA;
+			return IR_NOT_CORRECT_DATA;
 		}
 	}
 	
-	//read 5 address bits
-	for (i=0; i<5; i++) {
-		setTimerVal(0);
-		//wait for negative slope, while checking timer overflow
-		while ((IRPIN & (1<<IRBIT))) {
-			//om timeout (om timer-ovflow-flaggan sätt)
-			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
-		}
-		
-		setTimerVal(0);
-		//wait for positiv slope, while checking timer overflow
-		while (!(IRPIN & (1<<IRBIT))) {
-			//if timeout (if timer-ovflow-flaggan is set)
-			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
-		}
-		
-		uint16_t timerVal = getTimerVal();
-		
-		if (timerVal > IR_SIRC_ZERO_LOW && timerVal < IR_SIRC_ZERO_HIGH) {
-			//write a zero
-		} else if (timerVal > IR_SIRC_ONE_LOW && timerVal < IR_SIRC_ONE_HIGH) {
-			//write a one
-			*address |= (1<<i);
-		} else {
-			//return IR_NOT_CORRECT_DATA;
-		}
-	}
-
+	*command = ((uint8_t)rawbits&0x7f);
+	*address = ((uint8_t)(rawbits>>7)&0x1f);
+	
 	// check/wait for positiv to ensure that ir sequence is over
 	setTimerVal(0);
 	while (!(IRPIN & (1<<IRBIT))) {
