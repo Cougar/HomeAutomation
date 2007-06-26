@@ -38,10 +38,10 @@
 #define IR_SIRC_ST_BIT		2400*CYCLES_PER_US		//us
 #define IR_SIRC_REPETITION	40						//ms	(time between pulsetrains)
 #define IR_SIRC_F_MOD		40						//kHz	(modulation frequency)
-#define IR_SIRC_ZERO_LOW	500*CYCLES_PER_US		//us
-#define IR_SIRC_ZERO_HIGH	700*CYCLES_PER_US		//us
-#define IR_SIRC_ONE_LOW		1100*CYCLES_PER_US		//us
-#define IR_SIRC_ONE_HIGH	1300*CYCLES_PER_US		//us
+#define IR_SIRC_ZERO_LOW	450*CYCLES_PER_US		//us
+#define IR_SIRC_ZERO_HIGH	750*CYCLES_PER_US		//us
+#define IR_SIRC_ONE_LOW		1050*CYCLES_PER_US		//us
+#define IR_SIRC_ONE_HIGH	1350*CYCLES_PER_US		//us
 
 #define IR_PROTO_SHARP		4								//Wont work together with RCMM
 #define IR_SHARP_ST_BIT		275*CYCLES_PER_US		//us
