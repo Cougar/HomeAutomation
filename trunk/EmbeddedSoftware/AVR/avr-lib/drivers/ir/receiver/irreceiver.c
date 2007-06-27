@@ -28,16 +28,17 @@
  * Public Functions
  *---------------------------------------------------------------------------*/
 
+//TODO: ändra prescaler till /8
 //TODO: skriv doxygen-header som för de andra funktionerna
 void initTimer(void) {
 	//sätt upp timer
 	#if defined(__AVR_ATmega8__)
-	TCCR1B = (0<<CS11) | (1<<CS10); // prescaler: 1
+	TCCR1B = (0<<CS12) | (1<<CS11) | (0<<CS10); // prescaler: 1
 	TIFR  |= (1<<TOV1);  			// clear overflow flag.
 	TCNT1 = 0;
 	#endif
 	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
-	TCCR1B = (0<<CS11) | (1<<CS10); // prescaler: 1
+	TCCR1B = (0<<CS12) | (1<<CS11) | (0<<CS10); // prescaler: 1
 	TIFR1  |= (1<<TOV1);  			// clear overflow flag.
 	TCNT1 = 0;
 	#endif
@@ -95,7 +96,7 @@ uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 		//and wait for time to elapse
 		while(!isTimerOvfl());
 		//reset timer ovfl flag
-		setTimerVal(0);
+		setTimerVal(TIM_OVFL_RELOAD_VAL);
 		if (IRPIN & (1<<IRBIT)) {
 			//save a one
 			rawbits |= (1<<(12-i));
@@ -123,7 +124,7 @@ uint8_t receiveRC5(uint8_t *address, uint8_t *command) {
 	*address = ((uint8_t)(rawbits>>6)&0x7f);	
 	
 	//wait for positiv slope to ensure that ir sequence is over
-	setTimerVal(0);
+	setTimerVal(TIM_OVFL_RELOAD_VAL);
 	while (!(IRPIN & (1<<IRBIT))) {
 		//if timeout (if timer-ovflow-flaggan is set)
 		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
@@ -156,14 +157,14 @@ uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
 	uint16_t rawbits=0;
 	//read the 12 bits
 	for (i=0; i<12; i++) {
-		setTimerVal(0);
+		setTimerVal(TIM_OVFL_RELOAD_VAL);
 		//wait for negative slope, while checking timer overflow
 		while ((IRPIN & (1<<IRBIT))) {
 			//om timeout (om timer-ovflow-flaggan sätt)
 			if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 		}
 		
-		setTimerVal(0);
+		setTimerVal(TIM_OVFL_RELOAD_VAL);
 		//wait for positiv slope, while checking timer overflow
 		while (!(IRPIN & (1<<IRBIT))) {
 			//if timeout (if timer-ovflow-flaggan is set)
@@ -172,9 +173,9 @@ uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
 		
 		uint16_t timerVal = getTimerVal();
 		
-		if (timerVal > IR_SIRC_ZERO_LOW && timerVal < IR_SIRC_ZERO_HIGH) {
+		if (timerVal > IR_SIRC_ZERO_LOW+TIM_OVFL_RELOAD_VAL && timerVal < IR_SIRC_ZERO_HIGH+TIM_OVFL_RELOAD_VAL) {
 			//write a zero
-		} else if (timerVal > IR_SIRC_ONE_LOW && timerVal < IR_SIRC_ONE_HIGH) {
+		} else if (timerVal > IR_SIRC_ONE_LOW+TIM_OVFL_RELOAD_VAL && timerVal < IR_SIRC_ONE_HIGH+TIM_OVFL_RELOAD_VAL) {
 			//write a one
 			rawbits |= (1<<i);
 		} else {
@@ -186,7 +187,7 @@ uint8_t receiveSIRC(uint8_t *address, uint8_t *command) {
 	*address = ((uint8_t)(rawbits>>7)&0x1f);
 	
 	// check/wait for positiv to ensure that ir sequence is over
-	setTimerVal(0);
+	setTimerVal(TIM_OVFL_RELOAD_VAL);
 	while (!(IRPIN & (1<<IRBIT))) {
 		//if timeout (if timer-ovflow-flaggan is set)
 		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
