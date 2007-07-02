@@ -26,6 +26,8 @@
 void IrReceive_Init(void);
 uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout);
 uint8_t IrReceive_CheckIdle(void);
+uint16_t getRawData(uint8_t index);
+uint8_t getRawDataCnt(void);
 
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes
