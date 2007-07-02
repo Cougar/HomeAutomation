@@ -125,7 +125,15 @@ int main(void)
 					txMsg.Data.words[3] = getRawData(index+3);
 					
 					/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-					while (BIOS_CanSend(&txMsg) != CAN_OK) {}
+					//while (BIOS_CanSend(&txMsg) != CAN_OK) {}
+					BIOS_CanSend(&txMsg);
+					
+					uint16_t dummycnt = 1;
+					while (dummycnt > 0) {
+						dummycnt++;
+						asm("nop");
+						asm("nop");
+					}
 				}
 				
 				uint8_t lastpacketcnt = datacnt&0x03;
@@ -134,6 +142,8 @@ int main(void)
 					for (uint8_t i = 0; i < lastpacketcnt; i++) {
 						txMsg.Data.words[i] = getRawData((datacnt&0xfc)|i);
 					}
+					/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+					//while (BIOS_CanSend(&txMsg) != CAN_OK) {}
 					BIOS_CanSend(&txMsg);
 				}
 
