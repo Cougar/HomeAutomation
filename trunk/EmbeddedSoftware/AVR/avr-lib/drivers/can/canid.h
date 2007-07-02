@@ -66,31 +66,24 @@
 #define CAN_APPTYPES_IRRECEIVER     0xf010
 #define CAN_APPTYPES_RELAY          0xf015
 #define CAN_APPTYPES_SERVO          0xf020
+#define CAN_APPTYPES_SENSOR			0xf025
+#define CAN_APPTYPES_IRTRANSMITTER  0xf030
 
 // CAN ID definitions for SNS messages
-#define SNS_TYPE_RELAY_STATUS         0x0BL
-#define SNS_TYPE_SERVO_STATUS         0x0dL
-#define SNS_TYPE_CAN_IR               0x12L
+#define SNS_TYPE_STATUS               0x10L
+#define SNS_TYPE_IR                   0x12L
+#define SNS_TYPE_TEMPERATURE          0x14L
+#define SNS_TYPE_LIGHT                0x18L
 
-//#define CAN_ID_SNS_IRDATA     ((CAN_SNS << CAN_SHIFT_CLASS) \
-//                              | (SNS_FUNCC_CAN_IR << CAN_SHIFT_SNS_FUNCC) \
-//                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+#define SNS_ID_RELAY_STATUS           0x0BL
+#define SNS_ID_SERVO_STATUS           0x0dL
 
-//#define CAN_ID_SNS_RELAYDATA  ((CAN_SNS << CAN_SHIFT_CLASS) \
-//                              | (SNS_RELAY_STATUS << CAN_SHIFT_SNS_FUNCC) \
-//                              | (NODE_ID << CAN_SHIFT_SNS_SID))
+
 
 // CAN ID definitions for ACT messages
 #define ACT_TYPE_RELAY         0x01L
 
-//#define CAN_ID_ACT_RELAY     ((CAN_ACT << CAN_SHIFT_CLASS) \
-//                              | (CAN_RELAY << CAN_SHIFT_ACT_FUNCC) \
-//                              | (NODE_ID << CAN_SHIFT_ACT_SID))
-
 #define ACT_TYPE_SERVO         0x02L
 
-//#define CAN_ID_ACT_SERVO     ((CAN_ACT << CAN_SHIFT_CLASS) \
-//                              | (CAN_SERVO << CAN_SHIFT_ACT_FUNCC) \
-//                              | (NODE_ID << CAN_SHIFT_ACT_SID))
 
 #endif /*CANID_H_*/
