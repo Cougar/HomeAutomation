@@ -55,7 +55,9 @@
 #endif
 
 #define IR_PROTO_SHARP		4								//Wont work together with RCMM
-#define IR_SHARP_ST_BIT		275*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SHARP_HIGH		280*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SHARP_LOW_ONE	1850*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SHARP_LOW_ZERO	780*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SHARP_REPETITION	55									//ms	(time between pulsetrains)
 #define IR_SHARP_F_MOD		38									//kHz	(modulation frequency)
 

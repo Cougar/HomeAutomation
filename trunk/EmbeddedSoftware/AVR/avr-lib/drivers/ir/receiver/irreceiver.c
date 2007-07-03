@@ -192,7 +192,52 @@ uint8_t testRC5(uint8_t *address, uint8_t *command) {
 	
 	return IR_OK;
 }
+
+/**
+ * Test data on SHARP protocol
+ * http://www.sbprojects.com/knowledge/ir/sharp.htm
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+uint8_t testSharp(uint8_t *address, uint8_t *command) {
+	/* parse times[], max is timesCounter */
+
+	/* check if we have correct amount of data */ 
+	if (timesCounter != 31) {
+		return IR_NOT_CORRECT_DATA;
+	}
 	
+	uint16_t rawbits=0;
+	
+	for (uint8_t i = 1; i < timesCounter; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			/* check length of pause between bits */
+			if (times[i] > IR_SHARP_LOW_ONE - IR_SHARP_LOW_ONE/5 && times[i] < IR_SHARP_LOW_ONE + IR_SHARP_LOW_ONE/5) {
+				/* write a one */
+				rawbits |= 1<<((i-1)>>1);
+			} else if (times[i] > IR_SHARP_LOW_ZERO - IR_SHARP_LOW_ZERO/5 && times[i] < IR_SHARP_LOW_ZERO + IR_SHARP_LOW_ZERO/5) {
+				/* do nothing, a zero is already in rawbits */
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+		} else {			/* if even, ir-bit */
+			if (times[i] > IR_SHARP_HIGH + IR_SHARP_HIGH/5 || times[i] < IR_SHARP_HIGH - IR_SHARP_HIGH/5) {
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	*command = ((uint8_t)(rawbits>>5)&0xff);
+	*address = ((uint8_t)rawbits&0x1f);
+	
+	return IR_OK;
+}
+
 uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout) {
 	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
 	
@@ -239,6 +284,10 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	} else if (testRC5(&*address, &*command) == IR_OK) {
 		*proto = IR_PROTO_RC5;
 		*timeout = IR_RC5_REPETITION;
+		return IR_OK;
+	} else if (testSharp(&*address, &*command) == IR_OK) {
+		*proto = IR_PROTO_SHARP;
+		*timeout = IR_SHARP_REPETITION;
 		return IR_OK;
 	}
 		
