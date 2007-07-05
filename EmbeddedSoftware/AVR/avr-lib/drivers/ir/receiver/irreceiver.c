@@ -238,6 +238,65 @@ uint8_t testSharp(uint8_t *address, uint8_t *command) {
 	return IR_OK;
 }
 
+/**
+ * Test data on NEC protocol
+ * http://www.sbprojects.com/knowledge/ir/nec.htm
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+uint8_t testNEC(uint8_t *address, uint8_t *command) {
+	/* parse times[], max is timesCounter */
+
+	/* check if we have correct amount of data */ 
+	if (timesCounter != 67) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	/* check startbit */
+	if (times[0] > IR_NEC_ST_BIT + IR_NEC_ST_BIT/5 || times[0] < IR_NEC_ST_BIT - IR_NEC_ST_BIT/5) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	/* check pause after startbit */
+	if (times[1] > IR_NEC_ST_PAUSE_BIT + IR_NEC_ST_BIT/5 || times[1] < IR_NEC_ST_PAUSE_BIT - IR_NEC_ST_BIT/5) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	*command = 0;
+	*address = 0;
+	
+	for (uint8_t i = 3; i < timesCounter; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			/* check length of pause between bits */
+			if (times[i] > IR_NEC_LOW_ONE - IR_NEC_LOW_ONE/5 && times[i] < IR_NEC_LOW_ONE + IR_NEC_LOW_ONE/5) {
+				if (i>2 && i<18) {
+					/* write a one */
+					*address |= 1<<((i-3)>>1);
+				}
+				if (i>34 && i<50) {
+					/* write a one */
+					*command |= 1<<((i-35)>>1);
+				}
+			} else if (times[i] > IR_NEC_LOW_ZERO - IR_NEC_LOW_ZERO/5 && times[i] < IR_NEC_LOW_ZERO + IR_NEC_LOW_ZERO/5) {
+				/* do nothing, a zero is already in rawbits */
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+		} else {			/* if even, ir-bit */
+			if (times[i] > IR_NEC_HIGH + IR_NEC_HIGH/5 || times[i] < IR_NEC_HIGH - IR_NEC_HIGH/5) {
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	return IR_OK;
+}
+
 uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout) {
 	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
 	
@@ -288,6 +347,10 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	} else if (testSharp(&*address, &*command) == IR_OK) {
 		*proto = IR_PROTO_SHARP;
 		*timeout = IR_SHARP_REPETITION;
+		return IR_OK;
+	} else if (testNEC(&*address, &*command) == IR_OK) {
+		*proto = IR_PROTO_NEC;
+		*timeout = IR_NEC_REPETITION;
 		return IR_OK;
 	}
 		
