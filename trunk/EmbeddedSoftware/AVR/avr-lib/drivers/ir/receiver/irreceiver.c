@@ -120,7 +120,7 @@ uint8_t testSIRC(uint8_t *address, uint8_t *command) {
 	}
 	
 	/* check startbit */
-	if (times[0] > IR_SIRC_ST_BIT + IR_SIRC_ST_BIT/5 || times[0] < IR_SIRC_ST_BIT - IR_SIRC_ST_BIT/5) {
+	if (times[0] > IR_SIRC_ST_BIT + IR_SIRC_ST_BIT/IR_SIRC_TOL_DIV || times[0] < IR_SIRC_ST_BIT - IR_SIRC_ST_BIT/IR_SIRC_TOL_DIV) {
 		return IR_NOT_CORRECT_DATA;
 	}
 	
@@ -129,14 +129,14 @@ uint8_t testSIRC(uint8_t *address, uint8_t *command) {
 	for (uint8_t i = 1; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
-			if (times[i] > IR_SIRC_LOW + IR_SIRC_LOW/5 || times[i] < IR_SIRC_LOW - IR_SIRC_LOW/5) {
+			if (times[i] > IR_SIRC_LOW + IR_SIRC_LOW/IR_SIRC_TOL_DIV || times[i] < IR_SIRC_LOW - IR_SIRC_LOW/IR_SIRC_TOL_DIV) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		} else {			/* if even, ir-bit */
-			if (times[i] > IR_SIRC_HIGH_ONE - IR_SIRC_HIGH_ONE/5 && times[i] < IR_SIRC_HIGH_ONE + IR_SIRC_HIGH_ONE/5) {
+			if (times[i] > IR_SIRC_HIGH_ONE - IR_SIRC_HIGH_ONE/IR_SIRC_TOL_DIV && times[i] < IR_SIRC_HIGH_ONE + IR_SIRC_HIGH_ONE/IR_SIRC_TOL_DIV) {
 				/* write a one */
 				rawbits |= 1<<((i-2)>>1);
-			} else if (times[i] > IR_SIRC_HIGH_ZERO - IR_SIRC_HIGH_ZERO/5 && times[i] < IR_SIRC_HIGH_ZERO + IR_SIRC_HIGH_ZERO/5) {
+			} else if (times[i] > IR_SIRC_HIGH_ZERO - IR_SIRC_HIGH_ZERO/IR_SIRC_TOL_DIV && times[i] < IR_SIRC_HIGH_ZERO + IR_SIRC_HIGH_ZERO/IR_SIRC_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 			} else {
 				return IR_NOT_CORRECT_DATA;
@@ -173,9 +173,9 @@ uint8_t testRC5(uint8_t *address, uint8_t *command) {
 			rawbits |= (1<<(13-(halfbitscnt>>1)));
 		}
 		
-		if (times[i] > IR_RC5_HALF_BIT - IR_RC5_HALF_BIT/5 && times[i] < IR_RC5_HALF_BIT + IR_RC5_HALF_BIT/5) {
+		if (times[i] > IR_RC5_HALF_BIT - IR_RC5_HALF_BIT/IR_RC5_TOL_DIV && times[i] < IR_RC5_HALF_BIT + IR_RC5_HALF_BIT/IR_RC5_TOL_DIV) {
 			halfbitscnt += 1;
-		} else if (times[i] > IR_RC5_BIT - IR_RC5_BIT/5 && times[i] < IR_RC5_BIT + IR_RC5_BIT/5) {
+		} else if (times[i] > IR_RC5_BIT - IR_RC5_BIT/IR_RC5_TOL_DIV && times[i] < IR_RC5_BIT + IR_RC5_BIT/IR_RC5_TOL_DIV) {
 			halfbitscnt += 2;
 		} else {
 			return IR_NOT_CORRECT_DATA;
@@ -217,16 +217,16 @@ uint8_t testSharp(uint8_t *address, uint8_t *command) {
 	for (uint8_t i = 1; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
-			if (times[i] > IR_SHARP_LOW_ONE - IR_SHARP_LOW_ONE/5 && times[i] < IR_SHARP_LOW_ONE + IR_SHARP_LOW_ONE/5) {
+			if (times[i] > IR_SHARP_LOW_ONE - IR_SHARP_LOW_ONE/IR_SHARP_TOL_DIV && times[i] < IR_SHARP_LOW_ONE + IR_SHARP_LOW_ONE/IR_SHARP_TOL_DIV) {
 				/* write a one */
 				rawbits |= 1<<((i-1)>>1);
-			} else if (times[i] > IR_SHARP_LOW_ZERO - IR_SHARP_LOW_ZERO/5 && times[i] < IR_SHARP_LOW_ZERO + IR_SHARP_LOW_ZERO/5) {
+			} else if (times[i] > IR_SHARP_LOW_ZERO - IR_SHARP_LOW_ZERO/IR_SHARP_TOL_DIV && times[i] < IR_SHARP_LOW_ZERO + IR_SHARP_LOW_ZERO/IR_SHARP_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 			} else {
 				return IR_NOT_CORRECT_DATA;
 			}
 		} else {			/* if even, ir-bit */
-			if (times[i] > IR_SHARP_HIGH + IR_SHARP_HIGH/5 || times[i] < IR_SHARP_HIGH - IR_SHARP_HIGH/5) {
+			if (times[i] > IR_SHARP_HIGH + IR_SHARP_HIGH/IR_SHARP_TOL_DIV || times[i] < IR_SHARP_HIGH - IR_SHARP_HIGH/IR_SHARP_TOL_DIV) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		}
@@ -258,12 +258,12 @@ uint8_t testNEC(uint8_t *address, uint8_t *command) {
 	}
 	
 	/* check startbit */
-	if (times[0] > IR_NEC_ST_BIT + IR_NEC_ST_BIT/5 || times[0] < IR_NEC_ST_BIT - IR_NEC_ST_BIT/5) {
+	if (times[0] > IR_NEC_ST_BIT + IR_NEC_ST_BIT/IR_NEC_TOL_DIV || times[0] < IR_NEC_ST_BIT - IR_NEC_ST_BIT/IR_NEC_TOL_DIV) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
 	/* check pause after startbit */
-	if (times[1] > IR_NEC_ST_PAUSE_BIT + IR_NEC_ST_BIT/5 || times[1] < IR_NEC_ST_PAUSE_BIT - IR_NEC_ST_BIT/5) {
+	if (times[1] > IR_NEC_ST_PAUSE + IR_NEC_ST_PAUSE/IR_NEC_TOL_DIV || times[1] < IR_NEC_ST_PAUSE - IR_NEC_ST_PAUSE/IR_NEC_TOL_DIV) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
@@ -273,7 +273,7 @@ uint8_t testNEC(uint8_t *address, uint8_t *command) {
 	for (uint8_t i = 3; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
-			if (times[i] > IR_NEC_LOW_ONE - IR_NEC_LOW_ONE/5 && times[i] < IR_NEC_LOW_ONE + IR_NEC_LOW_ONE/5) {
+			if (times[i] > IR_NEC_LOW_ONE - IR_NEC_LOW_ONE/IR_NEC_TOL_DIV && times[i] < IR_NEC_LOW_ONE + IR_NEC_LOW_ONE/IR_NEC_TOL_DIV) {
 				if (i>2 && i<18) {
 					/* write a one */
 					*address |= 1<<((i-3)>>1);
@@ -282,13 +282,74 @@ uint8_t testNEC(uint8_t *address, uint8_t *command) {
 					/* write a one */
 					*command |= 1<<((i-35)>>1);
 				}
-			} else if (times[i] > IR_NEC_LOW_ZERO - IR_NEC_LOW_ZERO/5 && times[i] < IR_NEC_LOW_ZERO + IR_NEC_LOW_ZERO/5) {
+			} else if (times[i] > IR_NEC_LOW_ZERO - IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV && times[i] < IR_NEC_LOW_ZERO + IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 			} else {
 				return IR_NOT_CORRECT_DATA;
 			}
 		} else {			/* if even, ir-bit */
-			if (times[i] > IR_NEC_HIGH + IR_NEC_HIGH/5 || times[i] < IR_NEC_HIGH - IR_NEC_HIGH/5) {
+			if (times[i] > IR_NEC_HIGH + IR_NEC_HIGH/IR_NEC_TOL_DIV || times[i] < IR_NEC_HIGH - IR_NEC_HIGH/IR_NEC_TOL_DIV) {
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	return IR_OK;
+}
+
+
+/**
+ * Test data on Samsung protocol
+ * Very much like NEC, different start bit/pause lengths etc.
+ * http://www.sbprojects.com/knowledge/ir/nec.htm
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+uint8_t testSamsung(uint8_t *address, uint8_t *command) {
+	/* parse times[], max is timesCounter */
+
+	/* check if we have correct amount of data */ 
+	if (timesCounter != 67) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	/* check startbit */
+	if (times[0] > IR_SAMS_ST_BIT + IR_SAMS_ST_BIT/IR_SAMS_TOL_DIV || times[0] < IR_SAMS_ST_BIT - IR_SAMS_ST_BIT/IR_SAMS_TOL_DIV) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	/* check pause after startbit */
+	if (times[1] > IR_SAMS_ST_PAUSE + IR_SAMS_ST_PAUSE/IR_SAMS_TOL_DIV || times[1] < IR_SAMS_ST_PAUSE - IR_SAMS_ST_PAUSE/IR_SAMS_TOL_DIV) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	*command = 0;
+	*address = 0;
+	
+	for (uint8_t i = 3; i < timesCounter; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			/* check length of pause between bits */
+			if (times[i] > IR_SAMS_LOW_ONE - IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV && times[i] < IR_SAMS_LOW_ONE + IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV) {
+				if (i>2 && i<18) {
+					/* write a one */
+					*address |= 1<<((i-3)>>1);
+				}
+				if (i>34 && i<50) {
+					/* write a one */
+					*command |= 1<<((i-35)>>1);
+				}
+			} else if (times[i] > IR_SAMS_LOW_ZERO - IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV && times[i] < IR_SAMS_LOW_ZERO + IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV) {
+				/* do nothing, a zero is already in rawbits */
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+		} else {			/* if even, ir-bit */
+			if (times[i] > IR_SAMS_HIGH + IR_SAMS_HIGH/IR_SAMS_TOL_DIV || times[i] < IR_SAMS_HIGH - IR_SAMS_HIGH/IR_SAMS_TOL_DIV) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		}
@@ -351,6 +412,10 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	} else if (testNEC(&*address, &*command) == IR_OK) {
 		*proto = IR_PROTO_NEC;
 		*timeout = IR_NEC_REPETITION;
+		return IR_OK;
+	} else if (testSamsung(&*address, &*command) == IR_OK) {
+		*proto = IR_PROTO_SAMS;
+		*timeout = IR_SAMS_REPETITION;
 		return IR_OK;
 	}
 		
