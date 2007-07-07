@@ -11,6 +11,7 @@ CSRC =	$(TARGET).c\
 		$(LIBDIR)/drivers/timer/timebase.c\
 		$(LIBDIR)/drivers/mcu/mcu.c\
 		$(LIBDIR)/drivers/ir/receiver/irreceiver.c\
+		$(LIBDIR)/drivers/ir/ircommon.c\
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
