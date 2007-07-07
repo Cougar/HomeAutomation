@@ -16,9 +16,7 @@
 #define IRDDR	DDRD
 #define IRBIT	PD2
 
-#define IR_MIN_REPEATE_PULSE_WIDTH	200
-#define IR_MAX_REPEATE_PULSE_WIDTH	40000
-
+#define MAX_NR_TIMES		100 								//max ir pulses+pauses, used for dimensioning the buffer 
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
@@ -34,10 +32,6 @@ uint8_t getRawDataCnt(void);
  *---------------------------------------------------------------------------*/
 uint8_t receiveRC5(uint8_t *address, uint8_t *command);
 uint8_t receiveSIRC(uint8_t *address, uint8_t *command);
-void initTimer(void);
-uint8_t isTimerOvfl(void);
-uint16_t getTimerVal(void);
-void setTimerVal(uint16_t value);
 
 
 #endif /*IRRECEIVE_H_*/
