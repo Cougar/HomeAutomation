@@ -13,8 +13,8 @@
  * ENC28J60 Chip Select port on avr. 
  */ 
  
-#define ENC28J60_CONTROL_PORT   PORTB
-#define ENC28J60_CONTROL_DDR    DDRB
-#define ENC28J60_CONTROL_CS     1
+#define ENC28J60_CONTROL_PORT   PORTC
+#define ENC28J60_CONTROL_DDR    DDRC
+#define ENC28J60_CONTROL_CS     0
 
 #endif /*ENC28J60_CFG_H_*/
