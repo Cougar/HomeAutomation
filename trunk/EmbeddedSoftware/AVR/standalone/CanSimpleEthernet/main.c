@@ -29,10 +29,11 @@
 // in your local area network. You can not have the same numbers in
 // two devices:
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
+//static uint8_t myip[4] = {192,168,0,50};
 static uint8_t myip[4] = {193,11,254,22};
 static uint16_t rmDumperPrt =1200; // remote port for dumping data
 static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
-static uint16_t locDumperPrt =1200; // listen port 
+//static uint16_t locDumperPrt =1200; // listen port 
 static uint16_t locCan2SerPrt =1100; // listen port for Can2Serial-data
 static uint8_t gotdumpserver = 0;
 static uint8_t gotcan2serserver = 0;
@@ -54,6 +55,9 @@ static uint8_t buffpoint;
  
 #define C2S_START_BYTE 253
 #define C2S_END_BYTE 250
+
+/* set to 0 for not sending timestamps on bus */
+#define SENDTIMESTAMP	1
 
 /*----------------------------------------------------------------------------
  * Putchar for udp
@@ -83,7 +87,6 @@ int main(void) {
 
 	//ethernet vars
     uint16_t plen = 0;
-    uint8_t ledi=0;
     uint8_t payloadlen=0;
 	buffpoint = 0;
 	
@@ -93,44 +96,32 @@ int main(void) {
 	txMsg.Id = 3;
 	txMsg.DataLength = 0;
 	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1; //DataLength and the databytes are just what happens to be in the memory. They are never set.
-
+	txMsg.ExtendedFlag = 1;
 
  	uint32_t timeStamp = 0;
 	
 	Mcu_Init();
 	Timebase_Init();
-	//Serial_Init();
 
     //alla printf ska skriva till udp
     stdout = &mystdout;    //set the output stream 
     
 	sei();
 
-//	printf("CanInit...");
 	if (Can_Init() != CAN_OK) {
-//		printf("FAILED!\n");
-	}
-	else {
-//		printf("OK!\n");
 	}
 
-    /* enable PB0, reset as output */
-    DDRB|= (1<<DDB0);
     /* set output to gnd, reset the ethernet chip */
-    PORTB &= ~(1<<PB0);
+    PORTC &= ~(1<<PC1);
+    /* set PC1 as output */
+    DDRC |= (1<<DDC1);
+
     delay_ms(20);
-    /* set output to Vcc, reset inactive */
-    PORTB|= (1<<PB0);
+    /* set PC1 as input, resetpin pulled high */
+    DDRC &= ~(1<<DDC1);
+    
     delay_ms(100);
     
-    // LED
-    /* enable PB1, LED as output */
-    DDRD|= (1<<DDD6);
-    /* set output to Vcc, LED off */
-    PORTD|= (1<<PD6);
-
-	//printf("Init enc\n");
     /*initialize enc28j60*/
     enc28j60Init(mymac);
     delay_ms(20);
@@ -142,10 +133,6 @@ int main(void) {
     enc28j60PhyWrite(PHLCON,0x476);
     delay_ms(20);
     
-    /* set output to GND, red LED on */
-    PORTD &= ~(1<<PD6);
-    ledi=1;
-    
     //init the ethernet/ip layer:
     init_ip_arp_udp_tcp(mymac,myip,80);
 
@@ -154,28 +141,30 @@ int main(void) {
 		/* service the CAN routines */
 		Can_Service();
 		
+#if SENDTIMESTAMP == 1
 		/* send CAN message and check for CAN errors once every second */
-		if (Timebase_PassedTimeMillis(timeStamp) >= 2000) {
+		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
 			timeStamp = Timebase_CurrentTime();
-			/* send txMsg */
-			//txMsg.Id++;
-			//txMsg.Id = 3;
-			//Can_Send(&txMsg);
+			/* send timestamp, to keep network alive */
+			txMsg.Id = 0;
+			txMsg.DataLength = 0;
+			Can_Send(&txMsg);
 			
 		}
+#endif
 		
 		/* check if any messages have been received */
 		while (Can_Receive(&rxMsg) == CAN_OK) {
 			uint8_t i;
 
-			if (gotdumpserver != 0) {
+			/*if (gotdumpserver != 0) {
 				printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
 	    		printf("data={ ");
 	    		for (i=0; i<rxMsg.DataLength; i++) {
 	    			printf("%x ", rxMsg.Data.bytes[i]);
 	    		}
 		   		printf("}\n");
-			}
+			}*/
 	   		
 	   		if (gotcan2serserver != 0) {
 				//skicka ocks� som udppaket till rmCan2SerPrt
@@ -266,17 +255,17 @@ int main(void) {
 								}
 								Can_Send(&cm);
 								
-								if (gotdumpserver != 0) {
+								/*if (gotdumpserver != 0) {
 									printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", cm.Id, (uint16_t)(cm.DataLength), (uint16_t)(cm.ExtendedFlag), (uint16_t)(cm.RemoteFlag));
 									printf("data={ ");
 									for (i=0; i<cm.DataLength; i++) {
 										printf("%x ", cm.Data.bytes[i]);
 									}
 	   								printf("}\n");
-								}
+								}*/
 							}
 						//om port 1200 (dumparporten) 
-                        } else if ((buf[UDP_DST_PORT_H_P]==((locDumperPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locDumperPrt & 0xff))) {
+                        } /*else if ((buf[UDP_DST_PORT_H_P]==((locDumperPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locDumperPrt & 0xff))) {
                 	        if (gotdumpserver == 0) {
 				                while(i<6){
 					                remotemac[i]=buf[ETH_SRC_MAC +i];
@@ -294,7 +283,7 @@ int main(void) {
                 	        } else {
                 	        	make_udp_reply_from_request(buf,"Already got server",18,rmDumperPrt);
                 	        }
-                        }
+                        }*/
 	                }			            
 			    }
 	        }
