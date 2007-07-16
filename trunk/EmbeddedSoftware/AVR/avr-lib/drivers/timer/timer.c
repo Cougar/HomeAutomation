@@ -64,7 +64,7 @@ ISR(TIMER_VECTOR)
  * Public Functions
  *---------------------------------------------------------------------------*/
 
-void timerInit()
+void Timer_Init()
 {
 	/* Do basic setup of the timer hw, including interrupts. */
 	TIMER_INIT();
@@ -82,7 +82,7 @@ void timerInit()
 
 /*---------------------------------------------------------------------------*/
 
-uint32_t timerGetTicks()
+uint32_t Timer_GetTicks()
 {
 	uint32_t res;
 	uint8_t sreg = SREG;
@@ -94,7 +94,7 @@ uint32_t timerGetTicks()
 
 /*---------------------------------------------------------------------------*/
 
-void timerSetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback)
+void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback)
 {
 	if (timer<TIMER_NUM_TIMERS)
 	{
@@ -113,7 +113,7 @@ void timerSetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallbac
 
 /*---------------------------------------------------------------------------*/
 
-uint8_t timerExpired(uint8_t timer)
+uint8_t Timer_Expired(uint8_t timer)
 {
 	if ((timer<TIMER_NUM_TIMERS) && (timers[timer].expired))
 	{

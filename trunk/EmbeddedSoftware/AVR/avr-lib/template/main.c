@@ -5,10 +5,10 @@
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 #include <drivers/uart/serial.h>
-#include <drivers/timer/timebase.h>
+#include <drivers/timer/timer.h>
 
 #define APP_TYPE    0xf001
-#define APP_VERSION 0x0001
+#define APP_VERSION 0x0002
 
 // A simple message "queue", with space for one message only.
 // These are declared volatile to tell the compiler not to optimize away accesses.
@@ -24,15 +24,28 @@ void can_receive(Can_Message_t *msg) {
 	}
 }
 
+// Timer callback function used for some timer tests
+void timer_callback(uint8_t timer) {
+	Can_Message_t msg;
+	
+	msg.ExtendedFlag = 1;
+	msg.Id = (CAN_TST << CAN_SHIFT_CLASS) | NODE_ID;
+	msg.RemoteFlag = 0;
+	msg.DataLength = 1;
+	msg.Data.bytes[0] = timer;
+	
+	BIOS_CanSend(&msg);
+}
+
 int main(void)
 {
 	// Enable interrupts as early as possible
 	sei();
 	
-	Timebase_Init();
+	Timer_Init();
 	Serial_Init();
 	
-	unsigned long time, time1 = Timebase_CurrentTime();
+	unsigned long time;
 	
 	Can_Message_t txMsg;
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -54,11 +67,17 @@ int main(void)
 	txMsg.Data.dwords[0] = 0x01020304;
 	txMsg.DataLength = 8;
 
+	// Set up three timers (assume at least three has been defined)
+	// The timeout is specified in ticks, which is equal to ms if
+	// the tick frequency is set to 1000.
+	Timer_SetTimeout(0, 2000, TimerTypeFreeRunning, 0);
+	Timer_SetTimeout(1, 10768, TimerTypeOneShot, &timer_callback);
+	Timer_SetTimeout(2, 3141, TimerTypeFreeRunning, &timer_callback);
+	
 	while (1) {
-		time = Timebase_CurrentTime();
-		if ((time - time1) >= 2000) {
-			time1 = time;
+		if (Timer_Expired(0)) {
 			// Send a CAN message
+			time = Timer_GetTicks();
 			txMsg.Data.dwords[1] = time;
 			BIOS_CanSend(&txMsg);
 			printf("Two seconds passed, time is now %ld.\n", time);

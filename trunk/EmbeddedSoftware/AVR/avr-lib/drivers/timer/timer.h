@@ -49,7 +49,7 @@ typedef void (*timerCallback_t)(uint8_t);
  * Initializes the timer engine. The hardware timer interrupt source will be
  * enabled, but global interrupts need to be enabled by the application.
  */
-void timerInit(void);
+void Timer_Init(void);
 
 /**
  * Reads the current time.
@@ -58,7 +58,7 @@ void timerInit(void);
  * 		The current time in ticks. The tick count wraps around after 2^32
  * 		ticks without any notification.
  */
-uint32_t timerGetTicks(void);
+uint32_t Timer_GetTicks(void);
 
 /**
  * Initializes a software timer and starts it.
@@ -78,7 +78,7 @@ uint32_t timerGetTicks(void);
  * 		timer number as the	argument whenever the timer expires. It is called
  * 		from the interrupt handler and must be very short. Null if not used.
  */ 
-void timerSetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback);
+void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback);
 
 /**
  * Checks if a timer has expired. The timer will only signal its expiration at
@@ -90,7 +90,7 @@ void timerSetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallbac
  * @return
  * 		Non-zero if timer has expired since the previous check.
  */ 
-uint8_t timerExpired(uint8_t timer);
+uint8_t Timer_Expired(uint8_t timer);
 
 
 #endif /*TIMER_H_*/

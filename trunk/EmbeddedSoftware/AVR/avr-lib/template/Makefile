@@ -8,7 +8,7 @@ include $(LIBDIR)/system.inc
 
 # List C source files here. (C dependencies are automatically generated.)
 CSRC =	$(TARGET).c\
-		$(LIBDIR)/drivers/timer/timebase.c\
+		$(LIBDIR)/drivers/timer/timer.c\
 		$(LIBDIR)/drivers/uart/serial.c\
 		$(LIBDIR)/drivers/uart/uart.c\
 		$(LIBDIR)/drivers/mcu/mcu.c\
