@@ -68,6 +68,7 @@
 #define CAN_APPTYPES_SERVO          0xf020
 #define CAN_APPTYPES_SENSOR			0xf025
 #define CAN_APPTYPES_IRTRANSMITTER  0xf030
+#define CAN_APPTYPES_RGBLED			0xf035
 
 // CAN ID definitions for SNS messages
 #define SNS_TYPE_STATUS               0x10L
@@ -84,6 +85,8 @@
 #define ACT_TYPE_RELAY         0x01L
 
 #define ACT_TYPE_SERVO         0x02L
+
+#define ACT_TYPE_RGBLED		   0x03L
 
 
 #endif /*CANID_H_*/
