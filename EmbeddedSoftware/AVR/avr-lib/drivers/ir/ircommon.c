@@ -72,4 +72,4 @@ void setTimerVal(uint16_t value) {
 	TIFR1 |= (1<<TOV1);  // clear overflow flag.
 	#endif
 }
- 
+
