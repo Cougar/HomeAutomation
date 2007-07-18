@@ -64,34 +64,6 @@ int main(void)
 	uint8_t state = STATE_IDLE;
 
 	while (1) {
-		#if 0
-		time = Timebase_CurrentTime();
-		if (state == STATE_IDLE) {
-			if (IrReceive_CheckIR(&ir_protocol, &ir_address, &ir_command, &ir_timeout) == IR_OK) {
-				txMsg.Data.bytes[0] = 0x00;
-				txMsg.Data.bytes[1] = ir_protocol;
-				txMsg.Data.bytes[2] = ir_address;
-				txMsg.Data.bytes[3] = ir_command;
-				txMsg.DataLength = 4;
-				txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_IR << CAN_SHIFT_SNS_TYPE) | (IR_ID_DATA<<CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
-				BIOS_CanSend(&txMsg);
-				irTimeoutTime = Timebase_CurrentTime();
-				state = STATE_IR_REPEAT;
-			}
-		} else if (state == STATE_IR_REPEAT) {
-			//kolla efter ny ir, om ingen ny ir och timeout så sätt state till IDLE
-			if (time - irTimeoutTime >= ir_timeout) {		
-				state = STATE_IDLE;
-				txMsg.Data.bytes[0] = 0x0f;
-				BIOS_CanSend(&txMsg);
-			}
-			if (IrReceive_CheckIdle() == IR_OK) {
-				irTimeoutTime = Timebase_CurrentTime();
-			}
-		}
-		#endif
-		
-		#if 1
 		time = Timebase_CurrentTime();
 		
 		if (state == STATE_IDLE) {
@@ -99,7 +71,7 @@ int main(void)
 			uint8_t returnval = IrReceive_CheckIR(&ir_protocol, &ir_address, &ir_command, &ir_timeout);
 			if (returnval == IR_OK) {
 				/* a protocol was found for irdata, send on can */
-				txMsg.Data.bytes[0] = 0x00;
+				txMsg.Data.bytes[0] = IR_BUTTON_DOWN;
 				txMsg.Data.bytes[1] = ir_protocol;
 				txMsg.Data.bytes[2] = ir_address;
 				txMsg.Data.bytes[3] = ir_command;
@@ -164,7 +136,7 @@ int main(void)
 				state = STATE_IDLE;
 				/* if the protocol was known then send a release-message */
 				if (ir_protocol != IR_PROTO_UNKNOWN) {
-					txMsg.Data.bytes[0] = 0x0f;
+					txMsg.Data.bytes[0] = IR_BUTTON_UP;
 					BIOS_CanSend(&txMsg);
 				}
 			}
@@ -172,8 +144,6 @@ int main(void)
 				irTimeoutTime = Timebase_CurrentTime();
 			}
 		}
-			
-		#endif
 
 		
 		if (rxMsgFull) {
