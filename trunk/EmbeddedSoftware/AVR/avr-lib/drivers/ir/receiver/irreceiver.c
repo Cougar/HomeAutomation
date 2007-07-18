@@ -53,8 +53,6 @@ uint8_t getRawDataCnt(void) {
 	return timesCounter;
 }
 
-#if 1
-
 /**
  * Test data on SIRC protocol, 12-bit version
  * http://www.sbprojects.com/knowledge/ir/sirc.htm
@@ -286,7 +284,7 @@ uint8_t testSamsung(uint8_t *address, uint8_t *command) {
 	*command = 0;
 	*address = 0;
 	
-	for (uint8_t i = 3; i < timesCounter; i++) {
+	for (uint8_t i = 2; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
 			if (times[i] > IR_SAMS_LOW_ONE - IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV && times[i] < IR_SAMS_LOW_ONE + IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV) {
@@ -321,7 +319,7 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	//this routine should sample the timings for received irdata
 	timesCounter = 0;
 	
-	uint8_t gotTimout = 0;	// a timeout is a very long break in irdata (such as occurs between ir pulsetrains)
+	uint8_t gotTimout = 0;	// a timeout is a very long break in irdata (such as occurs between ir frames)
 	while (!gotTimout && timesCounter < MAX_NR_TIMES-1) { //loop as long as no timeout occured and not to many pulses received
 		setTimerVal(TIM_OVFL_RELOAD_VAL);
 		//wait for positiv slope, while checking timer overflow
@@ -377,7 +375,6 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	return IR_NO_PROTOCOL;
 	
 }
-#endif
 
 //TODO: skriv doxygen-header som för de andra funktionerna
 /**
@@ -390,7 +387,7 @@ void IrReceive_Init(void) {
 	IRDDR &= ~(1<<IRBIT);
 }
 
-//varför är denna funktion så komplex? jo den filtrerar bort korta ir-pulser
+//varför är denna funktion så komplex? jo den filtrerar bort för korta ir-pulser
 //TODO: skriv doxygen-header som för de andra funktionerna
 uint8_t IrReceive_CheckIdle(void) {
 	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
