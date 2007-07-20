@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Configuration file for the CallerID Macbeth module. -->
+<modcallerid>
+	
+	<list name="servers">
+		<item>
+			<!-- No trailing slash! -->
+			<field name="serverlocation" value="http://www.arune.se/callerid"/>
+		</item>
+		<!--item>
+			<field name="serverlocation" value="backupserver/callerid"/>
+		</item-->
+	</list>
+	
+
+	
+</modcallerid>

@@ -1,0 +1,25 @@
+this module should be used for reading mail in the menysystem later on
+
+två saker
+för det första, jag kan ju inte på något sätt veta om någon hämtat några meddelanden från servern, 
+så displayen kommer bara visa antalet nya sen förra pollen, den kan ju inte veta hur många nya totalt det finns
+man skulle kunna hålla reda på det om man visste att klienten raderade alla nya meddelanden, 
+i så fall skulle mailcheck bara kolla antalet mail totalt på servern och sen nästa gång kolla om det finns fler
+men eftersom jag själv konfat det så att meddelanden ligger kvar så blir det nog på detta sättet
+
+för det andra: meddelandet ligger kvar på displayen minst i 20sek, sen ligger det kvar tills någon skriver över det
+vilket kan vara lurigt
+
+
+[13:15:41] <virus_> om jag får saker och funka som jag vill med specialtecknen sen så kan man införa egna entities, 
+dvs precis som "&amp;" kan man ha "&nr_mail;" och sånt också
+(istället för #)
+sätt också in ett &plural; som byts mot 's' om det är fler mail än ett
+
+displaytext blir: &nr_mail; new mail&plural;
+så skriver den ut 
+1 new mail
+eller
+2 new mails
+
+men detta funkar ju bara med engelska, om man inte kan definiera eget pluraltecken

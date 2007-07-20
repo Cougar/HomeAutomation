@@ -1,0 +1,25 @@
+/*
+ * NodeServo application settings.
+ * Defines specific for one node/application
+ */
+
+/* Servo IDs, 6 bits */
+#define SERVOID_1 0x01
+#define SERVOID_2 0x02
+#define SERVOID_3 0x03
+
+//#define TWO_BUTTON_MODE
+
+/*
+ * As default nothing needs to be changed below here
+ */
+
+/* Degrees celcius when the node goes into failsafe mode */
+#define FAILSAFE_TRESHOLD 50 // degrees celcius
+
+/* How long time after turning pwm should be active */
+#define SERVO_FEED_TIME 5000 // milliseconds
+
+#define STEPS_PER_TURN_PERIOD   1 // number of steps for each adjustment
+#define TURN_PERIOD             9 // ms
+
