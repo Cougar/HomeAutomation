@@ -68,13 +68,14 @@ oldconfig:
 #	- cp $(PERSONALDIR)/*$(NODE_ID)*/bios.inc config.inc
 
 # Copy template to personal dir
-move:
-	- mkdir -p $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
-	- cp -r $(TEMPLATEDIR)/* $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/
+move: template
+	- mkdir -p $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/$(BIOSDIR)
+	- cp $(TEMPLATEDIR)/$(BIOSDIR)/* $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)/$(BIOSDIR)
+	- cp $(TEMPLATEDIR)/Makefile $(PERSONALDIR)/$(NODE_ID)_$(HW_NAME)
 
 # Copy template to personal dir but dont copy makefile and main.c as you dont want these files replaced generally 
-updateconfig:
-	- cp -r $(TEMPLATEDIR)/$(BIOSDIR) $(TEMPLATEDIR)/config.inc $(TEMPLATEDIR)/Makefile $(PERSONALDIR)/$(NODE_ID)_*/
+updateconfig: template
+	- cp $(TEMPLATEDIR)/$(BIOSDIR)/* $(TEMPLATEDIR)/Makefile $(PERSONALDIR)/$(NODE_ID)_*/
 
 
 .PHONY: clean cleanintermediate cleantemplate distclean
