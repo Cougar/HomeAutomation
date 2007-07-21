@@ -71,7 +71,7 @@ void Can_Process(Can_Message_t* msg) {
 	}
 }
 
-int main() {
+int main(void) {
 	void (*app_reset)(void) = 0; // Function pointer to jump to application reset vector.
 	uint8_t bios_state;
 	uint8_t nmt_type;

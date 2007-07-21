@@ -61,7 +61,6 @@ int main(void)
 	BIOS_CanSend(&txMsg);
 	
 	printf("AVR Test Application\n");
-	printf("Using AVR BIOS version %x\n", BIOS_VERSION);
 	
 	txMsg.Id = (CAN_TST << CAN_SHIFT_CLASS) | NODE_ID;
 	txMsg.Data.dwords[0] = 0x01020304;

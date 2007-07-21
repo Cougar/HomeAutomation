@@ -151,7 +151,7 @@ void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uin
 	MCP2515_UNSELECT();
 }
 
-uint8_t MCP2515_ReadStatus() {
+uint8_t MCP2515_ReadStatus(void) {
 	uint8_t i;
 	
 	MCP2515_SELECT();
@@ -198,7 +198,7 @@ uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
 	}
 }*/
 
-inline void MCP2515_ConfigRate() {
+inline void MCP2515_ConfigRate(void) {
 	MCP2515_SetRegister(MCP_CNF1, MCP_BITRATE_CFG1);
 	MCP2515_SetRegister(MCP_CNF2, MCP_BITRATE_CFG2);
 	MCP2515_SetRegister(MCP_CNF3, MCP_BITRATE_CFG3);
@@ -359,7 +359,7 @@ void MCP2515_StartTransmit(const uint8_t buffer) {
     MCP_INT_ENABLE();
 }
 
-uint8_t MCP2515_GetNextFreeTXBuf() {
+uint8_t MCP2515_GetNextFreeTXBuf(void) {
 	uint8_t stat;
 	
 	// check all 3 TX-Buffers
@@ -416,7 +416,7 @@ void MCP2515_InitRXInterrupts(void) {
 
 // ---
 
-uint8_t MCP2515_Init() {
+uint8_t MCP2515_Init(void) {
 	uint8_t res;
 	
 	SPI_Init();		// init SPI-Interface (as "Master")
@@ -496,7 +496,7 @@ ISR(MCP_INT_VECTOR) {
  * 		CAN_INIT_FAIL_SET_MODE if the controller could not be set to normal operation mode.
  * 		CAN_INIT_FAIL in case of general error.
  */
-Can_Return_t Can_Init() {
+Can_Return_t Can_Init(void) {
 		/*
 		 * Initialize MCP2515 device.
 		 */

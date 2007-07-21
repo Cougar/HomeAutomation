@@ -12,12 +12,16 @@ Example:
 cd AVR/personal
 svn export template node_0x04_IrReceiver2
 
-To build and install or upgrade a bios on the node, simply:
+To build and install or upgrade a bios on the node, you have to first setup
+a system.inc based on system.inc.template.
+
+After that, simply:
 cd node_0x04_IrReceiver2
 edit bios.inc to suit the node hardware, in particular set NODE_ID correctly.
 make bios
 make installbios (for ISP uploading to a fresh AVR) or
 make upgradebios (for uploading over CAN to a node with a working bios)
+make cleanbios (optional to reduce clutter in bios dir)
 
 The recommended layout of the node directory is the following:
 
@@ -28,6 +32,8 @@ node_<NODE_ID>_<DESCRIPTION>/
 |  |--bios.h (header file for the bios functions)
 |  |
 |  |--bios.hex (load file for installing/upgrading bios)
+|  |
+|  |--bios.map (memory layout of bios for use when linking application)
 |  |
 |  |--libbios.a (library for linking application with bios functions)
 |  |
