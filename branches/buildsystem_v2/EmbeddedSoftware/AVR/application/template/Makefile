@@ -75,6 +75,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(@:.o=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += $(GENDEPFLAGS)
 
 
 
@@ -176,18 +177,17 @@ OBJ = $(filter %.o,$(SOURCES:.c=.o) $(SOURCES:.S=.o))
 LST = $(OBJ:.o=.lst)
 
 # Define all dependency files.
-DEP = $(OBJ:.o=.dep)
+DEP = $(OBJ:.o=.d)
 
 BUILDDIRS = $(sort $(filter-out ./,$(dir $(OBJ))))
 
 BIOS_RAM_END := $(shell $(AWK) '/0x[0-9a-f]+.*__bios_ram_end/ { print $$1 }' $(BIOSDIR)/bios.map)
 
 # Compiler flags to generate dependency files.
-### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-GENDEPFLAGS = -M -MG -MP -MT "$(@:.dep=.o) $@" -MF $@
+GENDEPFLAGS = -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 
 # Default target.
-all: sizebefore config.h build sizeafter
+all: sizebefore buildtree config.h build sizeafter
 
 build: elf hex eep lss sym
 
@@ -196,6 +196,8 @@ hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss 
 sym: $(TARGET).sym
+
+buildtree: $(BUILDDIRS)
 
 # Display size of file.
 HEXSIZE = $(SIZE) --target=ihex $(TARGET).hex
@@ -284,9 +286,9 @@ endif
 	$(CC) -c $(ASFLAGS) $< -o $@
 
 # Depends: create dependency files from c source files.
-%.dep : %.c | $(BUILDDIRS)
-	@echo $(MSG_DEPEND) $<
-	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
+#%.d : %.c | $(BUILDDIRS)
+#	@echo $(MSG_DEPEND) $<
+#	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
 
 # Buildtree: create directories for output files.
 $(BUILDDIRS) :
@@ -304,6 +306,7 @@ clean:
 	$(RM) $(TARGET).sym
 	$(RM) $(TARGET).lss
 	$(RM) $(OBJ)
+	$(RM) $(DEP)
 	$(RM) $(LST)
 	$(RM) config.h
 
@@ -311,7 +314,11 @@ distclean: clean
 	$(RM) -r $(BUILDDIRS)
 
 # Include the dependency files.
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(DEP)),)
 -include $(DEP)
+endif
+endif
 
 # Listing of phony targets.
 .PHONY : all sizebefore sizeafter build \
