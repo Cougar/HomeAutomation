@@ -5,10 +5,10 @@
 
 # Define the command used to upload BIOS to the node
 # It will be executed as $(UPLOAD) $(ULFLAGS).
-# $(MCU) is the AVR to use and the file to upload is $(BUILDDIR)/$(TARGET).hex
+# $(MCU) is the AVR to use and the file to upload is $(BIOSDIR)/$(BIOSTARGET).hex
 
 UPLOAD         = avrdude
-ULFLAGS        = -p $(MCU) -P usb -c avrisp2 -U flash:w:$(BUILDDIR)/$(TARGET).hex
+ULFLAGS        = -p $(MCU) -P usb -c avrisp2 -U flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
 
 AVRDUDE_WRITE_FUSEBITS = -u
 ifdef EXTFUSE
