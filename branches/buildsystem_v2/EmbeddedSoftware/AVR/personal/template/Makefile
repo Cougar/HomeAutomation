@@ -2,26 +2,26 @@
 TARGET = main
 BIOSTARGET = bios
 
-LIBDIR = $(abspath ../../avr-lib)
-SRCDIR = $(abspath src)
-CFGDIR = $(abspath .)
-BIOSDIR = $(abspath bios)
-BIOSSRCDIR = $(abspath $(LIBDIR)/bios)
-BUILDDIR = $(abspath build)
+LIBDIR = ../../avr-lib
+SRCDIR = src
+CFGDIR = .
+BIOSDIR = bios
+BIOSSRCDIR = $(LIBDIR)/bios
+BUILDDIR = build
 
-include ../system.inc
 include bios.inc
+include ../system.inc
 
 APPMAKEFLAGS = 	TARGET=$(TARGET) \
-				LIBDIR=$(LIBDIR) \
-				SRCDIR=$(SRCDIR) \
-				BIOSDIR=$(BIOSDIR) \
-				CFGDIR=$(CFGDIR) 
+				LIBDIR=$(abspath $(LIBDIR)) \
+				SRCDIR=$(abspath $(SRCDIR)) \
+				BIOSDIR=$(abspath $(BIOSDIR)) \
+				CFGDIR=$(abspath $(CFGDIR)) 
 
 BIOSMAKEFLAGS = TARGET=$(BIOSTARGET) \
-				LIBDIR=$(LIBDIR) \
-				SRCDIR=$(BIOSSRCDIR) \
-				CFGDIR=$(CFGDIR) 
+				LIBDIR=$(abspath $(LIBDIR)) \
+				SRCDIR=$(abspath $(BIOSSRCDIR)) \
+				CFGDIR=$(abspath $(CFGDIR)) 
 
 # Define programs and commands.
 SHELL = sh
@@ -42,17 +42,17 @@ MSG_CREATEDIR = Creating directory:
 
 
 # Default target.
-all: $(BUILDDIR)
-	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(SRCDIR)/Makefile all
+all: $(abspath $(BUILDDIR))
+	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) all
 
-bios: $(BIOSDIR)
-	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(BIOSSRCDIR)/Makefile all
+bios: $(abspath $(BIOSDIR))
+	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) all
 
 installbios: bios
 	$(UPLOAD) $(ULFLAGS)
 
 upgradebios: bios
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(PRG).hex -r -b
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
 
 install: $(BUILDDIR)/$(TARGET).hex
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $< -r
@@ -63,19 +63,19 @@ reset:
 start: 
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -s
 
-$(BUILDDIR)/$(TARGET).hex: $(BUILDDIR)
-	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(SRCDIR)/Makefile $(TARGET).hex
+$(BUILDDIR)/$(TARGET).hex: $(abspath $(BUILDDIR))
+	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
 
-$(BUILDDIR) $(BIOSDIR):
+$(abspath $(BUILDDIR) $(BIOSDIR)):
 	@echo $(MSG_CREATEDIR) $@
 	@$(MKDIR) -p $@
 
 # Target: clean project.
 clean:
-	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(SRCDIR)/Makefile clean
+	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) clean
 
 cleanbios:
-	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(BIOSSRCDIR)/Makefile clean
+	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) clean
 
 distclean:
 	@echo $(MSG_CLEANING)
