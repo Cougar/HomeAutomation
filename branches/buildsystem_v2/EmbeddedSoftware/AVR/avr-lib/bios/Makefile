@@ -247,7 +247,7 @@ extcoff: $(TARGET).elf
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
 	@echo $(MSG_FLASH) $@
-	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
+	@$(OBJCOPY) -j .text -j .data -j .bootloader -O ihex $< $@
 
 %.eep: %.elf
 	@echo $(MSG_EEPROM) $@
