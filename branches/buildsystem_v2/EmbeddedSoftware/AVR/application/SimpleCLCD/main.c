@@ -20,7 +20,7 @@
 /* lib files */
 #include <bios.h>
 #include <config.h>
-#include <lcd_HD44780.h>
+#include <drivers/lcd/clcd/lcd_HD44780.h>
 /* funcdefs */
 #include <funcdefs/funcdefs.h>
 
