@@ -25,7 +25,7 @@
 /* lib files */
 #include <bios.h>
 #include <config.h>
-#include <settings.h>
+//#include <settings.h> //Migrated to config.inc
 
 #include <drivers/timer/timebase.h>
 

@@ -27,7 +27,7 @@
 #include <drivers/timer/timebase.h>
 #include <drivers/sensor/tc1047/tc1047.h>
 
-#include "settings.h"
+//#include "settings.h" //Migrated to config.inc
 
 /* defines */
 #define RELAY_OFF			0x01

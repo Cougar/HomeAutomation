@@ -22,7 +22,7 @@
 /* lib files */
 #include <bios.h>
 #include <config.h>
-#include <settings.h>
+//#include <settings.h> //Migrated to config.inc
 
 #include <drivers/timer/timebase.h>
 #include <drivers/sensor/tc1047/tc1047.h>

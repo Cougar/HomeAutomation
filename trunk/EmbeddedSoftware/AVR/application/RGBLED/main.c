@@ -32,7 +32,7 @@
 #include <bios.h>
 //#include <funcdefs/funcdefs.h>
 
-#include <settings.h>
+//#include <settings.h> //Migrated to config.inc
 
 /*----------------------------------------------------------------------------
  * Defines
