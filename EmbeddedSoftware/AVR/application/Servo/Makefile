@@ -1,29 +1,33 @@
-include bios.inc
-
-# Target file name (without extension).
+# Paths: default pathnames if they are not
+# passed on from parent Makefile.
+ifndef TARGET
 TARGET = main
+endif
+ifndef LIBDIR
+LIBDIR = ../../../avr-lib
+endif
+ifndef SRCDIR
+SRCDIR = ../src
+endif
+ifndef BIOSDIR
+BIOSDIR = ../bios
+endif
+ifndef CFGDIR
+CFGDIR = ..
+endif
 
-LIBDIR = ../../avr-lib
-include $(LIBDIR)/system.inc
+include $(CFGDIR)/bios.inc
 
-# List C source files here. (C dependencies are automatically generated.)
-CSRC =	$(TARGET).c\
-		$(LIBDIR)/drivers/timer/timebase.c\
-		$(LIBDIR)/drivers/actuator/rc-servo/rc_servo.c\
-		$(LIBDIR)/drivers/sensor/tc1047/tc1047.c\
-		$(LIBDIR)/drivers/mcu/mcu.c\
-#		../../lib/src/sensor/tc1047/tc1047.c\
-#		../../lib/src/actuator/rc_servo.c
+# VPATH: setup search path for source files.
+vpath
+vpath %.c $(LIBDIR):$(SRCDIR)
 
-# List Assembler source files here.
-# Make them always end in a capital .S.  Files ending in a lowercase .s
-# will not be considered source files but generated files (assembler
-# output from the compiler), and will be deleted upon "make clean"!
-# Even though the DOS/Win* filesystem matches both .s and .S the same,
-# it will preserve the spelling of the filenames, and gcc itself does
-# care about how the name is spelled on its command-line.
-ASRC = 
-
+# List source files here. (C dependencies are automatically generated.)
+SOURCES =	main.c\
+                drivers/timer/timebase.c\
+                drivers/actuator/rc-servo/rc_servo.c\
+                drivers/sensor/tc1047/tc1047.c\
+                drivers/mcu/mcu.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
@@ -38,8 +42,8 @@ DEBUG = stabs
 #DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
-#     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)\
+# Each directory must be separated by a space.
+EXTRAINCDIRS = $(LIBDIR) $(BIOSDIR)
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -68,9 +72,10 @@ CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -Wall -Wstrict-prototypes
-CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
+CFLAGS += -Wa,-adhlns=$(@:.o=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += $(GENDEPFLAGS)
 
 
 
@@ -83,7 +88,7 @@ CFLAGS += $(CSTANDARD)
 #             files -- see avr-libc docs [FIXME: not yet described there]
 ##ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp
-ASFLAGS += -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
+ASFLAGS += -Wa,-adhlns=$(@:.o=.lst),-g$(DEBUG)
 
 
 #Additional libraries.
@@ -118,7 +123,7 @@ MATH_LIB = -lm
 
 EXTMEMOPTS =
 
-BIOSOPTS = -Wl,-L.,-Tdata,$(BIOS_RAM_END) -lbios
+BIOSOPTS = -Wl,-L$(BIOSDIR),-Tdata,$(BIOS_RAM_END) -lbios
 
 # Linker flags.
 #  -Wl,...:     tell GCC to pass this to linker.
@@ -131,24 +136,17 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 # ---------------------------------------------------------------------------
 
-# Define directories, if needed.
-DIRAVR = c:/progra~1/winavr
-DIRAVRBIN = $(DIRAVR)/bin
-DIRAVRUTILS = $(DIRAVR)/utils/bin
-DIRINC = .
-DIRLIB = $(DIRAVR)/avr/lib
-
-
 # Define programs and commands.
 SHELL = sh
 CC = avr-gcc
+AWK = awk
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size
 NM = avr-nm
-REMOVE = rm -f
-COPY = cp
-
+RM = rm -f
+CP = cp
+MKDIR = mkdir
 
 
 
@@ -170,32 +168,26 @@ MSG_COMPILING = Compiling:
 MSG_ASSEMBLING = Assembling:
 MSG_DEPEND = Generating dependencies:
 MSG_CLEANING = Cleaning project:
-
-
-
+MSG_CREATE = Creating:
 
 # Define all object files.
-OBJ = $(CSRC:.c=.o) $(ASRC:.S=.o) 
+OBJ = $(filter %.o,$(SOURCES:.c=.o) $(SOURCES:.S=.o))
 
 # Define all listing files.
-LST = $(ASRC:.S=.lst) $(CSRC:.c=.lst)
+LST = $(OBJ:.o=.lst)
 
+# Define all dependency files.
+DEP = $(OBJ:.o=.d)
+
+BUILDDIRS = $(sort $(filter-out ./,$(dir $(OBJ))))
+
+BIOS_RAM_END := $(shell $(AWK) '/0x[0-9a-f]+.*__bios_ram_end/ { print $$1 }' $(BIOSDIR)/bios.map)
 
 # Compiler flags to generate dependency files.
-### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-GENDEPFLAGS = -M -MG -MP -MT "$(<:.c=.o) $@" -MF $@
-
-# Combine all necessary flags and optional flags.
-# Add target processor to flags.
-#ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
-#ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
-
-
-
-
+GENDEPFLAGS = -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 
 # Default target.
-all: begin sizebefore build sizeafter finished end
+all: sizebefore buildtree config.h build sizeafter
 
 build: elf hex eep lss sym
 
@@ -204,31 +196,8 @@ hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss 
 sym: $(TARGET).sym
-config: config.h
 
-install: hex
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(TARGET).hex -r
-
-reset: 
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -r
-
-start: 
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -s
-
-# Eye candy.
-# AVR Studio 3.x does not check make's exit code but relies on
-# the following magic strings to be generated by the compile job.
-begin:
-	@echo
-	@echo $(MSG_BEGIN)
-
-finished:
-	@echo $(MSG_ERRORS_NONE)
-
-end:
-	@echo $(MSG_END)
-	@echo
-
+buildtree: $(BUILDDIRS)
 
 # Display size of file.
 HEXSIZE = $(SIZE) --target=ihex $(TARGET).hex
@@ -239,12 +208,14 @@ sizebefore:
 sizeafter:
 	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); echo; fi
 
-
 # Generate config.h from bios.inc and config.inc
-config.h: bios.inc config.inc
+config.h: $(CFGDIR)/bios.inc $(CFGDIR)/config.inc
 	@echo Generating $@
 	@echo "/* This file is automatically generated. Do not edit. */\n" > $@
-	@cat $^ | awk 'BEGIN { FS="="; print "#ifndef CONFIG_H_\n#define CONFIG_H_\n" } /^[^#].*=.*/ { print "#define "$$1,$$2 } END { print "\n#endif /*CONFIG_H_*/" }' >> $@
+	@cat $^ | $(AWK) 'BEGIN { FS="="; print "#ifndef CONFIG_H_\n#define CONFIG_H_\n" } /^[^#].*=.*/ { print "#define "$$1,$$2 } END { print "\n#endif /*CONFIG_H_*/" }' >> $@
+
+$(CFGDIR)/config.inc: $(SRCDIR)/config.inc.template
+	@if [ ! -f $@ ]; then cp $< $@; fi
 
 # Display compiler version information.
 gccversion : 
@@ -259,115 +230,98 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 
 
 coff: $(TARGET).elf
-	@echo
 	@echo $(MSG_COFF) $(TARGET).cof
-	$(COFFCONVERT) -O coff-avr $< $(TARGET).cof
-
+	@$(COFFCONVERT) -O coff-avr $< $(TARGET).cof
 
 extcoff: $(TARGET).elf
-	@echo
 	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
-	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
-
-
+	@$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
-	@echo
 	@echo $(MSG_FLASH) $@
-	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 %.eep: %.elf
-	@echo
 	@echo $(MSG_EEPROM) $@
-	-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
+	-@$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 -O ihex $< $@
 
 # Create extended listing file from ELF output file.
 %.lss: %.elf
-	@echo
 	@echo $(MSG_EXTENDED_LISTING) $@
-	$(OBJDUMP) -h -S $< > $@
+	@$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
 %.sym: %.elf
-	@echo
 	@echo $(MSG_SYMBOL_TABLE) $@
-	$(NM) -n $< > $@
-
-
+	@$(NM) -n $< > $@
 
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
 ifneq (,$(filter atmega88 atmega168, $(MCU)))
 %.elf: $(OBJ)
-	@echo
 	@echo $(MSG_LINKING) $@
 	@echo GCC bug workaround for ATmega88/ATmega168:
-	eval $$($(CC) -v $(CFLAGS) -o $@ $^ $(LDFLAGS) 2>&1 | awk '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
+	@eval $$($(CC) -v $(CFLAGS) -o $@ $^ $(LDFLAGS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
 else
 %.elf: $(OBJ)
-	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 endif
 
 # Compile: create object files from C source files.
 %.o : %.c
-	@echo
 	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(CFLAGS) $< -o $@ 
-
+	@$(CC) -c $(CFLAGS) $< -o $@ 
 
 # Compile: create assembler files from C source files.
 %.s : %.c
-	$(CC) -S $(CFLAGS) $< -o $@
-
+	@$(CC) -S $(CFLAGS) $< -o $@
 
 # Assemble: create object files from assembler source files.
 %.o : %.S
-	@echo
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ASFLAGS) $< -o $@
 
 # Depends: create dependency files from c source files.
-%.d : %.c
-	@echo $(MSG_DEPEND) $<
-	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
+#%.d : %.c | $(BUILDDIRS)
+#	@echo $(MSG_DEPEND) $<
+#	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
+
+# Buildtree: create directories for output files.
+$(BUILDDIRS) :
+	@echo $(MSG_CREATE) $@
+	@$(MKDIR) -p $@
 
 # Target: clean project.
-clean: begin clean_list finished end
-
-clean_list :
-	@echo
+clean: 
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).a90
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lnk
-	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(OBJ)
-	$(REMOVE) $(LST)
-	$(REMOVE) $(CSRC:.c=.s)
-	$(REMOVE) $(CSRC:.c=.d)
-	$(REMOVE) -r .dep
-	$(REMOVE) config.h
+	$(RM) $(TARGET).hex
+	$(RM) $(TARGET).eep
+	$(RM) $(TARGET).cof
+	$(RM) $(TARGET).elf
+	$(RM) $(TARGET).map
+	$(RM) $(TARGET).sym
+	$(RM) $(TARGET).lss
+	$(RM) $(OBJ)
+	$(RM) $(DEP)
+	$(RM) $(LST)
+	$(RM) config.h
 
-
+distclean: clean
+	$(RM) -r $(BUILDDIRS)
 
 # Include the dependency files.
--include $(CSRC:%.c=%.d)
-
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(DEP)),)
+-include $(DEP)
+endif
+endif
 
 # Listing of phony targets.
-.PHONY : all begin finish end sizebefore sizeafter gccversion \
-build elf hex eep lss sym config coff extcoff \
-clean clean_list program programlock programinit
+.PHONY : all sizebefore sizeafter build \
+elf hex eep lss sym coff extcoff clean \
+distclean gccversion
 
