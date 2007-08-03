@@ -1,4 +1,5 @@
 testar
+nytt test
 
 All AVR-source code is written for the GNU toolchain. Each folder in this directory represents a software project, and each project can be built separately.
 
