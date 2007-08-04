@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Configuration file for the Mailchecker Macbeth module. -->
+<modmailcheck>
+	
+	<!-- how often to poll, in minutes -->
+	<option name="checkinterval" value="5"/>
+	
+	<!-- verbose / simple (verbose prints the number of new mail) -->
+	<option name="mode" value="simple"/>
+	
+	<!-- text to display -->
+	<option name="displaytext" value="New mail"/>
+	<!-- Displaytext when mode is verbose, # will be printed as the number of mail -->
+	<!--option name="displaytext" value="# new mail"/-->
+	
+	<list name="accounts">
+		<item>
+			<!--  -->
+			<field name="server" value="pop3.server.com"/>
+			<!--  -->
+			<field name="port" value="110"/>
+			<!-- sometimes just blipp, sometimes blipp@server.com -->
+			<field name="accountname" value="blipp@server.com"/>
+			<!--  -->
+			<field name="password" value="yourpassword"/>
+		</item>
+		<item>
+			<!-- Next account, can be on the same server but with different accountnames -->
+			<field name="server" value="pop3.server2.com"/>
+			<!--  -->
+			<field name="port" value="110"/>
+			<!-- sometimes just blipp, sometimes blipp@server.com -->
+			<field name="accountname" value="blipp@server2.com"/>
+			<!--  -->
+			<field name="password" value="yourpassword"/>
+		</item>
+	</list>
+	
+</modmailcheck>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Configuration file for MenuSystem Macbeth module. -->
+<modmenusystem>
+	<!-- which port to open for communication with flinsh -->
+	<option name="port" value="2229"/>
+	
+	<option name="padup" value="PADUP"/>
+	<option name="paddown" value="PADDOWN"/>
+	<option name="padleft" value="PADLEFT"/>
+	<option name="padright" value="PADRIGHT"/>
+	<option name="padok" value="PADMIDDLE"/>
+	<!-- option name="padcancel" value="PADcancel"/ -->
+
+	<!-- if clients that is not logged in can view menu -->
+	<!-- true or false -->
+	<option name="guestcanview" value="true"/>
+	<list name="login">
+		<item>
+			<field name="user" value="ip" />
+			<field name="pass" value="127.0.0.1" />
+			<field name="level" value="3" />
+		</item>
+		<item>
+			<field name="user" value="user" />
+			<field name="pass" value="thegreatpassword" />
+			<field name="level" value="2" />
+		</item>
+		<item>
+			<field name="user" value="user2" />
+			<field name="pass" value="test123" />
+			<field name="level" value="1" />
+		</item>
+		<item>
+			<field name="user" value="ip" />
+			<field name="pass" value="192.168.0.100" />
+			<field name="level" value="3" />
+		</item>
+			<!-- levels (guidelines for developing modules) -->
+			<!-- 3 - access to actions -->
+			<!-- 2 - scroll left/right, listening to incoming middleid -->
+			<!-- 1 - scrolling up/down, not listening to incoming middleid -->
+			<!-- 0 - guest -->
+	</list>
+		
+<!-- 
+port som klienter ska ansluta sig paa, 
+en lista oever ipn som automatiskt aer inloggade 
+-->
+
+</modmenusystem>

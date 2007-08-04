@@ -1,0 +1,9 @@
+/***** DEPRECATED *****/
+/* Help and description here?
+ * Copy this file to settings.h and modify by need
+ * 
+ * 	
+ */
+
+/* application software should not depend on the id of the physical node but for now lets do it like this */
+#define THISRGBLEDID			1		
