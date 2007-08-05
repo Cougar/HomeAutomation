@@ -1,6 +1,6 @@
 # System specific configuration file
 # Rename this file to system.inc and then modify the params below, 
-# make sure the last row is uncommented first time you program a node with bios
+# make sure the second ULFLAGS is uncommented first time you program a node with bios
 
 
 # Define the command used to upload BIOS to the node
@@ -21,7 +21,8 @@ ifdef LOWFUSE
 AVRDUDE_WRITE_FUSEBITS += -U lfuse:w:$(LOWFUSE):m
 endif
 
-#comment this line for not programming fusebits
+#this line should not be commented when you program a node with bios
+#when this line is uncommented the avr will be programmed with fuses automatically (fuses is defined in bios.inc)
 ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
 
 #Commands used to upload a new version of bios over can, see makefile for more details
