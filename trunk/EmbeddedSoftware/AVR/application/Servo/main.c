@@ -17,6 +17,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
+#include <string.h>
 #include <stdio.h>
 
 /* lib files */
