@@ -1,12 +1,8 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
 
-/* Help and description here?
- * Copy this file to ../config.inc and modify by need
- * 
- * 	
- */
+# If using two (or just one but nothing more) auxiliary buttons
+TWO_BUTTON_MODE=0 
 
-/* If using two (or just one but nothing more) auxiliary buttons */
-TWO_BUTTON_MODE = 0 
-
-/* application software should not depend on the id of the physical node but for now lets do it like this */
-THISRELAYID	= 1		
+# application software should not depend on the id of the physical node but for now lets do it like this
+THISRELAYID=1

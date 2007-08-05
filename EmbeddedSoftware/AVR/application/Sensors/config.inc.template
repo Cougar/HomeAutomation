@@ -1,24 +1,20 @@
-/***** DEPRECATED *****/
-/* Help and description here?
- * Copy this file to settings.h and modify by need
- * 
- * 	
- */
+# Application specific configuration file
+# All parameters required by library code should be defined here
 
-/* Temperature sensor IDs, 6 bits */
-#define TEMPSENSORID_1 0x01
-#define TEMPSENSORID_2 0x02
-#define TEMPSENSORID_3 0x03
-#define TEMPSENSORID_4 0x04
-#define TEMPSENSORID_5 0x05
+# Temperature sensor IDs, 6 bits
+TEMPSENSORID_1=0x01
+TEMPSENSORID_2=0x02
+TEMPSENSORID_3=0x03
+TEMPSENSORID_4=0x04
+TEMPSENSORID_5=0x05
 
-#define LIGHTSENSORID_1 0x01
+LIGHTSENSORID_1=0x01
 
-#define USE_DS18S20
-//#define USE_TC1047
-//#define USE_LDR
+USE_DS18S20=1
+#USE_TC1047=1
+#USE_LDR=1
 
-#define DS_SEND_PERIOD	10000
-#define DS_SEND_DELAY	2000
-#define TC_SEND_PERIOD	10000
-#define LDR_SEND_PERIOD	10000
+DS_SEND_PERIOD=10000
+DS_SEND_DELAY=2000
+TC_SEND_PERIOD=10000
+LDR_SEND_PERIOD=10000

@@ -25,7 +25,6 @@
 /* lib files */
 #include <config.h>
 #include <bios.h>
-#include <../config.inc> // Superfulhaxx, går säkert att lösa 100ggr bättre.
 
 #include <drivers/timer/timebase.h>
 
