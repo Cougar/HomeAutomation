@@ -23,9 +23,9 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 /* lib files */
-#include <bios.h>
 #include <config.h>
-//#include <settings.h> //Migrated to config.inc
+#include <bios.h>
+#include <../config.inc> // Superfulhaxx, går säkert att lösa 100ggr bättre.
 
 #include <drivers/timer/timebase.h>
 
