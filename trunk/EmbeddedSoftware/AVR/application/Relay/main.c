@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <string.h>
 /* lib files */
-#include "../config.inc" 
 #include <config.h>
 #include <bios.h>
 #include <drivers/timer/timebase.h>
