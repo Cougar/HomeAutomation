@@ -235,7 +235,6 @@ inline void MCP2515_ConfigRate(void) {
  */
 void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
 	uint8_t id[4];
-	uint8_t rtrdlc;
 	uint8_t i;
 
 	MCP2515_SELECT();
@@ -247,40 +246,35 @@ void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
 		id[i] = SPI_Read();
 	}
 	
-	
 	// extract SID10-SID0
-	msg->Id = 0;
-	msg->Id = (((uint32_t)(id[0])) << 3) + (((uint32_t)(id[1] & 0xE0)) >> 5);
+	uint16_t stdid = (((uint16_t)(id[0])) << 3) | (((uint16_t)(id[1] & 0xE0)) >> 5);
 	
-	if ((id[1] & MCP_TXB_EXIDE_M) != 0) {
+	if (id[1] & MCP_TXB_EXIDE_M) {
 		// extended message
 		msg->ExtendedFlag = 1;
 		// SID10-SID0 are still most significant, so shift them up
 		// and make room for 18 extended least significant EID-bits
-		msg->Id = (uint32_t)(msg->Id) << 18;
+		msg->Id = ((uint32_t)stdid) << 18;
 		// exctract EID17-EID16
-		msg->Id = (uint32_t)msg->Id | ((uint32_t)(((uint32_t)(id[1] & 0x03))<<16));
+		msg->Id |= (((uint32_t)(id[1] & 0x03))<<16);
 		// extract EID15-EID8
 		msg->Id |= (((uint32_t)id[2])<<8);
 		// extract EID7-EID0
 		msg->Id |= ((uint32_t)id[3]);
-		// mask ID to guarantee 29bit range
-		msg->Id &= 0x1FFFFFFF;
     }
     else {
     	// standard message
     	msg->ExtendedFlag = 0;
-    	// mask ID to guarantee 11bit range
-    	msg->Id &= 0x000007FF;
+    	msg->Id = stdid;
     }
     
     // extract DLC
-    rtrdlc = SPI_Read();
+	uint8_t rtrdlc = SPI_Read();
     msg->DataLength = rtrdlc & 0x0F;
     if (msg->DataLength > 8) msg->DataLength = 8;	// saturate DLC to guarantee 0-8 range
     
     // check RTR flag
-    msg->RemoteFlag = (rtrdlc & 0x40) ? 1 : 0;
+    msg->RemoteFlag = (rtrdlc & 0x40) > 0;
     
     // read data
     for (i=0; i<msg->DataLength; i++) {
@@ -291,22 +285,22 @@ void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
 
 
 void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
-    uint16_t canid = (uint16_t)(can_id & 0x0FFFF);
+    uint16_t canid = can_id & 0xFFFF;
     uint8_t tbufdata[4];
 	uint8_t i;
     
 	if (ext) {
-        tbufdata[3] = (uint8_t) (canid & 0xFF);
-        tbufdata[2] = (uint8_t) (canid / 256);
-        canid = (uint16_t)( can_id / 0x10000L );
-        tbufdata[1] = (uint8_t) (canid & 0x03);
-        tbufdata[1] += (uint8_t) ((canid & 0x1C )*8);
+        tbufdata[3] = canid & 0xFF;
+        tbufdata[2] = canid >> 8;
+        canid = can_id >> 16;
+        tbufdata[1] = canid & 0x03;
+        tbufdata[1] += (canid & 0x1C ) << 3;
         tbufdata[1] |= MCP_TXB_EXIDE_M;
-        tbufdata[0] = (uint8_t) (canid / 32 );
+        tbufdata[0] = canid >> 5;
     }
     else {
-        tbufdata[0] = (uint8_t) (canid / 8 );
-        tbufdata[1] = (uint8_t) ((canid & 0x07 )*32);
+        tbufdata[0] = canid >> 3;
+        tbufdata[1] = (canid & 0x07 ) << 5;
         tbufdata[2] = 0;
         tbufdata[3] = 0;
     }
@@ -331,7 +325,7 @@ void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 	
 	MCP_INT_DISABLE();
     MCP2515_SELECT();
-    SPI_ReadWrite(MCP_LOAD_TX0 + buffer * 2);
+    SPI_ReadWrite(MCP_LOAD_TX0 | (buffer << 1));
     MCP2515_SPIWriteCanId(msg->ExtendedFlag, msg->Id);
     if (msg->RemoteFlag == 1)  rtrdlc |= MCP_RTR_MASK;  // if RTR set bit in byte
     SPI_ReadWrite(rtrdlc);
@@ -354,7 +348,7 @@ void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 void MCP2515_StartTransmit(const uint8_t buffer) {
 	MCP_INT_DISABLE();
     MCP2515_SELECT();
-    SPI_ReadWrite(MCP_RTS_TX + (1<<buffer));
+    SPI_ReadWrite(MCP_RTS_TX | (1 << buffer));
     MCP2515_UNSELECT();
     MCP_INT_ENABLE();
 }
@@ -373,7 +367,7 @@ uint8_t MCP2515_GetNextFreeTXBuf(void) {
 }
 
 void MCP2515_InitCanBuffers(void) {
-	uint8_t i, a1, a2, a3;
+	uint8_t i;
 	
 	// TODO: check why this is needed to receive extended 
 	//   and standard frames
@@ -390,16 +384,10 @@ void MCP2515_InitCanBuffers(void) {
 	
 	// Clear, deactivate the three transmit buffers
 	// TXBnCTRL -> TXBnD7
-    a1 = MCP_TXB0CTRL;
-	a2 = MCP_TXB1CTRL;
-	a3 = MCP_TXB2CTRL;
     for (i = 0; i < 14; i++) { // in-buffer loop
-		MCP2515_SetRegister(a1, 0);
-		MCP2515_SetRegister(a2, 0);
-		MCP2515_SetRegister(a3, 0);
-        a1++;
-		a2++;
-		a3++;
+		MCP2515_SetRegister(MCP_TXB0CTRL + i, 0);
+		MCP2515_SetRegister(MCP_TXB1CTRL + i, 0);
+		MCP2515_SetRegister(MCP_TXB2CTRL + i, 0);
     }
 	
     // and clear, deactivate the two receive buffers.
