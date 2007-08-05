@@ -14,6 +14,8 @@
 #include "delay.h"
 #include "onewire.h"
 
+#include <config.h>
+
 #ifdef OW_ONE_BUS
 
 #define OW_GET_IN()   ( OW_IN & (1<<OW_PIN))
