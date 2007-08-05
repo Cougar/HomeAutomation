@@ -21,13 +21,14 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <string.h>
 /* lib files */
+#include "../config.inc" 
 #include <config.h>
 #include <bios.h>
 #include <drivers/timer/timebase.h>
 #include <drivers/sensor/tc1047/tc1047.h>
 
-//#include "settings.h" //Migrated to config.inc
 
 /* defines */
 #define RELAY_OFF			0x01
