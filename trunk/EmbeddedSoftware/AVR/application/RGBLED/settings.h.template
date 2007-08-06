@@ -1,9 +1,6 @@
-/***** DEPRECATED *****/
-/* Help and description here?
- * Copy this file to settings.h and modify by need
- * 
- * 	
- */
+# Application specific configuration file
+# All parameters required by library code should be defined here
 
-/* application software should not depend on the id of the physical node but for now lets do it like this */
-#define THISRGBLEDID			1		
+#Id for the RGB LED
+THISRGBLEDID=0x01
+
