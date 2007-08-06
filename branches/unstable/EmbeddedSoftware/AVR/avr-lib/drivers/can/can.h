@@ -24,6 +24,9 @@ typedef enum {
 	//CAN_CTRLERROR = -4
 } Can_Return_t;
 
+#define CAN_FLAG_EXT 0x01
+#define CAN_FLAG_RTR 0x80
+
 /**
  * CAN Message Type. Stores a complete CAN frame.
  */
@@ -41,12 +44,7 @@ typedef struct {
     /**
      * Extended frame flag. Set to 1 if the ID is 29bit, or 0 if it is 11bit.
      */
-    uint8_t ExtendedFlag;
-    
-    /**
-     * Remote frame flag. Set to 1 if the frame is a remote frame. 0 otherwise.
-     */
-    uint8_t RemoteFlag;
+    uint8_t Flags;
     
     /*
      * DATA section. Contains the 8 data bytes.

@@ -38,7 +38,34 @@ extern void __bios_start; // Start of BIOS area in flash, from ld-script.
 //---------------------------------------------------------------------------
 // Private functions
 
+#define BIOS_STD 1
 void Can_Process(Can_Message_t* msg) {
+#if BIOS_STD==1
+	if (msg->Flags & CAN_FLAG_EXT) {
+		if (BIOS_CanCallback) {
+				//printf("Calling app callback.\n");
+				BIOS_CanCallback(msg);
+		}
+	} else {
+		// Reset watchdog as long as STD messages are received periodically. If 
+		// anything hangs the CAN communication, the node will be reset.
+		wdt_reset();
+		
+		if ((msg->Id & (CAN_MASK_STD_TYPE | CAN_MASK_STD_ID)) 
+				== ((CAN_NMT_RESET << CAN_SHIFT_STD_TYPE)
+					| (NODE_ID << CAN_SHIFT_STD_ID))) {
+			BIOS_Reset();
+		}
+		// Copy message to bios buffer if bios is done with the previous message.
+		// This is also a check to see if bios is still running. When app is
+		// started, bios_msg_full is never reset to 0 so the check fails and all
+		// NMT communication except reset is ignored. 
+		if (!(bios_msg_full)) {
+			memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
+			bios_msg_full = 1;
+		}
+	}
+#else
 	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
 	
 	if ((msg->Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS == CAN_NMT) {
@@ -69,6 +96,7 @@ void Can_Process(Can_Message_t* msg) {
 		//printf("Calling app callback.\n");
 		BIOS_CanCallback(msg);
 	}
+#endif
 }
 
 int main(void) {
@@ -98,8 +126,8 @@ int main(void) {
 	
 	if (Can_Init() != CAN_OK) BIOS_Reset();
 	
-	tx_msg.RemoteFlag = 0;
-	tx_msg.ExtendedFlag = 1;
+	//tx_msg.RemoteFlag = 0;
+	//tx_msg.ExtendedFlag = 1;
 	tx_msg.Id = CAN_ID_NMT_BIOS_START;
 	tx_msg.DataLength = 3;
 	tx_msg.Data.words[0] = BIOS_VERSION;

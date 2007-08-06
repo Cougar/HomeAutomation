@@ -23,9 +23,8 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 /* lib files */
-#include <bios.h>
 #include <config.h>
-//#include <settings.h> //Migrated to config.inc
+#include <bios.h>
 
 #include <drivers/timer/timebase.h>
 

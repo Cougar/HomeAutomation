@@ -1,6 +1,2 @@
 # Application specific configuration file
 # All parameters required by library code should be defined here
-
-#Id for the RGB LED
-THISRGBLEDID=0x01
-

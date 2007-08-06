@@ -2,7 +2,22 @@
 #define CANID_H_
 
 //---------------------------------------------------------------------------
-// CAN ID definitions
+// CAN standard ID definitions
+
+#define CAN_MASK_STD_TYPE	0x780
+#define CAN_SHIFT_STD_TYPE	7
+#define CAN_MASK_STD_ID		0x07F
+#define CAN_SHIFT_STD_ID	0
+#define CAN_STD_SYNC		//data = {time:32}
+#define CAN_STD_ECHO		//data = any. recipient replies with data inverted.
+#define CAN_STD_IDRP		//sent with either ID=0 and data = {UUID:64} or ID=x and no data.
+							//the node with matching ID or UUID replies with a complete IDRP frame.
+#define CAN_STD_CMD			//data = {command:16, [parameters: 0-48]} 
+#define CAN_STD_DATA		//data = cmd specific
+#define CAN_STD_INFO		//data = {infotype:8, flags:8, biosver:16, [apptype:16, appver:16]} 
+							//sent at startup, after ID has been determined
+//---------------------------------------------------------------------------
+// CAN extended ID definitions
 
 #define CAN_MASK_CLASS		0x1E000000
 #define CAN_SHIFT_CLASS		25

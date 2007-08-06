@@ -21,6 +21,8 @@ changelog:
 #include "onewire.h"
 #include "crc8.h"
 
+#include <config.h>
+
 #ifdef DS18X20_EEPROMSUPPORT
 // for 10ms delay in copy scratchpad
 #include "delay.h"

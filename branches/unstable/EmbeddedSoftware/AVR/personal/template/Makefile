@@ -48,10 +48,10 @@ all: $(abspath $(BUILDDIR))
 bios: $(abspath $(BIOSDIR))
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) all
 
-installbios: bios
+installbios: $(BIOSDIR)/$(BIOSTARGET).hex
 	$(UPLOAD) $(ULFLAGS)
 
-upgradebios: bios
+upgradebios: $(BIOSDIR)/$(BIOSTARGET).hex
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
 
 install: $(BUILDDIR)/$(TARGET).hex
