@@ -3,6 +3,11 @@
 HW_NAME=NodeEssential
 HW_VERSION=2
 
+# Uncomment to make node autostart after X time-msgs has been sent to node
+# Do not choose 0 as X, also 1 is a bad choice
+# This should not be used on nodes with application under developement
+#AUTOSTART=5
+
 # This number should be unique on your network
 NODE_ID=0x02
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source

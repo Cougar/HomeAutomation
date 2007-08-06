@@ -24,12 +24,25 @@
 #error AVR device not supported!
 #endif
 
+#if defined(AUTOSTART)
+#if AUTOSTART == 0 
+#error Please choose a higher AUTOSTART value in bios.inc, the nod will cease to work, and you can only reflash node with ISP
+#endif
+#if AUTOSTART == 1
+#error Please choose a higher AUTOSTART value in bios.inc, there might be problems with updating software on node
+#endif
+#endif
+
 //---------------------------------------------------------------------------
 // Private declarations
 
 volatile uint8_t bios_msg_full;
 Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .bss space
 extern void __bios_start; // Start of BIOS area in flash, from ld-script.
+
+#if defined(AUTOSTART)
+uint8_t autostart_cnt;
+#endif
 
 #define BIOS_APP	1
 #define BIOS_NOAPP	2
@@ -49,6 +62,9 @@ void Can_Process(Can_Message_t* msg) {
 			// or the master node is not up, the node will be reset.
 			wdt_reset();
 			//TODO: Don't care about time right now... Figure out what to do with it. 
+#if defined(AUTOSTART)
+			autostart_cnt++;
+#endif
 		}
 		
 		if ((msg->Id & CAN_MASK_NMT_RID)>>CAN_SHIFT_NMT_RID == NODE_ID) {
@@ -86,7 +102,11 @@ int main(void) {
 	Can_Message_t tx_msg;
 	Can_Message_t bios_msg;
 	bios_msg_ptr = &bios_msg;
-	
+
+#if defined(AUTOSTART)
+	autostart_cnt = 0;
+#endif
+
 	// Enable watchdog timer to protect against an application locking the
 	// node by leaving interrupts disabled. 
 	wdt_enable(WDTO_2S);
@@ -123,7 +143,13 @@ int main(void) {
 	// Main loop
 	while (1) {
 		// Wait for message
-		while (!bios_msg_full);
+		while (!bios_msg_full) {
+#if defined(AUTOSTART)
+			if (bios_state == BIOS_APP && autostart_cnt == AUTOSTART) {
+				app_reset();
+			}
+#endif
+		}
 		
 		nmt_type = (bios_msg.Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE;
 		
