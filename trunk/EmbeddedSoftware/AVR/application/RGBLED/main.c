@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <avr/pgmspace.h> //To allow read/write from flash
 
+#include <math.h>
 
 #include <drivers/timer/timebase.h>
 
@@ -32,7 +33,7 @@
 #include <bios.h>
 //#include <funcdefs/funcdefs.h>
 
-//#include <settings.h> //Migrated to config.inc
+//#include <settings.h>
 
 /*----------------------------------------------------------------------------
  * Defines
@@ -129,6 +130,10 @@ Can_Message_t txMsg;	//Transmit message storage
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
 
+uint8_t lastr;
+uint8_t lastg;
+uint8_t lastb;
+
 /*----------------------------------------------------------------------------
  * Functions
  * -------------------------------------------------------------------------*/
@@ -155,13 +160,13 @@ int main(void) {
 
 //Setting up OC1A, 16 bit counter used as 8 bit.
 	TCCR1A |= (1<<COM1A1) | (1<<WGM11); /* Set OC1A at TOP, mode 14 */
-	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS12); /* Timer uses main system clock with ? prescale */
+	TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11)| (1<<CS10); /* Timer uses main system clock with ? prescale */
 	ICR1 = 256; //8 bit precision to match the other two counters.
 	OCR1A = 0;  //0% as standard
 	DDRB |= (1<<PB1); /* Enable pin as output */
 //Setting up OC0A
 	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); /* Set OC0A at TOP, Mode 7 */
-	TCCR0B |= (1<<CS02); /* Prescaler updating now */
+	TCCR0B |= (1<<CS01)|  (1<<CS00); /* Prescaler updating now */
 	OCR0A = 0;	//0% standard
 	DDRD |= (1<<PD6);
 //Setting up OC0B
@@ -170,13 +175,13 @@ int main(void) {
 	DDRD |= (1<<PD5);
 
 //Initialize variables
-   	fadeSpeed = 10;
+   	fadeSpeed = 40;
 	dimSpeed = 10;
 	timeStamp = 0;
 	dimStamp = 0;
 
 	reformatRGB(0x00,0x00,0x00,1);
-	destColor.Intens = 50;
+	destColor.Intens = 0xa0;
 	currColor = destColor;
 
 //Just temporary for now, they keep track of some kind of demo-program.
@@ -187,6 +192,7 @@ int main(void) {
 	sei();
 
 	BIOS_CanCallback = &can_receive;
+
 
 //Send a message that we are alive!
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -256,21 +262,21 @@ int main(void) {
 		/* Check if any messages has been recieved */
 		if (rxMsgFull) {
 			uint16_t acttype;
-			uint8_t rgbledid;
+			uint8_t rgbledid;			
 		
 			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){
 				// Actuator package
 				acttype =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
 				rgbledid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 				
-				if ((acttype == ACT_TYPE_RGBLED) && (rgbledid == THISRGBLEDID)) {
+				if ((acttype == ACT_TYPE_RGBLED) && (rgbledid == THISRGBLEDID)) {															
 					// This is a message for this rgbled
 					if( rxMsg.Data.bytes[0] == RGBLED_CMD_SETPROGRAM ){
-						/* Set a program! */
+						/* Set a program! Untested! */
 						currProgram = rxMsg.Data.bytes[1];
 						temp_adress = pgm_read_word(&programs[currProgram-1]);				
 					} else if ( rxMsg.Data.bytes[0] == RGBLED_CMD_SETINTENS ){
-						/* Set intensity! */
+						/* Set intensity! Works!*/
 						if (rxMsg.Data.bytes[1] == TRUE){
 							currColor.Intens = rxMsg.Data.bytes[2];					
 						}
@@ -318,25 +324,24 @@ int main(void) {
  ************************************************************************************************/
 void updateLED(){
 	uint8_t tempcontainer;
-
-	tempcontainer = currColor.R * currColor.Intens / 255;	//I really want to skip this, don't know how yet though.
-	OCR1A = tempcontainer;	
-      OCR0A = currColor.G * currColor.Intens / 255;
-	OCR0B = currColor.B * currColor.Intens / 255;		
-
-		
+	
+	tempcontainer = currColor.R * currColor.Intens / 0xff;	//I really want to skip this, don't know how yet though.
+	OCR1A = tempcontainer;
+    OCR0A = currColor.G * currColor.Intens / 0xff;
+    OCR0B = currColor.B * currColor.Intens / 0xff;
+    
 	//Bara för debugcrap
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	txMsg.DataLength = 4;
-	txMsg.Data.bytes[0] = currColor.R;
-	txMsg.Data.bytes[1] = currColor.G;
-	txMsg.Data.bytes[2] = currColor.B;
+	txMsg.Data.bytes[0] = currColor.R * currColor.Intens / 0xff;
+	txMsg.Data.bytes[1] = currColor.G * currColor.Intens / 0xff;
+	txMsg.Data.bytes[2] = currColor.B * currColor.Intens / 0xff;
 	txMsg.Data.bytes[3] = currColor.Intens;
 
-	BIOS_CanSend(&txMsg);
+	//BIOS_CanSend(&txMsg); //Strictly for debug..
 
 }
 
