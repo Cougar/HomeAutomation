@@ -113,6 +113,7 @@ class Program {
 				if (DEBUG_LEVEL>0) { Console.WriteLine("Connection to candaemon could not be established, I quit"); }
 				error = true; 
 			}
+			Thread.Sleep(100);
 		}
 			
 		if (!error && aTerminal) {
