@@ -13,7 +13,7 @@ public class Downloader {
 	//private Thread down;
 	private byte receiveID;
 	
-	private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_BIOS_UPDATE, SEND_RESET, DONE, DEBUG_STATE2 };
+	private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_BIOS_UPDATE, SEND_RESET, DONE, DEBUG_STATE2, WAIT_BOOT, SEND_EMPTY_START, WAIT_ACK_PRG_EMPTY, SEND_EMPTY_DATA, WAIT_ACK_EMPTY_DATA, SEND_DONE_EMPTY, WAIT_DONE_EMPTY};
 	
 	private const byte CAN_NMT				= 0x00;
 	
@@ -292,9 +292,167 @@ public class Downloader {
 						Console.WriteLine("Now say a prayer, moving bios");
 						dc.sendCanPacket(outCm);
 						t = Environment.TickCount;
-						pgs = dState.DONE;
+						pgs = dState.WAIT_BOOT;
+						//pgs = dState.DONE;
+						break;
+
+					case dState.WAIT_BOOT:
+						// Wait for node reset answer (boot msg).
+						if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
+							// Woops, error. 
+							Console.WriteLine("Timeout while waiting for node to boot.");
+							errorOccured = true;
+							pgs = dState.SEND_DONE;
+						}
+						//Thread.Sleep(1);
+						// If received boot msg.
+						hasMessage = dc.getData(out cm);
+						if (hasMessage) {
+							CanNMT cpnin = new CanNMT(cm);
+							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+								// If no error
+								if (cpnin.getType() == CAN_NMT_BIOS_START) {
+									pgs = dState.SEND_EMPTY_START;
+								}
+								else { 
+									// else ..
+								}
+							}
+						}
 						break;
 						
+					case dState.SEND_EMPTY_START:
+						// Send boot start packet to target.
+						// and wait for ack.
+						
+						//data[RID_INDEX] = TARGET_ID;
+						data[ADDR0_INDEX] = (byte)((0) & 0x0000FF);
+						data[ADDR1_INDEX] = (byte)(((0) & 0x00FF00) >> 8);
+						data[ADDR2_INDEX] = (byte)(((0) & 0xFF0000) >> 16);
+						data[ADDR3_INDEX] = 0;
+						//outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
+						outCm = cpn.getPgmStartPacket(data);
+						dc.sendCanPacket(outCm);
+						t = Environment.TickCount;
+						pgs = dState.WAIT_ACK_PRG_EMPTY;
+						timeStart = Environment.TickCount;
+						break;
+					
+					
+					case dState.WAIT_ACK_PRG_EMPTY:
+						// Check for timeout, resend start packet in that case..
+						if ((Environment.TickCount - t) > TIMEOUT_MS) {
+							Console.WriteLine("Timeout while waiting for start prg ack.");
+							errorOccured = true;
+							pgs = dState.SEND_RESET;
+						}
+						//Thread.Sleep(1);
+						// If received ack.
+						hasMessage = dc.getData(out cm);
+						if (hasMessage) {
+							CanNMT cpnin = new CanNMT(cm);
+							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+								// If no error
+								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
+									// Start sending program data..
+									byteSent = 0;
+									pgs = dState.SEND_EMPTY_DATA;
+								}
+								else if (cpnin.getType() == CAN_NMT_PGM_NACK ) { 
+									// else ..
+									Console.WriteLine("Nack on CAN_NMT_PGM_START.");
+									errorOccured = true;
+									pgs = dState.SEND_RESET;
+								}
+								
+							}
+						}
+						break;
+						
+					case dState.SEND_EMPTY_DATA:
+						// Send program data.
+						data[0] = 0;
+						data[1] = 0;
+						data[2] = 0xff;
+						data[3] = 0xff;
+
+						outCm = cpn.getPgmDataPacket(data, 4);
+						dc.sendCanPacket(outCm);
+						
+						t = Environment.TickCount;
+						byteSent += 6;
+						pgs = dState.WAIT_ACK_EMPTY_DATA;
+						break;
+						
+						
+					case dState.WAIT_ACK_EMPTY_DATA:
+						// Wait for pgm ack.
+						if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
+							// Woops, error. 
+							Console.WriteLine("Timeout while waiting for data ack.");
+							errorOccured = true;
+							pgs = dState.SEND_RESET;
+						}
+						//Thread.Sleep(1);
+						// If received ack.
+						hasMessage = dc.getData(out cm);
+						if (hasMessage) {
+							CanNMT cpnin = new CanNMT(cm);
+							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+								// If no error
+								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
+									pgs = dState.SEND_DONE_EMPTY;
+								}
+								else if (cpnin.getType() == CAN_NMT_PGM_NACK ) { 
+									// else ..
+									Console.WriteLine("Nack on CAN_NMT_PGM_DATA.");
+									errorOccured = true;
+									pgs = dState.SEND_RESET;
+								}
+								
+							}
+						}
+						break;
+						
+					case dState.SEND_DONE_EMPTY:
+						// Send done
+						outCm = cpn.getPgmEndPacket();
+						dc.sendCanPacket(outCm);
+
+						t = Environment.TickCount;
+						pgs = dState.WAIT_DONE_EMPTY;
+						break;
+						
+						
+					case dState.WAIT_DONE_EMPTY:
+						// Check for timeout, resend done packet in that case..
+						if ((Environment.TickCount - t) > TIMEOUT_MS) {
+							Console.WriteLine("Timeout while waiting for end prg ack.");
+							errorOccured = true;
+							pgs = dState.SEND_RESET;
+						}
+						//Thread.Sleep(1);
+						
+						hasMessage = dc.getData(out cm);
+						if (hasMessage) {
+							CanNMT cpnin = new CanNMT(cm);
+							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+								// If no error
+								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
+									Console.WriteLine("");
+									//
+									Console.WriteLine("Done, successfully cleaned application flash.");
+									pgs = dState.SEND_RESET;
+								}
+								else if (cpnin.getType() == CAN_NMT_PGM_NACK) {
+									// else resend addr..
+									Console.WriteLine("Nack on CAN_NMT_PGM_END.");
+									errorOccured = true;
+									pgs = dState.SEND_RESET;
+								}
+							}
+						}
+						break;						
 					case dState.SEND_RESET:
 						// Send reset
 						cpn.doReset(dc, receiveID);
