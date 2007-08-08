@@ -53,7 +53,10 @@ int main(void)
 
     Channel_Init();
 
-    while (1) {
+    Channel_Bind( 0, 3 );
+    Channel_SetValue( 0, 0x3333 );
+
+    for(;;) {
         val+=27;
         if( val<dim_val ) {
             PORTD |= (1<<PORTD4);
@@ -61,7 +64,7 @@ int main(void)
             PORTD &= ~(1<<PORTD4);
         }
         if (rxMsgFull) {
-            Channel_HandleMsg( &rxMsg );
+            Channel_HandleMsg( (Can_Message_t *)&rxMsg );
             rxMsgFull = 0;
         }
     }

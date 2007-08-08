@@ -25,12 +25,19 @@
 typedef struct {
     uint16_t    channel;
     uint16_t    value;
-    char        name[9];
 
+#if CHANNEL_ENABLE_NAME
+    char        name[9];
+#endif
+
+#if CHANNEL_ENABLE_TYPE
     uint16_t    type_k;
     uint16_t    type_m;
 
+#   if CHANNEL_ENABLE_TYPE_NAME
     char        type[5];
+#   endif
+#endif
 
 } Channel_Info_t;
 
@@ -38,7 +45,9 @@ uint8_t Channel_Init( void );
 
 uint8_t Channel_HandleMsg( Can_Message_t *msg );
 void Channel_Bind( uint8_t id, uint8_t channel );
+
 uint16_t Channel_GetValue( uint8_t id );
+uint8_t Channel_SetValue( uint8_t id, uint16_t value );
 
 void Channel_Callback_Value( uint8_t id, uint16_t value );
 

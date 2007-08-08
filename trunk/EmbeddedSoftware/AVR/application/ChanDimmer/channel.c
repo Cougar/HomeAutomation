@@ -18,7 +18,9 @@ uint8_t Channel_Init( void ) {
 
     /* CHANNEL_SUBCLASS_IDENTIFY */
 
-    txMsg.Id = (CAN_CHANNEL<<CAN_SHIFT_CLASS) | (CHANNEL_SUBCLASS_IDENTIFY<<CHANNEL_SHIFT_SUBCLASS) | NODE_ID;
+    txMsg.Id    = (CAN_CHANNEL                  << CAN_SHIFT_CLASS)
+                | (CHANNEL_SUBCLASS_IDENTIFY    << CHANNEL_SHIFT_SUBCLASS)
+                | (NODE_ID                      << CHANNEL_SHIFT_NODEID);
     txMsg.ExtendedFlag = 1;
     txMsg.RemoteFlag = 0;
 
@@ -83,7 +85,7 @@ uint8_t Channel_HandleMsg(Can_Message_t *msg) {
 
 
 
-
+#if CHANNEL_ENABLE_NAME
         case CHANNEL_SUBCLASS_CHN_NAME:
             for( i=0; i<CHANNEL_COUNT; i++ ) {
                 if( channel_defs[i].channel == channel ) {
@@ -94,22 +96,24 @@ uint8_t Channel_HandleMsg(Can_Message_t *msg) {
                 }
             }
             return CHANNEL_OK;
+#endif
 
-
-
+#if CHANNEL_ENABLE_TYPE
         case CHANNEL_SUBCLASS_CHN_TYPE:
             for( i=0; i<CHANNEL_COUNT; i++ ) {
                 if( channel_defs[i].channel == channel ) {
                     channel_defs[i].type_k = msg->Data.words[0];
                     channel_defs[i].type_m = msg->Data.words[1];
-
+#if CHANNEL_ENABLE_TYPE_NAME
                     for( j=0; j<msg->DataLength-4; j++) {
                         channel_defs[i].type[j]=msg->Data.bytes[j+4];
                     }
                     channel_defs[i].type[j]='\0';
+#endif
                 }
             }
             break;
+#endif
     }
 
     return CHANNEL_FAIL;
@@ -121,4 +125,32 @@ void Channel_Bind( uint8_t id, uint8_t channel ) {
 
 uint16_t Channel_GetValue( uint8_t id ) {
     return channel_defs[id].value;
+}
+
+uint8_t Channel_SetValue( uint8_t id, uint16_t value ) {
+    uint16_t channel;
+    Can_Message_t txMsg;
+
+    channel = channel_defs[id].channel;
+    if( channel == 0 ) return CHANNEL_FAIL;
+
+    txMsg.Id    = (CAN_CHANNEL              << CAN_SHIFT_CLASS)
+                | (CHANNEL_SUBCLASS_DATA    << CHANNEL_SHIFT_SUBCLASS)
+                | (channel                  << CHANNEL_SHIFT_CHANNEL)
+                | (NODE_ID                  << CHANNEL_SHIFT_NODEID);
+
+    txMsg.ExtendedFlag = 1;
+    txMsg.RemoteFlag = 0;
+    txMsg.DataLength = 2;
+    txMsg.Data.words[0] = value;
+
+    BIOS_CanSend( &txMsg );
+
+    channel_defs[id].value = value;
+
+#if CHANNEL_SET_SELF
+    Channel_Callback_Value( id, value );
+#endif
+
+    return CHANNEL_OK;
 }
