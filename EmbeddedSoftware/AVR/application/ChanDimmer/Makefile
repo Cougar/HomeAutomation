@@ -24,7 +24,7 @@ vpath %.c $(LIBDIR):$(SRCDIR)
 
 # List source files here. (C dependencies are automatically generated.)
 SOURCES =	main.c\
-			channel.c\
+			drivers/channel/channel.c\
 			drivers/mcu/mcu.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
