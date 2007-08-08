@@ -203,6 +203,8 @@ while (<LOGFILE>) {
 
 			$parsedLine =~ s/\[wiki\]/**[wiki]**/g;
 			$parsedLine =~ s/\[svn\]/**[svn]**/g;
+
+			$parsedLine =~ s/http:\/\/projekt\.auml\.se\/(.+)/[[$1]]/g;
 			
 			$parsedLine .= "\\\\"."\n";
 			if ($debugmode == 0) {
