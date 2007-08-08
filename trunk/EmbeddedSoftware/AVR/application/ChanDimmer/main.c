@@ -4,7 +4,7 @@
 #include <string.h>
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
-#include "channel.h"
+#include <drivers/channel/channel.h>
 
 #define APP_TYPE    0xf001
 #define APP_VERSION 0x0002
