@@ -12,6 +12,8 @@ $contentsfilename = "hobby.txt";
 $contentsheader = "====== Log of #hobby-channel ======\n";
 $namespace = "common:irc:hobby:";
 
+require "settings.pl";
+
 $numArgs = $#ARGV + 1;
 if ($numArgs == 1) {
 	if ($ARGV[0] eq "-r") {
@@ -94,7 +96,7 @@ if ($currentfile) {
 	}
 }
 
-@colors = ("#2F4F4F","#696969","#A0522D","#D2691E","#DAA520","#191970","#0000CD","#4682B4","#7FFFD4","#556B2F","#008B8B","#808000","#2E8B57","#32CD32","#483D8B","#6A5ACD","#8A2BE2","#BDB76B","#FF4500","#C71585","#8B0000","#DC143C","#E9967A","#CD5C5C","#B0E0E6","#FFEFD5");
+@colors = ("#2F4F4F","#696969","#A0522D","#D2691E","#DAA520","#191970","#0000CD","#4682B4","#7FEFD4","#556B2F","#008B8B","#808000","#2E8B57","#32CD32","#483D8B","#6A5ACD","#8A2BE2","#BDB76B","#EF4500","#C71585","#8B0000","#DC143C","#E9967A","#CD5C5C","#B0E0E6","#E0E0C0");
 $nrofcolors = @colors;
 
 $linecnt = 0;
@@ -172,7 +174,7 @@ while (<LOGFILE>) {
 					#$nickVal += $charval;
 					
 				}
-				$temp = $nickVal;
+				#$temp = $nickVal;
 				$nickVal = ($nickVal) % $nrofcolors;
 				#$nickB = sprintf("%x", ((($nickVal & 7)**2)*2.3+5));
 				#$nickG = sprintf("%x", (((($nickVal >> 3) & 7)**2.3)*2+5));
@@ -187,7 +189,7 @@ while (<LOGFILE>) {
 				#	$nickR = "0".$nickR;
 				#}
 				
-				print "$nick $temp $nickVal $colors[$nickVal] \n";
+				#print "$nick $temp $nickVal $colors[$nickVal] \n";
 				#$color = "#$nickR$nickG$nickB";
 				$parsedLine =~ s/<$nick>/<color $colors[$nickVal]><$nick><\/color>/;
 				#print $nick." ".$nickVal."\n";
@@ -205,7 +207,7 @@ while (<LOGFILE>) {
 			$parsedLine =~ s/\[svn\]/**[svn]**/g;
 
 			$parsedLine .= " ";
-			$parsedLine =~ s/http:\/\/projekt\.auml\.se\/(.+) /[[$1]] /g;
+			$parsedLine =~ s/http:\/\/projekt\.auml\.se\/(.+) /[[:$1]] /g;
 			
 			$parsedLine .= "\\\\"."\n";
 			if ($debugmode == 0) {
