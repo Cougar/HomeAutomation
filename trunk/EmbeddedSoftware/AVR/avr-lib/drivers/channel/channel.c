@@ -154,3 +154,7 @@ uint8_t Channel_SetValue( uint8_t id, uint16_t value ) {
 
     return CHANNEL_OK;
 }
+
+Channel_Info_t *Channel_GetStorage( uint8_t id ) {
+    return &channel_defs[id];
+}
