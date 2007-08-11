@@ -18,7 +18,7 @@ uint8_t Channel_Init( void ) {
 
     /* CHANNEL_SUBCLASS_IDENTIFY */
 
-    txMsg.Id    = (CAN_CHANNEL                  << CAN_SHIFT_CLASS)
+    txMsg.Id    = (CAN_CHN                      << CAN_SHIFT_CLASS)
                 | (CHANNEL_SUBCLASS_IDENTIFY    << CHANNEL_SHIFT_SUBCLASS)
                 | (NODE_ID                      << CHANNEL_SHIFT_NODEID);
     txMsg.ExtendedFlag = 1;
@@ -49,7 +49,7 @@ uint8_t Channel_HandleMsg(Can_Message_t *msg) {
         return CHANNEL_FAIL;
     }
     class = ( msg->Id & CAN_MASK_CLASS ) >> CAN_SHIFT_CLASS;
-    if( class != CAN_CHANNEL ) {
+    if( class != CAN_CHN ) {
         /* Is not a channel-message */
         return CHANNEL_FAIL;
     }
@@ -134,7 +134,7 @@ uint8_t Channel_SetValue( uint8_t id, uint16_t value ) {
     channel = channel_defs[id].channel;
     if( channel == 0 ) return CHANNEL_FAIL;
 
-    txMsg.Id    = (CAN_CHANNEL              << CAN_SHIFT_CLASS)
+    txMsg.Id    = (CAN_CHN                  << CAN_SHIFT_CLASS)
                 | (CHANNEL_SUBCLASS_DATA    << CHANNEL_SHIFT_SUBCLASS)
                 | (channel                  << CHANNEL_SHIFT_CHANNEL)
                 | (NODE_ID                  << CHANNEL_SHIFT_NODEID);
