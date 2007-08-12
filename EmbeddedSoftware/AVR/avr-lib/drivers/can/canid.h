@@ -90,5 +90,7 @@
 
 #define ACT_TYPE_RGBLED		   0x03L
 
+#define ACT_TYPE_IR            0x04L
+
 
 #endif /*CANID_H_*/
