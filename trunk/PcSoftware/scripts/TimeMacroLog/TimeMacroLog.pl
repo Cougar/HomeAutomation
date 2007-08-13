@@ -1,4 +1,13 @@
 #!/usr/bin/perl -w
+################################################
+#
+# This file should not be edited for settings
+# use settings.pl for that
+#
+# author: arune @ efnet
+#
+################################################
+
 use IO::Socket;
 use integer;
 use threads;
@@ -10,41 +19,23 @@ $sendtime = 0;
 $timestamp = 1;
 
 #define filters for id of messages, passed messages will be printed on stdout
-@acceptmask_ones =  (0x00080000, 0x00240000, 0x00040000, 0x00280000);
-@acceptmask_zeros = (0xfff70000, 0xffdb0000, 0xfffb0000, 0xffd70000);
+@acceptmask_ones =  ();
+@acceptmask_zeros = ();
 @denymask_ones = ();
 @denymask_zeros = ();
 
 @input = ();
 @output = ();
 
-#define makros, when an input sting is sent on can this perl-script will send the corresponding output string
+$host = "localhost";
+$port = 1200;
 
-# Remote button 1 => desktoplamp toggle
-push(@input , "PKT 0409000a 1 0 00 00 05 01");
-push(@output, "PKT 08008c00 1 0 03");
-
-# Remote button 4 down => blinds darker
-push(@input , "PKT 0409000a 1 0 00 00 05 04");
-push(@output, "PKT 08010200 1 0 00 03");
-
-# Remote button 4 up => blinds stop
-push(@input , "PKT 0409000a 1 0 0f 00 05 04");
-push(@output, "PKT 08010200 1 0 00 04");
-
-# Remote button 6 down => blinds lighter
-push(@input , "PKT 0409000a 1 0 00 00 05 06");
-push(@output, "PKT 08010200 1 0 80 03");
-
-# Remote button 6 up => blinds stop
-push(@input , "PKT 0409000a 1 0 0f 00 05 06");
-push(@output, "PKT 08010200 1 0 00 04");
-
+require "settings.pl";
 
 $remote = IO::Socket::INET->new(
                     Proto    => "tcp",
-                    PeerAddr => "localhost",
-                    PeerPort => "1200",
+                    PeerAddr => $host,
+                    PeerPort => $port,
                 )
                or die "cannot connect to port 1200 at localhost";
 
@@ -118,10 +109,10 @@ while ( $line = <$remote> ) {
 sub sendTime {
 	$remote = IO::Socket::INET->new(
                     Proto    => "tcp",
-                    PeerAddr => "localhost",
-                    PeerPort => "1200",
+                    PeerAddr => $host,
+                    PeerPort => $port,
                 )
-               or die "cannot connect to port 1200 at localhost";
+               or die "cannot connect to port $port at $host";
 	
 	while (1) {
 		select(undef, undef, undef, 0.5);
