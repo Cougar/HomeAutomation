@@ -6,7 +6,8 @@
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 //#include <drivers/uart/serial.h>
 #include <drivers/timer/timebase.h>
-#include <drivers/ir/receiver/irreceiver.h>
+#include <drivers/ir/transceiver/irtransceiver.h>
+//#include <drivers/ir/receiver/irreceiver.h>
 
 #define APP_TYPE    CAN_APPTYPES_IRRECEIVER
 #define APP_VERSION 0x0003
@@ -59,7 +60,9 @@ int main(void)
 	unsigned long time = Timebase_CurrentTime();
 	unsigned long irTimeoutTime = 100;
 	
-	uint8_t ir_protocol, ir_address, ir_command;
+	uint8_t ir_protocol;
+	//uint8_t ir_address, ir_command;
+	uint32_t ir_data;
 	uint16_t ir_timeout;
 	uint8_t state = STATE_IDLE;
 
@@ -68,15 +71,18 @@ int main(void)
 		
 		if (state == STATE_IDLE) {
 			/* test for irdata */
-			uint8_t returnval = IrReceive_CheckIR(&ir_protocol, &ir_address, &ir_command, &ir_timeout);
+			//uint8_t returnval = IrReceive_CheckIR(&ir_protocol, &ir_address, &ir_command, &ir_timeout);
+			uint8_t returnval = IrReceive_CheckIR(&ir_protocol, &ir_data, &ir_timeout);
 			if (returnval == IR_OK) {
 				/* a protocol was found for irdata, send on can */
 				txMsg.Data.bytes[0] = IR_BUTTON_DOWN;
 				txMsg.Data.bytes[1] = ir_protocol;
-				txMsg.Data.bytes[2] = ir_address;
-				txMsg.Data.bytes[3] = ir_command;
+				txMsg.Data.bytes[2] = (ir_data>>24)&0xff;
+				txMsg.Data.bytes[3] = (ir_data>>16)&0xff;
+				txMsg.Data.bytes[4] = (ir_data>>8)&0xff;
+				txMsg.Data.bytes[5] = ir_data&0xff;
 				txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_IR << CAN_SHIFT_SNS_TYPE) | (IR_ID_DATA<<CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
-				txMsg.DataLength = 4;
+				txMsg.DataLength = 6;
 				BIOS_CanSend(&txMsg);
 				
 				/* set up timeout */
