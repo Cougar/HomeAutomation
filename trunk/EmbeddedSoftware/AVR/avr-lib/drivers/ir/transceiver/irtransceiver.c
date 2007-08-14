@@ -29,6 +29,10 @@ uint8_t store;
 /*-----------------------------------------------------------------------------
  * Prerequisites
  *---------------------------------------------------------------------------*/
+#define IR_RX_ACTIVE_LOW	1
+#define IR_TX_ACTIVE_LOW	0		//Only 0 is implemented
+
+
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
 #define TIMSK1	TIMSK
 #define TIFR1	TIFR
@@ -55,8 +59,15 @@ uint8_t store;
 #define IR_CAPTURE_RISING()		TCCR1B |= (1<<ICES1); \
 								TIFR1 = (1<<ICF1);
 
-#define IR_RX_ACTIVE_LOW	1
-#define IR_TX_ACTIVE_LOW	1
+//TODO: if active low is 0 then make port 5V at LOW
+#if IR_TX_ACTIVE_LOW==1
+#define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
+#define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
+#else
+#define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
+#define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
+#endif
+
 
 /*-----------------------------------------------------------------------------
  * Interrupt Handlers
@@ -64,7 +75,12 @@ uint8_t store;
 
 ISR(IR_COMPARE_VECTOR)
 {
-	PORTC ^= (1<<PC5);
+	if ((timesIndex&1) == 1) {		/* if odd, ir-pause */
+		IR_OUTP_LOW();
+	} else {
+		IR_OUTP_HIGH();
+	}
+	
 	if (timesIndex < timesCounter)
 	{
 		IR_COMPARE_REG += times[timesIndex++];		
@@ -141,16 +157,83 @@ ISR(IR_CAPTURE_VECTOR)
 }
 
 
+
 /*-----------------------------------------------------------------------------
  * Public Functions
  *---------------------------------------------------------------------------*/
 
+/**
+ * Prepare Samsung data
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ */
+void prepareSamsung(uint32_t data) {
+	/* Set up startbit */
+	times[0] = IR_SAMS_ST_BIT;
+	times[1] = IR_SAMS_ST_PAUSE;
+	
+	for (uint8_t i = 0; i < 65; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			if ((data>>(i>>1))&1) {
+				times[i+2] = IR_SAMS_LOW_ONE;
+			} else {
+				times[i+2] = IR_SAMS_LOW_ZERO;
+			}
+		} else {				/* if even, ir-bit */
+			times[i+2] = IR_SAMS_HIGH;
+		}
+	}
+	
+	timesCounter = 67;
+}
+
+/**
+ * Prepare NEC data
+ * 
+ * @param address
+ * 		Pointer to store the address of the received data
+ * @param command
+ * 		Pointer to store the command of the received data
+ */
+void prepareNEC(uint32_t data) {
+	/* Set up startbit */
+	times[0] = IR_NEC_ST_BIT;
+	times[1] = IR_NEC_ST_PAUSE;
+
+	timesCounter = 67;
+	for (uint8_t i = 0; i < 65; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			if ((data>>(i>>1))&1) {
+				times[i+2] = IR_NEC_LOW_ONE;
+			} else {
+				times[i+2] = IR_NEC_LOW_ZERO;
+			}
+		} else {			/* if even, ir-bit */
+			times[i+2] = IR_NEC_HIGH;
+		}
+	}
+}
+
+void prepareSharp(uint32_t data) {}
+
 void IrTransceiver_Init(void)
 {
+	/* Set up receiver */
 	IR_TIMER_INIT();
 	IR_TIMEOUT_REG = IR_MAX_PULSE_WIDTH;
-	IRDDR &= ~(1<<IRBIT);
-	DDRC |= (1<<PC5);
+	IR_R_DDR &= ~(1<<IR_R_BIT);
+	//DDRC |= (1<<PC5);
+	
+	/* Set up transmitter */
+	IR_T_DDR |= (1<<IR_T_BIT);
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	TCCR0A = (0<<COM0A1)|(0<<COM0A0)|(1<<WGM01)|(0<<WGM00);
+	TCCR0B = (0<<WGM02)|(1<<CS00)|(0<<CS01)|(0<<CS02);
+	#endif
+
 }
 
 void IrTransceiver_Start(void)
@@ -183,6 +266,7 @@ uint8_t IrTransceiver_Poll(uint16_t **buffer, uint8_t *length)
 	}
 }
 
+#if 0
 uint8_t IrTransceiver_Transmit(uint16_t **buffer, uint8_t *length)
 {
 	data_transmitted = 0;
@@ -197,6 +281,48 @@ uint8_t IrTransceiver_Transmit(uint16_t **buffer, uint8_t *length)
 	IR_UNMASK_COMPARE();
 	
 	while (!data_transmitted);
+	
+	return IR_OK;
+}
+#endif
+
+uint8_t IrTransceiver_Transmit_Poll(void) {
+	if (data_transmitted == 0) {
+		return IR_NOT_FINISHED;
+	} else {
+		return IR_OK;
+	}
+}
+
+uint8_t IrTransceiver_Transmit(uint8_t proto, uint32_t data, uint16_t *timeout, uint8_t *repeates)
+{
+	timesCounter = 0;
+	//prepare rawdata here
+	if (proto == IR_PROTO_SHARP) {
+		prepareSharp(data);
+		OCR0A = (((F_CPU/2000)/IR_SHARP_F_MOD) -1);		// set up modulation
+		*repeates = IR_SHARP_REPS;
+		*timeout = IR_SHARP_REPETITION;
+	} else if (proto == IR_PROTO_SAMS) {
+		prepareSamsung(data);
+		OCR0A = (((F_CPU/2000)/IR_SAMS_F_MOD) -1);		// set up modulation
+		*repeates = IR_SAMS_REPS;
+		*timeout = IR_SAMS_REPETITION;
+	} else if (proto == IR_PROTO_NEC) {
+		prepareNEC(data);
+		OCR0A = (((F_CPU/2000)/IR_NEC_F_MOD) -1);		// set up modulation
+		*repeates = IR_NEC_REPS;
+		*timeout = IR_NEC_REPETITION;
+	}
+	
+	data_transmitted = 0;
+	if (timesCounter == 0) return IR_NO_DATA;
+	timesIndex = 1;
+	IR_COMPARE_REG = IR_COUNT_REG + times[0];
+	
+	IR_OUTP_HIGH();	
+	
+	IR_UNMASK_COMPARE();
 	
 	return IR_OK;
 }
@@ -224,20 +350,16 @@ uint8_t getRawDataCnt(void) {
 	return timesCounter;
 }
 
-#if 1
-
 /**
  * Test data on SIRC protocol, 12-bit version
  * http://www.sbprojects.com/knowledge/ir/sirc.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param data
+ * 		Pointer to store the received data
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
-uint8_t testSIRC(uint8_t *address, uint8_t *command) {
+uint8_t testSIRC(uint32_t *data) {
 	/* parse times[], max is timesCounter */
 
 	/* check if we have correct amount of data */ 
@@ -270,8 +392,7 @@ uint8_t testSIRC(uint8_t *address, uint8_t *command) {
 		}
 	}
 	
-	*command = ((uint8_t)rawbits&0x7f);
-	*address = ((uint8_t)(rawbits>>7)&0x1f);
+	*data = rawbits;
 	
 	return IR_OK;
 }
@@ -280,14 +401,12 @@ uint8_t testSIRC(uint8_t *address, uint8_t *command) {
  * Test data on RC5 protocol 
  * http://www.sbprojects.com/knowledge/ir/rc5.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param data
+ * 		Pointer to store the received data
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
-uint8_t testRC5(uint8_t *address, uint8_t *command) {
+uint8_t testRC5(uint32_t *data) {
 	uint8_t halfbitscnt = 1;
 	uint16_t rawbits = 0;
 	
@@ -308,14 +427,11 @@ uint8_t testRC5(uint8_t *address, uint8_t *command) {
 		}
 		
 	}
-
-	*command = ((uint8_t)rawbits&0x3f);
-	*address = ((uint8_t)(rawbits>>6)&0x7f);	
-
-	//support RC5-extended by putting the inversion of startbit 2 as the 7th commandbit
-	*command |= (~(*address) & 0x40);
-	*address &= 0x1f;		//remove togglebit and both startbits from address
 	
+	//support RC5-extended keeping second startbit 
+	//remove togglebit
+	*data = rawbits&0x37ff;
+
 	return IR_OK;
 }
 
@@ -323,14 +439,12 @@ uint8_t testRC5(uint8_t *address, uint8_t *command) {
  * Test data on SHARP protocol
  * http://www.sbprojects.com/knowledge/ir/sharp.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param data
+ * 		Pointer to store the received data
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
-uint8_t testSharp(uint8_t *address, uint8_t *command) {
+uint8_t testSharp(uint32_t *data) {
 	/* parse times[], max is timesCounter */
 
 	/* check if we have correct amount of data */ 
@@ -358,8 +472,7 @@ uint8_t testSharp(uint8_t *address, uint8_t *command) {
 		}
 	}
 	
-	*command = ((uint8_t)(rawbits>>5)&0xff);
-	*address = ((uint8_t)rawbits&0x1f);
+	*data = rawbits;
 	
 	return IR_OK;
 }
@@ -368,14 +481,12 @@ uint8_t testSharp(uint8_t *address, uint8_t *command) {
  * Test data on NEC protocol
  * http://www.sbprojects.com/knowledge/ir/nec.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param data
+ * 		Pointer to store the received data
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
-uint8_t testNEC(uint8_t *address, uint8_t *command) {
+uint8_t testNEC(uint32_t *data) {
 	/* parse times[], max is timesCounter */
 
 	/* check if we have correct amount of data */ 
@@ -393,23 +504,15 @@ uint8_t testNEC(uint8_t *address, uint8_t *command) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	*command = 0;
-	*address = 0;
-	
+	*data = 0;
 	for (uint8_t i = 3; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
 			if (times[i] > IR_NEC_LOW_ONE - IR_NEC_LOW_ONE/IR_NEC_TOL_DIV && times[i] < IR_NEC_LOW_ONE + IR_NEC_LOW_ONE/IR_NEC_TOL_DIV) {
-				if (i>2 && i<18) {
-					/* write a one */
-					*address |= 1<<((i-3)>>1);
-				}
-				if (i>34 && i<50) {
-					/* write a one */
-					*command |= 1<<((i-35)>>1);
-				}
+				/* write a one */
+				*data |= 1UL<<((i-3)>>1);
 			} else if (times[i] > IR_NEC_LOW_ZERO - IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV && times[i] < IR_NEC_LOW_ZERO + IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV) {
-				/* do nothing, a zero is already in rawbits */
+				/* do nothing, a zero is already in place */
 			} else {
 				return IR_NOT_CORRECT_DATA;
 			}
@@ -429,14 +532,12 @@ uint8_t testNEC(uint8_t *address, uint8_t *command) {
  * Very much like NEC, different start bit/pause lengths etc.
  * http://www.sbprojects.com/knowledge/ir/nec.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param data
+ * 		Pointer to store the received data
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
-uint8_t testSamsung(uint8_t *address, uint8_t *command) {
+uint8_t testSamsung(uint32_t *data) {
 	/* parse times[], max is timesCounter */
 
 	/* check if we have correct amount of data */ 
@@ -454,23 +555,15 @@ uint8_t testSamsung(uint8_t *address, uint8_t *command) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	*command = 0;
-	*address = 0;
-	
+	*data = 0;
 	for (uint8_t i = 3; i < timesCounter; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
 			if (times[i] > IR_SAMS_LOW_ONE - IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV && times[i] < IR_SAMS_LOW_ONE + IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV) {
-				if (i>2 && i<18) {
-					/* write a one */
-					*address |= 1<<((i-3)>>1);
-				}
-				if (i>34 && i<50) {
-					/* write a one */
-					*command |= 1<<((i-35)>>1);
-				}
+				/* write a one */
+				*data |= 1UL<<((i-3)>>1);
 			} else if (times[i] > IR_SAMS_LOW_ZERO - IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV && times[i] < IR_SAMS_LOW_ZERO + IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV) {
-				/* do nothing, a zero is already in rawbits */
+				/* do nothing, a zero is already in place */
 			} else {
 				return IR_NOT_CORRECT_DATA;
 			}
@@ -480,73 +573,32 @@ uint8_t testSamsung(uint8_t *address, uint8_t *command) {
 			}
 		}
 	}
-	
 	return IR_OK;
 }
 
-uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout) {
+//uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout) {
+uint8_t IrReceive_CheckIR(uint8_t *proto, uint32_t *data, uint16_t *timeout) {
 	IrTransceiver_Start();
 	
 	while (!data_received);
 	
-	
-#if 0
-	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
-	
-	initTimer();
-	
-	//this routine should sample the timings for received irdata
-	timesCounter = 0;
-	
-	uint8_t gotTimout = 0;	// a timeout is a very long break in irdata (such as occurs between ir pulsetrains)
-	while (!gotTimout && timesCounter < MAX_NR_TIMES-1) { //loop as long as no timeout occured and not to many pulses received
-		setTimerVal(TIM_OVFL_RELOAD_VAL);
-		//wait for positiv slope, while checking timer overflow
-		while (!(IRPIN & (1<<IRBIT))) {
-			//if timeout (if timer-ovflow-flaggan is set)
-			if (isTimerOvfl() == 1) return IR_TIME_OVFL;	//this timeout is not good (irsignal low which means active)
-		}
-		
-		times[timesCounter] = getTimerVal()-TIM_OVFL_RELOAD_VAL;
-		//TODO: should we check times[timesCounter] so its a realistic time-value? use IR_MIN_PULSE_WIDTH
-		timesCounter++;
-		
-		setTimerVal(TIM_OVFL_RELOAD_VAL);
-		//wait for negative slope, while checking timer overflow
-		while ((IRPIN & (1<<IRBIT)) && !gotTimout) {
-			//om timeout (om timer-ovflow-flaggan sätt)
-			if (isTimerOvfl() == 1) gotTimout=1;	//return IR_TIME_OVFL;
-		}
-
-		if (!gotTimout) {
-			times[timesCounter] = getTimerVal()-TIM_OVFL_RELOAD_VAL;
-			//TODO: should we check times[timesCounter] so its a realistic time-value? 
-			timesCounter++;
-		}
-	}
-	if (timesCounter >= MAX_NR_TIMES-1) {
-		//to much irdata, not good, abort
-		return IR_TO_MUCH_DATA;
-	}
-#endif
-	
-	if (testSIRC(&*address, &*command) == IR_OK) {
+	if (testSIRC(&*data) == IR_OK) {
 		*proto = IR_PROTO_SIRC;
 		*timeout = IR_SIRC_REPETITION;
 		return IR_OK;
-	} else if (testRC5(&*address, &*command) == IR_OK) {
+	} else if (testRC5(&*data) == IR_OK) {
 		*proto = IR_PROTO_RC5;
 		*timeout = IR_RC5_REPETITION;
 		return IR_OK;
-	} else if (testSharp(&*address, &*command) == IR_OK) {
+	} else if (testSharp(&*data) == IR_OK) {
 		*proto = IR_PROTO_SHARP;
 		*timeout = IR_SHARP_REPETITION;
 		return IR_OK;
-	} else if (testNEC(&*address, &*command) == IR_OK) {
+	} else if (testNEC(&*data) == IR_OK) {
 		*proto = IR_PROTO_NEC;
 		*timeout = IR_NEC_REPETITION;
 		return IR_OK;
-	} else if (testSamsung(&*address, &*command) == IR_OK) {
+	} else if (testSamsung(&*data) == IR_OK) {
 		*proto = IR_PROTO_SAMS;
 		*timeout = IR_SAMS_REPETITION;
 		return IR_OK;
@@ -555,7 +607,6 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
 	return IR_NO_PROTOCOL;
 	
 }
-#endif
 
 //TODO: skriv doxygen-header som för de andra funktionerna
 /**
@@ -566,13 +617,13 @@ uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, ui
  */
 void IrReceive_Init(void) {
 	IrTransceiver_Init();
-	/*IRDDR &= ~(1<<IRBIT);*/
+	/*IR_R_DDR &= ~(1<<IR_R_BIT);*/
 }
 
 //varför är denna funktion så komplex? jo den filtrerar bort korta ir-pulser
 //TODO: skriv doxygen-header som för de andra funktionerna
 uint8_t IrReceive_CheckIdle(void) {
-	if (IRPIN & (1<<IRBIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
+	if (IR_R_PIN & (1<<IR_R_BIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
 	
 	//nu lägger irmodulen ut en nolla, "startbiten" alltså
 	
@@ -580,7 +631,7 @@ uint8_t IrReceive_CheckIdle(void) {
 	
 	//Läs in längden på startbiten
 	initTimer();
-	while (!(IRPIN & (1<<IRBIT))) {		//vänta på att irmodulen lägger ut en etta
+	while (!(IR_R_PIN & (1<<IR_R_BIT))) {		//vänta på att irmodulen lägger ut en etta
 		//om timeout (om timer-ovflow-flaggan sätt)
 		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
 	}

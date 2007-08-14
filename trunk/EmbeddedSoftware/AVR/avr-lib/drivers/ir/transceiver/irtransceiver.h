@@ -10,10 +10,15 @@
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
-#define IRPORT	PORTB
-#define IRPIN	PINB
-#define IRDDR	DDRB
-#define IRBIT	PB0 // Input Capture Pin
+#define IR_R_PORT	PORTB
+#define IR_R_PIN	PINB
+#define IR_R_DDR	DDRB
+#define IR_R_BIT	PB0 // Input Capture Pin
+
+#define IR_T_PORT	PORTD
+#define IR_T_PIN	PIND
+#define IR_T_DDR	DDRD
+#define IR_T_BIT	PD6
 
 #define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
 
@@ -23,9 +28,14 @@
 void IrTransceiver_Init(void);
 void IrTransceiver_Start(void);
 uint8_t IrTransceiver_Poll(uint16_t **buffer, uint8_t *length);
+#if 0
 uint8_t IrTransceiver_Transmit(uint16_t **buffer, uint8_t *length);
+#endif
+uint8_t IrTransceiver_Transmit(uint8_t proto, uint32_t data, uint16_t *timeout, uint8_t *repeates);
+uint8_t IrTransceiver_Transmit_Poll(void);
 void IrReceive_Init(void);
-uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout);
+//uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout);
+uint8_t IrReceive_CheckIR(uint8_t *proto, uint32_t *data, uint16_t *timeout);
 uint8_t IrReceive_CheckIdle(void);
 uint16_t getRawData(uint8_t index);
 uint8_t getRawDataCnt(void);
@@ -33,8 +43,6 @@ uint8_t getRawDataCnt(void);
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes
  *---------------------------------------------------------------------------*/
-uint8_t receiveRC5(uint8_t *address, uint8_t *command);
-uint8_t receiveSIRC(uint8_t *address, uint8_t *command);
 
 
 #endif /*IRTRANSCEIVER_H_*/
