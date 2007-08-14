@@ -4,16 +4,18 @@
 #include <string.h>
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
-//#include <drivers/uart/serial.h>
 #include <drivers/timer/timebase.h>
-#include <drivers/ir/transmitter/irtransmitter.h>
+#include <drivers/ir/transceiver/irtransceiver.h>
 
 #define APP_TYPE    CAN_APPTYPES_IRTRANSMITTER
 #define APP_VERSION 0x0001
 
-#define STATE_IDLE			0
-#define STATE_REPEAT		1
-#define STATE_STOPPING		2
+#define STATE_IDLE				0
+#define STATE_START_TRANSMIT	1
+#define STATE_TRANSMITTING		2
+#define STATE_START_PAUSE		3
+#define STATE_PAUSING			4
+#define STATE_STOP				5
 
 // A simple message "queue", with space for one message only.
 // These are declared volatile to tell the compiler not to optimize away accesses.
@@ -35,8 +37,7 @@ int main(void)
 	sei();
 	
 	Timebase_Init();
-	//Serial_Init();
-	IrTransmit_Init();
+	IrTransceiver_Init();
 	
 	Can_Message_t txMsg;
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -51,25 +52,48 @@ int main(void)
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
 
-	//txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_IR << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID));
+	uint32_t time = Timebase_CurrentTime();
+	uint32_t timePauseStarted = 0;
 	
-	//unsigned long time = Timebase_CurrentTime();
-	//unsigned long irTimeoutTime = 100;
+	uint8_t state=STATE_IDLE;
+	uint8_t repeatcnt=0;
+	uint8_t stop=0;
+	uint8_t protocol=0; uint32_t ir_data=0; uint16_t timeout=0; uint8_t repeats=0;
 	
-	//uint8_t ir_protocol, ir_address, ir_command;
-	//uint16_t ir_timeout;
-	uint8_t state = STATE_IDLE;
-
 	while (1) {
-		//time = Timebase_CurrentTime();
+		time = Timebase_CurrentTime();
 		if (state == STATE_IDLE) {
-		} else if (state == STATE_REPEAT) {
-			IrTransmit_Poll();
-		} else if (state == STATE_STOPPING) {
-			IrTransmit_Poll();
-			if (IrTransmit_Stop() == IR_OK) {
+		} else if (state == STATE_START_TRANSMIT) {
+			if (IrTransceiver_Transmit(protocol, ir_data, &timeout, &repeats) == IR_OK) {
+				state = STATE_TRANSMITTING;
+			} else {
 				state = STATE_IDLE;
 			}
+		} else if (state == STATE_TRANSMITTING) {
+			//polla om den är klar, om klar gå till STATE_START_PAUSE
+			if (IrTransceiver_Transmit_Poll() != IR_NOT_FINISHED) {
+				state = STATE_START_PAUSE;
+			}
+		} else if (state == STATE_START_PAUSE) {
+			if (repeatcnt<repeats) {
+				repeatcnt++;
+			}
+			timePauseStarted = Timebase_CurrentTime();
+			state = STATE_PAUSING;
+		} else if (state == STATE_PAUSING) {
+			//när timeout har gått (timebase) så gå till STATE_START_TRANSMIT
+			if (time - timePauseStarted >= timeout) {
+				state = STATE_START_TRANSMIT;
+			}
+			if (stop == 1 && repeatcnt >= repeats) {
+				state = STATE_STOP;
+			}
+
+		} else if (state == STATE_STOP) {
+			stop = 0;
+			timeout = 0;
+			repeatcnt = 0;
+			state = STATE_IDLE;
 		}
 
 		
@@ -78,14 +102,18 @@ int main(void)
 				uint16_t acttype =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
 				uint8_t actid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
 				
-				if (rxMsg.DataLength==4) {
+				if (rxMsg.DataLength==6) {
 					if (acttype == ACT_TYPE_IR) {
 						if (state == STATE_IDLE && rxMsg.Data.bytes[0] == IR_BUTTON_DOWN) {
-							if (IrTransmit_Start(rxMsg.Data.bytes[1], rxMsg.Data.bytes[2], rxMsg.Data.bytes[3]) == IR_OK) {
-								state = STATE_REPEAT;
-							}
-						} else if (state == STATE_REPEAT && rxMsg.Data.bytes[0] == IR_BUTTON_UP) {
-							state = STATE_STOPPING;
+							protocol = rxMsg.Data.bytes[1];
+							ir_data = rxMsg.Data.bytes[5];
+							ir_data |= (rxMsg.Data.bytes[4]<<8);
+							ir_data |= ((uint32_t)rxMsg.Data.bytes[3]<<16);
+							ir_data |= ((uint32_t)rxMsg.Data.bytes[2]<<24);
+
+							state = STATE_START_TRANSMIT;
+						} else if (state != STATE_IDLE && rxMsg.Data.bytes[0] == IR_BUTTON_UP) {
+							stop = 1;
 						}
 					}
 				}
