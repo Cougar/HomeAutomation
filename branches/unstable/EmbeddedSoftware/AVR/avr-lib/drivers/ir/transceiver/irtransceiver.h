@@ -21,20 +21,9 @@
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
 void IrTransceiver_Init(void);
-void IrTransceiver_Start(void);
-uint8_t IrTransceiver_Poll(uint16_t **buffer, uint8_t *length);
-uint8_t IrTransceiver_Transmit(uint16_t **buffer, uint8_t *length);
-void IrReceive_Init(void);
-uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout);
-uint8_t IrReceive_CheckIdle(void);
-uint16_t getRawData(uint8_t index);
-uint8_t getRawDataCnt(void);
-
-/*-----------------------------------------------------------------------------
- * Private Function Prototypes
- *---------------------------------------------------------------------------*/
-uint8_t receiveRC5(uint8_t *address, uint8_t *command);
-uint8_t receiveSIRC(uint8_t *address, uint8_t *command);
-
+void IrTransceiver_Start(uint16_t *buffer);
+uint8_t IrTransceiver_Poll(void);
+uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length);
+//uint8_t IrReceive_CheckIdle(void);
 
 #endif /*IRTRANSCEIVER_H_*/
