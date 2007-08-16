@@ -5,7 +5,6 @@
  * Includes
  *---------------------------------------------------------------------------*/
 #include <stdio.h>
-#include <drivers/ir/ircommon.h>
 
 /*-----------------------------------------------------------------------------
  * Defines
@@ -26,20 +25,26 @@
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
 void IrTransceiver_Init(void);
-void IrTransceiver_Start(void);
-uint8_t IrTransceiver_Poll(uint16_t **buffer, uint8_t *length);
+void IrTransceiver_Start(uint16_t *buffer);
+uint8_t IrTransceiver_Poll(void);
+uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq);
+uint8_t IrTransceiver_Transmit_Poll(void);
+
+
+
+//uint8_t IrTransceiver_Poll(uint16_t **buffer, uint8_t *length);
 #if 0
 uint8_t IrTransceiver_Transmit(uint16_t **buffer, uint8_t *length);
 #endif
-uint8_t IrTransceiver_Transmit(uint8_t proto, uint32_t data, uint16_t *timeout, uint8_t *repeates);
-uint8_t IrTransceiver_Transmit_Poll(void);
-void IrReceive_Init(void);
+//uint8_t IrTransceiver_Transmit(uint8_t proto, uint32_t data, uint16_t *timeout, uint8_t *repeates);
+//void IrReceive_Init(void);
 //uint8_t IrReceive_CheckIR(uint8_t *proto, uint8_t *address, uint8_t *command, uint16_t *timeout);
-uint8_t IrReceive_CheckIR(uint8_t *proto, uint32_t *data, uint16_t *timeout);
-uint8_t IrReceive_CheckIdle(void);
+//uint8_t IrReceive_CheckIR(uint8_t *proto, uint32_t *data, uint16_t *timeout);
+
+/*uint8_t IrReceive_CheckIdle(void);
 uint16_t getRawData(uint8_t index);
 uint8_t getRawDataCnt(void);
-
+*/
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes
  *---------------------------------------------------------------------------*/
