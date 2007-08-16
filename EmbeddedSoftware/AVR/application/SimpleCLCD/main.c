@@ -21,8 +21,49 @@
 #include <bios.h>
 #include <config.h>
 #include <drivers/lcd/clcd/lcd_HD44780.h>
+
+#include <string.h> //for memcpy
+
+
 /* funcdefs */
-#include <funcdefs/funcdefs.h>
+//#include <funcdefs/funcdefs.h>
+
+
+//a lot of crap from previous funcdefs
+/* ACT LCD 12 bits <ACTION><SIZE> 0xFFFL
+ *
+ * <ACTION>, 4 bits = Type och action.
+ * <SIZE>, 8 bits = Size of display.
+ */
+#define LCD_ACTION_MASK 0xF00L /* bit[12..8] */
+#define LCD_SIZE_MASK 0x0FFL /* bit[7..0] */
+
+#define LCD_ACTION_BITS 8
+#define LCD_SIZE_BITS 0
+
+
+/* <ACTION> 4 bits 0xFL */
+
+#define LCD_ACTION_CLR			0x0L
+#define LCD_ACTION_CURS			0x1L
+#define LCD_ACTION_TEXT			0x2L
+#define LCD_ACTION_GET_SIZE		0x3L
+#define LCD_ACTION_SET_CONT		0x4L
+#define LCD_ACTION_SET_BLIGHT	0x5L
+#define LCD_ACTION_GET_CONT		0x6L
+#define LCD_ACTION_GET_BLIGHT	0x7L
+
+#define LCD_ACTION_SEND_CONT	0x8L
+#define LCD_ACTION_SEND_BLIGHT	0x9L
+
+
+
+/* <SIZE> 8 bits 0xFFL */
+#define LCD_SIZE_ALL	0x00L
+#define LCD_SIZE_16x2	0x02L
+#define LCD_SIZE_20x4	0x10L
+
+
 
 /*-----------------------------------------------------------------------------
  * Defines
@@ -46,8 +87,8 @@ uint8_t rxMsgFull;
 
 char buffer[ BUFFER_SIZE ];
 
-void send_dimensions();
-void rotenc();
+void send_dimensions(void);
+void rotenc(void);
 
 // CAN message reception callback
 // This function runs with interrupts disabled, keep it as short as possible
@@ -122,7 +163,7 @@ int main(void) {
 	while(1){
         /* check if any messages have been received */
 		if(rxMsgFull){
-
+/* FIXME noddan kommenterar bort allt
 			if( ((rxMsg.Id & CLASS_MASK)>> CLASS_MASK_BITS) == CLASS_ACT ){ // FIXME ett jäkla herk, städa upp
 				act = (rxMsg.Id & TYPE_MASK) >> TYPE_MASK_BITS;
 				act_type = (act & ACT_TYPE_MASK) >> ACT_TYPE_BITS;
@@ -182,7 +223,7 @@ int main(void) {
 				}
 			}
 			rxMsgFull = 0;
-		}
+		*/}
 	}
 }
 
@@ -206,7 +247,7 @@ void rotenc(){
 	Can_Message_t txMsg;
 	txMsg.ExtendedFlag=1;
 	txMsg.RemoteFlag=0;
-	txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x01<<SNS_ID_BITS )| NODE_ID;
+	//txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x01<<SNS_ID_BITS )| NODE_ID;//FIXME: borttaget
 	txMsg.DataLength=2;
 
 	if(PINB&(1<<PB0)){
