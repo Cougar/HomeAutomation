@@ -113,8 +113,9 @@ rotenc();
  * Main Program
  *---------------------------------------------------------------------------*/
 int main(void) {
-	uint32_t act;
-	uint8_t m, act_type, lcd_action, lcd_size;
+//	uint32_t act; not used anymoer
+//	uint8_t act_type, lcd_size; not used anymore
+	uint8_t m, lcd_action;
 
 	sei();
 
@@ -143,8 +144,9 @@ int main(void) {
 	TCCR1A |= (1<<COM1A1)|(1<<WGM11);
 	TCCR1B |= (1<<WGM13)|(1<<WGM12)|(1<<CS10);
 	ICR1 = 0xFF; // Make it 8 bits
-	OCR1A = 0x80;
+	OCR1A = 0xFF;
 	DDRB |= (1<<DDB1);
+
 
 	Can_Message_t txMsg;
 	txMsg.ExtendedFlag=1;
@@ -163,14 +165,18 @@ int main(void) {
 	while(1){
         /* check if any messages have been received */
 		if(rxMsgFull){
-/* FIXME noddan kommenterar bort allt
-			if( ((rxMsg.Id & CLASS_MASK)>> CLASS_MASK_BITS) == CLASS_ACT ){ // FIXME ett jäkla herk, städa upp
-				act = (rxMsg.Id & TYPE_MASK) >> TYPE_MASK_BITS;
-				act_type = (act & ACT_TYPE_MASK) >> ACT_TYPE_BITS;
-				lcd_action = (act & LCD_ACTION_MASK) >> LCD_ACTION_BITS;
-				lcd_size = (act & LCD_SIZE_MASK) >> LCD_SIZE_BITS;
+			uint16_t act_type;
+			uint8_t lcdid;
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett jäkla herk, städa upp
+				
+				
+				act_type =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+			
+				lcdid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);
+				
 
-				if( act_type == ACT_TYPE_LCD && (lcd_size == SIZE_LCD || lcd_size == LCD_SIZE_ALL)){
+				if( act_type == ACT_TYPE_LCD ){ //FIXME add id to check here
+					lcd_action =  rxMsg.Data.bytes[0];
 					switch( lcd_action ){
 					case LCD_ACTION_CLR:
 						// Clear LCD
@@ -178,7 +184,7 @@ int main(void) {
 					break;
 					case LCD_ACTION_CURS:
 						// Move cursor
-						lcd_gotoxy( rxMsg.Data.bytes[0],rxMsg.Data.bytes[1] );
+						lcd_gotoxy( rxMsg.Data.bytes[1],rxMsg.Data.bytes[2] );
 					break;
 					case LCD_ACTION_GET_SIZE:
 						// Request LCD dimension
@@ -186,34 +192,34 @@ int main(void) {
 					break;
 					case LCD_ACTION_TEXT:
 						// Print text to LCD
-						for(m=0;m<rxMsg.DataLength;m++){
+						for(m=1;m<rxMsg.DataLength;m++){
 							lcd_putc( (char)rxMsg.Data.bytes[m] );
 						}
 					break;
 					case LCD_ACTION_SET_CONT:
 						// Set contrast
 						if(rxMsg.DataLength == 1){
-							OCR0B = rxMsg.Data.bytes[0];
+							OCR0B = rxMsg.Data.bytes[1];
 						}
 					break;
 					case LCD_ACTION_SET_BLIGHT:
 						// Set backlight
-						if(rxMsg.DataLength == 1){
-							OCR1AL = rxMsg.Data.bytes[0];
+						if(rxMsg.DataLength == 2){
+							OCR1AL = rxMsg.Data.bytes[1];
 						}
 					break;
 					case LCD_ACTION_GET_CONT:
 						// Get contrast
 						txMsg.DataLength = 1;
-						txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_CONT<<LCD_ACTION_BITS )|NODE_ID;
-						txMsg.Data.bytes[0] = OCR0B;
+						//txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_CONT<<LCD_ACTION_BITS )|NODE_ID; FIXME
+						txMsg.Data.bytes[1] = OCR0B;
 						BIOS_CanSend(&txMsg);
 					break;
 					case LCD_ACTION_GET_BLIGHT:
 						// Get backlight
 						txMsg.DataLength = 1;
-						txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_BLIGHT<<LCD_ACTION_BITS )|NODE_ID;
-						txMsg.Data.bytes[0] = OCR1AL;
+						//txMsg.Id = ( CLASS_ACT<<CLASS_MASK_BITS )|( ACT_TYPE_LCD<<ACT_TYPE_BITS )|( LCD_ACTION_SEND_BLIGHT<<LCD_ACTION_BITS )|NODE_ID; FIXME
+						txMsg.Data.bytes[1] = OCR1AL;
 						BIOS_CanSend(&txMsg);
 					break;
 					default:
@@ -223,7 +229,7 @@ int main(void) {
 				}
 			}
 			rxMsgFull = 0;
-		*/}
+		}
 	}
 }
 
