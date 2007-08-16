@@ -27,8 +27,9 @@ SOURCES =	main.c\
                 drivers/timer/timebase.c\
                 drivers/mcu/mcu.c\
                 drivers/ir/transceiver/irtransceiver.c\
-                drivers/ir/ircommon.c\
+                drivers/ir/protocols.c\
 
+#                drivers/ir/ircommon.c\
 #                drivers/ir/transmitter/irtransmitter.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 

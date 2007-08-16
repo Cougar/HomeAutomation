@@ -6,9 +6,10 @@
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 #include <drivers/timer/timebase.h>
 #include <drivers/ir/transceiver/irtransceiver.h>
+#include <drivers/ir/protocols.h>
 
 #define APP_TYPE    CAN_APPTYPES_IRTRANSMITTER
-#define APP_VERSION 0x0001
+#define APP_VERSION 0x0002
 
 #define STATE_IDLE				0
 #define STATE_START_TRANSMIT	1
@@ -58,14 +59,22 @@ int main(void)
 	uint8_t state=STATE_IDLE;
 	uint8_t repeatcnt=0;
 	uint8_t stop=0;
-	uint8_t protocol=0; uint32_t ir_data=0; uint16_t timeout=0; uint8_t repeats=0;
+	Ir_Protocol_Data_t proto;
+	proto.timeout=0; proto.data=0; proto.repeats=0; proto.protocol=0;
+	uint8_t len=0;
+	
+	uint16_t txbuffer[MAX_NR_TIMES];
 	
 	while (1) {
 		time = Timebase_CurrentTime();
 		if (state == STATE_IDLE) {
 		} else if (state == STATE_START_TRANSMIT) {
-			if (IrTransceiver_Transmit(protocol, ir_data, &timeout, &repeats) == IR_OK) {
-				state = STATE_TRANSMITTING;
+			if (expandProtocol(txbuffer, &len, &proto) == IR_OK) {
+				if (IrTransceiver_Transmit(txbuffer, len, proto.modfreq) == IR_OK) {
+					state = STATE_TRANSMITTING;
+				} else {
+					state = STATE_IDLE;
+				}
 			} else {
 				state = STATE_IDLE;
 			}
@@ -75,23 +84,22 @@ int main(void)
 				state = STATE_START_PAUSE;
 			}
 		} else if (state == STATE_START_PAUSE) {
-			if (repeatcnt<repeats) {
+			if (repeatcnt<proto.repeats) {
 				repeatcnt++;
 			}
 			timePauseStarted = Timebase_CurrentTime();
 			state = STATE_PAUSING;
 		} else if (state == STATE_PAUSING) {
 			//när timeout har gått (timebase) så gå till STATE_START_TRANSMIT
-			if (time - timePauseStarted >= timeout) {
+			if (time - timePauseStarted >= proto.timeout) {
 				state = STATE_START_TRANSMIT;
 			}
-			if (stop == 1 && repeatcnt >= repeats) {
+			if (stop == 1 && repeatcnt >= proto.repeats) {
 				state = STATE_STOP;
 			}
-
 		} else if (state == STATE_STOP) {
 			stop = 0;
-			timeout = 0;
+			proto.timeout = 0;
 			repeatcnt = 0;
 			state = STATE_IDLE;
 		}
@@ -105,11 +113,11 @@ int main(void)
 				if (rxMsg.DataLength==6) {
 					if (acttype == ACT_TYPE_IR) {
 						if (state == STATE_IDLE && rxMsg.Data.bytes[0] == IR_BUTTON_DOWN) {
-							protocol = rxMsg.Data.bytes[1];
-							ir_data = rxMsg.Data.bytes[5];
-							ir_data |= (rxMsg.Data.bytes[4]<<8);
-							ir_data |= ((uint32_t)rxMsg.Data.bytes[3]<<16);
-							ir_data |= ((uint32_t)rxMsg.Data.bytes[2]<<24);
+							proto.protocol = rxMsg.Data.bytes[1];
+							proto.data = rxMsg.Data.bytes[5];
+							proto.data |= (rxMsg.Data.bytes[4]<<8);
+							proto.data |= ((uint32_t)rxMsg.Data.bytes[3]<<16);
+							proto.data |= ((uint32_t)rxMsg.Data.bytes[2]<<24);
 
 							state = STATE_START_TRANSMIT;
 						} else if (state != STATE_IDLE && rxMsg.Data.bytes[0] == IR_BUTTON_UP) {
