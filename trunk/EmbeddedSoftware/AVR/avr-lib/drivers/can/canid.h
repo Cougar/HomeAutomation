@@ -92,5 +92,8 @@
 
 #define ACT_TYPE_IR            0x04L
 
+#define ACT_TYPE_LCD		   0x05L
+
+
 
 #endif /*CANID_H_*/
