@@ -66,7 +66,6 @@ int main(void)
 	uint16_t txbuffer[MAX_NR_TIMES];
 	
 	while (1) {
-		time = Timebase_CurrentTime();
 		if (state == STATE_IDLE) {
 		} else if (state == STATE_START_TRANSMIT) {
 			if (expandProtocol(txbuffer, &len, &proto) == IR_OK) {
@@ -91,6 +90,7 @@ int main(void)
 			state = STATE_PAUSING;
 		} else if (state == STATE_PAUSING) {
 			//när timeout har gått (timebase) så gå till STATE_START_TRANSMIT
+			time = Timebase_CurrentTime();
 			if (time - timePauseStarted >= proto.timeout) {
 				state = STATE_START_TRANSMIT;
 			}
