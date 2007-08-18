@@ -162,10 +162,11 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SAMS_LOW_ONE		1720*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SAMS_LOW_ZERO	650*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SAMS_HIGH		500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_TIMEOUT	50									//ms	(time between ir frames)
+#define IR_SAMS_TIMEOUT		50									//ms	(time between ir frames)
 #define IR_SAMS_REPS		1									//		(minimum number of times to repeat code)
 #define IR_SAMS_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SAMS_TOL_DIV		4
+
 
 #define IR_PROTO_HASH		0xfe
 #define IR_PROTO_UNKNOWN	0xff								//

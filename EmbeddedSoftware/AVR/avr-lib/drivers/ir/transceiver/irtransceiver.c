@@ -1,9 +1,9 @@
 /**
- * IR receiver driver.
+ * IR receiver and transmitter driver.
  * 
  * @date	2006-12-10
  * 
- * @author	Anders Runeson
+ * @author	Anders Runeson, Andreas Fritiofson
  *   
  */
 
@@ -19,11 +19,9 @@
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
-//static uint16_t times[MAX_NR_TIMES];			//stores 
 uint16_t *rxbuf, *txbuf;
 uint8_t rxlen, txlen;
 
-//static uint8_t timesCounter=0;					//counts the items in Times, always less then MAX_NR_TIMES
 static uint8_t bufIndex;							//selects the pulse width in buffer to send
 volatile uint8_t data_received;
 volatile uint8_t data_transmitted;
@@ -186,7 +184,7 @@ void IrTransceiver_Init(void)
 
 }
 
-void IrTransceiver_Start(uint16_t *buffer)
+void IrTransceiver_Receive_Start(uint16_t *buffer)
 {
 	 /* Setup buffer and arm the edge detection. */
 	rxbuf = buffer;
@@ -203,7 +201,7 @@ void IrTransceiver_Start(uint16_t *buffer)
 	IR_UNMASK_CAPTURE();
 }
 
-uint8_t IrTransceiver_Poll(void)
+uint8_t IrTransceiver_Receive_Poll(void)
 {
 	if (data_received)
 	{
@@ -247,6 +245,23 @@ uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq
 	//while (!data_transmitted);
 	
 	return IR_OK;
+}
+
+/* Låt applikationen filtrera bort för korta pulser? */
+uint8_t IrTransceiver_Receive_Pause_Poll(void) {
+#if IR_RX_ACTIVE_LOW 
+	if (IR_R_PIN & (1<<IR_R_BIT)) {
+		return 0;
+	} else {
+		return 1;
+	}
+#else
+	if (IR_R_PIN & (1<<IR_R_BIT)) {
+		return 1;
+	} else {
+		return 0;
+	}
+#endif
 }
 
 #if 0

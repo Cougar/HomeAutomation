@@ -1,30 +1,43 @@
+/**
+ * IR receiver and transmitter protocols.
+ * 
+ * @date	2006-12-10
+ * 
+ * @author	Anders Runeson, Andreas Fritiofson
+ *   
+ */
+
 #include "protocols.h"
-#include <avr/io.h>
+
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	proto->protocol=IR_PROTO_UNKNOWN;
+	proto->data=0;
+	proto->timeout=100;
 	/* Try all protocols in order. */
 #if (IR_PROTOCOLS_USE_SIRC)
-	if (parseSIRC(buf, len, proto)) return IR_OK;
+	if (parseSIRC(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 #if (IR_PROTOCOLS_USE_RC5)
-	if (parseRC5(buf, len, proto)) return IR_OK;
+	if (parseRC5(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 #if (IR_PROTOCOLS_USE_SHARP)
-	if (parseSharp(buf, len, proto)) return IR_OK;
+	if (parseSharp(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 #if (IR_PROTOCOLS_USE_NEC)
-	if (parseNEC(buf, len, proto)) return IR_OK;
+	if (parseNEC(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 #if (IR_PROTOCOLS_USE_SAMSUNG)
-	if (parseSamsung(buf, len, proto)) return IR_OK;
+	if (parseSamsung(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 	/* No protocol matched. */
+	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
 }
 
 int8_t parseHash(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	//TODO: Transform the buffer in some clever way to a 32 bit word. */
 	proto->protocol = IR_PROTO_HASH;
-	proto->timeout = 0;
+	proto->timeout = 200;
 	proto->data = 0;
 	
 	return 0;
@@ -53,10 +66,12 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
  * Test data on SIRC protocol, 12-bit version
  * http://www.sbprojects.com/knowledge/ir/sirc.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
@@ -95,26 +110,42 @@ int8_t parseSIRC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	
 	proto->protocol = IR_PROTO_SIRC;
 	proto->timeout = IR_SIRC_TIMEOUT;
-	proto->data = rawbits; //TODO: Should some other mapping be used?
+	proto->data = rawbits; 
 	
 	return IR_OK;
 }
 #endif
 
+/**
+ * Expand data from SIRC protocol
+ * http://www.sbprojects.com/knowledge/ir/sirc.htm
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
 int8_t expandSIRC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	//TODO: Implement this function.
 	return IR_NOT_CORRECT_DATA;
 }
+
 
 #if (IR_PROTOCOLS_USE_RC5)
 /**
  * Test data on RC5 protocol 
  * http://www.sbprojects.com/knowledge/ir/rc5.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
@@ -151,20 +182,36 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 }
 #endif
 
+/**
+ * Expand data from RC5 protocol
+ * http://www.sbprojects.com/knowledge/ir/rc5.htm
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
 int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	//TODO: Implement this function.
 	return IR_NOT_CORRECT_DATA;
 }
+
 
 #if (IR_PROTOCOLS_USE_SHARP)
 /**
  * Test data on SHARP protocol
  * http://www.sbprojects.com/knowledge/ir/sharp.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
@@ -203,20 +250,36 @@ int8_t parseSharp(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 }
 #endif
 
+/**
+ * Expand data from Sharp protocol
+ * http://www.sbprojects.com/knowledge/ir/sharp.htm
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
 int8_t expandSharp(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	//TODO: Implement this function.
 	return IR_NOT_CORRECT_DATA;
 }
+
 
 #if (IR_PROTOCOLS_USE_NEC)
 /**
  * Test data on NEC protocol
  * http://www.sbprojects.com/knowledge/ir/nec.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
@@ -238,14 +301,14 @@ int8_t parseNEC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	uint32_t tmpdata = 0;
+	uint32_t rawbits = 0;
 
 	for (uint8_t i = 3; i < len; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
 			if (buf[i] > IR_NEC_LOW_ONE - IR_NEC_LOW_ONE/IR_NEC_TOL_DIV && buf[i] < IR_NEC_LOW_ONE + IR_NEC_LOW_ONE/IR_NEC_TOL_DIV) {
 				/* write a one */
-				tmpdata |= 1UL<<((i-3)>>1);
+				rawbits |= 1UL<<((i-3)>>1);
 			} else if (buf[i] > IR_NEC_LOW_ZERO - IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV && buf[i] < IR_NEC_LOW_ZERO + IR_NEC_LOW_ZERO/IR_NEC_TOL_DIV) {
 				/* do nothing, a zero is already in place */
 			} else {
@@ -260,11 +323,24 @@ int8_t parseNEC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 
 	proto->protocol=IR_PROTO_NEC;
 	proto->timeout=IR_NEC_TIMEOUT;
-	proto->data=tmpdata;	
+	proto->data=rawbits;	
 	return IR_OK;
 }
 #endif
 
+/**
+ * Expand data from NEC protocol
+ * http://www.sbprojects.com/knowledge/ir/nec.htm
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
 int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	/* Set up startbit */
 	buf[0] = IR_NEC_ST_BIT;
@@ -289,16 +365,19 @@ int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	return IR_OK;
 }
 
+
 #if (IR_PROTOCOLS_USE_SAMSUNG)
 /**
  * Test data on Samsung protocol
  * Very much like NEC, different start bit/pause lengths etc.
  * http://www.sbprojects.com/knowledge/ir/nec.htm
  * 
- * @param address
- * 		Pointer to store the address of the received data
- * @param command
- * 		Pointer to store the command of the received data
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
@@ -320,14 +399,14 @@ int8_t parseSamsung(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	uint32_t tmpdata = 0;
+	uint32_t rawbits = 0;
 	
 	for (uint8_t i = 3; i < len; i++) {
 		if ((i&1) == 1) {		/* if odd, ir-pause */
 			/* check length of pause between bits */
 			if (buf[i] > IR_SAMS_LOW_ONE - IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV && buf[i] < IR_SAMS_LOW_ONE + IR_SAMS_LOW_ONE/IR_SAMS_TOL_DIV) {
 				/* write a one */
-				tmpdata |= 1UL<<((i-3)>>1);
+				rawbits |= 1UL<<((i-3)>>1);
 			} else if (buf[i] > IR_SAMS_LOW_ZERO - IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV && buf[i] < IR_SAMS_LOW_ZERO + IR_SAMS_LOW_ZERO/IR_SAMS_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 			} else {
@@ -342,11 +421,25 @@ int8_t parseSamsung(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 	
 	proto->protocol=IR_PROTO_SAMS;
 	proto->timeout=IR_SAMS_TIMEOUT;
-	proto->data=tmpdata;	
+	proto->data=rawbits;	
 	return IR_OK;
 }
 #endif
 
+/**
+ * Expand data from Samsung protocol
+ * Very much like NEC, different start bit/pause lengths etc.
+ * http://www.sbprojects.com/knowledge/ir/nec.htm
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
 int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	/* Set up startbit */
 	buf[0] = IR_SAMS_ST_BIT;
