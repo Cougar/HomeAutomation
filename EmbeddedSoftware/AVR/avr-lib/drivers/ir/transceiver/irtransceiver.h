@@ -26,8 +26,7 @@
  *---------------------------------------------------------------------------*/
 void IrTransceiver_Init(void);
 void IrTransceiver_Receive_Start(uint16_t *buffer);
-uint8_t IrTransceiver_Receive_Poll(void);
-uint8_t IrTransceiver_Receive_Pause_Poll(void);
+uint8_t IrTransceiver_Receive_Poll(uint8_t *len);
 uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq);
 uint8_t IrTransceiver_Transmit_Poll(void);
 
