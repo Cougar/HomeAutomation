@@ -18,6 +18,7 @@
 #define STATE_RECEIVING		3
 #define STATE_START_PAUSE	4
 #define STATE_PAUSING		5
+#define STATE_START_IDLE	6
 
 #define IR_ID_DATA	0
 #define IR_ID_RAW	1
@@ -75,8 +76,8 @@ int main(void)
 		} else if (state == STATE_START_RECEIVE) {
 			state = STATE_RECEIVING;
 		} else if (state == STATE_RECEIVING) {
-			len = IrTransceiver_Receive_Poll();
-			if (len > 0) {
+			uint8_t res = IrTransceiver_Receive_Poll(&len);
+			if ((res == IR_OK) && (len > 0)) {
 				//låt protocols parsa och skicka på can
 				if (parseProtocol(rxbuffer, len, &proto) == IR_OK) {
 					if (proto.protocol != IR_PROTO_UNKNOWN) {
@@ -95,29 +96,40 @@ int main(void)
 				state = STATE_START_PAUSE;
 			}
 		} else if (state == STATE_START_PAUSE) {
+			IrTransceiver_Receive_Start(rxbuffer);
 			timePauseStarted = Timebase_CurrentTime();
 			state = STATE_PAUSING;
 		} else if (state == STATE_PAUSING) {
 			//resetta timebase-var om ir finns, detta bör göras snyggare
-			for (uint8_t i=0; i<10; i++) {
+			/*for (uint8_t i=0; i<10; i++) {
 				if (IrTransceiver_Receive_Pause_Poll() == 0) {
 					break;
 				} 
 				if (i==9) {
 					timePauseStarted = Timebase_CurrentTime();
 				}
+			}*/
+			uint8_t res = IrTransceiver_Receive_Poll(&len);
+			if (res == IR_NOT_FINISHED || res == IR_OK) {
+				timePauseStarted = Timebase_CurrentTime();
+			}
+			if (res == IR_OK) {
+				IrTransceiver_Receive_Start(rxbuffer);
 			}
 			
 			time = Timebase_CurrentTime();
 			if (time - timePauseStarted >= proto.timeout) {
-				if (proto.protocol != IR_PROTO_UNKNOWN) {
-					//skicka på can
-					txMsg.Data.bytes[0] = IR_BUTTON_UP;
-					BIOS_CanSend(&txMsg);
-				}
-				state = STATE_IDLE;
+				state = STATE_START_IDLE;
 			}
+		} else if (state == STATE_START_IDLE) {
+			if (proto.protocol != IR_PROTO_UNKNOWN) {
+				//skicka på can
+				txMsg.Data.bytes[0] = IR_BUTTON_UP;
+				BIOS_CanSend(&txMsg);
+			}
+			state = STATE_IDLE;
 		}
+		
 		
 		
 		if (rxMsgFull) {
