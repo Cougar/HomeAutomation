@@ -201,18 +201,18 @@ void IrTransceiver_Receive_Start(uint16_t *buffer)
 	IR_UNMASK_CAPTURE();
 }
 
-uint8_t IrTransceiver_Receive_Poll(void)
+uint8_t IrTransceiver_Receive_Poll(uint8_t *len)
 {
+	*len = rxlen;
 	if (data_received)
 	{
-		return rxlen;
-		/**buffer = times;
-		*length = timesCounter;
-		return IR_OK;*/
+		return IR_OK;
 	}
-	else
+	else if (rxlen > 0) 
 	{
-		return 0;
+		return IR_NOT_FINISHED;
+	} else {
+		return IR_NO_DATA;
 	}
 }
 
@@ -247,6 +247,8 @@ uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq
 	return IR_OK;
 }
 
+
+#if 0
 /* Låt applikationen filtrera bort för korta pulser? */
 uint8_t IrTransceiver_Receive_Pause_Poll(void) {
 #if IR_RX_ACTIVE_LOW 
@@ -263,6 +265,7 @@ uint8_t IrTransceiver_Receive_Pause_Poll(void) {
 	}
 #endif
 }
+#endif
 
 #if 0
 //varför är denna funktion så komplex? jo den filtrerar bort korta ir-pulser
