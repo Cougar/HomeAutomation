@@ -60,7 +60,7 @@ int main(void)
 	uint8_t repeatcnt=0;
 	uint8_t stop=0;
 	Ir_Protocol_Data_t proto;
-	proto.timeout=0; proto.data=0; proto.repeats=0; proto.protocol=0;
+	proto.timeout=0; proto.data=0; proto.repeats=0; proto.protocol=0; proto.framecnt = 0;
 	uint8_t len=0;
 	
 	uint16_t txbuffer[MAX_NR_TIMES];
@@ -87,6 +87,9 @@ int main(void)
 				repeatcnt++;
 			}
 			timePauseStarted = Timebase_CurrentTime();
+			if (proto.framecnt != 255) {
+				proto.framecnt++;
+			}
 			state = STATE_PAUSING;
 		} else if (state == STATE_PAUSING) {
 			//när timeout har gått (timebase) så gå till STATE_START_TRANSMIT
@@ -100,6 +103,7 @@ int main(void)
 		} else if (state == STATE_STOP) {
 			stop = 0;
 			proto.timeout = 0;
+			proto.framecnt = 0;
 			repeatcnt = 0;
 			state = STATE_IDLE;
 		}
