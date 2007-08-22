@@ -62,7 +62,7 @@ uint8_t store;
 #define IR_CAPTURE_RISING()		TCCR1B |= (1<<ICES1); \
 								TIFR1 = (1<<ICF1);
 
-//TODO: if active low is 0 then make port 5V at LOW
+//TODO: if active low is 0 then make port 5V at "LOW"
 #if IR_TX_ACTIVE_LOW==1
 #define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
 #define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
@@ -246,50 +246,3 @@ uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq
 	
 	return IR_OK;
 }
-
-
-#if 0
-/* Låt applikationen filtrera bort för korta pulser? */
-uint8_t IrTransceiver_Receive_Pause_Poll(void) {
-#if IR_RX_ACTIVE_LOW 
-	if (IR_R_PIN & (1<<IR_R_BIT)) {
-		return 0;
-	} else {
-		return 1;
-	}
-#else
-	if (IR_R_PIN & (1<<IR_R_BIT)) {
-		return 1;
-	} else {
-		return 0;
-	}
-#endif
-}
-#endif
-
-#if 0
-//varför är denna funktion så komplex? jo den filtrerar bort korta ir-pulser
-//TODO: skriv doxygen-header som för de andra funktionerna
-uint8_t IrReceive_CheckIdle(void) {
-	if (IR_R_PIN & (1<<IR_R_BIT)) return IR_NO_DATA;		//om irmodulen ger en etta så återgå
-	
-	//nu lägger irmodulen ut en nolla, "startbiten" alltså
-	
-	uint16_t timerVal;
-	
-	//Läs in längden på startbiten
-	initTimer();
-	while (!(IR_R_PIN & (1<<IR_R_BIT))) {		//vänta på att irmodulen lägger ut en etta
-		//om timeout (om timer-ovflow-flaggan sätt)
-		if (isTimerOvfl() == 1) return IR_TIME_OVFL;
-	}
-	timerVal = getTimerVal();
-	
-	if ((timerVal < IR_MAX_PULSE_WIDTH) && (timerVal > IR_MIN_PULSE_WIDTH)) {
-		return IR_OK;
-	} //else if ...
-	
-	
-	return IR_NO_PROTOCOL;
-}
-#endif
