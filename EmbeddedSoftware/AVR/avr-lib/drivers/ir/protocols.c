@@ -344,23 +344,30 @@ int8_t parseNEC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	/* Set up startbit */
 	buf[0] = IR_NEC_ST_BIT;
-	buf[1] = IR_NEC_ST_PAUSE;
-
-	*len = 67;
-	for (uint8_t i = 0; i < 65; i++) {
-		if ((i&1) == 1) {		/* if odd, ir-pause */
-			if ((proto->data>>(i>>1))&1) {
-				buf[i+2] = IR_NEC_LOW_ONE;
-			} else {
-				buf[i+2] = IR_NEC_LOW_ZERO;
-			}
-		} else {			/* if even, ir-bit */
-			buf[i+2] = IR_NEC_HIGH;
-		}
-	}
 	
+	if (proto->framecnt == 0) {
+		buf[1] = IR_NEC_ST_PAUSE;
+	
+		*len = 67;
+		for (uint8_t i = 0; i < 65; i++) {
+			if ((i&1) == 1) {		/* if odd, ir-pause */
+				if ((proto->data>>(i>>1))&1) {
+					buf[i+2] = IR_NEC_LOW_ONE;
+				} else {
+					buf[i+2] = IR_NEC_LOW_ZERO;
+				}
+			} else {			/* if even, ir-bit */
+				buf[i+2] = IR_NEC_HIGH;
+			}
+		}
+		proto->timeout=IR_NEC_TIMEOUT;
+	} else {
+		buf[1] = IR_NEC_ST_PAUSE/2;
+		buf[2] = IR_NEC_HIGH;
+		proto->timeout=IR_NEC_ST_TIMEOUT;
+		*len = 3;
+	}
 	proto->modfreq=(((F_CPU/2000)/IR_NEC_F_MOD) -1);
-	proto->timeout=IR_NEC_TIMEOUT;
 	proto->repeats=IR_NEC_REPS;
 	return IR_OK;
 }

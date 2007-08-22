@@ -10,6 +10,7 @@ typedef struct {
 	uint16_t timeout;
 	uint8_t repeats;
 	uint8_t modfreq;
+	uint8_t framecnt;
 } Ir_Protocol_Data_t;
 
 /* Which protocols to use. These should perhaps be configuration options 
@@ -148,6 +149,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEC_LOW_ZERO		560*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEC_HIGH			560*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEC_TIMEOUT		110									//ms	(time between ir frames)
+#define IR_NEC_ST_TIMEOUT	65									//ms	(time between first ir frames and second)
 #define IR_NEC_REPS			1									//		(minimum number of times to repeat code)
 #define IR_NEC_F_MOD		38									//kHz	(modulation frequency)
 #define IR_NEC_TOL_DIV		4
