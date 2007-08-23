@@ -93,6 +93,10 @@ int main(void) {
 		if( Timebase_PassedTimeMillis(timeStamp_DS) >= DS_SEND_PERIOD ){
 			timeStamp_DS = Timebase_CurrentTime();
 
+/*	    	txMsg.Id = 0xffffffff;
+	    	txMsg.DataLength = 0;
+	    	BIOS_CanSend(&txMsg);
+*/
             if ( DS18X20_start_meas( DS18X20_POWER_PARASITE, NULL ) == DS18X20_OK) {
                 delay_ms(DS18B20_TCONV_12BIT);
                 for ( i=0; i<nSensors; i++ ) {
