@@ -77,6 +77,8 @@
 #define SNS_TYPE_IR                   0x12L
 #define SNS_TYPE_TEMPERATURE          0x14L
 #define SNS_TYPE_LIGHT                0x18L
+#define SNS_TYPE_PHONENR              0x1aL
+
 
 #define SNS_ID_RELAY_STATUS           0x0BL
 #define SNS_ID_SERVO_STATUS           0x0dL
