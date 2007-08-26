@@ -28,6 +28,7 @@ SOURCES =	main.c\
 			drivers/uart/serial.c\
 			drivers/uart/uart.c\
 			drivers/mcu/mcu.c\
+			drivers/callerid/mt8870/mt8870.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
