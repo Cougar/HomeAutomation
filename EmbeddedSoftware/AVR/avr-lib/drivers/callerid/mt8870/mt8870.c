@@ -94,7 +94,7 @@ ISR(MT8870_INT_VECTOR) {
 	}
 	
 	/* Set/reset timer for dial timeout */
-	Timer_SetTimeout(0, DIAL_TIMEOUT, TimerTypeOneShot, &Callerid_timer_callback);
+	Timer_SetTimeout(0, DIAL_TIMEOUT, TimerTypeOneShot, &DTMFin_timer_callback);
 	
 	if (rxlen == MAX_TONES) {
 		data_overflow = 1;
@@ -108,12 +108,12 @@ ISR(MT8870_INT_VECTOR) {
  *---------------------------------------------------------------------------*/
 
 // Timer callback function 
-void Callerid_timer_callback(uint8_t timer) {
+void DTMFin_timer_callback(uint8_t timer) {
 	data_received = 1;
 	MT8870_INT_DISABLE();
 }
 
-void Callerid_Start(uint8_t *buffer) {
+void DTMFin_Start(uint8_t *buffer) {
 	rxbuf = buffer;
 	rxlen = 0;
 	data_overflow = 0;
@@ -122,7 +122,7 @@ void Callerid_Start(uint8_t *buffer) {
 	MT8870_INT_ENABLE();
 }
 
-uint8_t Callerid_Poll(uint8_t *len) {
+uint8_t DTMFin_Poll(uint8_t *len) {
 	*len = rxlen;
 	if (data_overflow) {
 		return RET_OVERFLOW;
@@ -133,7 +133,7 @@ uint8_t Callerid_Poll(uint8_t *len) {
 	return RET_NOT_FINISHED;
 }
 
-void Callerid_Init(void) {
+void DTMFin_Init(void) {
 	/* set up interrupt on rising edge */
 	INT0_CTRL |= _BV(ISC01);
 	INT0_CTRL |= _BV(ISC00);

@@ -43,13 +43,13 @@
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void Callerid_Init(void);
-uint8_t Callerid_Poll(uint8_t *len);
-void Callerid_Start(uint8_t *buffer);
+void DTMFin_Init(void);
+uint8_t DTMFin_Poll(uint8_t *len);
+void DTMFin_Start(uint8_t *buffer);
 
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes
  *---------------------------------------------------------------------------*/
-void Callerid_timer_callback(uint8_t timer);
+void DTMFin_timer_callback(uint8_t timer);
 
 #endif /*MT8870_H_*/

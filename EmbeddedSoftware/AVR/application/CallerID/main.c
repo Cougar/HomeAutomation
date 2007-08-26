@@ -50,7 +50,7 @@ int main(void)
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
 	
-	Callerid_Init();
+	DTMFin_Init();
 
 	uint8_t rxbuffer[MAX_TONES];
     uint8_t state=0;
@@ -59,12 +59,12 @@ int main(void)
 	while (1) {
 		
 		if (state == STATE_IDLE) {
-			Callerid_Start(rxbuffer);
+			DTMFin_Start(rxbuffer);
 			state = STATE_START_WAIT;
 		} else if (state == STATE_START_WAIT) {
 			state = STATE_WAIT;
 		} else if (state == STATE_WAIT) {
-			uint8_t retval = Callerid_Poll(&rxlen);
+			uint8_t retval = DTMFin_Poll(&rxlen);
 			if (retval == RET_FINISHED) {
 				state = STATE_STOP;
 			} else if (retval == RET_OVERFLOW) {
