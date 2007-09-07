@@ -6,6 +6,7 @@
  *
  * @date    2006-12-11
  * @author  Erik Larsson
+ * @author	Martin Norden
  *
  */
 
@@ -100,13 +101,13 @@ void can_receive(Can_Message_t *msg){
 }
 
 ISR( PCINT2_vect ){
-// For ROTENC_A and ROTENC_B FIXME 채r inte riktigt r채tt
+// For ROTENC_A and ROTENC_B FIXME 둹 inte riktigt r둻t. Verkar vara bra tycker jag?
 	rotenc();
 }
 
 ISR( PCINT0_vect ){
 // For ROTENC_BTN
-rotenc();
+	rotenc();
 }
 
 /*-----------------------------------------------------------------------------
@@ -159,7 +160,7 @@ int main(void) {
 	lcd_puts("HomeAutomation\n");
 
 	send_dimensions();
-	lcd_puts("Very nice!\n");
+	lcd_puts("CAN Connected!\n");
 
     /* main loop */
 	while(1){
@@ -167,7 +168,7 @@ int main(void) {
 		if(rxMsgFull){
 			uint16_t act_type;
 			uint8_t lcdid;
-			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett j채kla herk, st채da upp
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett j둲la herk, st둪a upp
 				
 				
 				act_type =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
@@ -248,7 +249,7 @@ void send_dimensions(){
 
 void rotenc(){
 	uint8_t rot_data = 0;
-	static uint8_t rot_lastdir = 0, rot_laststate = 0; // FIXME m책ste flyttas ut igen?
+	static uint8_t rot_lastdir = 0, rot_laststate = 0, btn_laststate = 0;
 
 	Can_Message_t txMsg;
 	txMsg.ExtendedFlag=1;
@@ -256,6 +257,16 @@ void rotenc(){
 	//txMsg.Id = ( CLASS_SNS<<CLASS_MASK_BITS )|( SNS_ACT_BUTTON<<SNS_TYPE_BITS )|( 0x01<<SNS_ID_BITS )| NODE_ID;//FIXME: borttaget
 	txMsg.DataLength=2;
 
+	//Take care of button push
+	if ((PINB&(1<<PB7)) != btn_laststate){ //The buttonstate has changed! Let's send a message!
+		btn_laststate = (PINB&(1<<PB7));
+		txMsg.Data.bytes[0] = 5;
+		txMsg.Data.bytes[1] = (btn_laststate)?0:1;
+		txMsg.DataLength=2;
+		BIOS_CanSend(&txMsg);
+	}
+	
+	//Take care of rotary encoder movement
 	if(PINB&(1<<PB0)){
 		rot_data |= 0x01;
 	}
@@ -263,38 +274,24 @@ void rotenc(){
 		rot_data |= 0x02;
 	}
 
-	if( rot_data==0 || rot_data==3 ){
-		if( rot_data==0 && rot_laststate!=rot_data ){
+	if( rot_data==0 || rot_data==3 ){ // Are both signals high or low?
+		if( rot_data==0 && rot_laststate!=rot_data ){ // Are both signals low? In that case we are finished with one turn and should print out the direction it went. 
 			if( rot_lastdir&0x01 ){
 				// Moving right
 				txMsg.Data.bytes[0]=RIGHT;
 				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
 				txMsg.DataLength=2;
 				BIOS_CanSend(&txMsg);
-				// For testing TODO remove
-				if(OCR1A<0xFF){
-					OCR1A++;
-				}
-				if(OCR0B>0){
-					OCR0B--;
-				}
 			}else{
 				// Moving left
 				txMsg.Data.bytes[0]=LEFT;
 				txMsg.Data.bytes[1] = (PINB&(1<<PB7))?0:1;
 				txMsg.DataLength=2;
 				BIOS_CanSend(&txMsg);
-				// For testing TODO remove
-				if(OCR1A>0){
-					OCR1A--;
-				}
-				if(OCR0B<0xFF){
-					OCR0B++;
-				}
 			}
 		}
 		rot_laststate = rot_data;
-	}else{
+	} else { // No, only one of the signals are high. We can use this to find out what direction we are moving.
 		rot_lastdir = rot_data;
 	}
 }
