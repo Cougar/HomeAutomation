@@ -12,10 +12,17 @@
 
 /**
  * MCP2515 Chip Select port on avr. 
- */ 
+ */
+
+/* Already defined in node configuration bios.inc */
+#ifndef MCP_CS_PORT
 #define MCP_CS_PORT	PORTB
+#endif
+#ifndef MCP_CS_DDR
 #define MCP_CS_DDR	DDRB
+#ifndef MCP_CS_BIT
 #define MCP_CS_BIT	PB2
+#endif
 
 #if defined(__AVR_ATmega8__)
 #define INT1_REG GICR
