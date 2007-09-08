@@ -418,7 +418,8 @@ uint8_t MCP2515_Init(void) {
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 
-	res = MCP2515_SetCanCtrl(CLK_MASK, CLKOUT_PS1);
+	/* Set prescaler for clock output */
+	res = MCP2515_SetCanCtrl(CLK_MASK, MCP_PRESCALER);
 	
 	if (res == MCP2515_FAIL) return res;  /* function exit on error */
 	
