@@ -35,8 +35,20 @@ F_CPU=8000000UL
 
 # CAN configuration
 CAN_CONTROLLER=MCP2515
-MCP_CLOCK_FREQ_MHZ=20
+MCP_CS_PORT=PORTB
+MCP_CS_DDR=DDRB
+MCP_CS_BIT=PB2
 MCP_CAN_BITRATE_KBPS=250
+MCP_CLOCK_FREQ_MHZ=20
+MCP_CLOCK_PRESC=1
+
+# For 				MCP_CLOCK_FREQ_MHZ=20	MCP_CLOCK_FREQ_MHZ=16
+# MCP_CLOCK_PRESC		external clock			external clock
+# 		1 					20MHz					16MHz 
+# 		2					10MHz					8MHz
+# 		4					5MHz					4MHz
+# 		8					2.5MHz					2MHz
+# Make sure to change F_CPU accordingly if using external clock on AVR (LOWFUSE)
 
 
 #Some common settings of fuses
