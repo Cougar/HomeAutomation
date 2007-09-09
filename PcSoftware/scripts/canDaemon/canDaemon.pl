@@ -71,7 +71,20 @@ if ($devicearg) {
 			print "For a serial device you need to specifiy baudrate, now using default 19200\n";
 			$baudarg = 19200;
 		}
-		use Device::SerialPort;		### install module with aptitude install libdevice-serialport-perl
+		
+		eval 'use Device::SerialPort';		### install module with aptitude install libdevice-serialport-perl
+		if ($@) {
+			eval 'use Win32::SerialPort';
+			if ($@) {
+				print "Could not find Device::SerialPort or Win32::SerialPort, I quit.\n";
+				exit 0;
+			} else {
+				$usingWin32Serial = 1;
+			}
+		} else {
+			$usingDeviceSerial = 1;
+		}
+		
 		&serialConnInit;
 		$thr = threads->new(\&serialConnThread);
 		$thr->detach;		
@@ -161,7 +174,11 @@ sub serialConnProcessBuffer {
 sub serialConnInit {
 	print "Connecting to hardware over serial port\n";
 	$quiet=0;
-	$serialPort = new Device::SerialPort($devicearg, $quiet) || die "failed to open serial port, $devicearg is not valid?";
+	if ($usingDeviceSerial == 1) {
+		$serialPort = new Device::SerialPort($devicearg, $quiet) || die "failed to open serial port, $devicearg is not valid?";
+	} elsif ($usingWin32Serial == 1) {
+		$serialPort = new Win32::SerialPort($devicearg, $quiet) || die "failed to open serial port, $devicearg is not valid?";
+	}
 	$serialPort->databits(8)			|| die "failed setting databits";
 	$serialPort->baudrate($baudarg)		|| die "failed setting baudrate";
 	$serialPort->parity("none")			|| die "failed setting parity";
