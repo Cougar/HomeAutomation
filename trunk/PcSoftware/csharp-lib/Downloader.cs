@@ -37,7 +37,8 @@ public class Downloader {
 	private const byte ADDR2_INDEX = 2;
 	private const byte ADDR3_INDEX = 3;
 	
-	private const int TIMEOUT_MS = 2000;
+	private const int TIMEOUT_MS = 1000;
+	private const int TIMEOUT_SHORT_MS = 200;
 	
 	private long timeStart = 0;
 	
@@ -80,6 +81,7 @@ public class Downloader {
 	public bool downloader() {
 		dState pgs = dState.SEND_START;
 		int t = 0;
+		int t2 = 0;
 		CanPacket outCm = null;
 		CanPacket cm = null;
 		byte[] data = new byte[8];
@@ -116,6 +118,7 @@ public class Downloader {
 						outCm = cpn.getPgmStartPacket(data);
 						dc.sendCanPacket(outCm);
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.WAIT_ACK_PRG;
 						timeStart = Environment.TickCount;
 						break;
@@ -171,6 +174,7 @@ public class Downloader {
 						dc.sendCanPacket(outCm);
 						
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						byteSent += 6;
 						pgs = dState.WAIT_ACK_DATA;
 						break;
@@ -178,11 +182,18 @@ public class Downloader {
 						
 					case dState.WAIT_ACK_DATA:
 						// Wait for pgm ack.
-						if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
+						if ((Environment.TickCount - t) > TIMEOUT_MS) {
 							// Woops, error. 
 							Console.WriteLine("Timeout while waiting for data ack.");
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
+						}
+						if ((Environment.TickCount - t2) > TIMEOUT_SHORT_MS) {
+							// Woops, error. 
+							Console.Write(":");
+							byteSent -= 6;
+							pgs = dState.SEND_PGM_DATA;
+							break;
 						}
 						//Thread.Sleep(1);
 						// If received ack.
@@ -221,6 +232,7 @@ public class Downloader {
 						dc.sendCanPacket(outCm);
 
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.WAIT_DONE;
 						break;
 						
@@ -292,6 +304,7 @@ public class Downloader {
 						Console.WriteLine("Now say a prayer, moving bios");
 						dc.sendCanPacket(outCm);
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.WAIT_BOOT;
 						//pgs = dState.DONE;
 						break;
@@ -334,6 +347,7 @@ public class Downloader {
 						outCm = cpn.getPgmStartPacket(data);
 						dc.sendCanPacket(outCm);
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.WAIT_ACK_PRG_EMPTY;
 						timeStart = Environment.TickCount;
 						break;
@@ -380,6 +394,7 @@ public class Downloader {
 						dc.sendCanPacket(outCm);
 						
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						byteSent += 6;
 						pgs = dState.WAIT_ACK_EMPTY_DATA;
 						break;
@@ -420,6 +435,7 @@ public class Downloader {
 						dc.sendCanPacket(outCm);
 
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.WAIT_DONE_EMPTY;
 						break;
 						
@@ -457,6 +473,7 @@ public class Downloader {
 						// Send reset
 						cpn.doReset(dc, receiveID);
 						t = Environment.TickCount;
+						t2 = Environment.TickCount;
 						pgs = dState.DONE;
 						break;
 						
