@@ -262,6 +262,21 @@ extern void lcd_command(uint8_t cmd);
 extern void lcd_data(uint8_t data);
 
 
+// displays a horizontal progress bar at the current cursor location
+// <progress> is the value the bargraph should indicate
+// <maxprogress> is the value at the end of the bargraph
+// <length> is the number of LCD characters that the bargraph should cover
+void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length);
+
+
+//loads a custom character
+// <lcdCustomCharArray> is a pointer to a ROM array containing custom characters
+// <romCharNum> is the index of the character to load from lcdCustomCharArray
+// <lcdCharNum> is the RAM location in the LCD (legal value: 0-7)
+void lcdLoadCustomChar(uint8_t* lcdCustomCharArray, uint8_t romCharNum, uint8_t lcdCharNum);
+
+
+
 /**
  @brief macros for automatically storing string constant in program memory
 */

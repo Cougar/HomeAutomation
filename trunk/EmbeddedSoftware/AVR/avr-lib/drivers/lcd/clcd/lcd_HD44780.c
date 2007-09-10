@@ -29,6 +29,17 @@
 #include <config.h>
 
 
+// custom LCD characters
+unsigned char __attribute__ ((progmem)) LcdCustomChar[] = 
+{
+	0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, // 0. 0/5 full progress block
+	0x00, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x1F, 0x00, // 1. 1/5 full progress block
+	0x00, 0x1F, 0x18, 0x18, 0x18, 0x18, 0x1F, 0x00, // 2. 2/5 full progress block
+	0x00, 0x1F, 0x1C, 0x1C, 0x1C, 0x1C, 0x1F, 0x00, // 3. 3/5 full progress block
+	0x00, 0x1F, 0x1E, 0x1E, 0x1E, 0x1E, 0x1F, 0x00, // 4. 4/5 full progress block
+	0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00, // 5. 5/5 full progress block
+};
+
 
 /* 
 ** constants/macros 
@@ -609,4 +620,68 @@ void lcd_init(uint8_t dispAttr)
     lcd_command(LCD_MODE_DEFAULT);          /* set entry mode               */
     lcd_command(dispAttr);                  /* display/cursor control       */
 
+    // load the custom characters for the bargraph
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,0,0);
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,1,1);
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,2,2);
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,3,3);
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,4,4);
+    lcdLoadCustomChar((uint8_t*)LcdCustomChar,5,5);
+    
 }/* lcd_init */
+
+void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
+	uint8_t i;
+	uint32_t pixelprogress;
+	uint8_t c;
+	
+	pixelprogress = ((progress*(length*6))/maxprogress);
+
+	// print exactly "length" characters
+	for(i=0; i<length; i++){
+		// check if this is a full block, or partial or empty
+		// (u16) cast is needed to avoid sign comparison warning
+		if( ((i*(uint16_t)6)+5) > pixelprogress ) {
+			// this is a partial or empty block
+			if( ((i*(uint16_t)6)) > pixelprogress ){
+				// this is an empty block
+				// use space character?
+				c = 0;
+			} else {
+				// this is a partial block
+				c = pixelprogress % 6;
+			}
+		} else {
+			// this is a full block
+			c = 5;
+		}    
+		// write character to display
+		lcd_data(c);
+	}	
+}
+
+void lcdLoadCustomChar(uint8_t* lcdCustomCharArray, uint8_t romCharNum, uint8_t lcdCharNum)
+{
+    register uint8_t i;
+    uint8_t saveDDRAMAddr;
+
+    // backup the current cursor position
+ //   saveDDRAMAddr = lcdControlRead() & 0x7F; TODO: Fix me
+
+    // multiply the character index by 8
+    lcdCharNum = (lcdCharNum<<3);   // each character occupies 8 bytes
+    romCharNum = (romCharNum<<3);   // each character occupies 8 bytes
+
+    // copy the 8 bytes into CG (character generator) RAM
+    for(i=0; i<8; i++)
+    {
+        // set CG RAM address
+        lcd_command((1<<LCD_CGRAM) | (lcdCharNum+i));
+        // write character data
+        lcd_data( pgm_read_byte(lcdCustomCharArray+romCharNum+i) );
+    }
+
+    // restore the previous cursor position
+   // lcd_command(1<<LCD_DDRAM | saveDDRAMAddr); todo: fix me
+
+}
