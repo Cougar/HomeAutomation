@@ -56,12 +56,22 @@ void send_dimensions(void);
 void rotenc(void);
 void action(uint8_t type);
 void alarm(void);
+void refreshDisplay(void);
 
 uint32_t timeBase = 0;
-uint16_t timerVar= 0;
-uint8_t alarmTimer = 0;
 
 char lcdBuffer[5];
+
+//Struct for countdown
+typedef struct
+{
+	uint16_t timerCnt;
+	uint8_t alarmTimer;
+	uint16_t timerMax;
+} countDown;
+
+countDown countTimer1;
+
 
 // CAN message reception callback
 // This function runs with interrupts disabled, keep it as short as possible
@@ -131,28 +141,26 @@ int main(void) {
 
 	lcd_init( LCD_DISP_ON );
 	lcd_clrscr();
-	lcd_puts("EggWatch\n");
+	lcd_puts("CanEggWatch\n");
 
 	send_dimensions();
 	lcd_puts("CAN Connected!\n");
+	
+	lcd_clrscr();
+	
 
     /* main loop */
 	while(1){
 		
 		
 		if( Timebase_PassedTimeMillis(timeBase) >= 1000 ){
-			if (timerVar != 0){
-				timerVar--;
-				lcd_clrscr();
-				itoa(timerVar/60,lcdBuffer,10);
-				lcd_puts(lcdBuffer);
-				lcd_puts(":");
-				itoa(timerVar%60,lcdBuffer,10);
-				lcd_puts(lcdBuffer);
+			if (countTimer1.timerCnt != 0){
+				countTimer1.timerCnt--;
+				refreshDisplay();
 			} else {
-				if (alarmTimer != 0){
+				if (countTimer1.alarmTimer != 0){
 					alarm();
-					alarmTimer--;
+					countTimer1.alarmTimer--;
 				}
 			}
 			timeBase =  Timebase_CurrentTime();
@@ -236,33 +244,40 @@ void action(uint8_t type){
 	//Let's do something with something!
 	lcd_clrscr();
 	if (type == LEFT){
-		timerVar--;
-		lcd_clrscr();
-		itoa(timerVar/60,lcdBuffer,10);
-		lcd_puts(lcdBuffer);
-		lcd_puts(":");
-		itoa(timerVar%60,lcdBuffer,10);
-		lcd_puts(lcdBuffer);
+		countTimer1.timerCnt--;
+		refreshDisplay();
 	}
 	if (type == RIGHT){
-		timerVar++;
-		lcd_clrscr();
-		itoa(timerVar/60,lcdBuffer,10);
-		lcd_puts(lcdBuffer);
-		lcd_puts(":");
-		itoa(timerVar%60,lcdBuffer,10);
-		lcd_puts(lcdBuffer);
+		countTimer1.timerCnt++;
+		if  (countTimer1.timerCnt > countTimer1.timerMax){
+			countTimer1.timerMax = countTimer1.timerCnt;
+		}
+		refreshDisplay();
 	}
 	if (type == BUTTON_PUSH){
 		lcd_puts("Init!");
 	}
 	if (type == BUTTON_RELEASE){
 		timeBase = Timebase_CurrentTime();
-		timerVar = 10;
-		alarmTimer = 1;
+		countTimer1.timerCnt = 10;
+		countTimer1.timerMax = 10;
+		countTimer1.alarmTimer = 1;
+		refreshDisplay();
 	}
 }
 
 void alarm(void){
 	lcd_puts("Riing!");
+}
+
+void refreshDisplay(void){
+	lcd_clrscr();
+	itoa(countTimer1.timerCnt/60,lcdBuffer,10);
+	lcd_puts(lcdBuffer);
+	lcd_puts(":");
+	itoa(countTimer1.timerCnt%60,lcdBuffer,10);
+	lcd_puts(lcdBuffer);
+	
+	lcd_gotoxy(0,1);
+	lcdProgressBar(countTimer1.timerCnt,countTimer1.timerMax,16);	
 }
