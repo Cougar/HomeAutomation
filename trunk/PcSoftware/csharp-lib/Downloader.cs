@@ -188,7 +188,7 @@ public class Downloader {
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
 						}
-						if ((Environment.TickCount - t2) > TIMEOUT_SHORT_MS) {
+						else if ((Environment.TickCount - t2) > TIMEOUT_SHORT_MS) {
 							// Woops, error. 
 							Console.Write(":");
 							byteSent -= 6;
