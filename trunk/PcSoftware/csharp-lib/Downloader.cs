@@ -311,7 +311,7 @@ public class Downloader {
 
 					case dState.WAIT_BOOT:
 						// Wait for node reset answer (boot msg).
-						if ((Environment.TickCount - t) > 2*TIMEOUT_MS) {
+						if ((Environment.TickCount - t) > 3*TIMEOUT_MS) {
 							// Woops, error. 
 							Console.WriteLine("Timeout while waiting for node to boot.");
 							errorOccured = true;
@@ -355,7 +355,7 @@ public class Downloader {
 					
 					case dState.WAIT_ACK_PRG_EMPTY:
 						// Check for timeout, resend start packet in that case..
-						if ((Environment.TickCount - t) > TIMEOUT_MS) {
+						if ((Environment.TickCount - t) > 3*TIMEOUT_MS) {
 							Console.WriteLine("Timeout while waiting for start prg ack.");
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
