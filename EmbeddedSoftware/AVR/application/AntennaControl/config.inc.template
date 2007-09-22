@@ -1,0 +1,9 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
+SERIAL_BAUDRATE=9600
+SERIAL_RX_BUFFER_SIZE=32
+SERIAL_TX_BUFFER_SIZE=64
+
+TIMER_NUM_TIMERS=3
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000
