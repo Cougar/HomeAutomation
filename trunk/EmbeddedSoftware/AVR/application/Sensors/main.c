@@ -63,7 +63,7 @@ int main(void) {
 #endif
 #if defined(USE_LDR)
 	uint32_t timeStamp_LDR = 0;
-	uint8_t ldr;
+	uint32_t ldr;
 	LDR_SensorInit();
 #endif
     sei();
@@ -145,7 +145,7 @@ int main(void) {
 			timeStamp_LDR = Timebase_CurrentTime();
 
             ldr = (uint8_t)LDR_GetData(0);
-            txMsg.Data.bytes[0] = ldr;
+            txMsg.Data.bytes[0] = (ldr>>2)&0xff;
             txMsg.DataLength = 1;
 
 			txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_LIGHT << CAN_SHIFT_SNS_TYPE) | (LIGHTSENSORID_1 << CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
