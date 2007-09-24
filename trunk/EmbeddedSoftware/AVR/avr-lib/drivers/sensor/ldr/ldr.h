@@ -17,8 +17,11 @@
  * Define which ADC that will be used, ADC0 to ADC7.
  * If using ATmega88/168 PDIP ADC7 wont be aviable, only on TFQP.
  * (syntax: ADCx where x is the number och the ADC used)
+ * 
+ * This should be defined in your application config.inc
  */
-#define ADC5
+//#define ADCHAN ADC5
+
 
 /*-----------------------------------------------
  * Functions
