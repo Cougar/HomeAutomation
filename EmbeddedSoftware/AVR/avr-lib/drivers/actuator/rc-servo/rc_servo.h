@@ -16,13 +16,17 @@
  * For width of the pulse that control the RC servo.
  * Clock pulses.
  * This is adjusted for a 8 MHz clock, to use different speeds recalculate.
+ * 
+ * MAX and MIN is defined in application config.inc
  */
-#define PWM1_MIN_PULSE   800 // 1000
-#define PWM1_MAX_PULSE   2200 // 2000
+/*
+#define PWM1_MIN_PULSE   550 // 1000
+#define PWM1_MAX_PULSE   2750 // 2000
 #define PWM2_MIN_PULSE   20
 #define PWM2_MAX_PULSE   50
 #define PWM3_MIN_PULSE   20
 #define PWM3_MAX_PULSE   50
+*/
 
 #define STEP1   ((PWM1_MAX_PULSE - PWM1_MIN_PULSE)/256)
 #define STEP2   1
