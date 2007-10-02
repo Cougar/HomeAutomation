@@ -73,27 +73,31 @@
 #define CAN_APPTYPES_RGBLED			0xf035
 
 // CAN ID definitions for SNS messages
-#define SNS_TYPE_STATUS               0x10L
-#define SNS_TYPE_IR                   0x12L
-#define SNS_TYPE_TEMPERATURE          0x14L
-#define SNS_TYPE_LIGHT                0x18L
-#define SNS_TYPE_PHONENR              0x1aL
+#define SNS_TYPE_STATUS             0x10L
+#define SNS_TYPE_IR                 0x12L
+#define SNS_TYPE_TEMPERATURE        0x14L
+#define SNS_TYPE_LIGHT              0x18L
+#define SNS_TYPE_PHONENR            0x1aL
+#define SNS_TYPE_PRESSURE			0x1bL
+#define SNS_TYPE_VOLTAGE			0x1cL
+#define SNS_TYPE_ROTSPEED			0x1dL
 
 
 #define SNS_ID_RELAY_STATUS           0x0BL
 #define SNS_ID_SERVO_STATUS           0x0dL
 
+//Definitions of precision of different sensors
+#define SNS_DECPOINT_TEMPERATURE	0x04
+#define SNS_DECPOINT_PRESSURE		0x06
+#define SNS_DECEPOINT_ROTSPEED		0x02
+#define SNS_DECPOINT_VOLTAGE		0x06
 
 
 // CAN ID definitions for ACT messages
 #define ACT_TYPE_RELAY         0x01L
-
 #define ACT_TYPE_SERVO         0x02L
-
 #define ACT_TYPE_RGBLED		   0x03L
-
 #define ACT_TYPE_IR            0x04L
-
 #define ACT_TYPE_LCD		   0x05L
 
 
