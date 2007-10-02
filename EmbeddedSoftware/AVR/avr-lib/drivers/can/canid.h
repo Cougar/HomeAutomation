@@ -89,7 +89,7 @@
 //Definitions of precision of different sensors
 #define SNS_DECPOINT_TEMPERATURE	0x04
 #define SNS_DECPOINT_PRESSURE		0x06
-#define SNS_DECEPOINT_ROTSPEED		0x02
+#define SNS_DECPOINT_ROTSPEED		0x02
 #define SNS_DECPOINT_VOLTAGE		0x06
 
 
