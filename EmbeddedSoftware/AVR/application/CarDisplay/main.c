@@ -7,6 +7,8 @@
  * @date    2007-10-01
  * @author	Martin Norden
  *
+ * TODO: put rotary encoder in external library, same with s16/u16tostr, cleanup, read external sensors... a lot basically.
+ * Assume all sensor conversion done on the sensorcard, use canstandard here
  */
 
 /*-----------------------------------------------------------------------------
@@ -76,6 +78,10 @@ void updateDisplay(uint8_t screen, uint8_t transition);
 #define LAST_SCREEN		0x04
 void standardScreen(char* text, uint16_t value, uint16_t maxvalue);
 
+void numtoascii( int16_t num, char **str );
+void rattoascii( int16_t num, uint8_t decimalplace, char *string); //decimalplace is number ofjah
+
+uint8_t *parsetemperature(int16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
 uint8_t *io_s16toStr(int16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
 uint8_t *io_u16toStr(uint16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
 
@@ -85,14 +91,13 @@ uint8_t *io_u16toStr(uint16_t value, uint8_t *str,uint8_t decimal,uint8_t option
  * Sensor Values, Scale factors etc.                                           *
  *******************************************************************************/
 int16_t sensor_Boost = 120; //Should be set automagically by incoming CAN
-int16_t sensor_Boost_Max = 200;
+int16_t sensor_Boost_Max = 200;  //highest boost so far
 
 uint16_t sensor_RPM = 2573;
 uint8_t sensor_Lambda = 127;
 uint8_t sensor_Voltage = 143;
 
-#define scale_Boost 809 //Read from eeprom later on?
-#define scale_BoostOffset 168 //Read from eeprom later on?
+#define scale_Boost 200 //see "Representation av storheter"
 #define scale_BoostMAX 200
 #define scale_RPMMAX 8000 //Can be set as in eeprom later perhaps?
 #define scale_Voltage 1024
@@ -179,15 +184,18 @@ int main(void) {
 	while(1){
         /* check if any messages have been received */
 		if(rxMsgFull){
-			uint16_t act_type;
-			uint8_t lcdid;
-			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett jäkla herk, städa upp
-				
-				
-				act_type =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
+			uint16_t sns_type;
+			uint8_t snsid;
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_SNS){// FIXME ett jäkla herk, städa upp
 			
-				lcdid = (uint8_t)((rxMsg.Id & CAN_MASK_ACT_ID) >> CAN_SHIFT_ACT_ID);				
-
+				sns_type = (uint16_t)((rxMsg.Id & CAN_MASK_SNS_TYPE) >> CAN_SHIFT_SNS_TYPE);
+				snsid = (uint8_t)((rxMsg.Id & CAN_MASK_SNS_ID) >> CAN_SHIFT_SNS_ID);
+				
+				
+				if (sns_type == SNS_TYPE_PRESSURE) {
+					sensor_Boost = rxMsg.Data.bytes[0]*256 + rxMsg.Data.bytes[1];
+					if (currentScreen == SCR_BOOST) updateDisplay(SCR_BOOST,0);
+				}
 
 			}
 			rxMsgFull = 0;
@@ -230,10 +238,13 @@ void rotenc_action(uint8_t type){
 }
 
 void updateDisplay(uint8_t screen, uint8_t transition){
-	char buffer[10];	
+	char buffer[20];	
 	
 	if (transition){
 		lcd_clrscr();
+		lcd_setanimation(0);
+	} else {
+		lcd_setanimation(0);
 	}
 	switch (screen){
 	case SCR_LAMBDA:
@@ -256,19 +267,23 @@ void updateDisplay(uint8_t screen, uint8_t transition){
 		lcd_puts("Boost:");
 	
 		lcd_gotoxy(7,0);
-		lcd_puts(io_s16toStr(((int32_t)sensor_Boost*scale_Boost)>>10,buffer,2,1));
-	
-		lcd_gotoxy(13,0);
-		lcd_puts("bar");
+		//lcd_puts(io_s16toStr(((int32_t)sensor_Boost*scale_Boost)>>10,buffer,2,1));
+		rattoascii(sensor_Boost,6,buffer);
+		lcd_puts(buffer);
+		
+		//lcd_gotoxy(13,0);
+		lcd_puts(" bar");
 		
 		lcd_gotoxy(0,1);
-		lcdProgressBar(max(0,sensor_Boost), ((int32_t)scale_BoostMAX)>>10, 16);
+		lcdProgressBar(max(0,sensor_Boost), scale_BoostMAX, 16);
 	break;
-	case SCR_MAXBOOST:
+	case SCR_MAXBOOST: //currently just a testscreen ffs omg
 		lcd_gotoxy(0,0);
 		lcd_puts("Max Boost: ");
 		lcd_gotoxy(11,0);
-		lcd_puts(io_s16toStr(((int32_t)sensor_Boost_Max*scale_Boost)>>10,buffer,2,1));		
+		lcd_gotoxy(0,1);
+		rattoascii(0x0001,6,buffer);
+		lcd_puts(buffer);
 	break;
 	case SCR_VOLTAGE:
 
@@ -276,9 +291,9 @@ void updateDisplay(uint8_t screen, uint8_t transition){
 		lcd_puts("Voltage:");
 		
 		lcd_gotoxy(9,0);
-		lcd_puts(io_u16toStr(((uint32_t)sensor_Voltage*scale_Voltage)>>10,buffer,1,0));
+		//lcd_puts(io_u16toStr(((uint32_t)sensor_Voltage*scale_Voltage)>>10,buffer,1,0));
 		
-		lcd_gotoxy(16,0);
+		lcd_gotoxy(14,0);
 		lcd_puts("V");		
 		lcd_puts("spanning!");
 		
@@ -373,12 +388,74 @@ void rotenc(){
 
 
 
+
+//á la pengi
+void numtoascii( int16_t num, char **str ) {
+	if( num==0 ) return;
+	numtoascii( num/10, str );
+	**str = '0' + (num%10);
+	(*str)++;
+}
+
+void rattoascii( int16_t num, uint8_t decimalplace, char *string){ //decimalplace is number of decimals
+	uint8_t i;
+#define ANTAL_NUFFROR 3
+	if( num<0 ) {
+		*(string++) = '-';
+		num = -num;
+	}
+	numtoascii(num>>decimalplace, &string );
+	*(string++) = '.';
+	for(i=0;i<ANTAL_NUFFROR;i++) { 
+		num %= 1<<decimalplace;
+		num *= 10;
+		*(string++) = '0' + (num>>decimalplace);
+	}
+	*(string++) = 0;
+}
+
+
 //Supersnodd:
 
 
 
 uint8_t _io_buf[10];
 
+
+/*
+uint8_t *parsetemperature(int16_t value,uint8_t *str,uint8_t decimal,uint8_t options){
+	uint16_t tmp;
+	uint8_t i=0;
+	
+	//value = 0xfcf4;
+	//decimal = 6;
+	
+	if(value<0) {
+		str[i++]='-'; //add negative sign
+		tmp=-value>>decimal;
+	} else {
+		if(options&0x01) str[i++]=' '; //Can the number be negative? Leave space for minussign
+		tmp=value>>decimal;
+	}	
+	
+	//Let's start axing up the value to print it beautifully. We have tmp, the integer part of the value
+	while(tmp>0) {
+		str[i++]='0' + (tmp%10);
+		tmp=tmp/10;
+	}	
+	
+	//now we hafve printed all of zat
+	str[i++] = '.';
+	
+	//let's go on to the fractional part... (cwap!)
+	
+	
+	str[i++]=0;
+	return(str);
+}
+*/
+
+// nån annans rutin som jag inte riktigt förstår mig på.
 uint8_t *io_s16toStr(int16_t value,uint8_t *str,uint8_t decimal,uint8_t options) {
 	uint8_t i=0,j=0,w=0;
 	uint16_t tmp;
