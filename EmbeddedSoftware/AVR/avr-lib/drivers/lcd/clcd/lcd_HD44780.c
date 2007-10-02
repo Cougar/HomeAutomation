@@ -482,6 +482,13 @@ void lcd_putc(char c)
 #endif
         lcd_waitbusy();
 #endif
+        
+#ifdef ANIMATION_OUTPUT        
+        lcd_write(5,1);
+        delay(ANIMATION_OUTPUT);
+        lcd_command(LCD_MOVE_CURSOR_LEFT);
+        delay(ANIMATION_OUTPUT);
+#endif
         lcd_write(c, 1);
     }
 
@@ -499,7 +506,8 @@ void lcd_puts(const char *s)
     register char c;
 
     while ( (c = *s++) ) {
-        lcd_putc(c);
+    	lcd_putc(c);
+    
     }
 
 }/* lcd_puts */
@@ -635,7 +643,8 @@ void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
 	uint32_t pixelprogress;
 	uint8_t c;
 	
-	pixelprogress = ((progress*(length*6))/maxprogress);
+	pixelprogress = 1;
+	pixelprogress = pixelprogress*progress*length*6/maxprogress; //TODO: Typecasta på ett snyggare sätt
 
 	// print exactly "length" characters
 	for(i=0; i<length; i++){
@@ -656,7 +665,7 @@ void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
 			c = 5;
 		}    
 		// write character to display
-		lcd_data(c);
+		lcd_putc(c);
 	}	
 }
 
