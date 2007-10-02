@@ -34,6 +34,8 @@
  @see The chapter <a href="http://homepage.sunrise.ch/mysunrise/peterfleury/avr-lcd44780.html" target="_blank">Interfacing a HD44780 Based LCD to an AVR</a>
       on my home page.
 
+ CHANGES: Added parameter ANIMATION_OUTPUT that slows output down but makes it a bit nicer. /noddan 07-10-02
+
 */
 
 /*@{*/
