@@ -28,6 +28,10 @@
 #include "lcd_HD44780.h"
 #include <config.h>
 
+#ifdef ANIMATION_OUTPUT
+uint8_t animation;
+#endif
+
 
 // custom LCD characters
 unsigned char __attribute__ ((progmem)) LcdCustomChar[] = 
@@ -483,11 +487,13 @@ void lcd_putc(char c)
         lcd_waitbusy();
 #endif
         
-#ifdef ANIMATION_OUTPUT        
-        lcd_write(5,1);
-        delay(ANIMATION_OUTPUT);
-        lcd_command(LCD_MOVE_CURSOR_LEFT);
-        delay(ANIMATION_OUTPUT);
+#ifdef ANIMATION_OUTPUT       
+        if (animation){
+        	lcd_write(5,1);
+        	delay(ANIMATION_OUTPUT);
+        	lcd_command(LCD_MOVE_CURSOR_LEFT);
+        	delay(ANIMATION_OUTPUT);
+        }
 #endif
         lcd_write(c, 1);
     }
@@ -637,6 +643,14 @@ void lcd_init(uint8_t dispAttr)
     lcdLoadCustomChar((uint8_t*)LcdCustomChar,5,5);
     
 }/* lcd_init */
+
+
+#ifdef ANIMATION_OUTPUT
+void lcd_setanimation(uint8_t animation_set){
+	animation = animation_set;	
+}
+#endif
+
 
 void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
 	uint8_t i;

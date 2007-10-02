@@ -264,6 +264,15 @@ extern void lcd_command(uint8_t cmd);
 extern void lcd_data(uint8_t data);
 
 
+#ifdef ANIMATION_OUTPUT
+/**
+ @brief    Turn on/off LCD animation
+ @param    1 or 0, on or off
+ @return   none
+*/
+extern void lcd_setanimation(uint8_t animation_set);
+#endif
+
 // displays a horizontal progress bar at the current cursor location
 // <progress> is the value the bargraph should indicate
 // <maxprogress> is the value at the end of the bargraph
