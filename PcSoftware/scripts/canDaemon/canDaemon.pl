@@ -67,6 +67,7 @@ if ($devicearg) {
 	}
 	### else, the hardware is serial, check for device, this might not work in windows ###
 #	elsif (-e $devicearg) {
+	else {
 		if (!$baudarg) {
 			print "For a serial device you need to specifiy baudrate, now using default 19200\n";
 			$baudarg = 19200;
@@ -88,7 +89,7 @@ if ($devicearg) {
 		&serialConnInit;
 		$thr = threads->new(\&serialConnThread);
 		$thr->detach;		
-		
+	}
 #	} else {
 #		print "Argument $devicearg is not correct\n";
 #		exit 0;
