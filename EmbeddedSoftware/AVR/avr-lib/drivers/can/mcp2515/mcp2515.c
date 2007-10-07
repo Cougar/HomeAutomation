@@ -41,12 +41,10 @@
 	#define SPI_SCK   PB5  
 	#define SPI_MISO  PB4 
 	#define SPI_MOSI  PB3  
-	#define SPI_SS    PB2 
 #elif defined(__AVR_ATmega32__) || defined(__AVR_ATmega16__)
 	#define SPI_SCK   PB7
 	#define SPI_MISO  PB6 
 	#define SPI_MOSI  PB5  
-	#define SPI_SS    PB4
 #else
 	#error "SPI pins undefined for this target (see spi.h)"
 #endif
@@ -60,7 +58,7 @@ static uint8_t SPI_Read(void);
 // init as SPI-Master
 static void SPI_Init(void) {
 	// SCK, SS!!, MOSI as outputs
-	SPI_DDR |= (1<<SPI_SCK) | (1<<SPI_SS) | (1<<SPI_MOSI);
+	SPI_DDR |= (1<<SPI_SCK) | (1<<SPI_MOSI);
 	// MISO as input
 	SPI_DDR &= ~(1<<SPI_MISO);
 	// INIT interface, Master, set clock rate fck/4
