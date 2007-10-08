@@ -70,41 +70,48 @@ void rotenc_action(uint8_t type);
 
 void updateDisplay(uint8_t screen, uint8_t transition);
 
-#define SCR_LAMBDA		0x00
-#define SCR_BOOST		0x01
-#define SCR_MAXBOOST	0x02
+#define SCR_BOOST		0x00
+#define SCR_MAXBOOST	0x01
+#define SCR_LAMBDA		0x02
 #define SCR_RPM			0x03
 #define SCR_VOLTAGE		0x04
-#define LAST_SCREEN		0x04
-void standardScreen(char* text, uint16_t value, uint16_t maxvalue);
+#define SCR_VELOCITY	0x05
+#define SCR_FUELCONS	0x06
+//#define SCR_OILPRESS	0x07
+//#define SCR_OILTEMP	0x08
+#define LAST_SCREEN		0x06
 
 void numtoascii( int16_t num, char **str );
-void rattoascii( int16_t num, uint8_t decimalplace, char *string); //decimalplace is number ofjah
-
-uint8_t *parsetemperature(int16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
-uint8_t *io_s16toStr(int16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
-uint8_t *io_u16toStr(uint16_t value, uint8_t *str,uint8_t decimal,uint8_t options);
+void signedtoascii(int16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals);
+void unsignedtoascii(uint16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals);
 
 
 
 /*******************************************************************************
  * Sensor Values, Scale factors etc.                                           *
  *******************************************************************************/
-int16_t sensor_Boost = 120; //Should be set automagically by incoming CAN
-int16_t sensor_Boost_Max = 200;  //highest boost so far
+int16_t 	sensor_Boost 		= 0.001*64; 
+int16_t 	sensor_Boost_Max 	= 0.92*64;  //highest boost so far
+uint16_t 	sensor_Lambda 		= 32000;
+uint16_t 	sensor_RPM 			= 3973*(2<<(SNS_DECPOINT_ROTSPEED-1));
+uint16_t 	sensor_Voltage 		= 12.7*(2<<(SNS_DECPOINT_VOLTAGE-1));
+uint16_t 	sensor_Velocity		= 120*(2<<(SNS_DECPOINT_VELOCITY-1));
+uint16_t 	sensor_Fuelcons		= 0.78*(2<<(SNS_DECPOINT_FUELCONS-1));
 
-uint16_t sensor_RPM = 2573;
-uint8_t sensor_Lambda = 127;
-uint8_t sensor_Voltage = 143;
-
-#define scale_Boost 200 //see "Representation av storheter"
-#define scale_BoostMAX 200
-#define scale_RPMMAX 8000 //Can be set as in eeprom later perhaps?
-#define scale_Voltage 1024
-#define scale_VoltageMAX 150
+#define SCALE_BOOSTMAX 1.2*64 //depending on memory usage later, maybe put these in eeprom?
+#define SCALE_LAMBDAMAX 65535
+#define SCALE_RPMMAX 8000*(2<<(SNS_DECPOINT_ROTSPEED-1))
+#define SCALE_VOLTAGEMAX 15*(2<<(SNS_DECPOINT_VOLTAGE-1))
+#define SCALE_VELOCITYMAX 150*(2<<(SNS_DECPOINT_VELOCITY-1))
+#define SCALE_FUELCONSMAX 2*(2<<(SNS_DECPOINT_FUELCONS-1))
 
 
-uint8_t currentScreen;
+
+/*******************************************************************************
+ * Something else..					                                           *
+ *******************************************************************************/
+
+uint8_t currentScreen; //current screen
 
 // CAN message reception callback
 // This function runs with interrupts disabled, keep it as short as possible
@@ -191,10 +198,19 @@ int main(void) {
 				sns_type = (uint16_t)((rxMsg.Id & CAN_MASK_SNS_TYPE) >> CAN_SHIFT_SNS_TYPE);
 				snsid = (uint8_t)((rxMsg.Id & CAN_MASK_SNS_ID) >> CAN_SHIFT_SNS_ID);
 				
-				
-				if (sns_type == SNS_TYPE_PRESSURE) {
+				switch(sns_type){
+				case SNS_TYPE_PRESSURE:
 					sensor_Boost = rxMsg.Data.bytes[0]*256 + rxMsg.Data.bytes[1];
-					if (currentScreen == SCR_BOOST) updateDisplay(SCR_BOOST,0);
+					sensor_Boost_Max = max(sensor_Boost,sensor_Boost_Max);
+					if (currentScreen == SCR_BOOST) updateDisplay(SCR_BOOST,0);			
+				break;
+				case SNS_TYPE_ROTSPEED:
+					sensor_RPM = rxMsg.Data.bytes[0]*256 + rxMsg.Data.bytes[1];
+					if (currentScreen == SCR_RPM) updateDisplay(SCR_RPM,0);
+				break;
+				case SNS_TYPE_VOLTAGE:
+					sensor_Voltage = rxMsg.Data.bytes[0]*256 + rxMsg.Data.bytes[1];
+					if (currentScreen == SCR_VOLTAGE) updateDisplay(SCR_VOLTAGE,0);
 				}
 
 			}
@@ -218,7 +234,7 @@ void send_dimensions(){
 
 void rotenc_action(uint8_t type){
 	//Let's do something with something!
-	lcd_clrscr();
+	
 	if (type == LEFT){	
 		if (currentScreen == 0) currentScreen = LAST_SCREEN+1;
 		currentScreen--;
@@ -242,79 +258,71 @@ void updateDisplay(uint8_t screen, uint8_t transition){
 	
 	if (transition){
 		lcd_clrscr();
-		lcd_setanimation(0);
+		lcd_setanimation(1);
 	} else {
 		lcd_setanimation(0);
 	}
 	switch (screen){
 	case SCR_LAMBDA:
 		lcd_gotoxy(0,0);
-		lcd_puts("LEAN Lambda RICH");
+		lcd_puts("LEAN   Lambda   RICH");
 		lcd_gotoxy(0,1);
-		lcdProgressBar(sensor_Lambda, 255, 16); //TODO: vacker bargraph med bara en plupp i mitten
+		lcdProgressBar(sensor_Lambda, SCALE_LAMBDAMAX, SIZE_X); //TODO: vacker bargraph med bara en plupp i mitten
 	break;
 	case SCR_RPM:		
 		lcd_gotoxy(0,0);
-		itoa(sensor_RPM,buffer,10);
 		lcd_puts("RPM: ");
+		unsignedtoascii(sensor_RPM,SNS_DECPOINT_ROTSPEED,buffer,0);
 		lcd_puts(buffer);
 		lcd_gotoxy(0,1);
-		lcdProgressBar(sensor_RPM, scale_RPMMAX, 16);
+		lcdProgressBar(sensor_RPM, SCALE_RPMMAX, SIZE_X);
 	break;
-	case SCR_BOOST:
-			
+	case SCR_BOOST:			
 		lcd_gotoxy(0,0);
-		lcd_puts("Boost:");
-	
-		lcd_gotoxy(7,0);
-		//lcd_puts(io_s16toStr(((int32_t)sensor_Boost*scale_Boost)>>10,buffer,2,1));
-		rattoascii(sensor_Boost,6,buffer);
+		lcd_puts("Boost: ");	
+		signedtoascii(sensor_Boost,SNS_DECPOINT_PRESSURE,buffer,2);
 		lcd_puts(buffer);
-		
-		//lcd_gotoxy(13,0);
-		lcd_puts(" bar");
+		lcd_puts(" bar    ");
 		
 		lcd_gotoxy(0,1);
-		lcdProgressBar(max(0,sensor_Boost), scale_BoostMAX, 16);
+		lcdProgressBar(max(0,sensor_Boost), SCALE_BOOSTMAX, SIZE_X);
 	break;
 	case SCR_MAXBOOST: //currently just a testscreen ffs omg
 		lcd_gotoxy(0,0);
 		lcd_puts("Max Boost: ");
-		lcd_gotoxy(11,0);
-		lcd_gotoxy(0,1);
-		rattoascii(0x0001,6,buffer);
+		signedtoascii(sensor_Boost_Max ,SNS_DECPOINT_PRESSURE,buffer,2);
 		lcd_puts(buffer);
+		lcd_puts(" bar");
 	break;
 	case SCR_VOLTAGE:
-
 		lcd_gotoxy(0,0);
-		lcd_puts("Voltage:");
-		
-		lcd_gotoxy(9,0);
-		//lcd_puts(io_u16toStr(((uint32_t)sensor_Voltage*scale_Voltage)>>10,buffer,1,0));
-		
-		lcd_gotoxy(14,0);
-		lcd_puts("V");		
-		lcd_puts("spanning!");
-		
+		lcd_puts("Voltage: ");	
+		unsignedtoascii(sensor_Voltage,SNS_DECPOINT_VOLTAGE,buffer,2);
+		lcd_puts(buffer);
+		lcd_puts(" V");		
 		lcd_gotoxy(0,1);
-		lcdProgressBar(sensor_Voltage, scale_VoltageMAX, 16);
+		lcdProgressBar(max(0,sensor_Voltage), SCALE_VOLTAGEMAX, SIZE_X);
+	break;
+	case SCR_FUELCONS:
+		lcd_gotoxy(0,0);
+		lcd_puts("Fuel: ");	
+		unsignedtoascii(sensor_Fuelcons,SNS_DECPOINT_FUELCONS,buffer,2);
+		lcd_puts(buffer);
+		lcd_puts(" L/10km");		
+		lcd_gotoxy(0,1);
+		lcdProgressBar(max(0,sensor_Fuelcons), SCALE_FUELCONSMAX, SIZE_X);
+	break;
+	case SCR_VELOCITY:
+		lcd_gotoxy(0,0);
+		lcd_puts("Speed: ");	
+		unsignedtoascii(sensor_Velocity,SNS_DECPOINT_VELOCITY,buffer,0);
+		lcd_puts(buffer);
+		lcd_puts(" km/h");		
+		lcd_gotoxy(0,1);
+		lcdProgressBar(max(0,sensor_Velocity), SCALE_VELOCITYMAX, SIZE_X);
 	break;
 	}
 }
-
-void standardScreen(char* text, uint16_t value, uint16_t maxvalue){
-	lcd_gotoxy(0,0);
-	char buffer[5];
-	itoa(value,buffer,10);
-	lcd_puts(text);
-	lcd_puts(" ");
-	lcd_puts(buffer);
-	lcd_gotoxy(0,1);
-	lcdProgressBar(value, maxvalue, 16);
-}
-
-
 
 
 
@@ -383,13 +391,7 @@ void rotenc(){
 
 
 
-
-
-
-
-
-
-//á la pengi
+//á la pengi. Skall libbifieras.
 void numtoascii( int16_t num, char **str ) {
 	if( num==0 ) return;
 	numtoascii( num/10, str );
@@ -397,16 +399,28 @@ void numtoascii( int16_t num, char **str ) {
 	(*str)++;
 }
 
-void rattoascii( int16_t num, uint8_t decimalplace, char *string){ //decimalplace is number of decimals
+void signedtoascii(int16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals){ //decimalplace is number of decimals
 	uint8_t i;
-#define ANTAL_NUFFROR 3
+
 	if( num<0 ) {
 		*(string++) = '-';
 		num = -num;
 	}
 	numtoascii(num>>decimalplace, &string );
-	*(string++) = '.';
-	for(i=0;i<ANTAL_NUFFROR;i++) { 
+	if(numberofdecimals!=0) *(string++) = '.';
+	for(i=0;i<numberofdecimals;i++) { 
+		num %= 1<<decimalplace;
+		num *= 10;
+		*(string++) = '0' + (num>>decimalplace);
+	}
+	*(string++) = 0;
+}
+
+void unsignedtoascii(uint16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals){ //decimalplace is number of decimals
+	uint8_t i;
+	numtoascii(num>>decimalplace, &string );
+	if(numberofdecimals!=0) *(string++) = '.';
+	for(i=0;i<numberofdecimals;i++) { 
 		num %= 1<<decimalplace;
 		num *= 10;
 		*(string++) = '0' + (num>>decimalplace);
@@ -415,100 +429,3 @@ void rattoascii( int16_t num, uint8_t decimalplace, char *string){ //decimalplac
 }
 
 
-//Supersnodd:
-
-
-
-uint8_t _io_buf[10];
-
-
-/*
-uint8_t *parsetemperature(int16_t value,uint8_t *str,uint8_t decimal,uint8_t options){
-	uint16_t tmp;
-	uint8_t i=0;
-	
-	//value = 0xfcf4;
-	//decimal = 6;
-	
-	if(value<0) {
-		str[i++]='-'; //add negative sign
-		tmp=-value>>decimal;
-	} else {
-		if(options&0x01) str[i++]=' '; //Can the number be negative? Leave space for minussign
-		tmp=value>>decimal;
-	}	
-	
-	//Let's start axing up the value to print it beautifully. We have tmp, the integer part of the value
-	while(tmp>0) {
-		str[i++]='0' + (tmp%10);
-		tmp=tmp/10;
-	}	
-	
-	//now we hafve printed all of zat
-	str[i++] = '.';
-	
-	//let's go on to the fractional part... (cwap!)
-	
-	
-	str[i++]=0;
-	return(str);
-}
-*/
-
-// nån annans rutin som jag inte riktigt förstår mig på.
-uint8_t *io_s16toStr(int16_t value,uint8_t *str,uint8_t decimal,uint8_t options) {
-	uint8_t i=0,j=0,w=0;
-	uint16_t tmp;
-	
-	if(value<0) {
-		str[i++]='-';
-		tmp=-value;
-	} else {
-		if(options&0x01) str[i++]=' ';
-		tmp=value;
-	}
-	while(tmp>0) {
-		_io_buf[j++]='0'+(tmp%10);
-		tmp=tmp/10;
-	}
-	if(j<=decimal) {
-		str[i++]='0';
-		if(decimal>0) str[i++]='.';
-		w=i;
-		while((i-w)<(decimal-j)) str[i++]='0';
-		while(j!=0) str[i++]=_io_buf[--j];
-	} else {
-		while(j!=0) {
-			str[i++]=_io_buf[--j];
-			if(j==decimal) str[i++]='.';
-		}
-	}
-	str[i++]=0;
-	return(str);
-}
-
-uint8_t *io_u16toStr(uint16_t value,uint8_t *str,uint8_t decimal,uint8_t options) {
-	uint8_t i=0;
-	uint8_t j=0;
-	uint8_t w=0;
-	
-	while(value>0) {
-		_io_buf[j++]='0'+(value%10);
-		value=value/10;
-	}
-
-	if(j<=decimal) {
-		str[i++]='0';
-		if(decimal>0) str[i++]='.';
-		w=i;
-		while((i-w)<(decimal-j)) str[i++]='0';
-		while(j!=0) str[i++]=_io_buf[--j];
-	} else {
-		while(j>0) {
-			str[i++]=_io_buf[--j];
-			if((decimal>0)&&(j==decimal)) str[i++]='.';
-		}
-	}
-	str[i++]=0;
-	return(str);
-}
