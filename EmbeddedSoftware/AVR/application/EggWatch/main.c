@@ -60,6 +60,8 @@ void refreshDisplay(void);
 
 uint32_t timeBase = 0;
 
+uint32_t timeBase_turnspeed = 0;
+
 char lcdBuffer[5];
 
 //Struct for countdown
@@ -244,11 +246,11 @@ void action(uint8_t type){
 	//Let's do something with something!
 	lcd_clrscr();
 	if (type == LEFT){
-		countTimer1.timerCnt--;
+		countTimer1.timerCnt = countTimer1.timerCnt - 10;
 		refreshDisplay();
 	}
 	if (type == RIGHT){
-		countTimer1.timerCnt++;
+		countTimer1.timerCnt = countTimer1.timerCnt + 10;
 		if  (countTimer1.timerCnt > countTimer1.timerMax){
 			countTimer1.timerMax = countTimer1.timerCnt;
 		}
