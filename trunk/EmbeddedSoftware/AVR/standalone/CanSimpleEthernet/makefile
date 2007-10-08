@@ -54,13 +54,13 @@ FORMAT = ihex
 TARGET = main
 
 LIBDIR = ../../lib/src/
-
+NEWLIBDIR = ../../avr-lib/drivers/
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
-		$(LIBDIR)eth/enc28j60/enc28j60.c\
-		$(LIBDIR)eth/timeout.c\
-		$(LIBDIR)eth/ip_arp_udp_tcp.c\
+		$(NEWLIBDIR)eth/enc28j60/enc28j60.c\
+		$(NEWLIBDIR)eth/timeout.c\
+		$(NEWLIBDIR)eth/ip_arp_udp_tcp.c\
 		$(LIBDIR)mcu/mcu.c\
 		$(LIBDIR)mcu/serial.c\
 		$(LIBDIR)mcu/uart.c\
@@ -92,7 +92,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu $(LIBDIR)/eth $(LIBDIR)/eth/enc28j60
+EXTRAINCDIRS = $(LIBDIR)can $(LIBDIR)can/mcp2515 $(LIBDIR)mcu $(NEWLIBDIR)eth $(NEWLIBDIR)eth/enc28j60
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
