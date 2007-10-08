@@ -81,6 +81,8 @@
 #define SNS_TYPE_PRESSURE			0x1bL
 #define SNS_TYPE_VOLTAGE			0x1cL
 #define SNS_TYPE_ROTSPEED			0x1dL
+#define SNS_TYPE_VELOCITY			0x1eL
+#define SNS_TYPE_FUELCONS			0x1fL
 
 
 #define SNS_ID_RELAY_STATUS           0x0BL
@@ -91,6 +93,8 @@
 #define SNS_DECPOINT_PRESSURE		0x06
 #define SNS_DECPOINT_ROTSPEED		0x02
 #define SNS_DECPOINT_VOLTAGE		0x06
+#define SNS_DECPOINT_VELOCITY		0x02
+#define SNS_DECPOINT_FUELCONS		0x06
 
 
 // CAN ID definitions for ACT messages
