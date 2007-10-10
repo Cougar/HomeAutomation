@@ -9,7 +9,7 @@ HW_VERSION=2
 #AUTOSTART=5
 
 # This number should be unique on your network
-NODE_ID=0x02
+NODE_ID=0x02UL
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
 
