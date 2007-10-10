@@ -246,6 +246,14 @@ class Program {
 						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 2"); }
 						return false;
 					}
+				} else if (node.Length > 4) {
+					try {
+						nodeid = byte.Parse(node.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+						sNodeid = true;
+					} catch {
+						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 2"); }
+						return false;
+					}
 				} else {
 					if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 3"); }
 					return false;
