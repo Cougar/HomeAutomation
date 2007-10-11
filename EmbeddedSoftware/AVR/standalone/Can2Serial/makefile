@@ -46,10 +46,10 @@ MCU = atmega168
 
 # Main Oscillator Frequency
 #F_CPU = 1000000
-F_CPU = 8000000
+#F_CPU = 8000000
 #F_CPU = 9216000
 #F_CPU = 16000000
-#F_CPU = 20000000
+F_CPU = 20000000
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -196,7 +196,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 AVRDUDE_PROGRAMMER = avrispv2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/ttyUSB0    # programmer connected to serial device
+AVRDUDE_PORT = /dev/ttyUSB1    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex

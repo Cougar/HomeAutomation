@@ -27,7 +27,7 @@
 #include <serial.h>
 #include <timebase.h>
 
-//#define UART_OUTPUT /* If you got the node connected to a computer enable this */
+#define UART_OUTPUT /* If you got the node connected to a computer enable this */
 //#define LED_OUTPUT /* If you havent got any connection to a computer but still got some IOs free */
 
 #define SENDING_ID	0x1600000UL // FIXME vilka idn kan vara lämpliga?

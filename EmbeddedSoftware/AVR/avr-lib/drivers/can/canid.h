@@ -57,13 +57,13 @@
 
 #define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE) \
-                              | (NODE_ID << CAN_SHIFT_NMT_SID))
+                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
 #define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE) \
-                              | (NODE_ID << CAN_SHIFT_NMT_SID))
+                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
 #define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
-                              | (NODE_ID << CAN_SHIFT_NMT_SID))
+                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
 
 #define CAN_APPTYPES_IRRECEIVER     0xf010
 #define CAN_APPTYPES_RELAY          0xf015

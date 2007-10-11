@@ -49,9 +49,10 @@ MCU = atmega168
 ##F_CPU = 2000000
 ##F_CPU = 3686400
 ##F_CPU = 4000000
-F_CPU = 8000000
+#F_CPU = 8000000
 ##F_CPU = 11059200
 ##F_CPU = 16000000
+F_CPU = 20000000
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -198,7 +199,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 AVRDUDE_PROGRAMMER = avrispv2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = com1    # programmer connected to serial device
+AVRDUDE_PORT = /dev/ttyUSB1    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
