@@ -15,7 +15,7 @@
 #define MCP_CLOCK_PRESC 		1
 
 
-#define ENC28J60_USART_SPI_MODE
+//#define ENC28J60_USART_SPI_MODE
 
  /**
  * ENC28J60 Chip Select port on avr. 
