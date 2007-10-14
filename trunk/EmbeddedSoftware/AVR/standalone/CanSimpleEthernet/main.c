@@ -150,7 +150,9 @@ int main(void) {
 	sei();
 
     /*initialize enc28j60*/
-    enc28j60Init(mymac);
+	if (enc28j60Init(mymac) != 1) {
+		/* Great place to set an IO for debug */
+	}
     delay_ms(20);
     
     /* Magjack leds configuration, see enc28j60 datasheet, page 11 */
