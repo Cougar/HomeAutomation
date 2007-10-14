@@ -16,8 +16,9 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <stdio.h>
+#include <string.h>
 /* lib files */
-#include <can.h>
+#include <mcp2515.h>
 #include <serial.h>
 #include <uart.h>
 #include <timebase.h>
@@ -28,6 +29,9 @@
  *---------------------------------------------------------------------------*/
 #define UART_START_BYTE 253
 #define UART_END_BYTE 250
+
+volatile Can_Message_t rxMsg; // Message storage
+volatile uint8_t rxMsgFull;   // Synchronization flag
 
 const uint8_t days[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
 
@@ -43,6 +47,7 @@ union {
 	} unpacked;
 } date;
 
+#if SENDTIMESTAMP == 1
 void IncTime(void) {
 	static uint8_t YY=07, MM=03, DD=02, hh=23, mm=58, ss=00;
 	
@@ -68,6 +73,7 @@ void IncTime(void) {
 	date.unpacked.mm = mm;
 	date.unpacked.ss = ss;
 }
+#endif
 /*-----------------------------------------------------------------------------
  * Functions
  *---------------------------------------------------------------------------*/
@@ -144,6 +150,27 @@ void UartParseByte(uint8_t c) {
 	}
 }
 
+void Can_Process(Can_Message_t* msg) {
+	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
+
+	if (!rxMsgFull) {
+		memcpy((void*)&rxMsg, msg, sizeof(rxMsg));
+		rxMsgFull = 1;
+	}
+}
+
+ISR(MCP_INT_VECTOR) {
+	// Get first available message from controller and pass it to
+	// application handler. If both RX buffers contain messages
+	// we will get another interrupt as soon as this one returns.
+	if (Can_Receive(&rxMsg) == CAN_OK) {
+		// Callbacks are run with global interrupts disabled but
+		// with controller flag cleared so another msg can be
+		// received while this one is processed.
+		Can_Process(&rxMsg);
+	}
+}
+
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -160,27 +187,27 @@ int main(void) {
 	
 	sei();
 	
-	Can_Message_t rxMsg;
 	Can_Message_t timeMsg;
+#if SENDTIMESTAMP == 1
 	uint32_t time = Timebase_CurrentTime();
 	uint32_t time1 = time;
 	uint32_t unixtime = 0;
+#endif
 	uint16_t rxByte;
 	uint8_t i = 0;
 	
+#if SENDTIMESTAMP == 1
 	timeMsg.ExtendedFlag = 1;
 	timeMsg.RemoteFlag = 0;
-	//timeMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
-	timeMsg.Id = 0; //Same thing, and lib's can.h is not updated.
+	timeMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
+	//timeMsg.Id = 0; //Same thing, and lib's can.h is not updated.
 	timeMsg.DataLength = 8;
+#endif
 	
 	/* main loop */
 	while (1) {
-		/* service the CAN routines */
-		Can_Service();
-		
 		/* any new CAN messages received? */
-		if (Can_Receive(&rxMsg) == CAN_OK) {
+		if (rxMsgFull) {
 			// Toggle activity LED
 			PORTC ^= (1<<PC1);
 			/* send message to CanWatcher */
@@ -196,6 +223,8 @@ int main(void) {
 				uart_putc(rxMsg.Data.bytes[i]);
 			}
 			uart_putc(UART_END_BYTE);
+			
+			rxMsgFull = 0;
 		}
 		
 		/* any UART bytes received? */
@@ -207,6 +236,7 @@ int main(void) {
 			rxByte = uart_getc();
 		}
 		
+#if SENDTIMESTAMP == 1
 		time1 = Timebase_CurrentTime();
 		if ((time1 - time) > 1000) {
 			time = time1;
@@ -215,6 +245,7 @@ int main(void) {
 			timeMsg.Data.dwords[1] = date.packed;
 			Can_Send(&timeMsg);
 		}
+#endif
 	}
 	
 	return 0;
