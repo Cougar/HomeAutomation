@@ -15,10 +15,13 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <stdio.h>
+#include <string.h>
+
 /* lib files */
-#include <can.h>
+#include <mcp2515.h>
 //#include <serial.h>
 #include <timebase.h>
+#include <mcu.h>
 #include <ip_arp_udp_tcp.h>
 #include <enc28j60.h>
 #include <timeout.h>
@@ -28,9 +31,9 @@
 // please modify the following two lines. mac and ip have to be unique
 // in your local area network. You can not have the same numbers in
 // two devices:
-static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
+static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x27};
 //static uint8_t myip[4] = {192,168,0,50};
-static uint8_t myip[4] = {193,11,254,22};
+static uint8_t myip[4] = {193,11,254,26};
 static uint16_t rmDumperPrt =1200; // remote port for dumping data
 static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
 //static uint16_t locDumperPrt =1200; // listen port 
@@ -57,7 +60,10 @@ static uint8_t buffpoint;
 #define C2S_END_BYTE 250
 
 /* set to 0 for not sending timestamps on bus */
-#define SENDTIMESTAMP	1
+#define SENDTIMESTAMP	0
+
+volatile Can_Message_t rxMsg; // Message storage
+volatile uint8_t rxMsgFull;   // Synchronization flag
 
 /*----------------------------------------------------------------------------
  * Putchar for udp
@@ -65,7 +71,7 @@ static uint8_t buffpoint;
  * \n-char is sent.
  * Needs a timeout to force send. 
  *--------------------------------------------------------------------------*/
-int udp_putchar(char c, FILE* stream) {
+/*int udp_putchar(char c, FILE* stream) {
 	if (gotdumpserver != 0) {
         sendbuf[buffpoint] = c;
         buffpoint++;
@@ -79,6 +85,29 @@ int udp_putchar(char c, FILE* stream) {
 }
 
 static FILE mystdout = FDEV_SETUP_STREAM(udp_putchar, NULL, _FDEV_SETUP_WRITE); 
+*/
+
+void Can_Process(Can_Message_t* msg) {
+	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
+
+	if (!rxMsgFull) {
+		memcpy((void*)&rxMsg, msg, sizeof(rxMsg));
+		rxMsgFull = 1;
+	}
+}
+
+ISR(MCP_INT_VECTOR) {
+	// Get first available message from controller and pass it to
+	// application handler. If both RX buffers contain messages
+	// we will get another interrupt as soon as this one returns.
+	if (Can_Receive(&rxMsg) == CAN_OK) {
+		// Callbacks are run with global interrupts disabled but
+		// with controller flag cleared so another msg can be
+		// received while this one is processed.
+		Can_Process(&rxMsg);
+	}
+}
+
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -92,36 +121,34 @@ int main(void) {
 	
 	//can vars
 	Can_Message_t txMsg;
-	Can_Message_t rxMsg;
 	txMsg.Id = 3;
 	txMsg.DataLength = 0;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 
+	rxMsgFull = 0;
+	
  	uint32_t timeStamp = 0;
+
+	//uint8_t sw=0;
+	// LED
+    /* enable PB1, LED as output */
+    //DDRB|= (1<<DDB0);
+    
+    /* set output to Vcc, LED off */
+    //PORTB|= (1<<PB0);
 	
 	Mcu_Init();
 	Timebase_Init();
 
     //alla printf ska skriva till udp
-    stdout = &mystdout;    //set the output stream 
-    
-	sei();
+    //stdout = &mystdout;    //set the output stream 
 
 	if (Can_Init() != CAN_OK) {
 	}
 
-    /* set output to gnd, reset the ethernet chip */
-    PORTC &= ~(1<<PC1);
-    /* set PC1 as output */
-    DDRC |= (1<<DDC1);
+	sei();
 
-    delay_ms(20);
-    /* set PC1 as input, resetpin pulled high */
-    DDRC &= ~(1<<DDC1);
-    
-    delay_ms(100);
-    
     /*initialize enc28j60*/
     enc28j60Init(mymac);
     delay_ms(20);
@@ -139,7 +166,7 @@ int main(void) {
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
-		Can_Service();
+		//Can_Service();
 		
 #if SENDTIMESTAMP == 1
 		/* send CAN message and check for CAN errors once every second */
@@ -154,9 +181,9 @@ int main(void) {
 #endif
 		
 		/* check if any messages have been received */
-		while (Can_Receive(&rxMsg) == CAN_OK) {
+		if (rxMsgFull) { //(Can_Receive(&rxMsg) == CAN_OK) {
 			uint8_t i;
-
+			
 			/*if (gotdumpserver != 0) {
 				printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
 	    		printf("data={ ");
@@ -183,8 +210,12 @@ int main(void) {
 	    		}
 				sendbuf2[16] = C2S_END_BYTE;
 				
+				MCP_INT_DISABLE();
 				send_udp(buf, sendbuf2, 18, rmCan2SerPrt, prgremotemac, prgremoteip);
+				MCP_INT_ENABLE();
 	   		}
+	   		
+	   		rxMsgFull = 0;
 		}
 		
 		//test-debug-kod
