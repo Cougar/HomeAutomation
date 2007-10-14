@@ -227,7 +227,7 @@ void enc28j60PhyWrite(uint8_t address, uint16_t data)
 }
 
 
-void enc28j60Init(uint8_t* macaddr) {
+uint8_t enc28j60Init(uint8_t* macaddr) {
 	// initialize I/O
 	ENC28J60_CS_DDR |= 1<<ENC28J60_CS;
 	/* enable PB0, reset as output */
@@ -269,6 +269,9 @@ void enc28j60Init(uint8_t* macaddr) {
 	// perform system reset
 	enc28j60WriteOp(ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
 	delay_ms(50);
+	
+	uint8_t chiprev = enc28j60getrev();
+	
 	// check CLKRDY bit to see if reset is complete
 	// The CLKRDY does not work. See Rev. B4 Silicon Errata point. Just wait.
 	//while(!(enc28j60Read(ESTAT) & ESTAT_CLKRDY));
@@ -342,6 +345,11 @@ void enc28j60Init(uint8_t* macaddr) {
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, EIE, EIE_INTIE|EIE_PKTIE);
 	// enable packet reception
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_RXEN);
+
+	if (chiprev != 2 && chiprev != 4 && chiprev != 5) {
+		return 0;
+	}
+	return 1;
 }
 
 // read the revision of the chip:
