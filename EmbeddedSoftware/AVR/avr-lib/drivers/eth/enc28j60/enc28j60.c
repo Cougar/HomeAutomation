@@ -17,7 +17,8 @@
 #include "enc28j60.h"
 #include "enc28j60_cfg.h"
 #include "timeout.h"
-//
+#include <config.h>
+
 #ifndef ALIBC_OLD
 #include <util/delay.h>
 #else
@@ -230,14 +231,14 @@ void enc28j60Init(uint8_t* macaddr) {
 	// initialize I/O
 	ENC28J60_CS_DDR |= 1<<ENC28J60_CS;
 	/* enable PB0, reset as output */
-	ENC28J60_RESET_DDR|= (1<<ENC28J60_RESET_CS);
+	ENC28J60_RESET_DDR|= (1<<ENC28J60_RESET);
 	
 	/* set output to gnd, reset the ethernet chip */
-	ENC28J60_RESET_PORT &= ~(1<<ENC28J60_RESET_CS);
+	ENC28J60_RESET_PORT &= ~(1<<ENC28J60_RESET);
 	delay_ms(20);
 	
 	/* set output to Vcc, reset inactive */
-	ENC28J60_RESET_PORT|= (1<<ENC28J60_RESET_CS);
+	ENC28J60_RESET_PORT|= (1<<ENC28J60_RESET);
 	delay_ms(100);
 
 	CSPASSIVE;
