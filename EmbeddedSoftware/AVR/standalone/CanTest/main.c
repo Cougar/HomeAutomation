@@ -5,9 +5,6 @@
  * CanTest sends messages periodicly, dumps incomming messages on uart
  * and echoes on packages with ID== ECHO_RECEIVE_ID;
  *
- * This version uses drivers that polls the mcp2515. That means that if this program works fine,
- * but bios+app doesnt. Something is wrong with the interruppt.
- * Probably the wire between AVR and MCP, so check it twice.
  * 
  * @date	2006-11-21
  * @author	Jimmy Myhrman, Erik Larsson (2007-05-07)
@@ -22,25 +19,44 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <stdio.h>
+#include <string.h>
 /* lib files */
-#include <can.h>
+#include <config.h>
+#include <mcp2515.h>
 #include <serial.h>
 #include <timebase.h>
-
-#define UART_OUTPUT /* If you got the node connected to a computer enable this */
-//#define LED_OUTPUT /* If you havent got any connection to a computer but still got some IOs free */
-
-#define SENDING_ID	0x1600000UL // FIXME vilka idn kan vara lämpliga?
-#define ECHO_RECEIVE_ID		0x1700000UL
-#define ECHO_SENDING_ID		0x17000FFUL
+#include <mcu.h>
 
 /* LED 1 blinks
 #define LED1_PORT	PORTC
 #define LED1_DDR	DDRC
 #define LED2_PORT	PORTC
 #define LED2_DDR	PORTC
+*/
 
+volatile Can_Message_t rxMsg; // Message storage
+volatile uint8_t rxMsgFull;   // Synchronization flag
 
+void Can_Process(Can_Message_t* msg) {
+	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
+
+	if (!rxMsgFull) {
+		memcpy((void*)&rxMsg, msg, sizeof(rxMsg));
+		rxMsgFull = 1;
+	}
+}
+
+ISR(MCP_INT_VECTOR) {
+	// Get first available message from controller and pass it to
+	// application handler. If both RX buffers contain messages
+	// we will get another interrupt as soon as this one returns.
+	if (Can_Receive(&rxMsg) == CAN_OK) {
+		// Callbacks are run with global interrupts disabled but
+		// with controller flag cleared so another msg can be
+		// received while this one is processed.
+		Can_Process(&rxMsg);
+	}
+}
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -52,17 +68,17 @@ int main(void) {
 #if defined(UART_OUTPUT)
 	Serial_Init();
 
-	printf("\n------------------------------------------------------------\n");
-	printf(  "   CAN Test:\n");
-	printf(  "   Periodic Transmission on CAN\n");
-	printf(  "   CAN Dump\n");
-	printf(  "   CAN Echo\n");
-	printf(  "------------------------------------------------------------\n");
+//	printf("\n------------------------------------------------------------\n");
+//	printf(  "   CAN Test:\n");
+//	printf(  "   Periodic Transmission on CAN\n");
+//	printf(  "   CAN Dump\n");
+//	printf(  "   CAN Echo\n");
+//	printf(  "------------------------------------------------------------\n");
 	
 	printf("CanInit...");
 	if (Can_Init() != CAN_OK) {
 		printf("FAILED!\n");
-		printf("Check wires between AVR and MCP2515 and the MCP speed (xtal).");
+//		printf("Check wires between AVR and MCP2515 and the MCP speed (xtal).");
 	}
 	else {
 		printf("OK!\n");
@@ -87,9 +103,6 @@ int main(void) {
 
 	/* main loop */
 	while (1) {
-		/* service the CAN routines */
-		Can_Service();
-		
 		/* send CAN message and check for CAN errors once every second */
 		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
 			timeStamp = Timebase_CurrentTime();
@@ -99,7 +112,7 @@ int main(void) {
 		}
 		
 		/* check if any messages have been received */
-		while (Can_Receive(&rxMsg) == CAN_OK) {
+		if (rxMsgFull) {
 #if defined(UART_OUTPUT)
 			/* Dump message data on uart */
 			printf("\nPKT %#lx %u %u", rxMsg.Id, (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
@@ -121,6 +134,7 @@ int main(void) {
 				Can_Send(&txMsg);
 #endif
 			}
+			rxMsgFull = 0;
 		}
 	}
 	
