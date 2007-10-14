@@ -197,7 +197,7 @@ AVRDUDE_PROGRAMMER = dragon_isp
 AVRDUDE_PORT = usb    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -b $(AVRDUDE_BAUD)
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
