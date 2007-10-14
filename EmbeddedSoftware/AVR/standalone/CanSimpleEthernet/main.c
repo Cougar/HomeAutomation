@@ -96,19 +96,6 @@ void Can_Process(Can_Message_t* msg) {
 	}
 }
 
-ISR(MCP_INT_VECTOR) {
-	// Get first available message from controller and pass it to
-	// application handler. If both RX buffers contain messages
-	// we will get another interrupt as soon as this one returns.
-	if (Can_Receive(&rxMsg) == CAN_OK) {
-		// Callbacks are run with global interrupts disabled but
-		// with controller flag cleared so another msg can be
-		// received while this one is processed.
-		Can_Process(&rxMsg);
-	}
-}
-
-
 /*-----------------------------------------------------------------------------
  * Main Program
  *---------------------------------------------------------------------------*/
