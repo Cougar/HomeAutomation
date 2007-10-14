@@ -8,6 +8,7 @@
 #include <avr/pgmspace.h>
 #include <avr/io.h>
 #include "avr_compat.h"
+#include <config.h>
 
 #ifndef ALIBC_OLD
 #include <util/delay.h>

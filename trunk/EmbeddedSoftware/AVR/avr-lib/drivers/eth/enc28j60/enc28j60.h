@@ -125,8 +125,8 @@
 // PHY registers
 #define PHCON1           0x00
 #define PHSTAT1          0x01
-#define PHHID1           0x02
-#define PHHID2           0x03
+#define PHID1            0x02
+#define PHID2            0x03
 #define PHCON2           0x10
 #define PHSTAT2          0x11
 #define PHIE             0x12
