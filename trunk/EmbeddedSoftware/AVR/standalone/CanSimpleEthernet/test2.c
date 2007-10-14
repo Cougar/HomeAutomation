@@ -18,6 +18,7 @@
 /* lib files */
 #include <ip_arp_udp_tcp.h>
 #include <enc28j60.h>
+#include <enc28j60_cfg.h>
 #include <timeout.h>
 #include <avr_compat.h>
 #include <net.h>
@@ -45,23 +46,13 @@ int main(void){
         // next four instructions.
         CLKPR=(1<<CLKPCE);
         CLKPR=0; // 8 MHZ
-        
-        /* enable PB0, reset as output */
-        DDRB|= (1<<DDB0);
 
-        /* set output to gnd, reset the ethernet chip */
-        PORTB &= ~(1<<PB0);
-        delay_ms(20);
-        /* set output to Vcc, reset inactive */
-        PORTB|= (1<<PB0);
-        delay_ms(100);
-        
         // LED
         /* enable PB1, LED as output */
-        DDRD|= (1<<DDD6);
+        DDRB|= (1<<DDB0);
 
         /* set output to Vcc, LED off */
-        PORTD|= (1<<PD6);
+        PORTB|= (1<<PB0);
 
         /*initialize enc28j60*/
         enc28j60Init(mymac);
@@ -76,8 +67,15 @@ int main(void){
         delay_ms(20);
         
         /* set output to GND, red LED on */
-        PORTD &= ~(1<<PD6);
+        //PORTB &= ~(1<<PB0);
         i=1;
+        
+        //while (enc28j60getrev() != 5) { }
+        
+        //if (enc28j60getrev() == 5) {
+            /* set output to GND, red LED on */
+        //	PORTB &= ~(1<<PB0);
+        //}
         
         //init the ethernet/ip layer:
         init_ip_arp_udp_tcp(mymac,myip,80);
@@ -105,11 +103,11 @@ int main(void){
                 
                 if (i){
                         /* set output to Vcc, LED off */
-                        PORTD|= (1<<PD6);
+                		//PORTB|= (1<<PB0);
                         i=0;
                 }else{
                         /* set output to GND, LED on */
-                        PORTD &= ~(1<<PD6);
+                    	//PORTB &= ~(1<<PB0);
                         i=1;
                 }
 
