@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR makefile written by Eric B. Weddington, Jï¿½rg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -43,17 +43,6 @@ MCU = atmega168
 #MCU = atmega16
 
 
-# Main Oscillator Frequency
-##F_CPU = 1000000
-##F_CPU = 1843200
-##F_CPU = 2000000
-##F_CPU = 3686400
-##F_CPU = 4000000
-#F_CPU = 8000000
-##F_CPU = 11059200
-##F_CPU = 16000000
-F_CPU = 20000000
-
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
@@ -61,17 +50,16 @@ FORMAT = ihex
 # Target file name (without extension).
 TARGET = main
 
-LIBDIR = ../../lib/src/
+LIBDIR = ../../avr-lib/
 
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c\
-		$(LIBDIR)mcu/mcu.c\
-		$(LIBDIR)mcu/serial.c\
-		$(LIBDIR)mcu/uart.c\
-		$(LIBDIR)mcu/timebase.c\
-		$(LIBDIR)can/can.c\
-		$(LIBDIR)can/mcp2515/mcp2515.c
+		$(LIBDIR)drivers/uart/serial.c\
+		$(LIBDIR)drivers/uart/uart.c\
+		$(LIBDIR)drivers/timer/timebase.c\
+		$(LIBDIR)drivers/mcu/mcu.c\
+		$(LIBDIR)drivers/can/mcp2515/mcp2515.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -97,7 +85,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)/can $(LIBDIR)/can/mcp2515 $(LIBDIR)/mcu
+EXTRAINCDIRS = $(LIBDIR)drivers/uart $(LIBDIR)drivers/timer $(LIBDIR)drivers/mcu $(LIBDIR)drivers/can/mcp2515/ $(LIBDIR) 
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -129,7 +117,7 @@ CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-CFLAGS += -DF_CPU=$(F_CPU)
+#CFLAGS += -DF_CPU=$(F_CPU)
 
 
 
@@ -142,7 +130,7 @@ CFLAGS += -DF_CPU=$(F_CPU)
 #             files -- see avr-libc docs [FIXME: not yet described there]
 ##ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
-ASFLAGS += -DF_OSC=$(F_OSC)
+#ASFLAGS += -DF_OSC=$(F_OSC)
 
 
 #Additional libraries.
@@ -196,10 +184,10 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = avrispv2
+AVRDUDE_PROGRAMMER = dragon_isp
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/ttyUSB1    # programmer connected to serial device
+AVRDUDE_PORT = usb    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
@@ -220,7 +208,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUD)
+AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
