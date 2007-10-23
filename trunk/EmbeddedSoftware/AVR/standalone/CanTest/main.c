@@ -81,7 +81,6 @@ int main(void) {
 	uint32_t timeStamp = 0;
 	
 	Can_Message_t txMsg;
-	Can_Message_t rxMsg;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	txMsg.Id = SENDING_ID;
@@ -97,6 +96,9 @@ int main(void) {
 			/* send txMsg */
 			txMsg.Id = SENDING_ID;
 			Can_Send(&txMsg);
+#if defined(UART_OUTPUT)
+			printf("\nSending: %#lx", txMsg.Id);
+#endif
 		}
 		
 		/* check if any messages have been received */
@@ -111,11 +113,11 @@ int main(void) {
 			/* Echo function */
 			if(rxMsg.Id == ECHO_RECEIVE_ID){
 #if defined(UART_OUTPUT)
-				printf("\n\"ping\" received");
+				printf("\n\"ping\" received: %#lx", rxMsg.Id);
 				txMsg.Id = ECHO_SENDING_ID;
 				/* Send reply */
 				Can_Send(&txMsg);
-				printf("\nreply sent");
+				printf("\nreply sent, ID: %#lx", txMsg.Id);
 #else
 				txMsg.Id = ECHO_SENDING_ID;
 				/* Send reply */
