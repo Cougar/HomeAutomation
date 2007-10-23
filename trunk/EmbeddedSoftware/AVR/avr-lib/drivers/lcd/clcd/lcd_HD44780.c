@@ -686,7 +686,7 @@ void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
 void lcdLoadCustomChar(uint8_t* lcdCustomCharArray, uint8_t romCharNum, uint8_t lcdCharNum)
 {
     register uint8_t i;
-    uint8_t saveDDRAMAddr;
+   // uint8_t saveDDRAMAddr;
 
     // backup the current cursor position
  //   saveDDRAMAddr = lcdControlRead() & 0x7F; TODO: Fix me
