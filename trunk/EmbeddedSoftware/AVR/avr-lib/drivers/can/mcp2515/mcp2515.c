@@ -408,7 +408,7 @@ uint8_t MCP2515_Init(void) {
 #if MCP_CS_BIT != PB2
 	/* If slave select is not set as output it might change SPI hw to slave
 	 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
-	DDRD |= (1<<PB2);
+	DDRB |= (1<<PB2);
 #endif
 	
 	SPI_Init();		// init SPI-Interface (as "Master")
