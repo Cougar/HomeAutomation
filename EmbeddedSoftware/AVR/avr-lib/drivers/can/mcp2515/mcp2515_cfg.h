@@ -38,8 +38,12 @@
 
 #if defined(__AVR_ATmega8__)
 #define INT1_REG GICR
+#define DDRSS DDRB
+#define SS PB2
 #elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
 #define INT1_REG EIMSK
+#define DDRSS DDRB
+#define SS PB2
 #else
 #error AVR device not supported!
 #endif

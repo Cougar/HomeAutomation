@@ -405,10 +405,10 @@ void MCP2515_InitRXInterrupts(void) {
 uint8_t MCP2515_Init(void) {
 	uint8_t res;
 	
-#if MCP_CS_BIT != PB2
+#if MCP_CS_BIT != SS
 	/* If slave select is not set as output it might change SPI hw to slave
 	 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
-	DDRB |= (1<<PB2);
+	DDRSS |= (1<<SS);
 #endif
 	
 	SPI_Init();		// init SPI-Interface (as "Master")
