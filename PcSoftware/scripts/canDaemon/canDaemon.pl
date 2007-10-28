@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+# 
+# for use with serial ports, install module with apt-get install libdevice-serialport-perl
+# 
+# 
+# 
+
 
 $hubport = 1200;
 #$udpip = "193.11.254.22";
@@ -21,7 +27,10 @@ if ( @ARGV > 0 ) {
 			"device=s"	=> \$devicearg,			#
 			"help"		=> \$help,				#
 						);
+} else {
+	$help = 1;
 }
+
 if ($help) {
 	print "Usage ./$binaryname [options]\n";
 	print "Options:\n";
