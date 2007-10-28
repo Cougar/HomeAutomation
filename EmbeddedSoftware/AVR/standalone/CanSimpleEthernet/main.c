@@ -28,12 +28,9 @@
 #include <avr_compat.h>
 #include <net.h>
 
-// please modify the following two lines. mac and ip have to be unique
-// in your local area network. You can not have the same numbers in
-// two devices:
-static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x27};
+static uint8_t mymac[6] = {ENC28J60_MAC1,ENC28J60_MAC2,ENC28J60_MAC3,ENC28J60_MAC4,ENC28J60_MAC5,ENC28J60_MAC6};
 //static uint8_t myip[4] = {192,168,0,50};
-static uint8_t myip[4] = {193,11,254,26};
+static uint8_t myip[4] = {ENC28J60_IP1,ENC28J60_IP2,ENC28J60_IP3,ENC28J60_IP4};
 static uint16_t rmDumperPrt =1200; // remote port for dumping data
 static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
 //static uint16_t locDumperPrt =1200; // listen port 
@@ -41,7 +38,6 @@ static uint16_t locCan2SerPrt =1100; // listen port for Can2Serial-data
 static uint8_t gotdumpserver = 0;
 static uint8_t gotcan2serserver = 0;
 
-// how did I get the mac addr? Translate the first 3 numbers into ascii is: TUX
 
 static uint8_t remotemac[6];
 static uint8_t remoteip[4];
