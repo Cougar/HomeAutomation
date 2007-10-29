@@ -104,12 +104,10 @@ int main(void) {
 
                         if (subzero) {
                             txMsg.Data.bytes[0] = -cel-1;
-                            //txMsg.Data.bytes[1] = ~(cel_frac_bits<<4); noddan har fixat korrekt decimal
-                            txMsg.Data.bytes[1] = ~(cel_frac_bits);
+                            txMsg.Data.bytes[1] = ~(cel_frac_bits<<4);
                         }else{
                             txMsg.Data.bytes[0] = cel;
-                            //txMsg.Data.bytes[1] = (cel_frac_bits<<4); noddan har fixat korrekt decimal
-                            txMsg.Data.bytes[1] = (cel_frac_bits);
+                            txMsg.Data.bytes[1] = (cel_frac_bits<<4);
                         }
                     }
 					/* Delay */
