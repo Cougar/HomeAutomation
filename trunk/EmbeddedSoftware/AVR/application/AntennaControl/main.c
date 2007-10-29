@@ -1,9 +1,9 @@
-/*
+/**
  * AntennaControl
  *
- * Build for use at ETA, http://www.eta.chalmers.se/, controlling their 2 meter quad antenna.
+ * Build for use at ETA, http://www.eta.chalmers.se/, controlling their 2 meter yagi antenna.
  *
- * @date 2007-09-22
+ * @date 2007-10-28
  * @author Erik Larsson
  *
  */
@@ -15,14 +15,12 @@
 #include <avr/eeprom.h>
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
-//#include <drivers/uart/serial.h>
 #include <drivers/timer/timer.h>
 
 #define APP_TYPE    0xf0a0
 #define APP_VERSION 0x0001
 
 #define AZIMUTH 0
-#define ELEVATION 1
 
 #define ROTATE_STOP 0
 #define ROTATE_PLUS 1
@@ -30,20 +28,29 @@
 
 #define SET 0
 #define GET 1
-#define CALIBRATE_ELEVATION 0
-#define CALIBRATE_AZIMUTH 2
+
+#define CALIBRATE_AZIMUTH 0 // EEPROM adress
 
 // Make sure this is a power of 2
 #define AVERAGE_SIZE 16
 #define AVERAGE_SIZE_SHIFT 4
 
+// Tillfälliga defines
+#define MSG_CAL_SET 0x0100001UL
+#define MSG_CAL_GET 0x0100002UL
+#define MSG_ABS 0x01000031UL
+#define MSG_REL 0x0100004UL
+#define MSG_START 0x0100005UL
+#define MSG_STOP 0x0100006UL
+#define MSG_STATUS 0x0100007UL
+
+
+// ----------
+
 // Essential pins
 // 0: PD2 azimuth plus
-// 1: PD1 azimuth minus
-// 2: PD0 elevation plus
-// 3: PD4 elevation minus
+// 1: PD1 azimuth minus 
 // 8: PC4 ADC4 azimuth feedback
-// 9: PC5 ADC5 elevation feedback
 
 
 
@@ -57,8 +64,11 @@ volatile uint8_t rxMsgFull;   // Synchronization flag
 //uint16_t actualAzimuthValue;
 //uint16_t desiredAzimuthValue;
 
+// For calculating average feedback measurement
 uint16_t azimuthReadout[ AVERAGE_SIZE ];
-uint16_t elevationReadout[ AVERAGE_SIZE ];
+//uint16_t elevationReadout[ AVERAGE_SIZE];
+
+uint16_t azimuthCalibration;
 
 // CAN message reception callback.
 // This function runs with interrupts disabled, keep it as short as possible.
@@ -70,56 +80,30 @@ void can_receive( Can_Message_t *msg ) {
 }
 
 // Calibration function
-// axis: Elevation / Azimuth
 // mode: set / get
 // value:
-int16_t calibration( uint8_t axis, uint8_t mode, uint16_t value );
+int16_t calibration( uint8_t mode, uint16_t value );
 
-// Turn rotors
-// axis: Elevation / Azimuth
+// Turn rotor
 // position: 0-1024
-uint8_t turn( uint8_t axis, uint16_t position );
+uint8_t turn( uint16_t position );
 
 // Get position
-// axis: Elevation / Azimuth
 // Gets the average value for compensation of distorsions
-uint16_t getPosition( uint8_t axis );
-
-// Read position
-// axis: Elevation / Azimuth
-// uses two adc
-uint16_t readPosition(uint8_t axis);
-
-void changeFeedbackAxis( uint8_t axis );
+uint16_t getPosition( void );
 
 // Initiate ADC
 void initAdcFeedback( void );
 
-// Store result from ADC
-void readAdcFeedback( void );
+// Read antenna feedback from ADC
+void readFeedback( void );
 
 // Control rotation relays
-// axis: Elevation / Azimuth
-void controlRelay( uint8_t axis, uint8_t direction );
+void controlRelay( uint8_t direction );
 
-// Timer callback function used for some timer tests
-void timer_callback( uint8_t timer ) {
-	Can_Message_t msg;
-	
-	msg.ExtendedFlag = 1;
-	msg.Id = (CAN_TST << CAN_SHIFT_CLASS) | NODE_ID;
-	msg.RemoteFlag = 0;
-	msg.DataLength = 1;
-	msg.Data.bytes[0] = timer;
-	
-	BIOS_CanSend(&msg);
-}
+// Sends antennas position on CAN
+void sendStatus( void );
 
-
-ISR( ADC_vect ) // ADC Conversion Complete
-{
-	
-}
 
 int main( void )
 {
@@ -127,9 +111,9 @@ int main( void )
 	sei();
 	
 	Timer_Init();
-//	Serial_Init();
 	
-//	unsigned long time;
+	// Setup ADC
+	initAdcFeedback();
 	
 	Can_Message_t txMsg;
 	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
@@ -144,37 +128,68 @@ int main( void )
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
 	
-	printf("AVR Test Application\n");
+	// Read calibration value from eeprom
+	azimuthCalibration = eeprom_read_word( CALIBRATE_AZIMUTH );
 	
-	txMsg.Id = (CAN_TST << CAN_SHIFT_CLASS) | NODE_ID;
-//	txMsg.Data.dwords[0] = 0x01020304;
-//	txMsg.DataLength = 8;
+	// Timer for reading position feedback
+	Timer_SetTimeout(0, 50, TimerTypeFreeRunning, 0);
 
-	// Set up three timers (assume at least three has been defined)
-	// The timeout is specified in ticks, which is equal to ms if
-	// the tick frequency is set to 1000.
-	Timer_SetTimeout(0, 10, TimerTypeFreeRunning, 0);
-//	Timer_SetTimeout(1, 10768, TimerTypeOneShot, &timer_callback);
-//	Timer_SetTimeout(2, 3141, TimerTypeFreeRunning, &timer_callback);
 	
 	while (1) {
 		if (Timer_Expired(0)) {
-//			ad-omvandla
+			// Periodicly read antennas position
+			readFeedback();
 		}
 		
 		if (rxMsgFull) {
-//			// Print the received message
-//			printf("RX: ID=%08lx, DLC=%u, EXT=%u, RTR=%u, data={ ", 
-//			        rxMsg.Id,
-//			        (uint16_t)rxMsg.DataLength, 
-//			        (uint16_t)rxMsg.ExtendedFlag, 
-//			        (uint16_t)rxMsg.RemoteFlag);
-//    		for (uint8_t i=0; i<rxMsg.DataLength; i++) {
-//    			printf("%02x ", rxMsg.Data.bytes[i]);
-//    		}
-//    		printf("}\n");
-			
-			
+
+			switch (rxMsg.Id){
+				case MSG_CAL_SET: // Set calibration value
+					if( 2 == rxMsg.DataLength ){
+						calibration( SET, rxMsg.Data.words[0] );
+					}
+					break;
+					
+				case MSG_CAL_GET: // Get calibration value
+					if( 0 == rxMsg.DataLength ){
+						
+					}
+					break;
+					
+				case MSG_ABS: // Start turning to absolute position
+					if( 2 == rxMsg.DataLength ){
+						
+					}
+					break;
+					
+				case MSG_REL: // Start turning to relative position
+					if( 2 == rxMsg.DataLength ){
+						
+					}
+					break;
+					
+				case MSG_START: // Start turning
+					if( 1 == rxMsg.DataLength ){
+						// First data byte decides direction
+						controlRelay( rxMsg.Data.bytes[0] );
+					}
+					break;
+					
+				case MSG_STOP: // Stop turning
+					if( 1 == rxMsg.DataLength ){
+						controlRelay( ROTATE_STOP );
+					}
+					break;
+				case MSG_STATUS: // Get position
+					if( 0 == rxMsg.DataLength ){
+						sendStatus();
+					}
+					break;
+					
+				default:
+					break;
+			}
+
     		rxMsgFull = 0; //  
 		}
 	}
@@ -183,26 +198,20 @@ int main( void )
 }
 
 
-int16_t calibration( uint8_t axis, uint8_t mode, uint16_t value )
+int16_t calibration( uint8_t mode, uint16_t value )
 {
 	// set / get calibration value
 	if( SET == mode ){
-		if( ELEVATION == axis ){
-			eeprom_write_word( CALIBRATE_ELEVATION, value );
-		}else if( AZIMUTH == axis ){
-			eeprom_write_word( CALIBRATE_AZIMUTH, value );
-		}	
+		eeprom_write_word( CALIBRATE_AZIMUTH, value );
+		azimuthCalibration = value;
+	
 	}else if( GET == mode ){
-		if( ELEVATION == axis ){
-			return eeprom_read_word( CALIBRATE_ELEVATION );
-		}else if( AZIMUTH == axis ){
-			return eeprom_read_word( CALIBRATE_AZIMUTH );
-		}		
+		return azimuthCalibration;
 	}
 	return 0;
 }
 
-uint8_t turn( uint8_t axis, uint16_t position )
+uint8_t turn( uint16_t position )
 {
 	// start relay
 	// read feedback
@@ -214,67 +223,24 @@ uint8_t turn( uint8_t axis, uint16_t position )
 	return 0;
 }
 
-uint16_t getPosition( uint8_t axis )
+uint16_t getPosition( void )
 {
-/*	uint16_t position = 0;
+	uint16_t position = 0;
 	
 	// Get average value of position
-	for( uint8_t i ; i < 4 ; i++ ){
-		position += readPosition( axis );
+	for( uint8_t i=0; i < AVERAGE_SIZE; i++ ){
+		position += azimuthReadout[i];
 	}
 	
-	position = (position >> 2);
+	position = position >> AVERAGE_SIZE_SHIFT;
+	position += azimuthCalibration;
 	
 	return position;
-*/
-	return 0;
-}
-
-uint16_t readPosition( uint8_t axis )
-{
-	uint16_t averageValue = 0;
-	uint16_t *measuredAxis;
-	
-	if( ELEVATION == axis ){
-		// Calculate elevation value
-		measuredAxis = elevationReadout;
-	}else if( AZIMUTH == axis ){
-		// Calculate aximuth value
-		measuredAxis = azimuthReadout;
-	}else{
-		return 0;
-	}
-
-	for(uint8_t i = 0 ; i<AVERAGE_SIZE ; i++ ){
-		// Summarize
-		averageValue += measuredAxis[i];
-	}
-	
-	averageValue = averageValue >> AVERAGE_SIZE_SHIFT;
-		
-		
-		
-	return averageValue;
-}
-
-
-void changeFeedbackAxis( uint8_t axis )
-{
-	if( AZIMUTH == axis ){
-		// Enable ADC4
-		ADMUX |= ( 1 << MUX2 );
-		ADMUX &= ~(( 1 << MUX0 )|( 1 << MUX1 )|( 1 << MUX3 ));
-	}else if( ELEVATION == axis ){
-		// Enable ADC5
-		ADMUX |= ( 1 << MUX0 )|( 1 << MUX2 );
-		ADMUX &= ~(( 1 << MUX1 )|( 1 << MUX3 ));
-	}	
 }
 
 void initAdcFeedback( void )
 {
 	// ADC4: Azimuth feedback
-	// ADC5: Elevation feedback
 	
 	// Enable ADC4
 	ADMUX |= ( 1 << MUX2 );
@@ -290,88 +256,63 @@ void initAdcFeedback( void )
 	// Right adjust the result
 	ADMUX &= ~( 1 << ADLAR );
 	
-	// Auto Trigger
+//	// Auto Trigger
 //	ADCSRA |= ( 1 << ADATE );
 	
 	// Disable digital input
 	DIDR0 |= ( 1 << ADC5D )|( 1 << ADC4D );
 	
-	// Wake uo ADC and enable it
+	// Wake up ADC and enable it
 	PRR &= ~( 1 << PRADC );
 	ADCSRA |= ( 1 << ADEN );
+	
+	// Start first conversion
+	ADCSRA |= ( 1 << ADSC );
 }
 
-void controlRelay( uint8_t axis, uint8_t direction )
+void controlRelay( uint8_t direction )
 {
-	if( AZIMUTH == axis ){
-		
-		if( ROTATE_PLUS == direction ){
-			PORTD &= ~(1 << PD2);
-			PORTD |= (1 << PD1);
-		}else if ( ROTATE_MINUS == direction ){
-			PORTD &= ~(1 << PD1);
-			PORTD |= (1 << PD2);
-		}else{
-			// stop azimuth rotor
-			PORTD |= (1 << PD1);
-			PORTD |= (1 << PD2);
-		}
-		
-	}else if( ELEVATION == axis ){
-		
-		if( ROTATE_PLUS == direction ){
-			PORTD &= ~(1 << PD0);
-			PORTD |= (1 << PD4);
-		}else if ( ROTATE_MINUS == direction ){
-			PORTD &= ~(1 << PD4);
-			PORTD |= (1 << PD0);
-		}else{
-			// stop elevation rotor
-			PORTD |= (1 << PD0);
-			PORTD |= (1 << PD4);
-		}
-		
+	if( ROTATE_PLUS == direction ){ // Turn clockwise
+		PORTD &= ~(1 << PD2);
+		PORTD |= (1 << PD1);
+	}else if ( ROTATE_MINUS == direction ){ // Turn counter clockwise
+		PORTD &= ~(1 << PD1);
+		PORTD |= (1 << PD2);
 	}else{
-		// stop all rotors
-		PORTD |= (1 << PD0);
+		// Stop azimuth rotor
 		PORTD |= (1 << PD1);
 		PORTD |= (1 << PD2);
-		PORTD |= (1 << PD4);
 	}
-	
 }
 
-void readAdcFeedback( void )
+void readFeedback( void )
 {
 	static uint8_t azimuthArrayPosition = 0;
-	static uint8_t elevationArrayPosition = 0;
-	static uint8_t lastAxis = AZIMUTH;
+
+	while( ADCSRA & ( 1 << ADSC )){} // Wait for conversion to complete
 	
-	while( ADCSRA & (1 << ADSC) ); // Wait for conversion to be done
-		
-	// Get measurement
-	if( AZIMUTH == lastAxis ){
-		azimuthReadout[ azimuthArrayPosition ] = ADCW;
-		azimuthArrayPosition++;
-		if( AVERAGE_SIZE <= azimuthArrayPosition ){
-			azimuthArrayPosition = 0;
-		}
-		
-		lastAxis = ELEVATION;
-		
-	}else if( ELEVATION == lastAxis ){
-		elevationReadout[ elevationArrayPosition ] = ADCW;
-		elevationArrayPosition++;
-		if( AVERAGE_SIZE <= elevationArrayPosition ){
-			elevationArrayPosition = 0;
-		}
-		
-		lastAxis = AZIMUTH;
+	azimuthReadout[ azimuthArrayPosition ] = ADCW;
+	azimuthArrayPosition++;
+	if( AVERAGE_SIZE <= azimuthArrayPosition ){
+		azimuthArrayPosition = 0;
 	}
 	
-	// Next time read other axis
-	changeFeedbackAxis( lastAxis );
+	// Start next conversion
+	ADCSRA |= ( 1 << ADSC );
+}
+
+void sendStatus( void )
+{
+	Can_Message_t txMsg;
 	
-	// Start next measurement
-	ADCSRA |= (1 << ADSC);
+	txMsg.Id = 0x01fff00UL; //(( CAN_SNS << CAN_SHIFT_CLASS )|( SNS_TYPE_STATUS << CAN_SHIFT_SNS_TYPE )|( SNS_ID_ANTENNA_STATUS << CAN_SHIFT_SNS_ID )|( NODE_ID << CAN_SHIFT_SNS_SID );
+	
+	txMsg.DataLength = 2;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	
+	txMsg.Data.words[ 0 ] = getPosition();
+	
+	BIOS_CanSend( &txMsg );
+	
 }
