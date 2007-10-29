@@ -22,7 +22,6 @@ changelog:
 #include "crc8.h"
 
 #include <config.h>
-#include <drivers/can/canid.h> //added by noddan to read decimal point for temperature
 
 #ifdef DS18X20_EEPROMSUPPORT
 // for 10ms delay in copy scratchpad
@@ -115,14 +114,8 @@ uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
 		}
 	}			
 	
-	//Note: Noddan has changed the temperature calculations
-	//to comply with our standards.
-	//*cel  = (uint8_t)(meas >> 4); 
-	//*cel_frac_bits = (uint8_t)(meas & 0x000F);
-	
-	
-	*cel  = (uint8_t)(meas >> 8); 
-	*cel_frac_bits = (uint8_t)(meas & 0x00FF);
+	*cel  = (uint8_t)(meas >> 4); 
+	*cel_frac_bits = (uint8_t)(meas & 0x000F);
 	
 	return DS18X20_OK;
 }
