@@ -1,12 +1,4 @@
-/**
- * High level functions for bus communication and standard node behaviour.
- * 
- * @author	Andreas Fritiofson
- * 
- * @date	2007-10-24
- */
 
-#include <config.h>
 #include "stdcan.h"
 #if defined(_AVRLIB_BIOS_)
 #include <bios.h>
@@ -37,6 +29,19 @@ unsigned char TxQ_Wr_idx; /**< Transmit queue write index. */
 unsigned char TxQ_Len; /**< Number of messages in transmit queue. */
 #endif
 
+#if (STDCAN_FILTER)
+/**
+ * The message acceptance filters.
+ */
+typedef struct {
+	char Active; /**< True if this filter should be used. */
+	unsigned long Id; /**< Match if id matches the message id in all bit locations that are not masked. */
+	unsigned long Mask; /**< Each bit specifies if the corresponding id bit must match (mask[n] = 1) or is Don't Care (mask[n] = 0). */
+} StdCan_Filter_t;
+
+StdCan_Filter_t RxFilters[STDCAN_NUM_FILTERS];
+#endif
+
 /**
  * CAN message callback.
  * Callback for when a message is received from the lower
@@ -47,6 +52,18 @@ void Can_Process(Can_Message_t* msg)
 	unsigned char n;
 	/* Check if there is room on the queue. */
 	if (RxQ_Len < STDCAN_RX_QUEUE_SIZE) {
+		
+#if (STDCAN_FILTER)
+		/* Try to match each filter in turn. */
+		for (n = 0; n < STDCAN_NUM_FILTERS; n++) {
+			if (RxFilters[n].Active && !((msg->Id ^ RxFilters[n].Id) & RxFilters[n].Mask)) {
+				RxQ[RxQ_Wr_idx].Match = n;
+				break;
+			}
+		}
+		
+		if (n == STDCAN_NUM_FILTERS) return; // No match found, discard message.
+#endif
 		/* Copy the message from lower layer into the queue. */
 		RxQ[RxQ_Wr_idx].Id     = msg->Id;
 		RxQ[RxQ_Wr_idx].Length = msg->DataLength;
@@ -73,9 +90,11 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	RxQ_Rd_idx = 0;
 	RxQ_Wr_idx = 0;
 	RxQ_Len    = 0;
+#if (STDCAN_TX_QUEUE_SIZE > 1)
 	TxQ_Rd_idx = 0;
 	TxQ_Wr_idx = 0;
 	TxQ_Len    = 0;
+#endif
 	
 #if defined(_AVRLIB_BIOS_)
 	/* Initialize BIOS' interface for CAN. */
@@ -165,3 +184,27 @@ void StdCan_SendHeartbeat(uint8_t n)
 	/* Try to send it. */
 	Can_Send(&Heartbeat);
 }
+
+#if (STDCAN_FILTER)
+StdCan_Ret_t StdCan_EnableFilter(unsigned char filter, unsigned long id, unsigned long mask)
+{
+	if (filter < STDCAN_NUM_FILTERS) {
+		RxFilters[filter].Id = id;
+		RxFilters[filter].Mask = mask;
+		RxFilters[filter].Active = 1;
+		return StdCan_Ret_OK;
+	} else {
+		return StdCan_Ret_DataErr;
+	}
+}
+
+StdCan_Ret_t StdCan_DisableFilter(unsigned char filter)
+{
+	if (filter < STDCAN_NUM_FILTERS) {
+		RxFilters[filter].Active = 0;
+		return StdCan_Ret_OK;
+	} else {
+		return StdCan_Ret_DataErr;
+	}
+}
+#endif
