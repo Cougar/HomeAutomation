@@ -18,7 +18,6 @@
 #define SERIAL_RX_BUFFER_SIZE	32
 #define SERIAL_TX_BUFFER_SIZE	64
 
-
 /* set to 0 for not sending timestamps on bus */
 #define SENDTIMESTAMP	0
 
