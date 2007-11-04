@@ -43,14 +43,14 @@ Usage:    see Doxygen manual
 */
 
 /** @brief  UART Baudrate Expression
- *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz          
- *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
+ *  @param  xtalCpu  system clock in Mhz, e.g. 4000000L for 4Mhz          
+ *  @param  baudRate baudrate in bps, e.g. 1200, 2400, 9600     
  */
 #define UART_BAUD_SELECT(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
 
 /** @brief  UART Baudrate Expression for ATmega double speed mode
- *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz           
- *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
+ *  @param  xtalCpu  system clock in Mhz, e.g. 4000000L for 4Mhz           
+ *  @param  baudRate baudrate in bps, e.g. 1200, 2400, 9600     
  */
 #define UART_BAUD_SELECT_DOUBLE_SPEED(baudRate,xtalCpu) (((xtalCpu)/((baudRate)*8l)-1)|0x8000)
 
@@ -97,7 +97,6 @@ extern void uart_init(unsigned int baudrate);
  * higher byte the last receive error.
  * UART_NO_DATA is returned when no data is available.
  *
- *  @param   void
  *  @return  lower byte:  received byte from ringbuffer
  *  @return  higher byte: last receive status
  *           - \b 0 successfully received data from UART

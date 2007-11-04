@@ -1,4 +1,4 @@
- /*! \file font5x7.h \brief Graphic LCD Font (Ascii Characters). */
+ /*! \file font.h \brief Graphic LCD Font (Ascii Characters). */
  //*****************************************************************************
  //
  // File Name    : 'font5x7.h'

@@ -197,7 +197,6 @@ extern void lcd_init(uint8_t dispAttr);
 
 /**
  @brief    Clear display and set cursor to home position
- @param    void                                        
  @return   none
 */
 extern void lcd_clrscr(void);
@@ -205,7 +204,6 @@ extern void lcd_clrscr(void);
 
 /**
  @brief    Set cursor to home position
- @param    void                                        
  @return   none
 */
 extern void lcd_home(void);
@@ -239,7 +237,7 @@ extern void lcd_puts(const char *s);
 
 /**
  @brief    Display string from program memory without auto linefeed
- @param    s string from program memory be be displayed                                        
+ @param    progmem_s string from program memory be be displayed                                        
  @return   none
  @see      lcd_puts_P
 */
