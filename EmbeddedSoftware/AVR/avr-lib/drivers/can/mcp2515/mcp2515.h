@@ -73,4 +73,5 @@ Can_Return_t Can_Send(Can_Message_t* msg);
  */
 void Can_Process(Can_Message_t* msg);  
 
+/**@}*/
 #endif
