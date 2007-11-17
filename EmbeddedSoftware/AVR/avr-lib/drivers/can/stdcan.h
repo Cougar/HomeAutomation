@@ -16,12 +16,15 @@
 
 /**@{*/
 
-#error StdCan: For discussion only! Do not use in application code.
+//#error StdCan: For discussion only! Do not use in application code.
+#warning StdCan: Not thourhly tested yet.
 
 #ifndef STDCAN_H_
 #define STDCAN_H_
 
 #include <config.h>
+
+#include <inttypes.h>
 
 #ifndef STDCAN_FILTER
 #define STDCAN_FILTER 1
@@ -105,7 +108,7 @@ StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg);
  * @retval
  * 		Number of messages in the receive queue.
  */ 
-unsigned char StdCan_Get_Pending();
+unsigned char StdCan_Get_Pending(void);
 
 /**
  * @brief Send a message.

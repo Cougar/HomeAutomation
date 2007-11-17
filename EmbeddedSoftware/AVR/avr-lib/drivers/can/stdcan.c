@@ -157,7 +157,7 @@ StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
 	Can_Msg.Id = msg->Id;
 	Can_Msg.DataLength = msg->Length;
 	for (n = 0; n < msg->Length; n++) {
-		Can_Msg->Data.bytes[n] = msg->Data[n];
+		Can_Msg.Data.bytes[n] = msg->Data[n];
 	}
 	
 	if (Can_Send(&Can_Msg) == CAN_OK)
