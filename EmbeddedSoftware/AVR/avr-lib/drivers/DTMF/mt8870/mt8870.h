@@ -93,4 +93,5 @@ void DTMFin_Start(uint8_t *buffer);
  *---------------------------------------------------------------------------*/
 void DTMFin_timer_callback(uint8_t timer);
 
+/**@}*/
 #endif /*MT8870_H_*/
