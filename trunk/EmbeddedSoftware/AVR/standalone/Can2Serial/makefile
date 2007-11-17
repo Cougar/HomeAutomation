@@ -40,8 +40,8 @@
 # MCU name
 #MCU = atmega32
 #MCU = atmega8
-MCU = atmega88
-#MCU = atmega168
+#MCU = atmega88
+MCU = atmega168
 
 
 # Output format. (can be srec, ihex, binary)
@@ -59,7 +59,8 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)drivers/uart/uart.c\
 		$(LIBDIR)drivers/timer/timebase.c\
 		$(LIBDIR)drivers/mcu/mcu.c\
-		$(LIBDIR)drivers/can/mcp2515/mcp2515.c
+		$(LIBDIR)drivers/can/stdcan.c\
+		$(LIBDIR)drivers/can/mcp2515/mcp2515.c\
 		
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -85,7 +86,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)drivers/uart $(LIBDIR)drivers/timer $(LIBDIR)drivers/mcu $(LIBDIR)drivers/can/mcp2515/ $(LIBDIR) 
+EXTRAINCDIRS = $(LIBDIR)drivers/uart $(LIBDIR)drivers/timer $(LIBDIR)drivers/mcu $(LIBDIR)drivers/can/mcp2515/ $(LIBDIR)drivers/can/ $(LIBDIR) 
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
