@@ -123,15 +123,15 @@ void DTMFin_Start(uint8_t *buffer) {
 	MT8870_INT_ENABLE();
 }
 
-uint8_t DTMFin_Poll(uint8_t *len) {
+MT8870_Ret_t DTMFin_Poll(uint8_t *len) {
 	*len = rxlen;
 	if (data_overflow) {
-		return RET_OVERFLOW;
+		return MT8870_Ret_Overflow;
 	}
 	if (data_received) {
-		return RET_FINISHED;
+		return MT8870_Ret_Finished;
 	}
-	return RET_NOT_FINISHED;
+	return MT8870_Ret_Not_Finished;
 }
 
 void DTMFin_Init(void) {
