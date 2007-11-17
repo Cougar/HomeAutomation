@@ -2,7 +2,13 @@
  * @defgroup mt8870 Mitel DTMF-receiver Library
  * @code #include <drivers/DTMF/mt8870/mt8870.h> @endcode
  * 
- * @brief xyz 
+ * @brief Driver for MT8870 DTMF receiver
+ * 
+ * Driver handle complete CallerID. Init and call start.
+ * When the poll function return MT8870_Ret_Finished
+ * data can be found in buffer set with the start function.
+ * The length pointer supplied with function Poll is used to
+ * find out the length of data. 
  * 
  * @author	Anders Runeson
  * @date	2007-08-24
@@ -51,16 +57,35 @@
 
 #endif
 
-/* Returnvalues */
-#define RET_NOT_FINISHED	0
-#define RET_FINISHED		1
-#define RET_OVERFLOW		2
+/**
+ * @brief Return values.
+ */
+typedef enum {
+	MT8870_Ret_Not_Finished, 	/**< No complete number yet. */
+	MT8870_Ret_Finished, 		/**< Data is available. */
+	MT8870_Ret_Overflow, 		/**< Buffer was overflown. */
+} MT8870_Ret_t;
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
+/**
+ * @brief Initialize MT8870 CallerID receiver
+ */
 void DTMFin_Init(void);
-uint8_t DTMFin_Poll(uint8_t *len);
+
+/**
+ * @brief Poll driver for status
+ * 
+ * Function returns MT8870_Ret_Finished if a complete
+ * number is stored in buffer supplied with the Start
+ * function.
+ */
+MT8870_Ret_t DTMFin_Poll(uint8_t *len);
+
+/**
+ * @brief Start the CallerID  
+ */
 void DTMFin_Start(uint8_t *buffer);
 
 /*-----------------------------------------------------------------------------
