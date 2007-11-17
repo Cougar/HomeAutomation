@@ -14,7 +14,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <drivers/timer/timer.h>
-#include <drivers/callerid/mt8870/mt8870.h>
+#include <drivers/DTMF/mt8870/mt8870.h>
+#include <config.h>
 
 /*-----------------------------------------------------------------------------
  * Globals

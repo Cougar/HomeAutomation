@@ -1,3 +1,15 @@
+/** 
+ * @defgroup mt8870 Mitel DTMF-receiver Library
+ * @code #include <drivers/DTMF/mt8870/mt8870.h> @endcode
+ * 
+ * @brief xyz 
+ * 
+ * @author	Anders Runeson
+ * @date	2007-08-24
+ */
+
+/**@{*/
+
 #ifndef MT8870_H_
 #define MT8870_H_
 
@@ -5,6 +17,8 @@
  * Defines
  *---------------------------------------------------------------------------*/
 
+/* Should be defined in user config.inc */
+#if 0
 /*
  * Signals connected from MT8870 is
  * StD, Q1, Q2, Q3 och Q4
@@ -34,6 +48,8 @@
 
 /* Maximum number of tones to store for the number */
 #define MAX_TONES		16
+
+#endif
 
 /* Returnvalues */
 #define RET_NOT_FINISHED	0
