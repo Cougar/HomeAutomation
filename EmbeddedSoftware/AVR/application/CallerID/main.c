@@ -5,7 +5,7 @@
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 #include <drivers/uart/serial.h>
-#include <drivers/callerid/mt8870/mt8870.h>
+#include <drivers/DTMF/mt8870/mt8870.h>
 
 #define STATE_IDLE			0
 #define STATE_GET_DATA		1
