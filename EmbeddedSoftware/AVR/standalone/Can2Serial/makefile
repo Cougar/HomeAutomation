@@ -40,8 +40,8 @@
 # MCU name
 #MCU = atmega32
 #MCU = atmega8
-#MCU = atmega88
-MCU = atmega168
+MCU = atmega88
+#MCU = atmega168
 
 
 # Output format. (can be srec, ihex, binary)

@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <canid.h>
 #include <config.h>
 /* lib files */
 #if USE_STDCAN == 1
