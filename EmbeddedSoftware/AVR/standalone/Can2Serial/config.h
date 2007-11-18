@@ -3,7 +3,7 @@
 
 // Kolla makefile för att sätta MCU!!
 
-#define F_CPU 					8000000UL
+#define F_CPU 					20000000UL
 
 //#define MCU atmega88
 #define CAN_CONTROLLER 			MCP2515
@@ -21,7 +21,7 @@
 /* set to 0 for not sending timestamps on bus */
 #define SENDTIMESTAMP			0
 
-#define USE_STDCAN
+#define USE_STDCAN				1
 #define NODE_ID 				0
 #define STDCAN_FILTER 			0
 

@@ -21,7 +21,7 @@
 
 #include <config.h>
 /* lib files */
-#ifdef USE_STDCAN
+#if USE_STDCAN == 1
 #include <stdcan.h>
 #else
 #include <mcp2515.h>
@@ -30,9 +30,10 @@
 #include <uart.h>
 #include <timebase.h>
 
-#ifdef USE_STDCAN
+
+#if USE_STDCAN == 1
 #if SENDTIMESTAMP == 1
-#error SENDTIMESTAMP not implemented with StdCan yet.
+#warning SENDTIMESTAMP not fully implemented with StdCan yet.
 #endif
 #endif
 
@@ -43,7 +44,7 @@
 #define UART_START_BYTE 253
 #define UART_END_BYTE 250
 
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
 #endif
@@ -102,7 +103,7 @@ void IncTime(void) {
  * 		The received UART byte.
  */
 void UartParseByte(uint8_t c) {
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 	static Can_Message_t cm;
 #else
 	static StdCan_Msg_t cm;
@@ -123,7 +124,7 @@ void UartParseByte(uint8_t c) {
 		if (count >= 15) {
 			if (c == UART_END_BYTE) {
 				PORTC ^= (1<<PC0);
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 				Can_Send(&cm);
 #else
 				StdCan_Put(&cm);
@@ -134,7 +135,7 @@ void UartParseByte(uint8_t c) {
 		}
 		/* data */
 		else if (count >= 7) {
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			cm.Data.bytes[count-7] = c;
 #else
 			cm.Data[count-7] = c;
@@ -144,7 +145,7 @@ void UartParseByte(uint8_t c) {
 		}
 		/* data length */
 		else if (count >= 6) {
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			cm.DataLength = c;
 #else
 			cm.Length = c;
@@ -154,7 +155,7 @@ void UartParseByte(uint8_t c) {
 		}
 		/* remote request flag */
 		else if (count >= 5) {
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			cm.RemoteFlag = c;
 #endif
 			count++;
@@ -162,7 +163,7 @@ void UartParseByte(uint8_t c) {
 		}
 		/* extended */
 		else if (count >= 4) {
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			cm.ExtendedFlag = c;
 #endif
 			count++;
@@ -185,7 +186,7 @@ void UartParseByte(uint8_t c) {
 	}
 }
 
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 void Can_Process(Can_Message_t* msg) {
 	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
 
@@ -205,7 +206,7 @@ int main(void) {
 //	OSCCAL = eeprom_read_byte(0);
 	Timebase_Init();
 	Serial_Init();
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 	Can_Init();
 #else
 	StdCan_Init(0);
@@ -217,7 +218,11 @@ int main(void) {
 	sei();
 	
 #if SENDTIMESTAMP == 1
+#if USE_STDCAN == 0
 	Can_Message_t timeMsg;
+#else
+	StdCan_Msg_t timeMsg;
+#endif	
 	uint32_t time = Timebase_CurrentTime();
 	uint32_t time1 = time;
 	uint32_t unixtime = 0;
@@ -226,21 +231,26 @@ int main(void) {
 	uint8_t i = 0;
 	
 #if SENDTIMESTAMP == 1
+#if USE_STDCAN == 0
 	timeMsg.ExtendedFlag = 1;
 	timeMsg.RemoteFlag = 0;
+	timeMsg.DataLength = 8;
+#else
+	/* Jag orkar inte fixa in datan i paketen, sätter längd till 0 sålänge */
+	timeMsg.Length = 0;
+#endif
 	timeMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
 	//timeMsg.Id = 0; //Same thing, and lib's can.h is not updated.
-	timeMsg.DataLength = 8;
 #endif
 	
-#ifdef USE_STDCAN
+#if USE_STDCAN == 1
 	StdCan_Msg_t rxMsg;
 #endif	
 	
 	/* main loop */
 	while (1) {
 		/* any new CAN messages received? */
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 		if (rxMsgFull) {
 #else
 		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
@@ -253,7 +263,7 @@ int main(void) {
 			uart_putc((uint8_t)(rxMsg.Id>>8));
 			uart_putc((uint8_t)(rxMsg.Id>>16));
 			uart_putc((uint8_t)(rxMsg.Id>>24));
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			uart_putc(rxMsg.ExtendedFlag);
 			uart_putc(rxMsg.RemoteFlag);
 			uart_putc(rxMsg.DataLength);
@@ -270,7 +280,7 @@ int main(void) {
 #endif
 			uart_putc(UART_END_BYTE);
 			
-#ifndef USE_STDCAN
+#if USE_STDCAN == 0
 			rxMsgFull = 0;
 #endif
 		}
@@ -288,10 +298,15 @@ int main(void) {
 		time1 = Timebase_CurrentTime();
 		if ((time1 - time) > 1000) {
 			time = time1;
+#if USE_STDCAN == 0
 			timeMsg.Data.dwords[0] = ++unixtime;
 			IncTime();
 			timeMsg.Data.dwords[1] = date.packed;
 			Can_Send(&timeMsg);
+#else
+			/* Jag orkar inte fixa in datan i paketen, sätter längd till 0 sålänge */
+			StdCan_Put(&timeMsg);
+#endif
 		}
 #endif
 	}
