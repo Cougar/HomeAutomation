@@ -7,6 +7,8 @@
  *   
  */
 
+#include <bios.h> //FIXME: Ta bort mig, jag finns bara fšr debug av noddans RC6
+
 #include "protocols.h"
 
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
@@ -196,8 +198,132 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  * 		IR_OK if data expanded successfully, one of several errormessages if not
  */
 int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
-	//TODO: Implement this function.
-	return IR_NOT_CORRECT_DATA;
+	uint8_t tempadress;
+	uint8_t tempcommand;
+	uint8_t previousBit;
+	
+	//TODO: Implement this function. Martin testar!
+	/* Set up startbit */
+	buf[0] = 0; // no start-one
+	buf[1] = IR_RC5_HALF_BIT;
+	buf[2] = IR_RC5_HALF_BIT;//first start bit
+	buf[3] = IR_RC5_HALF_BIT;
+	buf[4] = IR_RC5_HALF_BIT;//second start bit
+
+#define Toggle 0 //TODO: Fix toggle in some proper way
+	if (Toggle==0){
+		buf[5] = IR_RC5_HALF_BIT;
+		buf[6] = IR_RC5_HALF_BIT; //toggle bit (yes i know it should not be hardcoded)
+		*len = 7;
+	} else {
+		buf[4] = IR_RC5_BIT;
+		buf[5] = IR_RC5_HALF_BIT;
+		*len = 6;
+	}
+		
+	
+	previousBit = 1;
+	
+	//let's start with the adress bits..
+	tempadress = (proto->data>>8)&(0b00011111);
+	tempcommand = proto->data&(0b00111111);
+	
+
+	Can_Message_t txMsg;
+	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
+	txMsg.DataLength = 5;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	txMsg.Data.words[0] = tempadress;
+	//txMsg.Data.words[1] = tempcommand;
+	//txMsg.Data.words[2] = *len+3;
+	//BIOS_CanSend(&txMsg);
+	
+	tempadress = tempadress<<2;
+	
+	for(uint8_t i = 0; i < 5; i++) {
+		tempadress = tempadress<<1;
+		//temptemp = tempadress&0xA0;
+		if (((tempadress&(0xA0))>>7)==1){
+			if (previousBit == 1){//11
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			} else {//01
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			}
+			previousBit = 1;
+		} else {//10
+			if (previousBit == 1){
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			} else {//00
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			}
+			previousBit = 0;
+		}
+	}
+	
+	txMsg.DataLength = 6;
+	
+	tempcommand = tempcommand << 1;
+	
+	for(uint8_t i = 0; i < 6; i++) {
+		tempcommand = tempcommand<<1;
+		//temptemp = tempadress&0xA0;
+		if (((tempcommand&(0xA0))>>7)==1){
+			if (previousBit == 1){//11
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			} else {//01
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			}
+			previousBit = 1;
+		} else {//10
+			if (previousBit == 1){
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			} else {//00
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			}
+			previousBit = 0;
+		}
+	}
+
+	/*
+	//time for the command then!
+	for(uint8_t i = 0; i < 6; i++) {
+		tempcommand = tempcommand << 1;
+		if (((tempcommand&0xA0)>>7)==1){
+			buf[*len] = 3; //zero at the start
+			buf[*len+1] = IR_RC5_HALF_BIT; //keep it low
+			buf[*len+2] = IR_RC5_HALF_BIT; //and then, make it high
+			buf[*len+3] = 3; //and then we waste another cycle low to get in sync
+			*len = *len + 4;
+		} else {
+			buf[*len] = IR_RC5_HALF_BIT;
+			buf[*len+1] = IR_RC5_HALF_BIT;
+			*len = *len + 2;
+		}
+		
+	}	
+	*/
+	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
+	proto->timeout=IR_RC5_TIMEOUT;
+	proto->repeats=IR_RC5_REPS;
+	return IR_OK;
+	//return IR_NOT_CORRECT_DATA;
 }
 
 

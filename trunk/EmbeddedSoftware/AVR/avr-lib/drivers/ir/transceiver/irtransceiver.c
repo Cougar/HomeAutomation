@@ -84,8 +84,14 @@ ISR(IR_COMPARE_VECTOR)
 		IR_OUTP_HIGH();
 	}
 	
+	//The following three lines is just to allow a start signal to be zero.
+/*	bufIndex++;
+	while (txbuf[bufIndex] == 0){
+		bufIndex++;
+	}*/
+	
 	if (bufIndex < txlen)
-	{
+	{		
 		IR_COMPARE_REG += txbuf[bufIndex++];		
 		//IR_COMPARE_REG += *(txbuf + bufIndex++);		
 	}
