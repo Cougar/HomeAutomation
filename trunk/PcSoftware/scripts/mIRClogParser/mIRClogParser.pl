@@ -120,6 +120,14 @@ while (<LOGFILE>) {
 			$datetime =~ s/ /_/g;
 			$datetime = lc($datetime);
 
+			if ($currentfile) {
+				if ($debugmode == 0) {
+					print OUTFILE "\n\\\\\nNext page: [[".$datetime."]] \\\\ \n";
+					print OUTFILE "Back to index: [[".$namespace."]] \\\\ \n";
+					
+				}				
+			}
+
 			$currentfile = $datetime .".txt";
 			# skriv $datetimenice och $datetime till $contentspath
 			$fileopenerr = 0;
@@ -149,11 +157,15 @@ while (<LOGFILE>) {
 					exit;
 				}
 			}
-
+			if ($currentfile) {
+				if ($debugmode == 0) {
+					print OUTFILE "====== ".$datetimenice." ======\n";
+				}				
+			}
 			#print $datetime;
 		}
 		
-		if ($currentfile) {
+		elsif ($currentfile) {
 			$parsedLine = $line;
 			$parsedLine =~ s/\n//g;
 			$parsedLine =~ s/\r//g;
