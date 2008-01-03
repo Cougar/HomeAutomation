@@ -7,8 +7,6 @@
  *   
  */
 
-#include <bios.h> //FIXME: Ta bort mig, jag finns bara fšr debug av noddans RC6
-
 #include "protocols.h"
 
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
@@ -30,6 +28,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto
 #endif
 #if (IR_PROTOCOLS_USE_SAMSUNG)
 	if (parseSamsung(buf, len, proto)==IR_OK) return IR_OK;
+#endif
+#if (IR_PROTOCOLS_USE_MARANTZ)
+	if (parseMarantz(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
@@ -58,6 +59,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		return expandNEC(buf, len, proto);
 	case IR_PROTO_SAMS:
 		return expandSamsung(buf, len, proto);
+	case IR_PROTO_MARANTZ:
+		return expandMarantz(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
 	return IR_NOT_CORRECT_DATA;
@@ -177,7 +180,8 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->timeout=IR_RC5_TIMEOUT;
 	//support RC5-extended keeping second startbit 
 	//remove togglebit
-	proto->data = rawbits&0x37ff;
+	proto->data = rawbits&0x37ff; //This seems to be wrong? Does not invert second start bit and keeps first start bit
+	//proto->data = (rawbits&0x07ff) | ((~rawbits)&0x0100);
 
 	
 	return IR_OK;
@@ -201,6 +205,7 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	uint8_t tempadress;
 	uint8_t tempcommand;
 	uint8_t previousBit;
+	uint16_t tempdata;
 	
 	//TODO: Implement this function. Martin testar!
 	/* Set up startbit */
@@ -215,29 +220,53 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		buf[5] = IR_RC5_HALF_BIT;
 		buf[6] = IR_RC5_HALF_BIT; //toggle bit (yes i know it should not be hardcoded)
 		*len = 7;
+		previousBit = 1;
 	} else {
 		buf[4] = IR_RC5_BIT;
 		buf[5] = IR_RC5_HALF_BIT;
 		*len = 6;
+		previousBit = 0;
 	}
-		
-	
-	previousBit = 1;
-	
+			
 	//let's start with the adress bits..
-	tempadress = (proto->data>>8)&(0b00011111);
 	tempcommand = proto->data&(0b00111111);
+	tempadress = (proto->data>>8)&(0b00011111);
 	
-
-	Can_Message_t txMsg;
-	txMsg.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
-	txMsg.DataLength = 5;
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
-	txMsg.Data.words[0] = tempadress;
-	//txMsg.Data.words[1] = tempcommand;
-	//txMsg.Data.words[2] = *len+3;
-	//BIOS_CanSend(&txMsg);
+	
+	//tempdata = ((((uint16_t)(proto->data)&(0x3F)) + ((uint16_t)((proto->data>>8)&(0x1F))<<6)))<<5;
+	
+	tempdata = (uint16_t)tempcommand + ((uint16_t)tempadress<<6);
+	tempdata = tempdata<<5;
+	
+	/*
+	for(uint8_t ijag t = 0; i < 11; i++) {
+		tempdata = tempdata<<1;
+		//temptemp = tempadress&0xA0;
+		if (((tempdata&(0xA000))>>15)==1){
+			if (previousBit == 1){//11
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			} else {//01
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			}
+			previousBit = 1;
+		} else {//10
+			if (previousBit == 1){
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			} else {//00
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			}
+			previousBit = 0;
+		}
+	}
+	*/
 	
 	tempadress = tempadress<<2;
 	
@@ -269,7 +298,6 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 	
-	txMsg.DataLength = 6;
 	
 	tempcommand = tempcommand << 1;
 	
@@ -301,29 +329,10 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 
-	/*
-	//time for the command then!
-	for(uint8_t i = 0; i < 6; i++) {
-		tempcommand = tempcommand << 1;
-		if (((tempcommand&0xA0)>>7)==1){
-			buf[*len] = 3; //zero at the start
-			buf[*len+1] = IR_RC5_HALF_BIT; //keep it low
-			buf[*len+2] = IR_RC5_HALF_BIT; //and then, make it high
-			buf[*len+3] = 3; //and then we waste another cycle low to get in sync
-			*len = *len + 4;
-		} else {
-			buf[*len] = IR_RC5_HALF_BIT;
-			buf[*len+1] = IR_RC5_HALF_BIT;
-			*len = *len + 2;
-		}
-		
-	}	
-	*/
 	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
 	proto->timeout=IR_RC5_TIMEOUT;
 	proto->repeats=IR_RC5_REPS;
 	return IR_OK;
-	//return IR_NOT_CORRECT_DATA;
 }
 
 
@@ -597,3 +606,134 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	proto->repeats=IR_SAMS_REPS;
 	return IR_OK;
 }
+
+#if (IR_PROTOCOLS_USE_MARANTZ)
+/**
+ * Test data on Marantz protocol 
+ * Reverse-Engineered by Noddan, very similar to RC-5.
+ * Not tested with odd adresses since I have no remote that sends them.
+ * Don't know what happens with the extra long bit in that case.
+ * TODO: Replace all the RC5 with Marantz :D
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	uint8_t halfbitscnt = 1;
+	uint32_t rawbits = 0;
+	
+	for (uint8_t i = 0; i<len; i++) {
+		//halfbitscnt&1==1 in the middle of bits
+		//i&1==0 positive flank
+
+		if ((halfbitscnt&1)==1 && (i&1)==0) {		/* in the middle of bit AND a positve flank */
+			rawbits |= (uint32_t)1<<(19-(halfbitscnt>>1));
+		}
+		
+		if (buf[i] > IR_RC5_HALF_BIT - IR_RC5_HALF_BIT/IR_RC5_TOL_DIV && buf[i] < IR_RC5_HALF_BIT + IR_RC5_HALF_BIT/IR_RC5_TOL_DIV) {
+			halfbitscnt += 1;
+		} else if (buf[i] > IR_RC5_BIT - IR_RC5_BIT/IR_RC5_TOL_DIV && buf[i] < IR_RC5_BIT + IR_RC5_BIT/IR_RC5_TOL_DIV) {
+			halfbitscnt += 2;
+		} else if (buf[i] > IR_RC5_BIT - IR_RC5_BIT/IR_RC5_TOL_DIV && buf[i] < 3*IR_RC5_BIT + IR_RC5_BIT/IR_RC5_TOL_DIV) {
+			halfbitscnt += 1; //It seems to work, not entirely sure of the purpose of this long zero though.
+		} else {
+			return IR_NOT_CORRECT_DATA;
+		}
+		
+	}
+	
+	//rawbits = (uint32_t)1<<17;
+	proto->protocol=IR_PROTO_MARANTZ;
+	proto->timeout=IR_RC5_TIMEOUT;
+	//support RC5-extended keeping second startbit 
+	//remove togglebit
+	//proto->data = rawbits&0x37ff;
+	proto->data = rawbits&0x0001ffff;
+	
+	return IR_OK;
+}
+
+/**
+ * Expand data from Marantz
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	uint8_t previousBit;
+	uint32_t tempdata;
+	uint32_t tempvariabel; //bra att ha eftersom jag inte har koll pŒ alla typecastingar
+	
+	//TODO: Implement this function. Martin testar!
+	/* Set up startbits */
+	buf[0] = IR_RC5_HALF_BIT;//first start bit
+	buf[1] = IR_RC5_HALF_BIT;
+	buf[2] = IR_RC5_HALF_BIT;//second start bit
+	//TODO: Toggle bit should be better, not hard-coded
+	buf[3] = IR_RC5_HALF_BIT;
+	buf[4] = IR_RC5_HALF_BIT;//toggle bit
+	*len=5;
+	previousBit = 1;
+	
+	tempdata = proto->data;
+	
+	tempdata = (uint32_t)tempdata<<14; //MSB at position 32. 
+	
+	for(uint8_t ij = 0; ij < 17; ij++) {
+		tempdata = (uint32_t)tempdata<<1; 
+		tempvariabel = (uint32_t)tempdata&(0x8000);
+		tempvariabel = (uint32_t)tempdata>>31;
+		if ((uint32_t)tempvariabel==1){
+			if (previousBit == 1){//11
+				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len+1] = IR_RC5_HALF_BIT;
+				*len = *len + 2;
+			} else {//01
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			}
+			previousBit = 1;
+		} else {
+			if (previousBit == 1){//10
+				buf[*len-1] = IR_RC5_BIT;
+				buf[*len] = IR_RC5_HALF_BIT;
+				*len = *len + 1;
+			} else {//00
+				buf[*len] = IR_RC5_HALF_BIT;
+				if (ij==4){
+					buf[*len+1] = IR_RC5_HALF_BIT*5;
+				} else {
+					buf[*len+1] = IR_RC5_HALF_BIT;
+				}
+				
+				*len = *len + 2;
+			}
+			previousBit = 0;
+		}
+	}
+	//make sure that we finish high by removing the last zero if needed
+	if (*len%2 == 0){
+		*len = *len - 1;
+	} 
+
+	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
+	proto->timeout=IR_RC5_TIMEOUT;
+	proto->repeats=IR_RC5_REPS;
+	return IR_OK;
+}
+
+
+#endif
