@@ -20,6 +20,7 @@ typedef struct {
 #define IR_PROTOCOLS_USE_SHARP		1
 #define IR_PROTOCOLS_USE_NEC		1
 #define IR_PROTOCOLS_USE_SAMSUNG	1
+#define IR_PROTOCOLS_USE_MARANTZ	1
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -39,6 +40,9 @@ int8_t parseNEC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #if (IR_PROTOCOLS_USE_SAMSUNG)
 int8_t parseSamsung(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+#if (IR_PROTOCOLS_USE_MARANTZ)
+int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+#endif
 /* Try to parse all above protocols until a match is found. */
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 /* The Hash protocol always succeeds and creates a one-way signature of the
@@ -56,6 +60,7 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSharp(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
@@ -172,6 +177,19 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 #define IR_PROTO_HASH		0xfe
 #define IR_PROTO_UNKNOWN	0xff								//
+
+
+/* Marantz Implementation
+ * Receiver: Working (has not been tested with odd adressbits)
+ * Transmitter: 
+ */
+#define IR_PROTO_MARANTZ		7
+#define IR_MARANTZ_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_MARANTZ_BIT			889*2*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_MARANTZ_TIMEOUT		105									//ms	(time between ir frames)
+#define IR_MARANTZ_REPS			1									//		(minimum number of times to repeat code)
+#define IR_MARANTZ_F_MOD		36									//kHz	(modulation frequency)
+#define IR_MARANTZ_TOL_DIV		4
 
 
 #endif /*IR_PROTOCOLS_H_*/
