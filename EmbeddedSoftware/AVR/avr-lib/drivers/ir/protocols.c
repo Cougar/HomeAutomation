@@ -3,7 +3,7 @@
  * 
  * @date	2006-12-10
  * 
- * @author	Anders Runeson, Andreas Fritiofson
+ * @author	Anders Runeson, Andreas Fritiofson, Martin NordŽn
  *   
  */
 
@@ -207,7 +207,6 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	uint8_t previousBit;
 	uint16_t tempdata;
 	
-	//TODO: Implement this function. Martin testar!
 	/* Set up startbit */
 	buf[0] = 0; // no start-one
 	buf[1] = IR_RC5_HALF_BIT;
@@ -231,7 +230,7 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	//let's start with the adress bits..
 	tempcommand = proto->data&(0b00111111);
 	tempadress = (proto->data>>8)&(0b00011111);
-	
+	//TODO: This requires massive cleanup
 	
 	//tempdata = ((((uint16_t)(proto->data)&(0x3F)) + ((uint16_t)((proto->data>>8)&(0x1F))<<6)))<<5;
 	
@@ -660,7 +659,7 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 }
 
 /**
- * Expand data from Marantz
+ * Expand data from Marantz. Written by Martin NordŽn
  * 
  * @param buf
  * 		Pointer to buffer to store the expanded data
@@ -674,9 +673,7 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	uint8_t previousBit;
 	uint32_t tempdata;
-	uint32_t tempvariabel; //bra att ha eftersom jag inte har koll pŒ alla typecastingar
 	
-	//TODO: Implement this function. Martin testar!
 	/* Set up startbits */
 	buf[0] = IR_RC5_HALF_BIT;//first start bit
 	buf[1] = IR_RC5_HALF_BIT;
@@ -687,15 +684,12 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	*len=5;
 	previousBit = 1;
 	
-	tempdata = proto->data;
-	
-	tempdata = (uint32_t)tempdata<<14; //MSB at position 32. 
-	
-	for(uint8_t ij = 0; ij < 17; ij++) {
+	tempdata = (uint32_t)(proto->data)<<14;
+		
+	for(uint8_t i = 0; i < 17; i++) {
 		tempdata = (uint32_t)tempdata<<1; 
-		tempvariabel = (uint32_t)tempdata&(0x8000);
-		tempvariabel = (uint32_t)tempdata>>31;
-		if ((uint32_t)tempvariabel==1){
+
+		if (((uint32_t)tempdata>>31)==1){
 			if (previousBit == 1){//11
 				buf[*len] = IR_RC5_HALF_BIT;
 				buf[*len+1] = IR_RC5_HALF_BIT;
@@ -713,7 +707,7 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 				*len = *len + 1;
 			} else {//00
 				buf[*len] = IR_RC5_HALF_BIT;
-				if (ij==4){
+				if (i==4){
 					buf[*len+1] = IR_RC5_HALF_BIT*5;
 				} else {
 					buf[*len+1] = IR_RC5_HALF_BIT;
