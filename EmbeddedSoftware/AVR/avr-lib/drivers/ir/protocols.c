@@ -136,6 +136,11 @@ int8_t parseSIRC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  */
 int8_t expandSIRC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	//TODO: Implement this function.
+	buf[0] = IR_SIRC_ST_BIT;
+	buf[1] = IR_SIRC_LOW;//start pulse finished
+	
+	
+	
 	return IR_NOT_CORRECT_DATA;
 }
 
@@ -635,11 +640,11 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 			rawbits |= (uint32_t)1<<(19-(halfbitscnt>>1));
 		}
 		
-		if (buf[i] > IR_RC5_HALF_BIT - IR_RC5_HALF_BIT/IR_RC5_TOL_DIV && buf[i] < IR_RC5_HALF_BIT + IR_RC5_HALF_BIT/IR_RC5_TOL_DIV) {
+		if (buf[i] > IR_MARANTZ_HALF_BIT - IR_MARANTZ_HALF_BIT/IR_MARANTZ_TOL_DIV && buf[i] < IR_MARANTZ_HALF_BIT + IR_MARANTZ_HALF_BIT/IR_MARANTZ_TOL_DIV) {
 			halfbitscnt += 1;
-		} else if (buf[i] > IR_RC5_BIT - IR_RC5_BIT/IR_RC5_TOL_DIV && buf[i] < IR_RC5_BIT + IR_RC5_BIT/IR_RC5_TOL_DIV) {
+		} else if (buf[i] > IR_MARANTZ_BIT - IR_MARANTZ_BIT/IR_MARANTZ_TOL_DIV && buf[i] < IR_MARANTZ_BIT + IR_MARANTZ_BIT/IR_MARANTZ_TOL_DIV) {
 			halfbitscnt += 2;
-		} else if (buf[i] > IR_RC5_BIT - IR_RC5_BIT/IR_RC5_TOL_DIV && buf[i] < 3*IR_RC5_BIT + IR_RC5_BIT/IR_RC5_TOL_DIV) {
+		} else if (buf[i] > IR_MARANTZ_BIT - IR_MARANTZ_BIT/IR_MARANTZ_TOL_DIV && buf[i] < 5*IR_MARANTZ_HALF_BIT + IR_MARANTZ_BIT/IR_MARANTZ_TOL_DIV) {
 			halfbitscnt += 1; //It seems to work, not entirely sure of the purpose of this long zero though.
 		} else {
 			return IR_NOT_CORRECT_DATA;
@@ -649,7 +654,7 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 	
 	//rawbits = (uint32_t)1<<17;
 	proto->protocol=IR_PROTO_MARANTZ;
-	proto->timeout=IR_RC5_TIMEOUT;
+	proto->timeout=IR_MARANTZ_TIMEOUT;
 	//support RC5-extended keeping second startbit 
 	//remove togglebit
 	//proto->data = rawbits&0x37ff;
@@ -675,12 +680,12 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	uint32_t tempdata;
 	
 	/* Set up startbits */
-	buf[0] = IR_RC5_HALF_BIT;//first start bit
-	buf[1] = IR_RC5_HALF_BIT;
-	buf[2] = IR_RC5_HALF_BIT;//second start bit
+	buf[0] = IR_MARANTZ_HALF_BIT;//first start bit
+	buf[1] = IR_MARANTZ_HALF_BIT;
+	buf[2] = IR_MARANTZ_HALF_BIT;//second start bit
 	//TODO: Toggle bit should be better, not hard-coded
-	buf[3] = IR_RC5_HALF_BIT;
-	buf[4] = IR_RC5_HALF_BIT;//toggle bit
+	buf[3] = IR_MARANTZ_HALF_BIT;
+	buf[4] = IR_MARANTZ_HALF_BIT;//toggle bit
 	*len=5;
 	previousBit = 1;
 	
@@ -691,26 +696,26 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 
 		if (((uint32_t)tempdata>>31)==1){
 			if (previousBit == 1){//11
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
+				buf[*len] = IR_MARANTZ_HALF_BIT;
+				buf[*len+1] = IR_MARANTZ_HALF_BIT;
 				*len = *len + 2;
 			} else {//01
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len-1] = IR_MARANTZ_BIT;
+				buf[*len] = IR_MARANTZ_HALF_BIT;
 				*len = *len + 1;
 			}
 			previousBit = 1;
 		} else {
 			if (previousBit == 1){//10
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len-1] = IR_MARANTZ_BIT;
+				buf[*len] = IR_MARANTZ_HALF_BIT;
 				*len = *len + 1;
 			} else {//00
-				buf[*len] = IR_RC5_HALF_BIT;
+				buf[*len] = IR_MARANTZ_HALF_BIT;
 				if (i==4){
-					buf[*len+1] = IR_RC5_HALF_BIT*5;
+					buf[*len+1] = IR_MARANTZ_HALF_BIT*5;
 				} else {
-					buf[*len+1] = IR_RC5_HALF_BIT;
+					buf[*len+1] = IR_MARANTZ_HALF_BIT;
 				}
 				
 				*len = *len + 2;
@@ -723,9 +728,9 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		*len = *len - 1;
 	} 
 
-	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
-	proto->timeout=IR_RC5_TIMEOUT;
-	proto->repeats=IR_RC5_REPS;
+	proto->modfreq=(((F_CPU/2000)/IR_MARANTZ_F_MOD) -1);
+	proto->timeout=IR_MARANTZ_TIMEOUT;
+	proto->repeats=IR_MARANTZ_REPS;
 	return IR_OK;
 }
 
