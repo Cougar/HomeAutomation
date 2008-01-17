@@ -71,6 +71,7 @@
 #define CAN_APPTYPES_SENSOR			0xf025
 #define CAN_APPTYPES_IRTRANSMITTER  0xf030
 #define CAN_APPTYPES_RGBLED			0xf035
+#define CAN_APPTYPES_FANCONTROLLER	0xf040
 
 // CAN ID definitions for SNS messages
 #define SNS_TYPE_STATUS             0x10L
@@ -98,11 +99,12 @@
 
 
 // CAN ID definitions for ACT messages
-#define ACT_TYPE_RELAY         0x01L
-#define ACT_TYPE_SERVO         0x02L
-#define ACT_TYPE_RGBLED		   0x03L
-#define ACT_TYPE_IR            0x04L
-#define ACT_TYPE_LCD		   0x05L
+#define ACT_TYPE_RELAY         	0x01L
+#define ACT_TYPE_SERVO         	0x02L
+#define ACT_TYPE_RGBLED		   	0x03L
+#define ACT_TYPE_IR            	0x04L
+#define ACT_TYPE_LCD			0x05L
+#define ACT_TYPE_FAN			0x06L
 
 
 
