@@ -24,9 +24,8 @@ class CanPktHandler1(CanPktHandlerBase):
         print data
         
         # FIXME: convert data to class canpkt before passing to filter chain
-        
-        for filter in daemonConfig.filterChain:
-            fObj = cfg.filterCfg.filterModules[filter]
+        for filter in self.daemonCfg.filterChain:
+            fObj = self.daemonCfg.filterCfg.filterModules[filter]
             fObj.filter(data, fObj.__ASSOCIATED_SPACES__)
     
     def output(self, data):
