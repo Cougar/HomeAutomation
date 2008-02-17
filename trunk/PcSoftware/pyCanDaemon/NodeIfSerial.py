@@ -23,28 +23,33 @@ class SerialThread(Thread):
     port = None
     pktHandler = None
     
-    def __init__ (self, pktHandler, port, exceptHook):
+    def __init__ (self, pktHandler, port):
         Thread.__init__(self)
         self.pktHandler = pktHandler
         self.port = port
-        sys.excepthook = exceptHook
 
     def run(self):
-        log.debug('SerialThread.run')
-        readBuffer = []
-        while not self.terminated:
-            
-            inByte = self.port.read()
-            if inByte == '\n':
-                msg = ''.join(readBuffer)
-                readBuffer = []
-                #print 'Incoming:', msg
-                self.pktHandler.input(msg)
-            else:
-                readBuffer.append(inByte)
-
-            time.sleep(0.1)
-        self.port.close()
+        try:
+            log.debug('SerialThread.run')
+            readBuffer = []
+                    
+            while not self.terminated: 
+                inByte = self.port.read()
+                if inByte == '\n':
+                    msg = ''.join(readBuffer)
+                    readBuffer = []
+                    #print 'Incoming:', msg
+                    self.pktHandler.input(msg)
+                else:
+                    readBuffer.append(inByte)
+    
+                time.sleep(0.1)
+            self.port.close()
+        except: # sys.excepthook does not work in threads
+            import traceback
+            traceback.print_exc()
+            self.terminate()
+            self.port.close()
     
     def terminate(self):
         log.debug('SerialThread.terminate')
@@ -65,14 +70,12 @@ class NodeIfSerial(NodeIfBase):
     
     serialThread = None
     pktHandler = None
-    exceptHook = None
     
-    def __init__ (self, pktHandler, exceptHook, cfg = None):
+    def __init__ (self, pktHandler, cfg = None):
         if cfg is None:
             self.config = self.DEFAULT_CONFIG
         
         self.pktHandler = pktHandler
-        self.exceptHook = exceptHook
         NodeIfBase.__init__(self, cfg, pktHandler)
     
     def start(self):
@@ -90,7 +93,7 @@ class NodeIfSerial(NodeIfBase):
             print Error
             return False
         
-        self.serialThread = SerialThread(self.pktHandler, port, self.exceptHook)
+        self.serialThread = SerialThread(self.pktHandler, port)
         self.serialThread.start()
         return True
 
@@ -99,3 +102,10 @@ class NodeIfSerial(NodeIfBase):
             self.serialThread.terminate()
         else:
             log.debug('Serial interface not started, or already stopped')
+            
+    def running(self):
+        if self.serialThread is not None:
+            return self.serialThread.terminated
+        else:
+            return False
+    

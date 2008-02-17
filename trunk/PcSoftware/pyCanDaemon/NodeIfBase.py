@@ -20,3 +20,6 @@ class NodeIfBase:
 
     def stop(self):
         pass
+    
+    def running(self):
+        pass

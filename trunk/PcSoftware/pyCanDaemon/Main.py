@@ -35,41 +35,16 @@ class CanDaemon():
     
     
     def exitHelper(self):
-        if self.nodeIf is not None:
+        if self.nodeIf is not None and self.nodeIf.running():
             self.nodeIf.stop()
     
     
     def exceptHelper(self, type, value, tb):
-       if hasattr(sys, 'ps1') or not sys.stderr.isatty():
-          # we are in interactive mode or we don't have a tty-like
-          # device, so we call the default hook
-          sys.__excepthook__(type, value, tb)
-       else:
-          import traceback, pdb
-          # we are NOT in interactive mode, print the exception...
-          traceback.print_exception(type, value, tb)
-          print 'ERROR ERROR ERROR'
+          import traceback
+          traceback.print_exc()
+          print 'Exception in main program, shutting down threads'
           self.exitHelper()
-          
-          
-#    def install_thread_excepthook(self):
-#        """Workaround for sys.excepthook thread bug
-#           (https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470).
-#           Call once from __main__ before creating any threads.
-#           If using psyco, call psyco.cannotcompile(threading.Thread.run)
-#           since this replaces a new-style class method.
-#        """
-#        import sys, threading
-#        run_old = threading.Thread.run
-#        def run(*args, **kwargs):
-#            try:
-#                run_old(*args, **kwargs)
-#            except (KeyboardInterrupt, SystemExit):
-#                raise
-#            except:
-#                sys.excepthook(*sys.exc_info())
-#        threading.Thread.run = run
-        
+    
     
     def run(self):
         try:
@@ -78,10 +53,10 @@ class CanDaemon():
         except:
             return
         
-        print 'Start logging'
+        print 'INIT: Start logging'
         log.basicConfig(level=log.DEBUG)
         
-        print 'Get config options from command line or config file'
+        print 'INIT: Get config options from command line / config file'
         cfg = DaemonConfig()
         
         try:
@@ -103,15 +78,15 @@ class CanDaemon():
                 pass
     #            output = a
     
-        print 'Init and load filters and spaces'
+        print 'INIT: Loading filters and spaces'
     #    cfg.filterCfg.importFilter('DefaultFilter')
     #    cfg.stateSpaceCfg.importSpace('DefaultStateSpace')
         cfg.stateSpaceCfg.loadSpaces()
         cfg.filterCfg.loadFilters()
         cfg.setupFilterBindings()
         cfg.setupFilterChain()
-          
-        print 'Start selected can interface'
+        
+        print 'INIT: Starting selected can interface'
         ''' nodeif thread launch '''
         pktHandler = CanPktHandler1(cfg)
         
@@ -119,14 +94,16 @@ class CanDaemon():
      #   nodeif = NodeIfCanStim(cfg, pkthandler)
         ifConfig = NodeIfSerial.DEFAULT_CONFIG
     
-        self.nodeIf = NodeIfSerial(pktHandler, self.exceptHelper, ifConfig)
+        atexit.register(self.exitHelper)
+        sys.excepthook = self.exceptHelper
+    
+        self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
         
         if not self.nodeIf.start():
-            print 'FATAL: Failed to initialize node interface'
+            print 'FATAL: Failed to initialize node interface.'
+            print 'This may indicate that the interface is busy or that you don\'t have ' \
+                  'permission to access it.'
             sys.exit(-1)
-        else:
-            atexit.register(self.exitHelper)
-            sys.excepthook = self.exceptHelper
 
         print 'Initialize/gather info on connected can nodes and load associated state'
         print 'Start selected TCP and UDP server(s)'
@@ -149,9 +126,30 @@ class CanDaemon():
 
 #---------------------------------------------------------------------------
 
+#def install_thread_excepthook():
+#    """Workaround for sys.excepthook thread bug
+#       (https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470).
+#       Call once from __main__ before creating any threads.
+#       If using psyco, call psyco.cannotcompile(threading.Thread.run)
+#       since this replaces a new-style class method.
+#    """
+#    import sys, threading
+#    run_old = threading.Thread.run
+#    def run(*args, **kwargs):
+#        print 'WORKAROUND RUN'
+#        try:
+#            run_old(*args, **kwargs)
+#        except (KeyboardInterrupt, SystemExit):
+#            raise
+#        except:
+#            sys.excepthook(*sys.exc_info())
+#    threading.Thread.run = run
+        
+#---------------------------------------------------------------------------
+
 def main():
     daemonApp = CanDaemon()
-#    daemon.install_thread_excepthook()
+#    install_thread_excepthook()
     daemonApp.run()
 
 #---------------------------------------------------------------------------
