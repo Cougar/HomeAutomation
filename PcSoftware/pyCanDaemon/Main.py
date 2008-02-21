@@ -5,6 +5,7 @@ import sys
 import logging as log
 import getopt
 import atexit
+import time
 
 from CanPktHandlerBase import CanPktHandlerBase
 from CanPktHandler1 import CanPktHandler1
@@ -20,7 +21,21 @@ daemonApp = None
 class CanDaemon():
     
     nodeIf = None
+    ifNotifier = None
+    terminated = False
     
+    class IfNotifier():
+    
+        UNDEFINED = 0
+        TERMINATE = 1
+    
+        def notify(self, msg):
+            if msg == self.TERMINATE:
+                print 'Main terminate notify'
+                self.terminated = True
+            else:
+                print 'UNDEFINED NOTIFY'
+        
     def __init__ (self):
         pass
     
@@ -37,14 +52,7 @@ class CanDaemon():
     def exitHelper(self):
         if self.nodeIf is not None and self.nodeIf.running():
             self.nodeIf.stop()
-    
-    
-    def exceptHelper(self, type, value, tb):
-          import traceback
-          traceback.print_exc()
-          print 'Exception in main program, shutting down threads'
-          self.exitHelper()
-    
+          
     
     def run(self):
         try:
@@ -79,8 +87,8 @@ class CanDaemon():
     #            output = a
     
         print 'INIT: Loading filters and spaces'
-    #    cfg.filterCfg.importFilter('DefaultFilter')
-    #    cfg.stateSpaceCfg.importSpace('DefaultStateSpace')
+  #      cfg.filterCfg.importFilter('DefaultFilter')
+  #      cfg.stateSpaceCfg.importSpace('DefaultStateSpace')
         cfg.stateSpaceCfg.loadSpaces()
         cfg.filterCfg.loadFilters()
         cfg.setupFilterBindings()
@@ -88,21 +96,21 @@ class CanDaemon():
         
         print 'INIT: Starting selected can interface'
         ''' nodeif thread launch '''
+        self.ifNotifier = self.IfNotifier()
         pktHandler = CanPktHandler1(cfg)
         
-     #   cfg = NodeIfCanStim.DEFAULT_CONFIG
-     #   nodeif = NodeIfCanStim(cfg, pkthandler)
-        ifConfig = NodeIfSerial.DEFAULT_CONFIG
+        ifConfig = NodeIfCanStim.DEFAULT_CONFIG
+        self.nodeIf = NodeIfCanStim(ifConfig, pktHandler, self.ifNotifier)
+ #       ifConfig = NodeIfSerial.DEFAULT_CONFIG
     
         atexit.register(self.exitHelper)
-        sys.excepthook = self.exceptHelper
-    
-        self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
+ #       sys.excepthook = self.exceptHelper
+ #       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
         
         if not self.nodeIf.start():
             print 'FATAL: Failed to initialize node interface.'
-            print 'This may indicate that the interface is busy or that you don\'t have ' \
-                  'permission to access it.'
+            print 'This may indicate that the interface is unavailable, ' \
+                  'or that you do not have permission to access it.'
             sys.exit(-1)
 
         print 'Initialize/gather info on connected can nodes and load associated state'
@@ -111,40 +119,26 @@ class CanDaemon():
         
         print 'CanDaemon v1 ready'
         print 'Enter command or type \"help\" for a list of commands'
-        terminated = False
-        while not terminated:
+
+        while not self.terminated:
             input = raw_input('> ').strip().lower()
             if input == 'quit' or input == 'exit':
-                terminated = True
+                self.terminated = True
             elif input == 'help':
-                helpCommands()
+                self.helpCommands()
+            else:
+                print 'Unknown command: ' + input
         
         print 'Shutdown'
-        self.nodeIf.stop()
+        if self.nodeIf.running():
+            self.nodeIf.stop()
+
         cfg.stateSpaceCfg.saveSpaces()
         cfg.filterCfg.saveFilters()
-
-#---------------------------------------------------------------------------
-
-#def install_thread_excepthook():
-#    """Workaround for sys.excepthook thread bug
-#       (https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470).
-#       Call once from __main__ before creating any threads.
-#       If using psyco, call psyco.cannotcompile(threading.Thread.run)
-#       since this replaces a new-style class method.
-#    """
-#    import sys, threading
-#    run_old = threading.Thread.run
-#    def run(*args, **kwargs):
-#        print 'WORKAROUND RUN'
-#        try:
-#            run_old(*args, **kwargs)
-#        except (KeyboardInterrupt, SystemExit):
-#            raise
-#        except:
-#            sys.excepthook(*sys.exc_info())
-#    threading.Thread.run = run
         
+        time.sleep(0.1) # wait for threads
+        sys.exit(0) # will except if there are threads remaining
+
 #---------------------------------------------------------------------------
 
 def main():

@@ -15,11 +15,11 @@ class DefaultFilter(PktFilter):
     
     def filter(self, pkt, spaces):
         
-        print 'DefaultFilter called with ',pkt,' ', spaces
+#        print 'DefaultFilter, PKT from node', pkt.nodeId, spaces
         
         ''' Trigger only when nodeId is not equal to 1 '''
- #       if pkt.nodeId is 1:
- #           return
+        if pkt.nodeId is not 1:
+            return
     
         ''' Call associated state spaces '''
         for s in spaces:

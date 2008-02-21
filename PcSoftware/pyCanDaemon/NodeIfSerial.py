@@ -11,12 +11,6 @@ import serial
 import sys
 import time
 
-UART_START_BYTE = 253
-UART_END_BYTE = 250
-PACKET_LENGTH = 17
-readBufferSize = 8192
-UART_CONN_BYTE = 252
-
 class SerialThread(Thread):
     
     terminated = False
@@ -43,8 +37,11 @@ class SerialThread(Thread):
                 else:
                     readBuffer.append(inByte)
     
-                time.sleep(0.1)
+                time.sleep(0.001)
+                
             self.port.close()
+            self.ownerNotifier.notify(self.ownerNotifier.TERMINATE)
+            
         except: # sys.excepthook does not work in threads
             import traceback
             traceback.print_exc()
@@ -98,7 +95,7 @@ class NodeIfSerial(NodeIfBase):
         return True
 
     def stop(self):
-        if self.serialThread is not None:
+        if self.serialThread is not None and not self.stimThread.terminated:
             self.serialThread.terminate()
         else:
             log.debug('Serial interface not started, or already stopped')
