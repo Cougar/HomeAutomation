@@ -24,7 +24,8 @@ class DynamicModuleCfg:
     def __init__(self, modSubDir):
         self.modSubDir = modSubDir
         self.checkSumFile = modSubDir + '/' + self.CHECKSUM_FILE
-    
+        if not os.path.exists(self.checkSumFile):
+            self.__createCsumsFile()
     
     def loadModule(self, className):
         pFileName = os.getcwd() + '/' + self.modSubDir + '/' + className + '.p'
@@ -74,6 +75,12 @@ class DynamicModuleCfg:
         hasher.update(data)
         digest = hasher.hexdigest()
         return digest
+    
+    
+    def __createCsumsFile(self):
+         csumsfile = open(self.checkSumFile, 'w')
+         csumsfile.write('[' + self.CHECKSUM_SECTION + ']\n')
+         csumsfile.close()
     
     
     def __writeCheckSum(self, entryname, filename):
