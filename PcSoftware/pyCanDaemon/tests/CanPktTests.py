@@ -8,12 +8,12 @@ import unittest
 #--------------------------------------------------------------------------
 
 from CanPkt import CanPkt
-from CanPktHandler1 import CanPktHandler1
 
 class CanPktTests(unittest.TestCase):
 
     def setUp(self):
         """Call before every test case."""
+        pass
         
     def tearDown(self):
         """Call after every test case."""

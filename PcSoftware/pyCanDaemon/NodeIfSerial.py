@@ -102,7 +102,7 @@ class NodeIfSerial(NodeIfBase):
             
     def running(self):
         if self.serialThread is not None:
-            return self.serialThread.terminated
+            return not self.serialThread.terminated
         else:
             return False
     

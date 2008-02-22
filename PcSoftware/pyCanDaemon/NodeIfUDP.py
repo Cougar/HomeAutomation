@@ -17,3 +17,7 @@ class NodeIfUDP:
 
     def stop(self):
         pass
+
+    def running(self):
+        pass
+    

@@ -112,7 +112,7 @@ class NodeIfCanStim(NodeIfBase):
             
     def running(self):
         if self.stimThread is not None:
-            return self.stimThread.terminated
+            return not self.stimThread.terminated
         else:
             return False
 
