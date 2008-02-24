@@ -24,52 +24,86 @@ class CanDaemon():
     nodeIf = None
     ifNotifier = None
     terminated = False
+    
     command_list = []
     command_map = {}
+    CMDLIST_NAME = 0
+    CMDLIST_HANDLER = 1
+    CMDLIST_PARAMINFO = 2
+    CMDLIST_HELP = 3
+
+    logHelp = 'usage:\t log [options]\n\n' \
+              '\t options:\n' \
+              '\t level <num>, where: 0 < num < 3\n'
+    stateHelp = 'usage: state [name/add/rem]'
+    filterHelp = 'usage: filter [name/add/rem]'
+    addifHelp = 'usage: addif [name] [options]'
+    addbridgeHelp = 'usage: addbridge [interface names]'
+    tcpdHelp = 'usage: tcpd [start/stop/configure] [options]'
+    tlsdHelp = 'usage: tlsd [start/stop/configure] [options]'
+    canctldHelp = 'usage: canctld [start/stop/configure] [options]'
+    simHelp = 'usage: sim [record/play/add/rem/save/load] [options]'
     help_command_map = {}
+    
+    logOptions = {}
+    ifOptions = {}
+    bridgeOptions = {}
+    tcpdOptions = {}
+    tlsdOptions = {}
+    canctldOptions = {}
+    simOptions = {}
+
+    logValidOptions = {'level' : ['range', 0, 3]}
+    ifValidOptions = {'type' : ['alt', 'serial','udp']}
+    
+    ifSerialOptions = {'' : []}
+    ifCanStimOptions = {'' : []}
+    ifTelnetOptions = {'' : []}
+    ifTcpTlsOptions = {'' : []}
+    ifUDPOptions = {'' : []}
+    
+    bridgeValidOptions = {'' : ['']}
+    tcpdValidOptions = {'' : []}
+    tlsdValidOptions = {'' : []}
+    canctldValidOptions = {'' : []}
+    simValidOptions = {'' : []}
 
     def __init__ (self):
-        self.command_list = [['help', self.helpCmd, 'display help'],
-                       ['log', self.logCmd, 'log control: \"help log\"'],
-                       ['exec', self.execCmd,  'run command listing <filename>\n'],
-                       ['filter', self.filterCmd, 'filter commands: \"help filter\"'],
-                       ['state', self.stateCmd, 'state commands: \"help state\"\n'],
-                       ['addif', self.ifAddCmd, 'add interface: \"help addif\"'],
-                       ['remif', self.ifRemCmd, 'remove interface <name>'],
-                       ['ifup', self.ifUpCmd, 'bring up interface <name>'],
-                       ['ifdown', self.ifDownCmd, 'bring down interface <name>\n'],
-                       ['addbrigde', self.addBridgeCmd, 'add bridge: \"help addbridge\"'],
-                       ['rembridge', self.remBridgeCmd, 'remove bridge <name>\n'],
-                       ['tcpd', self.tcpdCmd, 'tcpd server control: \"help tcpd\"'],
-                       ['tlsd', self.tlsdCmd, 'tlsd server control: \"help tlsd\"'],
-                       ['canctld', self.canCtldCmd, 'canctld server control: \"help canctld\"\n'],
-                       ['status', self.statusCmd, 'show daemon status'],
-                       ['stats', self.statsCmd, 'show statistics\n'],
-                       ['nodelist', self.nodesCmd, 'list can nodes'],
-                       ['filterlist', self.filterlistCmd, 'list active filters\n'],
-                       ['sim', self.simCmd, 'simulator commands: \"help sim\"']]
+        
+        self.command_list = [['help', self.helpCmd, '', 'display help'],
+                       ['log', self.logCmd, '<options>', 'log control: \"help log\"'],
+                       ['exec', self.execCmd, '<filename>', 'run command listing\n'],
+                       ['filter', self.filterCmd, '<cmd>', 'filter commands: \"help filter\"'],
+                       ['state', self.stateCmd, '<cmd>', 'state commands: \"help state\"\n'],
+                       ['addif', self.ifAddCmd, '<options>', 'add interface: \"help addif\"'],
+                       ['remif', self.ifRemCmd, '<name>', 'remove interface'],
+                       ['ifup', self.ifUpCmd, '<name>', 'bring up interface'],
+                       ['ifdown', self.ifDownCmd, '<name>', 'bring down interface\n'],
+                       ['addbrigde', self.addBridgeCmd, '<options>', 'add bridge: \"help addbridge\"'],
+                       ['rembridge', self.remBridgeCmd, '<id>', 'remove bridge\n'],
+                       ['tcpd', self.tcpdCmd, '<cmd>', 'tcpd server control: \"help tcpd\"'],
+                       ['tlsd', self.tlsdCmd, '<cmd>', 'tlsd server control: \"help tlsd\"'],
+                       ['canctld', self.canCtldCmd, '<cmd>', 'canctld server control: \"help canctld\"\n'],
+                       ['status', self.statusCmd, '', 'show daemon status'],
+                       ['stats', self.statsCmd, '', 'show statistics\n'],
+                       ['nodelist', self.nodesCmd, '', 'list can nodes'],
+                       ['filterlist', self.filterlistCmd, '', 'list active filters\n'],
+                       ['sim', self.simCmd, '<cmd>', 'simulator commands: \"help sim\"']]
         
         index = 0
         for cmd in self.command_list:
             self.command_map[cmd[0]] = index
             index += 1
 
-        logHelp = 'not implemented'
-        stateHelp = 'not implemented'
-        addifHelp = 'not implemented'
-        addbridgeHelp = 'not implemented'
-        tcpdHelp = 'not implemented'
-        tlsdHelp = 'not implemented'
-        canctldHelp = 'not implemented'
-        simHelp = 'not implemented'
-        self.help_command_map = {'log' : logHelp,
-                                'state' : stateHelp,
-                                'addif' : addifHelp,
-                                'addbridge' : addbridgeHelp,
-                                'tcpd' : tcpdHelp,
-                                'tlsd' : tlsdHelp,
-                                'canctld' : canctldHelp,
-                                'sim' : simHelp}
+        self.help_command_map = {'log' : self.logHelp,
+                                'filter' : self.filterHelp,
+                                'state' : self.stateHelp,
+                                'addif' : self.addifHelp,
+                                'addbridge' : self.addbridgeHelp,
+                                'tcpd' : self.tcpdHelp,
+                                'tlsd' : self.tlsdHelp,
+                                'canctld' : self.canctldHelp,
+                                'sim' : self.simHelp}
 
         self.cfg = DaemonConfig()
     
@@ -88,7 +122,7 @@ class CanDaemon():
     
     def __rightAdjust(self, refstr, str):
         spcstr = ''
-        endpos = 20-len(refstr)
+        endpos = 25-len(refstr)
         for i in range(1,endpos):
             if i == endpos-5:
                 spcstr += ':'
@@ -97,12 +131,17 @@ class CanDaemon():
         return (spcstr+str)
     
     def helpCmd(self, *args):
-        args = args[0]
+        try:
+            args = args[0]
+        except:
+            args = []
         if len(args) < 1:
             quitStr = 'quit, exit'
             print quitStr, self.__rightAdjust(quitStr, 'shutdown pyCanDaemon')
             for cmd in self.command_list:
-                print cmd[0], self.__rightAdjust(cmd[0], cmd[2])
+                cmdstr = cmd[self.CMDLIST_NAME] + ' ' + cmd[self.CMDLIST_PARAMINFO]
+                print cmdstr, \
+                      self.__rightAdjust(cmdstr, cmd[self.CMDLIST_HELP])
         elif len(args) < 2:
             subCmd = args[0]
             if self.help_command_map.has_key(subCmd):
@@ -113,6 +152,14 @@ class CanDaemon():
             print 'usage: help [topic]'
 
     def filterCmd(self, *args):
+        try:
+            args = args[0]
+        except:
+            args = []
+        log.debug('filterCmd ' + str(args))
+        if len(args) < 2:
+            print 'Invalid arguments\n' + self.filterHelp
+            return
         cmd = args[0]
         filterName = args[1]
         # FIXME: verify 
@@ -122,65 +169,88 @@ class CanDaemon():
         elif cmd == 'rem' or cmd == 'remove':
             print 'Deleting filter: ' + filterName
             # FIXME: actually delete
+            raise 'Not implemented'
     
     def stateCmd(self, *args):
+        try:
+            args = args[0]
+        except:
+            args = []
+        log.debug('stateCmd ' + str(args))
+        if len(args) < 2:
+            print 'Invalid arguments\n' + self.stateHelp
+            return
         cmd = args[0]
         spaceName = args[1]
+        # FIXME: verify 
         if cmd == 'add':
             print 'Importing state space: ' + spaceName
             self.cfg.stateSpaceCfg.importSpace(spaceName)
         elif cmd == 'rem' or cmd == 'remove':
             print 'Deleting state space: ' + spaceName
             # FIXME: actually delete statespace
+            raise 'Not implemented'
     
     def ifAddCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def ifRemCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
 
     def ifUpCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
  
     def ifDownCmd(self, *args):
-        print 'not implemented'
-        pass
+        raise 'not implemented'
     
     def addBridgeCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
 
     def remBridgeCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def tcpdCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def tlsdCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def canCtldCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def statusCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def statsCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def nodesCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def filterlistCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def simCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
     
     def logCmd(self, *args):
-        print 'not implemented'
+        raise 'not implemented'
 
     def execCmd(self, *args):
-        pass
+        raise 'not implemented'
+    
+    def parseCommand(self, cmdstr):
+        incmd = cmdstr.strip()
+        cmd = incmd.split(' ')
+        if len(cmd[0]) < 2:
+            return
+        cmd[0] = cmd[0].lower()
+        if cmd[0] == 'quit' or cmd[0] == 'exit':
+            self.terminated = True
+        elif self.command_map.has_key(cmd[0]):
+            self.command_list[self.command_map[cmd[0]]][self.CMDLIST_HANDLER](cmd[1:])
+        else:
+            print 'unknown command: ' + cmd[0]
     
     def exitHelper(self):
         if self.nodeIf is not None and self.nodeIf.running():
@@ -196,14 +266,15 @@ class CanDaemon():
 
     def run(self):
         try:
-            demoPath = os.path.dirname(__file__)
-            os.chdir(demoPath)
+            myPath = os.path.dirname(__file__)
+            os.chdir(myPath)
         except:
             return
         
         print 'INIT: Start logging'
         log.basicConfig(level=log.DEBUG)
         
+        """command parameters only dictate verbosity and use of config file"""
         print 'INIT: Get config options from command line / config file'
         try:
             opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
@@ -224,32 +295,35 @@ class CanDaemon():
                 pass
     #            output = a
 
-        print 'INIT: Loading filters and spaces'
+        """load config defaults, or last config if exists"""
+        """run startup.cfg"""
+        
+#        print 'INIT: Loading filters and spaces'
 #       self.cfg.filterCfg.importFilter('DefaultFilter')
 #       self.cfg.stateSpaceCfg.importSpace('DefaultStateSpace')
-        self.cfg.stateSpaceCfg.loadSpaces()
-        self.cfg.filterCfg.loadFilters()
-        self.cfg.setupFilterBindings()
-        self.cfg.setupFilterChain()
+#        self.cfg.stateSpaceCfg.loadSpaces()
+#        self.cfg.filterCfg.loadFilters()
+#        self.cfg.setupFilterBindings()
+#        self.cfg.setupFilterChain()
 
-        print 'INIT: Starting selected can interface'
-        ''' nodeif thread launch '''
-        self.ifNotifier = self.IfNotifier()
-        pktHandler = CanPktHandler1(self.cfg)
-        
-        ifConfig = NodeIfCanStim.DEFAULT_CONFIG
-        self.nodeIf = NodeIfCanStim(ifConfig, pktHandler, self.ifNotifier)
- #       ifConfig = NodeIfSerial.DEFAULT_CONFIG
-    
-        atexit.register(self.exitHelper)
-        sys.excepthook = self.exceptHelper
+#        print 'INIT: Starting selected can interface'
+#        ''' nodeif thread launch '''
+#        self.ifNotifier = self.IfNotifier()
+#        pktHandler = CanPktHandler1(self.cfg)
+#        
+#        ifConfig = NodeIfCanStim.DEFAULT_CONFIG
+#        self.nodeIf = NodeIfCanStim(ifConfig, pktHandler, self.ifNotifier)
+# #       ifConfig = NodeIfSerial.DEFAULT_CONFIG
+#    
+#        atexit.register(self.exitHelper)
+#        sys.excepthook = self.exceptHelper
  #       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
-        
-        if not self.nodeIf.start():
-            print 'FATAL: Failed to initialize node interface.'
-            print 'This may indicate that the interface is unavailable, ' \
-                  'or that you do not have permission to access it.'
-            sys.exit(-1)
+#        
+#        if not self.nodeIf.start():
+#            print 'FATAL: Failed to initialize node interface.'
+#            print 'This may indicate that the interface is unavailable, ' \
+#                  'or that you do not have permission to access it.'
+#            sys.exit(-1)
 
         print 'Initialize/gather info on connected can nodes and load associated state'
         print 'Start selected TCP and UDP server(s)'
@@ -258,76 +332,16 @@ class CanDaemon():
         print 'CanDaemon v1 ready'
         print 'Enter command or type \"help\" for a list of commands'
         while not self.terminated:
-            input = raw_input('> ').strip().lower()
-            cmd = input.split(' ')
-            if len(cmd[0]) < 2:
-                continue
-            if cmd[0] == 'quit' or cmd[0] == 'exit':
-                self.terminated = True
-            elif self.command_map.has_key(cmd[0]):
-                self.command_list[self.command_map[cmd[0]]][1](cmd[1:])
-            else:
-                print 'unknown command: ' + cmd[0]
-
-        """ -- suggested commands -- p n = priority to implement (1 is highest)
-            base: (p 1)
-            filter add <name>
-            filter rem <name>
-            state add <name>
-            state rem <name>
-            state reset <name>
-            
-            	node interfaces:  (p 1)
-            addif <serial/sim/udp/telnet> <options> (help protocol gives options)
-            remif <name> - delete an interface
-            ifup <name> - bring up an interface
-            ifdown <name> - bring down an interface
-            
-            	bridging: (p 2)
-            addbridge <name> <ifname1> <ifname2> <ifname3> ... - create if bridge
-            rembridge <name>
-            
-            	servers:
-            tcpd start [port] - raw tcp (telnet, compat) server, all pkts  (p 1)
-            tcpd stop
-            tlsd start [port] - tcp+tls server, all pkts  (p 2)
-            tlsd stop
-            canctld start [port] - pyCanGUI server (tcp/tls)  (p 2)
-            canctld stop
-            
-            info commands: (p 3)
-            status - shows active settings, interfaces, servers
-            stats - shows some traffic statistics
-            nodes - shows active nodes 
-            filters - shows active filters
-            state [name] - shows active states, opt specific state info\
-            log - log control (TBD)
-            
-            simulator commands: (p 2)
-            simrecord <file> - record incoming packets
-            simplay <file> [timescale] - play recorded stream, opt accel time:
-            simadd <nodeid> (nodetype) 
-            simrem <nodeid>
-            simsave <config>
-            simload <config>
-        """
- 
-        """ -- other features --
-            startup.cfg - script to run at startup (command listing)
-            ie: ifup 0
-                tlsd start
-                canguid start
-            config.cfg - last daemon config (param override)
-            default.cfg - default daemon config (only read if config.cfg does not exist)
-        """
+            input = raw_input('> ')
+            self.parseCommand(input)
 
         print 'Shutdown'
-        if self.nodeIf.running():
-            print 'Stopping If thread'
-            self.nodeIf.stop()
+#        if self.nodeIf.running():
+#            print 'Stopping If thread'
+#            self.nodeIf.stop()
 
-        self.cfg.stateSpaceCfg.saveSpaces()
-        self.cfg.filterCfg.saveFilters()
+#        self.cfg.stateSpaceCfg.saveSpaces()
+#        self.cfg.filterCfg.saveFilters()
         
         print 'Waiting 0.1..'
         time.sleep(0.1) # wait for threads
