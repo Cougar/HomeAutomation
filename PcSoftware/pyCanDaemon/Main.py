@@ -109,13 +109,17 @@ class CanDaemon():
     
     class IfNotifier():
         """ Used by if threads to send messages to the main program thread """
+        
+        parent = None
         UNDEFINED = 0
         TERMINATE = 1
+        
+        def __init__(self, parent):
+            self.parent = parent
     
         def notify(self, msg):
             if msg == self.TERMINATE:
                 print 'Main terminate notify'
-                self.terminated = True
             else:
                 print 'UNDEFINED NOTIFY'
         
