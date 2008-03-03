@@ -19,7 +19,7 @@ class CanPktTests(unittest.TestCase):
         """Call after every test case."""
         pass
     
-    def testCanPktBasic1(self):
+    def testA_CanPktBasic1(self):
         log.debug('testCanPktBasic1')
         pkt = None
         pktList = []
@@ -30,7 +30,7 @@ class CanPktTests(unittest.TestCase):
             log.debug('pkt ' + str(i) + ' str: ' + pktstr)
             assert pkt.nodeId == i
 
-    def testCanPktBasic2(self):
+    def testB_CanPktBasic2(self):
         log.debug('testCanPktBasic2')
         pkt = CanPkt(0xffaaaa, [0x1b, 0xff])
         str = pkt.toString()
@@ -49,7 +49,7 @@ class CanPktTests(unittest.TestCase):
         assert pkt.data[1] == 0xff
         return True
     
-    def testCanPktBasic3(self):
+    def testC_CanPktBasic3(self):
         log.debug('testCanPktBasic3')
         pktstr = CanPkt(0x1f8f0100,[0x5f,0x3a,0x40,0x01]).toString()
         log.debug(pktstr)
@@ -59,7 +59,7 @@ class CanPktTests(unittest.TestCase):
         log.debug(pkt.data[1])
         assert pkt.data[3] == 0x01
     
-    def testPktHandler1_1(self):
+    def testC_PktHandler1_1(self):
         log.debug('testPktHandler1_1')
         pktstr = 'PKT 1f8f0100 1 0 43 01'
         pkt = CanPkt.stringToCanPkt(self, pktstr)
