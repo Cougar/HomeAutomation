@@ -28,11 +28,11 @@ class MainCmdTests(unittest.TestCase):
         """Call after every test case."""
         sys.stdout = sys.__stdout__ 
     
-    def testCmdBasic(self):
+    def testA_CmdBasic(self):
         log.debug('testCmdBasic')
         canDaemon.parseCommand('hello')
         
-    def testCmdHelp(self):
+    def testB_CmdHelp(self):
         log.debug('testCmdBasic')
         canDaemon.parseCommand('help')
         canDaemon.parseCommand('help log')
@@ -45,51 +45,51 @@ class MainCmdTests(unittest.TestCase):
         canDaemon.parseCommand('help canctld')
         canDaemon.parseCommand('help sim')
 
-    def testImportFilter(self):
+    def testC_ImportFilter(self):
         log.debug('testImportFilter')
         canDaemon.parseCommand('filter add DefaultFilter')
         
-    def testRemoveFilter(self):
+    def testD_RemoveFilter(self):
         log.debug('testRemoveFilter')
         canDaemon.parseCommand('filter rem DefaultFilter')
 
-    def testImportSpace(self):
+    def testE_ImportSpace(self):
         log.debug('testImportSpace')
         canDaemon.parseCommand('state add DefaultStateSpace')
         
-    def testRemoveSpace(self):
+    def testF_RemoveSpace(self):
         log.debug('testRemoveSpace')
         canDaemon.parseCommand('state rem DefaultStateSpace')
         
-    def testAddCanStimIf(self):
+    def testG_AddCanStimIf(self):
         log.debug('testAddCanStimIf')
         canDaemon.parseCommand('addif stim0 stim')
     
-    def testRemCanStimIf(self):
+    def testH_RemCanStimIf(self):
         log.debug('testRemCanStimIf')
         canDaemon.parseCommand('remif stim0')
         
-    def testAddUDPIf(self):
+    def testI_AddUDPIf(self):
         log.debug('testAddUDPIf')
         canDaemon.parseCommand('addif udp0 udp host=192.168.10.2 port=1000')
     
-    def testRemUDPIf(self):
+    def testJ_RemUDPIf(self):
         log.debug('testRemUDPIf')
         canDaemon.parseCommand('remif udp0')
 
-    def testAddTelnetIf(self):
+    def testK_AddTelnetIf(self):
         log.debug('testAddTelnetIf')
         canDaemon.parseCommand('addif telnet0 host=192.168.10.2 port=1000')
     
-    def testRemTelnetIf(self):
+    def testL_RemTelnetIf(self):
         log.debug('testRemTelnetIf')
         canDaemon.parseCommand('remif telnet0')
         
-    def testAddTcpTlsIf(self):
+    def testM_AddTcpTlsIf(self):
         log.debug('testAddTcpTlsIf')
         canDaemon.parseCommand('addif tcptls0 tcptls host=192.168.10.2 port=1000 key=mykey.pub')
             
-    def testRemTcpTlsIf(self):
+    def testN_RemTcpTlsIf(self):
         log.debug('testRemTcpTlsIf')
         canDaemon.parseCommand('remif tcptls0')
 

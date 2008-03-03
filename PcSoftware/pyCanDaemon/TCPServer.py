@@ -17,6 +17,7 @@ class TCPServerThread(Thread):
         Thread.__init__(self)
         self.sock = sock
         self.ownerNotifier = ownerNotifier
+        self.clientSocks = [] # may not be gc'd between instances of object
         self.clientSocksLock = Lock()
         
     def cleanup(self):
@@ -103,15 +104,18 @@ class TCPServer():
             return not self.serverThread.terminated
         else:
             return False
+        
+    def getClients(self):
+        return self.serverThread.clientSocks
 
     def readAll(self):
         cldata = []
         self.serverThread.clientSocksLock.acquire()
         for clsock,addr in self.serverThread.clientSocks:
             try:
-                data = clsock.s.recv(1024)
+                data = clsock.recv(1024)
             except Exception, e:
-                log.debug('TCPServer client socket error: ' + str(e))
+                log.debug('TCPServer client ' + str(addr) + ' socket error: ' + str(e))
                 self.serverThread.clientSocksLock.release()
                 return None
             cldata.append((addr, data))
@@ -124,8 +128,9 @@ class TCPServer():
             try:
                 clsock.send(data)
             except Exception, e:
-                log.debug('TCPServer client socket error: ' + str(e))
+                log.debug('TCPServer client ' + str(addr) + ' socket error: ' + str(e))
+                self.serverThread.clientSocks.remove((clsock,addr))
                 self.serverThread.clientSocksLock.release()
-                return None
+                return False
         self.serverThread.clientSocksLock.release()
-
+        return True
