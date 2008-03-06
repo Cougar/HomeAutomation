@@ -1,27 +1,13 @@
 /**
  * AntennaControl
  *
- * Build for use at ETA, http://www.eta.chalmers.se/
- * controlling their 2 meter yagi antenna.
- * For the moment only support for azimuth,
- * elevation is yet to be implemented.
+ * Build for use at ETA, http://www.eta.chalmers.se/, controlling their 2 meter yagi antenna.
  *
- * @date 2007-12-10
+ * @date 2007-10-28
  * @author Erik Larsson
  *
  */
 
-/*
- * This version uses a NodeEssential
- * and the pins used are:
- * 0: PD2 azimuth plus
- * 1: PD1 azimuth minus 
- * 8: PC4 ADC4 azimuth feedback
- */
-
-/*-----------------------------------------------------------------------------
- * Includes
- *---------------------------------------------------------------------------*/
 #include <inttypes.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
@@ -31,11 +17,8 @@
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 #include <drivers/timer/timer.h>
 
-/*-----------------------------------------------------------------------------
- * Defines
- *---------------------------------------------------------------------------*/
 #define APP_TYPE    0xf0a0
-#define APP_VERSION 0x0002
+#define APP_VERSION 0x0001
 
 #define AZIMUTH 0
 
@@ -46,13 +29,15 @@
 #define SET 0
 #define GET 1
 
+#define STATUS 0
+
 #define CALIBRATE_AZIMUTH 0 // EEPROM adress
 
 // Make sure this is a power of 2
 #define AVERAGE_SIZE 16
 #define AVERAGE_SIZE_SHIFT 4
 
-//FIXME move these message id defines
+// Tillfälliga defines
 #define MSG_CAL_SET 0x11100001UL
 #define MSG_CAL_GET 0x11100002UL
 #define MSG_ABS 0x111000031UL
@@ -60,7 +45,17 @@
 #define MSG_START 0x11100005UL
 #define MSG_STOP 0x11100006UL
 #define MSG_STATUS 0x11100007UL
+
 #define MSG_CAL_RET 0x111000f2UL
+
+
+// ----------
+
+// Essential pins
+// 0: PD2 azimuth plus
+// 1: PD1 azimuth minus 
+// 8: PC4 ADC4 azimuth feedback
+
 
 
 // A simple message "queue", with space for one message only.
@@ -68,84 +63,15 @@
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
 
+//uint16_t actualElevationValue;
+//uint16_t desiredElevationValue;
+//uint16_t actualAzimuthValue;
+//uint16_t desiredAzimuthValue;
+
 // For calculating average feedback measurement
 uint16_t azimuthReadout[ AVERAGE_SIZE ];
 
 uint16_t azimuthCalibration;
-
-/*-----------------------------------------------------------------------------
- * Declarations
- *---------------------------------------------------------------------------*/
- 
-/**
- * calibration
- * Sets and gets calibration data from EEPROM
- *
- * @param mode: set /get
- * @param value
- * @return value
- */
-int16_t calibration( uint8_t mode, uint16_t value );
-
-// Turn rotor
-// position: 0-1024
-/**
- * turn
- * Turns rotor to given position
- * FIXME implement this function
- *
- * @param position
- * @return 
- */
-uint8_t turn( uint16_t position );
-
-/**
- * getPosition
- * Calculates the antenna position
- * Uses a number of the latest adc readings
- * and gets the avarage value
- *
- * @param void
- * @return position
- */
-uint16_t getPosition( void );
-
-/**
- * initAdcFeedback
- * Starts the ADC
- *
- * @param void
- * @return void
- */
-void initAdcFeedback( void );
-
-/**
- * readFeedback
- * Gets antenna position from ADC and 
- * puts in arrary for later calculations
- *
- * @param void
- * @return void
- */
-void readFeedback( void );
-
-/**
- * controlRelay
- * Control the relay that turns the rotor
- *
- * @param direction
- * @return void
- */
-void controlRelay( uint8_t direction );
-
-/**
- * sendStatus
- * Sends antennas position on CAN bus
- *
- * @param void
- * @return void
- */
-void sendStatus( void );
 
 // CAN message reception callback.
 // This function runs with interrupts disabled, keep it as short as possible.
@@ -156,9 +82,32 @@ void can_receive( Can_Message_t *msg ) {
 	}
 }
 
-/*-----------------------------------------------------------------------------
- * Main Program
- *---------------------------------------------------------------------------*/
+// Calibration function
+// mode: set / get
+// value:
+int16_t calibration( uint8_t mode, uint16_t value );
+
+// Turn rotor
+// position: 0-1024
+uint8_t turn( uint16_t position );
+
+// Get position
+// Gets the average value for compensation of distorsions
+uint16_t getPosition( void );
+
+// Initiate ADC
+void initAdcFeedback( void );
+
+// Read antenna feedback from ADC
+void readFeedback( void );
+
+// Control rotation relays
+void controlRelay( uint8_t direction );
+
+// Sends antennas position on CAN
+void sendStatus( uint8_t type );
+
+
 int main( void )
 {
 	// Enable interrupts as early as possible
@@ -166,9 +115,10 @@ int main( void )
 	
 	Timer_Init();
 
-    DDRD |= (1 << PD1)|(1 << PD2);
-    PORTD |= (1 << PD1)|(1 << PD2);
-
+	// Set as outputs and stop rotor
+	DDRD |= (1 << PD1)|(1 << PD2);
+	PORTD &= ~((1 << PD1)|(1 << PD2));
+	
 	// Setup ADC
 	initAdcFeedback();
 	
@@ -180,7 +130,7 @@ int main( void )
 	txMsg.Data.words[0] = APP_TYPE;
 	txMsg.Data.words[1] = APP_VERSION;
 	
-	// Set up callback for CAN reception, this is optional if only sending is required.
+	// Set up callback for CAN reception
 	BIOS_CanCallback = &can_receive;
 	// Send CAN_NMT_APP_START
 	BIOS_CanSend(&txMsg);
@@ -189,10 +139,10 @@ int main( void )
 	azimuthCalibration = eeprom_read_word( CALIBRATE_AZIMUTH );
 	
 	// Timer for reading position feedback
-	Timer_SetTimeout(0, 50, TimerTypeFreeRunning, 0);
+	Timer_SetTimeout(0, 100, TimerTypeFreeRunning, 0);
 	Timer_SetTimeout(1, 1000, TimerTypeFreeRunning, 0);
 
-    sendStatus();
+	sendStatus( STATUS );
 
 	while (1) {
 		if (Timer_Expired(0)) {
@@ -200,93 +150,67 @@ int main( void )
 			readFeedback();
 		}
 		if (Timer_Expired(1)) {
-			// Send antennas position
-			sendStatus();
+			sendStatus(STATUS);
 		}
 		
-		/* If any messages is received */
 		if (rxMsgFull) {
-
-			switch ( rxMsg.Id ){
-				case MSG_CAL_SET:
-					// Set calibration value
+			switch (rxMsg.Id){
+				case MSG_CAL_SET: // Set calibration value
 					if( 2 == rxMsg.DataLength ){
-
 						calibration( SET, rxMsg.Data.words[0] );
 					}
-					
 					break;
 					
-				case MSG_CAL_GET:
-					// Get calibration value
+				case MSG_CAL_GET: // Get calibration value
 					if( 0 == rxMsg.DataLength ){
-
 						txMsg.Id = MSG_CAL_RET; 
 						txMsg.DataLength = 2;
 						txMsg.Data.words[0] = calibration( GET, 0 );
-
 						BIOS_CanSend(&txMsg);
 					}
-					
 					break;
 					
-				case MSG_ABS:
-					// Start turning to absolute position
+				case MSG_ABS: // Start turning to absolute position
 					if( 2 == rxMsg.DataLength ){
-
-						//FIXME implement this
+						
 					}
-					
 					break;
 					
-				case MSG_REL:
-					// Start turning to relative position
+				case MSG_REL: // Start turning to relative position
 					if( 2 == rxMsg.DataLength ){
-
-						//FIXME implement this
+						
 					}
-					
 					break;
 					
-				case MSG_START:
-					// Start turning rotor
+				case MSG_START: // Start turning
 					if( 1 == rxMsg.DataLength ){
-
 						// First data byte decides direction
 						controlRelay( rxMsg.Data.bytes[0] );
 					}
-					
 					break;
 					
-				case MSG_STOP:
-					// Stop turning rotor
-					
-					controlRelay( ROTATE_STOP );
-					
+				case MSG_STOP: // Stop turning
+					//if( 1 == rxMsg.DataLength ){
+						controlRelay( ROTATE_STOP );
+					//}
 					break;
-					
-				case MSG_STATUS:
-					// Get position
+				case MSG_STATUS: // Get position
 					if( 0 == rxMsg.DataLength ){
-						sendStatus();
+						sendStatus(STATUS);
 					}
-					
 					break;
 					
 				default:
 					break;
 			}
 
-    		rxMsgFull = 0;
+    			rxMsgFull = 0; //  
 		}
 	}
 	
 	return 0;
 }
 
-/*-----------------------------------------------------------------------------
- * Definitions
- *---------------------------------------------------------------------------*/
 
 int16_t calibration( uint8_t mode, uint16_t value )
 {
@@ -303,7 +227,6 @@ int16_t calibration( uint8_t mode, uint16_t value )
 
 uint8_t turn( uint16_t position )
 {
-	//FIXME implement this
 	// start relay
 	// read feedback
 	// callibrate measurement
@@ -317,7 +240,7 @@ uint8_t turn( uint16_t position )
 uint16_t getPosition( void )
 {
 	uint16_t position = 0;
-	
+
 	// Get average value of position
 	for( uint8_t i=0; i < AVERAGE_SIZE; i++ ){
 		position += azimuthReadout[i];
@@ -326,11 +249,45 @@ uint16_t getPosition( void )
 	// Calculate average
 	position = position >> AVERAGE_SIZE_SHIFT;
 
-	// Convert to degrees, gives about 379 degrees
-	position /= 3;
+	// Convert to degrees, gives about 361 degrees
+	// start 508, stop 1023 => 516 bits per rotation
+	// 516 * 7 / 10 = 361
 
+	// Antennen rör sig inom 180 -> 360 (=0) -> 180
+	// Norr = mittläget = 0 / 360 grader = 766 decimalt innan omräkning
+	// Söder = ändlägena = 180 grader = 508 och 1023 innan omräkning
+
+
+	// Make it between 508 and 1023
+	if( position < 508 ){
+		position = 0;
+	}else{
+		position -= 508;
+	}
+	
+//	if( 0x8000&position ){
+//		position = -position;
+//		position *= 7;
+//		position /= 10;
+//		//position = -position;
+//	}else{
+
+		// Make it between 0 and 360
+		position *= 7;
+		position /= 10;
+//	}
+
+	// Move it to 180 and 540
+	position += 180;
+	
 	// Calibrate
 	position += (int16_t)azimuthCalibration;
+	
+	// North is now at 360
+	if( position > 360 ){
+		// Antenna is between 0 and 180
+		position -= 360;
+	}
 	
 	return position;
 }
@@ -366,18 +323,16 @@ void initAdcFeedback( void )
 
 void controlRelay( uint8_t direction )
 {
-	if( ROTATE_PLUS == direction ){
-		// Turn CW
-		PORTD &= ~(1 << PD2);
-		PORTD |= (1 << PD1);
-	}else if ( ROTATE_MINUS == direction ){
-		// Turn CCW
+	if( ROTATE_PLUS == direction ){ // Turn clockwise
 		PORTD &= ~(1 << PD1);
 		PORTD |= (1 << PD2);
+	}else if ( ROTATE_MINUS == direction ){ // Turn counter clockwise
+		PORTD &= ~(1 << PD2);
+		PORTD |= (1 << PD1);
 	}else{
 		// Stop azimuth rotor
-		PORTD |= (1 << PD1);
-		PORTD |= (1 << PD2);
+		PORTD &= ~(1 << PD1);
+		PORTD &= ~(1 << PD2);
 	}
 }
 
@@ -385,35 +340,45 @@ void readFeedback( void )
 {
 	static uint8_t azimuthArrayPosition = 0;
 
-	// Wait for ADC conversion to complete
-	while( ADCSRA & ( 1 << ADSC )){} 
+	while( ADCSRA & ( 1 << ADSC )){} // Wait for conversion to complete
 	
-	// Put readout in ringbuffer
-	azimuthReadout[ azimuthArrayPosition ] = ADCW;
+	azimuthReadout[ azimuthArrayPosition ] = ADCW; // Store result in ring buffer
 	azimuthArrayPosition++;
-	
 	if( AVERAGE_SIZE <= azimuthArrayPosition ){
 		azimuthArrayPosition = 0;
 	}
-	
+
 	// Start next conversion
 	ADCSRA |= ( 1 << ADSC );
 }
 
-void sendStatus( void )
+void sendStatus( uint8_t type )
 {
-	// Gets antennas position and sends on CAN bus
 	Can_Message_t txMsg;
 	
-	txMsg.Id = 0x1f8f0100UL; //FIXME id should not be defined here
+	//txMsg.Id = 0x1f8f0100UL; //(( CAN_SNS << CAN_SHIFT_CLASS )|( SNS_TYPE_STATUS << CAN_SHIFT_SNS_TYPE )|( SNS_ID_ANTENNA_STATUS << CAN_SHIFT_SNS_ID )|( NODE_ID << CAN_SHIFT_SNS_SID );
 	
 	txMsg.DataLength = 2;
 	txMsg.RemoteFlag = 0;
 	txMsg.ExtendedFlag = 1;
 	
-	txMsg.Data.words[ 0 ] = getPosition();
-	
-	BIOS_CanSend( &txMsg );
+//	txMsg.Data.words[ 0 ] = getPosition();
+
+	if(STATUS == type){
+		txMsg.Id = 0x1f8f0100UL;
+		txMsg.Data.words[ 0 ] = getPosition();
+		txMsg.DataLength = 2;
+	}else{
+		txMsg.Id = 0x12020202UL;
+		txMsg.Data.bytes[ 0 ] = type;
+		txMsg.DataLength = 1;
+	}
+
+	// Try to resend up to four times
+	for(int i=0; i<3;i++){
+		if( CAN_OK == BIOS_CanSend( &txMsg )){
+			return;
+		}
+	}		
 	
 }
-
