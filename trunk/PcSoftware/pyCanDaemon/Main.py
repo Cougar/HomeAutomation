@@ -86,9 +86,8 @@ class CanDaemon():
                        ['tlsd', self.tlsdCmd, '<cmd>', 'tlsd server control: \"help tlsd\"'],
                        ['canctld', self.canCtldCmd, '<cmd>', 'canctld server control: \"help canctld\"\n'],
                        ['status', self.statusCmd, '', 'show daemon status'],
-                       ['stats', self.statsCmd, '', 'show statistics\n'],
-                       ['nodelist', self.nodesCmd, '', 'list can nodes'],
-                       ['filterlist', self.filterlistCmd, '', 'list active filters\n'],
+                       ['stats', self.statsCmd, '', 'show statistics'],
+                       ['nodelist', self.nodesCmd, '', 'list can nodes\n'],
                        ['sim', self.simCmd, '<cmd>', 'simulator commands: \"help sim\"']]
         
         index = 0
@@ -232,9 +231,6 @@ class CanDaemon():
     def nodesCmd(self, *args):
         raise 'not implemented'
     
-    def filterlistCmd(self, *args):
-        raise 'not implemented'
-    
     def simCmd(self, *args):
         raise 'not implemented'
     
@@ -323,7 +319,7 @@ class CanDaemon():
 #    
         atexit.register(self.exitHelper)
         sys.excepthook = self.exceptHelper
-        self.nodeIf = NodeIfTCP(pktHandler, self.ifNotifier ,None)
+        self.nodeIf = NodeIfTCP(pktHandler, self.ifNotifier, None)
 #       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
 #        
         if not self.nodeIf.start():
