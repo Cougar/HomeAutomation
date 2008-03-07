@@ -13,6 +13,7 @@ from CanPktHandler1 import CanPktHandler1
 from NodeIfBase import NodeIfBase
 from NodeIfCanStim import NodeIfCanStim
 from NodeIfSerial import NodeIfSerial
+from NodeIfTCP import NodeIfTCP
 
 from DaemonConfig import DaemonConfig
 
@@ -312,22 +313,24 @@ class CanDaemon():
 
 #        print 'INIT: Starting selected can interface'
 #        ''' nodeif thread launch '''
-#        self.ifNotifier = self.IfNotifier()
-#        pktHandler = CanPktHandler1(self.cfg)
+        self.ifNotifier = self.IfNotifier(self)
+        pktHandler = CanPktHandler1(self.cfg)
 #        
 #        ifConfig = NodeIfCanStim.DEFAULT_CONFIG
 #        self.nodeIf = NodeIfCanStim(ifConfig, pktHandler, self.ifNotifier)
 # #       ifConfig = NodeIfSerial.DEFAULT_CONFIG
+        ifConfig = NodeIfTCP.DEFAULT_CONFIG
 #    
-#        atexit.register(self.exitHelper)
-#        sys.excepthook = self.exceptHelper
- #       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
+        atexit.register(self.exitHelper)
+        sys.excepthook = self.exceptHelper
+        self.nodeIf = NodeIfTCP(pktHandler, self.ifNotifier ,None)
+#       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
 #        
-#        if not self.nodeIf.start():
-#            print 'FATAL: Failed to initialize node interface.'
-#            print 'This may indicate that the interface is unavailable, ' \
-#                  'or that you do not have permission to access it.'
-#            sys.exit(-1)
+        if not self.nodeIf.start():
+            print 'FATAL: Failed to initialize node interface.'
+            print 'This may indicate that the interface is unavailable, ' \
+                  'or that you do not have permission to access it.'
+            sys.exit(-1)
 
         print 'Initialize/gather info on connected can nodes and load associated state'
         print 'Start selected TCP and UDP server(s)'

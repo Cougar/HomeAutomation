@@ -27,7 +27,7 @@ class CanPkt:
         self.remote = remote
 
     def toString(self):
-        strpkt = 'PKT ' + hex(self.nodeId)[2:] # '0x' is cut from can2serial link
+        strpkt = 'PKT ' + '%08X' % self.nodeId
         if self.extended:
             strpkt += ' 1'
         else:
@@ -38,7 +38,7 @@ class CanPkt:
             strpkt += ' 0'
         bytestrings = ''
         for byte in self.data:
-            bytestrings = bytestrings + ' ' + str(byte)
+            bytestrings = bytestrings + ' %02x' % byte
         return (strpkt + bytestrings)
     
     @staticmethod
@@ -46,7 +46,7 @@ class CanPkt:
         """ Converts can message string to CanPkt class """
         strbyteslist = str.split(' ')
         nodeid = int('0x'+strbyteslist[1], 16)
-        intvalues = [int(val, 10) for val in strbyteslist[2:]]
+        intvalues = [int(val, 16) for val in strbyteslist[2:]]
         extended = (intvalues[0] == 1)
         remote = (intvalues[1] == 1)
         pkt = CanPkt(nodeid, intvalues[2:], extended, remote)

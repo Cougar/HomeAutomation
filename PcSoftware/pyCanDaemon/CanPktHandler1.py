@@ -22,7 +22,9 @@ class CanPktHandler1(CanPktHandlerBase):
         if strdata[0:3] != 'PKT':
             return
 
+#        print strdata
         pkt = CanPkt.stringToCanPkt(self, strdata)
+#        print 'incoming: ' + pkt.toString()
 
         for filter in self.daemonCfg.filterChain:
             fObj = self.daemonCfg.filterCfg.filterModules[filter]
