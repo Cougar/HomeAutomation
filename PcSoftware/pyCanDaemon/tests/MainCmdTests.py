@@ -77,12 +77,12 @@ class MainCmdTests(unittest.TestCase):
         log.debug('testRemUDPIf')
         canDaemon.parseCommand('remif udp0')
 
-    def testK_AddTelnetIf(self):
-        log.debug('testAddTelnetIf')
+    def testK_AddTCPIf(self):
+        log.debug('testAddTCPIf')
         canDaemon.parseCommand('addif telnet0 host=192.168.10.2 port=1000')
     
-    def testL_RemTelnetIf(self):
-        log.debug('testRemTelnetIf')
+    def testL_RemTCPIf(self):
+        log.debug('testRemTCPIf')
         canDaemon.parseCommand('remif telnet0')
         
     def testM_AddTcpTlsIf(self):

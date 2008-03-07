@@ -35,7 +35,7 @@ class CanPktTests(unittest.TestCase):
         pkt = CanPkt(0xffaaaa, [0x1b, 0xff])
         str = pkt.toString()
         log.debug('pkt str: ' + str)
-        assert str == 'PKT ffaaaa 1 0 27 255'
+        assert str == 'PKT 00FFAAAA 1 0 1b ff'
         log.debug(pkt.nodeId)
         assert pkt.nodeId == 0xffaaaa
         log.debug(pkt.extended)
@@ -71,7 +71,7 @@ class CanPktTests(unittest.TestCase):
         assert pkt.remote == False
         log.debug(pkt.data)
         log.debug(pkt.data[0])
-        assert pkt.data[0] == 0x2b
+        assert pkt.data[0] == 0x43
         log.debug(pkt.data[1])
         assert pkt.data[1] == 0x01
         
