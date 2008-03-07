@@ -67,10 +67,13 @@ class NodeIfSerial(NodeIfBase):
     
     serialThread = None
     pktHandler = None
+    config = {}
     
     def __init__ (self, pktHandler, cfg = None):
         if cfg is None:
             self.config = self.DEFAULT_CONFIG
+        else:
+            self.confg = cfg
         
         self.pktHandler = pktHandler
         NodeIfBase.__init__(self, cfg, pktHandler)
