@@ -13,7 +13,7 @@ class DefaultFilter(PktFilter):
     def detach(self):
         pass
     
-    def filter(self, pkt, spaces): # also if number?
+    def filter(self, ifname, pkt, spaceport):
         
 #        print 'DefaultFilter, PKT from node', pkt.nodeId, spaces
         
@@ -22,5 +22,5 @@ class DefaultFilter(PktFilter):
             return
     
         ''' Call associated state spaces '''
-        for s in spaces:
-            s.run()
+        spaceport.runAll()
+# spacePort.run('name')
