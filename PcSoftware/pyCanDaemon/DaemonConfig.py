@@ -12,7 +12,8 @@ import re
 from ConfigParser import ConfigParser
 import filters
 import statespaces
-
+from CanPktHandlerBase import CanPktHandlerBase
+from CanPktHandler1 import CanPktHandler1
 
 class DynamicModuleCfg:
     """Dynamic module manager"""
@@ -210,16 +211,31 @@ class DaemonConfig:
     
     stateSpaceCfg = None
     filterCfg = None
+    pktHandler = None
+    
     filterChain = []
+    nodeInterfaces = []
+    nodeInterfaceMap = {}
     
     def __init__ (self):
         self.filterCfg = FilterCfg()
         self.stateSpaceCfg = StateSpaceCfg()
+        self.pktHandler = CanPktHandler1()
         
-    def setupFilterChain(self):
+    def load(self):
+        self.stateSpaceCfg.loadSpaces()
+        self.stateSpaceCfg.loadFilters()
+        __setupFilterBindings()
+        __setupFilterChain()
+    
+    def save(self):
+        self.stateSpaceCfg.saveSpaces()
+        self.filterCfg.saveFilters()
+        
+    def __setupFilterChain(self):
         self.filterChain = ['DefaultFilter']
     
-    def setupFilterBindings(self):
+    def __setupFilterBindings(self):
         for f in self.filterCfg.filterModules.values():
             assocSpaces = []
             for s in f.ASSOCIATED_SPACES:
