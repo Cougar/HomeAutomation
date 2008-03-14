@@ -7,6 +7,7 @@
 class StateSpace:
     
     DESCRIPTIVE_NAME = 'New Packet Filter'
+    RELATED_SPACES = []
 
     ''' Called to restore the default state '''
     def reset(self):
@@ -20,6 +21,9 @@ class StateSpace:
     def unload(self):
         pass
     
-    ''' Triggered by filters as response to incoming packets '''
-    def run(self, args):
+    """ Triggered by filters as response to incoming packets
+        related: array of statespace objects related to this state space
+        args: optional arguments
+    """
+    def run(self, related, args):
         pass

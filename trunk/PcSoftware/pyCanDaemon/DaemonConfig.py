@@ -137,7 +137,7 @@ class FilterCfg:
     def loadFilter(self, name):
         newFilt = self.dynamicModuleCfg.loadModule(name)
         if newFilt is not None:
-            filterModules[name] = newFilt
+            self.filterModules[name] = newFilt
             return True
         else:
             return False
@@ -167,7 +167,7 @@ class FilterCfg:
 class StateSpaceCfg:
     """State space resource manager"""
     
-    REQUIRED_ATTRIBUTES = ['DESCRIPTIVE_NAME',
+    REQUIRED_ATTRIBUTES = ['DESCRIPTIVE_NAME', 'RELATED_SPACES'
                            'load', 'reset', 'run', 'unload']
     
     dynamicModuleCfg = None
@@ -180,7 +180,7 @@ class StateSpaceCfg:
     def loadSpace(self, name):
         newSpace = self.dynamicModuleCfg.loadModule(name)
         if newSpace is not None:
-            spaceModules[name] = newFilt
+            self.spaceModules[name] = newFilt
             return True
         else:
             return False
@@ -229,3 +229,12 @@ class DaemonConfig:
                     print 'WARNING: Reference to undefined state space: ' + s
             setattr(f, '__ASSOCIATED_SPACES__', assocSpaces)
     
+
+    def setupStateSpaceRelations(self):
+        for sm in self.stateSpaceCfg.spaceModules:
+            relatedSpaceNames = self.stateSpaceCfg.spaceModules[sm].RELATED_SPACES
+            relatedSpaces = {}
+            for rsname in relatedSpaceNames:
+                relatedSpaces[rsname] = self.stateSpaceCfg.spaceModules[rsname]
+            setattr(sm, '__RELATED_SPACES__', relatedSpaces)
+            
