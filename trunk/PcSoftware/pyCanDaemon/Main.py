@@ -7,9 +7,6 @@ import getopt
 import atexit
 import time
 
-from CanPktHandlerBase import CanPktHandlerBase
-from CanPktHandler1 import CanPktHandler1
-
 from NodeIfBase import NodeIfBase
 from NodeIfCanStim import NodeIfCanStim
 from NodeIfSerial import NodeIfSerial
@@ -22,7 +19,6 @@ daemonApp = None
 class CanDaemon():
     
     cfg = None
-    nodeIf = None
     ifNotifier = None
     terminated = False
     
@@ -254,8 +250,9 @@ class CanDaemon():
             print 'unknown command: ' + cmd[0]
     
     def exitHelper(self):
-        if self.nodeIf is not None and self.nodeIf.running():
-            self.nodeIf.stop()
+        pass
+#        if self.nodeIf is not None and self.nodeIf.running():
+#            self.nodeIf.stop()
             
     def exceptHelper(self, type, value, tb):
         import traceback
@@ -263,7 +260,7 @@ class CanDaemon():
         print '\nException in main program, shutting down threads'
         self.terminated = True
         self.exitHelper()
- #       sys.exit(-1)
+
 
     def run(self):
         try:
@@ -298,39 +295,27 @@ class CanDaemon():
 
         """load config defaults, or last config if exists"""
         """run startup.cfg"""
-        
-#        print 'INIT: Loading filters and spaces'
-#       self.cfg.filterCfg.importFilter('DefaultFilter')
-#       self.cfg.stateSpaceCfg.importSpace('DefaultStateSpace')
-#        self.cfg.stateSpaceCfg.loadSpaces()
-#        self.cfg.filterCfg.loadFilters()
-#        self.cfg.setupFilterBindings()
-#        self.cfg.setupFilterChain()
+        print 'INIT: Loading daemon configuration'
+        self.cfg = DaemonConfig()
+        self.cfg.load()
 
-#        print 'INIT: Starting selected can interface'
-#        ''' nodeif thread launch '''
-        self.ifNotifier = self.IfNotifier(self)
-        pktHandler = CanPktHandler1(self.cfg)
-#        
-#        ifConfig = NodeIfCanStim.DEFAULT_CONFIG
-#        self.nodeIf = NodeIfCanStim(ifConfig, pktHandler, self.ifNotifier)
-# #       ifConfig = NodeIfSerial.DEFAULT_CONFIG
-        ifConfig = NodeIfTCP.DEFAULT_CONFIG
-#    
+        self.ifNotifier = self.IfNotifier(self)        
+        for nodeIf in self.cfg.nodeInterfaces:
+            nodeIf.setIfNotifier(self.ifNotifier)
+            
         atexit.register(self.exitHelper)
         sys.excepthook = self.exceptHelper
-        self.nodeIf = NodeIfTCP(pktHandler, self.ifNotifier, None)
-#       self.nodeIf = NodeIfSerial(pktHandler, ifConfig)
-#        
-        if not self.nodeIf.start():
-            print 'FATAL: Failed to initialize node interface.'
-            print 'This may indicate that the interface is unavailable, ' \
-                  'or that you do not have permission to access it.'
-            sys.exit(-1)
 
-        print 'Initialize/gather info on connected can nodes and load associated state'
-        print 'Start selected TCP and UDP server(s)'
-        # server threads launch
+        print 'INIT: Starting configured node interfaces'
+        for nodeIf in self.cfg.nodeInterfaces:
+            if not nodeIf.start():
+                print 'FATAL: Failed to initialize node interface.'
+                print 'This may indicate that the interface is unavailable, ' \
+                      'or that you do not have permission to access it.'
+                sys.exit(-1)
+
+        print 'INIT: Initialize/gather info on connected can nodes and load associated state'
+        print 'INIT: Starting configured servers'
         
         print 'CanDaemon v1 ready'
         print 'Enter command or type \"help\" for a list of commands'
@@ -339,12 +324,12 @@ class CanDaemon():
             self.parseCommand(input)
 
         print 'Shutdown'
-#        if self.nodeIf.running():
-#            print 'Stopping If thread'
-#            self.nodeIf.stop()
-
-#        self.cfg.stateSpaceCfg.saveSpaces()
-#        self.cfg.filterCfg.saveFilters()
+        self.cfg.save()
+        
+        for nodeIf in self.cfg.nodeInterfaces:
+            if self.nodeIf.running():
+                print 'Stopping If thread'
+                self.nodeIf.stop()
         
         print 'Waiting 0.1..'
         time.sleep(0.1) # wait for threads
