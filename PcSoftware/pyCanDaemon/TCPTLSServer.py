@@ -5,7 +5,5 @@
 #
 ###########################################################
 
-from TCPServerBase import TCPServerBase
-
-class TCPServer1(TCPServerBase):
+class TCPTLSServer():
     pass

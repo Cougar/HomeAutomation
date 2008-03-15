@@ -21,6 +21,10 @@ from NodeIfUDP import NodeIfUDP
 from NodeIfTCPTLS import NodeIfTCPTLS
 from NodeIfCanStim import NodeIfCanStim
 
+from TCPServer1 import TCPServer1
+from TCPTLSServer import TCPTLSServer
+from CanCtldServer import CanCtldServer
+
 class DynamicModuleCfg:
     """Dynamic module manager"""
 
@@ -223,9 +227,14 @@ class DaemonConfig:
     nodeInterfaces = []
     nodeInterfaceMap = {}
     
+    serverDaemons = []
+    
     INTERFACE_TYPES = {'serial' : NodeIfSerial, 'tcp' : NodeIfTCP,
                        'udp' : NodeIfUDP, 'sim' : NodeIfCanStim,
                        'tcptls' : NodeIfTCPTLS}
+    
+    SERVER_TYPES = {'tcpd' : TCPServer1, 'tcptlsd' : TCPTLSServer,
+                    'canctld' : CanCtldServer}
 
     def __init__ (self):
         self.filterCfg = FilterCfg()
@@ -254,12 +263,23 @@ class DaemonConfig:
             return False
         
         cfg = self.INTERFACE_TYPES[type].DEFAULT_CONFIG
-        print cfg
         nodeIf = self.INTERFACE_TYPES[type](self.pktHandler, cfg)
-        print nodeIf
         self.nodeInterfaces.append(nodeIf)
+        return True
     
     def remInterface(self, name):
+        pass
+    
+    def addServerDaemon(self, type, cfg = None):
+        
+        if not self.SERVER_TYPES.has_key(type):
+            log.debug('addServerDaemon called with invalid daemon type')
+            return False
+        
+        serverd = self.SERVER_TYPES[type]() # actung!
+        return True    
+    
+    def remServerDaemon(self, name):
         pass
         
     def __setupFilterChain(self):
