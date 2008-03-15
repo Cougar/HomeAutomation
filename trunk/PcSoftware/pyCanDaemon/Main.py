@@ -301,6 +301,8 @@ class CanDaemon():
         
         # create interface for debugging purpose
         self.cfg.addInterface('tcp', None)
+        # create daemon
+        self.cfg.addServerDaemon('tcpd', None)
 
         self.ifNotifier = self.IfNotifier(self)        
         for nodeIf in self.cfg.nodeInterfaces:
@@ -319,6 +321,10 @@ class CanDaemon():
 
         print 'INIT: Initialize/gather info on connected can nodes and load associated state'
         print 'INIT: Starting configured servers'
+        for serverd in self.cfg.serverDaemons:
+            if not serverd.start():
+                print 'FATAL: Failed to initialize server daemon.'
+                system.exit(-1)
         
         print 'CanDaemon v1 ready'
         print 'Enter command or type \"help\" for a list of commands'
