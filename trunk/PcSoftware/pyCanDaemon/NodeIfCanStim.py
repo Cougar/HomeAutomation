@@ -85,17 +85,21 @@ class NodeIfCanStim(NodeIfBase):
     DEFAULT_CONFIG = {'DummyNodes':[]}
     config = None
     stimThread = None
-    ifNotifier = None
+    ownerNotifier = None
     pktHandler = None
     
-    def __init__ (self, cfg = None, pktHandler = None, ifNotifier = None):
+    def __init__ (self, pktHandler, cfg = None):
         if cfg is None:
             self.config = DEFAULT_CONFIG
-        if ifNotifier:
-            self.ifNotifier = ifNotifier
             
         self.pktHandler = pktHandler
         NodeIfBase.__init__(self, cfg, pktHandler)
+    
+    def setPktHandler(self, pktHandler):
+        self.pktHandler = pktHandler
+        
+    def setIfNotifier(ifNotifier):
+        self.ownerNotifier = ifNotifier
         
     def start(self):
         self.stimThread = CanStimThread(self.pktHandler, self.ifNotifier)

@@ -15,6 +15,12 @@ import statespaces
 from CanPktHandlerBase import CanPktHandlerBase
 from CanPktHandler1 import CanPktHandler1
 
+from NodeIfSerial import NodeIfSerial
+from NodeIfTCP import NodeIfTCP
+from NodeIfUDP import NodeIfUDP
+from NodeIfTCPTLS import NodeIfTCPTLS
+from NodeIfCanStim import NodeIfCanStim
+
 class DynamicModuleCfg:
     """Dynamic module manager"""
 
@@ -217,20 +223,44 @@ class DaemonConfig:
     nodeInterfaces = []
     nodeInterfaceMap = {}
     
+    INTERFACE_TYPES = {'serial' : NodeIfSerial, 'tcp' : NodeIfTCP,
+                       'udp' : NodeIfUDP, 'sim' : NodeIfCanStim,
+                       'tcptls' : NodeIfTCPTLS}
+
     def __init__ (self):
         self.filterCfg = FilterCfg()
         self.stateSpaceCfg = StateSpaceCfg()
-        self.pktHandler = CanPktHandler1()
+        self.pktHandler = CanPktHandler1(self)
         
     def load(self):
         self.stateSpaceCfg.loadSpaces()
-        self.stateSpaceCfg.loadFilters()
-        __setupFilterBindings()
-        __setupFilterChain()
-    
+        self.filterCfg.loadFilters()
+        self.__setupFilterBindings()
+        self.__setupStateSpaceRelations()
+        self.__setupFilterChain()
+
     def save(self):
         self.stateSpaceCfg.saveSpaces()
         self.filterCfg.saveFilters()
+        
+    def addInterface(self, type, cfg = None):
+        """ addInterface
+        type - a valid interface type name
+        cfg - interface configuration
+        returns: True on success, False otherwise """
+        
+        if not self.INTERFACE_TYPES.has_key(type):
+            log.debug('addInterface called with invalid interface type')
+            return False
+        
+        cfg = self.INTERFACE_TYPES[type].DEFAULT_CONFIG
+        print cfg
+        nodeIf = self.INTERFACE_TYPES[type](self.pktHandler, cfg)
+        print nodeIf
+        self.nodeInterfaces.append(nodeIf)
+    
+    def remInterface(self, name):
+        pass
         
     def __setupFilterChain(self):
         self.filterChain = ['DefaultFilter']
@@ -244,13 +274,12 @@ class DaemonConfig:
                 else:
                     print 'WARNING: Reference to undefined state space: ' + s
             setattr(f, '__ASSOCIATED_SPACES__', assocSpaces)
-    
 
-    def setupStateSpaceRelations(self):
+    def __setupStateSpaceRelations(self):
         for sm in self.stateSpaceCfg.spaceModules:
             relatedSpaceNames = self.stateSpaceCfg.spaceModules[sm].RELATED_SPACES
             relatedSpaces = {}
             for rsname in relatedSpaceNames:
                 relatedSpaces[rsname] = self.stateSpaceCfg.spaceModules[rsname]
-            setattr(sm, '__RELATED_SPACES__', relatedSpaces)
-            
+            setattr(self.stateSpaceCfg.spaceModules[sm], '__RELATED_SPACES__', relatedSpaces)
+

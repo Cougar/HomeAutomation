@@ -67,6 +67,7 @@ class NodeIfSerial(NodeIfBase):
     
     serialThread = None
     pktHandler = None
+    ownerNotifier = None
     config = {}
     
     def __init__ (self, pktHandler, cfg = None):
@@ -77,6 +78,12 @@ class NodeIfSerial(NodeIfBase):
         
         self.pktHandler = pktHandler
         NodeIfBase.__init__(self, cfg, pktHandler)
+        
+    def setPktHandler(self, pktHandler):
+        self.pktHandler = pktHandler
+        
+    def setIfNotifier(self, ifNotifier):
+        self.ownerNotifier = ifNotifier
     
     def start(self):
         
