@@ -12,15 +12,22 @@ class SpacePort():
     
     def __init__ (self, filterSpaces):
         for fs in filterSpaces:
-            self.filterSpaces[fs.name] = fs
+            sName = fs.__module__.split('.')[1] # implies module name is statespace.XXX
+            self.filterSpaces[sName] = fs
     
     def runAll(self, args):
-        for fs in filterSpaces.values():
-            relatedSpaces = s.__RELATED_SPACES__
+        for fs in self.filterSpaces.values():
+            relatedSpaces = fs.__RELATED_SPACES__
             fs.run(relatedSpaces, args)
+        return True
     
     def run(self, spaceName, args):
-        filtersSpaces[spaceName].run(args)
+        if not self.filterSpaces.has_key(spaceName):
+            return False
+        else:
+            relatedSpaces = self.filterSpaces[spaceName].__RELATED_SPACES__
+            self.filtersSpaces[spaceName].run(relatedSpaces, args)
+            return True
 
 class CanPktHandler1(CanPktHandlerBase):
     

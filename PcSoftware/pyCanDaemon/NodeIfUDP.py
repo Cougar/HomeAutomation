@@ -7,10 +7,18 @@
 
 class NodeIfUDP:
     config = []
+    pktHandler = None
+    ownerNotifier = None
     
-    def __init__(self, cfg):
-        global config
-        config = cfg
+    def __init__(self, pktHandler, cfg = None):
+        self.config = cfg
+        self.pktHandler = pktHandler
+        
+    def setPktHandler(self, pktHandler):
+        self.pktHandler = pktHandler
+        
+    def setIfNotifier(self, ifNotifier):
+        self.ownerNotifier = ifNotifier
     
     def start(self):
         pass

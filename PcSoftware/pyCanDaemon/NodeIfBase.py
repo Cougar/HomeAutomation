@@ -7,13 +7,19 @@
 class NodeIfBase:
     config = []
     pktHandler = None
+    ownerNotifier = None
     
-    def __init__(self, cfg, pktHandler):
+    DEFAULT_CONFIG = {}
+    
+    def __init__(self, pktHandler, cfg = None):
         self.config = cfg
         self.pktHandler = pktHandler
         
     def setPktHandler(self, pktHandler):
         self.pktHandler = pktHandler
+        
+    def setIfNotifier(self, ifNotifier):
+        self.ownerNotifier = ifNotifier
     
     def start(self):
         pass

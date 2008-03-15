@@ -67,16 +67,19 @@ class NodeIfTCP:
     tcpThread = None
     ownerNotifier = None
     
-    def __init__(self, pktHandler, ownerNotifier, cfg = None):
+    def __init__(self, pktHandler, cfg = None):
         if cfg is None:
             self.config = self.DEFAULT_CONFIG
         else:
-            self.confg = cfg
+            self.config = cfg
         self.pktHandler = pktHandler
-        self.ownerNotifier = ownerNotifier
+        log.debug('Creating iftcp interface, config: ' + str(self.config))
         
     def setPktHandler(self, pktHandler):
         self.pktHandler = pktHandler
+        
+    def setIfNotifier(self, ifNotifier):
+        self.ownerNotifier = ifNotifier
     
     def start(self):
         host = self.config['host']

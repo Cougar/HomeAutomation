@@ -298,6 +298,9 @@ class CanDaemon():
         print 'INIT: Loading daemon configuration'
         self.cfg = DaemonConfig()
         self.cfg.load()
+        
+        # create interface for debugging purpose
+        self.cfg.addInterface('tcp', None)
 
         self.ifNotifier = self.IfNotifier(self)        
         for nodeIf in self.cfg.nodeInterfaces:
@@ -322,14 +325,14 @@ class CanDaemon():
         while not self.terminated:
             input = raw_input('> ')
             self.parseCommand(input)
-
+        
         print 'Shutdown'
         self.cfg.save()
         
         for nodeIf in self.cfg.nodeInterfaces:
-            if self.nodeIf.running():
+            if nodeIf.running():
                 print 'Stopping If thread'
-                self.nodeIf.stop()
+                nodeIf.stop()
         
         print 'Waiting 0.1..'
         time.sleep(0.1) # wait for threads
