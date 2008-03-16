@@ -98,11 +98,11 @@ class NodeIfCanStim(NodeIfBase):
     def setPktHandler(self, pktHandler):
         self.pktHandler = pktHandler
         
-    def setIfNotifier(ifNotifier):
+    def setIfNotifier(self, ifNotifier):
         self.ownerNotifier = ifNotifier
         
     def start(self):
-        self.stimThread = CanStimThread(self.pktHandler, self.ifNotifier)
+        self.stimThread = CanStimThread(self.pktHandler, self.ownerNotifier)
         tempDummy = TempNode()
         self.stimThread.dummyList.append(tempDummy)
         self.stimThread.start()

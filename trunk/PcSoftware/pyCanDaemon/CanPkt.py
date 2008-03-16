@@ -4,6 +4,7 @@
 # identifiable by its type and contents
 #
 ###########################################################
+import logging as log
 
 class CanPkt:
     
@@ -44,6 +45,10 @@ class CanPkt:
     @staticmethod
     def stringToCanPkt(self, str):
         """ Converts can message string to CanPkt class """
+        if len(str) > 40:
+            str = str[:40]
+            log.debug('WARNING: Oversized string packet truncated to: ' + str)
+
         strbyteslist = str.split(' ')
         nodeid = int('0x'+strbyteslist[1], 16)
         intvalues = [int(val, 16) for val in strbyteslist[2:]]
@@ -52,4 +57,3 @@ class CanPkt:
         pkt = CanPkt(nodeid, intvalues[2:], extended, remote)
         return pkt
 
-    

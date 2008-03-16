@@ -15,7 +15,7 @@ class DefaultFilter(PktFilter):
     
     def filter(self, ifname, pkt, spaceport):
         
-        print 'DefaultFilter, PKT from node', pkt.nodeId
+        print 'DefaultFilter, PKT from node', hex(pkt.nodeId)
         
         ''' Trigger only when nodeId is not equal to 1 '''
  #       if pkt.nodeId is not 1:
