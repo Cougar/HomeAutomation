@@ -5,6 +5,7 @@
 ###########################################################
 from CanPktHandlerBase import CanPktHandlerBase
 from CanPkt import CanPkt
+import logging as log
 
 class SpacePort():
     
@@ -32,6 +33,7 @@ class SpacePort():
 class CanPktHandler1(CanPktHandlerBase):
     
     daemonCfg = None
+    serverListeners =[]
     
     def __init__ (self, daemonCfg):
         self.daemonCfg = daemonCfg
@@ -53,7 +55,19 @@ class CanPktHandler1(CanPktHandlerBase):
             fObj = self.daemonCfg.filterCfg.filterModules[filter]
             sp = SpacePort(fObj.__ASSOCIATED_SPACES__)
             fObj.filter('', pkt, sp) # FIXME: use if name
-
+            
+        for sl in self.serverListeners:
+            if not sl.full():
+                sl.write(pkt.toString())
+            else:
+                log.debug('WARNING: Overflow in server buffer: ' + sl + ', packet dropped')
 
     def output(self, data):
         pass
+    
+    def addServerListener(self, serverListener):
+        self.serverListeners.append(serverListener)
+    
+    def remServerListener(self, serverListener):
+        self.serverListeners.remove(serverListerner)
+    

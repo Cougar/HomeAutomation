@@ -262,7 +262,9 @@ class DaemonConfig:
             log.debug('addInterface called with invalid interface type')
             return False
         
-        cfg = self.INTERFACE_TYPES[type].DEFAULT_CONFIG
+        if cfg is None:
+            cfg = self.INTERFACE_TYPES[type].DEFAULT_CONFIG
+        
         nodeIf = self.INTERFACE_TYPES[type](self.pktHandler, cfg)
         self.nodeInterfaces.append(nodeIf)
         return True
@@ -276,8 +278,12 @@ class DaemonConfig:
             log.debug('addServerDaemon called with invalid daemon type')
             return False
         
-        serverd = self.SERVER_TYPES[type]() # actung!
-        return True    
+        if cfg is None:
+            cfg = self.SERVER_TYPES[type].DEFAULT_CONFIG
+        
+        serverd = self.SERVER_TYPES[type](self.pktHandler, cfg) # actung!
+        self.serverDaemons.append(serverd)
+        return True
     
     def remServerDaemon(self, name):
         pass
