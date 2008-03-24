@@ -1,3 +1,0 @@
-# Application specific configuration file
-# All parameters required by library code should be defined here
-SEND_DEBUG=0

@@ -1,6 +1,0 @@
--h hostname localhost Hostname
--p port 1200 Port number
--b brname br Bridge name
->run .{brname} bridge
->run .sock socket_texttcp {hostname} {port}
->.{brname} add sock

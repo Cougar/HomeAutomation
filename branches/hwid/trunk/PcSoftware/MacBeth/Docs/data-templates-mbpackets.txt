@@ -1,8 +1,0 @@
-<mbpacket sourcekernel="JM" sourcemodule="A" destmodule="B">
-    <data>Some data</data>
-</mbpacket>
-
-
-<mbpacket sourcemodule="Web" destmodule="GenRoomControl">
-    <remotecontrol button="SATNUMERIC1" state="DOWN" />
-</mbpacket>
