@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Configuration file for the GenRoomControl Macbeth module. -->
+<modgenroomcontrol>
+
+    <list name="roomobjects">
+        <item>
+            <field name="name" value="Desktoplamp"/>
+            <field name="byte" value="4"/>
+            <field name="nodename" value="RoomControl"/>
+            <field name="remotebutton" value="SATNUMERIC1"/>
+            <field name="public" value="true"/>
+        </item>
+
+        <item>
+            <field name="name" value="Fan, low"/>
+            <field name="byte" value="14"/>
+            <field name="nodename" value="RoomControl"/>
+            <field name="remotebutton" value="SATNUMERIC2"/>
+            <field name="public" value="true"/>
+        </item>
+
+        <item>
+            <field name="name" value="Fan, high"/>
+            <field name="byte" value="15"/>
+            <field name="nodename" value="RoomControl"/>
+            <field name="remotebutton" value="SATNUMERIC3"/>
+            <field name="public" value="true"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Master Volyme up"/>
+            <field name="byte" value="0"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATVOLPLUS"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Master Volyme down"/>
+            <field name="byte" value="1"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATVOLMIN"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Program up"/>
+            <field name="byte" value="2"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATPUP"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Program down"/>
+            <field name="byte" value="3"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATPDOWN"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Mute"/>
+            <field name="byte" value="4"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATMUTE"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Bass Boost"/>
+            <field name="byte" value="6"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATI-II"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; System On/Off"/>
+            <field name="byte" value="7"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATPOWER"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Video"/>
+            <field name="byte" value="8"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATREW"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Tv"/>
+            <field name="byte" value="9"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATPLAY"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Tape/MD"/>
+            <field name="byte" value="10"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATSTOP"/>
+            <field name="public" value="false"/>
+        </item>
+
+        <item>
+            <field name="name" value="Sony; Tuner"/>
+            <field name="byte" value="12"/>
+            <field name="nodename" value="SonyIRTransmitter"/>
+            <field name="remotebutton" value="SATPAUSE"/>
+            <field name="public" value="false"/>
+        </item>
+
+    </list>
+
+</modgenroomcontrol>

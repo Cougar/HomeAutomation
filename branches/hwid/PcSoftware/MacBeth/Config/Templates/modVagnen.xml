@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Configuration file for the Vagnen Macbeth module. -->
+<modvagnen>
+	
+	<list name="stops">
+		<item>
+			<!-- what bus/tram stop -->
+			<field name="stop" value="mossen"/>
+			
+			<field name="displayname" value="Mossen"/>
+			<!-- what bus/tram lines that should be fetched from this stop -->
+			<field name="includelines" value="49,52"/>
+			<!-- stodjer aven excludelines, sa den visar alla utom de man exkluderar -->
+			
+			<!-- exclude lines with a specific end station / destination -->
+			<!--field name="excludedest" value="linnplatsen"/-->
+			<field name="excludedest" value="linn"/>
+			<!-- borde val stodja includedest ocksa, for att endast ta med linjer till en viss hallplats -->
+		</item>
+		<item>
+			<!-- what bus/tram stop -->
+			<field name="stop" value="Pilb%c3%a5gsgatan"/>
+			
+			<field name="displayname" value="Pilbagsg."/>
+			<!-- what bus/tram lines that should be fetched from this stop -->
+			<field name="includelines" value="40,42,45,48"/>
+			<!-- stodjer aven excludelines, sa den visar alla utom de man exkluderar -->
+			
+			<!-- exclude lines with a specific end station / destination -->
+			<!--field name="excludedest" value="linnplatsen"/-->
+			<field name="excludedest" value="linn,fredriksdal"/>
+			<!-- borde val stodja includedest ocksa, for att endast ta med linjer till en viss hallplats -->
+		</item>
+	</list>
+
+	
+</modvagnen>
