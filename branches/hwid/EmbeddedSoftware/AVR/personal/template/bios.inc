@@ -8,7 +8,12 @@ HW_VERSION=2
 # This should not be used on nodes with application under developement
 #AUTOSTART=5
 
-# This number should be unique on your network
+# Node hardware id, this number should be unique on your network
+# leave as <GENERATE_HW> at first compile, then set it to whatever gets generated (see config.h)
+NODE_HW_ID=<GENERATE_HW>
+#NODE_HW_ID=0x12345678 
+
+# This number should be unique on your network (not in use in nodes with HW_ID)
 NODE_ID=0x02UL
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
