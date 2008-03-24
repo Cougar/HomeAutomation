@@ -51,6 +51,19 @@ bios: $(abspath $(BIOSDIR))
 installbios: bios
 	$(UPLOAD) $(ULFLAGS)
 
+ifdef NODE_HW_ID
+upgradebios: bios
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
+
+install: $(BUILDDIR)/$(TARGET).hex
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $< -r
+
+reset: 
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -r
+
+start: 
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -s
+else
 upgradebios: bios
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
 
@@ -62,6 +75,7 @@ reset:
 
 start: 
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -s
+endif
 
 $(BUILDDIR)/$(TARGET).hex: $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
