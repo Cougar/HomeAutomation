@@ -1,0 +1,60 @@
+<html>
+<head>
+<title>Doc Style Guide</title>
+<link rel="StyleSheet" href="doc.style.css" type="Text/CSS">
+</head>
+<body>
+To use this style, simply take this html document as a skeleton for you
+document and distribute it together with the CSS style file, doc.style.css,
+that resides in the same folder as this document.
+<h1>1 Heading 1</h1>
+Spam spam spam spam. Spam spam spam egg bacon and spam.
+
+<h2>1.1 Heading 2</h2>
+Spam spam spam spam. Spam spam spam egg bacon and spam.
+
+<h3>1.1.1 Heading 3</h3>(we really shouldn't need more than 3 heading levels)
+<br>
+<br>
+<br>
+
+This is worth <em>emphasing</em>!<br>
+And I would like to have some marking colors like <span class="mark_red">red</span>, <span class="mark_green">green</span> and <span class="mark_blue">blue</span>.
+<br>
+<br>
+<br>
+
+A ordered list
+<ol>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+</ol>
+<br>
+
+A unordered list
+<ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+</ul>
+<br>
+
+Some source code
+<pre>
+    if (p->host == 0) {     // The packet is not for us
+        passPacket(p);
+    }
+    else {                  // Give the packet to the right module
+        modules[p->module_id]->coreMessage(p->message);
+    }
+</pre>
+Sometimes you need to reference some <span class="code">function()</span> in the textflow.
+<br>
+<br>
+<br>
+
+Images should always have an <span class="code">alt</span> attribute and specified <span class="code">width</span> and <span class="code">height</span> attributes.<br>
+<img src="" width="200" height="200" alt="This image is broken">
+</body>
+</html>
