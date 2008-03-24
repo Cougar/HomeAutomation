@@ -9,6 +9,7 @@ using System.Text;
 
 class Program {
 	const byte DEBUG_LEVEL = 3;	//0, 1, 2, 3
+	static bool HWID_INUSE = false;
 	
 	//connects to candaemon on tcp to send and receive packets
 	static DaemonConnection dc;
@@ -25,10 +26,12 @@ class Program {
 	static bool aTerminal=false;	//if commandline says we should start in interactive mode
 		
 	static bool sNodeid=false;		//true when a nodeid has been parsed
+	static bool sHWid=false;		//true when a hardware id has been parsed
 	static bool sHexfile=false;		//true when a hexfile has been specified
 		
 	static string hexfile=null;		//path to a hexfile
 	static byte nodeid=0;			//id of current node
+	static uint HWid=0;   			//id of current node
 	static string host=null;		//address of candaemon-host
 	static int port=1200;			//port of candaemon-host
 	
@@ -67,8 +70,16 @@ class Program {
 					error = true;
 				}
 			}
-			if (!aTerminal && !sNodeid) {
-				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a nodeid must be supplied, I quit"); }
+			//check hwid argument
+			string hwid = CommandLine["i"];
+			if (hwid != null) {
+				if (!parseHWId(hwid)) {
+					error = true;
+				}
+				HWID_INUSE = true;
+			} 
+			if (!aTerminal && (!sNodeid && !sHWid)) {
+				if (DEBUG_LEVEL>0) { Console.WriteLine("When not in terminal mode a nodeid or a HWid must be supplied, I quit"); }
 				error = true;
 			} 
 			
@@ -93,6 +104,7 @@ class Program {
 			if (DEBUG_LEVEL>2) { 
 				Console.WriteLine("canDude settings:");
 				if (sNodeid) { Console.WriteLine("Nodeaddress: 0x" + String.Format("{0:x2}", nodeid)); }
+				if (sHWid) { Console.WriteLine("HW id: 0x" + String.Format("{0:x8}", HWid)); }
 				Console.WriteLine("Host: {0}:{1}", host, port);
 				if (hexfile != null) { Console.WriteLine("Hexfile: {0}", hexfile); }
 				Console.Write("Parameters: ");
@@ -163,18 +175,19 @@ class Program {
 			if (success) {
 				bool autosuccess = true;
 				
-				CanNMT cpn = new CanNMT();
+				CanNMT cpn = new CanNMT(HWID_INUSE);
 				if (aReset) {
 					//send a reset command (and wait for feedback)
-					if (!cpn.doReset(dc, nodeid)) {
+				   autosuccess = cpn.doReset(dc, nodeid, HWid);
+
+					if (!autosuccess) {
 						if (DEBUG_LEVEL>0) { Console.WriteLine("Target node did not respond to reset, I quit"); }
-						autosuccess = false;
 					}
 				}
 				
 				if (sHexfile && autosuccess) {
 					//send application
-					dl = new Downloader(hf, dc, nodeid, aBios);
+					dl = new Downloader(hf, dc, nodeid, aBios, HWID_INUSE, HWid);
 					if (!dl.go()) { 
 						if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 						autosuccess = false;
@@ -183,7 +196,7 @@ class Program {
 				
 				if (autosuccess && aStart) {
 					//start application
-					cpn.doStart(dc, nodeid);
+					cpn.doStart(dc, nodeid, HWid);
 				}
 				
 			}
@@ -230,32 +243,36 @@ class Program {
 		}
 		if (node.Length > 2) {
 			if (node.Substring(0, 2).Equals("0x")) {
-				if (node.Length == 3) {
-					try {
-						nodeid = byte.Parse(node.Substring(2, 1), System.Globalization.NumberStyles.HexNumber);
-						sNodeid = true;
-					} catch {
-						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 1"); }
-						return false;
-					}
-				} else if (node.Length == 4) {
-					try {
-						nodeid = byte.Parse(node.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-						sNodeid = true;
-					} catch {
-						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 2"); }
-						return false;
-					}
-				} else if (node.Length > 4) {
-					try {
-						nodeid = byte.Parse(node.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-						sNodeid = true;
-					} catch {
-						if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 2"); }
-						return false;
-					}
-				} else {
-					if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 3"); }
+				try {
+					nodeid = byte.Parse(node.Substring(2, node.Length-2), System.Globalization.NumberStyles.HexNumber);
+					sNodeid = true;
+				} catch {
+					if (DEBUG_LEVEL>0) { Console.WriteLine("nodeadress parse error 1"); }
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	static private bool parseHWId(string node) {
+		// the goal here is to find a uint in a string, format in decimal (0-4294967296) or in hex (0x0-0xffffffff)
+		// this is probably not done very neat
+		sHWid = false;
+		if (node.Length > 0) {
+			try {
+				HWid = uint.Parse(node);
+				sHWid = true;
+			} catch {}
+		}
+		if (node.Length > 2) {
+			if (node.Substring(0, 2).Equals("0x")) {
+				try {
+					HWid = uint.Parse(node.Substring(2, node.Length-2), System.Globalization.NumberStyles.HexNumber);
+					sHWid = true;
+				} catch {
+					if (DEBUG_LEVEL>0) { Console.WriteLine("HW id parse error 1"); }
 					return false;
 				}
 			}
@@ -269,16 +286,16 @@ class Program {
 		if (instr.Equals("reset")) {		//reset command, send a reset to current node
 			if (sNodeid) {
 				dc.flushData();
-				CanNMT cpn = new CanNMT();
-				cpn.doReset(dc, nodeid);
+				CanNMT cpn = new CanNMT(HWID_INUSE);
+                cpn.doReset(dc, nodeid, HWid);
 			} else {
 				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
 			}
 		}
 		else if (instr.Equals("start")) {	//start command, send a start to current node
 			if (sNodeid) {
-				CanNMT cpn = new CanNMT();
-				cpn.doStart(dc, nodeid);
+				CanNMT cpn = new CanNMT(HWID_INUSE);
+				cpn.doStart(dc, nodeid, HWid);
 			} else {
 				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
 			}
@@ -302,10 +319,10 @@ class Program {
 				error = true;
 			}
 			
-			CanNMT cpn = new CanNMT();
+			CanNMT cpn = new CanNMT(HWID_INUSE);
 			if (!error && aReset) {				//commandline arguments specified that a reset should be done before download
 				//send a reset command (and wait for feedback)
-				if (!cpn.doReset(dc, nodeid)) {
+				if (!cpn.doReset(dc, nodeid, HWid)) {
 					if (DEBUG_LEVEL>0) { Console.WriteLine("Target node did not respond to reset"); }
 					error = true;
 				}
@@ -314,7 +331,7 @@ class Program {
 			if (!error) {
 				//send application
 				dc.flushData();
-				dl = new Downloader(hf, dc, nodeid, dlBios);
+				dl = new Downloader(hf, dc, nodeid, dlBios, HWID_INUSE, HWid);
 				if (!dl.go()) { 
 					if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 					error = true;
@@ -323,7 +340,7 @@ class Program {
 				
 			if (!error && aStart) {				//commandline arguments specified that a start should be done after download
 				//start applikation
-				cpn.doStart(dc, nodeid);
+				cpn.doStart(dc, nodeid, HWid);
 			}
 			
 		}
