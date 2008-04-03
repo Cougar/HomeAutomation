@@ -54,9 +54,9 @@ void glcdWriteData(uint8_t data);
 
 //extern void glcdPutStr(const char *s);
 
-void glcdWriteChar(unsigned char c);
+void glcdWriteChar(char c);
 
-void glcdPutStr(unsigned char *data);
+void glcdPutStr(char *data);
 
 void SetControls(uint8_t RS, uint8_t RW);
 

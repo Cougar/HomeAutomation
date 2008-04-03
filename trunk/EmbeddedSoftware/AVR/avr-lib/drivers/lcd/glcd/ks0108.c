@@ -164,22 +164,23 @@ void glcdPutStr(const char *s)
 
 */
 
-void glcdWriteChar(unsigned char c)
+void glcdWriteChar(char c)
 {
-uint8_t i = 0;
-if (GrLcdState.lcdXAddr > (128-5)){
-	glcdSetXY(0,GrLcdState.lcdYAddr + 1);
+	uint8_t i = 0;
+	if (GrLcdState.lcdXAddr > (128-5))
+	{
+		glcdSetXY(0,GrLcdState.lcdYAddr + 1);
+	}
+
+	for(i=0; i<5; i++)
+	{	
+		glcdWriteData(~pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i])); //Borde snyggas till med pekare
+	}
+	glcdWriteData(~0x00);
+
 }
 
-for(i=0; i<5; i++)
-{
-	glcdWriteData(pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i])); //Borde snyggas till med pekare
-}
-	glcdWriteData(0x00);
-
-}
-
-void glcdPutStr(unsigned char *data){
+void glcdPutStr(char *data){
 	while (*data){
 		glcdWriteChar(*data);
 		data++;
