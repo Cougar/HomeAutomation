@@ -207,6 +207,12 @@ int main(void) {
 //	OSCCAL = eeprom_read_byte(0);
 	Timebase_Init();
 	Serial_Init();
+
+#if MCP_CS_BIT != PB2
+	/* If slave select is not set as output it might change SPI hw to slave
+	 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
+	DDRB |= (1<<PB2);
+#endif
 #if USE_STDCAN == 0
 	Can_Init();
 #else
