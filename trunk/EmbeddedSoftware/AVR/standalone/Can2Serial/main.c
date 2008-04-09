@@ -219,8 +219,8 @@ int main(void) {
 	StdCan_Init(0);
 #endif	
 	
-	DDRC = 1<<PC1 | 1<<PC0;
-	PORTC = (1<<PC1) | (1<<PC0);
+	DDRC |= 1<<PC1 | 1<<PC0;
+	PORTC |= (1<<PC1) | (1<<PC0);
 	
 	sei();
 	
