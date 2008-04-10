@@ -16,6 +16,10 @@
 #include <bios_export.h>
 #include CAN_DRIVER_H
 
+#if !defined( NODE_HW_ID )
+#error No NODE_HW_ID in bios.inc, set NODE_HW_ID=<GENERATE_HW> and Ill generate it for you
+#endif
+
 #if defined(__AVR_ATmega8__)
 #define IVSEL_REG GICR
 #elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
@@ -39,6 +43,8 @@
 volatile uint8_t bios_msg_full;
 Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .bss space
 extern void __bios_start; // Start of BIOS area in flash, from ld-script.
+
+prog_uint32_t hwid = NODE_HW_ID;
 
 #if defined(AUTOSTART)
 uint8_t autostart_cnt;
@@ -69,8 +75,8 @@ void Can_Process(Can_Message_t* msg) {
 		}
 		
 		if (((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE) == CAN_NMT_RESET && msg->DataLength == 4 &&
-				msg->Data.bytes[0] == (NODE_HW_ID&0xff) && msg->Data.bytes[1] == ((NODE_HW_ID>>8)&0xff) &&
-				msg->Data.bytes[2] == ((NODE_HW_ID>>16)&0xff) && msg->Data.bytes[3] == ((NODE_HW_ID>>24)&0xff) ) {
+				msg->Data.bytes[0] == (hwid&0xff) && msg->Data.bytes[1] == ((hwid>>8)&0xff) &&
+				msg->Data.bytes[2] == ((hwid>>16)&0xff) && msg->Data.bytes[3] == ((hwid>>24)&0xff) ) {
 			BIOS_Reset();
 		}
 		// Copy message to bios buffer if bios is done with the previous message.
@@ -124,10 +130,10 @@ int main(void) {
 	tx_msg.DataLength = 8;
 	tx_msg.Data.bytes[0] = BIOS_VERSION&0xff;
 	tx_msg.Data.bytes[1] = (BIOS_VERSION>>8)&0xff;
-	tx_msg.Data.bytes[4] = NODE_HW_ID&0xff;
-	tx_msg.Data.bytes[5] = (NODE_HW_ID>>8)&0xff;
-	tx_msg.Data.bytes[6] = (NODE_HW_ID>>16)&0xff;
-	tx_msg.Data.bytes[7] = (NODE_HW_ID>>24)&0xff;
+	tx_msg.Data.bytes[4] = hwid&0xff;
+	tx_msg.Data.bytes[5] = (hwid>>8)&0xff;
+	tx_msg.Data.bytes[6] = (hwid>>16)&0xff;
+	tx_msg.Data.bytes[7] = (hwid>>24)&0xff;
 
 	if (pgm_read_word(0) == 0xffff) {
 		// No application in flash
@@ -162,16 +168,16 @@ int main(void) {
 		case BIOS_APP:
 			//if (nmt_type == CAN_NMT_START_APP) {
 			if (nmt_type == CAN_NMT_START_APP && bios_msg.DataLength == 4 &&
-					bios_msg.Data.bytes[0] == (NODE_HW_ID&0xff) && bios_msg.Data.bytes[1] == ((NODE_HW_ID>>8)&0xff) &&
-					bios_msg.Data.bytes[2] == ((NODE_HW_ID>>16)&0xff) && bios_msg.Data.bytes[3] == ((NODE_HW_ID>>24)&0xff) ) {
+					bios_msg.Data.bytes[0] == (hwid&0xff) && bios_msg.Data.bytes[1] == ((hwid>>8)&0xff) &&
+					bios_msg.Data.bytes[2] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[3] == ((hwid>>24)&0xff) ) {
 				app_reset(); // Will never return
 			}
 			// Fall through
 		case BIOS_NOAPP:
 			//if (nmt_type == CAN_NMT_PGM_START) {
 			if (nmt_type == CAN_NMT_PGM_START && bios_msg.DataLength == 8 &&
-					bios_msg.Data.bytes[4] == (NODE_HW_ID&0xff) && bios_msg.Data.bytes[5] == ((NODE_HW_ID>>8)&0xff) &&
-					bios_msg.Data.bytes[6] == ((NODE_HW_ID>>16)&0xff) && bios_msg.Data.bytes[7] == ((NODE_HW_ID>>24)&0xff) ) {
+					bios_msg.Data.bytes[4] == (hwid&0xff) && bios_msg.Data.bytes[5] == ((hwid>>8)&0xff) &&
+					bios_msg.Data.bytes[6] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[7] == ((hwid>>24)&0xff) ) {
 				// Set base address
 				base_addr = bios_msg.Data.words[0];
 				flash_init(pagebuf);
