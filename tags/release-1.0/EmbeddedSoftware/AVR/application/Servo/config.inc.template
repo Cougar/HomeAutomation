@@ -1,0 +1,33 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
+
+# NodeServo application settings.
+# Defines specific for one node/application
+
+# Servo IDs, 6 bits
+SERVOID_1=0x01
+SERVOID_2=0x02
+SERVOID_3=0x03
+
+#TWO_BUTTON_MODE=1
+
+# As default nothing needs to be changed below here
+
+# Degrees celcius when the node goes into failsafe mode
+FAILSAFE_TRESHOLD=50
+
+# How long time after turning pwm should be active in milliseconds
+SERVO_FEED_TIME=5000
+
+# number of steps for each adjustment
+STEPS_PER_TURN_PERIOD=1
+# milliseconds
+TURN_PERIOD=9
+
+# set the highest and lowest pwm values
+PWM1_MIN_PULSE = 1000
+PWM1_MAX_PULSE = 2000
+PWM2_MIN_PULSE = 20
+PWM2_MAX_PULSE = 50
+PWM3_MIN_PULSE = 20
+PWM3_MAX_PULSE = 50
