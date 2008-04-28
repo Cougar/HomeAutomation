@@ -12,6 +12,8 @@ public class Downloader {
 	private ulong dlOffset = 0;
 	//private Thread down;
 	private byte receiveID;
+	private uint hwid;
+	private bool HWID_INUSE;
 	
 	private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_BIOS_UPDATE, SEND_RESET, DONE, DEBUG_STATE2, WAIT_BOOT, SEND_EMPTY_START, WAIT_ACK_PRG_EMPTY, SEND_EMPTY_DATA, WAIT_ACK_EMPTY_DATA, SEND_DONE_EMPTY, WAIT_DONE_EMPTY};
 	
@@ -36,17 +38,24 @@ public class Downloader {
 	private const byte ADDR1_INDEX = 1;
 	private const byte ADDR2_INDEX = 2;
 	private const byte ADDR3_INDEX = 3;
+
+	private const byte HWID0_INDEX = 4;
+	private const byte HWID1_INDEX = 5;
+	private const byte HWID2_INDEX = 6;
+	private const byte HWID3_INDEX = 7;
 	
 	private const int TIMEOUT_MS = 1000;
 	private const int TIMEOUT_SHORT_MS = 200;
 	
 	private long timeStart = 0;
 	
-	public Downloader(HexFile hf, DaemonConnection dc, byte receiveID, bool isBiosUpdate) {
+	public Downloader(HexFile hf, DaemonConnection dc, byte receiveID, bool isBiosUpdate, bool HWID_INUSE, uint hwid) {
 		this.hf = hf;
 		this.dc = dc;
 		this.receiveID = receiveID;
 		this.isBiosUpdate = isBiosUpdate;
+		this.hwid = hwid;
+		this.HWID_INUSE = HWID_INUSE;
 	}
 	
 	public int calcCRC(HexFile hf) {
@@ -97,7 +106,7 @@ public class Downloader {
         		//dlOffset = 200;
         	}
 
-			CanNMT cpn = new CanNMT();
+			CanNMT cpn = new CanNMT(HWID_INUSE);
 			cpn.setReceiver(receiveID);
 			bool hasMessage = false;
 			
@@ -114,6 +123,12 @@ public class Downloader {
 						data[ADDR1_INDEX] = (byte)(((currentAddress-dlOffset) & 0x00FF00) >> 8);
 						data[ADDR2_INDEX] = (byte)(((currentAddress-dlOffset) & 0xFF0000) >> 16);
 						data[ADDR3_INDEX] = 0;
+						if (HWID_INUSE) {
+							data[HWID0_INDEX] = (byte)((hwid) & 0xFF);
+							data[HWID1_INDEX] = (byte)((hwid>>8) & 0xFF);
+							data[HWID2_INDEX] = (byte)((hwid>>16) & 0xFF);
+							data[HWID3_INDEX] = (byte)((hwid>>24) & 0xFF);
+						}
 						//outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
 						outCm = cpn.getPgmStartPacket(data);
 						dc.sendCanPacket(outCm);
@@ -135,8 +150,9 @@ public class Downloader {
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									// Start sending program data..
@@ -149,7 +165,6 @@ public class Downloader {
 									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
-								
 							}
 						}
 						break;
@@ -199,8 +214,9 @@ public class Downloader {
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									//currentAddress += 2;
@@ -221,7 +237,6 @@ public class Downloader {
 									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
-								
 							}
 						}
 						break;
@@ -248,8 +263,9 @@ public class Downloader {
 						
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									Console.WriteLine("");
@@ -321,8 +337,9 @@ public class Downloader {
 						// If received boot msg.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_BIOS_START) {
 									pgs = dState.SEND_EMPTY_START;
@@ -343,20 +360,25 @@ public class Downloader {
 						data[ADDR1_INDEX] = (byte)(((0) & 0x00FF00) >> 8);
 						data[ADDR2_INDEX] = (byte)(((0) & 0xFF0000) >> 16);
 						data[ADDR3_INDEX] = 0;
+						if (HWID_INUSE) {
+							data[HWID0_INDEX] = (byte)((hwid) & 0xFF);
+							data[HWID1_INDEX] = (byte)((hwid>>8) & 0xFF);
+							data[HWID2_INDEX] = (byte)((hwid>>16) & 0xFF);
+							data[HWID3_INDEX] = (byte)((hwid>>24) & 0xFF);
+						}
 						//outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
 						outCm = cpn.getPgmStartPacket(data);
 						dc.sendCanPacket(outCm);
 						t = Environment.TickCount;
 						t2 = Environment.TickCount;
 						pgs = dState.WAIT_ACK_PRG_EMPTY;
-						timeStart = Environment.TickCount;
 						break;
 					
 					
 					case dState.WAIT_ACK_PRG_EMPTY:
 						// Check for timeout, resend start packet in that case..
 						if ((Environment.TickCount - t) > 3*TIMEOUT_MS) {
-							Console.WriteLine("Timeout while waiting for start prg ack.");
+							Console.WriteLine("Timeout while waiting for start prg ack during empty-first-block-cycle.");
 							errorOccured = true;
 							pgs = dState.SEND_RESET;
 						}
@@ -364,8 +386,9 @@ public class Downloader {
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									// Start sending program data..
@@ -378,7 +401,6 @@ public class Downloader {
 									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
-								
 							}
 						}
 						break;
@@ -412,8 +434,9 @@ public class Downloader {
 						// If received ack.
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									pgs = dState.SEND_DONE_EMPTY;
@@ -424,7 +447,6 @@ public class Downloader {
 									errorOccured = true;
 									pgs = dState.SEND_RESET;
 								}
-								
 							}
 						}
 						break;
@@ -451,8 +473,9 @@ public class Downloader {
 						
 						hasMessage = dc.getData(out cm);
 						if (hasMessage) {
-							CanNMT cpnin = new CanNMT(cm);
-							if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
+							CanNMT cpnin = new CanNMT(cm, HWID_INUSE);
+							if (cpnin.isNMTPacket()) {
+							//if (cpnin.isNMTPacket() && (cpnin.getSender() == receiveID)) {
 								// If no error
 								if (cpnin.getType() == CAN_NMT_PGM_ACK) {
 									Console.WriteLine("");
@@ -471,7 +494,7 @@ public class Downloader {
 						break;						
 					case dState.SEND_RESET:
 						// Send reset
-						cpn.doReset(dc, receiveID);
+						cpn.doReset(dc, receiveID, hwid);
 						t = Environment.TickCount;
 						t2 = Environment.TickCount;
 						pgs = dState.DONE;
