@@ -1,14 +1,21 @@
 ## Node specific configuration file for bios
 
-HW_NAME=NodeEssential
-HW_VERSION=2
+HW_NAME=CoreCard
+HW_VERSION=1
 
 # Uncomment to make node autostart after X time-msgs has been sent to node
 # Do not choose 0 as X, also 1 is a bad choice
 # This should not be used on nodes with application under developement
 #AUTOSTART=5
 
-# This number should be unique on your network
+# Node hardware id, this number should be unique on your network
+# leave as <GENERATE_HW> at first compile, then set it to whatever gets generated (see config.h)
+NODE_HW_ID=<GENERATE_HW>
+
+# example:
+#NODE_HW_ID=0x12345678 
+
+# This number should be unique on your network (for nodes with HW_ID it's not clear if this id is needed)
 NODE_ID=0x02UL
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
@@ -27,20 +34,24 @@ F_CPU=8000000UL
 #BOOT_START=0x1e00
 
 #---MEGA168---
-#MCU=atmega168
-#HIGHFUSE=0xdc
-#LOWFUSE=0xe2
-#EXTFUSE=0x02
-#BOOT_START=0x3c00
+MCU=atmega168
+HIGHFUSE=0xdc
+LOWFUSE=0xe2
+EXTFUSE=0x02
+BOOT_START=0x3c00
 
-# CAN configuration
+# CAN configuration (old nodes: PORTB, DDRB, PB2)
 CAN_CONTROLLER=MCP2515
-MCP_CS_PORT=PORTB
-MCP_CS_DDR=DDRB
-MCP_CS_BIT=PB2
+MCP_CS_PORT=PORTC
+MCP_CS_DDR=DDRC
+MCP_CS_BIT=PC3
 MCP_CAN_BITRATE_KBPS=250
 MCP_CLOCK_FREQ_MHZ=20
 MCP_CLOCK_PRESC=1
+
+
+
+# Everything below is just help
 
 # For 				MCP_CLOCK_FREQ_MHZ=20	MCP_CLOCK_FREQ_MHZ=16
 # MCP_CLOCK_PRESC		external clock			external clock
