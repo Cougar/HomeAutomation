@@ -52,16 +52,16 @@ installbios: bios
 	$(UPLOAD) $(ULFLAGS)
 
 upgradebios: bios
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
 
 install: $(BUILDDIR)/$(TARGET).hex
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -f $< -r
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $< -r
 
 reset: 
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -r
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -r
 
 start: 
-	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -s
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -s
 
 $(BUILDDIR)/$(TARGET).hex: $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
