@@ -130,6 +130,7 @@ int main(void) {
 	tx_msg.DataLength = 8;
 	tx_msg.Data.bytes[0] = BIOS_VERSION&0xff;
 	tx_msg.Data.bytes[1] = (BIOS_VERSION>>8)&0xff;
+	tx_msg.Data.bytes[3] = 0x00;
 	tx_msg.Data.bytes[4] = hwid&0xff;
 	tx_msg.Data.bytes[5] = (hwid>>8)&0xff;
 	tx_msg.Data.bytes[6] = (hwid>>16)&0xff;
