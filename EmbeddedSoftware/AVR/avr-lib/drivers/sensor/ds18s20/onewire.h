@@ -16,10 +16,15 @@
 
 #ifdef OW_ONE_BUS
 
+#ifndef OW_PIN
+
 #define OW_PIN  PD6
 #define OW_IN   PIND
 #define OW_OUT  PORTD
 #define OW_DDR  DDRD
+
+#endif
+
 #define OW_CONF_DELAYOFFSET 0
 
 #else 
