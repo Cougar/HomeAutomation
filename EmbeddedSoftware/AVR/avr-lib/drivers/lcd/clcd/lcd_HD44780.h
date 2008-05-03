@@ -47,6 +47,8 @@
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
+#include <config.h>
+
 #define LED_ON PORTD &= ~(1<<PD3);
 #define LED_OFF PORTD |= (1<<PD3);
 
@@ -91,6 +93,9 @@
  *  ports by adapting the LCD_DATAx_PORT and LCD_DATAx_PIN definitions.
  *  
  */
+
+#ifndef LCD_E_PIN
+
 #define LCD_PORT         PORTD        /**< port for the LCD lines   */
 #define LCD_DATA0_PORT   PORTC     /**< port for 4bit data bit 0 */
 #define LCD_DATA1_PORT   PORTC     /**< port for 4bit data bit 1 */
@@ -106,6 +111,9 @@
 #define LCD_RW_PIN       1            /**< pin  for RW line         */
 #define LCD_E_PORT       LCD_PORT     /**< port for Enable line     */
 #define LCD_E_PIN        4            /**< pin  for Enable line     */
+
+#endif
+
 
 #elif defined(__AVR_AT90S4414__) || defined(__AVR_AT90S8515__) || defined(__AVR_ATmega64__) || \
       defined(__AVR_ATmega8515__)|| defined(__AVR_ATmega103__) || defined(__AVR_ATmega128__) || \
