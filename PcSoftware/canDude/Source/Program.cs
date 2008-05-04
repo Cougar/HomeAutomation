@@ -234,6 +234,12 @@ class Program {
 	static private bool parseNodeId(string node) {
 		// the goal here is to find a byte from 0-255 in a string, format in decimal (0-255) or in hex (0x0-0xff)
 		// this is probably not done very neat
+        if (node.Length > 2) {
+            if (node.Substring(node.Length-2, 2).Equals("UL")) {
+               node = node.Substring(0, node.Length-2);
+            }
+		}
+		
 		sNodeid = false;
 		if (node.Length > 0) {
 			try {
@@ -259,6 +265,13 @@ class Program {
 	static private bool parseHWId(string node) {
 		// the goal here is to find a uint in a string, format in decimal (0-4294967296) or in hex (0x0-0xffffffff)
 		// this is probably not done very neat
+
+        if (node.Length > 2) {
+            if (node.Substring(node.Length-2, 2).Equals("UL")) {
+               node = node.Substring(0, node.Length-2);
+            }
+		}
+
 		sHWid = false;
 		if (node.Length > 0) {
 			try {
