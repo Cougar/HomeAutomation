@@ -161,6 +161,7 @@ CP = cp
 MKDIR = mkdir
 AR = avr-ar
 UUIDGEN = uuidgen
+# on BSD/MAC this should be MD5SUM = md5
 MD5SUM = md5sum
 CUT = cut
 GREP = grep
