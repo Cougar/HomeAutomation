@@ -108,7 +108,27 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 		retval = StdCan_Ret_Fail;
 #endif
 	
-	//TODO: Do something with the Node Descriptor.
+	//TODO: Do something with the Node Descriptor. 
+	//(why have constats passed as parameters? they are defined at compiletime /arune)
+#if defined(_AVRLIB_BIOS_)
+	/* TODO: When a Tx queue is implemented, the startup message should
+	 * be sent via StdCan_Put instead of directly to lower layer.
+	 */
+	Can_Message_t Startup;
+	
+	/* Set up Startup message format. */
+	Startup.ExtendedFlag = 1;
+	Startup.RemoteFlag = 0;
+	Startup.DataLength = 4;
+	Startup.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
+	Startup.Data.bytes[1] = APP_TYPE&0xff;
+	Startup.Data.bytes[0] = (APP_TYPE>>8)&0xff;
+	Startup.Data.bytes[3] = APP_VERSION&0xff;
+	Startup.Data.bytes[2] = (APP_VERSION>>8)&0xff;
+	
+	/* Try to send it. */
+	Can_Send(&Startup);
+#endif
 	
 	return retval;
 }
@@ -137,6 +157,11 @@ StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 		/* Queue is empty. */
 		return StdCan_Ret_Empty;
 	}
+}
+
+unsigned char StdCan_Get_Pending(void)
+{
+	return RxQ_Len;
 }
 
 StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
