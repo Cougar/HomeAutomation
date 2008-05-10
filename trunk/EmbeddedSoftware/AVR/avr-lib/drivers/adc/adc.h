@@ -60,9 +60,8 @@ uint8_t ADC_Init(void);
  * 
  * Starts an ADC conversion and returns the result right adjusted, 10 bits.
  * 
-  * @param id
- * 		Match if id matches the message id in all bit locations that are 
- * 		not masked.
+  * @param channel
+ * 		Channel to get ADC data from, currently not implemented.
  * @retval 
  * 		The ADC data
  */ 
