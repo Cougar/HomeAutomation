@@ -30,8 +30,9 @@ SOURCES =	main.c\
                 drivers/sensor/ds18s20/onewire.c\
                 drivers/sensor/ds18s20/delay.c\
                 drivers/sensor/ds18s20/crc8.c\
-#               drivers/sensor/tc1047/tc1047.c\
-#               drivers/sensor/ldr/ldr.c\
+#                drivers/adc/adc.c\
+#                drivers/sensor/ldr/ldr.c\
+#                drivers/sensor/tc1047/tc1047.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
