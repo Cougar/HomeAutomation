@@ -28,14 +28,19 @@
  *---------------------------------------------------------------------------*/
 
 /**
- * @brief Definitions for timer types
+ * @brief Definition for timer type TimerTypeOneShot
  * 
- * TimerTypeOneShot: When passed as the type argument to timerSetTimeout, the 
+ * When passed as the type argument to timerSetTimeout, the 
  * timer will trigger only once and then disable itself.
- * TimerTypeFreeRunning: When passed as the type argument to timerSetTimeout, 
- * the timer will reload itself at every expiration and trigger periodically.
  */
 #define TimerTypeOneShot		0
+
+/**
+ * @brief Definition for timer type TimerTypeFreeRunning
+ * 
+ * When passed as the type argument to timerSetTimeout, 
+ * the timer will reload itself at every expiration and trigger periodically.
+ */
 #define TimerTypeFreeRunning	1
 
 
@@ -73,7 +78,7 @@ uint32_t Timer_GetTicks(void);
  * @brief Initializes a software timer and starts it. 
  * 
  * @param timer
- * 		The timer.
+ * 		The timer (0<=timer<TIMER_NUM_TIMERS).
  * @param timeout
  * 		The timeout in ticks. Passing zero disables a running timer. A timeout
  * 		value of X ticks gives an actual timeout of between (X-1) and X ticks,
@@ -90,7 +95,7 @@ uint32_t Timer_GetTicks(void);
 void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback);
 
 /**
- * @brief Timer expired. 
+ * @brief Check if timer expired. 
  * 
  * Checks if a timer has expired, should be used for polling a timer event if callback 
  * is not used. The timer will only signal its expiration at
@@ -99,7 +104,7 @@ void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallba
  * 
  * @param timer
  * 		The timer (0<=timer<TIMER_NUM_TIMERS).
- * @return
+ * @retval
  * 		Non-zero if timer has expired since the previous check.
  */ 
 uint8_t Timer_Expired(uint8_t timer);
