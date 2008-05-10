@@ -24,10 +24,11 @@
 
 #include <config.h>
 
+#include <drivers/can/canid.h>
 #include <inttypes.h>
 
 #ifndef STDCAN_FILTER
-#define STDCAN_FILTER 1
+#define STDCAN_FILTER 0
 #endif
 #ifndef STDCAN_RX_QUEUE_SIZE
 #define STDCAN_RX_QUEUE_SIZE 8
@@ -75,6 +76,9 @@ typedef struct {
 	unsigned short Version; /**< Application version number (application defined). */
 	unsigned char Id; /**< Node ID. */
 } Node_Desc_t;
+
+//(why have constats passed as parameters? they are defined at compiletime /arune)
+
 
 /**
  * @brief Initialize StdCan.
