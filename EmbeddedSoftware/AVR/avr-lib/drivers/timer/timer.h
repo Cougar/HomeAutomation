@@ -1,12 +1,18 @@
-/**
+/** 
+ * @defgroup timer Timer Library
+ * @code #include <drivers/timer/timer.h> @endcode
+ * 
+ * @brief Functions for simple and advanced timer usage. 
+ *
  * Timer software module. Utilizes a hardware timer to provide a number of
  * software timers to the application. Each timer can be set to either one-shot
- * or free-running mode.
- * 
+ * or free-running mode. Timer events can be defined by polling or callbacks. 
+ *
  * @author	Andreas Fritiofson
- * 
  * @date	2007-07-13
  */
+
+/**@{*/
 
 #ifndef TIMER_H_
 #define TIMER_H_
@@ -22,22 +28,23 @@
  *---------------------------------------------------------------------------*/
 
 /**
- * When passed as the type argument to timerSetTimeout, the timer will trigger
- * only once and then disable itself.
+ * @brief Definitions for timer types
+ * 
+ * TimerTypeOneShot: When passed as the type argument to timerSetTimeout, the 
+ * timer will trigger only once and then disable itself.
+ * TimerTypeFreeRunning: When passed as the type argument to timerSetTimeout, 
+ * the timer will reload itself at every expiration and trigger periodically.
  */
 #define TimerTypeOneShot		0
-/**
- * When passed as the type argument to timerSetTimeout, the timer will reload
- * itself at every expiration and trigger periodically.
- */
 #define TimerTypeFreeRunning	1
+
 
 /*-----------------------------------------------------------------------------
  * Public Types
  *---------------------------------------------------------------------------*/
 
 /**
- * The type of the callback function pointer.
+ * @brief Type of the callback function pointer
  */
 typedef void (*timerCallback_t)(uint8_t);
 
@@ -46,22 +53,24 @@ typedef void (*timerCallback_t)(uint8_t);
  *---------------------------------------------------------------------------*/
 
 /**
+ * @brief Initialize timer engine
+ * 
  * Initializes the timer engine. The hardware timer interrupt source will be
  * enabled, but global interrupts need to be enabled by the application.
  */
 void Timer_Init(void);
 
 /**
- * Reads the current time.
+ * @brief Get current timer value
  * 
- * @return
+ * @retval
  * 		The current time in ticks. The tick count wraps around after 2^32
  * 		ticks without any notification.
  */
 uint32_t Timer_GetTicks(void);
 
 /**
- * Initializes a software timer and starts it.
+ * @brief Initializes a software timer and starts it. 
  * 
  * @param timer
  * 		The timer.
@@ -81,7 +90,10 @@ uint32_t Timer_GetTicks(void);
 void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallback_t callback);
 
 /**
- * Checks if a timer has expired. The timer will only signal its expiration at
+ * @brief Timer expired. 
+ * 
+ * Checks if a timer has expired, should be used for polling a timer event if callback 
+ * is not used. The timer will only signal its expiration at
  * the first call to this function after a timeout period, even if multiple
  * timeout periods have elapsed since the previous call.
  * 
@@ -92,5 +104,5 @@ void Timer_SetTimeout(uint8_t timer, uint16_t timeout, uint8_t type, timerCallba
  */ 
 uint8_t Timer_Expired(uint8_t timer);
 
-
+/**@}*/
 #endif /*TIMER_H_*/
