@@ -34,7 +34,7 @@ uint8_t ADC_Init(void)
 }
 
 /*
- * Start reading adc value. Channel parameter is not implemented.
+ * Start reading adc value.
  */
 uint16_t ADC_Get(uint8_t channel)
 {

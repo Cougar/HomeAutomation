@@ -9,7 +9,8 @@
  *
  * @author	Erik Larsson
  * @author	Anders Runeson
- * @date	2007-04-26
+ * @author	Martin Norden
+ * @date	2008-05-11
  */
 
 /**@{*/
@@ -32,6 +33,8 @@
  * ---------------------------------------------*/
  
 /* 
+ * NOTE!! ADCHAN is not neccessary anymore since channels are implemented!
+ *
  * Define which ADC that will be used, ADC0 to ADC7.
  * If using ATmega88/168 PDIP ADC7 wont be aviable, only on TFQP.
  * (syntax: ADCx where x is the number och the ADC used)
@@ -61,7 +64,7 @@ uint8_t ADC_Init(void);
  * Starts an ADC conversion and returns the result right adjusted, 10 bits.
  * 
   * @param channel
- * 		Channel to get ADC data from, currently not implemented.
+ * 		Channel to get ADC data from
  * @retval 
  * 		The ADC data
  */ 
