@@ -30,7 +30,7 @@ uint8_t LDR_SensorInit(void)
 /*
  * Start reading sensor value
  */
-uint32_t LDR_GetData(uint8_t sensor)
+uint16_t LDR_GetData(uint8_t sensor)
 {
     return ADC_Get(sensor);
 }
