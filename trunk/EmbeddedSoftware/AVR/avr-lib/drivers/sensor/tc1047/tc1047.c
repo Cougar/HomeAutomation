@@ -26,7 +26,7 @@
 /* 
  * Initiate ADC for reading temperature from sensor.
  */
-void adcTemperatureInit()
+uint8_t adcTemperatureInit()
 {
     return ADC_Init();
 }

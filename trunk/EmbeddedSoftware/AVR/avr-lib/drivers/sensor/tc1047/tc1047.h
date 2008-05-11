@@ -16,7 +16,7 @@
 /*-----------------------------------------------
  * Functions
  * ---------------------------------------------*/
-void adcTemperatureInit(void);
-uint16_t getTC1047temperature(void);
+uint8_t adcTemperatureInit(void);
+uint16_t getTC1047temperature(uint8_t sensor);
 
 #endif
