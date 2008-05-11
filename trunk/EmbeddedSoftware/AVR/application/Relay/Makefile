@@ -26,6 +26,7 @@ vpath %.c $(LIBDIR):$(SRCDIR)
 SOURCES =	main.c\
                 drivers/timer/timebase.c\
                 drivers/mcu/mcu.c\
+                drivers/adc/adc.c\
                 drivers/sensor/tc1047/tc1047.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
