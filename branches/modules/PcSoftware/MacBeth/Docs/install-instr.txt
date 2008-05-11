@@ -1,0 +1,57 @@
+För att enbart köra MacBeth:
+Detta behövs
+	JRE eller hellre Java-SDK
+	JavaComm
+
+1. Installera Java-JRE
+2. Installera JavaComm
+	Packa upp javacomm20-win32.zip till \temp\commapi
+	Kopiera win32com.dll till <JRE>\bin
+	Kopiera comm.jar till <JRE>\lib\ext
+	Kopiera javax.comm.properties till <JRE>\lib
+	Ta bort \temp\commapi
+<JRE> är troligtvis \Program Files\Java\j2re1.4.2_03
+
+Klart!
+
+
+För att installera och konfigurera för att utveckla MacBeth:
+Detta behövs 
+	Java-SDK
+	JavaComm
+	Eclipse
+	Projectfiles
+
+1. Installera Java-SDK
+2. Gör en svn-checkout från http://arune.se/svn/HomeAutomation/MacBeth/
+	Denna katalog kallas nu <MacBeth>
+3. Extra/nödvändiga projektfiler
+	Kopiera filerna från Projectfiles\Lib till <MacBeth>\Lib	
+4. Installera JavaComm
+	Packa upp javacomm20-win32.zip till \temp\commapi
+	Kopiera win32com.dll till <JRE>\bin
+	Kopiera comm.jar till <JRE>\lib\ext
+	Kopiera javax.comm.properties till <JRE>\lib
+<JRE> är troligtvis \Program Files\Java\j2re1.4.2_03
+
+	Kopiera win32com.dll till <JDK>\jre\bin
+	Kopiera comm.jar till <JDK>\jre\lib\ext
+	Kopiera javax.comm.properties till <JDK>\jre\lib
+	Kopiera comm.jar till <MacBeth>\Lib
+	Ta bort \temp\commapi
+<JDK> valde du vid installtionen av Java-SDK, annars \Program Files\Java\j2sdk1.4.2_03
+	
+5. Installera Eclipse
+
+6. ...
+
+7. ...
+		
+All mjukvara som behövs finns på http://www.arune.se/arne/tools/MacBeth/
+
+Senaste versioner finns här:
+Java-SDK: http://java.sun.com/j2se/1.4.2/download.html (Download J2SE v 1.4.2_03 OBS SDK!)
+Java-JRE: http://java.sun.com/j2se/1.4.2/download.html (Download J2SE v 1.4.2_03 OBS JRE!)
+JavaComm: http://java.sun.com/products/javacomm/downloads/index.html
+Projectfiles: http://www.arune.se/arne/tools/MacBeth/Project
+
