@@ -12,7 +12,7 @@
  * Functions
  * --------------------------------------------*/
  
- static uint8_t currrentChannel; //Used to keep the channel of the last measurement. This is used to determine if the channel needs to be changed.
+ static uint8_t currentChannel; //Used to keep the channel of the last measurement. This is used to determine if the channel needs to be changed.
 
 uint8_t ADC_Init(void)
 {
@@ -55,7 +55,7 @@ uint16_t ADC_Get(uint8_t channel)
 		    break;
 		case 2:
 		    /* Enable ADC2 */
-		    ADMUX |= (1<<MUX1)|;
+		    ADMUX |= (1<<MUX1);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
 		    break;
 		case 3:
@@ -84,6 +84,7 @@ uint16_t ADC_Get(uint8_t channel)
 		    ADMUX &= ~(1<<MUX3);
 		    break;
 		default:
+			break;
 		    //Some kind of error message?
 		}
 		
