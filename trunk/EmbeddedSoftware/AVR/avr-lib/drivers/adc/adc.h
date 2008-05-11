@@ -29,31 +29,13 @@
 #include <inttypes.h>
 
 /*-----------------------------------------------
- * Defines
- * ---------------------------------------------*/
- 
-/* 
- * NOTE!! ADCHAN is not neccessary anymore since channels are implemented!
- *
- * Define which ADC that will be used, ADC0 to ADC7.
- * If using ATmega88/168 PDIP ADC7 wont be aviable, only on TFQP.
- * (syntax: ADCx where x is the number och the ADC used)
- * 
- * This should be defined in your application config.inc
- */
-//#define ADCHAN ADC5
-
-
-/*-----------------------------------------------
  * Functions
  * ---------------------------------------------*/
 
 /**
  * @brief Initialize ADC.
  * 
- * Initializes the ADC channel specified by ADCHAN, currently this driver 
- * have the ability to enable only one ADC channel. The voltage reference 
- * is set to Avcc. 
+ * Initializes the ADC-unit on the AVR. The voltage reference is set to Avcc. 
  * 
  */ 
 uint8_t ADC_Init(void);
@@ -62,8 +44,9 @@ uint8_t ADC_Init(void);
  * @brief Get an ADC value.
  * 
  * Starts an ADC conversion and returns the result right adjusted, 10 bits.
+ * If the channel is changed it does a dummy-read first to prevent garbage data.
  * 
-  * @param channel
+ * @param channel
  * 		Channel to get ADC data from
  * @retval 
  * 		The ADC data
