@@ -140,7 +140,7 @@ int main(void) {
     uint8_t //blindsStatus, /* Position (-128 to 127) */
             servoToTurn,
             turnDirection = BLINDS_TURN_STOP; /* Specifies direction to turn or stopped */
-    uint32_t boardTemperature = 0;
+    uint16_t boardTemperature = 0;
     uint32_t timeStamp = 0, timeStampTurn = 0, servoFeed_timeStamp = 0;
 
 	Can_Message_t txMsg;
@@ -234,13 +234,12 @@ int main(void) {
 
 						}/*else if(rxMsg.Data.bytes[0] == BLINDS_CMD_STATUS){
 							// Send blinds status to CAN
-							boardTemperature = getTC1047temperature();
-
-							if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
+							boardTemperature = getTC1047temperature(TC1047_AD);
+							if (boardTemperature >= FAILSAFE_TRESHOLD ){
 								blindsFailsafe();
-							}else{
-							txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
-							txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+							} else {
+							txMsg.Data.bytes[0] = boardTemperature&0&ff;
+							txMsg.Data.bytes[1] = ((boardTemperature>>8)&0xff);
 							txMsg.Data.bytes[2] = 0x00;
 							txMsg.Data.bytes[3] = getPosition(1);
 							txMsg.Data.bytes[4] = getPosition(2);
@@ -259,13 +258,13 @@ int main(void) {
 			timeStamp = Timebase_CurrentTime();
             // Send blinds status to CAN periodically
 
-			boardTemperature = getTC1047temperature();
+			boardTemperature = getTC1047temperature(TC1047_AD);
 
-			if( (int32_t)boardTemperature >= FAILSAFE_TRESHOLD ){
+			if ( boardTemperature >= FAILSAFE_TRESHOLD ){
 				blindsFailsafe();
 				}else{
-				txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
-				txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+				txMsg.Data.bytes[0] = boardTemperature&0xff;
+				txMsg.Data.bytes[1] = ((boardTemperature>>8)&0xff);
 				txMsg.Data.bytes[2] = 0x00;
 				txMsg.Data.bytes[3] = getPosition(1);
 				txMsg.Data.bytes[4] = getPosition(2);
@@ -303,7 +302,7 @@ int main(void) {
 
 void blindsFailsafe()
 {
-/*	uint32_t boardTemperature = 0, timeStamp = 0;
+/*	uint16_t boardTemperature = 0, timeStamp = 0;
 
 	// Turn of servo current feed
 	SERVO_FEED_PORT &= ~(1<<SERVO_FEED_PIN);
@@ -322,10 +321,10 @@ void blindsFailsafe()
         if( Timebase_CurrentTime() - timeStamp >= FAILSAFE_SEND_PERIOD ){
             timeStamp = Timebase_CurrentTime();
             // Send relay status to CAN
-            boardTemperature = getTC1047temperature();
+            boardTemperature = getTC1047temperature(TC1047_AD);
 
-            txMsg.Data.bytes[0] = boardTemperature & 0x00FF;
-            txMsg.Data.bytes[1] = (boardTemperature & 0xFF00)>>8;
+            txMsg.Data.bytes[0] = boardTemperature&0xff;
+            txMsg.Data.bytes[1] = ((boardTemperature>>8)&0xff);
             txMsg.Data.bytes[2] = FAILSAFE_MODE;
 #if NUMBER_OF_RCS >0
             txMsg.Data.bytes[3] = getPosition(1);

@@ -6,3 +6,7 @@ TWO_BUTTON_MODE=0
 
 # application software should not depend on the id of the physical node but for now lets do it like this
 THISRELAYID=1
+
+TC1047_AD=7
+ADCHAN5=1
+

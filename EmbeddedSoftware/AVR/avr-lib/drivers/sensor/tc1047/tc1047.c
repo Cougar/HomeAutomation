@@ -14,9 +14,9 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <config.h>
 
 #include "tc1047.h"
-#include <config.h>
 #include <drivers/adc/adc.h>
 
 /*----------------------------------------------
@@ -34,11 +34,11 @@ void adcTemperatureInit()
 /*
  * Start reading and return the temperature value.
  */
-uint32_t getTC1047temperature()
+uint16_t getTC1047temperature(uint8_t sensor)
 {
 	uint32_t temperatureData;
 
-	temperatureData = ADC_Get(ADCHAN);
+	temperatureData = ADC_Get(sensor);
 
 	/* Use 5 volt as reference */
 	temperatureData = temperatureData * 5;
