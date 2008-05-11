@@ -58,12 +58,12 @@ int main(void) {
 	uint16_t sensor_ds_id[] = {TEMPSENSORID_1, TEMPSENSORID_2, TEMPSENSORID_3, TEMPSENSORID_4};
 #endif
 #if defined(USE_TC1047)
-    uint32_t tcTemperature = 0, timeStamp_TC = 0;
+    uint16_t tcTemperature = 0, timeStamp_TC = 0;
     adcTemperatureInit();
 #endif
 #if defined(USE_LDR)
 	uint32_t timeStamp_LDR = 0;
-	uint32_t ldr;
+	uint8_t ldr;
 	LDR_SensorInit();
 #endif
     sei();
@@ -128,9 +128,9 @@ int main(void) {
 		if( bios->timebase_get() - timeStamp_TC >= TC_SEND_PERIOD ){
 			timeStamp_TC = bios->timebase_get();
 
-            tcTemperature = getTC1047temperature();
-            txMsg.Data.bytes[0] = tcTemperature & 0x00FF;
-            txMsg.Data.bytes[1] = (tcTemperature & 0xFF00)>>8;
+            tcTemperature = getTC1047temperature(TC1047_AD);
+            txMsg.Data.bytes[0] = tcTemperature&0xff;
+            txMsg.Data.bytes[1] = (tcTemperature>>8)&0xff;
             txMsg.DataLength = 2;
 
 			txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_TEMPERATURE << CAN_SHIFT_SNS_TYPE) | (NODE_ID << CAN_SHIFT_SNS_SID));
@@ -144,8 +144,8 @@ int main(void) {
 		if( Timebase_PassedTimeMillis(timeStamp_LDR) >= LDR_SEND_PERIOD ){
 			timeStamp_LDR = Timebase_CurrentTime();
 
-            ldr = (uint8_t)LDR_GetData(0);
-            txMsg.Data.bytes[0] = (ldr>>2)&0xff;
+            ldr = (LDR_GetData(LDR_AD)>>2);
+            txMsg.Data.bytes[0] = ldr&0xff;
             txMsg.DataLength = 1;
 
 			txMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_LIGHT << CAN_SHIFT_SNS_TYPE) | (LIGHTSENSORID_1 << CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));

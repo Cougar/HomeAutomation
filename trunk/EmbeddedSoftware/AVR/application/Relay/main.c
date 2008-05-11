@@ -53,7 +53,7 @@
  * Global variables
  * -----------------------------------------------------------------------*/
 uint8_t relayStatus, failsafe_flag = 0;
-uint32_t boardTemperature = 0;
+uint16_t boardTemperature = 0;
 
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
@@ -208,21 +208,21 @@ void relayFailsafe()
 
 void sendStatus()
 {
-	uint32_t temperature;
+	uint16_t temperature;
 	Can_Message_t statusMsg;
 	statusMsg.RemoteFlag = 0;
 	statusMsg.ExtendedFlag = 1;
 	statusMsg.DataLength = 4;
 	statusMsg.Id = ((CAN_SNS << CAN_SHIFT_CLASS) | (SNS_TYPE_STATUS << CAN_SHIFT_SNS_TYPE) | (SNS_ID_RELAY_STATUS << CAN_SHIFT_SNS_ID) | (NODE_ID << CAN_SHIFT_SNS_SID));
 	
-	temperature = getTC1047temperature();
-	if( (int32_t)temperature >= FAILSAFE_TRESHOLD && !failsafe_flag ){
+	temperature = getTC1047temperature(TC1047_AD);
+	if ( temperature >= FAILSAFE_TRESHOLD && !failsafe_flag ){
 		// Goto failsafe mode
 		relayFailsafe();
 	}else{
 		// Transmitt node status
-		statusMsg.Data.bytes[0] = temperature & 0x00FF;
-		statusMsg.Data.bytes[1] = (temperature & 0xFF00)>>8;
+		statusMsg.Data.bytes[0] = temperature&0xff;
+		statusMsg.Data.bytes[1] = ((temperature>>8)&0xff);
 		statusMsg.Data.bytes[2] = relayStatus;
 		statusMsg.Data.bytes[3] = failsafe_flag;
 
