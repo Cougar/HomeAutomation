@@ -29,9 +29,9 @@ int main(void)
 		sns_ds18x20_Process();
 	
 		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
-			if ((uint8_t)StdCan_Ret_class(rxMsg) == CAN_MODULE_NMT) {
+			if ((uint8_t)StdCan_Ret_class(rxMsg) == CAN_CLASS_MODULE_NMT) {
 				
-				if (rxMsg.Header.ModuleType == CAN_MODULE_NMT_LIST) {
+				if (rxMsg.Header.ModuleType == CAN_CMD_MODULE_NMT_LIST) {
 					sns_ds18x20_List(1);
 				}
 			}

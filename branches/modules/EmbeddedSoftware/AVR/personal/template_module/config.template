@@ -1,0 +1,16 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
+
+# -- Application specific
+MODULE_APPLICATION=1
+TIMER_NUM_TIMERS=<TIMERS>
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000
+APP_HEARTBEAT_TIMER=<TIMER>
+STDCAN_HEARTBEAT_PERIOD=10000
+
+
+# -- Modules specific
+NUMBER_OF_MODULES=<MODULES>
+
+<MODULES_INCLUDE>

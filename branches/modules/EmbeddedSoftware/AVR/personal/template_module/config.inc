@@ -5,6 +5,7 @@
 # and then you may edit config.inc in your node folder (personal/nodeXYZ/) for settings
 
 # -- Application specific
+MODULE_APPLICATION=1
 TIMER_NUM_TIMERS=3
 TIMER_USE_TIMER=2
 TIMER_TICKFREQ=1000
@@ -13,7 +14,7 @@ STDCAN_HEARTBEAT_PERIOD=10000
 
 
 # -- Modules specific
-NUMBEROFMODULES=1
+NUMBER_OF_MODULES=1
 
 ## -- sns_ds18x20 specific
 #OW_PIN=PD6

@@ -7,79 +7,81 @@
 #define CAN_MASK_CLASS		0x1E000000
 #define CAN_SHIFT_CLASS		25
 //------------------------------------
-#define CAN_NMT				0x00UL
-#define CAN_MASK_NMT_TYPE	0x00FF0000
-#define CAN_SHIFT_NMT_TYPE	16
-#define CAN_MASK_NMT_SID	0x0000FF00
-#define CAN_SHIFT_NMT_SID	8
-#define CAN_MASK_NMT_RID	0x000000FF
-#define CAN_SHIFT_NMT_RID	0
+#define CAN_NMT			0x00UL
+#define CAN_MASK_NMT_TYPE		0x00FF0000
+#define CAN_SHIFT_NMT_TYPE		16
+#define CAN_MASK_NMT_SID		0x0000FF00
+#define CAN_SHIFT_NMT_SID		8
+#define CAN_MASK_NMT_RID		0x000000FF
+#define CAN_SHIFT_NMT_RID		0
 #define CAN_NMT_TIME		0x00UL	//D0:3 UNIX_TIME, D4:7 {YY:6, MM:4, DD:5, hh:5, mm:6, ss:6}
 #define CAN_NMT_RESET		0x04UL
-#define CAN_NMT_BIOS_START	0x08UL	//D0: VER7:0, D1:VER15:8, D2: 0 if no app, >0 if app
-#define CAN_NMT_PGM_START	0x0CUL	//D0: ADR7:0, D1:ADR15:8, D2:ADR23:16, D3:ADR31:24
-#define CAN_NMT_PGM_DATA	0x10UL	//D0: OFS7:0, D1: OFS15:8, D(n+2): DATAn7:0 [n=0..x] [x=0..5]
+#define CAN_NMT_BIOS_START		0x08UL	//D0: VER7:0, D1:VER15:8, D2: 0 if no app, >0 if app
+#define CAN_NMT_PGM_START		0x0CUL	//D0: ADR7:0, D1:ADR15:8, D2:ADR23:16, D3:ADR31:24
+#define CAN_NMT_PGM_DATA		0x10UL	//D0: OFS7:0, D1: OFS15:8, D(n+2): DATAn7:0 [n=0..x] [x=0..5]
 #define CAN_NMT_PGM_END		0x14UL	//D0: CRC7:0, D1: CRC15:8
-#define CAN_NMT_PGM_COPY	0x18UL	//D0: SRC7:0, D1:SRC15:8, D0: DST7:0, D1:DST15:8, D0: LEN7:0, D1:LEN15:8
+#define CAN_NMT_PGM_COPY		0x18UL	//D0: SRC7:0, D1:SRC15:8, D0: DST7:0, D1:DST15:8, D0: LEN7:0, D1:LEN15:8
 #define CAN_NMT_PGM_ACK		0x1CUL	//D0: OFS7:0, D1: OFS15:8
-#define CAN_NMT_PGM_NACK	0x20UL	//D0: OFS7:0, D1: OFS15:8
-#define CAN_NMT_START_APP	0x24UL
-#define CAN_NMT_APP_START	0x28UL	//D0: ID7:0, D1:ID15:8, D2: VER7:0, D3:VER15:8
-#define CAN_NMT_HEARTBEAT	0x2CUL
+#define CAN_NMT_PGM_NACK		0x20UL	//D0: OFS7:0, D1: OFS15:8
+#define CAN_NMT_START_APP		0x24UL
+#define CAN_NMT_APP_START		0x28UL	//D0: ID7:0, D1:ID15:8, D2: VER7:0, D3:VER15:8
+#define CAN_NMT_HEARTBEAT		0x2CUL
 //------------------------------------
-#define CAN_SNS				0x02UL
-#define CAN_MASK_SNS_TYPE	0x01FF8000
-#define CAN_SHIFT_SNS_TYPE	15
+
+// This is old definitions, not needed for modulebased applications
+#define CAN_SNS			0x02UL
+#define CAN_MASK_SNS_TYPE		0x01FF8000
+#define CAN_SHIFT_SNS_TYPE		15
 #define CAN_MASK_SNS_ID		0x00007E00
-#define CAN_SHIFT_SNS_ID	9
-#define CAN_MASK_SNS_SID	0x000001FF
-#define CAN_SHIFT_SNS_SID	0
-//------------------------------------
-#define CAN_ACT				0x04UL
-#define CAN_MASK_ACT_TYPE	0x01FF8000
-#define CAN_SHIFT_ACT_TYPE	15
+#define CAN_SHIFT_SNS_ID		9
+#define CAN_MASK_SNS_SID		0x000001FF
+#define CAN_SHIFT_SNS_SID		0
+
+#define CAN_ACT			0x04UL
+#define CAN_MASK_ACT_TYPE		0x01FF8000
+#define CAN_SHIFT_ACT_TYPE		15
 #define CAN_MASK_ACT_ID		0x00007E00
-#define CAN_SHIFT_ACT_ID	9
-#define CAN_MASK_ACT_SID	0x000001FF
-#define CAN_SHIFT_ACT_SID	0
-//------------------------------------
+#define CAN_SHIFT_ACT_ID		9
+#define CAN_MASK_ACT_SID		0x000001FF
+#define CAN_SHIFT_ACT_SID		0
+
 #define CAN_PKT				0x06UL
-//------------------------------------
+
 #define CAN_CON				0x08UL
-//------------------------------------
-#define CAN_CHN				0x0AUL
-//------------------------------------
+
 #define CAN_TST				0x0FUL
+//--------------------------------------------------------------------
+
+
+// New class definitions for modulebased applications
+//-----------------------------------
+#define DIR_FROM_OWNER			1		// If a module sends a packet
+#define DIR_TO_OWNER			0		// If a module sends a packet to another module
+//-----------------------------------
+#define CAN_CLASS_MODULE_NMT		0x0BUL		// If we move the functionality for this to BIOS we should use CAN_NMT instead
+#define CAN_CMD_MODULE_NMT_LIST		0x00UL		// Tell the application to report which modules it has
+//-----------------------------------
+#define CAN_CLASS_MODULE_ACT		0x0CUL
+//------------------------------------
+#define CAN_CLASS_MODULE_SNS		0x0DUL
 //------------------------------------
 
 //------------------------------------
-#define CAN_MODULE_NMT			0x0BUL
-#define CAN_MODULE_NMT_LIST		0x2DUL
-//------------------------------------
-#define CAN_MODULE_ACT			0x0CUL
-//------------------------------------
-#define CAN_MODULE_SNS			0x0DUL
-//------------------------------------
-#define OWNER				1
-#define NOT_OWNER			0
+#define CAN_TYPE_MODULE_sns_ds18x20		0x03
+#define CAN_CMD_MODULE_SNS_TEMPERATURE_CELSIUS	0x04
 
-#define MODULE_TYPE_sns_ds18x20		0x03
-#define SNS_CMD_TEMPERATURE_CELSIUS 	0x04
-#define CMD_LIST		 	0x00
+
 
 
 //---------------------------------------------------------------------------
 // CAN ID definitions for NMT messages
 
 #define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE))
 #define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE))
 #define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE))
 
 #define CAN_APPTYPES_IRRECEIVER     0xf010
 #define CAN_APPTYPES_RELAY          0xf015

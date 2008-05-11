@@ -1,26 +1,14 @@
-# Application specific configuration file
-# All parameters required by library code should be defined here
+## module sns_ds18x20
 
-# Temperature sensor IDs, 6 bits
-TEMPSENSORID_1=0x01
-TEMPSENSORID_2=0x02
-TEMPSENSORID_3=0x03
-TEMPSENSORID_4=0x04
-TEMPSENSORID_5=0x05
-
-LIGHTSENSORID_1=0x01
-
-USE_DS18S20=1
-#USE_TC1047=1
-#USE_LDR=1
-ADCHAN=5
-
-DS_SEND_PERIOD=10000
-DS_SEND_DELAY=2000
-TC_SEND_PERIOD=10000
-LDR_SEND_PERIOD=10000
+sns_ds18x20_ID=<ID>
+sns_ds18x20_TIMER=<TIMER>
+sns_ds18x20_SEND_PERIOD=20000
+sns_ds18x20_SEND_DELAY=500
+sns_ds18x20_SEARCH_TIMEOUT=5
 
 #OW_PIN=PD6
 #OW_IN=PIND
 #OW_OUT=PORTD
 #OW_DDR=DDRD
+
+## end module

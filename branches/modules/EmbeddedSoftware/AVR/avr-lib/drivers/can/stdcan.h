@@ -17,7 +17,7 @@
 /**@{*/
 
 //#error StdCan: For discussion only! Do not use in application code.
-#warning StdCan: Not thourhly tested yet.
+#warning StdCan: Not thouroughly tested yet.
 
 #ifndef STDCAN_H_
 #define STDCAN_H_
@@ -85,7 +85,7 @@ typedef struct {
  * Message.
  * 
  */ 
-StdCan_Ret_t StdCan_Init();
+StdCan_Ret_t StdCan_Init(void);
 
 /**
  * @brief Get a message.

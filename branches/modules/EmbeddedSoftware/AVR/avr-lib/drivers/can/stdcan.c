@@ -82,7 +82,7 @@ void Can_Process(Can_Message_t* msg)
 	}
 }
 
-StdCan_Ret_t StdCan_Init()
+StdCan_Ret_t StdCan_Init(void)
 {
 	StdCan_Ret_t retval;
 	
@@ -186,7 +186,9 @@ StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
 	}
 
 	if (Can_Send(&Can_Msg) == CAN_OK) {
+#ifdef MODULE_APPLICATION
 		Can_Process(&Can_Msg);
+#endif
 		return StdCan_Ret_OK;
 	}
 	else
