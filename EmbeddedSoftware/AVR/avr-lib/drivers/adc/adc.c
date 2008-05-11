@@ -47,34 +47,42 @@ uint16_t ADC_Get(uint8_t channel)
 		case 0:
 		    /* Enable ADC0 */
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX2)|(1<<MUX3));
+		    break;
 		case 1:
 		    /* Enable ADC1 */
 		    ADMUX |= (1<<MUX0);
 		    ADMUX &= ~((1<<MUX1)|(1<<MUX2)|(1<<MUX3));
+		    break;
 		case 2:
 		    /* Enable ADC2 */
 		    ADMUX |= (1<<MUX1)|;
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
+		    break;
 		case 3:
 		    /* Enable ADC3 */
 		    ADMUX |= (1<<MUX0)|(1<<MUX1);
 		    ADMUX &= ~((1<<MUX2)|(1<<MUX3));
+		    break;
 		case 4:
 		    /* Enable ADC4 */
 		    ADMUX |= (1<<MUX2);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX3));
+		    break;
 		case 5:
 		    /* Enable ADC5 */
 		    ADMUX |= (1<<MUX0)|(1<<MUX2);
 		    ADMUX &= ~((1<<MUX1)|(1<<MUX3));
+		    break;
 		case 6:
 		    /* Enable ADC6 */
 		    ADMUX |= (1<<MUX1)|(1<<MUX2);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
+		    break;
 		case 7:
 		    /* Enable ADC7 (only for TQFP package) */
 		    ADMUX |= (1<<MUX0)|(1<<MUX1)|(1<<MUX2);
 		    ADMUX &= ~(1<<MUX3);
+		    break;
 		default:
 		    //Some kind of error message?
 		}
