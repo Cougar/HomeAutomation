@@ -1,0 +1,48 @@
+#include <inttypes.h>
+#include <avr/interrupt.h>
+#include <stdio.h>
+#include <string.h>
+#include <std_can.h>
+#include <config.h> // All configuration parameters
+#include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
+#include <drivers/timer/timer.h>
+
+%INCLUDE
+
+int main(void)
+{
+	volatile StdCan_Msg_t rxMsg; // Message storage
+
+	// Enable interrupts as early as possible
+	sei();
+	
+	Timer_Init();
+
+	StdCan_Init();
+	
+	Timer_SetTimeout(APP_HEARTBEAT_TIMER, STDCAN_HEARTBEAT_PERIOD, TimerTypeFreeRunning, StdCan_SendHeartbeat);
+	
+	%INIT
+
+	while (1) {
+	
+		%PROCESS
+	
+		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
+
+			if (StdCan_Ret_class(rxMsg) == CAN_MODULE_NMT) {
+				
+				if (rxMsg.Header.ModuleType == CAN_MODULE_NMT_LIST) {
+					
+					%LIST
+				}
+			}
+			else {
+			
+				%MESSAGE_HANDLE
+			}
+    		}
+	}
+	
+	return 0;
+}

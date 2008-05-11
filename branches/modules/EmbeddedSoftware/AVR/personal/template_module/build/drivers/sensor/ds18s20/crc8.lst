@@ -1,0 +1,121 @@
+   1               		.file	"crc8.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  66               	.global	crc8
+  68               	crc8:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** /* please read copyright-notice at EOF */
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** #include <inttypes.h>
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** #define CRC8INIT	0x00
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** #define CRC8POLY	0x18              //0X18 = X^8+X^5+X^4+X^0
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** uint8_t	crc8 ( uint8_t *data_in, uint16_t number_of_bytes_to_read )
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** {
+  70               	.LM0:
+  71               	/* prologue: frame size=0 */
+  72               	/* prologue end (size=0) */
+  73 0000 20E0      		ldi r18,lo8(0)
+  74 0002 40E0      		ldi r20,lo8(0)
+  75 0004 50E0      		ldi r21,hi8(0)
+  76 0006 FC01      		movw r30,r24
+  77 0008 13C0      		rjmp .L2
+  78               	.L3:
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	uint8_t	 crc;
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	uint16_t loop_count;
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	uint8_t  bit_counter;
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	uint8_t  data;
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	uint8_t  feedback_bit;
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	crc = CRC8INIT;
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	for (loop_count = 0; loop_count != number_of_bytes_to_read; loop_count++)
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	{
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		data = data_in[loop_count];
+  80               	.LM1:
+  81 000a 9081      		ld r25,Z
+  82 000c 38E0      		ldi r19,lo8(8)
+  83 000e A8E1      		ldi r26,lo8(24)
+  84               	.L4:
+  21:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		
+  22:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		bit_counter = 8;
+  23:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		do {
+  24:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			feedback_bit = (crc ^ data) & 0x01;
+  25:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	
+  26:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			if ( feedback_bit == 0x01 ) {
+  86               	.LM2:
+  87 0010 822F      		mov r24,r18
+  88 0012 8927      		eor r24,r25
+  89 0014 80FF      		sbrs r24,0
+  90 0016 04C0      		rjmp .L5
+  27:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 				crc = crc ^ CRC8POLY;
+  28:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			}
+  29:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			crc = (crc >> 1) & 0x7F;
+  92               	.LM3:
+  93 0018 2A27      		eor r18,r26
+  94 001a 2695      		lsr r18
+  30:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			if ( feedback_bit == 0x01 ) {
+  31:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 				crc = crc | 0x80;
+  96               	.LM4:
+  97 001c 2068      		ori r18,lo8(-128)
+  98 001e 01C0      		rjmp .L7
+  99               	.L5:
+ 101               	.LM5:
+ 102 0020 2695      		lsr r18
+ 103               	.L7:
+  32:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			}
+  33:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		
+  34:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			data = data >> 1;
+  35:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 			bit_counter--;
+ 105               	.LM6:
+ 106 0022 3150      		subi r19,lo8(-(-1))
+  36:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		
+  37:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 		} while (bit_counter > 0);
+ 108               	.LM7:
+ 109 0024 11F0      		breq .L8
+ 111               	.LM8:
+ 112 0026 9695      		lsr r25
+ 113 0028 F3CF      		rjmp .L4
+ 114               	.L8:
+ 116               	.LM9:
+ 117 002a 4F5F      		subi r20,lo8(-(1))
+ 118 002c 5F4F      		sbci r21,hi8(-(1))
+ 119 002e 3196      		adiw r30,1
+ 120               	.L2:
+ 121 0030 4617      		cp r20,r22
+ 122 0032 5707      		cpc r21,r23
+ 123 0034 51F7      		brne .L3
+  38:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	}
+  39:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	
+  40:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** 	return crc;
+  41:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.c **** }
+ 125               	.LM10:
+ 126 0036 822F      		mov r24,r18
+ 127 0038 9927      		clr r25
+ 128               	/* epilogue: frame size=0 */
+ 129 003a 0895      		ret
+ 130               	/* epilogue end (size=1) */
+ 131               	/* function crc8 size 31 (30) */
+ 139               	.Lscope0:
+ 141               	.Letext0:
+ 142               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/crc8.
+DEFINED SYMBOLS
+                            *ABS*:00000000 crc8.c
+     /tmp/ccGTEUyN.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccGTEUyN.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccGTEUyN.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccGTEUyN.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccGTEUyN.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccGTEUyN.s:68     .text:00000000 crc8
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

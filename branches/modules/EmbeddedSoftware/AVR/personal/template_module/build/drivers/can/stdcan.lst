@@ -1,0 +1,689 @@
+   1               		.file	"stdcan.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  75               	.global	Can_Process
+  77               	Can_Process:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #include "stdcan.h"
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if defined(_AVRLIB_BIOS_)
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #include <bios.h>
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #define Can_Send BIOS_CanSend
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #else
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #include <drivers/can/mcp2515/mcp2515.h>
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if (STDCAN_TX_QUEUE_SIZE > 1)
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #error StdCan: Tx queue size longer than one msg not yet implemented.
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** /**
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * The receive queue.
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  */
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Msg_t RxQ[STDCAN_RX_QUEUE_SIZE];
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char RxQ_Rd_idx; /**< Receive queue read index. */
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char RxQ_Wr_idx; /**< Receive queue write index. */
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char RxQ_Len; /**< Number of messages in receive queue. */
+  21:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  22:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if (STDCAN_TX_QUEUE_SIZE > 1)
+  23:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** /**
+  24:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * The transmit queue.
+  25:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  */
+  26:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Msg_t TxQ[STDCAN_TX_QUEUE_SIZE];
+  27:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char TxQ_Rd_idx; /**< Transmit queue read index. */
+  28:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char TxQ_Wr_idx; /**< Transmit queue write index. */
+  29:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char TxQ_Len; /**< Number of messages in transmit queue. */
+  30:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+  31:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  32:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if (STDCAN_FILTER)
+  33:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** /**
+  34:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * The message acceptance filters.
+  35:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  */
+  36:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** typedef struct {
+  37:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	char Active; /**< True if this filter should be used. */
+  38:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	unsigned long Id; /**< Match if id matches the message id in all bit locations that are not masked
+  39:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	unsigned long Mask; /**< Each bit specifies if the corresponding id bit must match (mask[n] = 1) o
+  40:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** } StdCan_Filter_t;
+  41:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  42:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Filter_t RxFilters[STDCAN_NUM_FILTERS];
+  43:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+  44:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  45:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** /**
+  46:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * CAN message callback.
+  47:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * Callback for when a message is received from the lower
+  48:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  * layer (BIOS or CAN driver).
+  49:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c ****  */
+  50:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** void Can_Process(Can_Message_t* msg)
+  51:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+  79               	.LM0:
+  80               	/* prologue: frame size=0 */
+  81 0000 CF93      		push r28
+  82 0002 DF93      		push r29
+  83               	/* prologue end (size=2) */
+  84 0004 EC01      		movw r28,r24
+  52:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	unsigned char n;
+  53:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Check if there is room on the queue. */
+  54:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	if (RxQ_Len < STDCAN_RX_QUEUE_SIZE) {
+  86               	.LM1:
+  87 0006 6091 0000 		lds r22,RxQ_Len
+  88 000a 6830      		cpi r22,lo8(8)
+  89 000c B8F5      		brsh .L9
+  55:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		
+  56:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if (STDCAN_FILTER)
+  57:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Try to match each filter in turn. */
+  58:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		for (n = 0; n < STDCAN_NUM_FILTERS; n++) {
+  59:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 			if (RxFilters[n].Active && !((msg->Id ^ RxFilters[n].Id) & RxFilters[n].Mask)) {
+  60:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 				RxQ[RxQ_Wr_idx].Match = n;
+  61:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 				break;
+  62:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 			}
+  63:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		}
+  64:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		
+  65:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		if (n == STDCAN_NUM_FILTERS) return; // No match found, discard message.
+  66:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+  67:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Copy the message from lower layer into the queue. */
+  68:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		RxQ[RxQ_Wr_idx].Id     = msg->Id;
+  91               	.LM2:
+  92 000e 7091 0000 		lds r23,RxQ_Wr_idx
+  93 0012 272F      		mov r18,r23
+  94 0014 3327      		clr r19
+  95 0016 8DE0      		ldi r24,lo8(13)
+  96 0018 90E0      		ldi r25,hi8(13)
+  97 001a 289F      		mul r18,r24
+  98 001c F001      		movw r30,r0
+  99 001e 299F      		mul r18,r25
+ 100 0020 F00D      		add r31,r0
+ 101 0022 389F      		mul r19,r24
+ 102 0024 F00D      		add r31,r0
+ 103 0026 1124      		clr r1
+ 104 0028 E050      		subi r30,lo8(-(RxQ))
+ 105 002a F040      		sbci r31,hi8(-(RxQ))
+ 106 002c 8881      		ld r24,Y
+ 107 002e 9981      		ldd r25,Y+1
+ 108 0030 AA81      		ldd r26,Y+2
+ 109 0032 BB81      		ldd r27,Y+3
+ 110 0034 8083      		st Z,r24
+ 111 0036 9183      		std Z+1,r25
+ 112 0038 A283      		std Z+2,r26
+ 113 003a B383      		std Z+3,r27
+  69:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		RxQ[RxQ_Wr_idx].Length = msg->DataLength;
+ 115               	.LM3:
+ 116 003c 8C81      		ldd r24,Y+4
+ 117 003e 8483      		std Z+4,r24
+ 118 0040 20E0      		ldi r18,lo8(0)
+ 119 0042 30E0      		ldi r19,hi8(0)
+ 120 0044 AF01      		movw r20,r30
+ 121 0046 982F      		mov r25,r24
+ 122 0048 09C0      		rjmp .L4
+ 123               	.L5:
+  70:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		//TODO: This should be guarded against invalid DataLength.
+  71:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		for (n = 0; n < RxQ[RxQ_Wr_idx].Length; n++) {
+  72:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 			RxQ[RxQ_Wr_idx].Data[n] = msg->Data.bytes[n];
+ 125               	.LM4:
+ 126 004a FF27      		clr r31
+ 127 004c DA01      		movw r26,r20
+ 128 004e AE0F      		add r26,r30
+ 129 0050 BF1F      		adc r27,r31
+ 130 0052 EC0F      		add r30,r28
+ 131 0054 FD1F      		adc r31,r29
+ 132 0056 8781      		ldd r24,Z+7
+ 133 0058 FD01      		movw r30,r26
+ 134 005a 8583      		std Z+5,r24
+ 135               	.L4:
+ 136 005c E22F      		mov r30,r18
+ 137 005e 2F5F      		subi r18,lo8(-(1))
+ 138 0060 3F4F      		sbci r19,hi8(-(1))
+ 140               	.LM5:
+ 141 0062 E917      		cp r30,r25
+ 142 0064 90F3      		brlo .L5
+  73:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		}
+  74:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Increment write index and queue length. */
+  75:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		if (++RxQ_Wr_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Wr_idx = 0;
+ 144               	.LM6:
+ 145 0066 872F      		mov r24,r23
+ 146 0068 8F5F      		subi r24,lo8(-(1))
+ 147 006a 8093 0000 		sts RxQ_Wr_idx,r24
+ 148 006e 8830      		cpi r24,lo8(8)
+ 149 0070 10F0      		brlo .L7
+ 150 0072 1092 0000 		sts RxQ_Wr_idx,__zero_reg__
+ 151               	.L7:
+  76:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		RxQ_Len++;
+ 153               	.LM7:
+ 154 0076 6F5F      		subi r22,lo8(-(1))
+ 155 0078 6093 0000 		sts RxQ_Len,r22
+ 156               	.L9:
+ 157               	/* epilogue: frame size=0 */
+ 158 007c DF91      		pop r29
+ 159 007e CF91      		pop r28
+ 160 0080 0895      		ret
+ 161               	/* epilogue end (size=3) */
+ 162               	/* function Can_Process size 65 (60) */
+ 167               	.Lscope0:
+ 170               	.global	StdCan_Get
+ 172               	StdCan_Get:
+  77:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	} else {
+  78:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Overflow, just drop the new message. In the future, some
+  79:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		 * form of priority scheme could be used to drop another
+  80:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		 * message in the queue.
+  81:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		 */
+  82:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	}
+  83:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** }
+  84:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+  85:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Ret_t StdCan_Init()
+  86:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+  87:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	StdCan_Ret_t retval;
+  88:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+  89:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Reset all queue variables. */
+  90:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	RxQ_Rd_idx = 0;
+  91:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	RxQ_Wr_idx = 0;
+  92:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	RxQ_Len    = 0;
+  93:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if (STDCAN_TX_QUEUE_SIZE > 1)
+  94:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	TxQ_Rd_idx = 0;
+  95:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	TxQ_Wr_idx = 0;
+  96:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	TxQ_Len    = 0;
+  97:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+  98:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+  99:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if defined(_AVRLIB_BIOS_)
+ 100:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Initialize BIOS' interface for CAN. */
+ 101:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	BIOS_CanCallback = Can_Process;
+ 102:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	retval = StdCan_Ret_OK;
+ 103:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #else
+ 104:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Initialize CAN driver. */
+ 105:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	if (Can_Init() == CAN_OK)
+ 106:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		retval = StdCan_Ret_OK;
+ 107:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	else
+ 108:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		retval = StdCan_Ret_Fail;
+ 109:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+ 110:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 111:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	//TODO: Do something with the Node Descriptor. 
+ 112:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	//(why have constats passed as parameters? they are defined at compiletime /arune)
+ 113:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #if defined(_AVRLIB_BIOS_)
+ 114:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* TODO: When a Tx queue is implemented, the startup message should
+ 115:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 * be sent via StdCan_Put instead of directly to lower layer.
+ 116:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 */
+ 117:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Message_t Startup;
+ 118:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 119:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Set up Startup message format. */
+ 120:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.ExtendedFlag = 1;
+ 121:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.RemoteFlag = 0;
+ 122:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.DataLength = 4;
+ 123:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE);
+ 124:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.Data.bytes[0] = NODE_HW_ID&0xff;
+ 125:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
+ 126:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
+ 127:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Startup.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+ 128:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 129:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Try to send it. */
+ 130:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Send(&Startup);
+ 131:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** #endif
+ 132:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 133:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	return retval;
+ 134:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** }
+ 135:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+ 136:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
+ 137:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+ 174               	.LM8:
+ 175               	/* prologue: frame size=0 */
+ 176 0082 CF93      		push r28
+ 177 0084 DF93      		push r29
+ 178               	/* prologue end (size=2) */
+ 179 0086 EC01      		movw r28,r24
+ 138:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	unsigned char n;
+ 139:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 140:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Check if there's a message waiting. */
+ 141:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	if (RxQ_Len) {
+ 181               	.LM9:
+ 182 0088 8091 0000 		lds r24,RxQ_Len
+ 183 008c 8823      		tst r24
+ 184 008e 19F4      		brne .L11
+ 186               	.LM10:
+ 187 0090 82E0      		ldi r24,lo8(2)
+ 188 0092 90E0      		ldi r25,hi8(2)
+ 189 0094 4BC0      		rjmp .L13
+ 190               	.L11:
+ 142:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		
+ 143:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Copy message to user buffer. */
+ 144:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		msg->Id     = RxQ[RxQ_Rd_idx].Id;
+ 192               	.LM11:
+ 193 0096 8091 0000 		lds r24,RxQ_Rd_idx
+ 194 009a 9927      		clr r25
+ 195 009c 2DE0      		ldi r18,lo8(13)
+ 196 009e 30E0      		ldi r19,hi8(13)
+ 197 00a0 829F      		mul r24,r18
+ 198 00a2 F001      		movw r30,r0
+ 199 00a4 839F      		mul r24,r19
+ 200 00a6 F00D      		add r31,r0
+ 201 00a8 929F      		mul r25,r18
+ 202 00aa F00D      		add r31,r0
+ 203 00ac 1124      		clr r1
+ 204 00ae E050      		subi r30,lo8(-(RxQ))
+ 205 00b0 F040      		sbci r31,hi8(-(RxQ))
+ 206 00b2 8081      		ld r24,Z
+ 207 00b4 9181      		ldd r25,Z+1
+ 208 00b6 A281      		ldd r26,Z+2
+ 209 00b8 B381      		ldd r27,Z+3
+ 210 00ba 8883      		st Y,r24
+ 211 00bc 9983      		std Y+1,r25
+ 212 00be AA83      		std Y+2,r26
+ 213 00c0 BB83      		std Y+3,r27
+ 145:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		msg->Length = RxQ[RxQ_Rd_idx].Length;
+ 215               	.LM12:
+ 216 00c2 8481      		ldd r24,Z+4
+ 217 00c4 8C83      		std Y+4,r24
+ 218 00c6 20E0      		ldi r18,lo8(0)
+ 219 00c8 30E0      		ldi r19,hi8(0)
+ 220 00ca 6DE0      		ldi r22,lo8(13)
+ 221 00cc 70E0      		ldi r23,hi8(13)
+ 222 00ce 0BC0      		rjmp .L14
+ 223               	.L15:
+ 146:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		//TODO: Consider a mempcy() of the entire message.
+ 147:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		for (n = 0; n < RxQ[RxQ_Rd_idx].Length; n++) {
+ 148:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 			msg->Data[n] = RxQ[RxQ_Rd_idx].Data[n];
+ 225               	.LM13:
+ 226 00d0 852F      		mov r24,r21
+ 227 00d2 9927      		clr r25
+ 228 00d4 AC01      		movw r20,r24
+ 229 00d6 4C0F      		add r20,r28
+ 230 00d8 5D1F      		adc r21,r29
+ 231 00da A80F      		add r26,r24
+ 232 00dc B91F      		adc r27,r25
+ 233 00de FD01      		movw r30,r26
+ 234 00e0 8581      		ldd r24,Z+5
+ 235 00e2 FA01      		movw r30,r20
+ 236 00e4 8583      		std Z+5,r24
+ 237               	.L14:
+ 238 00e6 522F      		mov r21,r18
+ 240               	.LM14:
+ 241 00e8 4091 0000 		lds r20,RxQ_Rd_idx
+ 242 00ec 842F      		mov r24,r20
+ 243 00ee 9927      		clr r25
+ 244 00f0 2F5F      		subi r18,lo8(-(1))
+ 245 00f2 3F4F      		sbci r19,hi8(-(1))
+ 246 00f4 869F      		mul r24,r22
+ 247 00f6 D001      		movw r26,r0
+ 248 00f8 879F      		mul r24,r23
+ 249 00fa B00D      		add r27,r0
+ 250 00fc 969F      		mul r25,r22
+ 251 00fe B00D      		add r27,r0
+ 252 0100 1124      		clr r1
+ 253 0102 A050      		subi r26,lo8(-(RxQ))
+ 254 0104 B040      		sbci r27,hi8(-(RxQ))
+ 255 0106 FD01      		movw r30,r26
+ 256 0108 8481      		ldd r24,Z+4
+ 257 010a 5817      		cp r21,r24
+ 258 010c 08F3      		brlo .L15
+ 149:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		}
+ 150:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		
+ 151:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Increment read index and decrease queue length. */
+ 152:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		if (++RxQ_Rd_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Rd_idx = 0;
+ 260               	.LM15:
+ 261 010e 842F      		mov r24,r20
+ 262 0110 8F5F      		subi r24,lo8(-(1))
+ 263 0112 8093 0000 		sts RxQ_Rd_idx,r24
+ 264 0116 8830      		cpi r24,lo8(8)
+ 265 0118 10F0      		brlo .L17
+ 266 011a 1092 0000 		sts RxQ_Rd_idx,__zero_reg__
+ 267               	.L17:
+ 153:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		RxQ_Len--;
+ 269               	.LM16:
+ 270 011e 8091 0000 		lds r24,RxQ_Len
+ 271 0122 8150      		subi r24,lo8(-(-1))
+ 272 0124 8093 0000 		sts RxQ_Len,r24
+ 273 0128 80E0      		ldi r24,lo8(0)
+ 274 012a 90E0      		ldi r25,hi8(0)
+ 275               	.L13:
+ 276               	/* epilogue: frame size=0 */
+ 277 012c DF91      		pop r29
+ 278 012e CF91      		pop r28
+ 279 0130 0895      		ret
+ 280               	/* epilogue end (size=3) */
+ 281               	/* function StdCan_Get size 88 (83) */
+ 286               	.Lscope1:
+ 288               	.global	StdCan_Get_Pending
+ 290               	StdCan_Get_Pending:
+ 154:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		
+ 155:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		return StdCan_Ret_OK;
+ 156:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	} else {
+ 157:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		/* Queue is empty. */
+ 158:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		return StdCan_Ret_Empty;
+ 159:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	}
+ 160:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** }
+ 161:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+ 162:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** unsigned char StdCan_Get_Pending(void)
+ 163:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+ 292               	.LM17:
+ 293               	/* prologue: frame size=0 */
+ 294               	/* prologue end (size=0) */
+ 295 0132 8091 0000 		lds r24,RxQ_Len
+ 164:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	return RxQ_Len;
+ 165:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** }
+ 297               	.LM18:
+ 298 0136 9927      		clr r25
+ 299               	/* epilogue: frame size=0 */
+ 300 0138 0895      		ret
+ 301               	/* epilogue end (size=1) */
+ 302               	/* function StdCan_Get_Pending size 4 (3) */
+ 304               	.Lscope2:
+ 307               	.global	StdCan_SendHeartbeat
+ 309               	StdCan_SendHeartbeat:
+ 166:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+ 167:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
+ 168:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+ 169:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Message_t Can_Msg;
+ 170:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	unsigned char n;
+ 171:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 172:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Validate message. */
+ 173:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	if ((unsigned)msg->Length > 8) return StdCan_Ret_DataErr;
+ 174:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 175:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Copy message directly to lower layer until a proper
+ 176:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 * queue has been implemented.
+ 177:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 * TODO: Implement a proper queue. This requires TX interrupt
+ 178:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 * support in the driver and BIOS.
+ 179:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 */
+ 180:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Msg.ExtendedFlag = 1;
+ 181:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Msg.RemoteFlag = 0;
+ 182:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Msg.Id = msg->Id;
+ 183:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Msg.DataLength = msg->Length;
+ 184:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	for (n = 0; n < msg->Length; n++) {
+ 185:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		Can_Msg.Data.bytes[n] = msg->Data[n];
+ 186:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	}
+ 187:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+ 188:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	if (Can_Send(&Can_Msg) == CAN_OK) {
+ 189:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		Can_Process(&Can_Msg);
+ 190:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		return StdCan_Ret_OK;
+ 191:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	}
+ 192:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	else
+ 193:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 		return StdCan_Ret_Full;
+ 194:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** }
+ 195:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 
+ 196:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** void StdCan_SendHeartbeat(uint8_t n)
+ 197:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** {
+ 311               	.LM19:
+ 312               	/* prologue: frame size=15 */
+ 313 013a CF93      		push r28
+ 314 013c DF93      		push r29
+ 315 013e CDB7      		in r28,__SP_L__
+ 316 0140 DEB7      		in r29,__SP_H__
+ 317 0142 2F97      		sbiw r28,15
+ 318 0144 0FB6      		in __tmp_reg__,__SREG__
+ 319 0146 F894      		cli
+ 320 0148 DEBF      		out __SP_H__,r29
+ 321 014a 0FBE      		out __SREG__,__tmp_reg__
+ 322 014c CDBF      		out __SP_L__,r28
+ 323               	/* prologue end (size=10) */
+ 198:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* TODO: When a Tx queue is implemented, the heartbeat should
+ 199:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 * be sent via StdCan_Put instead of directly to lower layer.
+ 200:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	 */
+ 201:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Message_t Heartbeat;
+ 202:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 203:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Set up Heartbeat message format. */
+ 204:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.ExtendedFlag = 1;
+ 325               	.LM20:
+ 326 014e 81E0      		ldi r24,lo8(1)
+ 327 0150 8E83      		std Y+6,r24
+ 205:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.RemoteFlag = 0;
+ 329               	.LM21:
+ 330 0152 1F82      		std Y+7,__zero_reg__
+ 206:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.DataLength = 4;
+ 332               	.LM22:
+ 333 0154 84E0      		ldi r24,lo8(4)
+ 334 0156 8D83      		std Y+5,r24
+ 207:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE);
+ 336               	.LM23:
+ 337 0158 80E0      		ldi r24,lo8(2883584)
+ 338 015a 90E0      		ldi r25,hi8(2883584)
+ 339 015c ACE2      		ldi r26,hlo8(2883584)
+ 340 015e B0E0      		ldi r27,hhi8(2883584)
+ 341 0160 8983      		std Y+1,r24
+ 342 0162 9A83      		std Y+2,r25
+ 343 0164 AB83      		std Y+3,r26
+ 344 0166 BC83      		std Y+4,r27
+ 208:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.Data.bytes[0] = NODE_HW_ID&0xff;
+ 346               	.LM24:
+ 347 0168 8FE1      		ldi r24,lo8(31)
+ 348 016a 8887      		std Y+8,r24
+ 209:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
+ 350               	.LM25:
+ 351 016c 8BE0      		ldi r24,lo8(11)
+ 352 016e 8987      		std Y+9,r24
+ 210:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
+ 354               	.LM26:
+ 355 0170 80E9      		ldi r24,lo8(-112)
+ 356 0172 8A87      		std Y+10,r24
+ 211:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Heartbeat.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+ 358               	.LM27:
+ 359 0174 87EB      		ldi r24,lo8(-73)
+ 360 0176 8B87      		std Y+11,r24
+ 212:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	
+ 213:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	/* Try to send it. */
+ 214:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c **** 	Can_Send(&Heartbeat);
+ 362               	.LM28:
+ 363 0178 CE01      		movw r24,r28
+ 364 017a 0196      		adiw r24,1
+ 365 017c 0E94 0000 		call BIOS_CanSend
+ 366               	/* epilogue: frame size=15 */
+ 367 0180 2F96      		adiw r28,15
+ 368 0182 0FB6      		in __tmp_reg__,__SREG__
+ 369 0184 F894      		cli
+ 370 0186 DEBF      		out __SP_H__,r29
+ 371 0188 0FBE      		out __SREG__,__tmp_reg__
+ 372 018a CDBF      		out __SP_L__,r28
+ 373 018c DF91      		pop r29
+ 374 018e CF91      		pop r28
+ 375 0190 0895      		ret
+ 376               	/* epilogue end (size=9) */
+ 377               	/* function StdCan_SendHeartbeat size 44 (25) */
+ 382               	.Lscope3:
+ 385               	.global	StdCan_Put
+ 387               	StdCan_Put:
+ 389               	.LM29:
+ 390               	/* prologue: frame size=15 */
+ 391 0192 0F93      		push r16
+ 392 0194 1F93      		push r17
+ 393 0196 CF93      		push r28
+ 394 0198 DF93      		push r29
+ 395 019a CDB7      		in r28,__SP_L__
+ 396 019c DEB7      		in r29,__SP_H__
+ 397 019e 2F97      		sbiw r28,15
+ 398 01a0 0FB6      		in __tmp_reg__,__SREG__
+ 399 01a2 F894      		cli
+ 400 01a4 DEBF      		out __SP_H__,r29
+ 401 01a6 0FBE      		out __SREG__,__tmp_reg__
+ 402 01a8 CDBF      		out __SP_L__,r28
+ 403               	/* prologue end (size=12) */
+ 404 01aa 9C01      		movw r18,r24
+ 406               	.LM30:
+ 407 01ac FC01      		movw r30,r24
+ 408 01ae 4481      		ldd r20,Z+4
+ 409 01b0 4930      		cpi r20,lo8(9)
+ 410 01b2 18F0      		brlo .L25
+ 412               	.LM31:
+ 413 01b4 84E0      		ldi r24,lo8(4)
+ 414 01b6 90E0      		ldi r25,hi8(4)
+ 415 01b8 31C0      		rjmp .L27
+ 416               	.L25:
+ 418               	.LM32:
+ 419 01ba 81E0      		ldi r24,lo8(1)
+ 420 01bc 8E83      		std Y+6,r24
+ 422               	.LM33:
+ 423 01be 1F82      		std Y+7,__zero_reg__
+ 425               	.LM34:
+ 426 01c0 F901      		movw r30,r18
+ 427 01c2 8081      		ld r24,Z
+ 428 01c4 9181      		ldd r25,Z+1
+ 429 01c6 A281      		ldd r26,Z+2
+ 430 01c8 B381      		ldd r27,Z+3
+ 431 01ca 8983      		std Y+1,r24
+ 432 01cc 9A83      		std Y+2,r25
+ 433 01ce AB83      		std Y+3,r26
+ 434 01d0 BC83      		std Y+4,r27
+ 436               	.LM35:
+ 437 01d2 4D83      		std Y+5,r20
+ 438 01d4 40E0      		ldi r20,lo8(0)
+ 439 01d6 50E0      		ldi r21,hi8(0)
+ 440 01d8 8E01      		movw r16,r28
+ 441 01da 0F5F      		subi r16,lo8(-(1))
+ 442 01dc 1F4F      		sbci r17,hi8(-(1))
+ 443 01de 0AC0      		rjmp .L28
+ 444               	.L29:
+ 446               	.LM36:
+ 447 01e0 E92F      		mov r30,r25
+ 448 01e2 FF27      		clr r31
+ 449 01e4 DF01      		movw r26,r30
+ 450 01e6 A00F      		add r26,r16
+ 451 01e8 B11F      		adc r27,r17
+ 452 01ea E20F      		add r30,r18
+ 453 01ec F31F      		adc r31,r19
+ 454 01ee 8581      		ldd r24,Z+5
+ 455 01f0 FD01      		movw r30,r26
+ 456 01f2 8783      		std Z+7,r24
+ 457               	.L28:
+ 458 01f4 942F      		mov r25,r20
+ 459 01f6 4F5F      		subi r20,lo8(-(1))
+ 460 01f8 5F4F      		sbci r21,hi8(-(1))
+ 462               	.LM37:
+ 463 01fa F901      		movw r30,r18
+ 464 01fc 8481      		ldd r24,Z+4
+ 465 01fe 9817      		cp r25,r24
+ 466 0200 78F3      		brlo .L29
+ 468               	.LM38:
+ 469 0202 C801      		movw r24,r16
+ 470 0204 0E94 0000 		call BIOS_CanSend
+ 471 0208 8130      		cpi r24,lo8(1)
+ 472 020a 19F0      		breq .L31
+ 473 020c 81E0      		ldi r24,lo8(1)
+ 474 020e 90E0      		ldi r25,hi8(1)
+ 475 0210 05C0      		rjmp .L27
+ 476               	.L31:
+ 478               	.LM39:
+ 479 0212 C801      		movw r24,r16
+ 480 0214 0E94 0000 		call Can_Process
+ 481 0218 80E0      		ldi r24,lo8(0)
+ 482 021a 90E0      		ldi r25,hi8(0)
+ 483               	.L27:
+ 484               	/* epilogue: frame size=15 */
+ 485 021c 2F96      		adiw r28,15
+ 486 021e 0FB6      		in __tmp_reg__,__SREG__
+ 487 0220 F894      		cli
+ 488 0222 DEBF      		out __SP_H__,r29
+ 489 0224 0FBE      		out __SREG__,__tmp_reg__
+ 490 0226 CDBF      		out __SP_L__,r28
+ 491 0228 DF91      		pop r29
+ 492 022a CF91      		pop r28
+ 493 022c 1F91      		pop r17
+ 494 022e 0F91      		pop r16
+ 495 0230 0895      		ret
+ 496               	/* epilogue end (size=11) */
+ 497               	/* function StdCan_Put size 80 (57) */
+ 503               	.Lscope4:
+ 505               	.global	StdCan_Init
+ 507               	StdCan_Init:
+ 509               	.LM40:
+ 510               	/* prologue: frame size=15 */
+ 511 0232 CF93      		push r28
+ 512 0234 DF93      		push r29
+ 513 0236 CDB7      		in r28,__SP_L__
+ 514 0238 DEB7      		in r29,__SP_H__
+ 515 023a 2F97      		sbiw r28,15
+ 516 023c 0FB6      		in __tmp_reg__,__SREG__
+ 517 023e F894      		cli
+ 518 0240 DEBF      		out __SP_H__,r29
+ 519 0242 0FBE      		out __SREG__,__tmp_reg__
+ 520 0244 CDBF      		out __SP_L__,r28
+ 521               	/* prologue end (size=10) */
+ 523               	.LM41:
+ 524 0246 1092 0000 		sts RxQ_Rd_idx,__zero_reg__
+ 526               	.LM42:
+ 527 024a 1092 0000 		sts RxQ_Wr_idx,__zero_reg__
+ 529               	.LM43:
+ 530 024e 1092 0000 		sts RxQ_Len,__zero_reg__
+ 532               	.LM44:
+ 533 0252 80E0      		ldi r24,lo8(pm(Can_Process))
+ 534 0254 90E0      		ldi r25,hi8(pm(Can_Process))
+ 535 0256 9093 0000 		sts (BIOS_CanCallback)+1,r25
+ 536 025a 8093 0000 		sts BIOS_CanCallback,r24
+ 538               	.LM45:
+ 539 025e 81E0      		ldi r24,lo8(1)
+ 540 0260 8E83      		std Y+6,r24
+ 542               	.LM46:
+ 543 0262 1F82      		std Y+7,__zero_reg__
+ 545               	.LM47:
+ 546 0264 84E0      		ldi r24,lo8(4)
+ 547 0266 8D83      		std Y+5,r24
+ 549               	.LM48:
+ 550 0268 80E0      		ldi r24,lo8(2621440)
+ 551 026a 90E0      		ldi r25,hi8(2621440)
+ 552 026c A8E2      		ldi r26,hlo8(2621440)
+ 553 026e B0E0      		ldi r27,hhi8(2621440)
+ 554 0270 8983      		std Y+1,r24
+ 555 0272 9A83      		std Y+2,r25
+ 556 0274 AB83      		std Y+3,r26
+ 557 0276 BC83      		std Y+4,r27
+ 559               	.LM49:
+ 560 0278 8FE1      		ldi r24,lo8(31)
+ 561 027a 8887      		std Y+8,r24
+ 563               	.LM50:
+ 564 027c 8BE0      		ldi r24,lo8(11)
+ 565 027e 8987      		std Y+9,r24
+ 567               	.LM51:
+ 568 0280 80E9      		ldi r24,lo8(-112)
+ 569 0282 8A87      		std Y+10,r24
+ 571               	.LM52:
+ 572 0284 87EB      		ldi r24,lo8(-73)
+ 573 0286 8B87      		std Y+11,r24
+ 575               	.LM53:
+ 576 0288 CE01      		movw r24,r28
+ 577 028a 0196      		adiw r24,1
+ 578 028c 0E94 0000 		call BIOS_CanSend
+ 580               	.LM54:
+ 581 0290 80E0      		ldi r24,lo8(0)
+ 582 0292 90E0      		ldi r25,hi8(0)
+ 583               	/* epilogue: frame size=15 */
+ 584 0294 2F96      		adiw r28,15
+ 585 0296 0FB6      		in __tmp_reg__,__SREG__
+ 586 0298 F894      		cli
+ 587 029a DEBF      		out __SP_H__,r29
+ 588 029c 0FBE      		out __SREG__,__tmp_reg__
+ 589 029e CDBF      		out __SP_L__,r28
+ 590 02a0 DF91      		pop r29
+ 591 02a2 CF91      		pop r28
+ 592 02a4 0895      		ret
+ 593               	/* epilogue end (size=9) */
+ 594               	/* function StdCan_Init size 58 (39) */
+ 599               	.Lscope5:
+ 600               		.comm BIOS_CanCallback,2,1
+ 601               		.comm RxQ,104,1
+ 602               		.comm RxQ_Rd_idx,1,1
+ 603               		.comm RxQ_Wr_idx,1,1
+ 604               		.comm RxQ_Len,1,1
+ 611               	.Letext0:
+ 612               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/can/stdcan.c": code 
+DEFINED SYMBOLS
+                            *ABS*:00000000 stdcan.c
+     /tmp/ccXJw4NO.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccXJw4NO.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccXJw4NO.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccXJw4NO.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccXJw4NO.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccXJw4NO.s:77     .text:00000000 Can_Process
+                            *COM*:00000001 RxQ_Len
+                            *COM*:00000001 RxQ_Wr_idx
+                            *COM*:00000068 RxQ
+     /tmp/ccXJw4NO.s:172    .text:00000082 StdCan_Get
+                            *COM*:00000001 RxQ_Rd_idx
+     /tmp/ccXJw4NO.s:290    .text:00000132 StdCan_Get_Pending
+     /tmp/ccXJw4NO.s:309    .text:0000013a StdCan_SendHeartbeat
+     /tmp/ccXJw4NO.s:387    .text:00000192 StdCan_Put
+     /tmp/ccXJw4NO.s:507    .text:00000232 StdCan_Init
+                            *COM*:00000002 BIOS_CanCallback
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+BIOS_CanSend

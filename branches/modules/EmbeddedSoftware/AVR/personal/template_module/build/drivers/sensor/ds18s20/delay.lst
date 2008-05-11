@@ -1,0 +1,77 @@
+   1               		.file	"delay.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  69               	.global	delayloop32
+  71               	delayloop32:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** /* 
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    Precise Delay Functions 
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    V 0.5, Martin Thomas, 9/2004
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    In the original Code from Peter Dannegger a timer-interrupt
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    driven "timebase" has been used for precise One-Wire-Delays.
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    My loop-approach is less elegant but may be more usable 
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    as library-function. Since it's not "timer-dependent"
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    See also delay.h.
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****    Inspired by the avr-libc's loop-code
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** */
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** 
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** #include <avr/io.h>
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** #include <avr/io.h>
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** #include <inttypes.h>
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** 
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** #include "delay.h"
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** 
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** void delayloop32(uint32_t loops) 
+  21:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c **** {
+  73               	.LM0:
+  74               	/* prologue: frame size=0 */
+  75               	/* prologue end (size=0) */
+  76 0000 DC01      		movw r26,r24
+  77 0002 CB01      		movw r24,r22
+  22:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay.c ****   __asm__ volatile ( "cp  %A0,__zero_reg__ \n\t"  \
+  79               	.LM1:
+  80               	/* #APP */
+  81 0004 8115      		cp  r24,__zero_reg__ 
+  82 0006 9105      		cpc r25,__zero_reg__ 
+  83 0008 A105      		cpc r26,__zero_reg__ 
+  84 000a B105      		cpc r27,__zero_reg__ 
+  85 000c 29F0      		breq L_Exit_5       
+  86               		L_LOOP_5:           
+  87 000e 8150      		subi r24,1           
+  88 0010 9040      		sbci r25,0           
+  89 0012 A040      		sbci r26,0           
+  90 0014 B040      		sbci r27,0           
+  91 0016 D9F7      		brne L_LOOP_5            
+  92               		L_Exit_5:           
+  93               		
+  94               	/* #NOAPP */
+  95               	/* epilogue: frame size=0 */
+  96 0018 0895      		ret
+  97               	/* epilogue end (size=1) */
+  98               	/* function delayloop32 size 29 (28) */
+ 100               	.Lscope0:
+ 102               	.Letext0:
+ 103               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/drivers/sensor/ds18s20/delay
+DEFINED SYMBOLS
+                            *ABS*:00000000 delay.c
+     /tmp/ccD8pBYK.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccD8pBYK.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccD8pBYK.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccD8pBYK.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccD8pBYK.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccD8pBYK.s:71     .text:00000000 delayloop32
+     /tmp/ccD8pBYK.s:92     .text:00000018 L_Exit_5
+     /tmp/ccD8pBYK.s:86     .text:0000000e L_LOOP_5
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

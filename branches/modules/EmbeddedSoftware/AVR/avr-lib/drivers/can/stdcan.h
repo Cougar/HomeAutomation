@@ -57,7 +57,16 @@ typedef enum {
  * excluded (RTR and standard id).
  */
 typedef struct {
-	unsigned long Id; /**< CAN extended ID (29 bits). */
+	union {
+		uint32_t Id;	/**< CAN extended ID (29 bits). */
+		struct {
+			uint8_t Command;
+			uint8_t ModuleId;
+			uint8_t ModuleType;
+			uint8_t ClassAndDirection;
+		} Header;
+	};
+
 	char Length; /**< Data length [0,8]. */
 	unsigned char Data[8]; /**< Data array. Only the first \c Length elements are valid. */
 #if (STDCAN_FILTER)
@@ -65,33 +74,18 @@ typedef struct {
 #endif
 } StdCan_Msg_t;
 
-/**
- * @brief Node descriptor.
- * 
- * Describes the node and the application running on it.
- * TODO: Discuss the purpose and layout of Node_Desc_t.
- */
-typedef struct {
-	unsigned short Type; /**< Application type (documented elsewhere). */
-	unsigned short Version; /**< Application version number (application defined). */
-	unsigned char Id; /**< Node ID. */
-} Node_Desc_t;
-
-//(why have constats passed as parameters? they are defined at compiletime /arune)
-
-
+#define StdCan_Ret_class(MSG) ((MSG.Header.ClassAndDirection >> 1) & 0x0F)
+#define StdCan_Set_class(MSG, CLASS) MSG.Header.ClassAndDirection &= 0x01; MSG.Header.ClassAndDirection |= (CLASS << 1);
+#define StdCan_Ret_direction(MSG) (MSG.Header.ClassAndDirection & 0x01)
+#define StdCan_Set_direction(MSG, DIR) MSG.Header.ClassAndDirection &= 0xfe; MSG.Header.ClassAndDirection |= DIR;
 /**
  * @brief Initialize StdCan.
  * 
  * Initializes the StdCan and lower layers and sends an Application Startup
  * Message.
  * 
- * @param node_desc
- * 		Pointer to node descriptor, containing information about the type and
- * 		version of the application that should be announced in startup and
- * 		heartbeat messages.
  */ 
-StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc);
+StdCan_Ret_t StdCan_Init();
 
 /**
  * @brief Get a message.

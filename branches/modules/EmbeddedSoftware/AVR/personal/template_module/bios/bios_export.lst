@@ -1,0 +1,79 @@
+   1               		.file	"bios_export.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  69               	.global	BIOS_Reset
+  71               	BIOS_Reset:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include <inttypes.h>
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include <avr/io.h>
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include <avr/interrupt.h>
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include <config.h>
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include <drivers/can/can.h>
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** #include CAN_DRIVER_H
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** //---------------------------------------------------------------------------
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** // Function definitions for the exported interface
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** // These must all start with 'BIOS_' to be included in the library.
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** void BIOS_Reset(void) {
+  73               	.LM0:
+  74               	/* prologue: frame size=0 */
+  75               	/* prologue end (size=0) */
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 	// Just loop and let the watchdog reset
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 	cli(); 
+  77               	.LM1:
+  78               	/* #APP */
+  79 0000 F894      		cli
+  80               	/* #NOAPP */
+  81               	.L2:
+  82 0002 FFCF      		rjmp .L2
+  83               	/* epilogue: frame size=0 */
+  84               	/* epilogue: noreturn */
+  85               	/* epilogue end (size=0) */
+  86               	/* function BIOS_Reset size 3 (3) */
+  88               	.Lscope0:
+  91               	.global	BIOS_CanSend
+  93               	BIOS_CanSend:
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 	while(1);
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** }
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** Can_Return_t BIOS_CanSend(Can_Message_t* msg) {
+  95               	.LM2:
+  96               	/* prologue: frame size=0 */
+  97               	/* prologue end (size=0) */
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** 	return Can_Send(msg);
+  99               	.LM3:
+ 100 0004 0E94 0000 		call Can_Send
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c **** }
+ 102               	.LM4:
+ 103 0008 9927      		clr r25
+ 104 000a 87FD      		sbrc r24,7
+ 105 000c 9095      		com r25
+ 106               	/* epilogue: frame size=0 */
+ 107 000e 0895      		ret
+ 108               	/* epilogue end (size=1) */
+ 109               	/* function BIOS_CanSend size 6 (5) */
+ 111               	.Lscope1:
+ 113               	.Letext0:
+ 114               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios_export.c": code   
+DEFINED SYMBOLS
+                            *ABS*:00000000 bios_export.c
+     /tmp/ccTvp18G.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccTvp18G.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccTvp18G.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccTvp18G.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccTvp18G.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccTvp18G.s:71     .text:00000000 BIOS_Reset
+     /tmp/ccTvp18G.s:93     .text:00000004 BIOS_CanSend
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+Can_Send

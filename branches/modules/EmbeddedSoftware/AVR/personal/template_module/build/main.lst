@@ -1,0 +1,141 @@
+   1               		.file	"main.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  99               	.global	main
+ 101               	main:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <inttypes.h>
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <avr/interrupt.h>
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <stdio.h>
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <string.h>
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <drivers/can/stdcan.h>
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <config.h> // All configuration parameters
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include <drivers/timer/timer.h>
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** #include "../modules/sns_ds18x20/sns_ds18x20.h"
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** int main(void)
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** {
+ 103               	.LM0:
+ 104               	/* prologue: frame size=13 */
+ 105 0000 C0E0      		ldi r28,lo8(__stack - 13)
+ 106 0002 D0E0      		ldi r29,hi8(__stack - 13)
+ 107 0004 DEBF      		out __SP_H__,r29
+ 108 0006 CDBF      		out __SP_L__,r28
+ 109               	/* prologue end (size=4) */
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	StdCan_Msg_t rxMsg; // Message storage
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	// Enable interrupts as early as possible
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	sei();
+ 111               	.LM1:
+ 112               	/* #APP */
+ 113 0008 7894      		sei
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	Timer_Init();
+ 115               	.LM2:
+ 116               	/* #NOAPP */
+ 117 000a 0E94 0000 		call Timer_Init
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 
+  21:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	StdCan_Init();
+ 119               	.LM3:
+ 120 000e 0E94 0000 		call StdCan_Init
+  22:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	
+  23:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	Timer_SetTimeout(APP_HEARTBEAT_TIMER, STDCAN_HEARTBEAT_PERIOD, TimerTypeFreeRunning, StdCan_SendHe
+ 122               	.LM4:
+ 123 0012 20E0      		ldi r18,lo8(pm(StdCan_SendHeartbeat))
+ 124 0014 30E0      		ldi r19,hi8(pm(StdCan_SendHeartbeat))
+ 125 0016 41E0      		ldi r20,lo8(1)
+ 126 0018 60E1      		ldi r22,lo8(10000)
+ 127 001a 77E2      		ldi r23,hi8(10000)
+ 128 001c 80E0      		ldi r24,lo8(0)
+ 129 001e 0E94 0000 		call Timer_SetTimeout
+  24:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	
+  25:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	sns_ds18x20_Init();
+ 131               	.LM5:
+ 132 0022 0E94 0000 		call sns_ds18x20_Init
+ 133               	.L13:
+  26:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 
+  27:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	while (1) {
+  28:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	
+  29:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 		sns_ds18x20_Process();
+ 135               	.LM6:
+ 136 0026 0E94 0000 		call sns_ds18x20_Process
+  30:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 	
+  31:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
+ 138               	.LM7:
+ 139 002a 8E01      		movw r16,r28
+ 140 002c 0F5F      		subi r16,lo8(-(1))
+ 141 002e 1F4F      		sbci r17,hi8(-(1))
+ 142 0030 C801      		movw r24,r16
+ 143 0032 0E94 0000 		call StdCan_Get
+ 144 0036 8823      		tst r24
+ 145 0038 B1F7      		brne .L13
+  32:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 			if ((uint8_t)StdCan_Ret_class(rxMsg) == CAN_MODULE_NMT) {
+ 147               	.LM8:
+ 148 003a 8C81      		ldd r24,Y+4
+ 149 003c 8695      		lsr r24
+ 150 003e 8F70      		andi r24,lo8(15)
+ 151 0040 8B30      		cpi r24,lo8(11)
+ 152 0042 39F4      		brne .L4
+  33:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 				
+  34:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 				if (rxMsg.Header.ModuleType == CAN_MODULE_NMT_LIST) {
+ 154               	.LM9:
+ 155 0044 8B81      		ldd r24,Y+3
+ 156 0046 8D32      		cpi r24,lo8(45)
+ 157 0048 71F7      		brne .L13
+  35:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 					sns_ds18x20_List(1);
+ 159               	.LM10:
+ 160 004a 81E0      		ldi r24,lo8(1)
+ 161 004c 0E94 0000 		call sns_ds18x20_List
+ 162 0050 EACF      		rjmp .L13
+ 163               	.L4:
+  36:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 				}
+  37:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 			}
+  38:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 			else {
+  39:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 			
+  40:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c **** 				sns_ds18x20_HandleMessage(&rxMsg);
+ 165               	.LM11:
+ 166 0052 C801      		movw r24,r16
+ 167 0054 0E94 0000 		call sns_ds18x20_HandleMessage
+ 168 0058 E6CF      		rjmp .L13
+ 169               	/* epilogue: frame size=13 */
+ 170               	/* epilogue: noreturn */
+ 171               	/* epilogue end (size=0) */
+ 172               	/* function main size 46 (42) */
+ 177               	.Lscope0:
+ 178               		.comm BIOS_CanCallback,2,1
+ 179               		.comm gSensorIDs,32,1
+ 183               	.Letext0:
+ 184               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal/template_module/src/main.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccuso3Wn.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccuso3Wn.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccuso3Wn.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccuso3Wn.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccuso3Wn.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccuso3Wn.s:101    .text:00000000 main
+                            *COM*:00000002 BIOS_CanCallback
+                            *COM*:00000020 gSensorIDs
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+__stack
+Timer_Init
+StdCan_Init
+StdCan_SendHeartbeat
+Timer_SetTimeout
+sns_ds18x20_Init
+sns_ds18x20_Process
+StdCan_Get
+sns_ds18x20_List
+sns_ds18x20_HandleMessage

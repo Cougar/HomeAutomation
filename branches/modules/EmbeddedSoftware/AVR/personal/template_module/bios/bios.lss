@@ -1,0 +1,2368 @@
+
+bios.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00003bbe  00000b7a  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000a3e  00003180  00003180  0000013c  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .app_vectors  00000068  00000000  00000000  000000d4  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  3 .bootloader   000003f2  00003c00  00003c00  00000b7a  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  4 .bss          0000001b  00800100  00800100  00000f6c  2**0
+                  ALLOC
+  5 .noinit       00000000  0080011b  0080011b  00000f6c  2**0
+                  CONTENTS
+  6 .eeprom       00000000  00810000  00810000  00000f6c  2**0
+                  CONTENTS
+  7 .stab         000026f4  00000000  00000000  00000f6c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .stabstr      0000132f  00000000  00000000  00003660  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00003180 <__ctors_end>:
+    3180:	a1 6f       	ori	r26, 0xF1	; 241
+    3182:	1a 1d       	adc	r17, r10
+
+00003184 <__init>:
+    3184:	11 24       	eor	r1, r1
+    3186:	1f be       	out	0x3f, r1	; 63
+    3188:	cf ef       	ldi	r28, 0xFF	; 255
+    318a:	d4 e0       	ldi	r29, 0x04	; 4
+    318c:	de bf       	out	0x3e, r29	; 62
+    318e:	cd bf       	out	0x3d, r28	; 61
+
+00003190 <__do_copy_data>:
+    3190:	11 e0       	ldi	r17, 0x01	; 1
+    3192:	a0 e0       	ldi	r26, 0x00	; 0
+    3194:	b1 e0       	ldi	r27, 0x01	; 1
+    3196:	ee eb       	ldi	r30, 0xBE	; 190
+    3198:	fb e3       	ldi	r31, 0x3B	; 59
+    319a:	02 c0       	rjmp	.+4      	; 0x31a0 <.do_copy_data_start>
+
+0000319c <.do_copy_data_loop>:
+    319c:	05 90       	lpm	r0, Z+
+    319e:	0d 92       	st	X+, r0
+
+000031a0 <.do_copy_data_start>:
+    31a0:	a0 30       	cpi	r26, 0x00	; 0
+    31a2:	b1 07       	cpc	r27, r17
+    31a4:	d9 f7       	brne	.-10     	; 0x319c <.do_copy_data_loop>
+
+000031a6 <__do_clear_bss>:
+    31a6:	11 e0       	ldi	r17, 0x01	; 1
+    31a8:	a0 e0       	ldi	r26, 0x00	; 0
+    31aa:	b1 e0       	ldi	r27, 0x01	; 1
+    31ac:	01 c0       	rjmp	.+2      	; 0x31b0 <.do_clear_bss_start>
+
+000031ae <.do_clear_bss_loop>:
+    31ae:	1d 92       	st	X+, r1
+
+000031b0 <.do_clear_bss_start>:
+    31b0:	ab 31       	cpi	r26, 0x1B	; 27
+    31b2:	b1 07       	cpc	r27, r17
+    31b4:	e1 f7       	brne	.-8      	; 0x31ae <.do_clear_bss_loop>
+    31b6:	0c 94 e7 18 	jmp	0x31ce <main>
+
+000031ba <__bad_interrupt>:
+    31ba:	0c 94 00 1e 	jmp	0x3c00 <__boot_start>
+
+000031be <BIOS_Reset>:
+// These must all start with 'BIOS_' to be included in the library.
+
+void BIOS_Reset(void) {
+	// Just loop and let the watchdog reset
+	cli(); 
+    31be:	f8 94       	cli
+    31c0:	ff cf       	rjmp	.-2      	; 0x31c0 <BIOS_Reset+0x2>
+
+000031c2 <BIOS_CanSend>:
+	while(1);
+}
+
+Can_Return_t BIOS_CanSend(Can_Message_t* msg) {
+	return Can_Send(msg);
+    31c2:	0e 94 a0 1d 	call	0x3b40 <Can_Send>
+}
+    31c6:	99 27       	eor	r25, r25
+    31c8:	87 fd       	sbrc	r24, 7
+    31ca:	90 95       	com	r25
+    31cc:	08 95       	ret
+
+000031ce <main>:
+		BIOS_CanCallback(msg);
+	}
+}
+
+int main(void) {
+    31ce:	c0 e6       	ldi	r28, 0x60	; 96
+    31d0:	d4 e0       	ldi	r29, 0x04	; 4
+    31d2:	de bf       	out	0x3e, r29	; 62
+    31d4:	cd bf       	out	0x3d, r28	; 61
+	void (*app_reset)(void) = 0; // Function pointer to jump to application reset vector.
+	uint8_t bios_state;
+	uint8_t nmt_type;
+	uint8_t pagebuf[SPM_PAGESIZE];
+	// These unneccessary initializations uses 12 bytes flash, just to make the compiler happy!
+	uint16_t base_addr = 0;
+	uint16_t offset = 0;
+	uint16_t addr = 0;
+	uint8_t len;
+	uint16_t data;
+	uint8_t send_msg = 0;
+	Can_Message_t tx_msg;
+	Can_Message_t bios_msg;
+	bios_msg_ptr = &bios_msg;
+    31d6:	ce 01       	movw	r24, r28
+    31d8:	40 96       	adiw	r24, 0x10	; 16
+    31da:	90 93 19 01 	sts	0x0119, r25
+    31de:	80 93 18 01 	sts	0x0118, r24
+
+#if defined(AUTOSTART)
+	autostart_cnt = 0;
+    31e2:	10 92 17 01 	sts	0x0117, r1
+#endif
+
+	// Enable watchdog timer to protect against an application locking the
+	// node by leaving interrupts disabled. 
+	wdt_enable(WDTO_2S);
+    31e6:	88 e1       	ldi	r24, 0x18	; 24
+    31e8:	90 e0       	ldi	r25, 0x00	; 0
+    31ea:	2f e0       	ldi	r18, 0x0F	; 15
+    31ec:	0f b6       	in	r0, 0x3f	; 63
+    31ee:	f8 94       	cli
+    31f0:	a8 95       	wdr
+    31f2:	80 93 60 00 	sts	0x0060, r24
+    31f6:	0f be       	out	0x3f, r0	; 63
+    31f8:	20 93 60 00 	sts	0x0060, r18
+	
+	// Move interrupt vectors to start of bootloader section and enable interrupts
+	IVSEL_REG = _BV(IVCE);
+    31fc:	81 e0       	ldi	r24, 0x01	; 1
+    31fe:	85 bf       	out	0x35, r24	; 53
+	IVSEL_REG = _BV(IVSEL);
+    3200:	82 e0       	ldi	r24, 0x02	; 2
+    3202:	85 bf       	out	0x35, r24	; 53
+	sei();
+    3204:	78 94       	sei
+	
+	if (Can_Init() != CAN_OK) BIOS_Reset();
+    3206:	0e 94 7b 1c 	call	0x38f6 <Can_Init>
+    320a:	81 30       	cpi	r24, 0x01	; 1
+    320c:	11 f0       	breq	.+4      	; 0x3212 <main+0x44>
+    320e:	0e 94 df 18 	call	0x31be <BIOS_Reset>
+	
+	tx_msg.RemoteFlag = 0;
+    3212:	1f 82       	std	Y+7, r1	; 0x07
+	tx_msg.ExtendedFlag = 1;
+    3214:	21 e0       	ldi	r18, 0x01	; 1
+    3216:	2e 83       	std	Y+6, r18	; 0x06
+	tx_msg.Id = CAN_ID_NMT_BIOS_START;
+    3218:	80 e0       	ldi	r24, 0x00	; 0
+    321a:	92 e6       	ldi	r25, 0x62	; 98
+    321c:	a8 e0       	ldi	r26, 0x08	; 8
+    321e:	b0 e0       	ldi	r27, 0x00	; 0
+    3220:	89 83       	std	Y+1, r24	; 0x01
+    3222:	9a 83       	std	Y+2, r25	; 0x02
+    3224:	ab 83       	std	Y+3, r26	; 0x03
+    3226:	bc 83       	std	Y+4, r27	; 0x04
+	tx_msg.DataLength = 8;
+    3228:	88 e0       	ldi	r24, 0x08	; 8
+    322a:	8d 83       	std	Y+5, r24	; 0x05
+	tx_msg.Data.bytes[0] = BIOS_VERSION&0xff;
+    322c:	89 e3       	ldi	r24, 0x39	; 57
+    322e:	88 87       	std	Y+8, r24	; 0x08
+	tx_msg.Data.bytes[1] = (BIOS_VERSION>>8)&0xff;
+    3230:	83 e1       	ldi	r24, 0x13	; 19
+    3232:	89 87       	std	Y+9, r24	; 0x09
+	tx_msg.Data.bytes[3] = 0x00;
+    3234:	1b 86       	std	Y+11, r1	; 0x0b
+	tx_msg.Data.bytes[4] = hwid&0xff;
+    3236:	81 ea       	ldi	r24, 0xA1	; 161
+    3238:	8c 87       	std	Y+12, r24	; 0x0c
+	tx_msg.Data.bytes[5] = (hwid>>8)&0xff;
+    323a:	8f e6       	ldi	r24, 0x6F	; 111
+    323c:	8d 87       	std	Y+13, r24	; 0x0d
+	tx_msg.Data.bytes[6] = (hwid>>16)&0xff;
+    323e:	8a e1       	ldi	r24, 0x1A	; 26
+    3240:	8e 87       	std	Y+14, r24	; 0x0e
+	tx_msg.Data.bytes[7] = (hwid>>24)&0xff;
+    3242:	8d e1       	ldi	r24, 0x1D	; 29
+    3244:	8f 87       	std	Y+15, r24	; 0x0f
+
+	if (pgm_read_word(0) == 0xffff) {
+    3246:	80 e0       	ldi	r24, 0x00	; 0
+    3248:	90 e0       	ldi	r25, 0x00	; 0
+    324a:	fc 01       	movw	r30, r24
+    324c:	45 91       	lpm	r20, Z+
+    324e:	54 91       	lpm	r21, Z
+    3250:	4f 5f       	subi	r20, 0xFF	; 255
+    3252:	5f 4f       	sbci	r21, 0xFF	; 255
+    3254:	41 f4       	brne	.+16     	; 0x3266 <main+0x98>
+		// No application in flash
+		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
+		tx_msg.Data.bytes[2] = 0;
+    3256:	1a 86       	std	Y+10, r1	; 0x0a
+    3258:	82 e0       	ldi	r24, 0x02	; 2
+    325a:	c1 56       	subi	r28, 0x61	; 97
+    325c:	df 4f       	sbci	r29, 0xFF	; 255
+    325e:	88 83       	st	Y, r24
+    3260:	cf 59       	subi	r28, 0x9F	; 159
+    3262:	d0 40       	sbci	r29, 0x00	; 0
+    3264:	07 c0       	rjmp	.+14     	; 0x3274 <main+0xa6>
+		bios_state = BIOS_NOAPP;
+	} else {
+		// Application exists
+		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
+		tx_msg.Data.bytes[2] = 1;
+    3266:	2a 87       	std	Y+10, r18	; 0x0a
+    3268:	e1 e0       	ldi	r30, 0x01	; 1
+    326a:	c1 56       	subi	r28, 0x61	; 97
+    326c:	df 4f       	sbci	r29, 0xFF	; 255
+    326e:	e8 83       	st	Y, r30
+    3270:	cf 59       	subi	r28, 0x9F	; 159
+    3272:	d0 40       	sbci	r29, 0x00	; 0
+		bios_state = BIOS_APP;
+	}
+	
+	while (Can_Send(&tx_msg) != CAN_OK);
+    3274:	ce 01       	movw	r24, r28
+    3276:	01 96       	adiw	r24, 0x01	; 1
+    3278:	0e 94 a0 1d 	call	0x3b40 <Can_Send>
+    327c:	81 30       	cpi	r24, 0x01	; 1
+    327e:	d1 f7       	brne	.-12     	; 0x3274 <main+0xa6>
+
+	tx_msg.DataLength = 2; // All msg sent after BIOS_START are length 2 so set it once.
+    3280:	82 e0       	ldi	r24, 0x02	; 2
+    3282:	8d 83       	std	Y+5, r24	; 0x05
+    3284:	cc 24       	eor	r12, r12
+    3286:	dd 24       	eor	r13, r13
+    3288:	00 e0       	ldi	r16, 0x00	; 0
+    328a:	10 e0       	ldi	r17, 0x00	; 0
+    328c:	0e c0       	rjmp	.+28     	; 0x32aa <main+0xdc>
+	
+	// Main loop
+	while (1) {
+		// Wait for message
+		while (!bios_msg_full) {
+#if defined(AUTOSTART)
+			if (bios_state == BIOS_APP && autostart_cnt == AUTOSTART) {
+    328e:	c1 56       	subi	r28, 0x61	; 97
+    3290:	df 4f       	sbci	r29, 0xFF	; 255
+    3292:	f8 81       	ld	r31, Y
+    3294:	cf 59       	subi	r28, 0x9F	; 159
+    3296:	d0 40       	sbci	r29, 0x00	; 0
+    3298:	f1 30       	cpi	r31, 0x01	; 1
+    329a:	39 f4       	brne	.+14     	; 0x32aa <main+0xdc>
+    329c:	80 91 17 01 	lds	r24, 0x0117
+    32a0:	85 30       	cpi	r24, 0x05	; 5
+    32a2:	19 f4       	brne	.+6      	; 0x32aa <main+0xdc>
+				app_reset();
+    32a4:	e0 e0       	ldi	r30, 0x00	; 0
+    32a6:	f0 e0       	ldi	r31, 0x00	; 0
+    32a8:	09 95       	icall
+    32aa:	80 91 1a 01 	lds	r24, 0x011A
+    32ae:	88 23       	and	r24, r24
+    32b0:	71 f3       	breq	.-36     	; 0x328e <main+0xc0>
+			}
+#endif
+		}
+		
+		nmt_type = (bios_msg.Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE;
+    32b2:	2a 89       	ldd	r18, Y+18	; 0x12
+		
+		switch (bios_state) {
+    32b4:	c1 56       	subi	r28, 0x61	; 97
+    32b6:	df 4f       	sbci	r29, 0xFF	; 255
+    32b8:	88 81       	ld	r24, Y
+    32ba:	cf 59       	subi	r28, 0x9F	; 159
+    32bc:	d0 40       	sbci	r29, 0x00	; 0
+    32be:	82 30       	cpi	r24, 0x02	; 2
+    32c0:	61 f1       	breq	.+88     	; 0x331a <main+0x14c>
+    32c2:	83 30       	cpi	r24, 0x03	; 3
+    32c4:	20 f4       	brcc	.+8      	; 0x32ce <main+0x100>
+    32c6:	81 30       	cpi	r24, 0x01	; 1
+    32c8:	09 f0       	breq	.+2      	; 0x32cc <main+0xfe>
+    32ca:	d3 c0       	rjmp	.+422    	; 0x3472 <main+0x2a4>
+    32cc:	0c c0       	rjmp	.+24     	; 0x32e6 <main+0x118>
+    32ce:	c1 56       	subi	r28, 0x61	; 97
+    32d0:	df 4f       	sbci	r29, 0xFF	; 255
+    32d2:	e8 81       	ld	r30, Y
+    32d4:	cf 59       	subi	r28, 0x9F	; 159
+    32d6:	d0 40       	sbci	r29, 0x00	; 0
+    32d8:	e3 30       	cpi	r30, 0x03	; 3
+    32da:	09 f4       	brne	.+2      	; 0x32de <main+0x110>
+    32dc:	55 c0       	rjmp	.+170    	; 0x3388 <main+0x1ba>
+    32de:	e4 30       	cpi	r30, 0x04	; 4
+    32e0:	09 f0       	breq	.+2      	; 0x32e4 <main+0x116>
+    32e2:	c7 c0       	rjmp	.+398    	; 0x3472 <main+0x2a4>
+    32e4:	b6 c0       	rjmp	.+364    	; 0x3452 <main+0x284>
+		case BIOS_APP:
+			//if (nmt_type == CAN_NMT_START_APP) {
+			if (nmt_type == CAN_NMT_START_APP && bios_msg.DataLength == 4 &&
+    32e6:	24 32       	cpi	r18, 0x24	; 36
+    32e8:	c1 f4       	brne	.+48     	; 0x331a <main+0x14c>
+    32ea:	8c 89       	ldd	r24, Y+20	; 0x14
+    32ec:	84 30       	cpi	r24, 0x04	; 4
+    32ee:	09 f0       	breq	.+2      	; 0x32f2 <main+0x124>
+    32f0:	c0 c0       	rjmp	.+384    	; 0x3472 <main+0x2a4>
+    32f2:	8f 89       	ldd	r24, Y+23	; 0x17
+    32f4:	81 3a       	cpi	r24, 0xA1	; 161
+    32f6:	09 f0       	breq	.+2      	; 0x32fa <main+0x12c>
+    32f8:	bc c0       	rjmp	.+376    	; 0x3472 <main+0x2a4>
+    32fa:	88 8d       	ldd	r24, Y+24	; 0x18
+    32fc:	8f 36       	cpi	r24, 0x6F	; 111
+    32fe:	09 f0       	breq	.+2      	; 0x3302 <main+0x134>
+    3300:	b8 c0       	rjmp	.+368    	; 0x3472 <main+0x2a4>
+    3302:	89 8d       	ldd	r24, Y+25	; 0x19
+    3304:	8a 31       	cpi	r24, 0x1A	; 26
+    3306:	09 f0       	breq	.+2      	; 0x330a <main+0x13c>
+    3308:	b4 c0       	rjmp	.+360    	; 0x3472 <main+0x2a4>
+    330a:	8a 8d       	ldd	r24, Y+26	; 0x1a
+    330c:	8d 31       	cpi	r24, 0x1D	; 29
+    330e:	09 f0       	breq	.+2      	; 0x3312 <main+0x144>
+    3310:	b0 c0       	rjmp	.+352    	; 0x3472 <main+0x2a4>
+					bios_msg.Data.bytes[0] == (hwid&0xff) && bios_msg.Data.bytes[1] == ((hwid>>8)&0xff) &&
+					bios_msg.Data.bytes[2] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[3] == ((hwid>>24)&0xff) ) {
+				app_reset(); // Will never return
+    3312:	e0 e0       	ldi	r30, 0x00	; 0
+    3314:	f0 e0       	ldi	r31, 0x00	; 0
+    3316:	09 95       	icall
+    3318:	ac c0       	rjmp	.+344    	; 0x3472 <main+0x2a4>
+			}
+			// Fall through
+		case BIOS_NOAPP:
+			//if (nmt_type == CAN_NMT_PGM_START) {
+			if (nmt_type == CAN_NMT_PGM_START && bios_msg.DataLength == 8 &&
+    331a:	2c 30       	cpi	r18, 0x0C	; 12
+    331c:	09 f0       	breq	.+2      	; 0x3320 <main+0x152>
+    331e:	a9 c0       	rjmp	.+338    	; 0x3472 <main+0x2a4>
+    3320:	8c 89       	ldd	r24, Y+20	; 0x14
+    3322:	88 30       	cpi	r24, 0x08	; 8
+    3324:	09 f0       	breq	.+2      	; 0x3328 <main+0x15a>
+    3326:	a5 c0       	rjmp	.+330    	; 0x3472 <main+0x2a4>
+    3328:	8b 8d       	ldd	r24, Y+27	; 0x1b
+    332a:	81 3a       	cpi	r24, 0xA1	; 161
+    332c:	09 f0       	breq	.+2      	; 0x3330 <main+0x162>
+    332e:	a1 c0       	rjmp	.+322    	; 0x3472 <main+0x2a4>
+    3330:	8c 8d       	ldd	r24, Y+28	; 0x1c
+    3332:	8f 36       	cpi	r24, 0x6F	; 111
+    3334:	09 f0       	breq	.+2      	; 0x3338 <main+0x16a>
+    3336:	9d c0       	rjmp	.+314    	; 0x3472 <main+0x2a4>
+    3338:	8d 8d       	ldd	r24, Y+29	; 0x1d
+    333a:	8a 31       	cpi	r24, 0x1A	; 26
+    333c:	09 f0       	breq	.+2      	; 0x3340 <main+0x172>
+    333e:	99 c0       	rjmp	.+306    	; 0x3472 <main+0x2a4>
+    3340:	8e 8d       	ldd	r24, Y+30	; 0x1e
+    3342:	8d 31       	cpi	r24, 0x1D	; 29
+    3344:	09 f0       	breq	.+2      	; 0x3348 <main+0x17a>
+    3346:	95 c0       	rjmp	.+298    	; 0x3472 <main+0x2a4>
+					bios_msg.Data.bytes[4] == (hwid&0xff) && bios_msg.Data.bytes[5] == ((hwid>>8)&0xff) &&
+					bios_msg.Data.bytes[6] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[7] == ((hwid>>24)&0xff) ) {
+				// Set base address
+				base_addr = bios_msg.Data.words[0];
+    3348:	cf 88       	ldd	r12, Y+23	; 0x17
+    334a:	d8 8c       	ldd	r13, Y+24	; 0x18
+				flash_init(pagebuf);
+    334c:	ce 01       	movw	r24, r28
+    334e:	4f 96       	adiw	r24, 0x1f	; 31
+    3350:	0e 94 a6 1e 	call	0x3d4c <flash_init>
+				//send CAN_NMT_PGM_ACK(offset)
+				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+    3354:	80 e0       	ldi	r24, 0x00	; 0
+    3356:	92 e6       	ldi	r25, 0x62	; 98
+    3358:	ac e1       	ldi	r26, 0x1C	; 28
+    335a:	b0 e0       	ldi	r27, 0x00	; 0
+    335c:	89 83       	std	Y+1, r24	; 0x01
+    335e:	9a 83       	std	Y+2, r25	; 0x02
+    3360:	ab 83       	std	Y+3, r26	; 0x03
+    3362:	bc 83       	std	Y+4, r27	; 0x04
+				tx_msg.Data.words[0] = base_addr;
+    3364:	d9 86       	std	Y+9, r13	; 0x09
+    3366:	c8 86       	std	Y+8, r12	; 0x08
+    3368:	f3 e0       	ldi	r31, 0x03	; 3
+    336a:	c1 56       	subi	r28, 0x61	; 97
+    336c:	df 4f       	sbci	r29, 0xFF	; 255
+    336e:	f8 83       	st	Y, r31
+    3370:	cf 59       	subi	r28, 0x9F	; 159
+    3372:	d0 40       	sbci	r29, 0x00	; 0
+    3374:	78 c0       	rjmp	.+240    	; 0x3466 <main+0x298>
+				send_msg = 1;
+				bios_state = BIOS_PGM;
+			}
+			break;
+		case BIOS_PGM:
+			// Default to send CAN_NMT_PGM_ACK(offset)
+			tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+			
+			if (nmt_type == CAN_NMT_PGM_DATA) {
+				// Set address = base address + offset.
+				offset = bios_msg.Data.words[0];
+				addr = base_addr + offset;
+				
+				// One of ACK and NACK will be sent, both have offset as data.
+				tx_msg.Data.words[0] = offset;
+				send_msg = 1;
+
+				// Flash all data sent, beginning at addr.
+				len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
+				uint8_t i;
+				for (i=1; i<len; i++) { // Skip first word (offset).
+					
+					// Abort if trying to write in BIOS area.
+					if (addr >= (uint16_t)&__bios_start) {
+						// Send CAN_NMT_PGM_NACK(offset).
+						tx_msg.Id = CAN_ID_NMT_PGM_NACK;
+    3376:	80 e0       	ldi	r24, 0x00	; 0
+    3378:	92 e6       	ldi	r25, 0x62	; 98
+    337a:	a0 e2       	ldi	r26, 0x20	; 32
+    337c:	b0 e0       	ldi	r27, 0x00	; 0
+    337e:	89 83       	std	Y+1, r24	; 0x01
+    3380:	9a 83       	std	Y+2, r25	; 0x02
+    3382:	ab 83       	std	Y+3, r26	; 0x03
+    3384:	bc 83       	std	Y+4, r27	; 0x04
+    3386:	30 c0       	rjmp	.+96     	; 0x33e8 <main+0x21a>
+    3388:	80 e0       	ldi	r24, 0x00	; 0
+    338a:	92 e6       	ldi	r25, 0x62	; 98
+    338c:	ac e1       	ldi	r26, 0x1C	; 28
+    338e:	b0 e0       	ldi	r27, 0x00	; 0
+    3390:	89 83       	std	Y+1, r24	; 0x01
+    3392:	9a 83       	std	Y+2, r25	; 0x02
+    3394:	ab 83       	std	Y+3, r26	; 0x03
+    3396:	bc 83       	std	Y+4, r27	; 0x04
+    3398:	20 31       	cpi	r18, 0x10	; 16
+    339a:	69 f5       	brne	.+90     	; 0x33f6 <main+0x228>
+    339c:	8f 89       	ldd	r24, Y+23	; 0x17
+    339e:	98 8d       	ldd	r25, Y+24	; 0x18
+    33a0:	86 01       	movw	r16, r12
+    33a2:	08 0f       	add	r16, r24
+    33a4:	19 1f       	adc	r17, r25
+    33a6:	99 87       	std	Y+9, r25	; 0x09
+    33a8:	88 87       	std	Y+8, r24	; 0x08
+    33aa:	8c 89       	ldd	r24, Y+20	; 0x14
+    33ac:	99 27       	eor	r25, r25
+    33ae:	01 96       	adiw	r24, 0x01	; 1
+    33b0:	62 e0       	ldi	r22, 0x02	; 2
+    33b2:	70 e0       	ldi	r23, 0x00	; 0
+    33b4:	0e 94 b8 1d 	call	0x3b70 <__divmodhi4>
+    33b8:	e6 2e       	mov	r14, r22
+    33ba:	91 e0       	ldi	r25, 0x01	; 1
+    33bc:	f9 2e       	mov	r15, r25
+    33be:	12 c0       	rjmp	.+36     	; 0x33e4 <main+0x216>
+    33c0:	81 e3       	ldi	r24, 0x31	; 49
+    33c2:	00 38       	cpi	r16, 0x80	; 128
+    33c4:	18 07       	cpc	r17, r24
+    33c6:	b8 f6       	brcc	.-82     	; 0x3376 <main+0x1a8>
+						break; //for loop
+					}
+
+					data = bios_msg.Data.words[i];
+					flash_write_word(addr, data);
+    33c8:	ef 2d       	mov	r30, r15
+    33ca:	ff 27       	eor	r31, r31
+    33cc:	ee 0f       	add	r30, r30
+    33ce:	ff 1f       	adc	r31, r31
+    33d0:	ec 0f       	add	r30, r28
+    33d2:	fd 1f       	adc	r31, r29
+    33d4:	67 89       	ldd	r22, Z+23	; 0x17
+    33d6:	70 8d       	ldd	r23, Z+24	; 0x18
+    33d8:	c8 01       	movw	r24, r16
+    33da:	0e 94 6e 1e 	call	0x3cdc <flash_write_word>
+					addr += 2;
+    33de:	0e 5f       	subi	r16, 0xFE	; 254
+    33e0:	1f 4f       	sbci	r17, 0xFF	; 255
+    33e2:	f3 94       	inc	r15
+    33e4:	fe 14       	cp	r15, r14
+    33e6:	60 f3       	brcs	.-40     	; 0x33c0 <main+0x1f2>
+				}
+				// Adjust addr if an odd number of bytes were sent, for use in crc calc.
+				addr -= bios_msg.DataLength & 1; 
+    33e8:	8c 89       	ldd	r24, Y+20	; 0x14
+    33ea:	99 27       	eor	r25, r25
+    33ec:	81 70       	andi	r24, 0x01	; 1
+    33ee:	90 70       	andi	r25, 0x00	; 0
+    33f0:	08 1b       	sub	r16, r24
+    33f2:	19 0b       	sbc	r17, r25
+    33f4:	38 c0       	rjmp	.+112    	; 0x3466 <main+0x298>
+			}
+			if (nmt_type == CAN_NMT_PGM_END) {
+    33f6:	24 31       	cpi	r18, 0x14	; 20
+    33f8:	09 f0       	breq	.+2      	; 0x33fc <main+0x22e>
+    33fa:	3b c0       	rjmp	.+118    	; 0x3472 <main+0x2a4>
+				// Make sure a partly filled page will be flashed.
+				flash_flush_buffer();
+    33fc:	0e 94 34 1e 	call	0x3c68 <flash_flush_buffer>
+    3400:	f6 01       	movw	r30, r12
+    3402:	20 e0       	ldi	r18, 0x00	; 0
+    3404:	30 e0       	ldi	r19, 0x00	; 0
+    3406:	19 c0       	rjmp	.+50     	; 0x343a <main+0x26c>
+				
+				// Calculate crc on written data.
+				//TODO: This will not work if data is not sent sequentially without
+				// holes, starting with offset=0. We might want to send a NACK if the
+				// offset in a CAN_NMT_PGM_DATA msg differs from the expected offset.
+				uint16_t loc, crc = 0;
+				for (loc = base_addr; loc < addr; loc++) { // addr will be last location written + 2.
+					crc = _crc16_update(crc, pgm_read_byte(loc));
+    3408:	84 91       	lpm	r24, Z
+{
+	uint8_t __tmp;
+	uint16_t __ret;
+
+	__asm__ __volatile__ (
+    340a:	28 27       	eor	r18, r24
+    340c:	82 2f       	mov	r24, r18
+    340e:	82 95       	swap	r24
+    3410:	82 27       	eor	r24, r18
+    3412:	08 2e       	mov	r0, r24
+    3414:	86 95       	lsr	r24
+    3416:	86 95       	lsr	r24
+    3418:	80 25       	eor	r24, r0
+    341a:	08 2e       	mov	r0, r24
+    341c:	86 95       	lsr	r24
+    341e:	80 25       	eor	r24, r0
+    3420:	87 70       	andi	r24, 0x07	; 7
+    3422:	02 2e       	mov	r0, r18
+    3424:	23 2f       	mov	r18, r19
+    3426:	86 95       	lsr	r24
+    3428:	07 94       	ror	r0
+    342a:	87 95       	ror	r24
+    342c:	30 2d       	mov	r19, r0
+    342e:	28 27       	eor	r18, r24
+    3430:	06 94       	lsr	r0
+    3432:	87 95       	ror	r24
+    3434:	30 25       	eor	r19, r0
+    3436:	28 27       	eor	r18, r24
+    3438:	31 96       	adiw	r30, 0x01	; 1
+    343a:	e0 17       	cp	r30, r16
+    343c:	f1 07       	cpc	r31, r17
+    343e:	20 f3       	brcs	.-56     	; 0x3408 <main+0x23a>
+				}
+				
+				tx_msg.Data.words[0] = crc;
+    3440:	39 87       	std	Y+9, r19	; 0x09
+    3442:	28 87       	std	Y+8, r18	; 0x08
+    3444:	e4 e0       	ldi	r30, 0x04	; 4
+    3446:	c1 56       	subi	r28, 0x61	; 97
+    3448:	df 4f       	sbci	r29, 0xFF	; 255
+    344a:	e8 83       	st	Y, r30
+    344c:	cf 59       	subi	r28, 0x9F	; 159
+    344e:	d0 40       	sbci	r29, 0x00	; 0
+    3450:	0a c0       	rjmp	.+20     	; 0x3466 <main+0x298>
+				send_msg = 1;
+				bios_state = BIOS_END_PGM;
+			}
+			break;
+		case BIOS_END_PGM:
+			if (nmt_type == CAN_NMT_PGM_COPY) {
+    3452:	28 31       	cpi	r18, 0x18	; 24
+    3454:	71 f4       	brne	.+28     	; 0x3472 <main+0x2a4>
+				// For BIOS updating over CAN. Upload bios to application area,
+				// send this message with correct parameters to copy data from
+				// application to bios area and pray it will come alive again.
+				flash_copy_data(bios_msg.Data.words[0], 
+    3456:	4b 8d       	ldd	r20, Y+27	; 0x1b
+    3458:	5c 8d       	ldd	r21, Y+28	; 0x1c
+    345a:	69 8d       	ldd	r22, Y+25	; 0x19
+    345c:	7a 8d       	ldd	r23, Y+26	; 0x1a
+    345e:	8f 89       	ldd	r24, Y+23	; 0x17
+    3460:	98 8d       	ldd	r25, Y+24	; 0x18
+    3462:	0e 94 c0 1f 	call	0x3f80 <flash_copy_data>
+				                bios_msg.Data.words[1], 
+				                bios_msg.Data.words[2]);
+				// flash_copy_data will never return.
+			}
+		}
+		
+		if (send_msg) {
+			while (Can_Send(&tx_msg) != CAN_OK);
+    3466:	ce 01       	movw	r24, r28
+    3468:	01 96       	adiw	r24, 0x01	; 1
+    346a:	0e 94 a0 1d 	call	0x3b40 <Can_Send>
+    346e:	81 30       	cpi	r24, 0x01	; 1
+    3470:	d1 f7       	brne	.-12     	; 0x3466 <main+0x298>
+			send_msg = 0;
+		}
+
+		bios_msg_full = 0; // We're done with this message, ready for the next.
+    3472:	10 92 1a 01 	sts	0x011A, r1
+    3476:	19 cf       	rjmp	.-462    	; 0x32aa <main+0xdc>
+
+00003478 <Can_Process>:
+    3478:	cf 93       	push	r28
+    347a:	df 93       	push	r29
+    347c:	ec 01       	movw	r28, r24
+    347e:	8d 81       	ldd	r24, Y+5	; 0x05
+    3480:	88 23       	and	r24, r24
+    3482:	09 f4       	brne	.+2      	; 0x3486 <Can_Process+0xe>
+    3484:	47 c0       	rjmp	.+142    	; 0x3514 <Can_Process+0x9c>
+    3486:	28 81       	ld	r18, Y
+    3488:	39 81       	ldd	r19, Y+1	; 0x01
+    348a:	4a 81       	ldd	r20, Y+2	; 0x02
+    348c:	5b 81       	ldd	r21, Y+3	; 0x03
+    348e:	da 01       	movw	r26, r20
+    3490:	c9 01       	movw	r24, r18
+    3492:	80 70       	andi	r24, 0x00	; 0
+    3494:	90 70       	andi	r25, 0x00	; 0
+    3496:	a0 70       	andi	r26, 0x00	; 0
+    3498:	be 71       	andi	r27, 0x1E	; 30
+    349a:	00 97       	sbiw	r24, 0x00	; 0
+    349c:	a1 05       	cpc	r26, r1
+    349e:	b1 05       	cpc	r27, r1
+    34a0:	89 f5       	brne	.+98     	; 0x3504 <Can_Process+0x8c>
+    34a2:	44 23       	and	r20, r20
+    34a4:	31 f4       	brne	.+12     	; 0x34b2 <Can_Process+0x3a>
+    34a6:	a8 95       	wdr
+    34a8:	80 91 17 01 	lds	r24, 0x0117
+    34ac:	8f 5f       	subi	r24, 0xFF	; 255
+    34ae:	80 93 17 01 	sts	0x0117, r24
+    34b2:	88 81       	ld	r24, Y
+    34b4:	99 81       	ldd	r25, Y+1	; 0x01
+    34b6:	aa 81       	ldd	r26, Y+2	; 0x02
+    34b8:	bb 81       	ldd	r27, Y+3	; 0x03
+    34ba:	a4 30       	cpi	r26, 0x04	; 4
+    34bc:	89 f4       	brne	.+34     	; 0x34e0 <Can_Process+0x68>
+    34be:	8c 81       	ldd	r24, Y+4	; 0x04
+    34c0:	84 30       	cpi	r24, 0x04	; 4
+    34c2:	71 f4       	brne	.+28     	; 0x34e0 <Can_Process+0x68>
+    34c4:	8f 81       	ldd	r24, Y+7	; 0x07
+    34c6:	81 3a       	cpi	r24, 0xA1	; 161
+    34c8:	59 f4       	brne	.+22     	; 0x34e0 <Can_Process+0x68>
+    34ca:	88 85       	ldd	r24, Y+8	; 0x08
+    34cc:	8f 36       	cpi	r24, 0x6F	; 111
+    34ce:	41 f4       	brne	.+16     	; 0x34e0 <Can_Process+0x68>
+    34d0:	89 85       	ldd	r24, Y+9	; 0x09
+    34d2:	8a 31       	cpi	r24, 0x1A	; 26
+    34d4:	29 f4       	brne	.+10     	; 0x34e0 <Can_Process+0x68>
+    34d6:	8a 85       	ldd	r24, Y+10	; 0x0a
+    34d8:	8d 31       	cpi	r24, 0x1D	; 29
+    34da:	11 f4       	brne	.+4      	; 0x34e0 <Can_Process+0x68>
+    34dc:	0e 94 df 18 	call	0x31be <BIOS_Reset>
+    34e0:	80 91 1a 01 	lds	r24, 0x011A
+    34e4:	88 23       	and	r24, r24
+    34e6:	b1 f4       	brne	.+44     	; 0x3514 <Can_Process+0x9c>
+    34e8:	a0 91 18 01 	lds	r26, 0x0118
+    34ec:	b0 91 19 01 	lds	r27, 0x0119
+    34f0:	fe 01       	movw	r30, r28
+    34f2:	8f e0       	ldi	r24, 0x0F	; 15
+    34f4:	01 90       	ld	r0, Z+
+    34f6:	0d 92       	st	X+, r0
+    34f8:	81 50       	subi	r24, 0x01	; 1
+    34fa:	e1 f7       	brne	.-8      	; 0x34f4 <Can_Process+0x7c>
+    34fc:	81 e0       	ldi	r24, 0x01	; 1
+    34fe:	80 93 1a 01 	sts	0x011A, r24
+    3502:	08 c0       	rjmp	.+16     	; 0x3514 <Can_Process+0x9c>
+    3504:	e0 91 15 01 	lds	r30, 0x0115
+    3508:	f0 91 16 01 	lds	r31, 0x0116
+    350c:	30 97       	sbiw	r30, 0x00	; 0
+    350e:	11 f0       	breq	.+4      	; 0x3514 <Can_Process+0x9c>
+    3510:	ce 01       	movw	r24, r28
+    3512:	09 95       	icall
+    3514:	df 91       	pop	r29
+    3516:	cf 91       	pop	r28
+    3518:	08 95       	ret
+
+0000351a <flash_load_buffer>:
+
+void flash_load_buffer(uint16_t addr) {
+	uint8_t i;
+	uint8_t byte;
+	uint16_t page = (addr / SPM_PAGESIZE) * SPM_PAGESIZE;
+    351a:	80 78       	andi	r24, 0x80	; 128
+	
+	// Load current flash page contents into sram page buffer to implement
+	// flash read-modify-writes with word granularity.
+	for (i = 0; i < SPM_PAGESIZE; i++) {
+		byte = pgm_read_byte(page + i);
+		flash_pagebuf[i] = byte;
+    351c:	40 91 03 01 	lds	r20, 0x0103
+    3520:	50 91 04 01 	lds	r21, 0x0104
+    3524:	20 e0       	ldi	r18, 0x00	; 0
+    3526:	30 e0       	ldi	r19, 0x00	; 0
+    3528:	a2 2f       	mov	r26, r18
+    352a:	bb 27       	eor	r27, r27
+    352c:	fc 01       	movw	r30, r24
+    352e:	ea 0f       	add	r30, r26
+    3530:	fb 1f       	adc	r31, r27
+    3532:	e4 91       	lpm	r30, Z
+    3534:	a4 0f       	add	r26, r20
+    3536:	b5 1f       	adc	r27, r21
+    3538:	ec 93       	st	X, r30
+    353a:	2f 5f       	subi	r18, 0xFF	; 255
+    353c:	3f 4f       	sbci	r19, 0xFF	; 255
+    353e:	20 38       	cpi	r18, 0x80	; 128
+    3540:	31 05       	cpc	r19, r1
+    3542:	91 f7       	brne	.-28     	; 0x3528 <flash_load_buffer+0xe>
+    3544:	08 95       	ret
+
+00003546 <MCP2515_Reset>:
+}
+
+static Can_Message_t msgbuf;
+
+void MCP2515_Reset(void) {
+    3546:	cf 93       	push	r28
+    3548:	df 93       	push	r29
+    354a:	cd b7       	in	r28, 0x3d	; 61
+    354c:	de b7       	in	r29, 0x3e	; 62
+    354e:	22 97       	sbiw	r28, 0x02	; 2
+    3550:	0f b6       	in	r0, 0x3f	; 63
+    3552:	f8 94       	cli
+    3554:	de bf       	out	0x3e, r29	; 62
+    3556:	0f be       	out	0x3f, r0	; 63
+    3558:	cd bf       	out	0x3d, r28	; 61
+	MCP2515_SELECT();
+    355a:	43 98       	cbi	0x08, 3	; 8
+    355c:	80 ec       	ldi	r24, 0xC0	; 192
+    355e:	8e bd       	out	0x2e, r24	; 46
+    3560:	0d b4       	in	r0, 0x2d	; 45
+    3562:	07 fe       	sbrs	r0, 7
+    3564:	fd cf       	rjmp	.-6      	; 0x3560 <MCP2515_Reset+0x1a>
+    3566:	8e b5       	in	r24, 0x2e	; 46
+	SPI_ReadWrite(MCP_RESET);
+	MCP2515_UNSELECT();
+    3568:	43 9a       	sbi	0x08, 3	; 8
+	// delay at least 128 MCP clock cycles
+	volatile int16_t i;
+	for (i=0; i<32000; i++) {
+    356a:	1a 82       	std	Y+2, r1	; 0x02
+    356c:	19 82       	std	Y+1, r1	; 0x01
+    356e:	09 c0       	rjmp	.+18     	; 0x3582 <MCP2515_Reset+0x3c>
+		if (i < 0) break;
+    3570:	89 81       	ldd	r24, Y+1	; 0x01
+    3572:	9a 81       	ldd	r25, Y+2	; 0x02
+    3574:	97 fd       	sbrc	r25, 7
+    3576:	0a c0       	rjmp	.+20     	; 0x358c <MCP2515_Reset+0x46>
+    3578:	89 81       	ldd	r24, Y+1	; 0x01
+    357a:	9a 81       	ldd	r25, Y+2	; 0x02
+    357c:	01 96       	adiw	r24, 0x01	; 1
+    357e:	9a 83       	std	Y+2, r25	; 0x02
+    3580:	89 83       	std	Y+1, r24	; 0x01
+    3582:	89 81       	ldd	r24, Y+1	; 0x01
+    3584:	9a 81       	ldd	r25, Y+2	; 0x02
+    3586:	80 50       	subi	r24, 0x00	; 0
+    3588:	9d 47       	sbci	r25, 0x7D	; 125
+    358a:	94 f3       	brlt	.-28     	; 0x3570 <MCP2515_Reset+0x2a>
+    358c:	22 96       	adiw	r28, 0x02	; 2
+    358e:	0f b6       	in	r0, 0x3f	; 63
+    3590:	f8 94       	cli
+    3592:	de bf       	out	0x3e, r29	; 62
+    3594:	0f be       	out	0x3f, r0	; 63
+    3596:	cd bf       	out	0x3d, r28	; 61
+    3598:	df 91       	pop	r29
+    359a:	cf 91       	pop	r28
+    359c:	08 95       	ret
+
+0000359e <MCP2515_StartTransmit>:
+	}
+}
+
+uint8_t MCP2515_ReadRegister(const uint8_t address) {
+	uint8_t ret;
+	
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_READ);
+	SPI_ReadWrite(address);
+	ret = SPI_Read();
+	MCP2515_UNSELECT();
+	
+	return ret;
+}
+
+/*
+void MCP2515_ReadRXBuf(const uint8_t buf, uint8_t* data) {
+	uint8_t i;
+	
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_READ_RX0 + ((buf & 0x1) << 2));
+	// mcp2515 has auto-increment of address-pointer
+	for (i=0; i<13; i++) {
+		data[i] = SPI_Read();
+	}
+	MCP2515_UNSELECT();
+}*/
+
+void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_WRITE);
+	SPI_ReadWrite(address);
+	SPI_ReadWrite(value);
+	MCP2515_UNSELECT();
+}
+
+/*
+void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n) {
+	uint8_t i;
+	
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_WRITE);
+	SPI_ReadWrite(address);
+	// mcp2515 has auto-increment of address-pointer
+	for (i=0; i<n; i++) {
+		SPI_ReadWrite(values[i]);
+	}
+	MCP2515_UNSELECT();
+}*/
+
+void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data) {
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_BITMOD);
+	SPI_ReadWrite(address);
+	SPI_ReadWrite(mask);
+	SPI_ReadWrite(data);
+	MCP2515_UNSELECT();
+}
+
+uint8_t MCP2515_ReadStatus(void) {
+	uint8_t i;
+	
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_READ_STATUS);
+	i = SPI_Read();
+	MCP2515_UNSELECT();
+	
+	return i;
+}
+	
+/*uint8_t MCP2515_ReadStatus(void) {
+	return MCP2515_ReadXXStatus_Helper(MCP_READ_STATUS);
+}*/
+
+/*uint8_t MCP2515_RxStatus(void) {
+	return MCP2515_ReadXXStatus_Helper(MCP_RX_STATUS);
+}*/
+
+uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
+	uint8_t i;
+	MCP2515_ModifyRegister(MCP_CANCTRL, newmask, newmode);
+	// verify as advised in datasheet
+	i = MCP2515_ReadRegister(MCP_CANCTRL);
+	i &= newmask;
+	if ( i == newmode ) {
+		return MCP2515_OK; 
+	}
+	else {
+		return MCP2515_FAIL;
+	}
+}
+
+/*uint8_t MCP2515_SetClkout(const uint8_t newmode) {
+	uint8_t i;
+	MCP2515_ModifyRegister(MCP_CANCTRL, CLK_MASK, newmode);
+	// verify, perhaps not needed?
+	i = MCP2515_ReadRegister(MCP_CANCTRL);
+	i &= CLK_MASK;
+	if ( i == newmode ) {
+		return MCP2515_OK; 
+	}
+	else {
+		return MCP2515_FAIL;
+	}
+}*/
+
+inline void MCP2515_ConfigRate(void) {
+	MCP2515_SetRegister(MCP_CNF1, MCP_BITRATE_CFG1);
+	MCP2515_SetRegister(MCP_CNF2, MCP_BITRATE_CFG2);
+	MCP2515_SetRegister(MCP_CNF3, MCP_BITRATE_CFG3);
+}
+
+/**
+ * Reads a CAN message from the specified buffer base address in the MCP2515. The message
+ * is stored in the following format:
+ * 
+ * 		BASE+0:
+ * 		| SID10 | SID9  | SID8  | SID7  | SID6  | SID5  | SID4  | SID3  |
+ * 		
+ * 		BASE+1:
+ * 		| SID2  | SID1  | SID0  | SRR   | IDE   |       | EID17 | EID16 |
+ * 		
+ * 		BASE+2:
+ * 		| EID15 | EID14 | EID13 | EID12 | EID11 | EID10 | EID9  | EID8  |
+ * 		
+ * 		BASE+3:
+ * 		| EID7  | EID6  | EID5  | EID4  | EID3  | EID2  | EID1  | EID0  |
+ * 		
+ * 		BASE+4:
+ * 		|       |  RTR  |  RB1  |  RB0  | DLC3  | DLC2  | DLC1  | DCL0  |
+ * 		
+ * 		BASE+5 - BASE+12:
+ * 		DATA0 - DATA7
+ *
+ * @param buffer_sidh_addr
+ * 		Base address to the RX buffer.
+ * 
+ * @param msg
+ * 		Pointer to the message buffer into which the data should be copied.
+ * 
+ */
+void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
+	uint8_t id[4];
+	uint8_t i;
+
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_READ_RX0 + ((buffer & 0x1) << 2));
+	// mcp2515 has auto-increment of address-pointer
+	
+	// read ID
+	for (i=0; i<4; i++) {
+		id[i] = SPI_Read();
+	}
+	
+	// extract SID10-SID0
+	uint16_t stdid = (((uint16_t)(id[0])) << 3) | (((uint16_t)(id[1] & 0xE0)) >> 5);
+	
+	if (id[1] & MCP_TXB_EXIDE_M) {
+		// extended message
+		msg->ExtendedFlag = 1;
+		// SID10-SID0 are still most significant, so shift them up
+		// and make room for 18 extended least significant EID-bits
+		msg->Id = ((uint32_t)stdid) << 18;
+		// exctract EID17-EID16
+		msg->Id |= (((uint32_t)(id[1] & 0x03))<<16);
+		// extract EID15-EID8
+		msg->Id |= (((uint32_t)id[2])<<8);
+		// extract EID7-EID0
+		msg->Id |= ((uint32_t)id[3]);
+    }
+    else {
+    	// standard message
+    	msg->ExtendedFlag = 0;
+    	msg->Id = stdid;
+    }
+    
+    // extract DLC
+	uint8_t rtrdlc = SPI_Read();
+    msg->DataLength = rtrdlc & 0x0F;
+    if (msg->DataLength > 8) msg->DataLength = 8;	// saturate DLC to guarantee 0-8 range
+    
+    // check RTR flag
+    msg->RemoteFlag = (rtrdlc & 0x40) > 0;
+    
+    // read data
+    for (i=0; i<msg->DataLength; i++) {
+    	msg->Data.bytes[i] = SPI_Read();
+    }
+	MCP2515_UNSELECT();
+}
+
+
+void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
+    uint16_t canid = can_id & 0xFFFF;
+    uint8_t tbufdata[4];
+	uint8_t i;
+    
+	if (ext) {
+        tbufdata[3] = canid & 0xFF;
+        tbufdata[2] = canid >> 8;
+        canid = can_id >> 16;
+        tbufdata[1] = canid & 0x03;
+        tbufdata[1] += (canid & 0x1C ) << 3;
+        tbufdata[1] |= MCP_TXB_EXIDE_M;
+        tbufdata[0] = canid >> 5;
+    }
+    else {
+        tbufdata[0] = canid >> 3;
+        tbufdata[1] = (canid & 0x07 ) << 5;
+        tbufdata[2] = 0;
+        tbufdata[3] = 0;
+    }
+    for (i=0; i<4; i++) {
+    	SPI_ReadWrite(tbufdata[i]);
+    }
+}
+
+
+void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
+	MCP2515_SELECT();
+	SPI_ReadWrite(MCP_WRITE);
+	SPI_ReadWrite(mcp_addr);
+	MCP2515_SPIWriteCanId(ext, can_id);
+	MCP2515_UNSELECT();
+}
+
+// Buffer can be 0, 1 or 2
+void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
+	uint8_t rtrdlc = msg->DataLength;
+	uint8_t i;
+	
+	MCP_INT_DISABLE();
+    MCP2515_SELECT();
+    SPI_ReadWrite(MCP_LOAD_TX0 | (buffer << 1));
+    MCP2515_SPIWriteCanId(msg->ExtendedFlag, msg->Id);
+    if (msg->RemoteFlag == 1)  rtrdlc |= MCP_RTR_MASK;  // if RTR set bit in byte
+    SPI_ReadWrite(rtrdlc);
+    //MCP2515_UNSELECT();
+    //MCP_INT_ENABLE();
+
+	//MCP_INT_DISABLE();
+   	//MCP2515_SELECT();
+    for (i=0; i<msg->DataLength; i++) {
+    	SPI_ReadWrite(msg->Data.bytes[i]);
+    }
+   	MCP2515_UNSELECT();
+    MCP_INT_ENABLE();
+}
+
+
+// Start the transmission from one of the tx buffers.
+//
+// Buffer can be 0, 1 or 2
+void MCP2515_StartTransmit(const uint8_t buffer) {
+	MCP_INT_DISABLE();
+    359e:	e9 98       	cbi	0x1d, 1	; 29
+    MCP2515_SELECT();
+    35a0:	43 98       	cbi	0x08, 3	; 8
+    SPI_ReadWrite(MCP_RTS_TX | (1 << buffer));
+    35a2:	21 e0       	ldi	r18, 0x01	; 1
+    35a4:	30 e0       	ldi	r19, 0x00	; 0
+    35a6:	02 c0       	rjmp	.+4      	; 0x35ac <MCP2515_StartTransmit+0xe>
+    35a8:	22 0f       	add	r18, r18
+    35aa:	33 1f       	adc	r19, r19
+    35ac:	8a 95       	dec	r24
+    35ae:	e2 f7       	brpl	.-8      	; 0x35a8 <MCP2515_StartTransmit+0xa>
+    35b0:	20 68       	ori	r18, 0x80	; 128
+    35b2:	2e bd       	out	0x2e, r18	; 46
+    35b4:	0d b4       	in	r0, 0x2d	; 45
+    35b6:	07 fe       	sbrs	r0, 7
+    35b8:	fd cf       	rjmp	.-6      	; 0x35b4 <MCP2515_StartTransmit+0x16>
+    35ba:	8e b5       	in	r24, 0x2e	; 46
+    MCP2515_UNSELECT();
+    35bc:	43 9a       	sbi	0x08, 3	; 8
+    MCP_INT_ENABLE();
+    35be:	e9 9a       	sbi	0x1d, 1	; 29
+    35c0:	08 95       	ret
+
+000035c2 <MCP2515_SPIWriteCanId>:
+    35c2:	cf 93       	push	r28
+    35c4:	df 93       	push	r29
+    35c6:	cd b7       	in	r28, 0x3d	; 61
+    35c8:	de b7       	in	r29, 0x3e	; 62
+    35ca:	24 97       	sbiw	r28, 0x04	; 4
+    35cc:	0f b6       	in	r0, 0x3f	; 63
+    35ce:	f8 94       	cli
+    35d0:	de bf       	out	0x3e, r29	; 62
+    35d2:	0f be       	out	0x3f, r0	; 63
+    35d4:	cd bf       	out	0x3d, r28	; 61
+    35d6:	9a 01       	movw	r18, r20
+    35d8:	88 23       	and	r24, r24
+    35da:	c1 f0       	breq	.+48     	; 0x360c <MCP2515_SPIWriteCanId+0x4a>
+    35dc:	4c 83       	std	Y+4, r20	; 0x04
+    35de:	85 2f       	mov	r24, r21
+    35e0:	99 27       	eor	r25, r25
+    35e2:	8b 83       	std	Y+3, r24	; 0x03
+    35e4:	cb 01       	movw	r24, r22
+    35e6:	aa 27       	eor	r26, r26
+    35e8:	bb 27       	eor	r27, r27
+    35ea:	28 2f       	mov	r18, r24
+    35ec:	38 2f       	mov	r19, r24
+    35ee:	3c 71       	andi	r19, 0x1C	; 28
+    35f0:	33 0f       	add	r19, r19
+    35f2:	33 0f       	add	r19, r19
+    35f4:	33 0f       	add	r19, r19
+    35f6:	23 70       	andi	r18, 0x03	; 3
+    35f8:	23 0f       	add	r18, r19
+    35fa:	28 60       	ori	r18, 0x08	; 8
+    35fc:	2a 83       	std	Y+2, r18	; 0x02
+    35fe:	45 e0       	ldi	r20, 0x05	; 5
+    3600:	96 95       	lsr	r25
+    3602:	87 95       	ror	r24
+    3604:	4a 95       	dec	r20
+    3606:	e1 f7       	brne	.-8      	; 0x3600 <MCP2515_SPIWriteCanId+0x3e>
+    3608:	89 83       	std	Y+1, r24	; 0x01
+    360a:	0e c0       	rjmp	.+28     	; 0x3628 <MCP2515_SPIWriteCanId+0x66>
+    360c:	ca 01       	movw	r24, r20
+    360e:	33 e0       	ldi	r19, 0x03	; 3
+    3610:	96 95       	lsr	r25
+    3612:	87 95       	ror	r24
+    3614:	3a 95       	dec	r19
+    3616:	e1 f7       	brne	.-8      	; 0x3610 <MCP2515_SPIWriteCanId+0x4e>
+    3618:	89 83       	std	Y+1, r24	; 0x01
+    361a:	82 2f       	mov	r24, r18
+    361c:	82 95       	swap	r24
+    361e:	88 0f       	add	r24, r24
+    3620:	80 7e       	andi	r24, 0xE0	; 224
+    3622:	8a 83       	std	Y+2, r24	; 0x02
+    3624:	1b 82       	std	Y+3, r1	; 0x03
+    3626:	1c 82       	std	Y+4, r1	; 0x04
+    3628:	fe 01       	movw	r30, r28
+    362a:	31 96       	adiw	r30, 0x01	; 1
+    362c:	9e 01       	movw	r18, r28
+    362e:	2b 5f       	subi	r18, 0xFB	; 251
+    3630:	3f 4f       	sbci	r19, 0xFF	; 255
+    3632:	80 81       	ld	r24, Z
+    3634:	8e bd       	out	0x2e, r24	; 46
+    3636:	0d b4       	in	r0, 0x2d	; 45
+    3638:	07 fe       	sbrs	r0, 7
+    363a:	fd cf       	rjmp	.-6      	; 0x3636 <MCP2515_SPIWriteCanId+0x74>
+    363c:	8e b5       	in	r24, 0x2e	; 46
+    363e:	31 96       	adiw	r30, 0x01	; 1
+    3640:	e2 17       	cp	r30, r18
+    3642:	f3 07       	cpc	r31, r19
+    3644:	b1 f7       	brne	.-20     	; 0x3632 <MCP2515_SPIWriteCanId+0x70>
+    3646:	24 96       	adiw	r28, 0x04	; 4
+    3648:	0f b6       	in	r0, 0x3f	; 63
+    364a:	f8 94       	cli
+    364c:	de bf       	out	0x3e, r29	; 62
+    364e:	0f be       	out	0x3f, r0	; 63
+    3650:	cd bf       	out	0x3d, r28	; 61
+    3652:	df 91       	pop	r29
+    3654:	cf 91       	pop	r28
+    3656:	08 95       	ret
+
+00003658 <MCP2515_WriteCanMsg>:
+    3658:	1f 93       	push	r17
+    365a:	cf 93       	push	r28
+    365c:	df 93       	push	r29
+    365e:	eb 01       	movw	r28, r22
+    3660:	1c 81       	ldd	r17, Y+4	; 0x04
+    3662:	e9 98       	cbi	0x1d, 1	; 29
+    3664:	43 98       	cbi	0x08, 3	; 8
+    3666:	88 0f       	add	r24, r24
+    3668:	80 64       	ori	r24, 0x40	; 64
+    366a:	8e bd       	out	0x2e, r24	; 46
+    366c:	0d b4       	in	r0, 0x2d	; 45
+    366e:	07 fe       	sbrs	r0, 7
+    3670:	fd cf       	rjmp	.-6      	; 0x366c <MCP2515_WriteCanMsg+0x14>
+    3672:	8e b5       	in	r24, 0x2e	; 46
+    3674:	48 81       	ld	r20, Y
+    3676:	59 81       	ldd	r21, Y+1	; 0x01
+    3678:	6a 81       	ldd	r22, Y+2	; 0x02
+    367a:	7b 81       	ldd	r23, Y+3	; 0x03
+    367c:	8d 81       	ldd	r24, Y+5	; 0x05
+    367e:	0e 94 e1 1a 	call	0x35c2 <MCP2515_SPIWriteCanId>
+    3682:	8e 81       	ldd	r24, Y+6	; 0x06
+    3684:	81 30       	cpi	r24, 0x01	; 1
+    3686:	09 f4       	brne	.+2      	; 0x368a <MCP2515_WriteCanMsg+0x32>
+    3688:	10 64       	ori	r17, 0x40	; 64
+    368a:	1e bd       	out	0x2e, r17	; 46
+    368c:	0d b4       	in	r0, 0x2d	; 45
+    368e:	07 fe       	sbrs	r0, 7
+    3690:	fd cf       	rjmp	.-6      	; 0x368c <MCP2515_WriteCanMsg+0x34>
+    3692:	8e b5       	in	r24, 0x2e	; 46
+    3694:	2c 81       	ldd	r18, Y+4	; 0x04
+    3696:	90 e0       	ldi	r25, 0x00	; 0
+    3698:	0a c0       	rjmp	.+20     	; 0x36ae <MCP2515_WriteCanMsg+0x56>
+    369a:	fe 01       	movw	r30, r28
+    369c:	e9 0f       	add	r30, r25
+    369e:	f1 1d       	adc	r31, r1
+    36a0:	87 81       	ldd	r24, Z+7	; 0x07
+    36a2:	8e bd       	out	0x2e, r24	; 46
+    36a4:	0d b4       	in	r0, 0x2d	; 45
+    36a6:	07 fe       	sbrs	r0, 7
+    36a8:	fd cf       	rjmp	.-6      	; 0x36a4 <MCP2515_WriteCanMsg+0x4c>
+    36aa:	8e b5       	in	r24, 0x2e	; 46
+    36ac:	9f 5f       	subi	r25, 0xFF	; 255
+    36ae:	92 17       	cp	r25, r18
+    36b0:	a1 f7       	brne	.-24     	; 0x369a <MCP2515_WriteCanMsg+0x42>
+    36b2:	43 9a       	sbi	0x08, 3	; 8
+    36b4:	e9 9a       	sbi	0x1d, 1	; 29
+    36b6:	df 91       	pop	r29
+    36b8:	cf 91       	pop	r28
+    36ba:	1f 91       	pop	r17
+    36bc:	08 95       	ret
+
+000036be <MCP2515_WriteCanId>:
+    36be:	98 2f       	mov	r25, r24
+    36c0:	e6 2f       	mov	r30, r22
+    36c2:	43 98       	cbi	0x08, 3	; 8
+    36c4:	82 e0       	ldi	r24, 0x02	; 2
+    36c6:	8e bd       	out	0x2e, r24	; 46
+    36c8:	0d b4       	in	r0, 0x2d	; 45
+    36ca:	07 fe       	sbrs	r0, 7
+    36cc:	fd cf       	rjmp	.-6      	; 0x36c8 <MCP2515_WriteCanId+0xa>
+    36ce:	8e b5       	in	r24, 0x2e	; 46
+    36d0:	9e bd       	out	0x2e, r25	; 46
+    36d2:	0d b4       	in	r0, 0x2d	; 45
+    36d4:	07 fe       	sbrs	r0, 7
+    36d6:	fd cf       	rjmp	.-6      	; 0x36d2 <MCP2515_WriteCanId+0x14>
+    36d8:	8e b5       	in	r24, 0x2e	; 46
+    36da:	ba 01       	movw	r22, r20
+    36dc:	a9 01       	movw	r20, r18
+    36de:	8e 2f       	mov	r24, r30
+    36e0:	0e 94 e1 1a 	call	0x35c2 <MCP2515_SPIWriteCanId>
+    36e4:	43 9a       	sbi	0x08, 3	; 8
+    36e6:	08 95       	ret
+
+000036e8 <MCP2515_ReadRegister>:
+    36e8:	98 2f       	mov	r25, r24
+    36ea:	43 98       	cbi	0x08, 3	; 8
+    36ec:	83 e0       	ldi	r24, 0x03	; 3
+    36ee:	8e bd       	out	0x2e, r24	; 46
+    36f0:	0d b4       	in	r0, 0x2d	; 45
+    36f2:	07 fe       	sbrs	r0, 7
+    36f4:	fd cf       	rjmp	.-6      	; 0x36f0 <MCP2515_ReadRegister+0x8>
+    36f6:	8e b5       	in	r24, 0x2e	; 46
+    36f8:	9e bd       	out	0x2e, r25	; 46
+    36fa:	0d b4       	in	r0, 0x2d	; 45
+    36fc:	07 fe       	sbrs	r0, 7
+    36fe:	fd cf       	rjmp	.-6      	; 0x36fa <MCP2515_ReadRegister+0x12>
+    3700:	8e b5       	in	r24, 0x2e	; 46
+    3702:	1e bc       	out	0x2e, r1	; 46
+    3704:	0d b4       	in	r0, 0x2d	; 45
+    3706:	07 fe       	sbrs	r0, 7
+    3708:	fd cf       	rjmp	.-6      	; 0x3704 <MCP2515_ReadRegister+0x1c>
+    370a:	8e b5       	in	r24, 0x2e	; 46
+    370c:	43 9a       	sbi	0x08, 3	; 8
+    370e:	99 27       	eor	r25, r25
+    3710:	08 95       	ret
+
+00003712 <MCP2515_SetRegister>:
+    3712:	98 2f       	mov	r25, r24
+    3714:	43 98       	cbi	0x08, 3	; 8
+    3716:	82 e0       	ldi	r24, 0x02	; 2
+    3718:	8e bd       	out	0x2e, r24	; 46
+    371a:	0d b4       	in	r0, 0x2d	; 45
+    371c:	07 fe       	sbrs	r0, 7
+    371e:	fd cf       	rjmp	.-6      	; 0x371a <MCP2515_SetRegister+0x8>
+    3720:	8e b5       	in	r24, 0x2e	; 46
+    3722:	9e bd       	out	0x2e, r25	; 46
+    3724:	0d b4       	in	r0, 0x2d	; 45
+    3726:	07 fe       	sbrs	r0, 7
+    3728:	fd cf       	rjmp	.-6      	; 0x3724 <MCP2515_SetRegister+0x12>
+    372a:	8e b5       	in	r24, 0x2e	; 46
+    372c:	6e bd       	out	0x2e, r22	; 46
+    372e:	0d b4       	in	r0, 0x2d	; 45
+    3730:	07 fe       	sbrs	r0, 7
+    3732:	fd cf       	rjmp	.-6      	; 0x372e <MCP2515_SetRegister+0x1c>
+    3734:	8e b5       	in	r24, 0x2e	; 46
+    3736:	43 9a       	sbi	0x08, 3	; 8
+    3738:	08 95       	ret
+
+0000373a <MCP2515_InitRXInterrupts>:
+}
+
+uint8_t MCP2515_GetNextFreeTXBuf(void) {
+	uint8_t stat;
+	
+	// check all 3 TX-Buffers
+	MCP_INT_DISABLE();
+	stat = MCP2515_ReadStatus();
+    MCP_INT_ENABLE();
+	if (!(stat & MCP_STAT_TX0REQ)) return 0;
+	if (!(stat & MCP_STAT_TX1REQ)) return 1;
+	if (!(stat & MCP_STAT_TX2REQ)) return 2;
+	return MCP_ALLTXBUSY;
+}
+
+void MCP2515_InitCanBuffers(void) {
+	uint8_t i;
+	
+	// TODO: check why this is needed to receive extended 
+	//   and standard frames
+	// Mark all filter bits as don't care:
+    MCP2515_WriteCanId(MCP_RXM0SIDH, 0, 0);
+    MCP2515_WriteCanId(MCP_RXM1SIDH, 0, 0);
+    // Anyway, set all filters to 0:
+    MCP2515_WriteCanId(MCP_RXF0SIDH, 1, 0); // RXB0: extended 
+    MCP2515_WriteCanId(MCP_RXF1SIDH, 0, 0); //       AND standard
+    MCP2515_WriteCanId(MCP_RXF2SIDH, 1, 0); // RXB1: extended 
+    MCP2515_WriteCanId(MCP_RXF3SIDH, 0, 0); //       AND standard
+    MCP2515_WriteCanId(MCP_RXF4SIDH, 0, 0);
+    MCP2515_WriteCanId(MCP_RXF5SIDH, 0, 0);
+	
+	// Clear, deactivate the three transmit buffers
+	// TXBnCTRL -> TXBnD7
+    for (i = 0; i < 14; i++) { // in-buffer loop
+		MCP2515_SetRegister(MCP_TXB0CTRL + i, 0);
+		MCP2515_SetRegister(MCP_TXB1CTRL + i, 0);
+		MCP2515_SetRegister(MCP_TXB2CTRL + i, 0);
+    }
+	
+    // and clear, deactivate the two receive buffers.
+    MCP2515_SetRegister(MCP_RXB0CTRL, 0);
+    MCP2515_SetRegister(MCP_RXB1CTRL, 0);
+}
+
+
+void MCP2515_InitRXInterrupts(void) {
+	MCP2515_SetRegister(MCP_CANINTF, 0);
+    373a:	60 e0       	ldi	r22, 0x00	; 0
+    373c:	8c e2       	ldi	r24, 0x2C	; 44
+    373e:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+	MCP2515_SetRegister(MCP_CANINTE, MCP_RX_INT);
+    3742:	63 e0       	ldi	r22, 0x03	; 3
+    3744:	8b e2       	ldi	r24, 0x2B	; 43
+    3746:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+	MCP_INT_ENABLE();
+    374a:	e9 9a       	sbi	0x1d, 1	; 29
+    374c:	08 95       	ret
+
+0000374e <MCP2515_InitCanBuffers>:
+    374e:	1f 93       	push	r17
+    3750:	cf 93       	push	r28
+    3752:	df 93       	push	r29
+    3754:	20 e0       	ldi	r18, 0x00	; 0
+    3756:	30 e0       	ldi	r19, 0x00	; 0
+    3758:	40 e0       	ldi	r20, 0x00	; 0
+    375a:	50 e0       	ldi	r21, 0x00	; 0
+    375c:	60 e0       	ldi	r22, 0x00	; 0
+    375e:	80 e2       	ldi	r24, 0x20	; 32
+    3760:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    3764:	20 e0       	ldi	r18, 0x00	; 0
+    3766:	30 e0       	ldi	r19, 0x00	; 0
+    3768:	40 e0       	ldi	r20, 0x00	; 0
+    376a:	50 e0       	ldi	r21, 0x00	; 0
+    376c:	60 e0       	ldi	r22, 0x00	; 0
+    376e:	84 e2       	ldi	r24, 0x24	; 36
+    3770:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    3774:	20 e0       	ldi	r18, 0x00	; 0
+    3776:	30 e0       	ldi	r19, 0x00	; 0
+    3778:	40 e0       	ldi	r20, 0x00	; 0
+    377a:	50 e0       	ldi	r21, 0x00	; 0
+    377c:	61 e0       	ldi	r22, 0x01	; 1
+    377e:	80 e0       	ldi	r24, 0x00	; 0
+    3780:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    3784:	20 e0       	ldi	r18, 0x00	; 0
+    3786:	30 e0       	ldi	r19, 0x00	; 0
+    3788:	40 e0       	ldi	r20, 0x00	; 0
+    378a:	50 e0       	ldi	r21, 0x00	; 0
+    378c:	60 e0       	ldi	r22, 0x00	; 0
+    378e:	84 e0       	ldi	r24, 0x04	; 4
+    3790:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    3794:	20 e0       	ldi	r18, 0x00	; 0
+    3796:	30 e0       	ldi	r19, 0x00	; 0
+    3798:	40 e0       	ldi	r20, 0x00	; 0
+    379a:	50 e0       	ldi	r21, 0x00	; 0
+    379c:	61 e0       	ldi	r22, 0x01	; 1
+    379e:	88 e0       	ldi	r24, 0x08	; 8
+    37a0:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    37a4:	20 e0       	ldi	r18, 0x00	; 0
+    37a6:	30 e0       	ldi	r19, 0x00	; 0
+    37a8:	40 e0       	ldi	r20, 0x00	; 0
+    37aa:	50 e0       	ldi	r21, 0x00	; 0
+    37ac:	60 e0       	ldi	r22, 0x00	; 0
+    37ae:	80 e1       	ldi	r24, 0x10	; 16
+    37b0:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    37b4:	20 e0       	ldi	r18, 0x00	; 0
+    37b6:	30 e0       	ldi	r19, 0x00	; 0
+    37b8:	40 e0       	ldi	r20, 0x00	; 0
+    37ba:	50 e0       	ldi	r21, 0x00	; 0
+    37bc:	60 e0       	ldi	r22, 0x00	; 0
+    37be:	84 e1       	ldi	r24, 0x14	; 20
+    37c0:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    37c4:	20 e0       	ldi	r18, 0x00	; 0
+    37c6:	30 e0       	ldi	r19, 0x00	; 0
+    37c8:	40 e0       	ldi	r20, 0x00	; 0
+    37ca:	50 e0       	ldi	r21, 0x00	; 0
+    37cc:	60 e0       	ldi	r22, 0x00	; 0
+    37ce:	88 e1       	ldi	r24, 0x18	; 24
+    37d0:	0e 94 5f 1b 	call	0x36be <MCP2515_WriteCanId>
+    37d4:	c0 e0       	ldi	r28, 0x00	; 0
+    37d6:	d0 e0       	ldi	r29, 0x00	; 0
+    37d8:	60 e0       	ldi	r22, 0x00	; 0
+    37da:	8c 2f       	mov	r24, r28
+    37dc:	80 5d       	subi	r24, 0xD0	; 208
+    37de:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    37e2:	60 e0       	ldi	r22, 0x00	; 0
+    37e4:	8c 2f       	mov	r24, r28
+    37e6:	80 5c       	subi	r24, 0xC0	; 192
+    37e8:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    37ec:	60 e0       	ldi	r22, 0x00	; 0
+    37ee:	8c 2f       	mov	r24, r28
+    37f0:	80 5b       	subi	r24, 0xB0	; 176
+    37f2:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    37f6:	21 96       	adiw	r28, 0x01	; 1
+    37f8:	ce 30       	cpi	r28, 0x0E	; 14
+    37fa:	d1 05       	cpc	r29, r1
+    37fc:	69 f7       	brne	.-38     	; 0x37d8 <MCP2515_InitCanBuffers+0x8a>
+    37fe:	60 e0       	ldi	r22, 0x00	; 0
+    3800:	80 e6       	ldi	r24, 0x60	; 96
+    3802:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    3806:	60 e0       	ldi	r22, 0x00	; 0
+    3808:	80 e7       	ldi	r24, 0x70	; 112
+    380a:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    380e:	df 91       	pop	r29
+    3810:	cf 91       	pop	r28
+    3812:	1f 91       	pop	r17
+    3814:	08 95       	ret
+
+00003816 <MCP2515_ConfigRate>:
+    3816:	61 e0       	ldi	r22, 0x01	; 1
+    3818:	8a e2       	ldi	r24, 0x2A	; 42
+    381a:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    381e:	66 eb       	ldi	r22, 0xB6	; 182
+    3820:	89 e2       	ldi	r24, 0x29	; 41
+    3822:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    3826:	64 e0       	ldi	r22, 0x04	; 4
+    3828:	88 e2       	ldi	r24, 0x28	; 40
+    382a:	0e 94 89 1b 	call	0x3712 <MCP2515_SetRegister>
+    382e:	08 95       	ret
+
+00003830 <MCP2515_ModifyRegister>:
+    3830:	98 2f       	mov	r25, r24
+    3832:	43 98       	cbi	0x08, 3	; 8
+    3834:	85 e0       	ldi	r24, 0x05	; 5
+    3836:	8e bd       	out	0x2e, r24	; 46
+    3838:	0d b4       	in	r0, 0x2d	; 45
+    383a:	07 fe       	sbrs	r0, 7
+    383c:	fd cf       	rjmp	.-6      	; 0x3838 <MCP2515_ModifyRegister+0x8>
+    383e:	8e b5       	in	r24, 0x2e	; 46
+    3840:	9e bd       	out	0x2e, r25	; 46
+    3842:	0d b4       	in	r0, 0x2d	; 45
+    3844:	07 fe       	sbrs	r0, 7
+    3846:	fd cf       	rjmp	.-6      	; 0x3842 <MCP2515_ModifyRegister+0x12>
+    3848:	8e b5       	in	r24, 0x2e	; 46
+    384a:	6e bd       	out	0x2e, r22	; 46
+    384c:	0d b4       	in	r0, 0x2d	; 45
+    384e:	07 fe       	sbrs	r0, 7
+    3850:	fd cf       	rjmp	.-6      	; 0x384c <MCP2515_ModifyRegister+0x1c>
+    3852:	8e b5       	in	r24, 0x2e	; 46
+    3854:	4e bd       	out	0x2e, r20	; 46
+    3856:	0d b4       	in	r0, 0x2d	; 45
+    3858:	07 fe       	sbrs	r0, 7
+    385a:	fd cf       	rjmp	.-6      	; 0x3856 <MCP2515_ModifyRegister+0x26>
+    385c:	8e b5       	in	r24, 0x2e	; 46
+    385e:	43 9a       	sbi	0x08, 3	; 8
+    3860:	08 95       	ret
+
+00003862 <MCP2515_SetCanCtrl>:
+    3862:	0f 93       	push	r16
+    3864:	1f 93       	push	r17
+    3866:	18 2f       	mov	r17, r24
+    3868:	06 2f       	mov	r16, r22
+    386a:	46 2f       	mov	r20, r22
+    386c:	68 2f       	mov	r22, r24
+    386e:	8f e0       	ldi	r24, 0x0F	; 15
+    3870:	0e 94 18 1c 	call	0x3830 <MCP2515_ModifyRegister>
+    3874:	8f e0       	ldi	r24, 0x0F	; 15
+    3876:	0e 94 74 1b 	call	0x36e8 <MCP2515_ReadRegister>
+    387a:	90 e0       	ldi	r25, 0x00	; 0
+    387c:	18 23       	and	r17, r24
+    387e:	10 17       	cp	r17, r16
+    3880:	09 f4       	brne	.+2      	; 0x3884 <MCP2515_SetCanCtrl+0x22>
+    3882:	91 e0       	ldi	r25, 0x01	; 1
+    3884:	81 e0       	ldi	r24, 0x01	; 1
+    3886:	98 27       	eor	r25, r24
+    3888:	89 2f       	mov	r24, r25
+    388a:	99 27       	eor	r25, r25
+    388c:	1f 91       	pop	r17
+    388e:	0f 91       	pop	r16
+    3890:	08 95       	ret
+
+00003892 <MCP2515_Init>:
+}
+
+// ---
+
+uint8_t MCP2515_Init(void) {
+    3892:	1f 93       	push	r17
+	uint8_t res;
+	
+#if MCP_CS_BIT != SS
+	/* If slave select is not set as output it might change SPI hw to slave
+	 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
+	DDRSS |= (1<<SS);
+    3894:	22 9a       	sbi	0x04, 2	; 4
+    3896:	84 b1       	in	r24, 0x04	; 4
+    3898:	88 62       	ori	r24, 0x28	; 40
+    389a:	84 b9       	out	0x04, r24	; 4
+    389c:	24 98       	cbi	0x04, 4	; 4
+    389e:	80 e5       	ldi	r24, 0x50	; 80
+    38a0:	8c bd       	out	0x2c, r24	; 44
+    38a2:	81 e0       	ldi	r24, 0x01	; 1
+    38a4:	8d bd       	out	0x2d, r24	; 45
+#endif
+	
+	SPI_Init();		// init SPI-Interface (as "Master")
+	
+	MCP2515_UNSELECT();
+    38a6:	43 9a       	sbi	0x08, 3	; 8
+	MCP_CS_DDR |= ( 1 << MCP_CS_BIT );
+    38a8:	3b 9a       	sbi	0x07, 3	; 7
+	
+	MCP2515_Reset();
+    38aa:	0e 94 a3 1a 	call	0x3546 <MCP2515_Reset>
+	
+	res = MCP2515_SetCanCtrl(MODE_MASK, MODE_CONFIG);
+    38ae:	60 e8       	ldi	r22, 0x80	; 128
+    38b0:	80 ee       	ldi	r24, 0xE0	; 224
+    38b2:	0e 94 31 1c 	call	0x3862 <MCP2515_SetCanCtrl>
+	
+	if (res == MCP2515_FAIL) return res;  /* function exit on error */
+    38b6:	81 30       	cpi	r24, 0x01	; 1
+    38b8:	d1 f0       	breq	.+52     	; 0x38ee <MCP2515_Init+0x5c>
+
+	/* Set prescaler for clock output */
+	res = MCP2515_SetCanCtrl(CLK_MASK, MCP_PRESCALER);
+    38ba:	60 e0       	ldi	r22, 0x00	; 0
+    38bc:	83 e0       	ldi	r24, 0x03	; 3
+    38be:	0e 94 31 1c 	call	0x3862 <MCP2515_SetCanCtrl>
+    38c2:	18 2f       	mov	r17, r24
+	
+	if (res == MCP2515_FAIL) return res;  /* function exit on error */
+    38c4:	81 30       	cpi	r24, 0x01	; 1
+    38c6:	99 f0       	breq	.+38     	; 0x38ee <MCP2515_Init+0x5c>
+	
+	MCP2515_ConfigRate();
+    38c8:	0e 94 0b 1c 	call	0x3816 <MCP2515_ConfigRate>
+	
+	MCP2515_InitCanBuffers();
+    38cc:	0e 94 a7 1b 	call	0x374e <MCP2515_InitCanBuffers>
+
+#if (DEBUG_RXANY==1)
+	#warning DEBUG_RXANY is defined! Bypassing filter.
+		// enable both receive-buffers to receive any message
+		// and enable rollover
+		MCP2515_ModifyRegister(
+				MCP_RXB0CTRL,
+				MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK,
+				MCP_RXB_RX_ANY | MCP_RXB_BUKT_MASK);
+		MCP2515_ModifyRegister(
+				MCP_RXB1CTRL,
+				MCP_RXB_RX_MASK,
+				MCP_RXB_RX_ANY);
+#else
+		// enable both receive-buffers to receive messages
+		// with std. and ext. identifiers
+		// and enable rollover
+		MCP2515_ModifyRegister(
+    38d0:	44 e0       	ldi	r20, 0x04	; 4
+    38d2:	64 e6       	ldi	r22, 0x64	; 100
+    38d4:	80 e6       	ldi	r24, 0x60	; 96
+    38d6:	0e 94 18 1c 	call	0x3830 <MCP2515_ModifyRegister>
+				MCP_RXB0CTRL,
+				MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK, 
+				MCP_RXB_RX_STDEXT | MCP_RXB_BUKT_MASK );
+		MCP2515_ModifyRegister(
+    38da:	40 e0       	ldi	r20, 0x00	; 0
+    38dc:	60 e6       	ldi	r22, 0x60	; 96
+    38de:	80 e7       	ldi	r24, 0x70	; 112
+    38e0:	0e 94 18 1c 	call	0x3830 <MCP2515_ModifyRegister>
+				MCP_RXB1CTRL,
+				MCP_RXB_RX_MASK,
+				MCP_RXB_RX_STDEXT);
+#endif
+
+	MCP2515_InitRXInterrupts();
+    38e4:	0e 94 9d 1b 	call	0x373a <MCP2515_InitRXInterrupts>
+	
+	return res;
+    38e8:	81 2f       	mov	r24, r17
+    38ea:	99 27       	eor	r25, r25
+    38ec:	02 c0       	rjmp	.+4      	; 0x38f2 <MCP2515_Init+0x60>
+    38ee:	81 e0       	ldi	r24, 0x01	; 1
+    38f0:	90 e0       	ldi	r25, 0x00	; 0
+    38f2:	1f 91       	pop	r17
+    38f4:	08 95       	ret
+
+000038f6 <Can_Init>:
+}
+
+Can_Return_t Can_Receive(Can_Message_t *msg);
+
+ISR(MCP_INT_VECTOR) {
+	// Get first available message from controller and pass it to
+	// application handler. If both RX buffers contain messages
+	// we will get another interrupt as soon as this one returns.
+	if (Can_Receive(&msgbuf) == CAN_OK) {
+		// Callbacks are run with global interrupts disabled but
+		// with controller flag cleared so another msg can be
+		// received while this one is processed.
+		Can_Process(&msgbuf);
+	}
+}
+
+/*-----------------------------------------------------------------------------
+ * Public Functions
+ *---------------------------------------------------------------------------*/
+
+/**
+ * Initializes the CAN interface. Edit can_cfg.h to choose bitrate.
+ * 
+ * @return
+ *		CAN_OK if initialization was successful.
+ * 		CAN_INIT_FAIL_SET_BITRATE if bitrate could not be set correctly.
+ * 		CAN_INIT_FAIL_SET_MODE if the controller could not be set to normal operation mode.
+ * 		CAN_INIT_FAIL in case of general error.
+ */
+Can_Return_t Can_Init(void) {
+		/*
+		 * Initialize MCP2515 device.
+		 */
+		if (MCP2515_Init() != MCP2515_OK) {
+    38f6:	0e 94 49 1c 	call	0x3892 <MCP2515_Init>
+    38fa:	88 23       	and	r24, r24
+    38fc:	49 f4       	brne	.+18     	; 0x3910 <Can_Init+0x1a>
+			return CAN_FAIL;
+		}
+		if (MCP2515_SetCanCtrl(MODE_MASK, MODE_NORMAL) != MCP2515_OK) {
+    38fe:	60 e0       	ldi	r22, 0x00	; 0
+    3900:	80 ee       	ldi	r24, 0xE0	; 224
+    3902:	0e 94 31 1c 	call	0x3862 <MCP2515_SetCanCtrl>
+    3906:	88 23       	and	r24, r24
+    3908:	19 f4       	brne	.+6      	; 0x3910 <Can_Init+0x1a>
+    390a:	81 e0       	ldi	r24, 0x01	; 1
+    390c:	90 e0       	ldi	r25, 0x00	; 0
+    390e:	08 95       	ret
+    3910:	8f ef       	ldi	r24, 0xFF	; 255
+    3912:	9f ef       	ldi	r25, 0xFF	; 255
+			return CAN_FAIL;
+		}
+		return CAN_OK;
+	
+	return CAN_FAIL;
+}
+    3914:	08 95       	ret
+
+00003916 <MCP2515_ReadCanMsg>:
+    3916:	ef 92       	push	r14
+    3918:	ff 92       	push	r15
+    391a:	0f 93       	push	r16
+    391c:	1f 93       	push	r17
+    391e:	cf 93       	push	r28
+    3920:	df 93       	push	r29
+    3922:	cd b7       	in	r28, 0x3d	; 61
+    3924:	de b7       	in	r29, 0x3e	; 62
+    3926:	24 97       	sbiw	r28, 0x04	; 4
+    3928:	0f b6       	in	r0, 0x3f	; 63
+    392a:	f8 94       	cli
+    392c:	de bf       	out	0x3e, r29	; 62
+    392e:	0f be       	out	0x3f, r0	; 63
+    3930:	cd bf       	out	0x3d, r28	; 61
+    3932:	43 98       	cbi	0x08, 3	; 8
+    3934:	81 70       	andi	r24, 0x01	; 1
+    3936:	88 0f       	add	r24, r24
+    3938:	88 0f       	add	r24, r24
+    393a:	80 57       	subi	r24, 0x70	; 112
+    393c:	8e bd       	out	0x2e, r24	; 46
+    393e:	0d b4       	in	r0, 0x2d	; 45
+    3940:	07 fe       	sbrs	r0, 7
+    3942:	fd cf       	rjmp	.-6      	; 0x393e <MCP2515_ReadCanMsg+0x28>
+    3944:	8e b5       	in	r24, 0x2e	; 46
+    3946:	fe 01       	movw	r30, r28
+    3948:	31 96       	adiw	r30, 0x01	; 1
+    394a:	9e 01       	movw	r18, r28
+    394c:	2b 5f       	subi	r18, 0xFB	; 251
+    394e:	3f 4f       	sbci	r19, 0xFF	; 255
+    3950:	1e bc       	out	0x2e, r1	; 46
+    3952:	0d b4       	in	r0, 0x2d	; 45
+    3954:	07 fe       	sbrs	r0, 7
+    3956:	fd cf       	rjmp	.-6      	; 0x3952 <MCP2515_ReadCanMsg+0x3c>
+    3958:	8e b5       	in	r24, 0x2e	; 46
+    395a:	81 93       	st	Z+, r24
+    395c:	e2 17       	cp	r30, r18
+    395e:	f3 07       	cpc	r31, r19
+    3960:	b9 f7       	brne	.-18     	; 0x3950 <MCP2515_ReadCanMsg+0x3a>
+    3962:	aa 81       	ldd	r26, Y+2	; 0x02
+    3964:	89 81       	ldd	r24, Y+1	; 0x01
+    3966:	99 27       	eor	r25, r25
+    3968:	e3 e0       	ldi	r30, 0x03	; 3
+    396a:	88 0f       	add	r24, r24
+    396c:	99 1f       	adc	r25, r25
+    396e:	ea 95       	dec	r30
+    3970:	e1 f7       	brne	.-8      	; 0x396a <MCP2515_ReadCanMsg+0x54>
+    3972:	4a 2f       	mov	r20, r26
+    3974:	55 27       	eor	r21, r21
+    3976:	9a 01       	movw	r18, r20
+    3978:	55 e0       	ldi	r21, 0x05	; 5
+    397a:	36 95       	lsr	r19
+    397c:	27 95       	ror	r18
+    397e:	5a 95       	dec	r21
+    3980:	e1 f7       	brne	.-8      	; 0x397a <MCP2515_ReadCanMsg+0x64>
+    3982:	82 2b       	or	r24, r18
+    3984:	93 2b       	or	r25, r19
+    3986:	7c 01       	movw	r14, r24
+    3988:	00 27       	eor	r16, r16
+    398a:	11 27       	eor	r17, r17
+    398c:	43 ff       	sbrs	r20, 3
+    398e:	2e c0       	rjmp	.+92     	; 0x39ec <MCP2515_ReadCanMsg+0xd6>
+    3990:	81 e0       	ldi	r24, 0x01	; 1
+    3992:	fb 01       	movw	r30, r22
+    3994:	85 83       	std	Z+5, r24	; 0x05
+    3996:	92 e1       	ldi	r25, 0x12	; 18
+    3998:	ee 0c       	add	r14, r14
+    399a:	ff 1c       	adc	r15, r15
+    399c:	00 1f       	adc	r16, r16
+    399e:	11 1f       	adc	r17, r17
+    39a0:	9a 95       	dec	r25
+    39a2:	d1 f7       	brne	.-12     	; 0x3998 <MCP2515_ReadCanMsg+0x82>
+    39a4:	2b 81       	ldd	r18, Y+3	; 0x03
+    39a6:	33 27       	eor	r19, r19
+    39a8:	44 27       	eor	r20, r20
+    39aa:	55 27       	eor	r21, r21
+    39ac:	54 2f       	mov	r21, r20
+    39ae:	43 2f       	mov	r20, r19
+    39b0:	32 2f       	mov	r19, r18
+    39b2:	22 27       	eor	r18, r18
+    39b4:	8a 2f       	mov	r24, r26
+    39b6:	99 27       	eor	r25, r25
+    39b8:	aa 27       	eor	r26, r26
+    39ba:	bb 27       	eor	r27, r27
+    39bc:	83 70       	andi	r24, 0x03	; 3
+    39be:	90 70       	andi	r25, 0x00	; 0
+    39c0:	a0 70       	andi	r26, 0x00	; 0
+    39c2:	b0 70       	andi	r27, 0x00	; 0
+    39c4:	dc 01       	movw	r26, r24
+    39c6:	99 27       	eor	r25, r25
+    39c8:	88 27       	eor	r24, r24
+    39ca:	28 2b       	or	r18, r24
+    39cc:	39 2b       	or	r19, r25
+    39ce:	4a 2b       	or	r20, r26
+    39d0:	5b 2b       	or	r21, r27
+    39d2:	e2 2a       	or	r14, r18
+    39d4:	f3 2a       	or	r15, r19
+    39d6:	04 2b       	or	r16, r20
+    39d8:	15 2b       	or	r17, r21
+    39da:	8c 81       	ldd	r24, Y+4	; 0x04
+    39dc:	99 27       	eor	r25, r25
+    39de:	aa 27       	eor	r26, r26
+    39e0:	bb 27       	eor	r27, r27
+    39e2:	e8 2a       	or	r14, r24
+    39e4:	f9 2a       	or	r15, r25
+    39e6:	0a 2b       	or	r16, r26
+    39e8:	1b 2b       	or	r17, r27
+    39ea:	02 c0       	rjmp	.+4      	; 0x39f0 <MCP2515_ReadCanMsg+0xda>
+    39ec:	fb 01       	movw	r30, r22
+    39ee:	15 82       	std	Z+5, r1	; 0x05
+    39f0:	e0 82       	st	Z, r14
+    39f2:	f1 82       	std	Z+1, r15	; 0x01
+    39f4:	02 83       	std	Z+2, r16	; 0x02
+    39f6:	13 83       	std	Z+3, r17	; 0x03
+    39f8:	1e bc       	out	0x2e, r1	; 46
+    39fa:	0d b4       	in	r0, 0x2d	; 45
+    39fc:	07 fe       	sbrs	r0, 7
+    39fe:	fd cf       	rjmp	.-6      	; 0x39fa <MCP2515_ReadCanMsg+0xe4>
+    3a00:	8e b5       	in	r24, 0x2e	; 46
+    3a02:	98 2f       	mov	r25, r24
+    3a04:	8f 70       	andi	r24, 0x0F	; 15
+    3a06:	fb 01       	movw	r30, r22
+    3a08:	84 83       	std	Z+4, r24	; 0x04
+    3a0a:	89 30       	cpi	r24, 0x09	; 9
+    3a0c:	10 f0       	brcs	.+4      	; 0x3a12 <MCP2515_ReadCanMsg+0xfc>
+    3a0e:	88 e0       	ldi	r24, 0x08	; 8
+    3a10:	84 83       	std	Z+4, r24	; 0x04
+    3a12:	fb 01       	movw	r30, r22
+    3a14:	16 82       	std	Z+6, r1	; 0x06
+    3a16:	96 ff       	sbrs	r25, 6
+    3a18:	02 c0       	rjmp	.+4      	; 0x3a1e <MCP2515_ReadCanMsg+0x108>
+    3a1a:	81 e0       	ldi	r24, 0x01	; 1
+    3a1c:	86 83       	std	Z+6, r24	; 0x06
+    3a1e:	20 e0       	ldi	r18, 0x00	; 0
+    3a20:	30 e0       	ldi	r19, 0x00	; 0
+    3a22:	0b c0       	rjmp	.+22     	; 0x3a3a <MCP2515_ReadCanMsg+0x124>
+    3a24:	1e bc       	out	0x2e, r1	; 46
+    3a26:	0d b4       	in	r0, 0x2d	; 45
+    3a28:	07 fe       	sbrs	r0, 7
+    3a2a:	fd cf       	rjmp	.-6      	; 0x3a26 <MCP2515_ReadCanMsg+0x110>
+    3a2c:	8e b5       	in	r24, 0x2e	; 46
+    3a2e:	fb 01       	movw	r30, r22
+    3a30:	e9 0f       	add	r30, r25
+    3a32:	f1 1d       	adc	r31, r1
+    3a34:	87 83       	std	Z+7, r24	; 0x07
+    3a36:	2f 5f       	subi	r18, 0xFF	; 255
+    3a38:	3f 4f       	sbci	r19, 0xFF	; 255
+    3a3a:	92 2f       	mov	r25, r18
+    3a3c:	fb 01       	movw	r30, r22
+    3a3e:	84 81       	ldd	r24, Z+4	; 0x04
+    3a40:	28 17       	cp	r18, r24
+    3a42:	80 f3       	brcs	.-32     	; 0x3a24 <MCP2515_ReadCanMsg+0x10e>
+    3a44:	43 9a       	sbi	0x08, 3	; 8
+    3a46:	24 96       	adiw	r28, 0x04	; 4
+    3a48:	0f b6       	in	r0, 0x3f	; 63
+    3a4a:	f8 94       	cli
+    3a4c:	de bf       	out	0x3e, r29	; 62
+    3a4e:	0f be       	out	0x3f, r0	; 63
+    3a50:	cd bf       	out	0x3d, r28	; 61
+    3a52:	df 91       	pop	r29
+    3a54:	cf 91       	pop	r28
+    3a56:	1f 91       	pop	r17
+    3a58:	0f 91       	pop	r16
+    3a5a:	ff 90       	pop	r15
+    3a5c:	ef 90       	pop	r14
+    3a5e:	08 95       	ret
+
+00003a60 <MCP2515_ReadStatus>:
+    3a60:	43 98       	cbi	0x08, 3	; 8
+    3a62:	80 ea       	ldi	r24, 0xA0	; 160
+    3a64:	8e bd       	out	0x2e, r24	; 46
+    3a66:	0d b4       	in	r0, 0x2d	; 45
+    3a68:	07 fe       	sbrs	r0, 7
+    3a6a:	fd cf       	rjmp	.-6      	; 0x3a66 <MCP2515_ReadStatus+0x6>
+    3a6c:	8e b5       	in	r24, 0x2e	; 46
+    3a6e:	1e bc       	out	0x2e, r1	; 46
+    3a70:	0d b4       	in	r0, 0x2d	; 45
+    3a72:	07 fe       	sbrs	r0, 7
+    3a74:	fd cf       	rjmp	.-6      	; 0x3a70 <MCP2515_ReadStatus+0x10>
+    3a76:	8e b5       	in	r24, 0x2e	; 46
+    3a78:	43 9a       	sbi	0x08, 3	; 8
+    3a7a:	99 27       	eor	r25, r25
+    3a7c:	08 95       	ret
+
+00003a7e <Can_Receive>:
+
+/**
+ * Sends a CAN message immediately with the controller hardware. If the CAN
+ * controller is busy, the function will return CAN_FAIL.
+ *
+ * @param msg
+ *		Pointer to the CAN message storage buffer.
+ * 
+ * @return
+ *		CAN_OK if the message was successfully sent to the controller.
+ *		CAN_FAIL if the controller is busy.
+ */
+Can_Return_t Can_Send(Can_Message_t *msg) {
+		/*
+		 * Send with MCP2515 device.
+		 */
+		uint8_t txbuf_n;
+		txbuf_n = MCP2515_GetNextFreeTXBuf();
+		if (txbuf_n == MCP_ALLTXBUSY) {
+			// TODO: Maybe we should block until a buffer is available?
+			return CAN_FAIL;
+		}
+		MCP2515_WriteCanMsg(txbuf_n, msg);
+		MCP2515_StartTransmit(txbuf_n);
+		return CAN_OK;
+}
+
+
+/**
+ * Receives a CAN message from the CAN controller hardware.
+ * 
+ * @param msg
+ *		Pointer to the message storage buffer into which the message should be copied.
+ *
+ * @return
+ *		CAN_OK if a received message was successfully copied into the buffer.
+ *		CAN_NO_MSG_AVAILABLE if there is no message available in the controller.
+ */
+Can_Return_t Can_Receive(Can_Message_t *msg) {
+    3a7e:	cf 93       	push	r28
+    3a80:	df 93       	push	r29
+    3a82:	ec 01       	movw	r28, r24
+	/*
+	 * Receive from MCP2515 device.
+	 */
+	uint8_t stat;
+	static uint8_t buffer = 0;
+	
+	stat = MCP2515_ReadStatus() & MCP_STAT_RXIF_MASK;
+    3a84:	0e 94 30 1d 	call	0x3a60 <MCP2515_ReadStatus>
+    3a88:	83 70       	andi	r24, 0x03	; 3
+	
+	if (stat > 2) {
+    3a8a:	83 30       	cpi	r24, 0x03	; 3
+    3a8c:	40 f0       	brcs	.+16     	; 0x3a9e <Can_Receive+0x20>
+		// Both buffers contain data, read the one previously not read.
+		// (Bit 0 in buffer selects which buffer to read, no need to take modulus 2)
+		MCP2515_ReadCanMsg(buffer++, msg);
+    3a8e:	80 91 05 01 	lds	r24, 0x0105
+    3a92:	8f 5f       	subi	r24, 0xFF	; 255
+    3a94:	80 93 05 01 	sts	0x0105, r24
+    3a98:	81 50       	subi	r24, 0x01	; 1
+    3a9a:	be 01       	movw	r22, r28
+    3a9c:	07 c0       	rjmp	.+14     	; 0x3aac <Can_Receive+0x2e>
+	} else if (stat > 0) {
+    3a9e:	88 23       	and	r24, r24
+    3aa0:	19 f4       	brne	.+6      	; 0x3aa8 <Can_Receive+0x2a>
+    3aa2:	8e ef       	ldi	r24, 0xFE	; 254
+    3aa4:	9f ef       	ldi	r25, 0xFF	; 255
+    3aa6:	06 c0       	rjmp	.+12     	; 0x3ab4 <Can_Receive+0x36>
+		// One of the buffers contain data, read it
+		MCP2515_ReadCanMsg(stat-1, msg);
+    3aa8:	be 01       	movw	r22, r28
+    3aaa:	81 50       	subi	r24, 0x01	; 1
+    3aac:	0e 94 8b 1c 	call	0x3916 <MCP2515_ReadCanMsg>
+    3ab0:	81 e0       	ldi	r24, 0x01	; 1
+    3ab2:	90 e0       	ldi	r25, 0x00	; 0
+    3ab4:	df 91       	pop	r29
+    3ab6:	cf 91       	pop	r28
+    3ab8:	08 95       	ret
+
+00003aba <__vector_boot_2>:
+    3aba:	1f 92       	push	r1
+    3abc:	0f 92       	push	r0
+    3abe:	0f b6       	in	r0, 0x3f	; 63
+    3ac0:	0f 92       	push	r0
+    3ac2:	11 24       	eor	r1, r1
+    3ac4:	2f 93       	push	r18
+    3ac6:	3f 93       	push	r19
+    3ac8:	4f 93       	push	r20
+    3aca:	5f 93       	push	r21
+    3acc:	6f 93       	push	r22
+    3ace:	7f 93       	push	r23
+    3ad0:	8f 93       	push	r24
+    3ad2:	9f 93       	push	r25
+    3ad4:	af 93       	push	r26
+    3ad6:	bf 93       	push	r27
+    3ad8:	ef 93       	push	r30
+    3ada:	ff 93       	push	r31
+    3adc:	86 e0       	ldi	r24, 0x06	; 6
+    3ade:	91 e0       	ldi	r25, 0x01	; 1
+    3ae0:	0e 94 3f 1d 	call	0x3a7e <Can_Receive>
+    3ae4:	81 30       	cpi	r24, 0x01	; 1
+    3ae6:	21 f4       	brne	.+8      	; 0x3af0 <__vector_boot_2+0x36>
+    3ae8:	86 e0       	ldi	r24, 0x06	; 6
+    3aea:	91 e0       	ldi	r25, 0x01	; 1
+    3aec:	0e 94 3c 1a 	call	0x3478 <Can_Process>
+    3af0:	ff 91       	pop	r31
+    3af2:	ef 91       	pop	r30
+    3af4:	bf 91       	pop	r27
+    3af6:	af 91       	pop	r26
+    3af8:	9f 91       	pop	r25
+    3afa:	8f 91       	pop	r24
+    3afc:	7f 91       	pop	r23
+    3afe:	6f 91       	pop	r22
+    3b00:	5f 91       	pop	r21
+    3b02:	4f 91       	pop	r20
+    3b04:	3f 91       	pop	r19
+    3b06:	2f 91       	pop	r18
+    3b08:	0f 90       	pop	r0
+    3b0a:	0f be       	out	0x3f, r0	; 63
+    3b0c:	0f 90       	pop	r0
+    3b0e:	1f 90       	pop	r1
+    3b10:	18 95       	reti
+
+00003b12 <MCP2515_GetNextFreeTXBuf>:
+    3b12:	e9 98       	cbi	0x1d, 1	; 29
+    3b14:	0e 94 30 1d 	call	0x3a60 <MCP2515_ReadStatus>
+    3b18:	e9 9a       	sbi	0x1d, 1	; 29
+    3b1a:	99 27       	eor	r25, r25
+    3b1c:	82 fd       	sbrc	r24, 2
+    3b1e:	03 c0       	rjmp	.+6      	; 0x3b26 <MCP2515_GetNextFreeTXBuf+0x14>
+    3b20:	80 e0       	ldi	r24, 0x00	; 0
+    3b22:	90 e0       	ldi	r25, 0x00	; 0
+    3b24:	08 95       	ret
+    3b26:	84 fd       	sbrc	r24, 4
+    3b28:	03 c0       	rjmp	.+6      	; 0x3b30 <MCP2515_GetNextFreeTXBuf+0x1e>
+    3b2a:	81 e0       	ldi	r24, 0x01	; 1
+    3b2c:	90 e0       	ldi	r25, 0x00	; 0
+    3b2e:	08 95       	ret
+    3b30:	86 fd       	sbrc	r24, 6
+    3b32:	03 c0       	rjmp	.+6      	; 0x3b3a <MCP2515_GetNextFreeTXBuf+0x28>
+    3b34:	82 e0       	ldi	r24, 0x02	; 2
+    3b36:	90 e0       	ldi	r25, 0x00	; 0
+    3b38:	08 95       	ret
+    3b3a:	8f ef       	ldi	r24, 0xFF	; 255
+    3b3c:	90 e0       	ldi	r25, 0x00	; 0
+    3b3e:	08 95       	ret
+
+00003b40 <Can_Send>:
+    3b40:	1f 93       	push	r17
+    3b42:	cf 93       	push	r28
+    3b44:	df 93       	push	r29
+    3b46:	ec 01       	movw	r28, r24
+    3b48:	0e 94 89 1d 	call	0x3b12 <MCP2515_GetNextFreeTXBuf>
+    3b4c:	18 2f       	mov	r17, r24
+    3b4e:	8f 3f       	cpi	r24, 0xFF	; 255
+    3b50:	19 f4       	brne	.+6      	; 0x3b58 <Can_Send+0x18>
+    3b52:	8f ef       	ldi	r24, 0xFF	; 255
+    3b54:	9f ef       	ldi	r25, 0xFF	; 255
+    3b56:	08 c0       	rjmp	.+16     	; 0x3b68 <Can_Send+0x28>
+    3b58:	be 01       	movw	r22, r28
+    3b5a:	0e 94 2c 1b 	call	0x3658 <MCP2515_WriteCanMsg>
+    3b5e:	81 2f       	mov	r24, r17
+    3b60:	0e 94 cf 1a 	call	0x359e <MCP2515_StartTransmit>
+    3b64:	81 e0       	ldi	r24, 0x01	; 1
+    3b66:	90 e0       	ldi	r25, 0x00	; 0
+    3b68:	df 91       	pop	r29
+    3b6a:	cf 91       	pop	r28
+    3b6c:	1f 91       	pop	r17
+    3b6e:	08 95       	ret
+
+00003b70 <__divmodhi4>:
+    3b70:	97 fb       	bst	r25, 7
+    3b72:	09 2e       	mov	r0, r25
+    3b74:	07 26       	eor	r0, r23
+    3b76:	0a d0       	rcall	.+20     	; 0x3b8c <__divmodhi4_neg1>
+    3b78:	77 fd       	sbrc	r23, 7
+    3b7a:	04 d0       	rcall	.+8      	; 0x3b84 <__divmodhi4_neg2>
+    3b7c:	0c d0       	rcall	.+24     	; 0x3b96 <__udivmodhi4>
+    3b7e:	06 d0       	rcall	.+12     	; 0x3b8c <__divmodhi4_neg1>
+    3b80:	00 20       	and	r0, r0
+    3b82:	1a f4       	brpl	.+6      	; 0x3b8a <__divmodhi4_exit>
+
+00003b84 <__divmodhi4_neg2>:
+    3b84:	70 95       	com	r23
+    3b86:	61 95       	neg	r22
+    3b88:	7f 4f       	sbci	r23, 0xFF	; 255
+
+00003b8a <__divmodhi4_exit>:
+    3b8a:	08 95       	ret
+
+00003b8c <__divmodhi4_neg1>:
+    3b8c:	f6 f7       	brtc	.-4      	; 0x3b8a <__divmodhi4_exit>
+    3b8e:	90 95       	com	r25
+    3b90:	81 95       	neg	r24
+    3b92:	9f 4f       	sbci	r25, 0xFF	; 255
+    3b94:	08 95       	ret
+
+00003b96 <__udivmodhi4>:
+    3b96:	aa 1b       	sub	r26, r26
+    3b98:	bb 1b       	sub	r27, r27
+    3b9a:	51 e1       	ldi	r21, 0x11	; 17
+    3b9c:	07 c0       	rjmp	.+14     	; 0x3bac <__udivmodhi4_ep>
+
+00003b9e <__udivmodhi4_loop>:
+    3b9e:	aa 1f       	adc	r26, r26
+    3ba0:	bb 1f       	adc	r27, r27
+    3ba2:	a6 17       	cp	r26, r22
+    3ba4:	b7 07       	cpc	r27, r23
+    3ba6:	10 f0       	brcs	.+4      	; 0x3bac <__udivmodhi4_ep>
+    3ba8:	a6 1b       	sub	r26, r22
+    3baa:	b7 0b       	sbc	r27, r23
+
+00003bac <__udivmodhi4_ep>:
+    3bac:	88 1f       	adc	r24, r24
+    3bae:	99 1f       	adc	r25, r25
+    3bb0:	5a 95       	dec	r21
+    3bb2:	a9 f7       	brne	.-22     	; 0x3b9e <__udivmodhi4_loop>
+    3bb4:	80 95       	com	r24
+    3bb6:	90 95       	com	r25
+    3bb8:	bc 01       	movw	r22, r24
+    3bba:	cd 01       	movw	r24, r26
+    3bbc:	08 95       	ret
+Disassembly of section .app_vectors:
+
+00000000 <__vector_defaults>:
+   0:	ff ff       	.word	0xffff	; ????
+   2:	ff ff       	.word	0xffff	; ????
+
+00000004 <__vector_boot_1>:
+   4:	ff ff       	.word	0xffff	; ????
+   6:	ff ff       	.word	0xffff	; ????
+
+00000008 <__vector_default_2>:
+   8:	ff ff       	.word	0xffff	; ????
+   a:	ff ff       	.word	0xffff	; ????
+
+0000000c <__vector_boot_3>:
+   c:	ff ff       	.word	0xffff	; ????
+   e:	ff ff       	.word	0xffff	; ????
+
+00000010 <__vector_boot_4>:
+  10:	ff ff       	.word	0xffff	; ????
+  12:	ff ff       	.word	0xffff	; ????
+
+00000014 <__vector_boot_5>:
+  14:	ff ff       	.word	0xffff	; ????
+  16:	ff ff       	.word	0xffff	; ????
+
+00000018 <__vector_boot_6>:
+  18:	ff ff       	.word	0xffff	; ????
+  1a:	ff ff       	.word	0xffff	; ????
+
+0000001c <__vector_boot_7>:
+  1c:	ff ff       	.word	0xffff	; ????
+  1e:	ff ff       	.word	0xffff	; ????
+
+00000020 <__vector_boot_8>:
+  20:	ff ff       	.word	0xffff	; ????
+  22:	ff ff       	.word	0xffff	; ????
+
+00000024 <__vector_boot_9>:
+  24:	ff ff       	.word	0xffff	; ????
+  26:	ff ff       	.word	0xffff	; ????
+
+00000028 <__vector_boot_10>:
+  28:	ff ff       	.word	0xffff	; ????
+  2a:	ff ff       	.word	0xffff	; ????
+
+0000002c <__vector_boot_11>:
+  2c:	ff ff       	.word	0xffff	; ????
+  2e:	ff ff       	.word	0xffff	; ????
+
+00000030 <__vector_boot_12>:
+  30:	ff ff       	.word	0xffff	; ????
+  32:	ff ff       	.word	0xffff	; ????
+
+00000034 <__vector_boot_13>:
+  34:	ff ff       	.word	0xffff	; ????
+  36:	ff ff       	.word	0xffff	; ????
+
+00000038 <__vector_boot_14>:
+  38:	ff ff       	.word	0xffff	; ????
+  3a:	ff ff       	.word	0xffff	; ????
+
+0000003c <__vector_boot_15>:
+  3c:	ff ff       	.word	0xffff	; ????
+  3e:	ff ff       	.word	0xffff	; ????
+
+00000040 <__vector_boot_16>:
+  40:	ff ff       	.word	0xffff	; ????
+  42:	ff ff       	.word	0xffff	; ????
+
+00000044 <__vector_boot_17>:
+  44:	ff ff       	.word	0xffff	; ????
+  46:	ff ff       	.word	0xffff	; ????
+
+00000048 <__vector_boot_18>:
+  48:	ff ff       	.word	0xffff	; ????
+  4a:	ff ff       	.word	0xffff	; ????
+
+0000004c <__vector_boot_19>:
+  4c:	ff ff       	.word	0xffff	; ????
+  4e:	ff ff       	.word	0xffff	; ????
+
+00000050 <__vector_boot_20>:
+  50:	ff ff       	.word	0xffff	; ????
+  52:	ff ff       	.word	0xffff	; ????
+
+00000054 <__vector_boot_21>:
+  54:	ff ff       	.word	0xffff	; ????
+  56:	ff ff       	.word	0xffff	; ????
+
+00000058 <__vector_boot_22>:
+  58:	ff ff       	.word	0xffff	; ????
+  5a:	ff ff       	.word	0xffff	; ????
+
+0000005c <__vector_boot_23>:
+  5c:	ff ff       	.word	0xffff	; ????
+  5e:	ff ff       	.word	0xffff	; ????
+
+00000060 <__vector_boot_24>:
+  60:	ff ff       	.word	0xffff	; ????
+  62:	ff ff       	.word	0xffff	; ????
+
+00000064 <__vector_boot_25>:
+  64:	ff ff       	.word	0xffff	; ????
+  66:	ff ff       	.word	0xffff	; ????
+Disassembly of section .bootloader:
+
+00003c00 <__boot_vectors>:
+    3c00:	0c 94 c2 18 	jmp	0x3184 <__init>
+    3c04:	0c 94 02 00 	jmp	0x4 <__vector_boot_1>
+    3c08:	0c 94 5d 1d 	jmp	0x3aba <__vector_boot_2>
+    3c0c:	0c 94 06 00 	jmp	0xc <__vector_boot_3>
+    3c10:	0c 94 08 00 	jmp	0x10 <__vector_boot_4>
+    3c14:	0c 94 0a 00 	jmp	0x14 <__vector_boot_5>
+    3c18:	0c 94 0c 00 	jmp	0x18 <__vector_boot_6>
+    3c1c:	0c 94 0e 00 	jmp	0x1c <__vector_boot_7>
+    3c20:	0c 94 10 00 	jmp	0x20 <__vector_boot_8>
+    3c24:	0c 94 12 00 	jmp	0x24 <__vector_boot_9>
+    3c28:	0c 94 14 00 	jmp	0x28 <__vector_boot_10>
+    3c2c:	0c 94 16 00 	jmp	0x2c <__vector_boot_11>
+    3c30:	0c 94 18 00 	jmp	0x30 <__vector_boot_12>
+    3c34:	0c 94 1a 00 	jmp	0x34 <__vector_boot_13>
+    3c38:	0c 94 1c 00 	jmp	0x38 <__vector_boot_14>
+    3c3c:	0c 94 1e 00 	jmp	0x3c <__vector_boot_15>
+    3c40:	0c 94 20 00 	jmp	0x40 <__vector_boot_16>
+    3c44:	0c 94 22 00 	jmp	0x44 <__vector_boot_17>
+    3c48:	0c 94 24 00 	jmp	0x48 <__vector_boot_18>
+    3c4c:	0c 94 26 00 	jmp	0x4c <__vector_boot_19>
+    3c50:	0c 94 28 00 	jmp	0x50 <__vector_boot_20>
+    3c54:	0c 94 2a 00 	jmp	0x54 <__vector_boot_21>
+    3c58:	0c 94 2c 00 	jmp	0x58 <__vector_boot_22>
+    3c5c:	0c 94 2e 00 	jmp	0x5c <__vector_boot_23>
+    3c60:	0c 94 30 00 	jmp	0x60 <__vector_boot_24>
+    3c64:	0c 94 32 00 	jmp	0x64 <__vector_boot_25>
+
+00003c68 <flash_flush_buffer>:
+    3c68:	40 91 03 01 	lds	r20, 0x0103
+    3c6c:	50 91 04 01 	lds	r21, 0x0104
+    3c70:	80 91 00 01 	lds	r24, 0x0100
+    3c74:	88 23       	and	r24, r24
+    3c76:	09 f4       	brne	.+2      	; 0x3c7a <flash_flush_buffer+0x12>
+    3c78:	30 c0       	rjmp	.+96     	; 0x3cda <flash_flush_buffer+0x72>
+    3c7a:	20 e0       	ldi	r18, 0x00	; 0
+    3c7c:	30 e0       	ldi	r19, 0x00	; 0
+    3c7e:	61 e0       	ldi	r22, 0x01	; 1
+    3c80:	da 01       	movw	r26, r20
+    3c82:	8d 91       	ld	r24, X+
+    3c84:	9d 91       	ld	r25, X+
+    3c86:	0c 01       	movw	r0, r24
+    3c88:	f9 01       	movw	r30, r18
+    3c8a:	60 93 57 00 	sts	0x0057, r22
+    3c8e:	e8 95       	spm
+    3c90:	11 24       	eor	r1, r1
+    3c92:	2e 5f       	subi	r18, 0xFE	; 254
+    3c94:	3f 4f       	sbci	r19, 0xFF	; 255
+    3c96:	20 38       	cpi	r18, 0x80	; 128
+    3c98:	31 05       	cpc	r19, r1
+    3c9a:	99 f7       	brne	.-26     	; 0x3c82 <flash_flush_buffer+0x1a>
+    3c9c:	9f b7       	in	r25, 0x3f	; 63
+    3c9e:	f8 94       	cli
+    3ca0:	f9 99       	sbic	0x1f, 1	; 31
+    3ca2:	fe cf       	rjmp	.-4      	; 0x3ca0 <flash_flush_buffer+0x38>
+    3ca4:	20 91 01 01 	lds	r18, 0x0101
+    3ca8:	30 91 02 01 	lds	r19, 0x0102
+    3cac:	83 e0       	ldi	r24, 0x03	; 3
+    3cae:	f9 01       	movw	r30, r18
+    3cb0:	80 93 57 00 	sts	0x0057, r24
+    3cb4:	e8 95       	spm
+    3cb6:	07 b6       	in	r0, 0x37	; 55
+    3cb8:	00 fc       	sbrc	r0, 0
+    3cba:	fd cf       	rjmp	.-6      	; 0x3cb6 <flash_flush_buffer+0x4e>
+    3cbc:	85 e0       	ldi	r24, 0x05	; 5
+    3cbe:	f9 01       	movw	r30, r18
+    3cc0:	80 93 57 00 	sts	0x0057, r24
+    3cc4:	e8 95       	spm
+    3cc6:	07 b6       	in	r0, 0x37	; 55
+    3cc8:	00 fc       	sbrc	r0, 0
+    3cca:	fd cf       	rjmp	.-6      	; 0x3cc6 <flash_flush_buffer+0x5e>
+    3ccc:	10 92 00 01 	sts	0x0100, r1
+    3cd0:	81 e1       	ldi	r24, 0x11	; 17
+    3cd2:	80 93 57 00 	sts	0x0057, r24
+    3cd6:	e8 95       	spm
+    3cd8:	9f bf       	out	0x3f, r25	; 63
+    3cda:	08 95       	ret
+
+00003cdc <flash_write_word>:
+	}
+}
+
+void flash_write_word(uint16_t addr, uint16_t word) {
+    3cdc:	ef 92       	push	r14
+    3cde:	ff 92       	push	r15
+    3ce0:	0f 93       	push	r16
+    3ce2:	1f 93       	push	r17
+    3ce4:	cf 93       	push	r28
+    3ce6:	df 93       	push	r29
+    3ce8:	ec 01       	movw	r28, r24
+    3cea:	7b 01       	movw	r14, r22
+	uint16_t* buf = (uint16_t*)flash_pagebuf; // Access buffer on a word basis.
+    3cec:	00 91 03 01 	lds	r16, 0x0103
+    3cf0:	10 91 04 01 	lds	r17, 0x0104
+	
+	// Check if page address has changed since last write
+	if ((addr / SPM_PAGESIZE) != (flash_prev_addr / SPM_PAGESIZE)) {
+    3cf4:	9c 01       	movw	r18, r24
+    3cf6:	22 0f       	add	r18, r18
+    3cf8:	23 2f       	mov	r18, r19
+    3cfa:	22 1f       	adc	r18, r18
+    3cfc:	33 0b       	sbc	r19, r19
+    3cfe:	31 95       	neg	r19
+    3d00:	80 91 01 01 	lds	r24, 0x0101
+    3d04:	90 91 02 01 	lds	r25, 0x0102
+    3d08:	88 0f       	add	r24, r24
+    3d0a:	89 2f       	mov	r24, r25
+    3d0c:	88 1f       	adc	r24, r24
+    3d0e:	99 0b       	sbc	r25, r25
+    3d10:	91 95       	neg	r25
+    3d12:	28 17       	cp	r18, r24
+    3d14:	39 07       	cpc	r19, r25
+    3d16:	29 f0       	breq	.+10     	; 0x3d22 <flash_write_word+0x46>
+		flash_flush_buffer(); // Flash buffer contents to previous page
+    3d18:	0e 94 34 1e 	call	0x3c68 <flash_flush_buffer>
+		flash_load_buffer(addr); // Read new page contents into buffer
+    3d1c:	ce 01       	movw	r24, r28
+    3d1e:	0e 94 8d 1a 	call	0x351a <flash_load_buffer>
+	}
+	
+	buf[(addr % SPM_PAGESIZE)/2] = word;
+    3d22:	fe 01       	movw	r30, r28
+    3d24:	ee 77       	andi	r30, 0x7E	; 126
+    3d26:	f0 70       	andi	r31, 0x00	; 0
+    3d28:	e0 0f       	add	r30, r16
+    3d2a:	f1 1f       	adc	r31, r17
+    3d2c:	f1 82       	std	Z+1, r15	; 0x01
+    3d2e:	e0 82       	st	Z, r14
+	flash_prev_addr = addr;
+    3d30:	d0 93 02 01 	sts	0x0102, r29
+    3d34:	c0 93 01 01 	sts	0x0101, r28
+	flash_buffer_dirty = 1;
+    3d38:	81 e0       	ldi	r24, 0x01	; 1
+    3d3a:	80 93 00 01 	sts	0x0100, r24
+    3d3e:	df 91       	pop	r29
+    3d40:	cf 91       	pop	r28
+    3d42:	1f 91       	pop	r17
+    3d44:	0f 91       	pop	r16
+    3d46:	ff 90       	pop	r15
+    3d48:	ef 90       	pop	r14
+    3d4a:	08 95       	ret
+
+00003d4c <flash_init>:
+}     
+
+void flash_init(uint8_t* buf) {
+	// 0xffff is never in any page that can be written on devices with <= 64K flash,
+	// so the first flash_write_word will always trigger a buffer load.
+	flash_prev_addr = 0xffff;
+    3d4c:	2f ef       	ldi	r18, 0xFF	; 255
+    3d4e:	3f ef       	ldi	r19, 0xFF	; 255
+    3d50:	30 93 02 01 	sts	0x0102, r19
+    3d54:	20 93 01 01 	sts	0x0101, r18
+	flash_pagebuf = buf;
+    3d58:	90 93 04 01 	sts	0x0104, r25
+    3d5c:	80 93 03 01 	sts	0x0103, r24
+	flash_buffer_dirty = 0;
+    3d60:	10 92 00 01 	sts	0x0100, r1
+    3d64:	08 95       	ret
+	...
+
+00003f80 <flash_copy_data>:
+}
+
+extern void __flash_code_start; // Start of .flash_code from ld-script
+
+void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
+    3f80:	dc 01       	movw	r26, r24
+	uint16_t data;
+
+	cli(); // From this point we're on our own
+    3f82:	f8 94       	cli
+	
+	len = (len | (SPM_PAGESIZE - 1)) + 3; // Round len up to a whole page + 2
+    3f84:	4f 67       	ori	r20, 0x7F	; 127
+    3f86:	4d 5f       	subi	r20, 0xFD	; 253
+    3f88:	5f 4f       	sbci	r21, 0xFF	; 255
+    3f8a:	2e c0       	rjmp	.+92     	; 0x3fe8 <flash_copy_data+0x68>
+	
+	while (len -= 2) {
+		if (dst >= (uint16_t)&__flash_code_start) break;
+    3f8c:	8f e3       	ldi	r24, 0x3F	; 63
+    3f8e:	60 38       	cpi	r22, 0x80	; 128
+    3f90:	78 07       	cpc	r23, r24
+    3f92:	08 f0       	brcs	.+2      	; 0x3f96 <flash_copy_data+0x16>
+    3f94:	2d c0       	rjmp	.+90     	; 0x3ff0 <flash_copy_data+0x70>
+
+		wdt_reset();
+    3f96:	a8 95       	wdr
+
+		data = pgm_read_word(src); // Read source word
+    3f98:	fd 01       	movw	r30, r26
+    3f9a:	85 91       	lpm	r24, Z+
+    3f9c:	94 91       	lpm	r25, Z
+		boot_page_fill(dst, data); // Write word to destination
+    3f9e:	21 e0       	ldi	r18, 0x01	; 1
+    3fa0:	0c 01       	movw	r0, r24
+    3fa2:	fb 01       	movw	r30, r22
+    3fa4:	20 93 57 00 	sts	0x0057, r18
+    3fa8:	e8 95       	spm
+    3faa:	11 24       	eor	r1, r1
+		
+		if ((dst + 2) % SPM_PAGESIZE == 0) { // If we just wrote the last word of a page
+    3fac:	9b 01       	movw	r18, r22
+    3fae:	2e 5f       	subi	r18, 0xFE	; 254
+    3fb0:	3f 4f       	sbci	r19, 0xFF	; 255
+    3fb2:	c9 01       	movw	r24, r18
+    3fb4:	8f 77       	andi	r24, 0x7F	; 127
+    3fb6:	90 70       	andi	r25, 0x00	; 0
+    3fb8:	89 2b       	or	r24, r25
+    3fba:	a1 f4       	brne	.+40     	; 0x3fe4 <flash_copy_data+0x64>
+			boot_page_erase(dst);
+    3fbc:	83 e0       	ldi	r24, 0x03	; 3
+    3fbe:	fb 01       	movw	r30, r22
+    3fc0:	80 93 57 00 	sts	0x0057, r24
+    3fc4:	e8 95       	spm
+			boot_spm_busy_wait(); // Wait until the memory is erased.
+    3fc6:	07 b6       	in	r0, 0x37	; 55
+    3fc8:	00 fc       	sbrc	r0, 0
+    3fca:	fd cf       	rjmp	.-6      	; 0x3fc6 <flash_copy_data+0x46>
+			boot_page_write(dst); // Store buffer in flash page.
+    3fcc:	85 e0       	ldi	r24, 0x05	; 5
+    3fce:	fb 01       	movw	r30, r22
+    3fd0:	80 93 57 00 	sts	0x0057, r24
+    3fd4:	e8 95       	spm
+			boot_spm_busy_wait(); // Wait until the memory is written.
+    3fd6:	07 b6       	in	r0, 0x37	; 55
+    3fd8:	00 fc       	sbrc	r0, 0
+    3fda:	fd cf       	rjmp	.-6      	; 0x3fd6 <flash_copy_data+0x56>
+			boot_rww_enable();
+    3fdc:	81 e1       	ldi	r24, 0x11	; 17
+    3fde:	80 93 57 00 	sts	0x0057, r24
+    3fe2:	e8 95       	spm
+		}
+		 
+		src += 2;
+    3fe4:	12 96       	adiw	r26, 0x02	; 2
+    3fe6:	b9 01       	movw	r22, r18
+    3fe8:	42 50       	subi	r20, 0x02	; 2
+    3fea:	50 40       	sbci	r21, 0x00	; 0
+    3fec:	09 f0       	breq	.+2      	; 0x3ff0 <flash_copy_data+0x70>
+    3fee:	ce cf       	rjmp	.-100    	; 0x3f8c <flash_copy_data+0xc>
+    3ff0:	ff cf       	rjmp	.-2      	; 0x3ff0 <flash_copy_data+0x70>

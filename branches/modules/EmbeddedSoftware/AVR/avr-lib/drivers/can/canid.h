@@ -52,6 +52,22 @@
 #define CAN_TST				0x0FUL
 //------------------------------------
 
+//------------------------------------
+#define CAN_MODULE_NMT			0x0BUL
+#define CAN_MODULE_NMT_LIST		0x2DUL
+//------------------------------------
+#define CAN_MODULE_ACT			0x0CUL
+//------------------------------------
+#define CAN_MODULE_SNS			0x0DUL
+//------------------------------------
+#define OWNER				1
+#define NOT_OWNER			0
+
+#define MODULE_TYPE_sns_ds18x20		0x03
+#define SNS_CMD_TEMPERATURE_CELSIUS 	0x04
+#define CMD_LIST		 	0x00
+
+
 //---------------------------------------------------------------------------
 // CAN ID definitions for NMT messages
 

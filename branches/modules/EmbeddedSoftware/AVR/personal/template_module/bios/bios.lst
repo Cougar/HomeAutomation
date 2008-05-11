@@ -1,0 +1,966 @@
+   1               		.file	"bios.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  85               	.global	main
+  87               	main:
+   1:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** /*
+   2:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c ****  * $Id: bios.c 771 2008-05-01 18:01:33Z linlun $
+   3:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c ****  */
+   4:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c ****  
+   5:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <inttypes.h>
+   6:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <avr/io.h>
+   7:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <avr/interrupt.h>
+   8:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <avr/wdt.h>
+   9:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <avr/pgmspace.h>
+  10:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <string.h>
+  11:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <util/crc16.h>
+  12:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <config.h>
+  13:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <vectors.h> // Must be included after sfr_defs.h but before any ISR()
+  14:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <drivers/can/can.h>
+  15:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <flash.h>
+  16:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include <bios_export.h>
+  17:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #include CAN_DRIVER_H
+  18:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  19:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if !defined( NODE_HW_ID )
+  20:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #error No NODE_HW_ID in bios.inc, set NODE_HW_ID=<GENERATE_HW> and Ill generate it for you
+  21:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  22:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  23:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(__AVR_ATmega8__)
+  24:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define IVSEL_REG GICR
+  25:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+  26:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define IVSEL_REG MCUCR
+  27:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #else
+  28:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #error AVR device not supported!
+  29:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  30:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  31:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(AUTOSTART)
+  32:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if AUTOSTART == 0 
+  33:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #error Please choose a higher AUTOSTART value in bios.inc, the nod will cease to work, and you can 
+  34:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  35:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if AUTOSTART == 1
+  36:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #error Please choose a higher AUTOSTART value in bios.inc, there might be problems with updating so
+  37:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  38:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  39:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  40:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** //---------------------------------------------------------------------------
+  41:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** // Private declarations
+  42:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  43:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** volatile uint8_t bios_msg_full;
+  44:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .bss space
+  45:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** extern void __bios_start; // Start of BIOS area in flash, from ld-script.
+  46:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  47:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** prog_uint32_t hwid = NODE_HW_ID;
+  48:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  49:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(AUTOSTART)
+  50:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** uint8_t autostart_cnt;
+  51:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  52:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  53:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define BIOS_APP		1
+  54:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define BIOS_NOAPP		2
+  55:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define BIOS_PGM		3
+  56:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #define BIOS_END_PGM	4
+  57:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  58:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** //---------------------------------------------------------------------------
+  59:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** // Private functions
+  60:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  61:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** void Can_Process(Can_Message_t* msg) {
+  62:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
+  63:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+  64:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	if ((msg->Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS == CAN_NMT) {
+  65:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		
+  66:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_TIME) {
+  67:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			// Reset watchdog as long as time messages from the master node
+  68:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			// are received periodically. If anything hangs the CAN communication
+  69:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			// or the master node is not up, the node will be reset.
+  70:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			wdt_reset();
+  71:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			//TODO: Don't care about time right now... Figure out what to do with it. 
+  72:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(AUTOSTART)
+  73:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			autostart_cnt++;
+  74:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+  75:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+  76:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		
+  77:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		if (((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE) == CAN_NMT_RESET && msg->DataLength == 4 
+  78:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				msg->Data.bytes[0] == (hwid&0xff) && msg->Data.bytes[1] == ((hwid>>8)&0xff) &&
+  79:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				msg->Data.bytes[2] == ((hwid>>16)&0xff) && msg->Data.bytes[3] == ((hwid>>24)&0xff) ) {
+  80:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			BIOS_Reset();
+  81:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+  82:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// Copy message to bios buffer if bios is done with the previous message.
+  83:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// This is also a check to see if bios is still running. When app is
+  84:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// started, bios_msg_full is never reset to 0 so the check fails and all
+  85:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// NMT communication except reset is ignored. 
+  86:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		if (!(bios_msg_full)) {
+  87:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
+  88:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			bios_msg_full = 1;
+  89:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+  90:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	} else if (BIOS_CanCallback) {
+  91:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		//printf("Calling app callback.\n");
+  92:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		BIOS_CanCallback(msg);
+  93:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	}
+  94:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** }
+  95:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+  96:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** int main(void) {
+  89               	.LM0:
+  90               	/* prologue: frame size=159 */
+  91 0000 C0E0      		ldi r28,lo8(__stack - 159)
+  92 0002 D0E0      		ldi r29,hi8(__stack - 159)
+  93 0004 DEBF      		out __SP_H__,r29
+  94 0006 CDBF      		out __SP_L__,r28
+  95               	/* prologue end (size=4) */
+  97:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	void (*app_reset)(void) = 0; // Function pointer to jump to application reset vector.
+  98:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint8_t bios_state;
+  99:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint8_t nmt_type;
+ 100:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint8_t pagebuf[SPM_PAGESIZE];
+ 101:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	// These unneccessary initializations uses 12 bytes flash, just to make the compiler happy!
+ 102:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint16_t base_addr = 0;
+ 103:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint16_t offset = 0;
+ 104:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint16_t addr = 0;
+ 105:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint8_t len;
+ 106:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint16_t data;
+ 107:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	uint8_t send_msg = 0;
+ 108:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	Can_Message_t tx_msg;
+ 109:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	Can_Message_t bios_msg;
+ 110:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	bios_msg_ptr = &bios_msg;
+  97               	.LM1:
+  98 0008 CE01      		movw r24,r28
+  99 000a 4096      		adiw r24,16
+ 100 000c 9093 0000 		sts (bios_msg_ptr)+1,r25
+ 101 0010 8093 0000 		sts bios_msg_ptr,r24
+ 111:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 112:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(AUTOSTART)
+ 113:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	autostart_cnt = 0;
+ 103               	.LM2:
+ 104 0014 1092 0000 		sts autostart_cnt,__zero_reg__
+ 114:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+ 115:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 116:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	// Enable watchdog timer to protect against an application locking the
+ 117:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	// node by leaving interrupts disabled. 
+ 118:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	wdt_enable(WDTO_2S);
+ 106               	.LM3:
+ 107 0018 88E1      		ldi r24,lo8(24)
+ 108 001a 90E0      		ldi r25,hi8(24)
+ 109 001c 2FE0      		ldi r18,lo8(15)
+ 110               	/* #APP */
+ 111 001e 0FB6      		in __tmp_reg__,__SREG__
+ 112 0020 F894      		cli
+ 113 0022 A895      		wdr
+ 114 0024 8093 6000 		sts 96,r24
+ 115 0028 0FBE      		out __SREG__,__tmp_reg__
+ 116 002a 2093 6000 		sts 96,r18
+ 119:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+ 120:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	// Move interrupt vectors to start of bootloader section and enable interrupts
+ 121:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	IVSEL_REG = _BV(IVCE);
+ 118               	.LM4:
+ 119               	/* #NOAPP */
+ 120 002e 81E0      		ldi r24,lo8(1)
+ 121 0030 85BF      		out 85-0x20,r24
+ 122:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	IVSEL_REG = _BV(IVSEL);
+ 123               	.LM5:
+ 124 0032 82E0      		ldi r24,lo8(2)
+ 125 0034 85BF      		out 85-0x20,r24
+ 123:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	sei();
+ 127               	.LM6:
+ 128               	/* #APP */
+ 129 0036 7894      		sei
+ 124:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+ 125:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	if (Can_Init() != CAN_OK) BIOS_Reset();
+ 131               	.LM7:
+ 132               	/* #NOAPP */
+ 133 0038 0E94 0000 		call Can_Init
+ 134 003c 8130      		cpi r24,lo8(1)
+ 135 003e 11F0      		breq .L2
+ 137               	.LM8:
+ 138 0040 0E94 0000 		call BIOS_Reset
+ 139               	.L2:
+ 126:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+ 127:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.RemoteFlag = 0;
+ 141               	.LM9:
+ 142 0044 1F82      		std Y+7,__zero_reg__
+ 128:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.ExtendedFlag = 1;
+ 144               	.LM10:
+ 145 0046 21E0      		ldi r18,lo8(1)
+ 146 0048 2E83      		std Y+6,r18
+ 129:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Id = CAN_ID_NMT_BIOS_START;
+ 148               	.LM11:
+ 149 004a 80E0      		ldi r24,lo8(549376)
+ 150 004c 92E6      		ldi r25,hi8(549376)
+ 151 004e A8E0      		ldi r26,hlo8(549376)
+ 152 0050 B0E0      		ldi r27,hhi8(549376)
+ 153 0052 8983      		std Y+1,r24
+ 154 0054 9A83      		std Y+2,r25
+ 155 0056 AB83      		std Y+3,r26
+ 156 0058 BC83      		std Y+4,r27
+ 130:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.DataLength = 8;
+ 158               	.LM12:
+ 159 005a 88E0      		ldi r24,lo8(8)
+ 160 005c 8D83      		std Y+5,r24
+ 131:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[0] = BIOS_VERSION&0xff;
+ 162               	.LM13:
+ 163 005e 89E3      		ldi r24,lo8(57)
+ 164 0060 8887      		std Y+8,r24
+ 132:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[1] = (BIOS_VERSION>>8)&0xff;
+ 166               	.LM14:
+ 167 0062 83E1      		ldi r24,lo8(19)
+ 168 0064 8987      		std Y+9,r24
+ 133:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[3] = 0x00;
+ 170               	.LM15:
+ 171 0066 1B86      		std Y+11,__zero_reg__
+ 134:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[4] = hwid&0xff;
+ 173               	.LM16:
+ 174 0068 81EA      		ldi r24,lo8(-95)
+ 175 006a 8C87      		std Y+12,r24
+ 135:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[5] = (hwid>>8)&0xff;
+ 177               	.LM17:
+ 178 006c 8FE6      		ldi r24,lo8(111)
+ 179 006e 8D87      		std Y+13,r24
+ 136:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[6] = (hwid>>16)&0xff;
+ 181               	.LM18:
+ 182 0070 8AE1      		ldi r24,lo8(26)
+ 183 0072 8E87      		std Y+14,r24
+ 137:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.Data.bytes[7] = (hwid>>24)&0xff;
+ 185               	.LM19:
+ 186 0074 8DE1      		ldi r24,lo8(29)
+ 187 0076 8F87      		std Y+15,r24
+ 188               	.LBB8:
+ 138:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 139:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	if (pgm_read_word(0) == 0xffff) {
+ 190               	.LM20:
+ 191 0078 80E0      		ldi r24,lo8(0)
+ 192 007a 90E0      		ldi r25,hi8(0)
+ 193 007c FC01      		movw r30,r24
+ 194               	/* #APP */
+ 195 007e 4591      		lpm r20, Z+
+ 196 0080 5491      		lpm r21, Z
+ 197               		
+ 198               	/* #NOAPP */
+ 199               	.LBE8:
+ 200 0082 4F5F      		subi r20,lo8(-1)
+ 201 0084 5F4F      		sbci r21,hi8(-1)
+ 202 0086 41F4      		brne .L4
+ 140:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// No application in flash
+ 141:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 0)
+ 142:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		tx_msg.Data.bytes[2] = 0;
+ 204               	.LM21:
+ 205 0088 1A86      		std Y+10,__zero_reg__
+ 206 008a 82E0      		ldi r24,lo8(2)
+ 207 008c C156      		subi r28,lo8(-159)
+ 208 008e DF4F      		sbci r29,hi8(-159)
+ 209 0090 8883      		st Y,r24
+ 210 0092 CF59      		subi r28,lo8(159)
+ 211 0094 D040      		sbci r29,hi8(159)
+ 212 0096 07C0      		rjmp .L51
+ 213               	.L4:
+ 143:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		bios_state = BIOS_NOAPP;
+ 144:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	} else {
+ 145:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// Application exists
+ 146:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// Send CAN_NMT_BIOS_START(BIOS_VERSION, 1)
+ 147:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		tx_msg.Data.bytes[2] = 1;
+ 215               	.LM22:
+ 216 0098 2A87      		std Y+10,r18
+ 217 009a E1E0      		ldi r30,lo8(1)
+ 218 009c C156      		subi r28,lo8(-159)
+ 219 009e DF4F      		sbci r29,hi8(-159)
+ 220 00a0 E883      		st Y,r30
+ 221 00a2 CF59      		subi r28,lo8(159)
+ 222 00a4 D040      		sbci r29,hi8(159)
+ 223               	.L51:
+ 148:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		bios_state = BIOS_APP;
+ 149:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	}
+ 150:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+ 151:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	while (Can_Send(&tx_msg) != CAN_OK);
+ 225               	.LM23:
+ 226 00a6 CE01      		movw r24,r28
+ 227 00a8 0196      		adiw r24,1
+ 228 00aa 0E94 0000 		call Can_Send
+ 229 00ae 8130      		cpi r24,lo8(1)
+ 230 00b0 D1F7      		brne .L51
+ 152:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 153:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	tx_msg.DataLength = 2; // All msg sent after BIOS_START are length 2 so set it once.
+ 232               	.LM24:
+ 233 00b2 82E0      		ldi r24,lo8(2)
+ 234 00b4 8D83      		std Y+5,r24
+ 235 00b6 CC24      		clr r12
+ 236 00b8 DD24      		clr r13
+ 237 00ba 00E0      		ldi r16,lo8(0)
+ 238 00bc 10E0      		ldi r17,hi8(0)
+ 239 00be 0EC0      		rjmp .L58
+ 240               	.L9:
+ 154:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	
+ 155:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	// Main loop
+ 156:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 	while (1) {
+ 157:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		// Wait for message
+ 158:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		while (!bios_msg_full) {
+ 159:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #if defined(AUTOSTART)
+ 160:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (bios_state == BIOS_APP && autostart_cnt == AUTOSTART) {
+ 242               	.LM25:
+ 243 00c0 C156      		subi r28,lo8(-159)
+ 244 00c2 DF4F      		sbci r29,hi8(-159)
+ 245 00c4 F881      		ld r31,Y
+ 246 00c6 CF59      		subi r28,lo8(159)
+ 247 00c8 D040      		sbci r29,hi8(159)
+ 248 00ca F130      		cpi r31,lo8(1)
+ 249 00cc 39F4      		brne .L58
+ 250 00ce 8091 0000 		lds r24,autostart_cnt
+ 251 00d2 8530      		cpi r24,lo8(5)
+ 252 00d4 19F4      		brne .L58
+ 161:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				app_reset();
+ 254               	.LM26:
+ 255 00d6 E0E0      		ldi r30,lo8(0)
+ 256 00d8 F0E0      		ldi r31,hi8(0)
+ 257 00da 0995      		icall
+ 258               	.L58:
+ 260               	.LM27:
+ 261 00dc 8091 0000 		lds r24,bios_msg_full
+ 262 00e0 8823      		tst r24
+ 263 00e2 71F3      		breq .L9
+ 162:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 163:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** #endif
+ 164:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+ 165:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		
+ 166:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		nmt_type = (bios_msg.Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE;
+ 265               	.LM28:
+ 266 00e4 2A89      		ldd r18,Y+18
+ 167:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		
+ 168:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		switch (bios_state) {
+ 268               	.LM29:
+ 269 00e6 C156      		subi r28,lo8(-159)
+ 270 00e8 DF4F      		sbci r29,hi8(-159)
+ 271 00ea 8881      		ld r24,Y
+ 272 00ec CF59      		subi r28,lo8(159)
+ 273 00ee D040      		sbci r29,hi8(159)
+ 274 00f0 8230      		cpi r24,lo8(2)
+ 275 00f2 61F1      		breq .L15
+ 276 00f4 8330      		cpi r24,lo8(3)
+ 277 00f6 20F4      		brsh .L18
+ 278 00f8 8130      		cpi r24,lo8(1)
+ 279 00fa 09F0      		breq .+2
+ 280 00fc D3C0      		rjmp .L44
+ 281 00fe 0CC0      		rjmp .L14
+ 282               	.L18:
+ 283 0100 C156      		subi r28,lo8(-159)
+ 284 0102 DF4F      		sbci r29,hi8(-159)
+ 285 0104 E881      		ld r30,Y
+ 286 0106 CF59      		subi r28,lo8(159)
+ 287 0108 D040      		sbci r29,hi8(159)
+ 288 010a E330      		cpi r30,lo8(3)
+ 289 010c 09F4      		brne .+2
+ 290 010e 55C0      		rjmp .L16
+ 291 0110 E430      		cpi r30,lo8(4)
+ 292 0112 09F0      		breq .+2
+ 293 0114 C7C0      		rjmp .L44
+ 294 0116 B6C0      		rjmp .L17
+ 295               	.L14:
+ 169:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		case BIOS_APP:
+ 170:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			//if (nmt_type == CAN_NMT_START_APP) {
+ 171:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (nmt_type == CAN_NMT_START_APP && bios_msg.DataLength == 4 &&
+ 297               	.LM30:
+ 298 0118 2432      		cpi r18,lo8(36)
+ 299 011a C1F4      		brne .L15
+ 300 011c 8C89      		ldd r24,Y+20
+ 301 011e 8430      		cpi r24,lo8(4)
+ 302 0120 09F0      		breq .+2
+ 303 0122 C0C0      		rjmp .L44
+ 304 0124 8F89      		ldd r24,Y+23
+ 305 0126 813A      		cpi r24,lo8(-95)
+ 306 0128 09F0      		breq .+2
+ 307 012a BCC0      		rjmp .L44
+ 308 012c 888D      		ldd r24,Y+24
+ 309 012e 8F36      		cpi r24,lo8(111)
+ 310 0130 09F0      		breq .+2
+ 311 0132 B8C0      		rjmp .L44
+ 312 0134 898D      		ldd r24,Y+25
+ 313 0136 8A31      		cpi r24,lo8(26)
+ 314 0138 09F0      		breq .+2
+ 315 013a B4C0      		rjmp .L44
+ 316 013c 8A8D      		ldd r24,Y+26
+ 317 013e 8D31      		cpi r24,lo8(29)
+ 318 0140 09F0      		breq .+2
+ 319 0142 B0C0      		rjmp .L44
+ 172:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					bios_msg.Data.bytes[0] == (hwid&0xff) && bios_msg.Data.bytes[1] == ((hwid>>8)&0xff) &&
+ 173:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					bios_msg.Data.bytes[2] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[3] == ((hwid>>24)&0xff) ) {
+ 174:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				app_reset(); // Will never return
+ 321               	.LM31:
+ 322 0144 E0E0      		ldi r30,lo8(0)
+ 323 0146 F0E0      		ldi r31,hi8(0)
+ 324 0148 0995      		icall
+ 325 014a ACC0      		rjmp .L44
+ 326               	.L15:
+ 175:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 176:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			// Fall through
+ 177:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		case BIOS_NOAPP:
+ 178:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			//if (nmt_type == CAN_NMT_PGM_START) {
+ 179:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (nmt_type == CAN_NMT_PGM_START && bios_msg.DataLength == 8 &&
+ 328               	.LM32:
+ 329 014c 2C30      		cpi r18,lo8(12)
+ 330 014e 09F0      		breq .+2
+ 331 0150 A9C0      		rjmp .L44
+ 332 0152 8C89      		ldd r24,Y+20
+ 333 0154 8830      		cpi r24,lo8(8)
+ 334 0156 09F0      		breq .+2
+ 335 0158 A5C0      		rjmp .L44
+ 336 015a 8B8D      		ldd r24,Y+27
+ 337 015c 813A      		cpi r24,lo8(-95)
+ 338 015e 09F0      		breq .+2
+ 339 0160 A1C0      		rjmp .L44
+ 340 0162 8C8D      		ldd r24,Y+28
+ 341 0164 8F36      		cpi r24,lo8(111)
+ 342 0166 09F0      		breq .+2
+ 343 0168 9DC0      		rjmp .L44
+ 344 016a 8D8D      		ldd r24,Y+29
+ 345 016c 8A31      		cpi r24,lo8(26)
+ 346 016e 09F0      		breq .+2
+ 347 0170 99C0      		rjmp .L44
+ 348 0172 8E8D      		ldd r24,Y+30
+ 349 0174 8D31      		cpi r24,lo8(29)
+ 350 0176 09F0      		breq .+2
+ 351 0178 95C0      		rjmp .L44
+ 180:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					bios_msg.Data.bytes[4] == (hwid&0xff) && bios_msg.Data.bytes[5] == ((hwid>>8)&0xff) &&
+ 181:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					bios_msg.Data.bytes[6] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[7] == ((hwid>>24)&0xff) ) {
+ 182:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Set base address
+ 183:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				base_addr = bios_msg.Data.words[0];
+ 353               	.LM33:
+ 354 017a CF88      		ldd r12,Y+23
+ 355 017c D88C      		ldd r13,Y+24
+ 184:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				flash_init(pagebuf);
+ 357               	.LM34:
+ 358 017e CE01      		movw r24,r28
+ 359 0180 4F96      		adiw r24,31
+ 360 0182 0E94 0000 		call flash_init
+ 185:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				//send CAN_NMT_PGM_ACK(offset)
+ 186:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+ 362               	.LM35:
+ 363 0186 80E0      		ldi r24,lo8(1860096)
+ 364 0188 92E6      		ldi r25,hi8(1860096)
+ 365 018a ACE1      		ldi r26,hlo8(1860096)
+ 366 018c B0E0      		ldi r27,hhi8(1860096)
+ 367 018e 8983      		std Y+1,r24
+ 368 0190 9A83      		std Y+2,r25
+ 369 0192 AB83      		std Y+3,r26
+ 370 0194 BC83      		std Y+4,r27
+ 187:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				tx_msg.Data.words[0] = base_addr;
+ 372               	.LM36:
+ 373 0196 D986      		std Y+9,r13
+ 374 0198 C886      		std Y+8,r12
+ 375 019a F3E0      		ldi r31,lo8(3)
+ 376 019c C156      		subi r28,lo8(-159)
+ 377 019e DF4F      		sbci r29,hi8(-159)
+ 378 01a0 F883      		st Y,r31
+ 379 01a2 CF59      		subi r28,lo8(159)
+ 380 01a4 D040      		sbci r29,hi8(159)
+ 381 01a6 78C0      		rjmp .L52
+ 382               	.L48:
+ 383               	.LBB9:
+ 188:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				send_msg = 1;
+ 189:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				bios_state = BIOS_PGM;
+ 190:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 191:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			break;
+ 192:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		case BIOS_PGM:
+ 193:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			// Default to send CAN_NMT_PGM_ACK(offset)
+ 194:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			tx_msg.Id = CAN_ID_NMT_PGM_ACK;
+ 195:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			
+ 196:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (nmt_type == CAN_NMT_PGM_DATA) {
+ 197:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Set address = base address + offset.
+ 198:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				offset = bios_msg.Data.words[0];
+ 199:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				addr = base_addr + offset;
+ 200:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				
+ 201:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// One of ACK and NACK will be sent, both have offset as data.
+ 202:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				tx_msg.Data.words[0] = offset;
+ 203:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				send_msg = 1;
+ 204:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 205:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Flash all data sent, beginning at addr.
+ 206:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
+ 207:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				uint8_t i;
+ 208:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				for (i=1; i<len; i++) { // Skip first word (offset).
+ 209:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					
+ 210:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					// Abort if trying to write in BIOS area.
+ 211:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					if (addr >= (uint16_t)&__bios_start) {
+ 212:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 						// Send CAN_NMT_PGM_NACK(offset).
+ 213:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 						tx_msg.Id = CAN_ID_NMT_PGM_NACK;
+ 385               	.LM37:
+ 386 01a8 80E0      		ldi r24,lo8(2122240)
+ 387 01aa 92E6      		ldi r25,hi8(2122240)
+ 388 01ac A0E2      		ldi r26,hlo8(2122240)
+ 389 01ae B0E0      		ldi r27,hhi8(2122240)
+ 390 01b0 8983      		std Y+1,r24
+ 391 01b2 9A83      		std Y+2,r25
+ 392 01b4 AB83      		std Y+3,r26
+ 393 01b6 BC83      		std Y+4,r27
+ 394 01b8 30C0      		rjmp .L38
+ 395               	.L16:
+ 396               	.LBE9:
+ 398               	.LM38:
+ 399 01ba 80E0      		ldi r24,lo8(1860096)
+ 400 01bc 92E6      		ldi r25,hi8(1860096)
+ 401 01be ACE1      		ldi r26,hlo8(1860096)
+ 402 01c0 B0E0      		ldi r27,hhi8(1860096)
+ 403 01c2 8983      		std Y+1,r24
+ 404 01c4 9A83      		std Y+2,r25
+ 405 01c6 AB83      		std Y+3,r26
+ 406 01c8 BC83      		std Y+4,r27
+ 408               	.LM39:
+ 409 01ca 2031      		cpi r18,lo8(16)
+ 410 01cc 69F5      		brne .L32
+ 411               	.LBB10:
+ 413               	.LM40:
+ 414 01ce 8F89      		ldd r24,Y+23
+ 415 01d0 988D      		ldd r25,Y+24
+ 417               	.LM41:
+ 418 01d2 8601      		movw r16,r12
+ 419 01d4 080F      		add r16,r24
+ 420 01d6 191F      		adc r17,r25
+ 422               	.LM42:
+ 423 01d8 9987      		std Y+9,r25
+ 424 01da 8887      		std Y+8,r24
+ 426               	.LM43:
+ 427 01dc 8C89      		ldd r24,Y+20
+ 428 01de 9927      		clr r25
+ 429 01e0 0196      		adiw r24,1
+ 430 01e2 62E0      		ldi r22,lo8(2)
+ 431 01e4 70E0      		ldi r23,hi8(2)
+ 432 01e6 0E94 0000 		call __divmodhi4
+ 433 01ea E62E      		mov r14,r22
+ 434 01ec 91E0      		ldi r25,lo8(1)
+ 435 01ee F92E      		mov r15,r25
+ 436 01f0 12C0      		rjmp .L34
+ 437               	.L35:
+ 439               	.LM44:
+ 440 01f2 80E0      		ldi r24,hi8(__bios_start)
+ 441 01f4 0030      		cpi r16,lo8(__bios_start)
+ 442 01f6 1807      		cpc r17,r24
+ 443 01f8 B8F6      		brsh .L48
+ 214:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 						break; //for loop
+ 215:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					}
+ 216:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 217:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					data = bios_msg.Data.words[i];
+ 218:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					flash_write_word(addr, data);
+ 445               	.LM45:
+ 446 01fa EF2D      		mov r30,r15
+ 447 01fc FF27      		clr r31
+ 448 01fe EE0F      		lsl r30
+ 449 0200 FF1F      		rol r31
+ 450 0202 EC0F      		add r30,r28
+ 451 0204 FD1F      		adc r31,r29
+ 452 0206 6789      		ldd r22,Z+23
+ 453 0208 708D      		ldd r23,Z+24
+ 454 020a C801      		movw r24,r16
+ 455 020c 0E94 0000 		call flash_write_word
+ 219:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					addr += 2;
+ 457               	.LM46:
+ 458 0210 0E5F      		subi r16,lo8(-(2))
+ 459 0212 1F4F      		sbci r17,hi8(-(2))
+ 461               	.LM47:
+ 462 0214 F394      		inc r15
+ 463               	.L34:
+ 464 0216 FE14      		cp r15,r14
+ 465 0218 60F3      		brlo .L35
+ 466               	.L38:
+ 220:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				}
+ 221:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Adjust addr if an odd number of bytes were sent, for use in crc calc.
+ 222:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				addr -= bios_msg.DataLength & 1; 
+ 468               	.LM48:
+ 469 021a 8C89      		ldd r24,Y+20
+ 470 021c 9927      		clr r25
+ 471 021e 8170      		andi r24,lo8(1)
+ 472 0220 9070      		andi r25,hi8(1)
+ 473 0222 081B      		sub r16,r24
+ 474 0224 190B      		sbc r17,r25
+ 475 0226 38C0      		rjmp .L52
+ 476               	.L32:
+ 477               	.LBE10:
+ 223:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 224:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (nmt_type == CAN_NMT_PGM_END) {
+ 479               	.LM49:
+ 480 0228 2431      		cpi r18,lo8(20)
+ 481 022a 09F0      		breq .+2
+ 482 022c 3BC0      		rjmp .L44
+ 483               	.LBB11:
+ 225:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Make sure a partly filled page will be flashed.
+ 226:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				flash_flush_buffer();
+ 485               	.LM50:
+ 486 022e 0E94 0000 		call flash_flush_buffer
+ 487 0232 F601      		movw r30,r12
+ 488 0234 20E0      		ldi r18,lo8(0)
+ 489 0236 30E0      		ldi r19,hi8(0)
+ 490 0238 19C0      		rjmp .L40
+ 491               	.L41:
+ 492               	.LBB12:
+ 227:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				
+ 228:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// Calculate crc on written data.
+ 229:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				//TODO: This will not work if data is not sent sequentially without
+ 230:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// holes, starting with offset=0. We might want to send a NACK if the
+ 231:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// offset in a CAN_NMT_PGM_DATA msg differs from the expected offset.
+ 232:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				uint16_t loc, crc = 0;
+ 233:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				for (loc = base_addr; loc < addr; loc++) { // addr will be last location written + 2.
+ 234:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 					crc = _crc16_update(crc, pgm_read_byte(loc));
+ 494               	.LM51:
+ 495               	/* #APP */
+ 496 023a 8491      		lpm r24, Z
+ 497               		
+ 498               	/* #NOAPP */
+ 499               	.LBE12:
+ 500               	.LBB13:
+ 501               	.LBB14:
+ 503               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** /* Copyright (c) 2002, 2003, 2004  Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    Copyright (c) 2005, Joerg Wunsch
+   3:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+   5:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+   8:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  11:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  16:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  20:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  32:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** /* $Id: crc16.h,v 1.2.2.1 2006/04/19 20:35:54 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  34:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** #ifndef _UTIL_CRC16_H_
+  35:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** #define _UTIL_CRC16_H_
+  36:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  37:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** #include <stdint.h>
+  38:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  39:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** /** \defgroup util_crc <util/crc16.h>: CRC Computations
+  40:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \code#include <util/crc16.h>\endcode
+  41:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  42:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     This header file provides a optimized inline functions for calculating
+  43:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     cyclic redundancy checks (CRC) using common polynomials.
+  44:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  45:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \par References:
+  46:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  47:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \par
+  48:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  49:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     See the Dallas Semiconductor app note 27 for 8051 assembler example and
+  50:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     general CRC optimization suggestions. The table on the last page of the
+  51:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     app note is the key to understanding these implementations.
+  52:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  53:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \par
+  54:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  55:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     Jack Crenshaw's "Implementing CRCs" article in the January 1992 isue of \e
+  56:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     Embedded \e Systems \e Programming. This may be difficult to find, but it
+  57:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     explains CRC's in very clear and concise terms. Well worth the effort to
+  58:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     obtain a copy.
+  59:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  60:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     A typical application would look like:
+  61:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  62:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \code
+  63:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     // Dallas iButton test vector.
+  64:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     uint8_t serno[] = { 0x02, 0x1c, 0xb8, 0x01, 0, 0, 0, 0xa2 };
+  65:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  66:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     int
+  67:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     checkcrc(void)
+  68:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     {
+  69:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	uint8_t crc = 0, i;
+  70:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  71:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	for (i = 0; i < sizeof serno / sizeof serno[0]; i++)
+  72:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	    crc = _crc_ibutton_update(crc, serno[i]);
+  73:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  74:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	return crc; // must be 0
+  75:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     }
+  76:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \endcode
+  77:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** */
+  78:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  79:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** /** \ingroup util_crc
+  80:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     Optimized CRC-16 calculation.
+  81:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  82:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     Polynomial: x^16 + x^15 + x^2 + 1 (0xa001)<br>
+  83:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     Initial value: 0xffff
+  84:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  85:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     This CRC is normally used in disk-drive controllers.
+  86:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  87:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     The following is the equivalent functionality written in C.
+  88:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  89:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \code
+  90:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     uint16_t
+  91:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     crc16_update(uint16_t crc, uint8_t a)
+  92:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     {
+  93:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	int i;
+  94:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+  95:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	crc ^= a;
+  96:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	for (i = 0; i < 8; ++i)
+  97:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	{
+  98:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	    if (crc & 1)
+  99:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 		crc = (crc >> 1) ^ 0xA001;
+ 100:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	    else
+ 101:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 		crc = (crc >> 1);
+ 102:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	}
+ 103:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+ 104:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	return crc;
+ 105:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     }
+ 106:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+ 107:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h ****     \endcode */
+ 108:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+ 109:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** static __inline__ uint16_t
+ 110:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** _crc16_update(uint16_t __crc, uint8_t __data)
+ 111:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** {
+ 112:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	uint8_t __tmp;
+ 113:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	uint16_t __ret;
+ 114:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 
+ 115:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/crc16.h **** 	__asm__ __volatile__ (
+ 505               	.LM52:
+ 506               	/* #APP */
+ 507 023c 2827      		eor r18,r24
+ 508 023e 822F      		mov r24,r18
+ 509 0240 8295      		swap r24
+ 510 0242 8227      		eor r24,r18
+ 511 0244 082E      		mov __tmp_reg__,r24
+ 512 0246 8695      		lsr r24
+ 513 0248 8695      		lsr r24
+ 514 024a 8025      		eor r24,__tmp_reg__
+ 515 024c 082E      		mov __tmp_reg__,r24
+ 516 024e 8695      		lsr r24
+ 517 0250 8025      		eor r24,__tmp_reg__
+ 518 0252 8770      		andi r24,0x07
+ 519 0254 022E      		mov __tmp_reg__,r18
+ 520 0256 232F      		mov r18,r19
+ 521 0258 8695      		lsr r24
+ 522 025a 0794      		ror __tmp_reg__
+ 523 025c 8795      		ror r24
+ 524 025e 302D      		mov r19,__tmp_reg__
+ 525 0260 2827      		eor r18,r24
+ 526 0262 0694      		lsr __tmp_reg__
+ 527 0264 8795      		ror r24
+ 528 0266 3025      		eor r19,__tmp_reg__
+ 529 0268 2827      		eor r18,r24
+ 530               	/* #NOAPP */
+ 531               	.LBE14:
+ 532               	.LBE13:
+ 534               	.Ltext2:
+ 536               	.LM53:
+ 537 026a 3196      		adiw r30,1
+ 538               	.L40:
+ 539 026c E017      		cp r30,r16
+ 540 026e F107      		cpc r31,r17
+ 541 0270 20F3      		brlo .L41
+ 235:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				}
+ 236:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				
+ 237:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				tx_msg.Data.words[0] = crc;
+ 543               	.LM54:
+ 544 0272 3987      		std Y+9,r19
+ 545 0274 2887      		std Y+8,r18
+ 546 0276 E4E0      		ldi r30,lo8(4)
+ 547 0278 C156      		subi r28,lo8(-159)
+ 548 027a DF4F      		sbci r29,hi8(-159)
+ 549 027c E883      		st Y,r30
+ 550 027e CF59      		subi r28,lo8(159)
+ 551 0280 D040      		sbci r29,hi8(159)
+ 552 0282 0AC0      		rjmp .L52
+ 553               	.L17:
+ 554               	.LBE11:
+ 238:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				send_msg = 1;
+ 239:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				bios_state = BIOS_END_PGM;
+ 240:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 241:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			break;
+ 242:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		case BIOS_END_PGM:
+ 243:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			if (nmt_type == CAN_NMT_PGM_COPY) {
+ 556               	.LM55:
+ 557 0284 2831      		cpi r18,lo8(24)
+ 558 0286 71F4      		brne .L44
+ 244:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// For BIOS updating over CAN. Upload bios to application area,
+ 245:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// send this message with correct parameters to copy data from
+ 246:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// application to bios area and pray it will come alive again.
+ 247:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				flash_copy_data(bios_msg.Data.words[0], 
+ 560               	.LM56:
+ 561 0288 4B8D      		ldd r20,Y+27
+ 562 028a 5C8D      		ldd r21,Y+28
+ 563 028c 698D      		ldd r22,Y+25
+ 564 028e 7A8D      		ldd r23,Y+26
+ 565 0290 8F89      		ldd r24,Y+23
+ 566 0292 988D      		ldd r25,Y+24
+ 567 0294 0E94 0000 		call flash_copy_data
+ 568               	.L52:
+ 248:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				                bios_msg.Data.words[1], 
+ 249:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				                bios_msg.Data.words[2]);
+ 250:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 				// flash_copy_data will never return.
+ 251:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			}
+ 252:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+ 253:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		
+ 254:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		if (send_msg) {
+ 255:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			while (Can_Send(&tx_msg) != CAN_OK);
+ 570               	.LM57:
+ 571 0298 CE01      		movw r24,r28
+ 572 029a 0196      		adiw r24,1
+ 573 029c 0E94 0000 		call Can_Send
+ 574 02a0 8130      		cpi r24,lo8(1)
+ 575 02a2 D1F7      		brne .L52
+ 576               	.L44:
+ 256:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 			send_msg = 0;
+ 257:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		}
+ 258:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 
+ 259:/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c **** 		bios_msg_full = 0; // We're done with this message, ready for the next.
+ 578               	.LM58:
+ 579 02a4 1092 0000 		sts bios_msg_full,__zero_reg__
+ 580 02a8 19CF      		rjmp .L58
+ 581               	/* epilogue: frame size=159 */
+ 582               	/* epilogue: noreturn */
+ 583               	/* epilogue end (size=0) */
+ 584               	/* function main size 377 (373) */
+ 617               	.Lscope0:
+ 620               	.global	Can_Process
+ 622               	Can_Process:
+ 624               	.LM59:
+ 625               	/* prologue: frame size=0 */
+ 626 02aa CF93      		push r28
+ 627 02ac DF93      		push r29
+ 628               	/* prologue end (size=2) */
+ 629 02ae EC01      		movw r28,r24
+ 631               	.LM60:
+ 632 02b0 8D81      		ldd r24,Y+5
+ 633 02b2 8823      		tst r24
+ 634 02b4 09F4      		brne .+2
+ 635 02b6 47C0      		rjmp .L76
+ 637               	.LM61:
+ 638 02b8 2881      		ld r18,Y
+ 639 02ba 3981      		ldd r19,Y+1
+ 640 02bc 4A81      		ldd r20,Y+2
+ 641 02be 5B81      		ldd r21,Y+3
+ 642 02c0 DA01      		movw r26,r20
+ 643 02c2 C901      		movw r24,r18
+ 644 02c4 8070      		andi r24,lo8(503316480)
+ 645 02c6 9070      		andi r25,hi8(503316480)
+ 646 02c8 A070      		andi r26,hlo8(503316480)
+ 647 02ca BE71      		andi r27,hhi8(503316480)
+ 648 02cc 0097      		sbiw r24,0
+ 649 02ce A105      		cpc r26,__zero_reg__
+ 650 02d0 B105      		cpc r27,__zero_reg__
+ 651 02d2 89F5      		brne .L62
+ 653               	.LM62:
+ 654 02d4 4423      		tst r20
+ 655 02d6 31F4      		brne .L64
+ 657               	.LM63:
+ 658               	/* #APP */
+ 659 02d8 A895      		wdr
+ 661               	.LM64:
+ 662               	/* #NOAPP */
+ 663 02da 8091 0000 		lds r24,autostart_cnt
+ 664 02de 8F5F      		subi r24,lo8(-(1))
+ 665 02e0 8093 0000 		sts autostart_cnt,r24
+ 666               	.L64:
+ 668               	.LM65:
+ 669 02e4 8881      		ld r24,Y
+ 670 02e6 9981      		ldd r25,Y+1
+ 671 02e8 AA81      		ldd r26,Y+2
+ 672 02ea BB81      		ldd r27,Y+3
+ 673 02ec A430      		cpi r26,lo8(4)
+ 674 02ee 89F4      		brne .L66
+ 675 02f0 8C81      		ldd r24,Y+4
+ 676 02f2 8430      		cpi r24,lo8(4)
+ 677 02f4 71F4      		brne .L66
+ 678 02f6 8F81      		ldd r24,Y+7
+ 679 02f8 813A      		cpi r24,lo8(-95)
+ 680 02fa 59F4      		brne .L66
+ 681 02fc 8885      		ldd r24,Y+8
+ 682 02fe 8F36      		cpi r24,lo8(111)
+ 683 0300 41F4      		brne .L66
+ 684 0302 8985      		ldd r24,Y+9
+ 685 0304 8A31      		cpi r24,lo8(26)
+ 686 0306 29F4      		brne .L66
+ 687 0308 8A85      		ldd r24,Y+10
+ 688 030a 8D31      		cpi r24,lo8(29)
+ 689 030c 11F4      		brne .L66
+ 691               	.LM66:
+ 692 030e 0E94 0000 		call BIOS_Reset
+ 693               	.L66:
+ 695               	.LM67:
+ 696 0312 8091 0000 		lds r24,bios_msg_full
+ 697 0316 8823      		tst r24
+ 698 0318 B1F4      		brne .L76
+ 700               	.LM68:
+ 701 031a A091 0000 		lds r26,bios_msg_ptr
+ 702 031e B091 0000 		lds r27,(bios_msg_ptr)+1
+ 703 0322 FE01      		movw r30,r28
+ 704 0324 8FE0      		ldi r24,lo8(15)
+ 705               	.L74:
+ 706 0326 0190      		ld r0,Z+
+ 707 0328 0D92      		st X+,r0
+ 708 032a 8150      		subi r24,lo8(-(-1))
+ 709 032c E1F7      		brne .L74
+ 711               	.LM69:
+ 712 032e 81E0      		ldi r24,lo8(1)
+ 713 0330 8093 0000 		sts bios_msg_full,r24
+ 714 0334 08C0      		rjmp .L76
+ 715               	.L62:
+ 717               	.LM70:
+ 718 0336 E091 0000 		lds r30,BIOS_CanCallback
+ 719 033a F091 0000 		lds r31,(BIOS_CanCallback)+1
+ 720 033e 3097      		sbiw r30,0
+ 721 0340 11F0      		breq .L76
+ 723               	.LM71:
+ 724 0342 CE01      		movw r24,r28
+ 725 0344 0995      		icall
+ 726               	.L76:
+ 727               	/* epilogue: frame size=0 */
+ 728 0346 DF91      		pop r29
+ 729 0348 CF91      		pop r28
+ 730 034a 0895      		ret
+ 731               	/* epilogue end (size=3) */
+ 732               	/* function Can_Process size 83 (78) */
+ 734               	.Lscope1:
+ 735               	.global	hwid
+ 736               		.section	.progmem.data,"a",@progbits
+ 739               	hwid:
+ 740 0000 A1        		.byte	-95
+ 741 0001 6F        		.byte	111
+ 742 0002 1A        		.byte	26
+ 743 0003 1D        		.byte	29
+ 744               		.comm BIOS_CanCallback,2,1
+ 745               		.comm bios_msg_full,1,1
+ 746               		.comm bios_msg_ptr,2,1
+ 747               		.comm autostart_cnt,1,1
+ 753               		.text
+ 755               	.Letext0:
+ 756               	/* File "/home/linus/HomeAutomation/trunk/EmbeddedSoftware/AVR/avr-lib/bios/bios.c": code  460 = 0x
+DEFINED SYMBOLS
+                            *ABS*:00000000 bios.c
+     /tmp/ccNvy8dd.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccNvy8dd.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccNvy8dd.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccNvy8dd.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccNvy8dd.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccNvy8dd.s:87     .text:00000000 main
+                            *COM*:00000002 bios_msg_ptr
+                            *COM*:00000001 autostart_cnt
+                            *COM*:00000001 bios_msg_full
+     /tmp/ccNvy8dd.s:622    .text:000002aa Can_Process
+                            *COM*:00000002 BIOS_CanCallback
+     /tmp/ccNvy8dd.s:739    .progmem.data:00000000 hwid
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+__stack
+Can_Init
+BIOS_Reset
+Can_Send
+flash_init
+__divmodhi4
+__bios_start
+flash_write_word
+flash_flush_buffer
+flash_copy_data

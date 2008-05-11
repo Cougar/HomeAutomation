@@ -1,0 +1,580 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o)
+                              bios.o (__divmodhi4)
+/usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+                              bios_export.o (__do_copy_data)
+/usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_clear_bss.o)
+                              bios_export.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_udivmodhi4.o)
+                              /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o) (__udivmodhi4)
+
+Allocating common symbols
+Common symbol       size              file
+
+BIOS_CanCallback    0x2               bios.o
+autostart_cnt       0x1               bios.o
+bios_msg_ptr        0x2               bios.o
+bios_msg_full       0x1               bios.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00004000         xr
+data             0x00800100         0x00000400         rw !x
+eeprom           0x00810000         0x00000200         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+                0x00003180                __bios_start = 0x3180
+                0x00003c00                __boot_start = 0x3c00
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+/DISCARD/
+ *(.vectors)
+
+.app_vectors    0x00000000       0x68
+ *(.app_vectors)
+ .app_vectors   0x00000000       0x68 vectors.o
+                0x00000004                __vector_boot_1
+                0x0000003c                __vector_boot_15
+                0x00000048                __vector_default_18
+                0x00000008                __vector_default_2
+                0x00000040                __vector_default_16
+                0x00000028                __vector_boot_10
+                0x0000000c                __vector_boot_3
+                0x00000058                __vector_boot_22
+                0x00000030                __vector_default_12
+                0x00000034                __vector_boot_13
+                0x0000004c                __vector_boot_19
+                0x00000054                __vector_boot_21
+                0x00000064                __vector_boot_25
+                0x0000001c                __vector_default_7
+                0x00000024                __vector_default_9
+                0x0000002c                __vector_default_11
+                0x00000010                __vector_default_4
+                0x00000014                __vector_boot_5
+                0x00000018                __vector_boot_6
+                0x00000034                __vector_default_13
+                0x0000002c                __vector_boot_11
+                0x00000044                __vector_boot_17
+                0x0000005c                __vector_boot_23
+                0x00000064                __vector_default_25
+                0x00000044                __vector_default_17
+                0x00000010                __vector_boot_4
+                0x00000048                __vector_boot_18
+                0x00000028                __vector_default_10
+                0x00000018                __vector_default_6
+                0x00000038                __vector_boot_14
+                0x00000050                __vector_default_20
+                0x0000000c                __vector_default_3
+                0x0000004c                __vector_default_19
+                0x00000060                __vector_default_24
+                0x00000020                __vector_boot_8
+                0x00000014                __vector_default_5
+                0x00000040                __vector_boot_16
+                0x00000054                __vector_default_21
+                0x00000038                __vector_default_14
+                0x0000005c                __vector_default_23
+                0x00000030                __vector_boot_12
+                0x00000050                __vector_boot_20
+                0x00000060                __vector_boot_24
+                0x0000001c                __vector_boot_7
+                0x00000024                __vector_boot_9
+                0x00000058                __vector_default_22
+                0x00000020                __vector_default_8
+                0x0000003c                __vector_default_15
+                0x00000004                __vector_default_1
+
+.text           0x00003180      0xa3e
+                0x00003180                __ctors_start = .
+ *(.ctors)
+                0x00003180                __ctors_end = .
+                0x00003180                __dtors_start = .
+ *(.dtors)
+                0x00003180                __dtors_end = .
+ *(.progmem.gcc*)
+ *(.progmem*)
+ .progmem.data  0x00003180        0x4 bios.o
+                0x00003180                hwid
+                0x00003184                . = ALIGN (0x2)
+ *(.init0)
+ *(.init1)
+ *(.init2)
+ .init2         0x00003184        0xc /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+ *(.init3)
+ *(.init4)
+ .init4         0x00003190       0x16 /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+                0x00003190                __do_copy_data
+ .init4         0x000031a6       0x10 /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_clear_bss.o)
+                0x000031a6                __do_clear_bss
+ *(.init5)
+ *(.init6)
+ *(.init7)
+ *(.init8)
+ *(.init9)
+ .init9         0x000031b6        0x4 /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+ *(.text)
+ .text          0x000031ba        0x4 /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+                0x000031ba                __vector_22
+                0x000031ba                __vector_1
+                0x000031ba                __vector_24
+                0x000031ba                __vector_12
+                0x000031ba                __bad_interrupt
+                0x000031ba                __vector_6
+                0x000031ba                __vector_3
+                0x000031ba                __vector_23
+                0x000031ba                __vector_25
+                0x000031ba                __vector_11
+                0x000031ba                __vector_13
+                0x000031ba                __vector_17
+                0x000031ba                __vector_19
+                0x000031ba                __vector_7
+                0x000031ba                __vector_5
+                0x000031ba                __vector_4
+                0x000031ba                __vector_9
+                0x000031ba                __vector_2
+                0x000031ba                __vector_21
+                0x000031ba                __vector_15
+                0x000031ba                __vector_8
+                0x000031ba                __vector_14
+                0x000031ba                __vector_10
+                0x000031ba                __vector_16
+                0x000031ba                __vector_18
+                0x000031ba                __vector_20
+ .text          0x000031be       0x10 bios_export.o
+                0x000031c2                BIOS_CanSend
+                0x000031be                BIOS_Reset
+ .text          0x000031ce      0x34c bios.o
+                0x000031ce                main
+                0x00003478                Can_Process
+ .text          0x0000351a       0x2c flash.o
+                0x0000351a                flash_load_buffer
+ .text          0x00003546      0x62a drivers/can/mcp2515/mcp2515.o
+                0x000036be                MCP2515_WriteCanId
+                0x00003b40                Can_Send
+                0x000038f6                Can_Init
+                0x00003a60                MCP2515_ReadStatus
+                0x00003816                MCP2515_ConfigRate
+                0x00003892                MCP2515_Init
+                0x0000373a                MCP2515_InitRXInterrupts
+                0x00003a7e                Can_Receive
+                0x00003712                MCP2515_SetRegister
+                0x00003916                MCP2515_ReadCanMsg
+                0x000035c2                MCP2515_SPIWriteCanId
+                0x0000374e                MCP2515_InitCanBuffers
+                0x000036e8                MCP2515_ReadRegister
+                0x00003546                MCP2515_Reset
+                0x00003830                MCP2515_ModifyRegister
+                0x00003658                MCP2515_WriteCanMsg
+                0x00003aba                __vector_boot_2
+                0x0000359e                MCP2515_StartTransmit
+                0x00003b12                MCP2515_GetNextFreeTXBuf
+                0x00003862                MCP2515_SetCanCtrl
+                0x00003b70                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x00003b70       0x26 /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o)
+                0x00003b70                __divmodhi4
+                0x00003b70                _div
+ .text.libgcc   0x00003b96       0x28 /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_udivmodhi4.o)
+                0x00003b96                __udivmodhi4
+                0x00003bbe                . = ALIGN (0x2)
+ *(.fini9)
+ *(.fini8)
+ *(.fini7)
+ *(.fini6)
+ *(.fini5)
+ *(.fini4)
+ *(.fini3)
+ *(.fini2)
+ *(.fini1)
+ *(.fini0)
+                0x00003bbe                _etext = .
+
+.bootloader     0x00003c00      0x3f2
+ *(.boot_vectors)
+ .boot_vectors  0x00003c00       0x68 vectors.o
+                0x00003c00                __vector_default
+                0x00003c00                __boot_vectors
+                0x00003c68                __bootloader_start = .
+ *(.bootloader)
+ .bootloader    0x00003c68       0xfe flash.o
+                0x00003c68                flash_flush_buffer
+                0x00003d4c                flash_init
+                0x00003cdc                flash_write_word
+                0x00003f80                . = ((0x4000 - __boot_start) - 0x80)
+ *fill*         0x00003d66      0x21a 00
+                0x00003f80                __flash_code_start = .
+ *(.flash_code)
+ .flash_code    0x00003f80       0x72 flash.o
+                0x00003f80                flash_copy_data
+                0x00003ff2                __bootloader_end = .
+
+.data           0x00800100        0x0 load address 0x00003bbe
+                0x00800100                PROVIDE (__data_start, .)
+ *(.data)
+ *(.gnu.linkonce.d*)
+                0x00800100                . = ALIGN (0x2)
+                0x00800100                _edata = .
+                0x00800100                PROVIDE (__data_end, .)
+
+.bss            0x00800100       0x1b
+                0x00800100                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00800100        0x5 flash.o
+ .bss           0x00800105       0x10 drivers/can/mcp2515/mcp2515.o
+ *(COMMON)
+ COMMON         0x00800115        0x6 bios.o
+                0x00800115                BIOS_CanCallback
+                0x00800117                autostart_cnt
+                0x00800118                bios_msg_ptr
+                0x0080011a                bios_msg_full
+                0x0080011b                PROVIDE (__bss_end, .)
+                0x00003bbe                __data_load_start = LOADADDR (.data)
+                0x00003bbe                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0080011b                __temp = .
+                0x00003143                . = ((__boot_start - (__data_load_end - __bios_start)) - 0x7f)
+                0x00003180                __bios_optimal_start = ALIGN (0x80)
+                0x0080011b                . = __temp
+                0x00000e80                __bios_size = (0x4000 - __bios_start)
+
+.noinit         0x0080011b        0x0
+                0x0080011b                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0080011b                PROVIDE (__noinit_end, .)
+                0x0080011b                _end = .
+                0x0080011b                PROVIDE (__bios_ram_end, .)
+
+.eeprom         0x00810000        0x0
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.stab           0x00000000     0x26f4
+ *(.stab)
+ .stab          0x00000000      0x36c /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+ .stab          0x0000036c      0x30c bios_export.o
+                                0x318 (size before relaxing)
+ .stab          0x00000678      0x708 bios.o
+                                0x8c4 (size before relaxing)
+ .stab          0x00000d80      0x528 flash.o
+                                0x75c (size before relaxing)
+ .stab          0x000012a8      0xeac drivers/can/mcp2515/mcp2515.o
+                               0x1068 (size before relaxing)
+ .stab          0x00002154      0x5a0 vectors.o
+                                0x5ac (size before relaxing)
+
+.stabstr        0x00000000     0x132f
+ *(.stabstr)
+ .stabstr       0x00000000     0x132f /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+LOAD /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/libm.a
+LOAD bios_export.o
+LOAD bios.o
+LOAD flash.o
+LOAD drivers/can/mcp2515/mcp2515.o
+LOAD vectors.o
+LOAD /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a
+LOAD /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/libc.a
+LOAD /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a
+OUTPUT(bios.elf elf32-avr)
+
+Cross Reference Table
+
+Symbol                                            File
+BIOS_CanCallback                                  bios.o
+BIOS_CanSend                                      bios_export.o
+BIOS_Reset                                        bios_export.o
+                                                  bios.o
+Can_Init                                          drivers/can/mcp2515/mcp2515.o
+                                                  bios.o
+Can_Process                                       bios.o
+                                                  drivers/can/mcp2515/mcp2515.o
+Can_Receive                                       drivers/can/mcp2515/mcp2515.o
+Can_Send                                          drivers/can/mcp2515/mcp2515.o
+                                                  bios.o
+                                                  bios_export.o
+MCP2515_ConfigRate                                drivers/can/mcp2515/mcp2515.o
+MCP2515_GetNextFreeTXBuf                          drivers/can/mcp2515/mcp2515.o
+MCP2515_Init                                      drivers/can/mcp2515/mcp2515.o
+MCP2515_InitCanBuffers                            drivers/can/mcp2515/mcp2515.o
+MCP2515_InitRXInterrupts                          drivers/can/mcp2515/mcp2515.o
+MCP2515_ModifyRegister                            drivers/can/mcp2515/mcp2515.o
+MCP2515_ReadCanMsg                                drivers/can/mcp2515/mcp2515.o
+MCP2515_ReadRegister                              drivers/can/mcp2515/mcp2515.o
+MCP2515_ReadStatus                                drivers/can/mcp2515/mcp2515.o
+MCP2515_Reset                                     drivers/can/mcp2515/mcp2515.o
+MCP2515_SPIWriteCanId                             drivers/can/mcp2515/mcp2515.o
+MCP2515_SetCanCtrl                                drivers/can/mcp2515/mcp2515.o
+MCP2515_SetRegister                               drivers/can/mcp2515/mcp2515.o
+MCP2515_StartTransmit                             drivers/can/mcp2515/mcp2515.o
+MCP2515_WriteCanId                                drivers/can/mcp2515/mcp2515.o
+MCP2515_WriteCanMsg                               drivers/can/mcp2515/mcp2515.o
+__bad_interrupt                                   /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__bios_start                                      bios.o
+__boot_vectors                                    vectors.o
+__bss_end                                         /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_clear_bss.o)
+__data_end                                        /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+__data_load_start                                 /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+__data_start                                      /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+__divmodhi4                                       /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o)
+                                                  bios.o
+__do_clear_bss                                    /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_clear_bss.o)
+                                                  drivers/can/mcp2515/mcp2515.o
+                                                  flash.o
+                                                  bios.o
+                                                  bios_export.o
+__do_copy_data                                    /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_copy_data.o)
+                                                  drivers/can/mcp2515/mcp2515.o
+                                                  flash.o
+                                                  bios.o
+                                                  bios_export.o
+__flash_code_start                                flash.o
+__heap_end                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__init                                            /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+                                                  vectors.o
+__stack                                           /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+                                                  bios.o
+__udivmodhi4                                      /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_udivmodhi4.o)
+                                                  /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o)
+__vector_1                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_10                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_11                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_12                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_13                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_14                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_15                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_16                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_17                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_18                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_19                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_2                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_20                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_21                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_22                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_23                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_24                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_25                                       /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_3                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_4                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_5                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_6                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_7                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_8                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_9                                        /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_boot_1                                   vectors.o
+__vector_boot_10                                  vectors.o
+__vector_boot_11                                  vectors.o
+__vector_boot_12                                  vectors.o
+__vector_boot_13                                  vectors.o
+__vector_boot_14                                  vectors.o
+__vector_boot_15                                  vectors.o
+__vector_boot_16                                  vectors.o
+__vector_boot_17                                  vectors.o
+__vector_boot_18                                  vectors.o
+__vector_boot_19                                  vectors.o
+__vector_boot_2                                   vectors.o
+                                                  drivers/can/mcp2515/mcp2515.o
+__vector_boot_20                                  vectors.o
+__vector_boot_21                                  vectors.o
+__vector_boot_22                                  vectors.o
+__vector_boot_23                                  vectors.o
+__vector_boot_24                                  vectors.o
+__vector_boot_25                                  vectors.o
+__vector_boot_3                                   vectors.o
+__vector_boot_4                                   vectors.o
+__vector_boot_5                                   vectors.o
+__vector_boot_6                                   vectors.o
+__vector_boot_7                                   vectors.o
+__vector_boot_8                                   vectors.o
+__vector_boot_9                                   vectors.o
+__vector_default                                  vectors.o
+                                                  /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+__vector_default_1                                vectors.o
+__vector_default_10                               vectors.o
+__vector_default_11                               vectors.o
+__vector_default_12                               vectors.o
+__vector_default_13                               vectors.o
+__vector_default_14                               vectors.o
+__vector_default_15                               vectors.o
+__vector_default_16                               vectors.o
+__vector_default_17                               vectors.o
+__vector_default_18                               vectors.o
+__vector_default_19                               vectors.o
+__vector_default_2                                vectors.o
+__vector_default_20                               vectors.o
+__vector_default_21                               vectors.o
+__vector_default_22                               vectors.o
+__vector_default_23                               vectors.o
+__vector_default_24                               vectors.o
+__vector_default_25                               vectors.o
+__vector_default_3                                vectors.o
+__vector_default_4                                vectors.o
+__vector_default_5                                vectors.o
+__vector_default_6                                vectors.o
+__vector_default_7                                vectors.o
+__vector_default_8                                vectors.o
+__vector_default_9                                vectors.o
+__vectors                                         /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
+_div                                              /usr/lib/gcc/avr/4.1.0/avr5/libgcc.a(_divmodhi4.o)
+autostart_cnt                                     bios.o
+bios_msg_full                                     bios.o
+bios_msg_ptr                                      bios.o
+flash_copy_data                                   flash.o
+                                                  bios.o
+flash_flush_buffer                                flash.o
+                                                  bios.o
+flash_init                                        flash.o
+                                                  bios.o
+flash_load_buffer                                 flash.o
+flash_write_word                                  flash.o
+                                                  bios.o
+hwid                                              bios.o
+main                                              bios.o
+                                                  /usr/lib/gcc/avr/4.1.0/../../../../avr/lib/avr5/crtm168.o
