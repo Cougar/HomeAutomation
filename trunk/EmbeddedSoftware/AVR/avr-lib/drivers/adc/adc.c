@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "adc.h"
 #include <config.h>
+#include "adc.h"
 /*----------------------------------------------
  * Functions
  * --------------------------------------------*/
@@ -44,45 +44,61 @@ uint16_t ADC_Get(uint8_t channel)
 	{
 		switch(channel)//If not, let's switch the admux
 		{
+#if ADCHAN0!=0
 		case 0:
 		    /* Enable ADC0 */
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX2)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN1!=0
 		case 1:
 		    /* Enable ADC1 */
 		    ADMUX |= (1<<MUX0);
 		    ADMUX &= ~((1<<MUX1)|(1<<MUX2)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN2!=0
 		case 2:
 		    /* Enable ADC2 */
 		    ADMUX |= (1<<MUX1);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN3!=0
 		case 3:
 		    /* Enable ADC3 */
 		    ADMUX |= (1<<MUX0)|(1<<MUX1);
 		    ADMUX &= ~((1<<MUX2)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN4!=0
 		case 4:
 		    /* Enable ADC4 */
 		    ADMUX |= (1<<MUX2);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN5!=0
 		case 5:
 		    /* Enable ADC5 */
 		    ADMUX |= (1<<MUX0)|(1<<MUX2);
 		    ADMUX &= ~((1<<MUX1)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN6!=0
 		case 6:
-		    /* Enable ADC6 */
+		    /* Enable ADC6 (only for TQFP&MLF package) */
 		    ADMUX |= (1<<MUX1)|(1<<MUX2);
 		    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
 		    break;
+#endif
+#if ADCHAN7!=0
 		case 7:
-		    /* Enable ADC7 (only for TQFP package) */
+		    /* Enable ADC7 (only for TQFP&MLF package) */
 		    ADMUX |= (1<<MUX0)|(1<<MUX1)|(1<<MUX2);
 		    ADMUX &= ~(1<<MUX3);
 		    break;
+#endif
 		default:
 			break;
 		    //Some kind of error message?

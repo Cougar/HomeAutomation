@@ -22,6 +22,34 @@
 #error only tested on ATmega88/168
 #endif
 
+#if !defined(ADCHAN0) && !defined(ADCHAN1) && !defined(ADCHAN2) && !defined(ADCHAN3) && !defined(ADCHAN4) && !defined(ADCHAN5) && !defined(ADCHAN6) && !defined(ADCHAN7)
+#error No channels defined, either define the AD-channel you use (with ADCHANx=1 in config.inc) or dont use adc driver
+#endif
+#ifndef ADCHAN0
+#define ADCHAN0 0
+#endif
+#ifndef ADCHAN1
+#define ADCHAN1 0
+#endif
+#ifndef ADCHAN2
+#define ADCHAN2 0
+#endif
+#ifndef ADCHAN3
+#define ADCHAN3 0
+#endif
+#ifndef ADCHAN4
+#define ADCHAN4 0
+#endif
+#ifndef ADCHAN5
+#define ADCHAN5 0
+#endif
+#ifndef ADCHAN6
+#define ADCHAN6 0
+#endif
+#ifndef ADCHAN7
+#define ADCHAN7 0
+#endif
+
 /*-----------------------------------------------
  * Includes
  * ---------------------------------------------*/
