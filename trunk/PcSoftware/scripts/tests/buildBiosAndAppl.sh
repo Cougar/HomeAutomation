@@ -6,11 +6,13 @@
 # This script builds default bios and if successful tries to build all the applications
 
 
-
 PERSONALPATH=$HOME"/svn/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal"
 APPLPATH="../../application/"
 TESTNODE="nightTestNode"
 LOGFILE="results.log"
+
+# Put log in separate file
+exec &> $LOGFILE
 
 
 STARTDATE=`date`
@@ -69,6 +71,11 @@ do
 	echo "#######################################"
 	echo ""
     
+    #get svn info of the application
+    cd src
+    svn info
+    cd ..
+    
     # Build application
     if make
 	then
@@ -120,5 +127,4 @@ echo "#######################################"
 echo ""
 
 exit 0
-
 
