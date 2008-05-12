@@ -24,19 +24,20 @@ int main(void)
 	
 	sns_ds18x20_Init();
 
-	while (1) {
-	
+	while (1)
+	{
 		sns_ds18x20_Process();
 	
-		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
-			if ((uint8_t)StdCan_Ret_class(rxMsg) == CAN_CLASS_MODULE_NMT) {
-				
-				if (rxMsg.Header.ModuleType == CAN_CMD_MODULE_NMT_LIST) {
-					sns_ds18x20_List(1);
-				}
+		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK)
+		{
+			if (	StdCan_Ret_class(rxMsg) == CAN_CLASS_MODULE_NMT &&
+				StdCan_Ret_direction(rxMsg) == DIR_TO_OWNER &&
+				rxMsg.Header.Command == CAN_CMD_MODULE_NMT_LIST)
+			{
+				sns_ds18x20_List(1);
 			}
-			else {
-			
+			else
+			{
 				sns_ds18x20_HandleMessage(&rxMsg);
 			}
 		}

@@ -74,9 +74,9 @@ typedef struct {
 #endif
 } StdCan_Msg_t;
 
-#define StdCan_Ret_class(MSG) ((MSG.Header.ClassAndDirection >> 1) & 0x0F)
+#define StdCan_Ret_class(MSG) (uint8_t)((MSG.Header.ClassAndDirection >> 1) & 0x0F)
 #define StdCan_Set_class(MSG, CLASS) MSG.Header.ClassAndDirection &= 0x01; MSG.Header.ClassAndDirection |= (CLASS << 1);
-#define StdCan_Ret_direction(MSG) (MSG.Header.ClassAndDirection & 0x01)
+#define StdCan_Ret_direction(MSG) (uint8_t)(MSG.Header.ClassAndDirection & 0x01)
 #define StdCan_Set_direction(MSG, DIR) MSG.Header.ClassAndDirection &= 0xfe; MSG.Header.ClassAndDirection |= DIR;
 /**
  * @brief Initialize StdCan.
