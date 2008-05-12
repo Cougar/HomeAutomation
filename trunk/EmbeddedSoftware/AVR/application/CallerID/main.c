@@ -65,9 +65,9 @@ int main(void)
 			state = STATE_WAIT;
 		} else if (state == STATE_WAIT) {
 			uint8_t retval = DTMFin_Poll(&rxlen);
-			if (retval == RET_FINISHED) {
+			if (retval == MT8870_Ret_Finished) {
 				state = STATE_STOP;
-			} else if (retval == RET_OVERFLOW) {
+			} else if (retval == MT8870_Ret_Overflow) {
 				state = STATE_IDLE;
 			}
 		} else if (state == STATE_STOP) {
