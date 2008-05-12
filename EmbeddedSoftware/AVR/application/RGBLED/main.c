@@ -44,10 +44,10 @@
 #define RGBLED_CMD_STATUS   		0x00	/* Get status */
 #define RGBLED_CMD_SETRGB   		0x01	/* Set RGB Triplet */
 #define RGBLED_CMD_CHANGERGB  		0x02	/* Change RGB +/- */
-#define RGBLED_CMD_SETPROGRAM 		0x03  /* Set program */
-#define RGBLED_CMD_SETFADESPEED 	0x04  /* Set fadespeed */
-#define RGBLED_CMD_SETDIMSPEED		0x05  /* Set dimspeed */
-#define RGBLED_CMD_SETINTENS  		0x10  /* Set intensity */
+#define RGBLED_CMD_SETPROGRAM 		0x03  	/* Set program */
+#define RGBLED_CMD_SETFADESPEED 	0x04  	/* Set fadespeed */
+#define RGBLED_CMD_SETDIMSPEED		0x05  	/* Set dimspeed */
+#define RGBLED_CMD_SETINTENS  		0x10  	/* Set intensity */
 
 #define APP_TYPE    CAN_APPTYPES_RGBLED
 #define APP_VERSION 0x0001
@@ -284,8 +284,6 @@ int main(void) {
 						if (rxMsg.Data.bytes[3] != 0){
 							dimSpeed = rxMsg.Data.bytes[3];
 						}
-						currProgram = rxMsg.Data.bytes[1];
-						temp_adress = pgm_read_word(&programs[currProgram-1]);
 					} else if( rxMsg.Data.bytes[0] == RGBLED_CMD_SETRGB) {
 						/* Set RGB-triplet! */
 						reformatRGB(rxMsg.Data.bytes[2],rxMsg.Data.bytes[3],rxMsg.Data.bytes[4],0);
@@ -330,7 +328,7 @@ void updateLED(){
     OCR0A = currColor.G * currColor.Intens / 0xff;
     OCR0B = currColor.B * currColor.Intens / 0xff;
     
-	//Bara för debugcrap
+	//Just for debug
 	Can_Message_t txMsg;
 	txMsg.Id = 0x55;
 	txMsg.RemoteFlag = 0;
