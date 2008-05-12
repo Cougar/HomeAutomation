@@ -60,31 +60,9 @@ for testappl in $APPLPATH*
 do
 	echo; echo
 
-	#with symlinks
-#	rm src
-
-	#copy whole application
-    rm -rf src
-    
     #with symlinks
- #   ln -s "$testappl" src
+    ln -s "$testappl" src
  
-	#copy whole application
-	cp -r "$testappl" src 
-
-    #with symlinks
-#    if test -e "src/config.inc"
-#	then
-#		CONF_EXIST=true
-#		echo "config.inc already exist"
-#	else
-#		cp src/config.inc.template src/config.inc
-#		CONF_EXIST=false
-#	fi
-
-	#copy whole application
-	cp src/config.inc.template src/config.inc
-    
     echo ""
 	echo "#######################################"
 	echo "Building $testappl"
@@ -113,15 +91,8 @@ do
 	fi
 
 	make clean
-	    
-	#with symlinks
-#	if CONF_EXIST
-#	then
-#		echo "config.inc existed already, dont remove"
-#	else
-#		echo "removing config.inc"
-#		rm src/config.inc
-#	fi
+	rm src
+	rm config.inc
 	
     continue # On to next application
   echo
@@ -130,7 +101,7 @@ done
 
 # Remove test node after finished building
 cd ..
-rm -rf "$TESTNODE"
+rm -r "$TESTNODE"
 
 ENDDATE=`date`
 
