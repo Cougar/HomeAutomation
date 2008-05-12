@@ -106,8 +106,10 @@ int main(void) {
                             txMsg.Data.bytes[0] = -cel-1;
                             txMsg.Data.bytes[1] = ~(cel_frac_bits<<4);
                         }else{
-                            txMsg.Data.bytes[0] = cel;
-                            txMsg.Data.bytes[1] = (cel_frac_bits<<4);
+                            // txMsg.Data.bytes[0] = cel;
+                            // txMsg.Data.bytes[1] = (cel_frac_bits<<4);
+                        	txMsg.Data.words[0] = (cel<<4 | cel_frac_bits); //Sends temperature compatible with our CAN standard.
+                        
                         }
                     }
 					/* Delay */
