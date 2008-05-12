@@ -1,5 +1,5 @@
 /** 
- * @defgroup mt8870 Mitel DTMF-receiver Library
+ * @defgroup mt8870 MT8870 DTMF-receiver Library
  * @code #include <drivers/DTMF/mt8870/mt8870.h> @endcode
  * 
  * @brief Driver for MT8870 DTMF receiver
