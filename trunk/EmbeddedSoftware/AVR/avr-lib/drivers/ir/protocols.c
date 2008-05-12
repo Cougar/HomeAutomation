@@ -617,7 +617,6 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
  * Reverse-Engineered by Noddan, very similar to RC-5.
  * Not tested with odd adresses since I have no remote that sends them.
  * Don't know what happens with the extra long bit in that case.
- * TODO: Replace all the RC5 with Marantz :D
  * 
  * @param buf
  * 		Pointer to buffer to where to data to parse is stored
@@ -652,12 +651,8 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 		
 	}
 	
-	//rawbits = (uint32_t)1<<17;
 	proto->protocol=IR_PROTO_MARANTZ;
 	proto->timeout=IR_MARANTZ_TIMEOUT;
-	//support RC5-extended keeping second startbit 
-	//remove togglebit
-	//proto->data = rawbits&0x37ff;
 	proto->data = rawbits&0x0001ffff;
 	
 	return IR_OK;
