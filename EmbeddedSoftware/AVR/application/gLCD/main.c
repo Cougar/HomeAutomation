@@ -203,6 +203,12 @@ int main(void)
 				{
 				case SNS_TYPE_TEMPERATURE:
 					sensor_Temperature = rxMsg.Data.words[0];
+					for (jxa = 0; jxa< 8; jxa++){
+						glcdSetXY(0,jxa);
+						for (ixa = 0; ixa < 128; ixa++){
+							glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
+						}
+					}
 					
 
 
