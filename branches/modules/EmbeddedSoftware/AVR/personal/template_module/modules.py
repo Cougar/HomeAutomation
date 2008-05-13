@@ -1,3 +1,5 @@
+#!/bin/env python
+
 # Written by Mattias Runge 2008-05-13
 
 import os
@@ -286,7 +288,11 @@ def main():
 		print str(err) # will print something like "option -a not recognized"
 		usage()
 		sys.exit(2)
-		
+	
+	if len(sys.argv) == 1:
+		usage()
+		sys.exit()
+	
 	for o, a in opts:
 		if o in ("-l", "--list"):
 			print getModules()
