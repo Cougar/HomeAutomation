@@ -239,7 +239,8 @@ def addModule(moduleName):
 	print "Trying to add module " + moduleName
 	
 	try:
-		os.symlink(moddir + "/" + moduleName, localmoddir + "/" + moduleName)
+		os.symlink("../" + moddir + "/" + moduleName, localmoddir + "/" + moduleName)
+		print "Added module successfully"
 	except OSError, (errno, strerror):
 		if errno == 17:
 			print "A link, file or directory named " + moduleName + " is already present in the modules directory, not linking"
