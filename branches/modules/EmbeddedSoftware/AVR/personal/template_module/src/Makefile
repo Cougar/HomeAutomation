@@ -6,6 +6,9 @@ endif
 ifndef LIBDIR
 LIBDIR = ../../../avr-lib
 endif
+ifndef MODDIR
+MODDIR = ../modules
+endif
 ifndef SRCDIR
 SRCDIR = ../src
 endif
@@ -20,19 +23,15 @@ include $(CFGDIR)/bios.inc
 
 # VPATH: setup search path for source files.
 vpath
-vpath %.c $(LIBDIR):$(SRCDIR)
+vpath %.c $(LIBDIR):$(SRCDIR):$(MODDIR)
 
 # List source files here. (C dependencies are automatically generated.)
-SOURCES =	main.c\
-			drivers/timer/timer.c\
-			drivers/mcu/mcu.c\
-			drivers/sensor/ds18s20/ds18x20.c\
-			drivers/sensor/ds18s20/onewire.c\
-			drivers/sensor/ds18s20/delay.c\
-			drivers/sensor/ds18s20/crc8.c\
-			drivers/can/stdcan.c\
-			../modules/sns_ds18x20/sns_ds18x20.c
+SOURCES +=	main.c\
+		drivers/timer/timer.c\
+		drivers/mcu/mcu.c\
+		drivers/can/stdcan.c\
 
+include $(CFGDIR)/modules.inc
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
@@ -267,6 +266,7 @@ extcoff: $(TARGET).elf
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
 ifneq (,$(filter atmega88 atmega168, $(MCU)))
+#main.elf: $(OBJ)
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
 	@echo GCC bug workaround for ATmega88/ATmega168:
@@ -331,3 +331,7 @@ endif
 elf hex eep lss sym coff extcoff clean \
 distclean gccversion
 
+printsources:
+	@echo $(SOURCES)
+	@echo $(OBJ)
+	@echo $(BUILDDIRS)

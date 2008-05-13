@@ -32,7 +32,11 @@ int main(void)
 		{
 			if (	StdCan_Ret_class(rxMsg) == CAN_CLASS_MODULE_NMT &&
 				StdCan_Ret_direction(rxMsg) == DIR_TO_OWNER &&
-				rxMsg.Header.Command == CAN_CMD_MODULE_NMT_LIST)
+				rxMsg.Header.Command == CAN_CMD_MODULE_NMT_LIST &&
+				rxMsg.Data[0] == NODE_HW_ID_BYTE0 &&
+				rxMsg.Data[1] == NODE_HW_ID_BYTE1 &&
+				rxMsg.Data[2] == NODE_HW_ID_BYTE2 &&
+				rxMsg.Data[3] == NODE_HW_ID_BYTE3)
 			{
 				sns_ds18x20_List(1);
 			}

@@ -5,12 +5,14 @@ BIOSTARGET = bios
 LIBDIR = ../../avr-lib
 SRCDIR = src
 CFGDIR = .
+#MODDIR = modules
 BIOSDIR = bios
 BIOSSRCDIR = $(LIBDIR)/bios
 BUILDDIR = build
 
 include bios.inc
 include ../system.inc
+#include modules.inc
 
 APPMAKEFLAGS = 	TARGET=$(TARGET) \
 				LIBDIR=$(abspath $(LIBDIR)) \
