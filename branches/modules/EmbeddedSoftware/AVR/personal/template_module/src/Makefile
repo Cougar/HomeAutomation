@@ -6,11 +6,11 @@ endif
 ifndef LIBDIR
 LIBDIR = ../../../avr-lib
 endif
-ifndef MODDIR
-MODDIR = ../modules
-endif
 ifndef SRCDIR
 SRCDIR = ../src
+endif
+ifndef MODDIR
+MODDIR = ../modules
 endif
 ifndef BIOSDIR
 BIOSDIR = ../bios
@@ -23,15 +23,10 @@ include $(CFGDIR)/bios.inc
 
 # VPATH: setup search path for source files.
 vpath
-vpath %.c $(LIBDIR):$(SRCDIR):$(MODDIR)
+vpath %.c $(LIBDIR):$(SRCDIR)
 
 # List source files here. (C dependencies are automatically generated.)
-SOURCES +=	main.c\
-		drivers/timer/timer.c\
-		drivers/mcu/mcu.c\
-		drivers/can/stdcan.c\
-
-include $(CFGDIR)/modules.inc
+include $(CFGDIR)/sources.inc
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
@@ -266,7 +261,6 @@ extcoff: $(TARGET).elf
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
 ifneq (,$(filter atmega88 atmega168, $(MCU)))
-#main.elf: $(OBJ)
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
 	@echo GCC bug workaround for ATmega88/ATmega168:
@@ -331,7 +325,3 @@ endif
 elf hex eep lss sym coff extcoff clean \
 distclean gccversion
 
-printsources:
-	@echo $(SOURCES)
-	@echo $(OBJ)
-	@echo $(BUILDDIRS)

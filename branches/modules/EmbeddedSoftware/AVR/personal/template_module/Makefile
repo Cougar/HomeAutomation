@@ -4,6 +4,7 @@ BIOSTARGET = bios
 
 LIBDIR = ../../avr-lib
 SRCDIR = src
+MODDIR = modules
 CFGDIR = .
 #MODDIR = modules
 BIOSDIR = bios

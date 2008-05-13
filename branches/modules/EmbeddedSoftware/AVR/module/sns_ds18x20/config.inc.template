@@ -1,4 +1,4 @@
-## module sns_ds18x20
+## Section sns_ds18x20 -- Do not edit this line
 
 sns_ds18x20_ID=<ID>
 sns_ds18x20_TIMER=<TIMER>
@@ -11,4 +11,4 @@ sns_ds18x20_SEARCH_TIMEOUT=5
 #OW_OUT=PORTD
 #OW_DDR=DDRD
 
-## end module
+## End section sns_ds18x20 -- Do not edit this line

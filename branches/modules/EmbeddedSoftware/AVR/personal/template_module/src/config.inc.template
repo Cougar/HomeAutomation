@@ -1,0 +1,17 @@
+## Section application -- Do not edit this line
+
+# Application specific configuration file
+# All parameters required by library code should be defined here
+
+MODULE_APPLICATION=1
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000
+STDCAN_HEARTBEAT_PERIOD=10000
+APP_HEARTBEAT_TIMER=<TIMER>
+
+# This must be last in this section
+
+TIMER_NUM_TIMERS=<NUMBER_OF_TIMERS>
+NUMBER_OF_MODULES=<NUMBER_OF_MODULES>
+
+## End section application -- Do not edit this line
