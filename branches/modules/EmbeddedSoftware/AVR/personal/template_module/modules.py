@@ -252,6 +252,23 @@ def addModule(moduleName):
 	regenerateModules()
 
 
+def delModule(moduleName):
+	print "Trying to remove module " + moduleName
+	
+	try:
+		os.unlink(localmoddir + "/" + moduleName)
+		print "Removed module successfully"
+	except OSError, (errno, strerror):
+		if errno == 2:
+			print "No such " + moduleName + " present in the modules directory, not unlinking"
+		else:
+			raise
+	
+	print ""
+	
+	regenerateModules()
+
+
 def usage():
 	print "Options:"
 	print "\t--regenare\t\tRegenarate modules and files"
@@ -263,7 +280,7 @@ def usage():
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlr", ["help", "list", "regenerate", "add="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlrd", ["help", "list", "regenerate", "add=", "del="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -273,11 +290,14 @@ def main():
 	for o, a in opts:
 		if o in ("-l", "--list"):
 			print getModules()
+			
 		elif o in ("-h", "--help"):
 			usage()
 			sys.exit()
+			
 		elif o in ("-r", "--regenerate"):
 			regenerateModules()
+			
 		elif o in ("--add"):
 			if len(a) == 0:
 				print "No modulename specified"
@@ -289,6 +309,19 @@ def main():
 				sys.exit()
 				
 			addModule(a)
+			
+		elif o in ("--del"):
+			if len(a) == 0:
+				print "No modulename specified"
+				usage()
+				sys.exit()
+			
+			if a not in getModules():
+				print a + " is not a recognized module name"
+				sys.exit()
+				
+			delModule(a)
+			
 		else:
 			assert False, "unhandled option"
 
