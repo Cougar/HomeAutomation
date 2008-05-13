@@ -79,10 +79,10 @@ typedef struct {
 #define StdCan_Ret_direction(MSG) (uint8_t)(MSG.Header.ClassAndDirection & 0x01)
 #define StdCan_Set_direction(MSG, DIR) MSG.Header.ClassAndDirection &= 0xfe; MSG.Header.ClassAndDirection |= DIR;
 
-#define NODE_HW_ID_BYTE0 (uint8_t)(NODE_HW_ID>>24)&0xff
-#define NODE_HW_ID_BYTE1 (uint8_t)(NODE_HW_ID>>16)&0xff
-#define NODE_HW_ID_BYTE2 (uint8_t)(NODE_HW_ID>>8)&0xff
-#define NODE_HW_ID_BYTE3 (uint8_t)(NODE_HW_ID)&0xff
+#define NODE_HW_ID_BYTE0 (uint8_t)((NODE_HW_ID>>24)&0xff)
+#define NODE_HW_ID_BYTE1 (uint8_t)((NODE_HW_ID>>16)&0xff)
+#define NODE_HW_ID_BYTE2 (uint8_t)((NODE_HW_ID>>8)&0xff)
+#define NODE_HW_ID_BYTE3 (uint8_t)((NODE_HW_ID)&0xff)
 
 /**
  * @brief Initialize StdCan.
