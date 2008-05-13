@@ -1,0 +1,5 @@
+drivers/sensor/ds18s20/ds18x20.c
+drivers/sensor/ds18s20/onewire.c
+drivers/sensor/ds18s20/delay.c
+drivers/sensor/ds18s20/crc8.c
+modules/sns_ds18x20/sns_ds18x20.c
