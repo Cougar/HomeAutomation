@@ -29,8 +29,13 @@ uint8_t LDR_SensorInit(void)
 
 /*
  * Start reading sensor value
+ * returns the lightvalue in promille (0.1% per bit)
  */
 uint16_t LDR_GetData(uint8_t sensor)
 {
-    return ADC_Get(sensor);
+	uint16_t ldr = ADC_Get(sensor);
+	if (ldr>1000) {
+		ldr=1000;
+	}
+    return ldr;
 }
