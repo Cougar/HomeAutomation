@@ -23,7 +23,7 @@ include $(CFGDIR)/bios.inc
 
 # VPATH: setup search path for source files.
 vpath
-vpath %.c $(LIBDIR):$(SRCDIR)
+vpath %.c $(LIBDIR):$(SRCDIR):$(MODDIR)
 
 # List source files here. (C dependencies are automatically generated.)
 include $(CFGDIR)/sources.inc

@@ -82,7 +82,7 @@ def compileMainFile():
 		
 		if pos_include != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_include] + "#include \"../modules/" + moduleName + "/" + moduleName + ".h\n")
+				main_c.write(main_c_template_line[:pos_include] + "#include \"../modules/" + moduleName + "/" + moduleName + ".h\"\n")
 		elif pos_init != -1:
 			for moduleName in modules:
 				main_c.write(main_c_template_line[:pos_init] + moduleName + "_Init();\n")
