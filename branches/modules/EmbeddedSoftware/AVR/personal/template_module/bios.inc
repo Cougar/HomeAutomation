@@ -13,7 +13,7 @@ AUTOSTART=5
 # Node hardware id, this number should be unique on your network
 # leave as <GENERATE_HW> at first compile, the build will then autmoatically set it to whatever gets generated (see config.h)
 # Never set this manually if you are not sure what you are doing
-NODE_HW_ID=0xb7900b1f
+NODE_HW_ID=<GENERATE_HW>
 
 # example:
 #NODE_HW_ID=0x12345678 

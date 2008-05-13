@@ -1,5 +1,5 @@
-#ifndef SNS_DS18X20
-#define SNS_DS18X20
+#ifndef ACT_HD44780
+#define ACT_HD44780
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -14,15 +14,14 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
-#include <drivers/sensor/ds18s20/ds18x20.h>
-#include <drivers/sensor/ds18s20/onewire.h>
-#include <drivers/sensor/ds18s20/delay.h>
+#include <drivers/lcd/clcd/lcd_HD44780.h>
+#include <string.h> //for memcpy
 
 #include "protocol.h"
 
-void sns_ds18x20_Init(void);
-void sns_ds18x20_Process(void);
-void sns_ds18x20_HandleMessage(StdCan_Msg_t *rxMsg);
-void sns_ds18x20_List(uint8_t ModuleSequenceNumber);
+void act_hd44780_Init(void);
+void act_hd44780_Process(void);
+void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg);
+void act_hd44780_List(uint8_t ModuleSequenceNumber);
 
 #endif

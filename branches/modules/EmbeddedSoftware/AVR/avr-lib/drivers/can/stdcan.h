@@ -74,10 +74,10 @@ typedef struct {
 #endif
 } StdCan_Msg_t;
 
-#define StdCan_Ret_class(MSG) (uint8_t)((MSG.Header.ClassAndDirection >> 1) & 0x0F)
-#define StdCan_Set_class(MSG, CLASS) MSG.Header.ClassAndDirection &= 0x01; MSG.Header.ClassAndDirection |= (CLASS << 1);
-#define StdCan_Ret_direction(MSG) (uint8_t)(MSG.Header.ClassAndDirection & 0x01)
-#define StdCan_Set_direction(MSG, DIR) MSG.Header.ClassAndDirection &= 0xfe; MSG.Header.ClassAndDirection |= DIR;
+#define StdCan_Ret_class(Header) (uint8_t)((Header.ClassAndDirection >> 1) & 0x0F)
+#define StdCan_Set_class(Header, CLASS) Header.ClassAndDirection &= 0x01; Header.ClassAndDirection |= (CLASS << 1);
+#define StdCan_Ret_direction(Header) (uint8_t)(Header.ClassAndDirection & 0x01)
+#define StdCan_Set_direction(Header, DIR) Header.ClassAndDirection &= 0xfe; Header.ClassAndDirection |= DIR;
 
 #define NODE_HW_ID_BYTE0 (uint8_t)((NODE_HW_ID>>24)&0xff)
 #define NODE_HW_ID_BYTE1 (uint8_t)((NODE_HW_ID>>16)&0xff)

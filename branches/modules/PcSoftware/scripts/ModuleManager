@@ -34,6 +34,7 @@ def parseModuleIdFromFile(moduleName, fileName):
 	
 	for line in config_inc_lines:
 		line = line.strip("\n").strip(" ")
+		
 		if line.find(moduleName + "_ID") != -1:
 			parts = line.split("=")
 			return parts[1].strip(" ")
@@ -43,11 +44,11 @@ def parseModuleIdFromFile(moduleName, fileName):
 
 def getFreeModuleId(moduleName):
 	takenIds = []
-	
+
 	for applicationName in os.listdir("../"):
+		
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
 			takenId = parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
-			
 			if takenId != -1 and takenId != "<ID>":
 				takenIds.append(int(takenId, 16))
 
@@ -61,6 +62,7 @@ def getFreeModuleId(moduleName):
 	for takenId in takenIds:
 		if takenId != lastId+1:
 			return hex(lastId+1)
+		lastId = takenId
 
 	return hex(lastId+1)
 	

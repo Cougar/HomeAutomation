@@ -68,7 +68,8 @@
 
 //------------------------------------
 #define CAN_TYPE_MODULE_sns_ds18x20		0x03
-#define CAN_CMD_MODULE_SNS_TEMPERATURE_CELSIUS	0x04
+#define CAN_TYPE_MODULE_ACT_hd44789		0x04
+
 
 
 
