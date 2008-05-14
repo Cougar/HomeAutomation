@@ -68,6 +68,8 @@
 
 //------------------------------------
 #define CAN_TYPE_MODULE_sns_ds18x20		0x03
+#define CAN_TYPE_MODULE_sns_FOST02		0x05
+
 #define CAN_TYPE_MODULE_ACT_hd44789		0x04
 
 
