@@ -233,8 +233,8 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	}
 			
 	//let's start with the adress bits..
-	tempcommand = proto->data&(0b00111111);
-	tempadress = (proto->data>>8)&(0b00011111);
+	tempcommand = proto->data&(0x3F);
+	tempadress = (proto->data>>8)&(0x1F);
 	//TODO: This requires massive cleanup
 	
 	//tempdata = ((((uint16_t)(proto->data)&(0x3F)) + ((uint16_t)((proto->data>>8)&(0x1F))<<6)))<<5;
