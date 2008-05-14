@@ -171,10 +171,10 @@ def updateConfigFile():
 		if line.find("<TIMER>") != -1:
 			line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
 			timers += 1
-		elif line.find("<NUMBER_OF_TIMERS>") != -1:
-			line = line.replace("<NUMBER_OF_TIMERS>", hex(timers))
-		elif line.find("<NUMBER_OF_MODULES>") != -1:
-			line = line.replace("<NUMBER_OF_MODULES>", hex(len(modules)))
+		elif line.find("TIMER_NUM_TIMERS=") != -1:
+			line = "TIMER_NUM_TIMERS=" + hex(timers)
+		elif line.find("NUMBER_OF_MODULES=") != -1:
+			line = "NUMBER_OF_MODULES=" + hex(len(modules))
 		
 		applicationSection[c] = line;
 		c += 1
