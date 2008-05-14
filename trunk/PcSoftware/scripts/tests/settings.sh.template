@@ -1,0 +1,5 @@
+PERSONALPATH=/var/www/appdata/tmp/builddir/personal
+APPLPATH=../../application/
+TESTNODE="nightTestNode"
+LOGFILE=/var/www/appdata/tmp/results.log
+
