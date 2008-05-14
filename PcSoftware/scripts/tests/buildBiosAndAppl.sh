@@ -5,11 +5,9 @@
 #
 # This script builds default bios and if successful tries to build all the applications
 
+SCRIPTDIR=`dirname $0`
 
-PERSONALPATH=$HOME"/svn/HomeAutomation/trunk/EmbeddedSoftware/AVR/personal"
-APPLPATH="../../application/"
-TESTNODE="nightTestNode"
-LOGFILE="results.log"
+source ${SCRIPTDIR}/settings.sh
 
 # Put log in separate file
 exec &> $LOGFILE
