@@ -6,8 +6,8 @@ import os
 import sys
 import getopt
 
-moddir = '../../module'
-localmoddir = 'modules'
+moddir = '../../module' # FIXME: This is ugly
+localmoddir = 'modules' # FIXME: This is ugly
 
 def getModules():
 	modules = []
@@ -89,18 +89,18 @@ def compileMainFile():
 				main_c.write(main_c_template_line[:pos_include] + "#include \"../modules/" + moduleName + "/" + moduleName + ".h\"\n")
 		elif pos_init != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_init] + moduleName + "_Init();\n")
+				main_c.write(main_c_template_line[:pos_init] + moduleName + "_Init(\n")
 		elif pos_process != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_process] + moduleName + "_Process();\n")
+				main_c.write(main_c_template_line[:pos_process] + moduleName + "_Process(\n")
 		elif pos_list != -1:
 			count = 1
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_list] + moduleName + "_List(" + str(count) + ");\n")
+				main_c.write(main_c_template_line[:pos_list] + moduleName + "_List(" + str(count) + "\n")
 				count += 1
 		elif pos_handlemsg != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_handlemsg] + moduleName + "_HandleMessage(&rxMsg);\n")
+				main_c.write(main_c_template_line[:pos_handlemsg] + moduleName + "_HandleMessage(&rxMsg\n")
 		else:
 			main_c.write(main_c_template_line)
 
@@ -233,10 +233,15 @@ def compileSourcesFile():
 
 def regenerateModules():
 	print "Regenerating modules..."
+	print ""
 	compileSourcesFile()
+	print ""
 	compileMainFile()
+	print ""
 	updateConfigFile()
+	print ""
 	print "Regenerating modules complete"
+	print ""
 
 
 def addModule(moduleName):
@@ -274,17 +279,19 @@ def delModule(moduleName):
 
 
 def usage():
+	print "Syntax: ./ModuleManager [options]"
 	print "Options:"
-	print "\t--regenare\t\tRegenarate modules and files"
-	print "\t--list\t\t\tList avalible modules"
-	print "\t--help\t\t\tPrint this help"
-	print "\t--add=<module name>\tAdds a module to the application"
+	print "  --help               Print this help"
+	print "  --regenerate         Regenarate modules and files"
+	print "  --list               List avalible and installed modules"
+	print "  --add=<module name>  Adds a module to the application"
+	print "  --del=<module name>  Removes a module from the application"
 	print ""
 
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlrd", ["help", "list", "regenerate", "add=", "del="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlr", ["help", "list", "regenerate", "add=", "del="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -297,7 +304,21 @@ def main():
 	
 	for o, a in opts:
 		if o in ("-l", "--list"):
-			print getModules()
+			modules = getModules()
+			
+			print "Available modules"
+			print "================="
+			for module in modules:
+				print module
+				
+			print ""
+			
+			modules = getLocalModules()
+			
+			print "Modules used in this application"
+			print "================================"
+			for module in modules:
+				print module
 			
 		elif o in ("-h", "--help"):
 			usage()
