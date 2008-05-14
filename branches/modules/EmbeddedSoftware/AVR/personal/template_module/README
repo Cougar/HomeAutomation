@@ -26,3 +26,7 @@ Makefile
 ********
 Make script for doing various things like compiling and cleaning etc.
 
+ModuleManager
+********
+Script to add and remove modules, also used to generate files needed for compilation,
+for information on how to use the manager type "./ModuleManager --help"
