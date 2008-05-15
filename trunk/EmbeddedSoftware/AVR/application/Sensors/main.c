@@ -127,8 +127,8 @@ int main(void) {
 #if defined(USE_TC1047)
 #warning tc1047 id is still not correct // FIXME
             /* check temperature and send on CAN */
-		if( bios->timebase_get() - timeStamp_TC >= TC_SEND_PERIOD ){
-			timeStamp_TC = bios->timebase_get();
+		if( Timebase_PassedTimeMillis(timeStamp_TC) >= TC_SEND_PERIOD ){
+			timeStamp_TC = Timebase_CurrentTime();
 
             tcTemperature = getTC1047temperature(TC1047_AD);
             txMsg.Data.bytes[0] = tcTemperature&0xff;
