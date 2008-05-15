@@ -17,14 +17,14 @@ void SetControls(uint8_t RS, uint8_t RW){
 }
 
 void SetData(uint8_t Data){
-	if(Data&0b00000001) {LCD_DATA_PORT_DB0 |= (1<<LCD_DATA_PIN_DB0);} else { LCD_DATA_PORT_DB0 &= ~(1<<LCD_DATA_PIN_DB0);};	
-	if(Data&0b00000010) {LCD_DATA_PORT_DB1 |= (1<<LCD_DATA_PIN_DB1);} else { LCD_DATA_PORT_DB1 &= ~(1<<LCD_DATA_PIN_DB1);};	
-	if(Data&0b00000100) {LCD_DATA_PORT_DB2 |= (1<<LCD_DATA_PIN_DB2);} else { LCD_DATA_PORT_DB2 &= ~(1<<LCD_DATA_PIN_DB2);};	
-	if(Data&0b00001000) {LCD_DATA_PORT_DB3 |= (1<<LCD_DATA_PIN_DB3);} else { LCD_DATA_PORT_DB3 &= ~(1<<LCD_DATA_PIN_DB3);};	
-	if(Data&0b00010000) {LCD_DATA_PORT_DB4 |= (1<<LCD_DATA_PIN_DB4);} else { LCD_DATA_PORT_DB4 &= ~(1<<LCD_DATA_PIN_DB4);};	
-	if(Data&0b00100000) {LCD_DATA_PORT_DB5 |= (1<<LCD_DATA_PIN_DB5);} else { LCD_DATA_PORT_DB5 &= ~(1<<LCD_DATA_PIN_DB5);};	
-	if(Data&0b01000000) {LCD_DATA_PORT_DB6 |= (1<<LCD_DATA_PIN_DB6);} else { LCD_DATA_PORT_DB6 &= ~(1<<LCD_DATA_PIN_DB6);};	
-	if(Data&0b10000000) {LCD_DATA_PORT_DB7 |= (1<<LCD_DATA_PIN_DB7);} else { LCD_DATA_PORT_DB7 &= ~(1<<LCD_DATA_PIN_DB7);};	
+	if(Data&0x01) {LCD_DATA_PORT_DB0 |= (1<<LCD_DATA_PIN_DB0);} else { LCD_DATA_PORT_DB0 &= ~(1<<LCD_DATA_PIN_DB0);};	
+	if(Data&0x02) {LCD_DATA_PORT_DB1 |= (1<<LCD_DATA_PIN_DB1);} else { LCD_DATA_PORT_DB1 &= ~(1<<LCD_DATA_PIN_DB1);};	
+	if(Data&0x04) {LCD_DATA_PORT_DB2 |= (1<<LCD_DATA_PIN_DB2);} else { LCD_DATA_PORT_DB2 &= ~(1<<LCD_DATA_PIN_DB2);};	
+	if(Data&0x08) {LCD_DATA_PORT_DB3 |= (1<<LCD_DATA_PIN_DB3);} else { LCD_DATA_PORT_DB3 &= ~(1<<LCD_DATA_PIN_DB3);};	
+	if(Data&0x10) {LCD_DATA_PORT_DB4 |= (1<<LCD_DATA_PIN_DB4);} else { LCD_DATA_PORT_DB4 &= ~(1<<LCD_DATA_PIN_DB4);};	
+	if(Data&0x20) {LCD_DATA_PORT_DB5 |= (1<<LCD_DATA_PIN_DB5);} else { LCD_DATA_PORT_DB5 &= ~(1<<LCD_DATA_PIN_DB5);};	
+	if(Data&0x40) {LCD_DATA_PORT_DB6 |= (1<<LCD_DATA_PIN_DB6);} else { LCD_DATA_PORT_DB6 &= ~(1<<LCD_DATA_PIN_DB6);};	
+	if(Data&0x80) {LCD_DATA_PORT_DB7 |= (1<<LCD_DATA_PIN_DB7);} else { LCD_DATA_PORT_DB7 &= ~(1<<LCD_DATA_PIN_DB7);};	
 }
 
 
@@ -71,7 +71,7 @@ void glcdPowerOn(){
 	Disable();
 	Delay();
 	SetControls(0,0);
-	SetData(0b00111111);
+	SetData(0x3F);
 	Enable();
 	
 	glcdClear();
@@ -89,11 +89,11 @@ void glcdClear(){
 
 	for(j = 0; j < 8; j++){
 		SetControls(0,0);
-		SetData(0b10111000 + j);
+		SetData(0xB8 + j);
 		Enable();
 
 		SetControls(0,0);
-		SetData(0b01000000);
+		SetData(0x40);
 		Enable();
 		for (i = 0; i < 64; i++){
 			SetControls(1,0);
@@ -120,12 +120,12 @@ void glcdSetXY(uint8_t x, uint8_t y){
 
 	//Steg 2: Sätt rätt x-adress på det aktiva chippet
 	SetControls(0,0);
-	SetData(0b01000000 + x%64);
+	SetData(0x40 + x%64);
 
 	Enable();
 
 	//Steg 3: Sätt rätt y-adress på det aktiva chippet
-	SetData(0b10111000 + y);
+	SetData(0xB8 + y);
 	
 	
 	Enable();
