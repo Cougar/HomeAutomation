@@ -89,18 +89,18 @@ def compileMainFile():
 				main_c.write(main_c_template_line[:pos_include] + "#include \"../modules/" + moduleName + "/" + moduleName + ".h\"\n")
 		elif pos_init != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_init] + moduleName + "_Init(\n")
+				main_c.write(main_c_template_line[:pos_init] + moduleName + "_Init();\n")
 		elif pos_process != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_process] + moduleName + "_Process(\n")
+				main_c.write(main_c_template_line[:pos_process] + moduleName + "_Process();\n")
 		elif pos_list != -1:
 			count = 1
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_list] + moduleName + "_List(" + str(count) + "\n")
+				main_c.write(main_c_template_line[:pos_list] + moduleName + "_List(" + str(count) + ");\n")
 				count += 1
 		elif pos_handlemsg != -1:
 			for moduleName in modules:
-				main_c.write(main_c_template_line[:pos_handlemsg] + moduleName + "_HandleMessage(&rxMsg\n")
+				main_c.write(main_c_template_line[:pos_handlemsg] + moduleName + "_HandleMessage(&rxMsg);\n")
 		else:
 			main_c.write(main_c_template_line)
 

@@ -18,7 +18,7 @@ void act_hd44780_Init(void)
 	lcd_init(LCD_DISP_ON);
 	lcd_clrscr();
 	lcd_puts("HomeAutomation\n");
-	lcd_puts("HD44780-module running\n");
+	lcd_puts("HD44780-module\n");
 }
 
 void act_hd44780_Process(void)
