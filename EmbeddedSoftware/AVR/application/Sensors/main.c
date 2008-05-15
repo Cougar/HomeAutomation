@@ -125,7 +125,7 @@ int main(void) {
         }
 #endif
 #if defined(USE_TC1047)
-#warning tc1047 id is still not correct // FIXME
+#warning tc1047 id is still not correct // FIXME 
             /* check temperature and send on CAN */
 		if( bios->timebase_get() - timeStamp_TC >= TC_SEND_PERIOD ){
 			timeStamp_TC = bios->timebase_get();
