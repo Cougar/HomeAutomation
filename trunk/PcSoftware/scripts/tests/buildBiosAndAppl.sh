@@ -124,5 +124,11 @@ echo -e ${failed[@]}
 echo "#######################################"
 echo ""
 
+if [ $DOPOSTIRC -eq "1" ] ; then
+	if [ ${#failed[@]} -ne "0" ] ; then
+		$POSTLINE \#hobby Tested to build apps, failed ${#failed[@]}, successfull: ${#successfull[@]}, http://projekt.auml.se/homeautomation:software:embedded:last-build-test
+	fi
+fi
+
 exit 0
 
