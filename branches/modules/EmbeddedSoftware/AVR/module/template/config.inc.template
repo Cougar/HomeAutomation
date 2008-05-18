@@ -1,7 +1,7 @@
-## Section template -- Do not edit this line
+## Section <template> -- Do not edit this line
 
-template_ID=<ID>
-#template_DUMMY=1
-#template_DUMMY_TIMER=<TIMER>
+<template>_ID=<ID>
+#<template>_DUMMY=1
+#<template>_DUMMY_TIMER=<TIMER>
 
-## End section template -- Do not edit this line
+## End section <template> -- Do not edit this line

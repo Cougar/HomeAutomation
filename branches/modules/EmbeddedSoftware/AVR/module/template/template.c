@@ -1,25 +1,25 @@
 
-#include "template.h"
+#include "<template>.h"
 
-void template_Init(void)
+void <template>_Init(void)
 {
 	///TODO: Initialize hardware etc here
 }
 
-void template_Process(void)
+void <template>_Process(void)
 {
 	///TODO: Stuff that needs doing is done here
 }
 
-void template_HandleMessage(StdCan_Msg_t *rxMsg)
+void <template>_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	StdCan_Msg_t txMsg;
 	uint8_t n = 0;
 
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_TEMPLATE && ///TODO: Change this to the actual class type
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_<template> && ///TODO: Change this to the actual class type
 		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_TEMPLATE && ///TODO: Change this to the actual module type
-		rxMsg->Header.ModuleId == template_ID)
+		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_<template> && ///TODO: Change this to the actual module type
+		rxMsg->Header.ModuleId == <template>_ID)
 	{
 		switch (rxMsg->Header.Command)
 		{
@@ -30,14 +30,14 @@ void template_HandleMessage(StdCan_Msg_t *rxMsg)
 	}
 }
 
-void template_List(uint8_t ModuleSequenceNumber)
+void <template>_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_TEMPLATE); ///TODO: Change this to the actual class type
+	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_<template>); ///TODO: Change this to the actual class type
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_TEMPLATE; ///TODO: Change this to the actual module type
-	txMsg.Header.ModuleId = template_ID;
+	txMsg.Header.ModuleType = CAN_TYPE_MODULE_<template>; ///TODO: Change this to the actual module type
+	txMsg.Header.ModuleId = <template>_ID;
 	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
 	txMsg.Length = 6;
 

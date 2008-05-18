@@ -1,5 +1,5 @@
-#ifndef TEMPLATE
-#define TEMPLATE
+#ifndef <TEMPLATE>
+#define <TEMPLATE>
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -16,9 +16,9 @@
 
 #include "protocol.h"
 
-void TEMPLATE_Init(void);
-void TEMPLATE_Process(void);
-void TEMPLATE_HandleMessage(StdCan_Msg_t *rxMsg);
-void TEMPLATE_List(uint8_t ModuleSequenceNumber);
+void <template>_Init(void);
+void <template>_Process(void);
+void <template>_HandleMessage(StdCan_Msg_t *rxMsg);
+void <template>_List(uint8_t ModuleSequenceNumber);
 
-#endif
+#endif // <TEMPLATE>
