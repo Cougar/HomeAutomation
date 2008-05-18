@@ -29,10 +29,11 @@ void sns_BusVoltage_Process(void)
 
 void sns_BusVoltage_HandleMessage(StdCan_Msg_t *rxMsg)
 {
+#if 0
 	StdCan_Msg_t txMsg;
 	uint8_t n = 0;
 
-#if 0
+
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_SNS && ///TODO: Change this to the actual class type
 		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
 		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_TEMPLATE && ///TODO: Change this to the actual module type
