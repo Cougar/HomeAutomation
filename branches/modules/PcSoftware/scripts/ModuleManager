@@ -203,8 +203,10 @@ def compileSourcesFile():
 	sources_list_template.close()
 	
 	for sources_list_template_line in sources_list_template_lines:
-		if len(sources_list_template_line) > 0:
-			uniqueSet.append(sources_list_template_line.strip("\n"))
+		line = sources_list_template_line.strip("\n").strip(" ")
+		if len(line) > 0:
+			if line[0] != '#':
+				uniqueSet.append(line)
 		
 	modules = getLocalModules()
 	
@@ -214,8 +216,11 @@ def compileSourcesFile():
 		sources_list.close()
 	
 		for sources_list_line in sources_list_lines:
-			if len(sources_list_line) > 0:
-				uniqueSet.append(sources_list_line.strip("\n"))
+			line = sources_list_line.strip("\n").strip(" ")
+			if len(line) > 0:
+				if line[0] != '#':
+					uniqueSet.append(line)
+			
 	
 	sourcesString = "SOURCES = "
 	
