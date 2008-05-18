@@ -6,8 +6,8 @@ import os
 import sys
 import getopt
 
-moddir = '../../module' # FIXME: This is ugly
-localmoddir = 'modules' # FIXME: This is ugly
+moddir = sys.path[0] + "/../../EmbeddedSoftware/AVR/module"
+localmoddir = os.getcwd() + "/modules"
 
 def getModules():
 	modules = []
@@ -253,7 +253,7 @@ def addModule(moduleName):
 	print "Trying to add module " + moduleName
 	
 	try:
-		os.symlink("../" + moddir + "/" + moduleName, localmoddir + "/" + moduleName)
+		os.symlink(moddir + "/" + moduleName, localmoddir + "/" + moduleName)
 		print "Added module successfully"
 	except OSError, (errno, strerror):
 		if errno == 17:
@@ -282,6 +282,31 @@ def delModule(moduleName):
 	
 	regenerateModules()
 
+def createFile(moduleName, templateFileName, moduleFileName):
+	print "Creating " + moduleName + "/" + templateFileName + "..."
+	template_file = open(moddir + "/template/" + templateFileName, 'r')
+	lines = template_file.readlines()
+	template_file.close()
+
+	module_file = open(moddir + "/" + moduleName + "/" + moduleFileName, 'w')
+	
+	for line in lines:
+		line = line.replace("<template>", moduleName)
+		line = line.replace("<TEMPLATE>", moduleName.upper())
+
+		module_file.write(line)
+
+	module_file.close()
+	
+def newModule(moduleName):
+	print "Creating " + moddir + "/" + moduleName + " directory..."
+	os.mkdir(moddir + "/" + moduleName + "/")
+
+	createFile(moduleName, "config.inc.template", "config.inc.template")
+	createFile(moduleName, "protocol.h", "protocol.h")
+	createFile(moduleName, "sources.list", "sources.list")
+	createFile(moduleName, "template.h", moduleName + ".h")
+	createFile(moduleName, "template.c", moduleName + ".c")
 
 def usage():
 	print "Syntax: ./ModuleManager [options]"
@@ -291,12 +316,13 @@ def usage():
 	print "  --list               List avalible and installed modules"
 	print "  --add=<module name>  Adds a module to the application"
 	print "  --del=<module name>  Removes a module from the application"
+	print "  --new=<module name>  Creates a new module from the module template"
 	print ""
 
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlr", ["help", "list", "regenerate", "add=", "del="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlr", ["help", "list", "regenerate", "add=", "del=", "new="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -355,6 +381,18 @@ def main():
 				sys.exit()
 				
 			delModule(a)
+			
+		elif o in ("--new"):
+			if len(a) == 0:
+				print "No modulename specified"
+				usage()
+				sys.exit()
+			
+			if a in getModules():
+				print a + " already exists"
+				sys.exit()
+				
+			newModule(a)
 			
 		else:
 			assert False, "unhandled option"

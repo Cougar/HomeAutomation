@@ -53,26 +53,33 @@
 //--------------------------------------------------------------------
 
 
-// New class definitions for modulebased applications
-//-----------------------------------
+//--------------------------------------------------- //
+// New class definitions for modulebased applications //
+//--------------------------------------------------- //
+
+// Module classes
+//------------------------------------
+#define CAN_CLASS_MODULE_NMT		0x0BUL		// If we move the functionality for this to BIOS we should use CAN_NMT instead
+#define CAN_CLASS_MODULE_ACT		0x0CUL
+#define CAN_CLASS_MODULE_SNS		0x0DUL
+#define CAN_CLASS_MODULE_DEF		0x0EUL
+
+// Module frame direction
+//------------------------------------
 #define DIR_FROM_OWNER			1		// If a module sends a packet
 #define DIR_TO_OWNER			0		// If a module sends a packet to another module
-//-----------------------------------
-#define CAN_CLASS_MODULE_NMT		0x0BUL		// If we move the functionality for this to BIOS we should use CAN_NMT instead
+
+// Module types
+//------------------------------------
+#define CAN_TYPE_MODULE_def_default	0x01
+#define CAN_TYPE_MODULE_sns_ds18x20	0x03
+#define CAN_TYPE_MODULE_sns_FOST02	0x05
+#define CAN_TYPE_MODULE_sns_BusVoltage	0x06
+#define CAN_TYPE_MODULE_act_hd44789	0x04
+
+// Module commands
+//------------------------------------
 #define CAN_CMD_MODULE_NMT_LIST		0x00UL		// Tell the application to report which modules it has
-//-----------------------------------
-#define CAN_CLASS_MODULE_ACT		0x0CUL
-//------------------------------------
-#define CAN_CLASS_MODULE_SNS		0x0DUL
-//------------------------------------
-
-//------------------------------------
-#define CAN_TYPE_MODULE_sns_ds18x20		0x03
-#define CAN_TYPE_MODULE_sns_FOST02		0x05
-
-#define CAN_TYPE_MODULE_ACT_hd44789		0x04
-#define CAN_TYPE_MODULE_sns_BusVoltage		0x06
-
 
 
 

@@ -32,7 +32,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_ACT &&
 		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_ACT_hd44789 &&
+		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_act_hd44789 &&
 		rxMsg->Header.ModuleId == act_hd44780_ID)
 	{
 		switch (rxMsg->Header.Command)
@@ -55,7 +55,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_CMD_MODULE_LCD_SIZE:
 		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_ACT_hd44789;
+		txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_hd44789;
 		txMsg.Header.ModuleId = act_hd44780_ID;
 		txMsg.Header.Command = CAN_CMD_MODULE_LCD_SIZE;
 		txMsg.Length = 2;
@@ -74,7 +74,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 	
 		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_ACT_hd44789;
+		txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_hd44789;
 		txMsg.Header.ModuleId = act_hd44780_ID;
 		txMsg.Header.Command = CAN_CMD_MODULE_LCD_BACKLIGHT;
 		txMsg.Length = 1;
@@ -93,7 +93,7 @@ void act_hd44780_List(uint8_t ModuleSequenceNumber)
 	
 	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_ACT_hd44789;
+	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_hd44789;
 	txMsg.Header.ModuleId = act_hd44780_ID;
 	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
 	txMsg.Length = 6;
