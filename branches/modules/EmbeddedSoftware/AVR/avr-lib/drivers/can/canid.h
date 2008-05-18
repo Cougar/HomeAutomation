@@ -71,6 +71,7 @@
 #define CAN_TYPE_MODULE_sns_FOST02		0x05
 
 #define CAN_TYPE_MODULE_ACT_hd44789		0x04
+#define CAN_TYPE_MODULE_sns_BusVoltage		0x06
 
 
 
