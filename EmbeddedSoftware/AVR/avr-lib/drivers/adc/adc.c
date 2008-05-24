@@ -8,6 +8,9 @@
 
 #include <config.h>
 #include "adc.h"
+
+#define BV(x) (1<<(x))
+
 /*----------------------------------------------
  * Functions
  * --------------------------------------------*/
@@ -42,67 +45,10 @@ uint16_t ADC_Get(uint8_t channel)
 	
 	if (currentChannel != channel) //Did we use this channel the last time?
 	{
-		switch(channel)//If not, let's switch the admux
-		{
-#if ADCHAN0!=0
-		case 0:
-		    /* Enable ADC0 */
-		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX2)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN1!=0
-		case 1:
-		    /* Enable ADC1 */
-		    ADMUX |= (1<<MUX0);
-		    ADMUX &= ~((1<<MUX1)|(1<<MUX2)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN2!=0
-		case 2:
-		    /* Enable ADC2 */
-		    ADMUX |= (1<<MUX1);
-		    ADMUX &= ~((1<<MUX0)|(1<<MUX2)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN3!=0
-		case 3:
-		    /* Enable ADC3 */
-		    ADMUX |= (1<<MUX0)|(1<<MUX1);
-		    ADMUX &= ~((1<<MUX2)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN4!=0
-		case 4:
-		    /* Enable ADC4 */
-		    ADMUX |= (1<<MUX2);
-		    ADMUX &= ~((1<<MUX0)|(1<<MUX1)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN5!=0
-		case 5:
-		    /* Enable ADC5 */
-		    ADMUX |= (1<<MUX0)|(1<<MUX2);
-		    ADMUX &= ~((1<<MUX1)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN6!=0
-		case 6:
-		    /* Enable ADC6 (only for TQFP&MLF package) */
-		    ADMUX |= (1<<MUX1)|(1<<MUX2);
-		    ADMUX &= ~((1<<MUX0)|(1<<MUX3));
-		    break;
-#endif
-#if ADCHAN7!=0
-		case 7:
-		    /* Enable ADC7 (only for TQFP&MLF package) */
-		    ADMUX |= (1<<MUX0)|(1<<MUX1)|(1<<MUX2);
-		    ADMUX &= ~(1<<MUX3);
-		    break;
-#endif
-		default:
-			break;
-		    //Some kind of error message?
-		}
+		/* Set to 0 all mux registers */
+		ADMUX &= ~( BV(MUX3) | BV(MUX2) | BV(MUX1) | BV(MUX0) );
+		/* Select channel, only first 8 channel modes are supported for now */
+		ADMUX |= (channel & 0x07);
 		
 		currentChannel = channel;	//Update the channel for the last measurement to the one we want this time
 		ADC_Get(channel);	//And do a dummy-read
