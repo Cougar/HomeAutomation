@@ -12,7 +12,7 @@ def GetControllerManager():
 		gControllerMan = ControllerManager()
 	return gControllerMan
 
-class ControllerManager ():
+class ControllerManager:
 	modules = {}
 	controllers = {}
 	

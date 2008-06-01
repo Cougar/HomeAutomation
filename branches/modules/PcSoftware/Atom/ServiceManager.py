@@ -31,7 +31,7 @@ def GetServiceManager():
 		gServiceMan = ServiceManager()
 	return gServiceMan
 
-class ServiceManager ():
+class ServiceManager:
 	services = {}
 	modules = {}
 	

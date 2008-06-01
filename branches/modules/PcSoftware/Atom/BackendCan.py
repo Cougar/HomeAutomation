@@ -86,7 +86,7 @@ class CanMessage:
 		cmd = "PKT " + id + " 1 0 " + bytes
 		return cmd.strip(" ")
 
-class CanNode ():
+class CanNode:
 	HardwareId = [0,0,0,0]
 	LastOnline = 0
 	Services = {}

@@ -20,7 +20,7 @@
 import ServiceManager
 import threading
 
-class ControllerBase ():
+class ControllerBase:
 	Settings = {}
 	Timers = {}
 	
