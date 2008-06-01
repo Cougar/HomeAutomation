@@ -81,7 +81,8 @@ void ConvertTemperature(void)
 void sns_ds18x20_Init(void)
 {
 	/* Make sure there is no more then 4 sensors. */
-	NumberOfSensors = search_sensors();
+	FlagSearchSensors = 1;
+	NumberOfSensors = 0;
 	
 	Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_SEND_PERIOD , TimerTypeFreeRunning, &ConvertTemperature_callback);
 }
