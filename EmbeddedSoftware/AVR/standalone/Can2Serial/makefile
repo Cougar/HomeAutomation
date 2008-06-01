@@ -36,12 +36,27 @@
 # - DEPFLAGS according to Eric Weddingtion's fix (avrfreaks/gcc-forum)
 # - F_OSC Define in CFLAGS and AFLAGS
 
+## HomeAutomation-users! Make sure you have a system.inc in your EmbeddedSoftware/AVR/personal folder ##
 
-# MCU name
-#MCU = atmega32
+## FUSES, will automatically be programmed ##
 #MCU = atmega8
-MCU = atmega88
-#MCU = atmega168
+
+#MCU = atmega88
+#HIGHFUSE=0xdc
+#LOWFUSE=0xe2
+#EXTFUSE=0x01
+
+MCU = atmega168
+HIGHFUSE=0xdc
+LOWFUSE=0xe2
+EXTFUSE=0x01
+
+
+# for using the same system.inc we use BIOSDIR and BIOSTARGET for setting the correct file to flash
+# flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
+BIOSDIR = .
+BIOSTARGET = main
+include ../../personal/system.inc
 
 
 # Output format. (can be srec, ihex, binary)
@@ -175,7 +190,7 @@ LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
-
+## HomeAutomation-users: settings are moved to system.inc ##
 
 # Programming support using avrdude. Settings and variables.
 
@@ -185,13 +200,13 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = dragon_isp
+#AVRDUDE_PROGRAMMER = avrispmkII
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = usb    # programmer connected to serial device
-AVRDUDE_BAUD = 115200
+#AVRDUDE_PORT = usb    # programmer connected to serial device
+#AVRDUDE_BAUD = 115200
 
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+#AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
@@ -209,10 +224,10 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUD)
-AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
-AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
-AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
+#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUD)
+#AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
+#AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
+#AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 
 
 
@@ -233,7 +248,7 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size
 NM = avr-nm
-AVRDUDE = avrdude
+#AVRDUDE = avrdude
 REMOVE = rm -f
 COPY = cp
 
@@ -325,10 +340,14 @@ gccversion :
 	@$(CC) --version
 
 
+# Program the device.  
+install: $(TARGET).hex $(TARGET).eep
+	$(UPLOAD) $(ULFLAGS)
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(UPLOAD) $(ULFLAGS)
+#	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 #programlock: 
 #	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lock:w:0x00:m
