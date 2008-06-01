@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../sensor/ds18s20/delay.h"
+#include <drivers/sensor/ds18s20/delay.h>
 #include "FOST02.h"
 
 /*----------------------------------------------

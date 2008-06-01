@@ -52,8 +52,8 @@ uint16_t getFOST02temperature(void);
 uint16_t getFOST02humidity(void);
 void getFOST02DataByte(uint8_t *data1, uint8_t *data2);
 
-//static unsigned uint16_t __attribute__ ((progmem)) HydroTable[] = {
-static uint16_t HydroTable[] = {
+//static unsigned uint16_t __attribute__ ((progmem)) HumidityTable[] = {
+static uint16_t HumidityTable[] = {
 0x0000,
 0x0000,
 0x0000,
