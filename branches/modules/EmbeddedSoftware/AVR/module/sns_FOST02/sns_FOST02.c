@@ -31,7 +31,7 @@ void GetTemperature(void)
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_FOST02;
 		txMsg.Header.ModuleId = sns_FOST02_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_SNS_TEMPERATURE_CELSIUS;
+		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_TEMPERATURE_CELSIUS;
 		txMsg.Length = 3;
 		txMsg.Data[0] = FOST02_ID;
 	
@@ -60,7 +60,7 @@ void GetHumidity(void)
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_FOST02;
 		txMsg.Header.ModuleId = sns_FOST02_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_SNS_HUMIDITY_PERCENT;
+		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_HUMIDITY_PERCENT;
 		txMsg.Length = 3;
 		txMsg.Data[0] = FOST02_ID;
 	
