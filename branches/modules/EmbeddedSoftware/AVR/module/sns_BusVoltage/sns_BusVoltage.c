@@ -17,7 +17,7 @@ void sns_BusVoltage_Process(void)
 		busVoltage = ((busVoltage>>2)*195)>>7; //((4.95*(12+47)/12) * 8)
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_BusVoltage;
 		txMsg.Header.ModuleId = sns_BusVoltage_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_SNS_VOLTAGE;
+		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_VOLTAGE;
 		txMsg.Length = 3;
 		txMsg.Data[0] = 0;
 		txMsg.Data[2] = busVoltage&0xff;
