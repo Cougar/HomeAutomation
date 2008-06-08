@@ -26,7 +26,7 @@ void ReadTemperature(void)
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_ds18x20;
 	txMsg.Header.ModuleId = sns_ds18x20_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_SNS_TEMPERATURE_CELSIUS;
+	txMsg.Header.Command = CAN_CMD_MODULE_PHYS_TEMPERATURE_CELSIUS;
 	txMsg.Length = 3;
 
 	txMsg.Data[0] = SensorIds[CurrentSensor];
