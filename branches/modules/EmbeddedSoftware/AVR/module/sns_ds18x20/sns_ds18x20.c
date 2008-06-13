@@ -33,16 +33,19 @@ void ReadTemperature(void)
 
 	if (DS18X20_read_meas(&gSensorIDs[CurrentSensor][0], &subzero, &cel, &cel_frac_bits) == DS18X20_OK)
 	{
+		int16_t temp = cel;
+
+		temp = temp << 6;
+
+		temp += (cel_frac_bits << 2);
+
 		if (subzero)
 		{
-			txMsg.Data[1] = -cel-1;
-			txMsg.Data[2] = ~(cel_frac_bits<<4);
+			temp = -temp;
 		}
-		else
-		{
-			txMsg.Data[1] = cel;
-			txMsg.Data[2] = (cel_frac_bits<<4);
-		}
+
+		txMsg.Data[1] = (uint8_t)(temp >> 8);
+		txMsg.Data[2] = (uint8_t)(temp & 0xff);
 	}
 	
 	StdCan_Put(&txMsg);

@@ -66,8 +66,8 @@ void GetHumidity(void)
 	
 		getFOST02DataByte(&byte1, &byte2);
 		TmpV = HumidityTable[byte2];
-		txMsg.Data[2]= (uint8_t) (TmpV & 0x00FF);
-		txMsg.Data[1]= (uint8_t) ((TmpV >> 8) & 0x00FF);
+		txMsg.Data[2]= (uint8_t) ((TmpV>>2) & 0x00FF);
+		txMsg.Data[1]= (uint8_t) ((TmpV >> 10) & 0x00FF);
 
 		StdCan_Put(&txMsg);
 

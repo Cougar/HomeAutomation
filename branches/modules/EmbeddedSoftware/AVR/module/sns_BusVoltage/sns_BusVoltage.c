@@ -20,8 +20,8 @@ void sns_BusVoltage_Process(void)
 		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_VOLTAGE;
 		txMsg.Length = 3;
 		txMsg.Data[0] = 0;
-		txMsg.Data[2] = busVoltage&0xff;
-		txMsg.Data[1] = (busVoltage>>8)&0xff;
+		txMsg.Data[2] = (busVoltage>>2)&0xff;
+		txMsg.Data[1] = (busVoltage>>10)&0xff;
 
 		StdCan_Put(&txMsg);
 	}
