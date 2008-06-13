@@ -79,7 +79,7 @@
 
 // Module commands
 //------------------------------------
-#define CAN_CMD_MODULE_NMT_LIST		0x00UL		// Tell the application to report which modules it has
+//#define CAN_CMD_MODULE_NMT_LIST		0x00UL		// Tell the application to report which modules it has
 
 
 
