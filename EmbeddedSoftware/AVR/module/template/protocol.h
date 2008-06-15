@@ -8,6 +8,6 @@
  *      Only Id:s with numbers between 128 and 191 is allowed
  */
 
-//#define CAN_CMD_MODULE_SPECIFIC_PWM	0x128
+//#define CAN_CMD_MODULE_SPECIFIC_PWM	128
 
 #endif // <TEMPLATE>_PROTOCOL
