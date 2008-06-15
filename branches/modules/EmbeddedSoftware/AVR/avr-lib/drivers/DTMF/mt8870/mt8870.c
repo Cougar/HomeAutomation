@@ -95,9 +95,9 @@ ISR(MT8870_INT_VECTOR) {
 	}
 	
 	/* Set/reset timer for dial timeout */
-	Timer_SetTimeout(0, DIAL_TIMEOUT, TimerTypeOneShot, &DTMFin_timer_callback);
+	Timer_SetTimeout(MT_TIMER, MT_DIAL_TIMEOUT, TimerTypeOneShot, &DTMFin_timer_callback);
 	
-	if (rxlen == MAX_TONES) {
+	if (rxlen == MT_MAX_TONES) {
 		data_overflow = 1;
 		MT8870_INT_DISABLE();
 	}
@@ -144,7 +144,5 @@ void DTMFin_Init(void) {
 	MT_Q2_DDR &= ~(1<<MT_Q2_BIT);
 	MT_Q3_DDR &= ~(1<<MT_Q3_BIT);
 	MT_Q4_DDR &= ~(1<<MT_Q4_BIT);
-	
-	Timer_Init();
 }
 

@@ -63,6 +63,8 @@
 #define CAN_CLASS_MODULE_ACT		0x0CUL
 #define CAN_CLASS_MODULE_SNS		0x0DUL
 #define CAN_CLASS_MODULE_DEF		0x0EUL
+#define CAN_CLASS_MODULE_CON_OPEN	0x0FUL
+#define CAN_CLASS_MODULE_CON		0x10UL
 
 // Module frame direction
 //------------------------------------
@@ -75,7 +77,9 @@
 #define CAN_TYPE_MODULE_sns_ds18x20	0x03
 #define CAN_TYPE_MODULE_sns_FOST02	0x05
 #define CAN_TYPE_MODULE_sns_BusVoltage	0x06
+#define CAN_TYPE_MODULE_sns_SimpleDTMF	0x07
 #define CAN_TYPE_MODULE_act_hd44789	0x04
+
 
 // Module commands
 //------------------------------------

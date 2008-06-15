@@ -1,0 +1,3 @@
+# List all files that needs to be compiled here
+sns_SimpleDTMF/sns_SimpleDTMF.c
+drivers/DTMF/mt8870/mt8870.c

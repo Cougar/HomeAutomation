@@ -17,7 +17,7 @@
 /**@{*/
 
 //#error StdCan: For discussion only! Do not use in application code.
-#warning StdCan: Not thouroughly tested yet.
+//#warning StdCan: Not thouroughly tested yet.
 
 #ifndef STDCAN_H_
 #define STDCAN_H_
