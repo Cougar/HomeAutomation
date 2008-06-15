@@ -1,0 +1,12 @@
+TODO Atom Service Framework
+===========================
+* Daemon mode
+* Logfile
+* Read canid.h
+* Remove hardcoded definitions, use canid.h read data
+* Create more services, atleast one for every module
+* Handle connection failures to canDaemon better
+* SIGHUP handle
+* Control+C does not cancel every thread
+* Fix imapservice
+* Threading sucks!!! fix
