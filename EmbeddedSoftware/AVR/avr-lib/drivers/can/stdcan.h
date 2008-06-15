@@ -17,7 +17,7 @@
 /**@{*/
 
 //#error StdCan: For discussion only! Do not use in application code.
-#warning StdCan: Not thourhly tested yet.
+//#warning StdCan: Not thouroughly tested yet.
 
 #ifndef STDCAN_H_
 #define STDCAN_H_
@@ -57,13 +57,34 @@ typedef enum {
  * excluded (RTR and standard id).
  */
 typedef struct {
+#ifdef MODULE_APPLICATION
+	union {
+		uint32_t Id;	/**< CAN extended ID (29 bits). */
+		struct {
+			uint8_t Command;
+			uint8_t ModuleId;
+			uint8_t ModuleType;
+			uint8_t ClassAndDirection;
+		} Header;
+	};
+#else
 	unsigned long Id; /**< CAN extended ID (29 bits). */
+#endif
 	char Length; /**< Data length [0,8]. */
 	unsigned char Data[8]; /**< Data array. Only the first \c Length elements are valid. */
 #if (STDCAN_FILTER)
 	unsigned char Match; /**< Filter id that matched this message. */ 
 #endif
 } StdCan_Msg_t;
+
+#define StdCan_Ret_class(Header) (uint8_t)((Header.ClassAndDirection >> 1) & 0x0F)
+#define StdCan_Set_class(Header, CLASS) Header.ClassAndDirection &= 0x01; Header.ClassAndDirection |= (CLASS << 1);
+#define StdCan_Ret_direction(Header) (uint8_t)(Header.ClassAndDirection & 0x01)
+#define StdCan_Set_direction(Header, DIR) Header.ClassAndDirection &= 0xfe; Header.ClassAndDirection |= DIR;
+#define NODE_HW_ID_BYTE3 (uint8_t)((NODE_HW_ID>>24)&0xff)
+#define NODE_HW_ID_BYTE2 (uint8_t)((NODE_HW_ID>>16)&0xff)
+#define NODE_HW_ID_BYTE1 (uint8_t)((NODE_HW_ID>>8)&0xff)
+#define NODE_HW_ID_BYTE0 (uint8_t)((NODE_HW_ID)&0xff)
 
 /**
  * @brief Node descriptor.
@@ -90,9 +111,12 @@ typedef struct {
  * 		Pointer to node descriptor, containing information about the type and
  * 		version of the application that should be announced in startup and
  * 		heartbeat messages.
- */ 
+ */
+#ifdef MODULE_APPLICATION
+StdCan_Ret_t StdCan_Init(void);
+#else 
 StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc);
-
+#endif
 /**
  * @brief Get a message.
  * 

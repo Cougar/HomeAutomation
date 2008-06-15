@@ -82,8 +82,13 @@ void Can_Process(Can_Message_t* msg)
 	}
 }
 
+#ifdef MODULE_APPLICATION
+StdCan_Ret_t StdCan_Init(void)
+{
+#else
 StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 {
+#endif
 	StdCan_Ret_t retval;
 	
 	/* Reset all queue variables. */
@@ -120,12 +125,19 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	Startup.ExtendedFlag = 1;
 	Startup.RemoteFlag = 0;
 	Startup.DataLength = 4;
+#ifdef MODULE_APPLICATION
+	Startup.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE);
+	Startup.Data.bytes[0] = NODE_HW_ID&0xff;
+	Startup.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
+	Startup.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
+	Startup.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+#else
 	Startup.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
 	Startup.Data.bytes[1] = APP_TYPE&0xff;
 	Startup.Data.bytes[0] = (APP_TYPE>>8)&0xff;
 	Startup.Data.bytes[3] = APP_VERSION&0xff;
 	Startup.Data.bytes[2] = (APP_VERSION>>8)&0xff;
-	
+#endif
 	/* Try to send it. */
 	Can_Send(&Startup);
 #endif
@@ -184,9 +196,13 @@ StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
 	for (n = 0; n < msg->Length; n++) {
 		Can_Msg.Data.bytes[n] = msg->Data[n];
 	}
-	
-	if (Can_Send(&Can_Msg) == CAN_OK)
+
+	if (Can_Send(&Can_Msg) == CAN_OK) {
+#ifdef MODULE_APPLICATION
+		Can_Process(&Can_Msg);
+#endif
 		return StdCan_Ret_OK;
+	}
 	else
 		return StdCan_Ret_Full;
 }
@@ -201,10 +217,21 @@ void StdCan_SendHeartbeat(uint8_t n)
 	/* Set up Heartbeat message format. */
 	Heartbeat.ExtendedFlag = 1;
 	Heartbeat.RemoteFlag = 0;
+#ifdef MODULE_APPLICATION
+	Heartbeat.DataLength = 4;
+	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE);
+	Heartbeat.Data.bytes[0] = NODE_HW_ID&0xff;
+	Heartbeat.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
+	Heartbeat.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
+	Heartbeat.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+#else
+	
+	
 	Heartbeat.DataLength = 0;
 	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS)
 				 | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE)
 				 | (NODE_ID << CAN_SHIFT_NMT_SID);
+#endif
 	
 	/* Try to send it. */
 	Can_Send(&Heartbeat);

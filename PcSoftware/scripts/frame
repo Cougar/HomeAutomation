@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ID=${1}
+PARS=${@}
+DATA=${PARS:${#ID}}
+
+echo "PKT ${ID} 1 0${DATA}" | nc localhost 1200 -q 10 > /dev/null

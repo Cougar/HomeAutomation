@@ -1,0 +1,6 @@
+# There must be one and only one CONTROLLER
+CONTROLLER=Example
+
+# Settings specific to the controller
+LCD_ID=CAN_4_1
+SENSOR_ID=CAN_3_1
