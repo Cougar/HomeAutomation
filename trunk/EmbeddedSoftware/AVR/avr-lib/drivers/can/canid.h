@@ -87,14 +87,11 @@
 // CAN ID definitions for NMT messages
 
 #define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE))
 #define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE))
 #define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
-                              | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE))
 
 #define CAN_APPTYPES_IRRECEIVER     0xf010
 #define CAN_APPTYPES_RELAY          0xf015
@@ -103,6 +100,7 @@
 #define CAN_APPTYPES_IRTRANSMITTER  0xf030
 #define CAN_APPTYPES_RGBLED			0xf035
 #define CAN_APPTYPES_FANCONTROLLER	0xf040
+#define CAN_APPTYPES_LCD		0xf045
 
 // CAN ID definitions for SNS messages
 #define SNS_TYPE_STATUS             0x10L
