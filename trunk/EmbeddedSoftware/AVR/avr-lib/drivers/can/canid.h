@@ -85,7 +85,7 @@
 
 //---------------------------------------------------------------------------
 // CAN ID definitions for NMT messages
-#ifdef MODULE_APPLICATION
+#ifdef NODE_HW_ID
 #define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE))
 #define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
