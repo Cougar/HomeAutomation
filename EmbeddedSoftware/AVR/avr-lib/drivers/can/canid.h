@@ -85,14 +85,7 @@
 
 //---------------------------------------------------------------------------
 // CAN ID definitions for NMT messages
-#ifdef NODE_HW_ID
-#define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE))
-#define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE))
-#define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
-                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE))
-#else
+#ifdef NODE_ID
 #define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE) \
                               | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
@@ -102,6 +95,13 @@
 #define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
                               | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE) \
                               | ((uint32_t)NODE_ID << CAN_SHIFT_NMT_SID))
+#else
+#define CAN_ID_NMT_BIOS_START  ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_BIOS_START << CAN_SHIFT_NMT_TYPE))
+#define CAN_ID_NMT_PGM_ACK     ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_PGM_ACK << CAN_SHIFT_NMT_TYPE))
+#define CAN_ID_NMT_PGM_NACK    ((CAN_NMT << CAN_SHIFT_CLASS) \
+                              | (CAN_NMT_PGM_NACK << CAN_SHIFT_NMT_TYPE))
 #endif
 
 #define CAN_APPTYPES_IRRECEIVER     0xf010
