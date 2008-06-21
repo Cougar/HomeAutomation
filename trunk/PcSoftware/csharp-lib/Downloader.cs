@@ -140,6 +140,7 @@ public class Downloader {
 						pgs = dState.WAIT_ACK_PRG;
 						timeStart = Environment.TickCount;
                         Console.WriteLine("Downloading...");
+                        Console.Write("  0%");
 						break;
 					
 					
@@ -202,45 +203,46 @@ public class Downloader {
 						
 						if (percent>9 && dldisplaystate==0) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=1;
 						} else if (percent>19 && dldisplaystate==1) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=2;
 						} else if (percent>29 && dldisplaystate==2) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=3;
 						} else if (percent>39 && dldisplaystate==3) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=4;
 						} else if (percent>49 && dldisplaystate==4) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=5;
 						} else if (percent>59 && dldisplaystate==5) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=6;
 						} else if (percent>69 && dldisplaystate==6) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=7;
 						} else if (percent>79 && dldisplaystate==7) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=8;
 						} else if (percent>89 && dldisplaystate==8) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=9;
 						} else if (percent>99 && dldisplaystate==9) {
                            Console.Write("\r");
-						   Console.Write(percent+"%");
+						   Console.Write(" "+percent+"%");
 						   dldisplaystate=10;
 						}
+						Console.Write(".");
 
 						// Send program data.
 						byte datalength = 2;
