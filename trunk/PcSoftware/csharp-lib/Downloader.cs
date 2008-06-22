@@ -100,7 +100,10 @@ public class Downloader {
         bool errorOccured = false;
         
         //int rotstate=0;
-        int dldisplaystate=0;
+        //int dldisplaystate=0;
+        double lastpercent=0;
+        double lasttenpercent=0;
+        int nrOfTicks=0;
         
         try {
         	if (isBiosUpdate) {
@@ -140,7 +143,8 @@ public class Downloader {
 						pgs = dState.WAIT_ACK_PRG;
 						timeStart = Environment.TickCount;
                         Console.WriteLine("Downloading...");
-                        Console.Write("  0%");
+                        Console.Write("  0% [                                        ]\r");
+                        Console.Write("  0% [");
 						break;
 					
 					
@@ -175,74 +179,26 @@ public class Downloader {
 						break;
 						
 					case dState.SEND_PGM_DATA:
-						//Console.WriteLine("byteSent = "+byteSent);
-//disable						Console.Write(".");
-//Console.Write("\b");
-//int curleft = Console.CursorLeft;
-//int curtop = Console.CursorTop;
-//Console.SetCursorPosition(curleft, curtop-1);
 
-//if (rotstate==0) {
-//   Console.Write("-");
-//   rotstate=1;
-//} else if (rotstate==1) {
-//   Console.Write("\\");
-//   rotstate=2;
-//} else if (rotstate==2) {
-//   Console.Write("|");
-//   rotstate=3;
-//} else if (rotstate==3) {
-//   Console.Write("/");
-//   rotstate=0;
-//}
-//Console.Write("\r");
-//dldisplaystate
+						double percent = (double)byteSent*100/((double)hf.getAddrUpper()-(double)currentAddress);
+						//Console.Write("  0% [                                        ]");
 
-//FULHACK deulx
-						ulong percent = byteSent*100/(hf.getAddrUpper()-currentAddress);
-						
-						if (percent>9 && dldisplaystate==0) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=1;
-						} else if (percent>19 && dldisplaystate==1) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=2;
-						} else if (percent>29 && dldisplaystate==2) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=3;
-						} else if (percent>39 && dldisplaystate==3) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=4;
-						} else if (percent>49 && dldisplaystate==4) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=5;
-						} else if (percent>59 && dldisplaystate==5) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=6;
-						} else if (percent>69 && dldisplaystate==6) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=7;
-						} else if (percent>79 && dldisplaystate==7) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=8;
-						} else if (percent>89 && dldisplaystate==8) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=9;
-						} else if (percent>99 && dldisplaystate==9) {
-                           Console.Write("\r");
-						   Console.Write(" "+percent+"%");
-						   dldisplaystate=10;
+						if (percent >= lastpercent+2.5) {
+						//Console.WriteLine(percent);
+   						   Console.Write("=");
+   						   nrOfTicks++;
+						   lastpercent = lastpercent+2.5;
 						}
-						Console.Write(".");
+						if (percent > lasttenpercent+10) {
+						   Console.Write("\r");
+						   Console.Write(" "+Math.Round(percent,0)+"% [");
+						   
+  						   lasttenpercent = percent;
+						   for (int i=0; i<nrOfTicks; i++) {
+						      Console.Write("=");
+						   }
+						}
+
 
 						// Send program data.
 						byte datalength = 2;
@@ -315,7 +271,7 @@ public class Downloader {
 						
 					case dState.SEND_DONE:
                        Console.Write("\r");
-					   Console.Write("100%");
+					   Console.Write("100% [========================================]  ");
 						// Send done
 						outCm = cpn.getPgmEndPacket();
 						dc.sendCanPacket(outCm);
