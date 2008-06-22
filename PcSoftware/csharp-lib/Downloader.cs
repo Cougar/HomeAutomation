@@ -143,7 +143,7 @@ public class Downloader {
 						pgs = dState.WAIT_ACK_PRG;
 						timeStart = Environment.TickCount;
                         Console.WriteLine("Downloading...");
-                        Console.Write("  0% [                                        ]\r");
+                        //Console.Write("  0% [                                        ]\r");
                         Console.Write("  0% [");
 						break;
 					
@@ -197,7 +197,7 @@ public class Downloader {
 						   Console.Write("\r");
 						   Console.Write(" "+Math.Round(percent,0)+"% [");
 						   
-  						   lasttenpercent = percent;
+  						   lasttenpercent = lasttenpercent+10;
 						   for (int i=0; i<nrOfTicks; i++) {
 						      Console.Write("=");
 						   }
