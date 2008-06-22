@@ -190,6 +190,10 @@ public class Downloader {
 						   lastpercent = lastpercent+2.5;
 						}
 						if (percent > lasttenpercent+10) {
+						   for (int i=nrOfTicks; i<40; i++) {
+						      Console.Write(" ");
+						   }
+						   Console.Write("]");
 						   Console.Write("\r");
 						   Console.Write(" "+Math.Round(percent,0)+"% [");
 						   
@@ -270,8 +274,12 @@ public class Downloader {
 						break;
 						
 					case dState.SEND_DONE:
+					   for (int i=nrOfTicks; i<40; i++) {
+					      Console.Write(" ");
+					   }
+					   Console.Write("]");
                        Console.Write("\r");
-					   Console.Write("100% [========================================]  ");
+					   Console.Write("100% [========================================]");
 						// Send done
 						outCm = cpn.getPgmEndPacket();
 						dc.sendCanPacket(outCm);
