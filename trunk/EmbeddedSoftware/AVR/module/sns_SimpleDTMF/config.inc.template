@@ -29,6 +29,8 @@ MT_Q3_BIT=PC2
 
 MT_Q4_PIN=PINC
 MT_Q4_DDR=DDRC
+
+## Should be PC4 on corecard expansion and PC3 on NodeCallerID
 MT_Q4_BIT=PC4
 
 ## End section sns_SimpleDTMF -- Do not edit this line
