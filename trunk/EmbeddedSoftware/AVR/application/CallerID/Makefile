@@ -28,6 +28,7 @@ SOURCES =	main.c\
 			drivers/uart/serial.c\
 			drivers/uart/uart.c\
 			drivers/mcu/mcu.c\
+			drivers/DTMF/dtmf.c\
 			drivers/DTMF/mt8870/mt8870.c\
 
 # Optimization level, can be [0, 1, 2, 3, s]. 

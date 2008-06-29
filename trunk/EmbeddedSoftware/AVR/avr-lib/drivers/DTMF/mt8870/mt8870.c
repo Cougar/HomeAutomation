@@ -13,18 +13,17 @@
 //#include <config.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <drivers/timer/timer.h>
+#include <drivers/DTMF/dtmf.h>
 #include <drivers/DTMF/mt8870/mt8870.h>
 #include <config.h>
 
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
-uint8_t *rxbuf;
-uint8_t rxlen;
+uint8_t mt_rxbuf[MT_MAX_TONES];
+uint8_t mt_rxlen;
 
-uint8_t data_overflow;
-uint8_t data_received;
+uint8_t mt_data_overflow;
 
 /*-----------------------------------------------------------------------------
  * Prerequisites
@@ -50,18 +49,18 @@ uint8_t data_received;
 
 ISR(MT8870_INT_VECTOR) {
 	/* External interrupt 0, rising edge detected */
-	uint8_t datain;
+	uint8_t mt_datain;
 	
 	/* Read data on input pins */
-	datain = ((MT_Q1_PIN >> MT_Q1_BIT) & 0x1);
-	datain |= (((MT_Q2_PIN >> MT_Q2_BIT) & 0x1)<<1);
-	datain |= (((MT_Q3_PIN >> MT_Q3_BIT) & 0x1)<<2);
-	datain |= (((MT_Q4_PIN >> MT_Q4_BIT) & 0x1)<<3);
+	mt_datain = ((MT_Q1_PIN >> MT_Q1_BIT) & 0x1);
+	mt_datain |= (((MT_Q2_PIN >> MT_Q2_BIT) & 0x1)<<1);
+	mt_datain |= (((MT_Q3_PIN >> MT_Q3_BIT) & 0x1)<<2);
+	mt_datain |= (((MT_Q4_PIN >> MT_Q4_BIT) & 0x1)<<3);
 	
 	/* Parse read data and place in buffer */
-	switch(datain) {
+	switch(mt_datain) {
 	case 0:		//DTMF0  = D
-		rxbuf[rxlen++] = 0xd;
+		mt_rxbuf[mt_rxlen++] = 0xd;
 		break;
 	case 1:
 	case 2:
@@ -72,34 +71,31 @@ ISR(MT8870_INT_VECTOR) {
 	case 7:
 	case 8:
 	case 9:
-		rxbuf[rxlen++] = datain;
+		mt_rxbuf[mt_rxlen++] = mt_datain;
 		break;
 	case 0xa:	//DTMF10 = number 0
-		rxbuf[rxlen++] = 0;
+		mt_rxbuf[mt_rxlen++] = 0;
 		break;
 	case 0xb:	//DTMF11 = *
-		rxbuf[rxlen++] = 0xe;
+		mt_rxbuf[mt_rxlen++] = 0xe;
 		break;
 	case 0xc:	//DTMF12 = #
-		rxbuf[rxlen++] = 0xf;
+		mt_rxbuf[mt_rxlen++] = 0xf;
 		break;
 	case 0xd:	//DTMF13 = A
-		rxbuf[rxlen++] = 0xa;
+		mt_rxbuf[mt_rxlen++] = 0xa;
 		break;
 	case 0xe:	//DTMF14 = B
-		rxbuf[rxlen++] = 0xb;
+		mt_rxbuf[mt_rxlen++] = 0xb;
 		break;
 	case 0xf:	//DTMF15 = C
-		rxbuf[rxlen++] = 0xc;
+		mt_rxbuf[mt_rxlen++] = 0xc;
 		break;
 	}
 	
-	/* Set/reset timer for dial timeout */
-	Timer_SetTimeout(MT_TIMER, MT_DIAL_TIMEOUT, TimerTypeOneShot, &DTMFin_timer_callback);
-	
-	if (rxlen == MT_MAX_TONES) {
-		data_overflow = 1;
-		MT8870_INT_DISABLE();
+	if (mt_rxlen >= MT_MAX_TONES) {
+		mt_data_overflow = 1;
+		mt_rxlen=0;
 	}
 }
 
@@ -108,33 +104,28 @@ ISR(MT8870_INT_VECTOR) {
  * Public Functions
  *---------------------------------------------------------------------------*/
 
-// Timer callback function 
-void DTMFin_timer_callback(uint8_t timer) {
-	data_received = 1;
-	MT8870_INT_DISABLE();
-}
-
-void DTMFin_Start(uint8_t *buffer) {
-	rxbuf = buffer;
-	rxlen = 0;
-	data_overflow = 0;
-	data_received = 0;
-	
-	MT8870_INT_ENABLE();
-}
-
-MT8870_Ret_t DTMFin_Poll(uint8_t *len) {
-	*len = rxlen;
-	if (data_overflow) {
-		return MT8870_Ret_Overflow;
+DTMF_Ret_t mt8870_Pop(uint8_t *buffer, uint8_t *len) {
+	DTMF_Ret_t mt_returndata = DTMF_Ret_No_data;
+	*len = 0;
+	if (mt_rxlen > 0) {
+		cli();
+		*len = mt_rxlen;
+		for (uint8_t i=0; i<*len; i++) {
+			buffer[i] = mt_rxbuf[i];
+		}
+		mt_rxlen = 0;
+		sei();
+		if (mt_data_overflow) {
+			mt_data_overflow = 0;
+			mt_returndata = DTMF_Ret_Overflow;
+		} else {
+			mt_returndata = DTMF_Ret_Data_avail;
+		}
 	}
-	if (data_received) {
-		return MT8870_Ret_Finished;
-	}
-	return MT8870_Ret_Not_Finished;
+	return mt_returndata;
 }
 
-void DTMFin_Init(void) {
+void mt8870_Init(void) {
 	/* set up interrupt on rising edge */
 	INT0_CTRL |= _BV(ISC01);
 	INT0_CTRL |= _BV(ISC00);
@@ -144,5 +135,9 @@ void DTMFin_Init(void) {
 	MT_Q2_DDR &= ~(1<<MT_Q2_BIT);
 	MT_Q3_DDR &= ~(1<<MT_Q3_BIT);
 	MT_Q4_DDR &= ~(1<<MT_Q4_BIT);
+	
+	mt_rxlen = 0;
+	mt_data_overflow = 0;
+	MT8870_INT_ENABLE();
 }
 
