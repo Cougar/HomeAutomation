@@ -8,6 +8,7 @@ sns_SimpleDTMF_MT_TIMER=<TIMER>
 MT_TIMER=sns_SimpleDTMF_MT_TIMER
 MT_MAX_TONES=16
 MT_DIAL_TIMEOUT=1800
+MT8870=1
 
 # Signals connected from MT8870 is
 # StD, Q1, Q2, Q3 och Q4
