@@ -1,6 +1,8 @@
 
 #include "sns_SimpleDTMF.h"
 
+uint8_t pollrxbuffer[MT_MAX_TONES];
+uint8_t pollrxlen=0;
 uint8_t rxbuffer[MT_MAX_TONES];
 uint8_t state = SNS_SIMPLEDTMF_STATE_IDLE;
 uint8_t rxlen = 0;
@@ -12,33 +14,50 @@ void sns_SimpleDTMF_Init(void)
 
 void sns_SimpleDTMF_Process(void)
 {
-	uint8_t retval;
 	StdCan_Msg_t txMsg;
+	DTMF_Ret_t retval;
 	
 	switch (state)
 	{
 	case SNS_SIMPLEDTMF_STATE_IDLE:
-	DTMFin_Start(rxbuffer);
-	state = SNS_SIMPLEDTMF_STATE_START_WAIT;
+		if (DTMFin_Pop(pollrxbuffer, &pollrxlen) == DTMF_Ret_Data_avail) {
+			state = SNS_SIMPLEDTMF_STATE_COPYDATA;
+		} else {
+			//go into sleep or something, incoming data from mt8870 is interrupted so we will wake up
+		}
 	break;
 	
-	case SNS_SIMPLEDTMF_STATE_START_WAIT:
-	state = SNS_SIMPLEDTMF_STATE_WAIT;
+	case SNS_SIMPLEDTMF_STATE_COPYDATA:
+		state = SNS_SIMPLEDTMF_STATE_WAIT;
+		for (uint8_t i=0; i<pollrxlen;i++) {
+			rxbuffer[rxlen++] = pollrxbuffer[i];
+			if (rxlen >= MT_MAX_TONES) {
+				//overflow
+				rxlen = 0;
+				state = SNS_SIMPLEDTMF_STATE_IDLE;
+				break;
+			}
+		}
+		
+		Timer_SetTimeout(MT_TIMER, MT_DIAL_TIMEOUT, TimerTypeOneShot, 0);
 	break;
 	
 	case SNS_SIMPLEDTMF_STATE_WAIT:
-	retval = DTMFin_Poll(&rxlen);
-	
-	if (retval == MT8870_Ret_Finished)
-		state = SNS_SIMPLEDTMF_STATE_STOP;
-	else if (retval == MT8870_Ret_Overflow)
-		state = SNS_SIMPLEDTMF_STATE_IDLE;
+		if (Timer_Expired(MT_TIMER)) {
+			state = SNS_SIMPLEDTMF_STATE_SEND;
+		}
 		
+		retval = DTMFin_Pop(pollrxbuffer, &pollrxlen);
+		if (retval == DTMF_Ret_Data_avail) {
+			state = SNS_SIMPLEDTMF_STATE_COPYDATA;
+		} else if (retval == DTMF_Ret_Overflow) {
+			rxlen=0;
+			state = SNS_SIMPLEDTMF_STATE_IDLE;
+		}
 	break;
 	
-	case SNS_SIMPLEDTMF_STATE_STOP:
-	//if ((rxbuffer[0] == 0xa || rxbuffer[0] == 0xb) && rxbuffer[rxlen-1] == 0xc) {
-	
+	case SNS_SIMPLEDTMF_STATE_SEND:
+		//if ((rxbuffer[0] == 0xa || rxbuffer[0] == 0xb) && rxbuffer[rxlen-1] == 0xc) {
 		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_SimpleDTMF;
@@ -54,9 +73,9 @@ void sns_SimpleDTMF_Process(void)
 		txMsg.Length = (rxlen>>1)+(rxlen&1);
 		
 		StdCan_Put(&txMsg);
-
-	//}
-	state = SNS_SIMPLEDTMF_STATE_IDLE;
+		//}
+		rxlen = 0;
+		state = SNS_SIMPLEDTMF_STATE_IDLE;
 	break;
 	}
 }

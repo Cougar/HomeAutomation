@@ -14,13 +14,12 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
-#include <drivers/DTMF/mt8870/mt8870.h>
+#include <drivers/DTMF/dtmf.h>
 
 #define SNS_SIMPLEDTMF_STATE_IDLE			0
-#define SNS_SIMPLEDTMF_STATE_GET_DATA		1
-#define SNS_SIMPLEDTMF_STATE_START_WAIT		2
-#define SNS_SIMPLEDTMF_STATE_WAIT			3
-#define SNS_SIMPLEDTMF_STATE_STOP			4
+#define SNS_SIMPLEDTMF_STATE_COPYDATA		1
+#define SNS_SIMPLEDTMF_STATE_WAIT			2
+#define SNS_SIMPLEDTMF_STATE_SEND			3
 
 #include "protocol.h"
 
