@@ -4,10 +4,10 @@
  * 
  * @brief Driver for MT8870 DTMF receiver
  * 
- * Driver handle complete CallerID. Init and call start.
- * When the poll function return MT8870_Ret_Finished
- * data can be found in buffer set with the start function.
- * The length pointer supplied with function Poll is used to
+ * Driver handle only reception of dtmf codes. 
+ * When the pop function return DTMF_Ret_Data_avail
+ * data can be found in the buffer.
+ * The length pointer supplied with function Pop is used to
  * find out the length of data. 
  * 
  * @author	Anders Runeson
@@ -19,52 +19,12 @@
 #ifndef MT8870_H_
 #define MT8870_H_
 
+#include <drivers/DTMF/dtmf.h>
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
 
-/* Should be defined in user config.inc */
-#if 0
-/*
- * Signals connected from MT8870 is
- * StD, Q1, Q2, Q3 och Q4
- */
-#define MT_StD_PIN      PIND
-#define MT_StD_DDR      DDRD
-#define MT_StD_BIT      PD2
 
-#define MT_Q1_PIN       PINC
-#define MT_Q1_DDR       DDRC
-#define MT_Q1_BIT       PC0
-
-#define MT_Q2_PIN       PINC
-#define MT_Q2_DDR       DDRC
-#define MT_Q2_BIT       PC1
-
-#define MT_Q3_PIN       PINC
-#define MT_Q3_DDR       DDRC
-#define MT_Q3_BIT       PC2
-
-#define MT_Q4_PIN       PINC
-#define MT_Q4_DDR       DDRC
-#define MT_Q4_BIT       PC3
-
-/* Time to elapse to know when number sequence is over */
-#define DIAL_TIMEOUT	1800
-
-/* Maximum number of tones to store for the number */
-#define MAX_TONES		16
-
-#endif
-
-/**
- * @brief Return values.
- */
-typedef enum {
-	MT8870_Ret_Not_Finished, 	/**< No complete number yet. */
-	MT8870_Ret_Finished, 		/**< Data is available. */
-	MT8870_Ret_Overflow, 		/**< Buffer was overflown. */
-} MT8870_Ret_t;
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
@@ -72,7 +32,7 @@ typedef enum {
 /**
  * @brief Initialize MT8870 CallerID receiver
  */
-void DTMFin_Init(void);
+void mt8870_Init(void);
 
 /**
  * @brief Poll driver for status
@@ -81,17 +41,7 @@ void DTMFin_Init(void);
  * number is stored in buffer supplied with the Start
  * function.
  */
-MT8870_Ret_t DTMFin_Poll(uint8_t *len);
-
-/**
- * @brief Start the CallerID  
- */
-void DTMFin_Start(uint8_t *buffer);
-
-/*-----------------------------------------------------------------------------
- * Private Function Prototypes
- *---------------------------------------------------------------------------*/
-void DTMFin_timer_callback(uint8_t timer);
+DTMF_Ret_t mt8870_Pop(uint8_t *buffer, uint8_t *len);
 
 /**@}*/
 #endif /*MT8870_H_*/
