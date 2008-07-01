@@ -322,7 +322,7 @@ def usage():
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlr", ["help", "list", "regenerate", "add=", "del=", "new="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlrc", ["help", "list", "regenerate", "add=", "del=", "new="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -334,22 +334,30 @@ def main():
 		sys.exit()
 	
 	for o, a in opts:
-		if o in ("-l", "--list"):
+		if o in ("-c"):
+			modules = getModules()
+			
+			for module in modules:
+				print module
+
+		elif o in ("-l", "--list"):
 			modules = getModules()
 			
 			print "Available modules"
 			print "================="
 			for module in modules:
 				print module
-				
-			print ""
 			
-			modules = getLocalModules()
+
+			if os.path.exists(localmoddir):
+				print ""
 			
-			print "Modules used in this application"
-			print "================================"
-			for module in modules:
-				print module
+				modules = getLocalModules()
+			
+				print "Modules used in this application"
+				print "================================"
+				for module in modules:
+					print module
 			
 		elif o in ("-h", "--help"):
 			usage()
