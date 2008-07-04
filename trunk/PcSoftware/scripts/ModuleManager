@@ -12,7 +12,7 @@ localmoddir = os.getcwd() + "/modules"
 def getModules():
 	modules = []
 	for fileName in os.listdir(moddir):
-		if fileName[0] != '.':
+		if fileName[0] != '.' and fileName != "template":
 			modules.append(fileName)
 
 	return modules
