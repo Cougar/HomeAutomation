@@ -59,6 +59,7 @@ if ($tcpportarg) {
 
 $C2SSTARTSTR = 253;
 $C2SENDSTR = 250;
+$C2PINGSTR = 251;
 
 ### create a tcp server ###
 $linelength=1000;
@@ -158,8 +159,15 @@ sub serialConnProcessBuffer {
 	for ($i = 0; $i < length($input); $i++) {
 		if (ord(substr($input, $i, 1)) == $C2SSTARTSTR) {
 			$input = substr($input, $i);
+			$output = $input;
+			#print "debug: cutting character\n";
 			break;
 		} 
+		if (ord(substr($input, $i, 1)) == $C2PINGSTR) {
+			print "Got pong from hardware\n";
+			$input = substr($input, $i+1);
+			$output = $input;
+		}
 	}
 	### Check for possible complete packets ###
 	for ($i = 0; $i < length($input)-16; $i++) {
@@ -199,6 +207,9 @@ sub serialConnInit {
 	$serialPort->read_char_time(0);     # don't wait for each character
 	$serialPort->read_const_time(1000); # 1 second per unfulfilled "read" call
 
+	print "Testing connection to hardware: ping (hardware should answer with a pong)\n";
+	serialConnSend(chr($C2PINGSTR));
+	
 	### create a connection between the hardware and the tcp-server ###
 	&hardwareConnInit;
 	$hardwareSendFunction = "serialConnSend";		### set up callback for a 'send data' function
@@ -411,7 +422,13 @@ sub c2sToString {
 				$output .= sprintf " %02x", $data;
 			}
 			$_[1] = "PKT ".$output;
+		} else {
+			#print "debug: incorrect ext, rtr or dl\n";
+
 		}
+	} else {
+		#print "debug: incorrect boundaries\n";
+
 	}
 }
 

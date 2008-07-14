@@ -44,6 +44,7 @@
  *---------------------------------------------------------------------------*/
 #define UART_START_BYTE 253
 #define UART_END_BYTE 250
+#define UART_PING_BYTE 251
 
 #if USE_STDCAN == 0
 volatile Can_Message_t rxMsg; // Message storage
@@ -183,6 +184,12 @@ void UartParseByte(uint8_t c) {
 		startTime = Timebase_CurrentTime();
 		count = 0;
 		cm.Id = 0;
+		return;	
+	}
+
+	if (c == UART_PING_BYTE && !waitingMessage) {
+		//send ping reply
+		uart_putc(UART_PING_BYTE);
 		return;	
 	}
 }
