@@ -26,18 +26,6 @@ BIOSMAKEFLAGS = TARGET=$(BIOSTARGET) \
 				SRCDIR=$(abspath $(BIOSSRCDIR)) \
 				CFGDIR=$(abspath $(CFGDIR)) 
 
-# Define programs and commands.
-SHELL = sh
-CC = avr-gcc
-AWK = awk
-OBJCOPY = avr-objcopy
-OBJDUMP = avr-objdump
-SIZE = avr-size
-NM = avr-nm
-RM = rm -f
-COPY = cp
-MKDIR = mkdir
-
 # Define Messages
 # English
 MSG_CLEANING = Cleaning project:
