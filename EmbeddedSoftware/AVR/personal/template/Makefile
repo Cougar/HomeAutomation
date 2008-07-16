@@ -23,18 +23,6 @@ BIOSMAKEFLAGS = TARGET=$(BIOSTARGET) \
 				SRCDIR=$(abspath $(BIOSSRCDIR)) \
 				CFGDIR=$(abspath $(CFGDIR)) 
 
-# Define programs and commands.
-SHELL = sh
-CC = avr-gcc
-AWK = awk
-OBJCOPY = avr-objcopy
-OBJDUMP = avr-objdump
-SIZE = avr-size
-NM = avr-nm
-RM = rm -f
-COPY = cp
-MKDIR = mkdir
-
 # Define Messages
 # English
 MSG_CLEANING = Cleaning project:
@@ -67,7 +55,7 @@ $(BUILDDIR)/$(TARGET).hex: $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
 
 $(abspath $(BUILDDIR) $(BIOSDIR)):
-	@echo $(MSG_CREATEDIR) $@
+	@$(ECHO) $(MSG_CREATEDIR) $@
 	@$(MKDIR) -p $@
 
 # Target: clean project.
@@ -78,7 +66,7 @@ cleanbios:
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) clean
 
 distclean:
-	@echo $(MSG_CLEANING)
+	@$(ECHO) $(MSG_CLEANING)
 	$(RM) -r $(BUILDDIR)
 	$(RM) -r $(BIOSDIR)
 
