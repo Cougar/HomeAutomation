@@ -20,11 +20,6 @@ LIBNAME = lib$(TARGET)
 include $(CFGDIR)/bios.inc
 include $(CFGDIR)/../system.inc
 
-ifndef AWK
-	STOP! This is because you have not defined build-binaries in system.inc
-	Please update system.inc.template from SVN and then copy the build binaries definitions to your system.inc
-endif
-
 # VPATH: setup search path for source files.
 vpath
 vpath %.c $(SRCDIR):$(LIBDIR)
@@ -188,15 +183,6 @@ BUILDDIRS = $(sort $(filter-out ./,$(dir $(OBJ))))
 # Compiler flags to generate dependency files.
 GENDEPFLAGS = -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 
-check_binaries:
-ifndef AWK
-	@echo 
-	@echo ERROR! This is because you have not defined build-binaries in system.inc
-	@echo Please update system.inc.template from SVN and then copy the build binaries definitions to your system.inc
-	@echo 
-	@false
-endif
-
 # Default target.
 all: check_binaries sizebefore buildtree build lib sizeafter
 
@@ -350,6 +336,15 @@ clean:
 	$(RM) $(LIBNAME).S
 	$(RM) config.h
 	$(RM) -r drivers
+
+check_binaries:
+ifndef AWK
+	@echo 
+	@echo ERROR! This is because you have not defined build-binaries in system.inc
+	@echo Please update system.inc.template from SVN and then copy the build binaries definitions to your system.inc
+	@echo 
+	@false
+endif
 
 # Include the dependency files.
 ifneq ($(MAKECMDGOALS),clean)
