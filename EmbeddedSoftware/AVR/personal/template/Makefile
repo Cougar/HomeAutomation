@@ -30,10 +30,10 @@ MSG_CREATEDIR = Creating directory:
 
 
 # Default target.
-all: $(abspath $(BUILDDIR))
+all: check_binaries $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) all
 
-bios: $(abspath $(BIOSDIR))
+bios: check_binaries $(abspath $(BIOSDIR))
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) all
 
 installbios: bios
@@ -51,27 +51,36 @@ reset:
 start: 
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -s
 
-$(BUILDDIR)/$(TARGET).hex: $(abspath $(BUILDDIR))
+$(BUILDDIR)/$(TARGET).hex: check_binaries $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
 
-$(abspath $(BUILDDIR) $(BIOSDIR)):
+$(abspath $(BUILDDIR) $(BIOSDIR)): check_binaries
 	@$(ECHO) $(MSG_CREATEDIR) $@
 	@$(MKDIR) -p $@
 
 # Target: clean project.
-clean:
+clean: check_binaries
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) clean
 
-cleanbios:
+cleanbios: check_binaries
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) clean
 
-distclean:
+distclean: check_binaries
 	@$(ECHO) $(MSG_CLEANING)
 	$(RM) -r $(BUILDDIR)
 	$(RM) -r $(BIOSDIR)
 
+check_binaries:
+ifndef MKDIR
+	@echo 
+	@echo ERROR! This is because you have not defined build-binaries in system.inc
+	@echo Please update system.inc.template from SVN and then copy the build binaries definitions to your system.inc
+	@echo 
+	@false
+endif
+
 # Listing of phony targets.
 .PHONY : all bios installbios upgradebios \
 install reset start \
-clean cleanbios distclean
+clean cleanbios distclean check_binaries
 
