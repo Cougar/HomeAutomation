@@ -2,17 +2,18 @@
 
 $debugmode = 0;
 
-$outputpath = "outp/";
-$linenrpath = "linenr.txt";
-$contentspath = "contents.txt";
-$currentfilepath = "currentfile.txt";
-$logfilepath = "#hobby_small.log";
-$contentsfileoutput = "outp/";
-$contentsfilename = "hobby.txt";
+#$outputpath = "outp/";
+#$linenrpath = "linenr.txt";
+#$contentspath = "contents.txt";
+#$currentfilepath = "currentfile.txt";
+#$logfilepath = "#hobby_small.log";
+#$contentsfileoutput = "outp/";
+#$contentsfilename = "hobby.txt";
 $contentsheader = "====== Log of #hobby-channel ======\n";
-$namespace = "common:irc:hobby:";
+#$namespace = "common:irc:hobby:";
 
-require "settings.pl";
+#require "settings.pl";
+use File::Copy;
 
 $numArgs = $#ARGV + 1;
 if ($numArgs == 1) {
@@ -45,6 +46,12 @@ if ($numArgs == 1) {
 	}
 }
 
+if ($numArgs == 2) {
+	if ($ARGV[0] eq "-s") {
+		require "$ARGV[1]";
+	}
+}
+
 $startAtLine = 0;
 $currentfile = "";
 
@@ -53,7 +60,7 @@ open (LINENR, "<".$linenrpath) or $fileopenerr = 1;
 if ($fileopenerr == 0) {
 	$startAtLine = <LINENR>;
 	if ($startAtLine =~ /\D/) {
-		print "Not a number\n";
+		print "Not a number: $startAtLine\n";
 		exit;
 	} 
 	close(LINENR);
@@ -105,15 +112,17 @@ while (<LOGFILE>) {
 	$line = $_;
 	#$store = "";
 	if ($linecnt >= $startAtLine) {
-		if ($line =~ m/^Session Time:/) {
+		if ($line =~ m/^Session Time:/ || $line =~ m/^Session Start:/) {
 			#print $line;
 			$datetimenice = $line;
 			$datetimenice =~ s/Session Time: //g;
+			$datetimenice =~ s/Session Start: //g;
 			$datetimenice =~ s/\n//g;
 			$datetimenice =~ s/\r//g;
 			
 			$datetime = $line;
 			$datetime =~ s/Session Time: //g;
+			$datetime =~ s/Session Start: //g;
 			$datetime =~ s/://g;
 			$datetime =~ s/\n//g;
 			$datetime =~ s/\r//g;
@@ -124,7 +133,13 @@ while (<LOGFILE>) {
 				if ($debugmode == 0) {
 					print OUTFILE "\n\\\\\nNext page: [[".$datetime."]] \\\\ \n";
 					print OUTFILE "Back to index: [[".$namespace."]] \\\\ \n";
+					close(OUTFILE);
 					
+					$fileopenerr = 0;
+					copy($outputpath.$currentfile, $outputpath."yesterday.txt") or $fileopenerr = 1;
+					if ($fileopenerr == 1) {
+					        print "Could not copy yesterday.txt-log";
+					}
 				}				
 			}
 
@@ -208,6 +223,17 @@ while (<LOGFILE>) {
 				#print $parsedLine ."\n";
 			}
 			
+			#$parsedLine =~ s/\/\//\//g;
+			$parsedLine =~ s/''/'/g;
+			$parsedLine =~ s/\[\[/\[/g;
+			$parsedLine =~ s/\]\]/\]/g;
+			$parsedLine =~ s/\(\(/\(/g;
+			$parsedLine =~ s/\)\)/\)/g;
+			$parsedLine =~ s/____/_/g;
+			$parsedLine =~ s/___/_/g;
+			$parsedLine =~ s/__/_/g;
+			$parsedLine =~ s/\*\*/\*/g;
+
 			$parsedLine =~ s/\x{e5}/å/g;
 			$parsedLine =~ s/\x{e4}/ä/g;
 			$parsedLine =~ s/\x{f6}/ö/g;
@@ -219,7 +245,7 @@ while (<LOGFILE>) {
 			$parsedLine =~ s/\[svn\]/**[svn]**/g;
 
 			$parsedLine .= " ";
-			$parsedLine =~ s/http:\/\/projekt\.auml\.se\/(.+) /[[:$1]] /g;
+			$parsedLine =~ s/http:\/\/projekt\.auml\.se\/(\S+)/[[:$1]] /g;
 			
 			$parsedLine .= "\\\\"."\n";
 			if ($debugmode == 0) {
@@ -230,6 +256,13 @@ while (<LOGFILE>) {
 		
 	}
 	$linecnt++;
+}
+close(OUTFILE);
+
+$fileopenerr = 0;
+copy($outputpath.$currentfile, $outputpath."today.txt") or $fileopenerr = 1;
+if ($fileopenerr == 1) {
+	print "Could not copy today.txt-log";
 }
 
 if ($debugmode == 0) {
@@ -262,7 +295,7 @@ if ($debugmode == 0) {
 			@contentsfilecontents = <CONTENTSFILE>;
 			print NICECONTENTSFILE $contentsheader;
 			foreach (@contentsfilecontents) {
-							print NICECONTENTSFILE $_;
+				print NICECONTENTSFILE $_;
 			}
 			close(NICECONTENTSFILE);
 		} else {
@@ -277,10 +310,3 @@ if ($debugmode == 0) {
 }
 
 #print $linecnt-1 ." - ". $line;
-
-
-
-
-
-
-
