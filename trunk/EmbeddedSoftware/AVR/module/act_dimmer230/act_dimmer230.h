@@ -7,6 +7,7 @@
 /* system files */
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <stdio.h>
 /* lib files */
 #include <config.h>
