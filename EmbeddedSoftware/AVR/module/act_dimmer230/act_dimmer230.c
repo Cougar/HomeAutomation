@@ -48,23 +48,23 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 
 		if (dimmerValue > 0 && dimmerValue < 127)
 		{
-			newTimerVal += pgm_read_word(&powerStepTable[dimmerValue-1]);
+			newTimerVal += ACT_DIMMMER230_PERIOD_TIME - pgm_read_word(&powerStepTable[dimmerValue-1]);
 		} 
 		else if (dimmerValue < 255)
 		{
-			newTimerVal += 10000 - pgm_read_word(&powerStepTable[254-dimmerValue]);
+			newTimerVal += pgm_read_word(&powerStepTable[254-dimmerValue]);
 		} 
 		else if (dimmerValue == 255)
 		{
-			newTimerVal += 9900;	//almost max, to make sure we don't fire after next zerocross
+			newTimerVal += 100;	//almost max, to make sure we don't fire before zerocross
+		}
+		
+		if (newTimerVal > ACT_DIMMMER230_PERIOD_TIME) 
+		{
+			newTimerVal -= ACT_DIMMMER230_PERIOD_TIME;
 		}
 
-		if (state==ACT_DIMMMER230_STATE_TIMER_ON)
-		{
-			//TODO: this will probably end up out of sync, not a good solution?
-			timerStore = newTimerVal + TCNT1 - OCR1A;
-		}
-		else 
+		if (dimmerValue > 0) 
 		{
 			TCNT1 = 0;				//reset timer1 count register
 			OCR1A = newTimerVal;
