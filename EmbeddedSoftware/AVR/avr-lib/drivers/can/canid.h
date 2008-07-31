@@ -78,6 +78,7 @@
 #define CAN_TYPE_MODULE_sns_BusVoltage	0x06
 #define CAN_TYPE_MODULE_sns_SimpleDTMF	0x07
 #define CAN_TYPE_MODULE_act_hd44789	0x04
+#define CAN_TYPE_MODULE_act_Dimmer230	0x08
 
 
 // Module commands
