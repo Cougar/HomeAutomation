@@ -4,6 +4,11 @@ act_dimmer230_ID=<ID>
 #act_dimmer230_DUMMY=1
 #act_dimmer230_DUMMY_TIMER=<TIMER>
 
+# send sync message on can, value defines how many 10ms-pulses to count
+# set to 0 if not used
+act_dimmer230_SYNC=100
+
+
 #### HW-defines ####
 #io defines for zerocross
 act_dimmer230_ZC_PCINT=1				//port PCINT, numeric 0-23
