@@ -1,8 +1,16 @@
 
 #include "act_dimmer230.h"
 
+//#define USEDEMO
+
+#ifdef USEDEMO
 uint8_t demo = 0;
-//uint8_t demo = 2;	//disable demo
+//uint8_t demo = 2;	//demo one way
+//uint8_t demo = 3;	//disable demo 
+uint8_t democnt = 0;
+#define DEMOSTEPS 2
+#define DEMOSTEPS2 1
+#endif
 
 //uint16_t periodTime = 0;
 			//measured during init (by taking the time difference between two zero cross)
@@ -92,17 +100,37 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 			txMsg.Data[5] = xcTimeDiff&0xff;
 			//StdCan_Put(&txMsg);
 
-			if (demo == 0) {
-				dimmerValueCh1++;
-				if (dimmerValueCh1 == 255) {
+#ifdef USEDEMO
+			if (demo == 0 || demo == 2) {
+				democnt++;
+				if (democnt==DEMOSTEPS)
+				{
+					democnt = 0;
+					uint8_t tempDim=dimmerValueCh1;
+					dimmerValueCh1+=DEMOSTEPS2;
+					if (dimmerValueCh1<tempDim && demo == 0) {
+						dimmerValueCh1=255;
+					}
+				}
+				if (dimmerValueCh1 == 255 && demo == 0) {
 					demo = 1;
 				}
 			} else if (demo == 1) {
-				dimmerValueCh1--;
+				democnt++;
+				if (democnt==DEMOSTEPS)
+				{
+					democnt = 0;
+					uint8_t tempDim=dimmerValueCh1;
+					dimmerValueCh1-=DEMOSTEPS2;
+					if (dimmerValueCh1>tempDim) {
+						dimmerValueCh1=0;
+					}
+				}
 				if (dimmerValueCh1 == 0) {
 					demo = 0;
 				}
 			}
+#endif //USEDEMO
 		}
 #endif		
 	}
