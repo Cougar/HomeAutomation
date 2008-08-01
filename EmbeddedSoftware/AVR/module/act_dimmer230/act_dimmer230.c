@@ -338,9 +338,9 @@ void act_dimmer230_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_DEF); ///TODO: Change this to the actual class type
+	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT); 
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_def_default; ///TODO: Change this to the actual module type
+	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_Dimmer230;
 	txMsg.Header.ModuleId = act_dimmer230_ID;
 	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
 	txMsg.Length = 6;
