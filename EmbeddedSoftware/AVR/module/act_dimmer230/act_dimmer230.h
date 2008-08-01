@@ -23,6 +23,10 @@
 
 #define ACT_DIMMMER230_PERIOD_TIME			10000
 
+#define ACT_DIMMMER230_MAX_DIM				255
+#define ACT_DIMMMER230_MIN_DIM				0
+
+
 #if act_dimmer230_ZC_PCINT<8
 #define act_dimmer230_ZC_PCINT_vect	PCINT0_vect		//interrupt vector
 #define act_dimmer230_ZC_PCIE		PCIE0			//interrupt enable
