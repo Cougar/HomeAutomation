@@ -40,10 +40,11 @@ ISR (TIMER1_COMPA_vect)
 	//testa hur lång denna loop behöver vara
 	//verkar fungera upp till 249-250 sen blir det för korta pulser
 	act_dimmer230_CHAN1_PORT |= _BV(act_dimmer230_CHAN1_BIT);
-   	uint8_t dummycnt = 240;
+	uint8_t dummycnt = 40;
 	while (dummycnt > 0) 
 	{
 		dummycnt++;
+		asm("nop");
 		asm("nop");
 	}
 	act_dimmer230_CHAN1_PORT &= ~_BV(act_dimmer230_CHAN1_BIT);			
@@ -121,7 +122,7 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 			//txMsg.Data[3] = periodTime&0xff;
 			txMsg.Data[4] = (xcTimeDiff>>8)&0xff;
 			txMsg.Data[5] = xcTimeDiff&0xff;
-			//StdCan_Put(&txMsg);
+			StdCan_Put(&txMsg);
 
 #ifdef USEDEMO
 			if (demo == 0 || demo == 2) {
@@ -231,6 +232,8 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				
+				fadeSpeedCntCh1 = 0;
+				fadeSpeedCh1 = 0;
 				uint8_t endValue = 0;
 				if (direction == 1) {
 					endValue = ACT_DIMMMER230_MAX_DIM;
@@ -269,6 +272,9 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t endValue = rxMsg->Data[2];
+
+				fadeSpeedCntCh1 = 0;
+				fadeSpeedCh1 = 0;
 				if (speed == 0) {
 					dimmerValueCh1 = endValue;	//set dimmer value immediately
 				} else {
@@ -296,6 +302,8 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t direction = rxMsg->Data[2];
 				uint8_t steps = rxMsg->Data[3];
 				
+				fadeSpeedCntCh1 = 0;
+				fadeSpeedCh1 = 0;
 				uint8_t tempDimVal = dimmerValueCh1;
 				uint8_t tempDimVal2 = dimmerValueCh1;
 				if (direction == 1) {					//if increase
