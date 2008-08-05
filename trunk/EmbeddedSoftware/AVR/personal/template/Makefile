@@ -70,6 +70,9 @@ distclean: check_binaries
 	$(RM) -r $(BUILDDIR)
 	$(RM) -r $(BIOSDIR)
 
+sethwid:
+	@$(PERL) ../../../../PcSoftware/scripts/SetHwId/SetHwId.pl
+
 check_binaries:
 ifndef MKDIR
 	@echo 
@@ -82,5 +85,5 @@ endif
 # Listing of phony targets.
 .PHONY : all bios installbios upgradebios \
 install reset start \
-clean cleanbios distclean check_binaries
+clean cleanbios distclean check_binaries sethwid
 
