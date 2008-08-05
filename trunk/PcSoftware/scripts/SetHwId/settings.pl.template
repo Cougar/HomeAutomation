@@ -1,0 +1,4 @@
+#Host and port where the canDaemon exist
+$host = "localhost";
+$port = 1200;
+
