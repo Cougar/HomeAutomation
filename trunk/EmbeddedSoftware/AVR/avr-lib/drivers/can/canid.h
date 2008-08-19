@@ -62,8 +62,6 @@
 #define CAN_CLASS_MODULE_ACT		0x0CUL
 #define CAN_CLASS_MODULE_SNS		0x0DUL
 #define CAN_CLASS_MODULE_DEF		0x0EUL
-#define CAN_CLASS_MODULE_CON_OPEN	0x0FUL
-#define CAN_CLASS_MODULE_CON		0x10UL
 
 // Module frame direction
 //------------------------------------
