@@ -5,6 +5,9 @@ HW_VERSION=1
 
 _AVRLIB_BIOS_=1
 
+# Support for printf-over-can, read more at http://projekt.auml.se/homeautomation:software:embedded:avr:module#printf_over_can
+CAN_PRINTF=0
+
 # Uncomment to make node autostart after X time-msgs has been sent to node
 # Do not choose 0 as X, also 1 is a bad choice
 # This should not be used on nodes with application under developement
