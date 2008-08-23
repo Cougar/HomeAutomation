@@ -2,3 +2,5 @@ main.c
 drivers/timer/timer.c
 drivers/mcu/mcu.c
 drivers/can/stdcan.c
+drivers/can/canprintf.c
+

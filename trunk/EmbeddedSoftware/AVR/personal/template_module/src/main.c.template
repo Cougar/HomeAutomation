@@ -7,6 +7,8 @@
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
 #include <drivers/timer/timer.h>
 
+#include <drivers/can/canprintf.h>
+
 %INCLUDE
 
 int main(void)
@@ -19,9 +21,14 @@ int main(void)
 	Timer_Init();
 
 	StdCan_Init();
+
+#if CAN_PRINTF==1
+	#warning can_printf in use
+	CanPrintf_Init();
+#endif
 	
 	Timer_SetTimeout(APP_HEARTBEAT_TIMER, STDCAN_HEARTBEAT_PERIOD, TimerTypeFreeRunning, StdCan_SendHeartbeat);
-	
+
 	%INIT
 
 	while (1)
