@@ -18,14 +18,17 @@ use IO::Select;
 use threads;
 use Getopt::Long;
 
+use POSIX qw(setsid);
+
 $binaryname = "canDaemon.pl";
 if ( @ARGV > 0 ) {
-	GetOptions(	"baudrate=i" 	=> \$baudarg,	#
+	GetOptions(	"baudrate=i" 	=> \$baudarg,			#
 			"server=s" 	=> \$serverarg,			#
 			"port=i"	=> \$portarg, 			#
 			"tcpport=i"	=> \$tcpportarg,		#
 			"device=s"	=> \$devicearg,			#
-			"help"		=> \$help,				#
+			"help"		=> \$help,			#
+			"xDaemon"	=> \$daemon,			#
 						);
 } else {
 	$help = 1;
@@ -34,12 +37,13 @@ if ( @ARGV > 0 ) {
 if ($help) {
 	print "Usage ./$binaryname [options]\n";
 	print "Options:\n";
+	print "  -x 						Make canDaemon detach as a UNIX daemon\n";
 	print "  -d <device> (udp or /dev/ttyXYZ)		Choose hardware for communication\n";
-	print "  -b <baudrate> 				Baudrate, for serial devices\n";
+	print "  -b <baudrate> 					Baudrate, for serial devices\n";
 	print "  -s <server>					Server, for udp devices\n";
 	print "  -p <port>					Port, for udp devices\n";
 	print "  -t <tcpport>					Port, for tcp server (default 1200)\n";
-	print "  -h <help>					Shows this usage\n";
+	print "  -h 						Shows this usage\n";
 	print "\n";
 	print "example: ./$binaryname -d /dev/ttyUSB0 -b 38400\n";
 	print "example: ./$binaryname -d udp -s 192.168.0.10 -p 1100\n";
@@ -55,6 +59,17 @@ if ($portarg) {
 }
 if ($tcpportarg) {
 	$hubport = $tcpportarg;
+}
+
+if ($daemon) {
+	chdir '/'                 or die "Can't chdir to /: $!";
+	umask 0;
+	open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
+	open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
+	#open STDERR, '>/dev/null' or die "Can't write to /dev/null: $!";
+	defined(my $pid = fork)   or die "Can't fork: $!";
+	exit if $pid;
+	setsid                    or die "Can't start a new session: $!";
 }
 
 $C2SSTARTSTR = 253;
@@ -105,6 +120,7 @@ if ($devicearg) {
 #		exit 0;
 #	}
 }
+
 
 ### loop here until user aborts with ctrl+c ###
 while (1) { sleep 1; }
