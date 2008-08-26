@@ -27,7 +27,8 @@ $remote = IO::Socket::INET->new(
                 )
                or die "cannot connect to port $port at $host";
 
-
+print "Connected to canDaemon. Printf strings on can will be printed below.\n"; 
+print "Don't forget to terminate your strings with '\\n'.\n";
 
 $newline = 1;
 #read line from socket (blocking)
