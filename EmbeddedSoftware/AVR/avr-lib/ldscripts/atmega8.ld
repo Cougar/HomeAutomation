@@ -131,7 +131,7 @@ SECTIONS
      _edata = . ;
      PROVIDE (__data_end = .) ;
   }  > data
-  .bss  SIZEOF(.data) + ADDR(.data) :
+  .bss  SIZEOF(.data) + ADDR(.data) : AT (ADDR (.bss))
   {
      PROVIDE (__bss_start = .) ;
     *(.bss)
