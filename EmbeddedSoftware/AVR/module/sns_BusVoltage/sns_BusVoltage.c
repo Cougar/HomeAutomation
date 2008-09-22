@@ -3,7 +3,7 @@
 
 void sns_BusVoltage_Init(void)
 {
-	///TODO: Initialize hardware etc here
+	///TODO: Initialize hardware etc here 
 	ADC_Init();
 	Timer_SetTimeout(sns_BusVoltage_TIMER, sns_BusVoltage_SEND_PERIOD , TimerTypeFreeRunning, 0);
 }
