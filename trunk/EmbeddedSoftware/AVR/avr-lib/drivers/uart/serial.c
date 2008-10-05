@@ -37,7 +37,11 @@ static FILE myStdOut = FDEV_SETUP_STREAM(serial_putchar, NULL,_FDEV_SETUP_WRITE)
  * STDOUT to the serial communication channel.
  */
 void Serial_Init() {
+#if (SERIAL_DOUBLE_SPEED==1)
+	uart_init((UART_BAUD_SELECT_DOUBLE_SPEED((SERIAL_BAUDRATE),F_CPU)));
+#else
 	uart_init((UART_BAUD_SELECT((SERIAL_BAUDRATE),F_CPU)));
+#endif
 	
 	stdout = &myStdOut;
 }

@@ -11,6 +11,25 @@
 
 #define BV(x) (1<<(x))
 
+// Find a suitable prescaler to get between 75KHz and 150kHz ADC clock
+#ifndef ADC_PRESCALER
+ #if (F_CPU < 300000)
+  #define ADC_PRESCALER 1 // F_CPU/2
+ #elif (F_CPU < 600000)
+  #define ADC_PRESCALER 2 // F_CPU/4
+ #elif (F_CPU < 1200000)
+  #define ADC_PRESCALER 3 // F_CPU/8
+ #elif (F_CPU < 2400000)
+  #define ADC_PRESCALER 4 // F_CPU/16
+ #elif (F_CPU < 4800000)
+  #define ADC_PRESCALER 5 // F_CPU/32
+ #elif (F_CPU < 9600000)
+  #define ADC_PRESCALER 6 // F_CPU/64
+ #else
+  #define ADC_PRESCALER 7 // F_CPU/128
+ #endif
+#endif
+
 /*----------------------------------------------
  * Functions
  * --------------------------------------------*/
@@ -28,7 +47,7 @@ uint8_t ADC_Init(void)
 
     /* Wake up ADC and enable it */
     PRR &= ~(1<<PRADC);
-    ADCSRA |= (1<<ADEN);
+    ADCSRA = (1<<ADEN) | ((ADC_PRESCALER&7)<<ADPS0);
 
     /* Make sure that the next ADC_Get will do an empty measurement first by setting the channel to an impossible value */
     currentChannel = 10; 
