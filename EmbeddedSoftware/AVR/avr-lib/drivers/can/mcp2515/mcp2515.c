@@ -82,7 +82,7 @@ static uint8_t SPI_Read(void) {
 
 static Can_Message_t msgbuf;
 
-void MCP2515_Reset(void) {
+static void MCP2515_Reset(void) {
 	MCP2515_SELECT();
 	SPI_ReadWrite(MCP_RESET);
 	MCP2515_UNSELECT();
@@ -93,7 +93,7 @@ void MCP2515_Reset(void) {
 	}
 }
 
-uint8_t MCP2515_ReadRegister(const uint8_t address) {
+static uint8_t MCP2515_ReadRegister(const uint8_t address) {
 	uint8_t ret;
 	
 	MCP2515_SELECT();
@@ -106,7 +106,7 @@ uint8_t MCP2515_ReadRegister(const uint8_t address) {
 }
 
 /*
-void MCP2515_ReadRXBuf(const uint8_t buf, uint8_t* data) {
+static void MCP2515_ReadRXBuf(const uint8_t buf, uint8_t* data) {
 	uint8_t i;
 	
 	MCP2515_SELECT();
@@ -118,7 +118,7 @@ void MCP2515_ReadRXBuf(const uint8_t buf, uint8_t* data) {
 	MCP2515_UNSELECT();
 }*/
 
-void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
+static void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
 	MCP2515_SELECT();
 	SPI_ReadWrite(MCP_WRITE);
 	SPI_ReadWrite(address);
@@ -127,7 +127,7 @@ void MCP2515_SetRegister(const uint8_t address, const uint8_t value) {
 }
 
 /*
-void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n) {
+static void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const uint8_t n) {
 	uint8_t i;
 	
 	MCP2515_SELECT();
@@ -140,7 +140,7 @@ void MCP2515_SetRegisterS(const uint8_t address, const uint8_t values[], const u
 	MCP2515_UNSELECT();
 }*/
 
-void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data) {
+static void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uint8_t data) {
 	MCP2515_SELECT();
 	SPI_ReadWrite(MCP_BITMOD);
 	SPI_ReadWrite(address);
@@ -149,7 +149,7 @@ void MCP2515_ModifyRegister(const uint8_t address, const uint8_t mask, const uin
 	MCP2515_UNSELECT();
 }
 
-uint8_t MCP2515_ReadStatus(void) {
+static uint8_t MCP2515_ReadStatus(void) {
 	uint8_t i;
 	
 	MCP2515_SELECT();
@@ -160,15 +160,17 @@ uint8_t MCP2515_ReadStatus(void) {
 	return i;
 }
 	
-/*uint8_t MCP2515_ReadStatus(void) {
+/*
+static uint8_t MCP2515_ReadStatus(void) {
 	return MCP2515_ReadXXStatus_Helper(MCP_READ_STATUS);
 }*/
 
-/*uint8_t MCP2515_RxStatus(void) {
+/*
+static uint8_t MCP2515_RxStatus(void) {
 	return MCP2515_ReadXXStatus_Helper(MCP_RX_STATUS);
 }*/
 
-uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
+static uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
 	uint8_t i;
 	MCP2515_ModifyRegister(MCP_CANCTRL, newmask, newmode);
 	// verify as advised in datasheet
@@ -182,7 +184,8 @@ uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
 	}
 }
 
-/*uint8_t MCP2515_SetClkout(const uint8_t newmode) {
+/*
+static uint8_t MCP2515_SetClkout(const uint8_t newmode) {
 	uint8_t i;
 	MCP2515_ModifyRegister(MCP_CANCTRL, CLK_MASK, newmode);
 	// verify, perhaps not needed?
@@ -196,7 +199,7 @@ uint8_t MCP2515_SetCanCtrl(const uint8_t newmask, const uint8_t newmode) {
 	}
 }*/
 
-inline void MCP2515_ConfigRate(void) {
+static inline void MCP2515_ConfigRate(void) {
 	MCP2515_SetRegister(MCP_CNF1, MCP_BITRATE_CFG1);
 	MCP2515_SetRegister(MCP_CNF2, MCP_BITRATE_CFG2);
 	MCP2515_SetRegister(MCP_CNF3, MCP_BITRATE_CFG3);
@@ -231,7 +234,7 @@ inline void MCP2515_ConfigRate(void) {
  * 		Pointer to the message buffer into which the data should be copied.
  * 
  */
-void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
+static void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
 	uint8_t id[4];
 	uint8_t i;
 
@@ -282,7 +285,7 @@ void MCP2515_ReadCanMsg(const uint8_t buffer, Can_Message_t* msg) {
 }
 
 
-void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
+static void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
     uint16_t canid = can_id & 0xFFFF;
     uint8_t tbufdata[4];
 	uint8_t i;
@@ -308,7 +311,7 @@ void MCP2515_SPIWriteCanId(const uint8_t ext, const uint32_t can_id) {
 }
 
 
-void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
+static void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_t can_id) {
 	MCP2515_SELECT();
 	SPI_ReadWrite(MCP_WRITE);
 	SPI_ReadWrite(mcp_addr);
@@ -317,7 +320,7 @@ void MCP2515_WriteCanId(const uint8_t mcp_addr, const uint8_t ext, const uint32_
 }
 
 // Buffer can be 0, 1 or 2
-void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
+static void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 	uint8_t rtrdlc = msg->DataLength;
 	uint8_t i;
 	
@@ -343,7 +346,7 @@ void MCP2515_WriteCanMsg( const uint8_t buffer, const Can_Message_t* msg) {
 // Start the transmission from one of the tx buffers.
 //
 // Buffer can be 0, 1 or 2
-void MCP2515_StartTransmit(const uint8_t buffer) {
+static void MCP2515_StartTransmit(const uint8_t buffer) {
 	MCP_INT_DISABLE();
     MCP2515_SELECT();
     SPI_ReadWrite(MCP_RTS_TX | (1 << buffer));
@@ -351,7 +354,7 @@ void MCP2515_StartTransmit(const uint8_t buffer) {
     MCP_INT_ENABLE();
 }
 
-uint8_t MCP2515_GetNextFreeTXBuf(void) {
+static uint8_t MCP2515_GetNextFreeTXBuf(void) {
 	uint8_t stat;
 	
 	// check all 3 TX-Buffers
@@ -364,7 +367,7 @@ uint8_t MCP2515_GetNextFreeTXBuf(void) {
 	return MCP_ALLTXBUSY;
 }
 
-void MCP2515_InitCanBuffers(void) {
+static void MCP2515_InitCanBuffers(void) {
 	uint8_t i;
 	
 	// TODO: check why this is needed to receive extended 
@@ -394,7 +397,7 @@ void MCP2515_InitCanBuffers(void) {
 }
 
 
-void MCP2515_InitRXInterrupts(void) {
+static void MCP2515_InitRXInterrupts(void) {
 	MCP2515_SetRegister(MCP_CANINTF, 0);
 	MCP2515_SetRegister(MCP_CANINTE, MCP_RX_INT);
 	MCP_INT_ENABLE();
@@ -402,7 +405,7 @@ void MCP2515_InitRXInterrupts(void) {
 
 // ---
 
-uint8_t MCP2515_Init(void) {
+static uint8_t MCP2515_Init(void) {
 	uint8_t res;
 	
 #if MCP_CS_BIT != SS
