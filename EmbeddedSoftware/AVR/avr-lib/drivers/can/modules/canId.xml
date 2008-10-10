@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<!-- Written by CanIdManager on Fri, 10-Oct-2008 22:09:22 -->
+<!-- Written by CanIdManager on Sat, 11-Oct-2008 01:20:43 -->
 <root>
   <commands>
     <command id="0" name="List" type="management" module="" description="Network management messages"/>
@@ -10,6 +10,7 @@
     <command id="66" name="Humidity_Percent" type="physical" module="" description="Humidity data"/>
     <command id="67" name="Voltage" type="physical" module="" description="Voltage data"/>
     <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data"/>
+    <command id="2" name="Dummy_Test" type="global" module="" description="Testing for seeing if svn update is working"/>
   </commands>
   <classes>
     <class id="0" name="nmt" description="Networkmanagement"/>
