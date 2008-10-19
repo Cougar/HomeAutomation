@@ -1,3 +1,17 @@
+/** 
+ * @defgroup infrared IR Protocols Driver Library
+ * @code #include <drivers/ir/protocols.h> @endcode
+ * 
+ * @brief  
+ *
+ *
+ * @author	Andreas Fritiofson, Anders Runeson
+ * @date	2007
+ */
+
+/**@{*/
+
+
 #ifndef IR_PROTOCOLS_H_
 #define IR_PROTOCOLS_H_
 #include <stdio.h>
@@ -84,7 +98,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 /* RC5 Implementation
  * Receiver: DONE
- * Transmitter: 
+ * Transmitter: DONE (noddan implentation, not fully working)
  */
 #define IR_PROTO_RC5		0
 #define IR_RC5_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
@@ -174,13 +188,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SAMS_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SAMS_TOL_DIV		4
 
-
-#define IR_PROTO_HASH		0xfe
-#define IR_PROTO_UNKNOWN	0xff								//
-
-
 /* Marantz Implementation
- * Receiver: Working (has not been tested with odd adressbits)
+ * Receiver: DONE (has not been tested with odd adressbits)
  * Transmitter: 
  */
 #define IR_PROTO_MARANTZ		7
@@ -191,5 +200,10 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_MARANTZ_F_MOD		36									//kHz	(modulation frequency)
 #define IR_MARANTZ_TOL_DIV		4
 
+#define IR_PROTO_HASH		0xfe
+#define IR_PROTO_UNKNOWN	0xff								//
 
+
+
+/**@}*/
 #endif /*IR_PROTOCOLS_H_*/
