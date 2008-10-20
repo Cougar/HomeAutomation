@@ -3,11 +3,12 @@
  * 
  * @date	2006-12-10
  * 
- * @author	Anders Runeson, Andreas Fritiofson, Martin Nordén
+ * @author	Anders Runeson, Andreas Fritiofson, Martin Nordn
  *   
  */
 
 #include "protocols.h"
+#include <bios.h>
 
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->protocol=IR_PROTO_UNKNOWN;
@@ -194,8 +195,16 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 #endif
 
 /**
+ * Used by the expandRC5 to ensure that we toggle the signal with each button press.
+ */
+int8_t rc5_toggle=0;
+
+/**
  * Expand data from RC5 protocol
  * http://www.sbprojects.com/knowledge/ir/rc5.htm
+ * 
+ * One is defined as low then high
+ * Zero is defined as high then low
  * 
  * @param buf
  * 		Pointer to buffer to store the expanded data
@@ -207,132 +216,71 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  * 		IR_OK if data expanded successfully, one of several errormessages if not
  */
 int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
-	uint8_t tempadress;
-	uint8_t tempcommand;
+
+	//This is the raw message that we should create the IR times for
+	//Lets copy the data locally to ensure that no interups will modify the vector.
+	uint16_t rawMessage=proto->data & 0x3fff;
+	
 	uint8_t previousBit;
-	uint16_t tempdata;
-	
 	/* Set up startbit */
-	buf[0] = 0; // no start-one
+	//Bit = 0
+	//We start with a low signal since the diode 
+	//isn't active before we send anything,
+	buf[0] = IR_RC5_HALF_BIT;//first start bit
+	
+	// Bit = 1
 	buf[1] = IR_RC5_HALF_BIT;
-	buf[2] = IR_RC5_HALF_BIT;//first start bit
-	buf[3] = IR_RC5_HALF_BIT;
-	buf[4] = IR_RC5_HALF_BIT;//second start bit
+	buf[2] = IR_RC5_HALF_BIT;//second start bit
 
-#define Toggle 0 //TODO: Fix toggle in some proper way
-	if (Toggle==0){
-		buf[5] = IR_RC5_HALF_BIT;
-		buf[6] = IR_RC5_HALF_BIT; //toggle bit (yes i know it should not be hardcoded)
-		*len = 7;
-		previousBit = 1;
+	if (rc5_toggle==0){
+		buf[3] = IR_RC5_HALF_BIT;
+		buf[4] = IR_RC5_HALF_BIT; //toggle bit (yes i know it should not be hardcoded)
+		*len = 5;
+		previousBit = 1; //Same as last startbit
 	} else {
-		buf[4] = IR_RC5_BIT;
-		buf[5] = IR_RC5_HALF_BIT;
-		*len = 6;
-		previousBit = 0;
+		//We are reusing the signal from the previous signal 
+		//and extend the time into this bit.
+		buf[2] = IR_RC5_BIT;
+		buf[3] = IR_RC5_HALF_BIT;
+		*len = 4;
+		previousBit = 0; //Toggled from last startbit
 	}
+	//Invert the toggle for next time
+	rc5_toggle=!rc5_toggle & 1;
+	
+	//Decode the message
+	//We know that RC5 messages are 14 bits long
+	for(uint8_t pos=11;pos>0;pos--)
+	{		
+		// Check the current bit
+		if(previousBit == ((rawMessage>>(pos-1)) & 1))
+		{
+			buf[*len]=IR_RC5_HALF_BIT;
+			buf[*len+1]=IR_RC5_HALF_BIT;
+			*len=*len+2;
+		}
+		else
+		{
+			//We are having the same signal as we ended the last bit with,
+			//Expand the time that that signal is active to cover 
+			//half of this bit aswell
+			buf[*len-1]=IR_RC5_BIT;
+			buf[*len]=IR_RC5_HALF_BIT;
+			*len=*len+1;
 			
-	//let's start with the adress bits..
-	tempcommand = proto->data&(0x3F);
-	tempadress = (proto->data>>8)&(0x1F);
-	//TODO: This requires massive cleanup
-	
-	//tempdata = ((((uint16_t)(proto->data)&(0x3F)) + ((uint16_t)((proto->data>>8)&(0x1F))<<6)))<<5;
-	
-	tempdata = (uint16_t)tempcommand + ((uint16_t)tempadress<<6);
-	tempdata = tempdata<<5;
-	
-	/*
-	for(uint8_t ijag t = 0; i < 11; i++) {
-		tempdata = tempdata<<1;
-		//temptemp = tempadress&0xA0;
-		if (((tempdata&(0xA000))>>15)==1){
-			if (previousBit == 1){//11
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			} else {//01
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			}
-			previousBit = 1;
-		} else {//10
-			if (previousBit == 1){
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			} else {//00
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			}
-			previousBit = 0;
+			//Invert the previous bit
+			previousBit = (!previousBit) & 1;
 		}
 	}
-	*/
-	
-	tempadress = tempadress<<2;
-	
-	for(uint8_t i = 0; i < 5; i++) {
-		tempadress = tempadress<<1;
-		//temptemp = tempadress&0xA0;
-		if (((tempadress&(0xA0))>>7)==1){
-			if (previousBit == 1){//11
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			} else {//01
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			}
-			previousBit = 1;
-		} else {//10
-			if (previousBit == 1){
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			} else {//00
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			}
-			previousBit = 0;
-		}
+	//We have to handle the last bit specially since we have to 
+	//end with low signal on the IR diod
+	if(previousBit == 0)
+	{
+		//We have to remove the last time since that would bring us to a high signal again.
+		*len=*len-1;
+		buf[*len]=0;
 	}
 	
-	
-	tempcommand = tempcommand << 1;
-	
-	for(uint8_t i = 0; i < 6; i++) {
-		tempcommand = tempcommand<<1;
-		//temptemp = tempadress&0xA0;
-		if (((tempcommand&(0xA0))>>7)==1){
-			if (previousBit == 1){//11
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			} else {//01
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			}
-			previousBit = 1;
-		} else {//10
-			if (previousBit == 1){
-				buf[*len-1] = IR_RC5_BIT;
-				buf[*len] = IR_RC5_HALF_BIT;
-				*len = *len + 1;
-			} else {//00
-				buf[*len] = IR_RC5_HALF_BIT;
-				buf[*len+1] = IR_RC5_HALF_BIT;
-				*len = *len + 2;
-			}
-			previousBit = 0;
-		}
-	}
-
 	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
 	proto->timeout=IR_RC5_TIMEOUT;
 	proto->repeats=IR_RC5_REPS;
@@ -659,7 +607,7 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 }
 
 /**
- * Expand data from Marantz. Written by Martin Nordén
+ * Expand data from Marantz. Written by Martin Nordn
  * 
  * @param buf
  * 		Pointer to buffer to store the expanded data
