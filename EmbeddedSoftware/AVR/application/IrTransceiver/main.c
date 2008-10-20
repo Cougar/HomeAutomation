@@ -248,6 +248,7 @@ int main(void)
 			uint8_t res = IrTransceiver_Receive_Poll(&len_receive);
 			if ((res == IR_OK) && (len_receive > 0)) {
 				//låt protocols parsa och skicka på can
+#if !(SEND_DEBUG)
 				uint8_t res2 = parseProtocol(rxbuffer, len_receive, &proto_receive);
 				if (res2 == IR_OK && proto_receive.protocol != IR_PROTO_UNKNOWN) {
 					txMsg_receive.Data.bytes[0] = IR_BUTTON_DOWN;
@@ -260,11 +261,13 @@ int main(void)
 					txMsg_receive.DataLength = 6;
 					BIOS_CanSend(&txMsg_receive);
 				} else if (proto_receive.protocol == IR_PROTO_UNKNOWN) {
-#if (SEND_DEBUG)
-					send_debug(rxbuffer, len_receiver);
-					proto_receiver.timeout=300;
-#endif
 				}
+#endif
+#if (SEND_DEBUG)
+				send_debug(rxbuffer, len_receive);
+				proto_receive.timeout=300;
+#endif
+				
 				state_receive = STATE_START_PAUSE_RECEIVE;
 			}
 		} else if (state_receive == STATE_START_PAUSE_RECEIVE) {
@@ -294,12 +297,6 @@ int main(void)
 			}
 			state_receive = STATE_IDLE_RECEIVE;
 		}
-		
-	//	if (rxMsgFull) {
-			/* No message reception functionality implemented */
-			/* Flush the received message */
-    //		rxMsgFull = 0; //  
-	//	}
 	}
 	
 	return 0;
