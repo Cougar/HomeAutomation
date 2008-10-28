@@ -98,7 +98,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 /* RC5 Implementation
  * Receiver: DONE
- * Transmitter: DONE (noddan implentation, not fully working)
+ * Transmitter: DONE
  */
 #define IR_PROTO_RC5		0
 #define IR_RC5_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
