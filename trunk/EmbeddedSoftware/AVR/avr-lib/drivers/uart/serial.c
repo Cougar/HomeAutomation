@@ -43,7 +43,9 @@ void Serial_Init() {
 	uart_init((UART_BAUD_SELECT((SERIAL_BAUDRATE),F_CPU)));
 #endif
 	
+#if CAN_PRINTF==0
 	stdout = &myStdOut;
+#endif
 }
 
 
