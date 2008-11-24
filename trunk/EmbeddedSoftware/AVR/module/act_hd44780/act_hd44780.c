@@ -7,6 +7,13 @@ void act_hd44780_Init(void)
 {
 	///FIXME: What is this, this needs to be more clear by far....
 
+	// Contrast
+	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
+	TCCR0B |= (1<<CS00);
+	OCR0B = 0x10;
+	DDRD |= (1<<DDD5);
+
+
 	// Backlight
 	TCCR1A |= (1<<COM1A1)|(1<<WGM11);
 	TCCR1B |= (1<<WGM13)|(1<<WGM12)|(1<<CS10);
@@ -59,10 +66,10 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		txMsg.Header.ModuleId = act_hd44780_ID;
 		txMsg.Header.Command = CAN_CMD_MODULE_LCD_SIZE;
 		txMsg.Length = 2;
-	
+
 		txMsg.Data[0] = act_hd44780_WIDTH;
 		txMsg.Data[1] = act_hd44780_HEIGHT;
-		
+
 		StdCan_Put(&txMsg);
 		break;
 
@@ -71,16 +78,16 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 			OCR1AL = rxMsg->Data[0];
 
 		StdCan_Msg_t txMsg;
-	
+
 		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_hd44789;
 		txMsg.Header.ModuleId = act_hd44780_ID;
 		txMsg.Header.Command = CAN_CMD_MODULE_LCD_BACKLIGHT;
 		txMsg.Length = 1;
-	
+
 		txMsg.Data[0] = OCR1AL;
-		
+
 		StdCan_Put(&txMsg);
 		break;
 		}
@@ -90,7 +97,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 void act_hd44780_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
-	
+
 	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_hd44789;
@@ -102,9 +109,9 @@ void act_hd44780_List(uint8_t ModuleSequenceNumber)
 	txMsg.Data[1] = NODE_HW_ID_BYTE1;
 	txMsg.Data[2] = NODE_HW_ID_BYTE2;
 	txMsg.Data[3] = NODE_HW_ID_BYTE3;
-	
+
 	txMsg.Data[4] = NUMBER_OF_MODULES;
 	txMsg.Data[5] = ModuleSequenceNumber;
-	
+
 	StdCan_Put(&txMsg);
 }
