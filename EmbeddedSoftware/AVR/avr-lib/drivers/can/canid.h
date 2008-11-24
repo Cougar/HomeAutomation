@@ -81,7 +81,7 @@
 
 #define CAN_TYPE_MODULE_act_hd44789	0x04
 #define CAN_TYPE_MODULE_act_Dimmer230	0x08
-
+#define CAN_TYPE_MODULE_act_ks0108	0x0a
 
 // Module commands
 //------------------------------------
