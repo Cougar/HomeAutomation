@@ -1,0 +1,3 @@
+# List all files that needs to be compiled here
+drivers/lcd/glcd/ks0108.c
+act_ks0108/act_ks0108.c
