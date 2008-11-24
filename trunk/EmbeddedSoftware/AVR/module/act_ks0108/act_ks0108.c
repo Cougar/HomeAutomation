@@ -20,8 +20,6 @@ void numtoascii( int16_t num, char **str );
 void signedtoascii(int16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals);
 void unsignedtoascii(uint16_t num, uint8_t decimalplace, char *string, uint8_t numberofdecimals);
 
-
-
 void act_ks0108_Init(void)
 {
 	///TODO: Initialize hardware etc here
