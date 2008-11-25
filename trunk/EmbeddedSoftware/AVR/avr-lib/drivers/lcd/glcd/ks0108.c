@@ -33,16 +33,18 @@ void Disable(){
 }
 
 void Delay(){ //OBS!! BEH�VER VEEERKLIGEN FIXAS!
-           // 1-8us      ...2-13us     ...5-31us
-                               // 10-60us    ...50-290us
+	delay_us(1);
+}// 1-8us      ...2-13us     ...5-31us
+ /*                              // 10-60us    ...50-290us
 unsigned int i;             // 100-580us  ...500-2,9ms
 unsigned char j;            // 1000-5,8ms ...5000-29ms
-uint8_t p = 190;                             // 10000-56ms ...30000-170ms
+uint8_t p = 250;                             // 10000-56ms ...30000-170ms
                              // 50000-295ms...60000-345ms
 //  for (i = 0; i < p; i++) for (j = 0; j < 10; j++) asm volatile ("nop");
-    for (i = 0; i < p; i++) for (j = 0; j < 10; j++);
+    for (i = 0; i < p; i++) for (j = 0; j < 50; j++);
 
 }
+*/
 void Enable(){
 	Delay();
 	LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_E);
