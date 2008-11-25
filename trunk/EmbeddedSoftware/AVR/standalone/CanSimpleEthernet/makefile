@@ -38,14 +38,18 @@
 
 
 # MCU name
-#MCU = atmega168
-MCU = atmega88
+MCU = atmega168
+HIGHFUSE=0xdc
+LOWFUSE=0xe0
+EXTFUSE=0x01
 
 
-# Main Oscillator Frequency
-#now defined in config.h
-#F_CPU = 8000000
-#F_CPU = 20000000
+# for using the same system.inc we use BIOSDIR and BIOSTARGET for setting the correct file to flash
+# flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
+BIOSDIR = .
+BIOSTARGET = main
+include ../../personal/system.inc
+
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -137,7 +141,7 @@ CFLAGS += $(CSTANDARD)
 #             files -- see avr-libc docs [FIXME: not yet described there]
 ##ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
-#ASFLAGS += -DF_CPU=$(F_CPU)
+#ASFLAGS += -DF_OSC=$(F_OSC)
 
 
 #Additional libraries.
@@ -148,7 +152,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 # Floating point printf version (requires MATH_LIB = -lm below)
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
-PRINTF_LIB = $(PRINTF_LIB_MIN)
+PRINTF_LIB = 
 
 # Minimalistic scanf version
 SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
@@ -182,6 +186,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
 
+## HomeAutomation-users: settings are moved to system.inc ##
 
 # Programming support using avrdude. Settings and variables.
 
@@ -191,13 +196,13 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = dragon_isp
+#AVRDUDE_PROGRAMMER = avrispmkII
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = usb    # programmer connected to serial device
-AVRDUDE_BAUD = 115200
+#AVRDUDE_PORT = usb    # programmer connected to serial device
+#AVRDUDE_BAUD = 115200
 
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -b $(AVRDUDE_BAUD)
+#AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
@@ -215,10 +220,10 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -b $(AVRDUDE_BAUD)
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
-AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
-AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
+#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUD)
+#AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
+#AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
+#AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 
 
 
@@ -239,7 +244,7 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size
 NM = avr-nm
-AVRDUDE = avrdude
+#AVRDUDE = avrdude
 REMOVE = rm -f
 COPY = cp
 
@@ -331,10 +336,14 @@ gccversion :
 	@$(CC) --version
 
 
+# Program the device.  
+install: $(TARGET).hex $(TARGET).eep
+	$(UPLOAD) $(ULFLAGS)
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(UPLOAD) $(ULFLAGS)
+#	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 #programlock: 
 #	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lock:w:0x00:m
