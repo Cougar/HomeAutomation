@@ -1,6 +1,6 @@
 #include <inttypes.h>
 #include <config.h>
-
+#include <drivers/sensor/ds18s20/delay.h>
 
 #ifndef LCD_CONTROL_PIN_E
 
