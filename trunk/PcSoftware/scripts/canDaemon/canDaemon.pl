@@ -173,16 +173,20 @@ sub serialConnProcessBuffer {
 		
 	### Cut all leading chars that is not a start-char ###
 	for ($i = 0; $i < length($input); $i++) {
-		if (ord(substr($input, $i, 1)) == $C2SSTARTSTR) {
-			$input = substr($input, $i);
-			$output = $input;
-			#print "debug: cutting character\n";
+		if (ord(substr($input, 0, 1)) != $C2SSTARTSTR) {
+			if (ord(substr($input, $i, 1)) == $C2SSTARTSTR) {
+				$input = substr($input, $i);
+				$output = $input;
+				#print "debug: cutting character\n";
+				break;
+			} 
+			if (ord(substr($input, $i, 1)) == $C2PINGSTR) {
+				print "Got pong from hardware\n";
+				$input = substr($input, $i+1);
+				$output = $input;
+			}
+		} else {
 			break;
-		} 
-		if (ord(substr($input, $i, 1)) == $C2PINGSTR) {
-			print "Got pong from hardware\n";
-			$input = substr($input, $i+1);
-			$output = $input;
 		}
 	}
 	### Check for possible complete packets ###
