@@ -12,9 +12,12 @@ void sns_BusVoltage_Process(void)
 {
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_BusVoltage_TIMER)) {
-		StdCan_Msg_t txMsg;
 		uint16_t busVoltage = ADC_Get(BUSVOLTAGEAD);
 		busVoltage = ((busVoltage>>2)*195)>>7; //((4.95*(12+47)/12) * 8)
+	
+		StdCan_Msg_t txMsg;
+		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
+		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_BusVoltage;
 		txMsg.Header.ModuleId = sns_BusVoltage_ID;
 		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_VOLTAGE;
