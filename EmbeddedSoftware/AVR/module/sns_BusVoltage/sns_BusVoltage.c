@@ -1,6 +1,19 @@
 
 #include "sns_BusVoltage.h"
 
+#define R51	12000
+#define R50	47000
+
+#if (5 * (R51 + R50))/(R51) > 64
+	#error "ADC_FACTOR must be less then 64, change R51 and R52"
+#elseif (5 * (R51 + R50))/(R51) < 32
+	#define ADC_FACTOR	(5 * (R51 + R50))/(R51)
+	#define ADC_SCALE	10
+#else
+	#define ADC_FACTOR	(5 * (R51 + R50))/(R51 / 2)
+	#define ADC_SCALE	11
+#endif
+
 void sns_BusVoltage_Init(void)
 {
 	///TODO: Initialize hardware etc here 
@@ -13,8 +26,8 @@ void sns_BusVoltage_Process(void)
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_BusVoltage_TIMER)) {
 		uint16_t busVoltage = ADC_Get(BUSVOLTAGEAD);
-		busVoltage = ((busVoltage>>2)*195)>>7; //((4.95*(12+47)/12) * 8)
-	
+		busVoltage = (busVoltage & 0x03ff) * ADC_FACTOR;
+		
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
 		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
@@ -23,8 +36,8 @@ void sns_BusVoltage_Process(void)
 		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_VOLTAGE;
 		txMsg.Length = 3;
 		txMsg.Data[0] = 0;
-		txMsg.Data[2] = (busVoltage>>2)&0xff;
-		txMsg.Data[1] = (busVoltage>>10)&0xff;
+		txMsg.Data[1] = (busVoltage>>(ADC_SCALE-6+8))&0xff;
+		txMsg.Data[2] = (busVoltage>>(ADC_SCALE-6))&0xff;
 
 		StdCan_Put(&txMsg);
 	}
