@@ -32,15 +32,26 @@
 
 #include <vectors.h>
 
-
+#ifdef MCP_USART_SPI_MODE
+#define SPI_PORT	PORTD
+#define SPI_PIN		PIND
+#define SPI_DDR		DDRD
+#else 
 #define SPI_PORT	PORTB
 #define SPI_PIN		PINB
 #define SPI_DDR		DDRB
+#endif
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
-	#define SPI_SCK   PB5  
-	#define SPI_MISO  PB4 
-	#define SPI_MOSI  PB3  
+	#ifdef MCP_USART_SPI_MODE
+		#define SPI_SCK   PD4
+		#define SPI_MISO  PD0
+		#define SPI_MOSI  PD1
+	#else 
+		#define SPI_SCK   PB5
+		#define SPI_MISO  PB4
+		#define SPI_MOSI  PB3
+	#endif
 #elif defined(__AVR_ATmega32__) || defined(__AVR_ATmega16__)
 	#define SPI_SCK   PB7
 	#define SPI_MISO  PB6 
@@ -55,6 +66,28 @@ static uint8_t SPI_Read(void);
 
 #define SPI_DONTCARE (0x00)
 
+#ifdef MCP_USART_SPI_MODE
+static void SPI_Init(void) {
+	//cli();
+	UBRR0 = 0;
+	SPI_DDR |= (1<<SPI_SCK) | (1<<SPI_MOSI); // xck (sck) output
+	SPI_DDR &= ~(1<<SPI_MISO);
+//	TXD_DDR |= (1<<TXD); // txd (mosi) output
+	UCSR0C = (1<<UMSEL01)|(1<<UMSEL00)|(0<<UCPHA0)|(0<<UCPOL0);		//select MSPIM, SPI-mode 0
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0);									//enable receiver and transmitter
+	UBRR0 = 0;														//set "baudrate" to maximum ( BAUD=Fosc/2(UBRR0+1) )
+	//sei();
+}
+
+static uint8_t SPI_ReadWrite(uint8_t data) {
+	//while ( !( UCSR0A & (1<<UDRE0)) );
+	//uint8_t dummy = UDR0;
+	UDR0 = data;
+	while(!(UCSR0A&(1<<RXC0)));
+	
+	return UDR0;
+}
+#else
 // init as SPI-Master
 static void SPI_Init(void) {
 	// SCK, SS!!, MOSI as outputs
@@ -75,6 +108,7 @@ static uint8_t SPI_ReadWrite(uint8_t data) {
 	// return data read from SPI (if any)
 	return SPDR;
 }
+#endif
 
 static uint8_t SPI_Read(void) {
 	return SPI_ReadWrite(SPI_DONTCARE);
@@ -408,16 +442,22 @@ static void MCP2515_InitRXInterrupts(void) {
 static uint8_t MCP2515_Init(void) {
 	uint8_t res;
 	
-#if MCP_CS_BIT != SS
-	/* If slave select is not set as output it might change SPI hw to slave
-	 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
-	DDRSS |= (1<<SS);
+#ifndef MCP_USART_SPI_MODE
+	#if MCP_CS_BIT != SS
+		/* If slave select is not set as output it might change SPI hw to slave
+		 * See ch 18.3.2 (18.3 SS Pin Functionality) in ATmega48/88/168-datasheet */
+		DDRSS |= (1<<SS);
+	#endif
 #endif
-	
+
 	SPI_Init();		// init SPI-Interface (as "Master")
 	
 	MCP2515_UNSELECT();
+#ifdef MCP_USART_SPI_MODE
+	MCP_CS_DDR_USART |= ( 1 << MCP_CS_BIT_USART );
+#else
 	MCP_CS_DDR |= ( 1 << MCP_CS_BIT );
+#endif
 	
 	MCP2515_Reset();
 	
@@ -475,7 +515,12 @@ ISR(MCP_INT_VECTOR) {
 		// Callbacks are run with global interrupts disabled but
 		// with controller flag cleared so another msg can be
 		// received while this one is processed.
+#if MCP_CAN_PROCESS_RENAMED == 1
+		// when running a gateway application which uses stdcan
+		Can_Process_USART(&msgbuf);
+#else
 		Can_Process(&msgbuf);
+#endif
 	}
 }
 

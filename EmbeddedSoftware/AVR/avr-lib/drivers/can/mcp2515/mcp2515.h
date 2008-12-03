@@ -23,6 +23,11 @@
 #include <drivers/can/mcp2515/mcp2515_cfg.h>
 #include <drivers/can/can.h>
 
+#if !defined(MCP_CAN_PROCESS_RENAMED)
+#define MCP_CAN_PROCESS_RENAMED 0
+#endif
+
+
 #define MCP_N_TXBUFFERS (3)
 
 #define MCP_RXBUF_0 (MCP_RXB0SIDH)
@@ -31,8 +36,13 @@
 #define MCP_TXBUF_1 (MCP_TXB1SIDH)
 #define MCP_TXBUF_2 (MCP_TXB2SIDH)
 
-#define MCP2515_SELECT()   ( MCP_CS_PORT &= ~(1<<MCP_CS_BIT) )
-#define MCP2515_UNSELECT() ( MCP_CS_PORT |=  (1<<MCP_CS_BIT) )
+#ifdef MCP_USART_SPI_MODE
+	#define MCP2515_SELECT()   ( MCP_CS_PORT_USART &= ~(1<<MCP_CS_BIT_USART) )
+	#define MCP2515_UNSELECT() ( MCP_CS_PORT_USART |=  (1<<MCP_CS_BIT_USART) )
+#else
+	#define MCP2515_SELECT()   ( MCP_CS_PORT &= ~(1<<MCP_CS_BIT) )
+	#define MCP2515_UNSELECT() ( MCP_CS_PORT |=  (1<<MCP_CS_BIT) )
+#endif
 
 #define MCP2515_OK         (0)
 #define MCP2515_FAIL       (1)
@@ -71,7 +81,11 @@ Can_Return_t Can_Send(Can_Message_t* msg);
  * @param msg
  *		Pointer to the CAN message storage buffer.
  */
-void Can_Process(Can_Message_t* msg);  
+#if MCP_CAN_PROCESS_RENAMED == 1
+void Can_Process_USART(Can_Message_t* msg);
+#else
+void Can_Process(Can_Message_t* msg);
+#endif
 
 /**@}*/
 #endif
