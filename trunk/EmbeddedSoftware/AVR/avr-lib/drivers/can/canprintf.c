@@ -3,8 +3,8 @@
 
 #if CAN_PRINTF==1
 /*
-* This could be included in the default module somehow, and the user of a module
-* only has to enable CAN_PRINTF in bios.inc?
+* This is included in the default module somehow, and the user of a module
+* only has to enable CAN_PRINTF in config.inc
 *
 */
 #define SEND_BUFFER_SIZE 8
