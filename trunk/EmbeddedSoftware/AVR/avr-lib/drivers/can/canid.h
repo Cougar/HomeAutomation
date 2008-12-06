@@ -115,6 +115,7 @@
 #define CAN_APPTYPES_RGBLED			0xf035
 #define CAN_APPTYPES_FANCONTROLLER	0xf040
 #define CAN_APPTYPES_LCD		0xf045
+#define CAN_APPTYPES_CANGW		0xf04a
 
 // CAN ID definitions for SNS messages
 #define SNS_TYPE_STATUS             0x10L
