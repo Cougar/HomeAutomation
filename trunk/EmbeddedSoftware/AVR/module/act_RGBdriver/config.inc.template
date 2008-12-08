@@ -1,0 +1,8 @@
+## Section act_RGBdriver -- Do not edit this line
+
+act_RGBdriver_ID=<ID>
+
+act_RGBdriver_ADC_SEND_TIMER=<TIMER>
+act_RGBdriver_REGULATOR_TIMER=<TIMER>
+
+## End section act_RGBdriver -- Do not edit this line

@@ -83,6 +83,8 @@
 #define CAN_TYPE_MODULE_act_Dimmer230	0x08
 #define CAN_TYPE_MODULE_act_ks0108	0x0a
 
+#define CAN_TYPE_MODULE_act_RGBdriver	0x0d
+
 // Module commands
 //------------------------------------
 
