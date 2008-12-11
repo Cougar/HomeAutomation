@@ -8,5 +8,6 @@
  *      Only Id:s with numbers between 0x80 and 0xbf is allowed
  */
 //#define CAN_CMD_MODULE_SPECIFIC_PWM	0x80
+#define CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL	0x85
 
 #endif // SNS_DS18X20_PROTOCOL

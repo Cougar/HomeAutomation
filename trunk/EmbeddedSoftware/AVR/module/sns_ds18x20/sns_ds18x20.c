@@ -6,6 +6,7 @@ void ConvertTemperature_callback(uint8_t timer);
 void ReadTemperature(void);
 void ReadTemperature_callback(uint8_t timer);
 
+uint8_t sns_ds18x20_ReportInterval = (uint8_t)sns_ds18x20_SEND_PERIOD;
 uint8_t NumberOfSensors = 0;
 uint16_t SensorIds[] = {0, 0, 0, 0};
 uint8_t FlagReadTemperature = 0, FlagConvertTemperature = 0, FlagSearchSensors = 0;
@@ -64,7 +65,7 @@ void ReadTemperature(void)
 		
 		CurrentSensor = 0;
 
-		Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_SEND_PERIOD , TimerTypeOneShot, &ConvertTemperature_callback);
+		Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_ReportInterval*1000, TimerTypeOneShot, &ConvertTemperature_callback);
 	}
 }
 
@@ -87,7 +88,7 @@ void sns_ds18x20_Init(void)
 	FlagSearchSensors = 1;
 	NumberOfSensors = 0;
 	
-	Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_SEND_PERIOD , TimerTypeFreeRunning, &ConvertTemperature_callback);
+	Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_ReportInterval*1000, TimerTypeFreeRunning, &ConvertTemperature_callback);
 }
 
 void sns_ds18x20_Process(void)
@@ -123,6 +124,32 @@ void sns_ds18x20_Process(void)
 
 void sns_ds18x20_HandleMessage(StdCan_Msg_t *rxMsg)
 {
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_SNS &&
+		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
+		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_sns_ds18x20 &&
+		rxMsg->Header.ModuleId == sns_ds18x20_ID)
+	{
+		switch (rxMsg->Header.Command)
+		{
+		case CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL:
+		if (rxMsg->Length > 0)
+			sns_ds18x20_ReportInterval = rxMsg->Data[0];
+
+		StdCan_Msg_t txMsg;
+
+		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
+		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_ds18x20;
+		txMsg.Header.ModuleId = sns_ds18x20_ID;
+		txMsg.Header.Command = CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL;
+		txMsg.Length = 1;
+
+		txMsg.Data[0] = sns_ds18x20_ReportInterval;
+
+		StdCan_Put(&txMsg);
+		break;
+		}
+	}
 }
 
 void sns_ds18x20_List(uint8_t ModuleSequenceNumber)
