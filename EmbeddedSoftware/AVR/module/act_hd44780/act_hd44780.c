@@ -52,8 +52,16 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		lcd_gotoxy(rxMsg->Data[0], rxMsg->Data[1]);
 		break;
 
+		case CAN_CMD_MODULE_LCD_PRINTAT:
+		lcd_gotoxy(rxMsg->Data[0], rxMsg->Data[1]);
+		for (n = 2; n < rxMsg->Length; n++)
+		{
+			lcd_putc((char)rxMsg->Data[n]);
+		}
+		break;
+		
 		case CAN_CMD_MODULE_LCD_PRINT:
-		for(n = 0; n < rxMsg->Length; n++)
+		for (n = 0; n < rxMsg->Length; n++)
 		{
 			lcd_putc((char)rxMsg->Data[n]);
 		}
