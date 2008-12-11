@@ -2,7 +2,7 @@
 
 sns_BusVoltage_ID=<ID>
 sns_BusVoltage_TIMER=<TIMER>
-sns_BusVoltage_SEND_PERIOD=20000
+sns_BusVoltage_SEND_PERIOD=20
 sns_BusVoltage_SEND_DELAY=500
 
 BUSVOLTAGEAD=6

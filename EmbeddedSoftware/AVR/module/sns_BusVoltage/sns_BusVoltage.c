@@ -14,11 +14,13 @@
 	#define ADC_SCALE	11
 #endif
 
+uint8_t sns_BusVoltage_ReportInterval = (uint8_t)sns_BusVoltage_SEND_PERIOD;
+
 void sns_BusVoltage_Init(void)
 {
 	///TODO: Initialize hardware etc here 
 	ADC_Init();
-	Timer_SetTimeout(sns_BusVoltage_TIMER, sns_BusVoltage_SEND_PERIOD , TimerTypeFreeRunning, 0);
+	Timer_SetTimeout(sns_BusVoltage_TIMER, sns_BusVoltage_ReportInterval*1000 , TimerTypeFreeRunning, 0);
 }
 
 void sns_BusVoltage_Process(void)
@@ -45,24 +47,35 @@ void sns_BusVoltage_Process(void)
 
 void sns_BusVoltage_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-#if 0
-	StdCan_Msg_t txMsg;
-	uint8_t n = 0;
-
-
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_SNS && ///TODO: Change this to the actual class type
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_SNS &&
 		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_TEMPLATE && ///TODO: Change this to the actual module type
+		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_sns_BusVoltage &&
 		rxMsg->Header.ModuleId == sns_BusVoltage_ID)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_DUMMY:
-		///TODO: Do something dummy
+		case CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL:
+		if (rxMsg->Length > 0)
+		{
+			sns_BusVoltage_ReportInterval = rxMsg->Data[0];
+			Timer_SetTimeout(sns_BusVoltage_TIMER, sns_BusVoltage_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+		}
+
+		StdCan_Msg_t txMsg;
+
+		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
+		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_BusVoltage;
+		txMsg.Header.ModuleId = sns_BusVoltage_ID;
+		txMsg.Header.Command = CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL;
+		txMsg.Length = 1;
+
+		txMsg.Data[0] = sns_BusVoltage_ReportInterval;
+
+		StdCan_Put(&txMsg);
 		break;
 		}
 	}
-#endif
 }
 
 void sns_BusVoltage_List(uint8_t ModuleSequenceNumber)
