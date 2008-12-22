@@ -1,4 +1,4 @@
-// Built on Mon Dec 22 22:02:32 2008 by makeCanId.pl
+// Built on Mon Dec 22 22:11:34 2008 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 //------------------ //
@@ -46,8 +46,9 @@
 #define CAN_MODULE_TYPE_SNS_BUSVOLTAGE 6
 #define CAN_MODULE_TYPE_SNS_SIMPLEDTMF 7
 #define CAN_MODULE_TYPE_SNS_ROTARY 8
-#define CAN_MODULE_TYPE_ACT_HD44789 4
-#define CAN_MODULE_TYPE_ACT_DIMMER230 8
+#define CAN_MODULE_TYPE_ACT_HD44789 9
+#define CAN_MODULE_TYPE_ACT_DIMMER230 10
+#define CAN_MODULE_TYPE_ACT_KS0108 11
 
 //----------------- //
 // Misc definitions //
