@@ -23,11 +23,11 @@ void ReadTemperature(void)
 	uint8_t subzero, cel, cel_frac_bits = 0;
 	StdCan_Msg_t txMsg;
 
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_ds18x20;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_DS18X20;
 	txMsg.Header.ModuleId = sns_ds18x20_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_PHYS_TEMPERATURE_CELSIUS;
+	txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
 	txMsg.Length = 3;
 
 	txMsg.Data[0] = SensorIds[CurrentSensor];
@@ -124,24 +124,24 @@ void sns_ds18x20_Process(void)
 
 void sns_ds18x20_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_SNS &&
-		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_sns_ds18x20 &&
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS &&
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
+		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_DS18X20 &&
 		rxMsg->Header.ModuleId == sns_ds18x20_ID)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL:
+		case CAN_MODULE_CMD_SPECIFIC_SENSOR_REPORT_INTERVAL:
 		if (rxMsg->Length > 0)
 			sns_ds18x20_ReportInterval = rxMsg->Data[0];
 
 		StdCan_Msg_t txMsg;
 
-		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_ds18x20;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_DS18X20;
 		txMsg.Header.ModuleId = sns_ds18x20_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_SENSOR_REPORT_INTERVAL;
+		txMsg.Header.Command = CAN_MODULE_CMD_SPECIFIC_SENSOR_REPORT_INTERVAL;
 		txMsg.Length = 1;
 
 		txMsg.Data[0] = sns_ds18x20_ReportInterval;
@@ -156,11 +156,11 @@ void sns_ds18x20_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_ds18x20;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_DS18X20;
 	txMsg.Header.ModuleId = sns_ds18x20_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;

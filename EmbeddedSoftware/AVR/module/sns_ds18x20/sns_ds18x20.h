@@ -18,8 +18,6 @@
 #include <drivers/sensor/ds18s20/onewire.h>
 #include <drivers/sensor/ds18s20/delay.h>
 
-#include "protocol.h"
-
 void sns_ds18x20_Init(void);
 void sns_ds18x20_Process(void);
 void sns_ds18x20_HandleMessage(StdCan_Msg_t *rxMsg);
