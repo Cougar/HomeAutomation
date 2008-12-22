@@ -16,8 +16,6 @@
 #include <drivers/sensor/FOST02/FOST02.h>
 #include <drivers/sensor/ds18s20/delay.h>
 
-#include "protocol.h"
-
 void sns_FOST02_Init(void);
 void sns_FOST02_Process(void);
 void sns_FOST02_HandleMessage(StdCan_Msg_t *rxMsg);

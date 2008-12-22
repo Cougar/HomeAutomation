@@ -27,11 +27,11 @@ void GetTemperature(void)
 	uint16_t TmpV;
 	if (getFOST02PinStatus() == 0) {
 		StdCan_Msg_t txMsg;
-		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_FOST02;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_FOST02;
 		txMsg.Header.ModuleId = sns_FOST02_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_TEMPERATURE_CELSIUS;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
 		txMsg.Length = 3;
 		txMsg.Data[0] = FOST02_ID;
 	
@@ -56,11 +56,11 @@ void GetHumidity(void)
 	uint16_t TmpV;
 	if (getFOST02PinStatus() == 0) {
 		StdCan_Msg_t txMsg;
-		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_FOST02;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_FOST02;
 		txMsg.Header.ModuleId = sns_FOST02_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_HUMIDITY_PERCENT;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_HUMIDITY_PERCENT;
 		txMsg.Length = 3;
 		txMsg.Data[0] = FOST02_ID;
 	
@@ -114,11 +114,11 @@ void sns_FOST02_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_FOST02;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_FOST02;
 	txMsg.Header.ModuleId = sns_FOST02_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;
