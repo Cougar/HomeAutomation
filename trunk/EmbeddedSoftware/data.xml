@@ -114,8 +114,9 @@
     <module id="6" name="BusVoltage" class="sns"/>
     <module id="7" name="SimpleDTMF" class="sns"/>
     <module id="8" name="Rotary" class="sns"/>
-    <module id="4" name="HD44789" class="act"/>
-    <module id="8" name="Dimmer230" class="act"/>
+    <module id="9" name="HD44789" class="act"/>
+    <module id="10" name="Dimmer230" class="act"/>
+    <module id="11" name="KS0108" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
