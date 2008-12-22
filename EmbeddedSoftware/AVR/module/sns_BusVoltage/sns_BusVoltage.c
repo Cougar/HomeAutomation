@@ -54,7 +54,7 @@ void sns_BusVoltage_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_MODULE_CMD_SPECIFIC_SENSOR_REPORT_INTERVAL:
+		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
 		if (rxMsg->Length > 0)
 		{
 			sns_BusVoltage_ReportInterval = rxMsg->Data[0];
@@ -67,7 +67,7 @@ void sns_BusVoltage_HandleMessage(StdCan_Msg_t *rxMsg)
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_BUSVOLTAGE;
 		txMsg.Header.ModuleId = sns_BusVoltage_ID;
-		txMsg.Header.Command = CAN_MODULE_CMD_SPECIFIC_SENSOR_REPORT_INTERVAL;
+		txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
 		txMsg.Length = 1;
 
 		txMsg.Data[0] = sns_BusVoltage_ReportInterval;
