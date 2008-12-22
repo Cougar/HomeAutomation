@@ -15,8 +15,6 @@
 #include <drivers/timer/timer.h>
 #include <drivers/adc/adc.h>
 
-#include "protocol.h"
-
 void act_RGBdriver_Init(void);
 void act_RGBdriver_Process(void);
 void act_RGBdriver_HandleMessage(StdCan_Msg_t *rxMsg);
