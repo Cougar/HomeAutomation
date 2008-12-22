@@ -44,15 +44,15 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_MODULE_CMD_SPECIFIC_LCD_CLEAR:
+		case CAN_MODULE_CMD_HD44789_LCD_CLEAR:
 		lcd_clrscr();
 		break;
 
-		case CAN_MODULE_CMD_SPECIFIC_LCD_CURSOR:
+		case CAN_MODULE_CMD_HD44789_LCD_CURSOR:
 		lcd_gotoxy(rxMsg->Data[0], rxMsg->Data[1]);
 		break;
 
-		case CAN_MODULE_CMD_SPECIFIC_LCD_TEXTAT:
+		case CAN_MODULE_CMD_HD44789_LCD_TEXTAT:
 		lcd_gotoxy(rxMsg->Data[0], rxMsg->Data[1]);
 		for (n = 2; n < rxMsg->Length; n++)
 		{
@@ -60,14 +60,14 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		}
 		break;
 		
-		case CAN_MODULE_CMD_SPECIFIC_LCD_TEXT:
+		case CAN_MODULE_CMD_HD44789_LCD_TEXT:
 		for (n = 0; n < rxMsg->Length; n++)
 		{
 			lcd_putc((char)rxMsg->Data[n]);
 		}
 		break;
 
-		case CAN_MODULE_CMD_SPECIFIC_LCD_SIZE:
+		case CAN_MODULE_CMD_HD44789_LCD_SIZE:
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_HD44789;
@@ -81,7 +81,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		StdCan_Put(&txMsg);
 		break;
 
-		case CAN_MODULE_CMD_SPECIFIC_LCD_BACKLIGHT:
+		case CAN_MODULE_CMD_HD44789_LCD_BACKLIGHT:
 		if (rxMsg->Length > 0)
 			OCR1AL = rxMsg->Data[0];
 

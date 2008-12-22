@@ -62,11 +62,48 @@
         <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
       </variables>
     </command>
-     <command id="134" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
+      <command id="134" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
       <variables>
         <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
         <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </command>
+    
+    
+    
+    <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="Stop_Fade" type="specific" module="Dimmer230" description="">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="Abs_Fade" type="specific" module="Dimmer230" description="">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="EndValue" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="132" name="Rel_Fade" type="specific" module="Dimmer230" description="">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
     </command>
   </commands>

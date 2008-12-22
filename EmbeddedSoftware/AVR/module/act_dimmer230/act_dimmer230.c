@@ -213,20 +213,20 @@ void act_dimmer230_Process(void)
 
 void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_ACT &&
-		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_act_Dimmer230 && 
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_ACT &&
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
+		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_ACT_DIMMER230 && 
 		rxMsg->Header.ModuleId == act_dimmer230_ID)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_DIMMER_DEMO:		// Demo(channel, speed, steps)
+		case CAN_MODULE_CMD_DIMMER230_DEMO:		// Demo(channel, speed, steps)
 			if (rxMsg->Length == 3) {
 				
 			}
 		break;
 		
-		case CAN_CMD_MODULE_DIMMER_START_FADE:	// StartFade(channel, speed, direction), just an alias of ABS_FADE
+		case CAN_MODULE_CMD_DIMMER230_START_FADE:	// StartFade(channel, speed, direction), just an alias of ABS_FADE
 			if (rxMsg->Length == 3) {
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
@@ -261,13 +261,13 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 		break;
 
-		case CAN_CMD_MODULE_DIMMER_STOP_FADE:	// StopFade(channel)
+		case CAN_MODULE_CMD_DIMMER230_STOP_FADE:	// StopFade(channel)
 			if (rxMsg->Length == 1) {
 				fadeSpeedCh1 = 0;
 			}
 		break;
 
-		case CAN_CMD_MODULE_DIMMER_ABS_FADE:	// AbsFade(channel, speed, endValue)
+		case CAN_MODULE_CMD_DIMMER230_ABS_FADE:	// AbsFade(channel, speed, endValue)
 			if (rxMsg->Length == 3) {
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
@@ -295,7 +295,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 		break;
 
-		case CAN_CMD_MODULE_DIMMER_REL_FADE:	// RelFade(channel, speed, direction, steps)
+		case CAN_MODULE_CMD_DIMMER230_REL_FADE:	// RelFade(channel, speed, direction, steps)
 			if (rxMsg->Length == 4) {
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
@@ -346,11 +346,11 @@ void act_dimmer230_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT); 
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_Dimmer230;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT); 
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_DIMMER230;
 	txMsg.Header.ModuleId = act_dimmer230_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;

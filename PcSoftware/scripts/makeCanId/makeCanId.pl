@@ -48,7 +48,7 @@ print MYFILE "\n";
 
 foreach my $class ($root->first_child('classes')->children('class'))
 {
-	my $className = "\U" . $class->att('name');
+	my $className = $class->att('name');
 	$className =~ tr/a-z/A-Z/;
 	print MYFILE "#define CAN_MODULE_CLASS_$className " . $class->att('id') . "\n";
 }
@@ -61,10 +61,17 @@ print MYFILE "\n";
 
 foreach my $command ($root->first_child('commands')->children('command'))
 {
-	my $commandName = "\U" . $command->att('name');
+	my $commandName = $command->att('name');
 	$commandName =~ tr/a-z/A-Z/;
-	my $commandType = "\U" . $command->att('type');
+	my $commandType = $command->att('type');
 	$commandType =~ tr/a-z/A-Z/;
+	
+	if ($commandType eq "SPECIFIC")
+	{
+		$commandType = $command->att('module');
+		$commandType =~ tr/a-z/A-Z/;
+	}
+	
 	print MYFILE "#define CAN_MODULE_CMD_" . $commandType . "_" . $commandName . " " . $command->att('id') . "\n";
 }
 
@@ -76,9 +83,9 @@ print MYFILE "\n";
 
 foreach my $module ($root->first_child('modules')->children('module'))
 {
-	my $className = "\U" . $module->att('class');
+	my $className = $module->att('class');
 	$className =~ tr/a-z/A-Z/;
-	my $moduleName = "\U" . $module->att('name');
+	my $moduleName = $module->att('name');
 	$moduleName =~ tr/a-z/A-Z/;
 	print MYFILE "#define CAN_MODULE_TYPE_" . $className . "_" . $moduleName . " " . $module->att('id') . "\n";
 }
@@ -91,9 +98,9 @@ print MYFILE "\n";
 
 foreach my $define ($root->first_child('defines')->children('define'))
 {
-	my $groupName = "\U" . $define->att('group');
+	my $groupName = $define->att('group');
 	$groupName =~ tr/a-z/A-Z/;
-	my $defineName = "\U" . $define->att('name');
+	my $defineName = $define->att('name');
 	$defineName =~ tr/a-z/A-Z/;
 	print MYFILE "#define " . $groupName . "_" . $defineName . " " . $define->att('id') . "\n";
 }
