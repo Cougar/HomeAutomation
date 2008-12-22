@@ -101,11 +101,11 @@ void sns_rotary_Process(void)
 	if (rotaryEncoder_Position != rotaryEncoder_Position_old)
 	{
 		StdCan_Msg_t txMsg;
-		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_rotary;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_ROTARY;
 		txMsg.Header.ModuleId = sns_rotary_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_ROTARY_SWITCH;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_ROTARY_SWITCH;
 		txMsg.Length = 4;
 		txMsg.Data[0] = 0x01;
 		if ((rotaryEncoder_Position > rotaryEncoder_Position_old || (rotaryEncoder_Position_old==0xff && rotaryEncoder_Position==0x00)) && !(rotaryEncoder_Position_old==0x00 && rotaryEncoder_Position==0xff))
@@ -122,11 +122,11 @@ void sns_rotary_Process(void)
 	{
 		rotaryEncoder_Button_Position_old = rotaryEncoder_Button_Position;
 		StdCan_Msg_t txMsg;
-		StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS);
-		StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_rotary;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_ROTARY;
 		txMsg.Header.ModuleId = sns_rotary_ID;
-		txMsg.Header.Command = CAN_CMD_MODULE_PHYS_BUTTON;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_BUTTON;
 		txMsg.Length = 2;
 		txMsg.Data[0] = 0x01;
 #ifndef ROTARY_BTN_INVERT_OUTPUT
@@ -155,11 +155,11 @@ void sns_rotary_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_SNS); ///TODO: Change this to the actual class type
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_sns_rotary; ///TODO: Change this to the actual module type
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_ROTARY; ///TODO: Change this to the actual module type
 	txMsg.Header.ModuleId = sns_rotary_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;

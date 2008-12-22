@@ -21,8 +21,6 @@
 #define SNS_SIMPLEDTMF_STATE_WAIT			2
 #define SNS_SIMPLEDTMF_STATE_SEND			3
 
-#include "protocol.h"
-
 void sns_SimpleDTMF_Init(void);
 void sns_SimpleDTMF_Process(void);
 void sns_SimpleDTMF_HandleMessage(StdCan_Msg_t *rxMsg);

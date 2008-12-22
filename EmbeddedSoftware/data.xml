@@ -39,6 +39,7 @@
     </command>
     <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data"/>
     <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status"/>
+    <command id="70" name="Button" type="physical" module="" description=""/>
     
     <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
     <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
