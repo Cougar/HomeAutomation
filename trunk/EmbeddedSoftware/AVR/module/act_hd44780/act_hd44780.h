@@ -17,8 +17,6 @@
 #include <drivers/lcd/clcd/lcd_HD44780.h>
 #include <string.h> //for memcpy
 
-#include "protocol.h"
-
 void act_hd44780_Init(void);
 void act_hd44780_Process(void);
 void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg);
