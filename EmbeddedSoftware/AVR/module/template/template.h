@@ -14,8 +14,6 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
-#include "protocol.h"
-
 void <template>_Init(void);
 void <template>_Process(void);
 void <template>_HandleMessage(StdCan_Msg_t *rxMsg);
