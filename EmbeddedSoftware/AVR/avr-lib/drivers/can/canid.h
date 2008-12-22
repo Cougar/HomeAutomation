@@ -1,6 +1,10 @@
 #ifndef CANID_H_
 #define CANID_H_
 
+#ifdef MODULE_APPLICATION
+#include "moduleid.h"
+#endif
+
 //---------------------------------------------------------------------------
 // CAN ID definitions
 
@@ -52,41 +56,6 @@
 //--------------------------------------------------------------------
 
 
-//--------------------------------------------------- //
-// New class definitions for modulebased applications //
-//--------------------------------------------------- //
-
-// Module classes
-//------------------------------------
-#define CAN_CLASS_MODULE_NMT		0x0BUL		// If we move the functionality for this to BIOS we should use CAN_NMT instead
-#define CAN_CLASS_MODULE_ACT		0x0CUL
-#define CAN_CLASS_MODULE_SNS		0x0DUL
-#define CAN_CLASS_MODULE_DEF		0x0EUL
-#define CAN_CLASS_MODULE_TST		0x0FUL
-
-// Module frame direction
-//------------------------------------
-#define DIR_FROM_OWNER			1		// If a module sends a packet
-#define DIR_TO_OWNER			0		// If a module sends a packet to another module
-
-// Module types
-//------------------------------------
-#define CAN_TYPE_MODULE_def_default	0x01
-
-#define CAN_TYPE_MODULE_sns_ds18x20	0x03
-#define CAN_TYPE_MODULE_sns_FOST02	0x05
-#define CAN_TYPE_MODULE_sns_BusVoltage	0x06
-#define CAN_TYPE_MODULE_sns_SimpleDTMF	0x07
-#define CAN_TYPE_MODULE_sns_rotary	0x09
-
-#define CAN_TYPE_MODULE_act_hd44789	0x04
-#define CAN_TYPE_MODULE_act_Dimmer230	0x08
-#define CAN_TYPE_MODULE_act_ks0108	0x0a
-
-#define CAN_TYPE_MODULE_act_RGBdriver	0x0d
-
-// Module commands
-//------------------------------------
 
 //---------------------------------------------------------------------------
 // CAN ID definitions for NMT messages
