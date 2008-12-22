@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<!-- Written by Mattias on 02-dec-2008 14:21:10 -->
+<!-- Written by Mattias on 22-dec-2008 22:52:00 -->
 <root>
   <classes>
     <class id="11" name="nmt" description="Networkmanagement"/>
@@ -30,7 +30,12 @@
         <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Celsius" description=""/>
       </variables>
     </command>
-    <command id="66" name="Humidity_Percent" type="physical" module="" description="Humidity data"/>
+    <command id="66" name="Humidity_Percent" type="physical" module="" description="Humidity data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
     <command id="67" name="Voltage" type="physical" module="" description="Voltage data">
       <variables>
         <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
@@ -38,9 +43,20 @@
       </variables>
     </command>
     <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data"/>
-    <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status"/>
-    <command id="70" name="Button" type="physical" module="" description=""/>
-    
+    <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status">
+      <variables>
+        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Direction" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Position" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="70" name="Button" type="physical" module="" description="">
+      <variables>
+        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Status" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
     <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
     <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
       <variables>
@@ -71,9 +87,6 @@
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
-    
-    
-    
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
