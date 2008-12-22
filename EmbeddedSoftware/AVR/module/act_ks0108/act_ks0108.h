@@ -17,8 +17,6 @@
 #include <drivers/lcd/glcd/ks0108.h>
 #include <avr/pgmspace.h>
 
-#include "protocol.h"
-
 void act_ks0108_Init(void);
 void act_ks0108_Process(void);
 void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg);

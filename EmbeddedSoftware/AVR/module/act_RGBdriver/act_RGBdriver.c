@@ -70,11 +70,11 @@ void calculatePWM(uint8_t timer) {
 
 void sendADCvalue(uint8_t timer) {
 	StdCan_Msg_t txMsg;
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_RGBdriver; 
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_RGBDRIVER; 
 	txMsg.Header.ModuleId = act_RGBdriver_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_DEBUG;
 	txMsg.Length = 6;
 
 	//txMsg.Data[0] = (uint8_t)(ADC_Get(5)>>2);
@@ -138,9 +138,9 @@ void act_RGBdriver_Process(void)
 
 void act_RGBdriver_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_ACT && 
-		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_act_RGBdriver && 
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_ACT && 
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
+		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_ACT_RGBDRIVER && 
 		rxMsg->Header.ModuleId == act_RGBdriver_ID)
 	{
 		switch (rxMsg->Header.Command)
@@ -156,11 +156,11 @@ void act_RGBdriver_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_ACT);
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_act_RGBdriver;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_RGBDRIVER;
 	txMsg.Header.ModuleId = act_RGBdriver_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;

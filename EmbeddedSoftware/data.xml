@@ -17,7 +17,8 @@
       </variables>
     </command>
     <command id="1" name="Ascii" type="global" module="" description="Used for sending text with printf"/>
-    <command id="2" name="Report_Interval" type="global" module="" description="">
+    <command id="2" name="Debug" type="global" module="" description="Used for debugging, should not be used for anything real"/>
+    <command id="3" name="Report_Interval" type="global" module="" description="Get/Set interval of reporting">
       <variables>
         <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
       </variables>
@@ -117,6 +118,7 @@
     <module id="9" name="HD44789" class="act"/>
     <module id="10" name="Dimmer230" class="act"/>
     <module id="11" name="KS0108" class="act"/>
+    <module id="12" name="RGBdriver" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
