@@ -17,6 +17,11 @@
       </variables>
     </command>
     <command id="1" name="Ascii" type="global" module="" description="Used for sending text with printf"/>
+    <command id="2" name="Report_Interval" type="global" module="" description="">
+      <variables>
+        <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
+      </variables>
+    </command>
     <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data"/>
     <command id="65" name="Temperature_Celsius" type="physical" module="" description="Temperature data">
       <variables>
@@ -55,11 +60,6 @@
     <command id="132" name="LCD_Backlight" type="specific" module="HD44789" description="Set LCD backlight brightness">
       <variables>
         <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-      </variables>
-    </command>
-    <command id="133" name="Sensor_Report_Interval" type="specific" module="DS18x20" description="">
-      <variables>
-        <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
       </variables>
     </command>
       <command id="134" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
