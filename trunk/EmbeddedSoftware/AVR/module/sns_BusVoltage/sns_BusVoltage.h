@@ -15,8 +15,6 @@
 #include <drivers/timer/timer.h>
 #include <drivers/adc/adc.h>
 
-#include "protocol.h"
-
 void sns_BusVoltage_Init(void);
 void sns_BusVoltage_Process(void);
 void sns_BusVoltage_HandleMessage(StdCan_Msg_t *rxMsg);
