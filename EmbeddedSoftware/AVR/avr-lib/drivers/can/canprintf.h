@@ -6,7 +6,6 @@
 #include <config.h>
 #include <bios.h>
 #include <drivers/can/stdcan.h>
-#include <drivers/can/modules/GlobalCMD.h>
 
 #ifndef CAN_PRINTF
 #define CAN_PRINTF 0

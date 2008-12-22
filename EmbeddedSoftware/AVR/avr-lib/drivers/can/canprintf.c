@@ -19,11 +19,11 @@ static FILE canstdout = FDEV_SETUP_STREAM(CanPutChar, NULL, _FDEV_SETUP_WRITE);
 *--------------------------------------------------------------------------*/
 void CanPrintf_Init(void) 
 {
-	StdCan_Set_class(printfTxMsg.Header, CAN_CLASS_MODULE_TST);
-	StdCan_Set_direction(printfTxMsg.Header, DIR_FROM_OWNER);
+	StdCan_Set_class(printfTxMsg.Header, CAN_MODULE_CLASS_TST);
+	StdCan_Set_direction(printfTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	printfTxMsg.Header.ModuleType = 0;
 	printfTxMsg.Header.ModuleId = 0;
-	printfTxMsg.Header.Command = CAN_CMD_MODULE_GLOB_ASCII;
+	printfTxMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_ASCII;
 	bufpoint = 0;
 	stdout = &canstdout;    //set the output stream
 }
