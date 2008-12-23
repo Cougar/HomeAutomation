@@ -1,7 +1,10 @@
 
 function startup()
 {
-	autostart();
-	
+	if (autostart)
+	{
+		autostart();
+	}
+
 	startOfflineCheck();
 }
