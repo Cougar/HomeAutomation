@@ -124,9 +124,14 @@ echo -e ${failed[@]}
 echo "#######################################"
 echo ""
 
+#echo "Debug: DOPOSTIRC=$DOPOSTIRC failed=${#failed[@]} POSTLINE=$POSTLINE"
+
 if [ $DOPOSTIRC -eq "1" ] ; then
 	if [ ${#failed[@]} -ne "0" ] ; then
-		$POSTLINE \#hobby Tested to build apps, failed ${#failed[@]}, successfull: ${#successfull[@]}, http://projekt.auml.se/homeautomation:software:embedded:last-build-test
+#echo "Debug: DOPOSTIRC=$DOPOSTIRC failed=${#failed[@]} POSTLINE=$POSTLINE"
+		$POSTLINE \#hobby Tested to build apps, ${#failed[@]} failed, ${#successfull[@]} successfull, http://projekt.auml.se/homeautomation:software:embedded:last-build-test
+#		$POSTLINE \#lekstuga Tested to build apps, failed ${#failed[@]}, successfull: ${#successfull[@]}, http://projekt.auml.se/homeautomation:software:embedded:last-build-test
+#echo "POSTLINE exitcode: $?"
 	fi
 fi
 
