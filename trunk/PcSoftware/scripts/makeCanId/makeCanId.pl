@@ -41,6 +41,10 @@ open (MYFILE, '>' . $cfile);
 print MYFILE "// Built on $now by $binaryname\n";
 print MYFILE "// DO NOT CHANGE MANUALLY\n\n";
 
+
+print MYFILE "#ifndef MODULEID_H_\n";
+print MYFILE "#define MODULEID_H_\n\n";
+
 print MYFILE "//------------------ //\n";
 print MYFILE "// Class definitions //\n";
 print MYFILE "//------------------ //\n";
@@ -107,7 +111,8 @@ foreach my $define ($root->first_child('defines')->children('define'))
 
 print MYFILE "\n";
 
+print MYFILE "#endif /*MODULEID_H_*/\n";
+
 close (MYFILE);
 
 print "Successfully wrote " . $cfile . "\n";
-
