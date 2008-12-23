@@ -1,0 +1,25 @@
+TODO
+====
+
+IMPORTANT
+* Do not output everything to syslog only the most important, other things to diffrent logfiles or sockets
+
+LESS IMPORTANT
+* Commandline options override settings
+* Try to detect if network is down... maybe ping canDaemon? try sending something and se if that fails
+* Validity on incomming and outgoing canmessages based on information in the xml-file
+* Variable value types as Linus suggested
+* Error checking...
+* FIXMEs
+* Javascript command interface
+* Check if it is possible to unload a scriptfile, so we can load a new version
+* Check with linus what he wants for canInterpreter output
+* Implement support for nmt-messages to restart applications and program nodes. Build interaface to replace canDude
+* Implement internal canDaemon functionality
+* Implement more module-services...
+* Build service example... commented
+* Socket interface
+* Http interface, post, get etc...
+* Mysql-interface
+* Implementera hitta.se query som använder http intefacet mobil.hitta.se
+* Timerfunctions be able to send functions
