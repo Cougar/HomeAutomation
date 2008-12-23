@@ -23,7 +23,7 @@ void CanPrintf_Init(void)
 	StdCan_Set_direction(printfTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	printfTxMsg.Header.ModuleType = CAN_MODULE_TYPE_TST_DEBUG;
 	printfTxMsg.Header.ModuleId = 0;
-	printfTxMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_ASCII;
+	printfTxMsg.Header.Command = CAN_MODULE_CMD_DEBUG_PRINTF;
 	bufpoint = 0;
 	stdout = &canstdout;    //set the output stream
 }
