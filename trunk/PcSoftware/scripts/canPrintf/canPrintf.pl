@@ -39,7 +39,7 @@ while ( $line = <$remote> ) {
 	if (length($line) > 12) {
 		#$idhex = substr($line, 4, 8);
 		$id = hex(substr($line, 4, 8));
-		if ($id == hex("1f000001")) {
+		if ($id == hex("1f000080")) {
 			#@data = ();
 			if ($newline == 1) {
 				if ($timestamp == 1) {
