@@ -8,7 +8,7 @@
 #
 ################################################
 
-//Set autoflush on ( http://www.perlmonks.org/?node_id=20590 )
+#Set autoflush on ( http://www.perlmonks.org/?node_id=20590 )
 $| = 1;
 
 use IO::Socket;
