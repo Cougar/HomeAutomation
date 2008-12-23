@@ -46,5 +46,5 @@ void <template>_List(uint8_t ModuleSequenceNumber)
 	txMsg.Data[4] = NUMBER_OF_MODULES;
 	txMsg.Data[5] = ModuleSequenceNumber;
 	
-	StdCan_Put(&txMsg);
+	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 }
