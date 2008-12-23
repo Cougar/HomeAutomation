@@ -1,0 +1,7 @@
+
+function startup()
+{
+	autostart();
+	
+	startOfflineCheck();
+}

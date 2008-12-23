@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="51">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="CanNet" displayName="CanNet" projectFiles="true">
+      <itemPath>CanNet/canidtranslator.cpp</itemPath>
+      <itemPath>CanNet/canidtranslator.h</itemPath>
+      <itemPath>CanNet/canmessage.cpp</itemPath>
+      <itemPath>CanNet/canmessage.h</itemPath>
+      <itemPath>CanNet/canmessageexception.h</itemPath>
+      <itemPath>CanNet/cannetmanager.cpp</itemPath>
+      <itemPath>CanNet/cannetmanager.h</itemPath>
+      <itemPath>CanNet/cantranslatorexception.h</itemPath>
+      <itemPath>CanNet/canvariable.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f2" displayName="Settings" projectFiles="true">
+      <itemPath>Settings/settings.cpp</itemPath>
+      <itemPath>Settings/settings.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="Socket" displayName="Socket" projectFiles="true">
+      <itemPath>Socket/asyncsocket.cpp</itemPath>
+      <itemPath>Socket/asyncsocket.h</itemPath>
+      <itemPath>Socket/socketexception.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f3" displayName="SyslogStream" projectFiles="true">
+      <itemPath>SyslogStream/syslogstream.cpp</itemPath>
+      <itemPath>SyslogStream/syslogstream.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f4" displayName="Threads" projectFiles="true">
+      <itemPath>Threads/mutex.h</itemPath>
+      <itemPath>Threads/semaphore.h</itemPath>
+      <itemPath>Threads/thread.h</itemPath>
+      <itemPath>Threads/threadsafequeue.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="Tools" displayName="Tools" projectFiles="true">
+      <itemPath>Tools/tools.cpp</itemPath>
+      <itemPath>Tools/tools.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f6" displayName="VM" projectFiles="true">
+      <itemPath>VM/intervalthread.cpp</itemPath>
+      <itemPath>VM/intervalthread.h</itemPath>
+      <itemPath>VM/virtualmachine.cpp</itemPath>
+      <itemPath>VM/virtualmachine.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="XML" displayName="XML" projectFiles="true">
+      <itemPath>Xml/xmlexception.h</itemPath>
+      <itemPath>Xml/xmlnode.cpp</itemPath>
+      <itemPath>Xml/xmlnode.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>fetchV8.sh</itemPath>
+      <itemPath>Makefile</itemPath>
+      <itemPath>Services</itemPath>
+    </logicalFolder>
+    <itemPath>exception.h</itemPath>
+    <itemPath>main.cpp</itemPath>
+    <itemPath>version.h</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <commandLine>-m32</commandLine>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <commandLine>-m32</commandLine>
+        </ccCompilerTool>
+        <linkerTool>
+          <output>atom</output>
+          <linkerLibItems>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerLibFileItem>v8/libv8.a</linkerLibFileItem>
+          </linkerLibItems>
+          <commandLine>-m32</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="CanNet/canidtranslator.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/canidtranslator.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canmessage.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/canmessage.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canmessageexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/cannetmanager.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/cannetmanager.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/cantranslatorexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canvariable.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Settings/settings.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Settings/settings.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/asyncsocket.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Socket/asyncsocket.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/socketexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="SyslogStream/syslogstream.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="SyslogStream/syslogstream.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/mutex.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/semaphore.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/thread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/threadsafequeue.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Tools/tools.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Tools/tools.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/intervalthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/intervalthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/virtualmachine.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/virtualmachine.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Xml/xmlexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Xml/xmlnode.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Xml/xmlnode.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="exception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="main.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="version.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <developmentMode>5</developmentMode>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <developmentMode>5</developmentMode>
+        </ccCompilerTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <output>atom</output>
+          <linkerLibItems>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerLibFileItem>v8/libv8.a</linkerLibFileItem>
+          </linkerLibItems>
+          <commandLine>-m32</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="CanNet/canidtranslator.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/canidtranslator.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canmessage.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/canmessage.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canmessageexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/cannetmanager.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="CanNet/cannetmanager.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/cantranslatorexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="CanNet/canvariable.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Settings/settings.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Settings/settings.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/asyncsocket.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Socket/asyncsocket.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/socketexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="SyslogStream/syslogstream.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="SyslogStream/syslogstream.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/mutex.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/semaphore.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/thread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Threads/threadsafequeue.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Tools/tools.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Tools/tools.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/intervalthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/intervalthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/virtualmachine.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/virtualmachine.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Xml/xmlexception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Xml/xmlnode.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Xml/xmlnode.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="exception.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="main.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="version.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
