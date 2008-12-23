@@ -21,7 +21,7 @@ void CanPrintf_Init(void)
 {
 	StdCan_Set_class(printfTxMsg.Header, CAN_MODULE_CLASS_TST);
 	StdCan_Set_direction(printfTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	printfTxMsg.Header.ModuleType = 0;
+	printfTxMsg.Header.ModuleType = CAN_MODULE_TYPE_TST_DEBUG;
 	printfTxMsg.Header.ModuleId = 0;
 	printfTxMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_ASCII;
 	bufpoint = 0;

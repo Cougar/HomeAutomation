@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<!-- Written by Mattias on 22-dec-2008 22:52:00 -->
+<!-- Written on 23-dec-2008 13:40:00 -->
 <root>
   <classes>
     <class id="11" name="nmt" description="Networkmanagement"/>
@@ -16,7 +16,11 @@
         <variable name="SequenceNumber" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </command>
-    <command id="1" name="Ascii" type="global" module="" description="Used for sending text with printf"/>
+    <command id="1" name="Ascii" type="global" module="" description="Used for sending text with printf">
+     <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
     <command id="2" name="Debug" type="global" module="" description="Used for debugging, should not be used for anything real"/>
     <command id="3" name="Report_Interval" type="global" module="" description="Get/Set interval of reporting">
       <variables>
@@ -134,6 +138,7 @@
     </command>
   </commands>
   <modules>
+    <module id="0" name="Debug" class="tst"/>
     <module id="1" name="Default" class="def"/>
     <module id="3" name="DS18x20" class="sns"/>
     <module id="5" name="FOST02" class="sns"/>

@@ -1,5 +1,8 @@
-// Built on Mon Dec 22 23:11:52 2008 by makeCanId.pl
+// Built on Tue Dec 23 13:52:40 2008 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
+
+#ifndef MODULEID_H_
+#define MODULEID_H_
 
 //------------------ //
 // Class definitions //
@@ -42,6 +45,7 @@
 // Module definitions //
 //------------------- //
 
+#define CAN_MODULE_TYPE_TST_DEBUG 0
 #define CAN_MODULE_TYPE_DEF_DEFAULT 1
 #define CAN_MODULE_TYPE_SNS_DS18X20 3
 #define CAN_MODULE_TYPE_SNS_FOST02 5
@@ -61,3 +65,4 @@
 #define DIRECTIONFLAG_TO_OWNER 0
 #define NONE_HEARTBEATHEADER 002c0000
 
+#endif /*MODULEID_H_*/
