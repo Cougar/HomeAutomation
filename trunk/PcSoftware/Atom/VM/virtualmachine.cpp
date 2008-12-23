@@ -125,8 +125,12 @@ void VirtualMachine::run()
 			loadScript("System/CanManager.js");
 			loadScript("System/CanService.js");
 			loadScript("System/Startup.js");
-			loadScript("Autostart.js");
 
+			if (file_exists(basePath + "Autostart.js"))
+			{
+				loadScript("Autostart.js");
+			}
+			
 			myFunctionHandleHeartbeat = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleHeartbeat")));
 			myFunctionOfflineCheck = Handle<Function>::Cast(myContext->Global()->Get(String::New("offlineCheck")));
 			myFunctionHandleMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleMessage")));
