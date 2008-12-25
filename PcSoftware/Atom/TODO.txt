@@ -22,4 +22,4 @@ LESS IMPORTANT
 * Http interface, post, get etc...
 * Mysql-interface
 * Implementera hitta.se query som använder http intefacet mobil.hitta.se
-* Timerfunctions be able to send functions
+* Add domainname resolv to point to canDaemon
