@@ -92,14 +92,14 @@ void CanNetManager::openChannel()
 
 						//slog << "Received: " << data;
 
-						if (canMessage.isUnknown())
-						{
-							slog << "Received unknown message. Skipping...\n";
-						}
-						else
+						if (!canMessage.isUnknown())
 						{
 							vm.queueCanMessage(canMessage);
 						}
+						/*else
+						{
+							slog << "Received unknown message. Skipping...\n";
+						}*/
 					}
 				}
 				catch (CanMessageException* e)

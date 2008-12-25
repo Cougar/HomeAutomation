@@ -1,6 +1,6 @@
 
 CanServices = new Array();
-CanOfflineTimeoutId = null;
+CanOfflineTimer = new Interval(offlineCheck, 10000);
 
 // This is called when a message has been received from the can network
 function handleMessage(className, directionFlag, moduleName, moduleId, commandName, data)
@@ -58,7 +58,7 @@ function sendMessage(canMessage)
 
 function startOfflineCheck()
 {
-	CanOfflineTimeoutId = setInterval("offlineCheck();", 10000);
+	CanOfflineTimer.start();
 }
 
 // This will be called at reqular intervals

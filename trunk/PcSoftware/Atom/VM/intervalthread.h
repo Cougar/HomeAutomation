@@ -19,8 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _OFFLINECHECK_H
-#define	_OFFLINECHECK_H
+#ifndef _INTERVALTHREAD_H
+#define	_INTERVALTHREAD_H
 
 using namespace std;
 
@@ -45,5 +45,5 @@ private:
 	unsigned int myTimeout;
 };
 
-#endif	/* _OFFLINECHECK_H */
+#endif	/* _INTERVALTHREAD_H */
 

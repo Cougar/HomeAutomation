@@ -13,7 +13,7 @@ ServiceManager.getService = function(type, name, id)
 		{
 			if (!loadScript(type + "/" + name + ".js"))
 			{
-				log("Could not load " + name + ".js\n");
+				//log("Could not load " + name + ".js\n");
 				return null;
 			}
 			else
