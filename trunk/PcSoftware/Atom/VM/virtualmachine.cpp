@@ -392,7 +392,7 @@ Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	unsigned int id = args[1]->Uint32Value();
+	unsigned int id = args[0]->Uint32Value();
 
 	return Integer::New(vm.stopIntervalThread(id));
 }

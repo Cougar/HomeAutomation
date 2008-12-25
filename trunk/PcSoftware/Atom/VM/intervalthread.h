@@ -35,6 +35,7 @@ class IntervalThread : public Thread<IntervalThread>
 public:
 	IntervalThread() { Thread<IntervalThread>(); };
 	IntervalThread(unsigned int timeout);
+	~IntervalThread() { stop(); };
 
 	unsigned int getId() { return myId; };
 
