@@ -22,14 +22,16 @@ CanService.prototype.canMessageHandler = function(canMessage)
 CanService.prototype.onlineHandler = function()
 {
 	log(this.myName + ":" + this.myId + "> Service went online\n");
-	this.myHeartbeatTime = time();
+	var date = new Date();
+	this.myHeartbeatTime = date.getTimestamp();
 	this.myIsOnline = true;
 	this.callEvent("online", null);
 }
 
 CanService.prototype.heartbeatHandler = function()
 {
-	this.myHeartbeatTime = time();
+	var date = new Date();
+	this.myHeartbeatTime = date.getTimestamp();
 	this.myIsOnline = true;
 	this.callEvent("heartbeat", null);
 }
@@ -38,7 +40,8 @@ CanService.prototype.checkOffline = function()
 {
 	if (this.myIsOnline)
 	{
-		if (this.myHeartbeatTime + 10 < time())
+		var date = new Date();
+		if (this.myHeartbeatTime + 10 < date.getTimestamp())
 		{
 			log(this.myName + ":" + this.myId + "> Service went offline\n");
 			this.myIsOnline = false;

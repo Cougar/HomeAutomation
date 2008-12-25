@@ -42,9 +42,8 @@ using namespace v8;
 Handle<Value> VirtualMachine_log(const Arguments& args);
 Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args);
 Handle<Value> VirtualMachine_loadScript(const Arguments& args);
-Handle<Value> VirtualMachine_clearInterval(const Arguments& args);
-Handle<Value> VirtualMachine_setTimeout(const Arguments& args);
-Handle<Value> VirtualMachine_setInterval(const Arguments& args);
+Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args);
+Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args);
 
 class VirtualMachine : public Thread<VirtualMachine>
 {
@@ -58,8 +57,8 @@ public:
 	void run();
 
 	bool loadScript(string scriptName);
-	int setInterval(string expression, int interval, bool single);
-	bool clearInterval(int timeoutId);
+	unsigned int startIntervalThread(unsigned int timeout);
+	bool stopIntervalThread(unsigned int id);
 
 private:
 	void callHandleHeartbeat(int hardwareId);
@@ -84,7 +83,7 @@ private:
 	ThreadSafeQueue<string> myExpressions;
 	ThreadSafeQueue<CanMessage> myCanMessages;
 
-	map<int, IntervalThread> myTimers;
+	map<int, IntervalThread> myIntervalThreads;
 };
 
 #endif	/* _VIRTUALMACHINE_H */

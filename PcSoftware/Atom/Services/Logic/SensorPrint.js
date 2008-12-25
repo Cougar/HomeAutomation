@@ -14,7 +14,7 @@ extend(SensorPrint, Service);
 SensorPrint.prototype.myLCDService = null;
 SensorPrint.prototype.myTempService = null;
 SensorPrint.prototype.myVoltService = null;
-SensorPrint.prototype.myTimeoutId = null;
+SensorPrint.prototype.myInterval = null;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
@@ -32,6 +32,8 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	this.myLCDService.registerEventCallback("online", function(args) { self.lcdOnline(); });
 	/* If the service is already online we should call the handler here */
 	this.lcdOnline();
+	/* Add a callback for when the service goes offline */
+	this.myLCDService.registerEventCallback("offline", function(args) { self.lcdOffline(); });
 
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myTempService = ServiceManager.getService("Can", "DS18x20", this.myInitialArguments["DS18x20"]["Id"]);
@@ -52,14 +54,6 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	this.voltOnline();
 }
 
-/* This method is static */
-SensorPrint.timerCallback = function(type, name, id)
-{
-	/* Get the service instance and call the timer update */
-	var service = ServiceManager.getService(type, name, id);
-	service.timerUpdate();
-}
-
 SensorPrint.prototype.lcdOnline = function()
 {
 	/* If service is not online do nothing */
@@ -71,11 +65,25 @@ SensorPrint.prototype.lcdOnline = function()
 		this.myLCDService.setBacklight(255);
 
 		/* If we have no interval timer running start it */
-		if (this.myTimeoutId == null)
+		if (this.myInterval == null)
 		{
-			/* Start interval timer for our printout. Arguments are expression and time in seconds */
-			this.myTimeoutId = setInterval("SensorPrint.timerCallback('Logic', '" + this.myName + "', " + this.myId + ");", 1000);
+			var self = this;
+		
+			/* Start interval timer for our printout. Arguments are the callback function and time in seconds */
+			this.myInterval = new Interval(function() { self.timerUpdate() }, 1000);
 		}
+		
+		this.myInterval.start();
+	}
+}
+
+SensorPrint.prototype.lcdOffline = function()
+{
+	/* If we have no interval timer running do nothing */
+	if (this.myInterval != null)
+	{
+		/* Stop the interval */
+		this.myInterval.stop();
 	}
 }
 
@@ -132,8 +140,9 @@ SensorPrint.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
+		var date = new Date();
 		/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
-		var dateAndTime = formatDateTime();
+		var dateAndTime = date.getDateTimeFormated();
 		/* Print the text to the LCD */
 		this.myLCDService.printText(0, 3, dateAndTime);
 		/* Print out what we are doing to the console */

@@ -1,19 +1,4 @@
-/*
-String.pad(length: Integer, [substring: String = " "], [type: Integer = 0]): String
-    	Returns the string with a substring padded on the left, right or both sides.
-    length
-        amount of characters that the string must have
-    substring
-        string that will be concatenated
-    type
-        specifies the side where the concatenation will happen, where: 0 = left, 1 = right and 2 = both sides
-*/
-String.prototype.pad = function(l, s, t)
-{
-    return s || (s = " "), (l -= this.length) > 0 ? (s = new Array(Math.ceil(l / s.length)
-        + 1).join(s)).substr(0, t = !t ? l : t == 1 ? 0 : Math.ceil(l / 2))
-        + this + s.substr(0, l - t) : this;
-}
+
 
 function extend(descendant, parent)
 {
@@ -31,54 +16,60 @@ function extend(descendant, parent)
 	}
 }
 
-function time(d)
+/*
+String.pad(length: Integer, [substring: String = " "], [type: Integer = 0]): String
+    	Returns the string with a substring padded on the left, right or both sides.
+    length
+        amount of characters that the string must have
+    substring
+        string that will be concatenated
+    type
+        specifies the side where the concatenation will happen, where: 0 = left, 1 = right and 2 = both sides
+*/
+String.prototype.pad = function(l, s, t)
 {
-	if (!d)
-		d = new Date();
-		
-	return d.getTime()/1000;
+	return	s || (s = " "), (l -= this.length) > 0 ? (s = new Array(Math.ceil(l / s.length)
+		+ 1).join(s)).substr(0, t = !t ? l : t == 1 ? 0 : Math.ceil(l / 2))
+		+ this + s.substr(0, l - t) : this;
 }
 
-function formatDate(d)
-{
-	if (!d)
-		d = new Date();
-		
-	return d.getFullYear() + "-" + (d.getMonth()+1).toString().pad(2, "0", 0) + "-" + d.getDate().toString().pad(2, "0", 0);
-}
-
-function formatTime(d)
-{
-	if (!d)
-		d = new Date();
-		
-	return d.getHours().toString().pad(2, "0", 0) + "." + d.getMinutes().toString().pad(2, "0", 0) + "." + d.getSeconds().toString().pad(2, "0", 0);
-}
-
-function formatDateTime(d)
-{
-	if (!d)
-		d = new Date();
-		
-	return formatDate(d) + " " + formatTime(d);
-}
-
-function ltrim(str, charlist)
+String.prototype.ltrim = function(charlist)
 {
 	charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
 	var re = new RegExp('^[' + charlist + ']+', 'g');
-	return str.replace(re, '');
+	return this.replace(re, '');
 }
 
-function rtrim(str, charlist)
+String.prototype.rtrim = function(charlist)
 {
 	charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
 	var re = new RegExp('[' + charlist + ']+$', 'g');
-	return str.replace(re, '');
+	return this.replace(re, '');
 }
 
-function trim(str, charlist)
+String.prototype.trim = function(charlist)
 {
-	str = ltrim(str, charlist);
-	return rtrim(str, charlist);
+	var str = this.ltrim(charlist);
+	return str.rtrim(charlist);
+}
+
+
+Date.prototype.getTimestamp = function()
+{
+	return this.getTime()/1000;
+}
+
+Date.prototype.getDateFormated = function()
+{
+	return this.getFullYear() + "-" + (this.getMonth()+1).toString().pad(2, "0", 0) + "-" + this.getDate().toString().pad(2, "0", 0);
+}
+
+Date.prototype.getTimeFormated = function()
+{
+	return this.getHours().toString().pad(2, "0", 0) + "." + this.getMinutes().toString().pad(2, "0", 0) + "." + this.getSeconds().toString().pad(2, "0", 0);
+}
+
+Date.prototype.getDateTimeFormated = function()
+{
+	return this.getDateFormated() + " " + this.getTimeFormated();
 }

@@ -25,21 +25,24 @@
 using namespace std;
 
 #include <string>
+#include <time.h>
 
 #include "../Threads/thread.h"
+#include "../Tools/tools.h"
 
 class IntervalThread : public Thread<IntervalThread>
 {
 public:
 	IntervalThread() { Thread<IntervalThread>(); };
-	IntervalThread(string expression, int interval, bool single);
+	IntervalThread(unsigned int timeout);
+
+	unsigned int getId() { return myId; };
 
 	void run();
 
 private:
-	string myExpression;
-	int myInterval;
-	bool mySingle;
+	unsigned int myId;
+	unsigned int myTimeout;
 };
 
 #endif	/* _OFFLINECHECK_H */

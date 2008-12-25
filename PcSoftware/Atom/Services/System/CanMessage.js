@@ -89,5 +89,15 @@ CanMessage.prototype.getDataString = function()
 		str += key + ":" + this.myData[key] + ",";
 	}
 	
-	return rtrim(str, ",");
+	return str.rtrim(",");
+}
+
+CanMessage.prototype.toString = function()
+{
+	return "[CanMessage] " + 	this.getClassName() + ", " + 
+					this.getDirectionFlag() + ", " + 
+					this.getModuleName() + ", " + 
+					this.getModuleId() + ", " + 
+					this.getDataString();
+					
 }
