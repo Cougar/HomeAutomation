@@ -21,7 +21,11 @@ Interval.triggerIntervalCallback = function(id)
 	else
 	{
 		log("Interval:" + id + "> Encountered a thread that have no javascript Interval object. This is not supposed to be possible, report this.\n");
-		stopIntervalThread(id);
+		
+		if (!stopIntervalThread(id))
+		{
+			log("Interval:" + id + "> Interval thread could not be stopped.\n");
+		}
 	}
 }
 
@@ -61,7 +65,12 @@ Interval.prototype.start = function()
 Interval.prototype.stop = function()
 {
 	this.myIsRunning = false;
-	stopIntervalThread(this.myId);
+	
+	if (!stopIntervalThread(this.myId))
+	{
+		log("Interval:" + this.myId + "> Interval thread could not be stopped.\n");
+	}
+	
 	delete Interval.myIntervals[this.myId];
 	this.myId = null;
 }
