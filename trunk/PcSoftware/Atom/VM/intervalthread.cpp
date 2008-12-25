@@ -22,11 +22,10 @@
 #include "intervalthread.h"
 #include "virtualmachine.h"
 
-IntervalThread::IntervalThread(string expression, int interval, bool single)
+IntervalThread::IntervalThread(unsigned int timeout)
 {
-	myExpression = expression;
-	myInterval = interval;
-	mySingle = single;
+	myId = time(NULL);
+	myTimeout = timeout;
 
 	Thread<IntervalThread>();
 }
@@ -35,9 +34,9 @@ void IntervalThread::run()
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	while (!mySingle)
+	while (true)
 	{
-		usleep(myInterval*1000);
-		vm.queueExpression(myExpression);
+		usleep(myTimeout*1000);
+		vm.queueExpression("Interval.triggerIntervalCallback(" + itos(myId) + ");");
 	}
 }

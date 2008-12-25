@@ -59,9 +59,9 @@ void VirtualMachine::run()
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	string basePath = Settings::get("BasePath") + "/Services/System/";
+	string basePath = Settings::get("BasePath") + "Services/";
 	string scriptName = "Base.js";
-	string scriptFileName = basePath + scriptName;
+	string scriptFileName = basePath + "System/" + scriptName;
 
 	if (!file_exists(scriptFileName))
 	{
@@ -81,10 +81,8 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("log"), FunctionTemplate::New(VirtualMachine_log));
 	myGlobal->Set(String::New("sendCanMessage"), FunctionTemplate::New(VirtualMachine_sendCanMessage));
 	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine_loadScript));
-	myGlobal->Set(String::New("setTimeout"), FunctionTemplate::New(VirtualMachine_setTimeout));
-	myGlobal->Set(String::New("setInterval"), FunctionTemplate::New(VirtualMachine_setInterval));
-	myGlobal->Set(String::New("clearTimeout"), FunctionTemplate::New(VirtualMachine_clearInterval));
-	myGlobal->Set(String::New("clearInterval"), FunctionTemplate::New(VirtualMachine_clearInterval));
+	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine_startIntervalThread));
+	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine_stopIntervalThread));
 
 	//create context for the script
 	myContext = Context::New(NULL, myGlobal);
@@ -119,11 +117,6 @@ void VirtualMachine::run()
 		}
 		else
 		{
-			loadScript("System/Service.js");
-			loadScript("System/ServiceManager.js");
-			loadScript("System/CanMessage.js");
-			loadScript("System/CanManager.js");
-			loadScript("System/CanService.js");
 			loadScript("System/Startup.js");
 
 			if (file_exists(basePath + "Autostart.js"))
@@ -263,23 +256,21 @@ void VirtualMachine::callHandleMessage(CanMessage canMessage)
 	Handle<Value> result = myFunctionHandleMessage->Call(myFunctionHandleMessage, argc, argv); // argc and argv are your standard arguments to a function
 }
 
-int VirtualMachine::setInterval(string expression, int interval, bool single)
+unsigned int VirtualMachine::startIntervalThread(unsigned int timeout)
 {
-	IntervalThread intervalThread(expression, interval, single);
-	intervalThread.start();
+	IntervalThread intervalThread(timeout);
 
-	int timeoutId = myTimers.size();
-	myTimers[timeoutId] = intervalThread;
-	myTimers[timeoutId].start();
+	myIntervalThreads[intervalThread.getId()] = intervalThread;
+	myIntervalThreads[intervalThread.getId()].start();
 
-	return timeoutId;
+	return intervalThread.getId();
 }
 
-bool VirtualMachine::clearInterval(int timeoutId)
+bool VirtualMachine::stopIntervalThread(unsigned int id)
 {
-	if (myTimers.find(timeoutId) != myTimers.end())
+	if (myIntervalThreads.find(id) != myIntervalThreads.end())
 	{
-		myTimers.erase(timeoutId);
+		myIntervalThreads.erase(id);
 		return true;
 	}
 
@@ -388,29 +379,20 @@ Handle<Value> VirtualMachine_loadScript(const Arguments& args)
 	return Boolean::New(vm.loadScript(*str));
 }
 
-Handle<Value> VirtualMachine_setInterval(const Arguments& args)
+Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	String::AsciiValue expression(args[0]);
-	unsigned int interval = args[1]->Uint32Value();
+	unsigned int timeout = args[0]->Uint32Value();
 
-	return Integer::New(vm.setInterval(*expression, interval, false));
+	return Integer::New(vm.startIntervalThread(timeout));
 }
 
-Handle<Value> VirtualMachine_setTimeout(const Arguments& args)
+Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	String::AsciiValue expression(args[0]);
-	unsigned int interval = args[1]->Uint32Value();
+	unsigned int id = args[1]->Uint32Value();
 
-	return Integer::New(vm.setInterval(*expression, interval, true));
-}
-
-Handle<Value> VirtualMachine_clearInterval(const Arguments& args)
-{
-	VirtualMachine &vm = VirtualMachine::getInstance();
-
-	return Boolean::New(vm.clearInterval(args[0]->Uint32Value()));
+	return Integer::New(vm.stopIntervalThread(id));
 }
