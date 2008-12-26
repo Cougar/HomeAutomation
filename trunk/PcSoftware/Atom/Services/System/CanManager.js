@@ -70,6 +70,14 @@ function offlineCheck()
 	}
 }
 
+function setAllOffline()
+{
+	for (var n in CanServices)
+	{
+		CanServices[n].setOffline();
+	}
+}
+
 // This is called when a node sends a heartbeat
 function handleHeartbeat(hardwareId)
 {

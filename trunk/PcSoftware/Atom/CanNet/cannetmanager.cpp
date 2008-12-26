@@ -69,6 +69,8 @@ void CanNetManager::openChannel()
 
 	myChannel->startEvent();
 
+	bool waitingForPong = false;
+
 	while (1)
 	{
 		myChannel->waitForEvent();
@@ -79,6 +81,8 @@ void CanNetManager::openChannel()
 		{
 			while (myChannel->availableData())
 			{
+				waitingForPong = false;
+
 				string data = myChannel->getData();
 
 				try
@@ -87,6 +91,14 @@ void CanNetManager::openChannel()
 
 					for (int n = 0; n < dataLines.size(); n++)
 					{
+						data = trim(data, '\n');
+
+						if (data == "PONG")
+						{
+							slog << "Received pong.\n";
+							continue;
+						}
+
 						CanMessage canMessage;
 						canMessage.setRaw(data);
 
@@ -108,6 +120,24 @@ void CanNetManager::openChannel()
 					slog << e->getDescription() << "\n";
 				}
 			}
+		}
+		else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
+		{
+			if (waitingForPong)
+			{
+				slog << "We have not received a pong for our ping.\n";
+				waitingForPong = false;
+				vm.queueExpression("setAllOffline();");
+				myChannel->forceReconnect();
+			}
+			else
+			{
+				slog << "We have not received anything from the canDaemon in some time.\n";
+				waitingForPong = true;
+				slog << "Sending ping.\n";
+				myChannel->sendData("PING");
+			}
+
 		}
 	}
 
