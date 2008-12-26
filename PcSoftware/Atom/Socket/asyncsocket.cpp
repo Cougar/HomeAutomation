@@ -260,11 +260,7 @@ void AsyncSocket::reconnectLoop()
 
 void AsyncSocket::connect()
 {
-	if (mySocket != -1)
-	{
-		::close(mySocket);
-		mySocket = -1;
-	}
+	close();
 	
 	mySocket = ::socket(AF_INET, SOCK_STREAM, 0);
 

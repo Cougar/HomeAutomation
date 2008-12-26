@@ -121,6 +121,10 @@ void CanNetManager::openChannel()
 				}
 			}
 		}
+		else if (event == ASYNCSOCKET_EVENT_CLOSED)
+		{
+			vm.queueExpression("setAllOffline();");
+		}
 		else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
 		{
 			if (waitingForPong)
