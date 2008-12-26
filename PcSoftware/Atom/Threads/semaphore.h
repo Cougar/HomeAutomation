@@ -23,6 +23,7 @@
 #define	_SEMAPHORE_H
 
 #include "mutex.h"
+#include <sys/time.h>
 
 class Semaphore : public Mutex
 {
@@ -32,9 +33,22 @@ public:
 
 	int broadcast() { return pthread_cond_broadcast(&myCondition); };
 	int wait() { return pthread_cond_wait(&myCondition, &myMutex); };
+	int wait(int timeout) // Returns ETIMEDOUT on timeout
+	{
+		gettimeofday(&myTimeval, NULL);
+
+		 /* Convert from timeval to timespec */
+		myTimespec.tv_sec  = myTimeval.tv_sec;
+		myTimespec.tv_nsec = myTimeval.tv_usec * 1000;
+		myTimespec.tv_sec += timeout;
+
+		return pthread_cond_timedwait(&myCondition, &myMutex, &myTimespec);
+	}
 
 protected:
 	pthread_cond_t myCondition;
+	struct timespec myTimespec;
+	struct timeval myTimeval;
 };
 
 

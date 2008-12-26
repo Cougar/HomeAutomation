@@ -27,6 +27,7 @@ AsyncSocket::AsyncSocket()
 {
 	mySocket = -1;
 	myReconnectTimeout = 10;
+	myForceReconnect = false;
 
 	Thread<AsyncSocket>();
 }
@@ -51,138 +52,174 @@ void AsyncSocket::run()
 	char buf[MAXBUFFER + 1];
 	string data;
 	int status;
-
+	int rc;
+	int timeSince = time(NULL) + 10;
+	
 	AsyncSocket::mySemaphore.lock();
 
 	try
 	{
 		while (1)
 		{
-			mySemaphore.wait();
+			rc = mySemaphore.wait(5);
+
+			if (myForceReconnect)
+			{
+				slog << "Disconnected from server.\n";
+				reconnectLoop();
+				timeSince = time(NULL) + 10;
+				continue;
+			}
 
 			//cout << "Socket awoken...\n";
-
-			while (myOutQueue.size() > 0)
+			
+			if (rc == ETIMEDOUT)
 			{
-				data = myOutQueue.pop();
+				/* Socket timed out, this means we have not received anything in some time
+				and we should check the connection */
 
-				//slog << "Sending: " << data << "\n";
+				setEvent(ASYNCSOCKET_EVENT_INACTIVITY);
+				timeSince = time(NULL);
+			}
+			else
+			{
+				while (myOutQueue.size() > 0)
+				{
+					data = myOutQueue.pop();
 
-				status = ::send(mySocket, data.c_str(), data.size(), 0);
+					//slog << "Sending: " << data << "\n";
+
+					status = ::send(mySocket, data.c_str(), data.size(), 0);
+
+					//slog << "Status: " << status << "\n";
+
+					if (status == -1)
+					{
+						switch (errno)
+						{
+							case EACCES:
+							throw new SocketException("(For  Unix  domain sockets, which are identified by pathname) Write permission is denied on the destination socket file, or search permission is denied for one of the directories the path prefix.  (See path_resolution(7).)");
+
+							case EAGAIN:
+							//slog << "The socket is marked non-blocking and the requested operation would block.\n";
+							break;
+
+							case EBADF:
+							throw new SocketException("An invalid descriptor was specified.");
+
+							case ECONNRESET:
+							throw new SocketException("Connection reset by peer.");
+
+							case EDESTADDRREQ:
+							throw new SocketException("The socket is not connection-mode, and no peer address is set.");
+
+							case EFAULT:
+							throw new SocketException("An invalid user space address was specified for an argument.");
+
+							case EINTR:
+							throw new SocketException("A signal occurred before any data was transmitted; see signal(7).");
+
+							case EINVAL:
+							throw new SocketException("1Invalid argument passed.");
+
+							case EISCONN:
+							throw new SocketException("The connection-mode socket was connected already but a recipient was specified. (Now either this error is returned, or the recipient specification is ignored.)");
+
+							case EMSGSIZE:
+							throw new SocketException("The socket type requires that message be sent atomically, and the size of the message to be sent made this impossible.");
+
+							case ENOBUFS:
+							throw new SocketException("The output queue for a network interface was full.  This generally indicates that the interface has stopped sending, but may be caused by transient congestion.  (Normally, this does not occur in Linux.  Packets are just silently dropped when a device queue overflows.)");
+
+							case ENOMEM:
+							throw new SocketException("No memory available.");
+
+							case ENOTCONN:
+							throw new SocketException("The socket is not connected, and no target has been given.");
+
+							case ENOTSOCK:
+							throw new SocketException("The argument s is not a socket.");
+
+							case EOPNOTSUPP:
+							throw new SocketException("Some bit in the flags argument is inappropriate for the socket type.");
+
+							case EPIPE:
+							throw new SocketException("The  local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
+
+							default:
+							slog << "Unknow exception: " << errno << "\n";
+							break;
+						}
+					}
+				}
+
+				memset(buf, 0, MAXBUFFER + 1);
+
+				status = ::recv(mySocket, buf, MAXBUFFER, 0);
+
+				//slog << "Receiving: " << buf << "\n";
 
 				if (status == -1)
 				{
 					switch (errno)
 					{
-						case EACCES:
-						throw new SocketException("(For  Unix  domain sockets, which are identified by pathname) Write permission is denied on the destination socket file, or search permission is denied for one of the directories the path prefix.  (See path_resolution(7).)");
-
 						case EAGAIN:
-						//slog << "The socket is marked non-blocking and the requested operation would block.\n";
+						//slog << "The socket is marked non-blocking and the receive operation would block, or a receive timeout had been set and the timeout expired before data was received.\n";
 						break;
 
 						case EBADF:
-						throw new SocketException("An invalid descriptor was specified.");
+						throw new SocketException("The argument s is an invalid descriptor.");
 
-						case ECONNRESET:
-						throw new SocketException("Connection reset by peer.");
-
-						case EDESTADDRREQ:
-						throw new SocketException("The socket is not connection-mode, and no peer address is set.");
+						case ECONNREFUSED:
+						throw new SocketException("A remote host refused to allow the network connection (typically because it is not running the requested service).");
 
 						case EFAULT:
-						throw new SocketException("An invalid user space address was specified for an argument.");
+						throw new SocketException("The receive buffer pointer(s) point outside the process's address space.");
 
 						case EINTR:
-						throw new SocketException("A signal occurred before any data was transmitted; see signal(7).");
+						throw new SocketException("The receive was interrupted by delivery of a signal before any data were available; see signal(7).");
 
 						case EINVAL:
-						throw new SocketException("Invalid argument passed.");
-
-						case EISCONN:
-						throw new SocketException("The connection-mode socket was connected already but a recipient was specified. (Now either this error is returned, or the recipient specification is ignored.)");
-
-						case EMSGSIZE:
-						throw new SocketException("The socket type requires that message be sent atomically, and the size of the message to be sent made this impossible.");
-
-						case ENOBUFS:
-						throw new SocketException("The output queue for a network interface was full.  This generally indicates that the interface has stopped sending, but may be caused by transient congestion.  (Normally, this does not occur in Linux.  Packets are just silently dropped when a device queue overflows.)");
+						//throw new SocketException("2Invalid argument passed.");
+						slog << "Disconnected from server.\n";
+						reconnectLoop();
+						break;
 
 						case ENOMEM:
-						throw new SocketException("No memory available.");
+						throw new SocketException("Could not allocate memory for recvmsg().");
 
 						case ENOTCONN:
-						throw new SocketException("The socket is not connected, and no target has been given.");
+						throw new SocketException("The socket is associated with a connection-oriented protocol and has not been connected (see connect(2) and  accept(2)).");
 
 						case ENOTSOCK:
-						throw new SocketException("The argument s is not a socket.");
-
-						case EOPNOTSUPP:
-						throw new SocketException("Some bit in the flags argument is inappropriate for the socket type.");
-
-						case EPIPE:
-						throw new SocketException("The  local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
+						throw new SocketException("The argument s does not refer to a socket.");
 
 						default:
 						slog << "Unknow exception: " << errno << "\n";
 						break;
 					}
 				}
-			}
-
-			memset(buf, 0, MAXBUFFER + 1);
-
-			status = ::recv(mySocket, buf, MAXBUFFER, 0);
-
-			if (status == -1)
-			{
-				switch (errno)
+				else if (status == 0)
 				{
-					case EAGAIN:
-					//slog << "The socket is marked non-blocking and the receive operation would block, or a receive timeout had been set and the timeout expired before data was received.\n";
-					break;
-
-					case EBADF:
-					throw new SocketException("The argument s is an invalid descriptor.");
-
-					case ECONNREFUSED:
-					throw new SocketException("A remote host refused to allow the network connection (typically because it is not running the requested service).");
-
-					case EFAULT:
-					throw new SocketException("The receive buffer pointer(s) point outside the process's address space.");
-
-					case EINTR:
-					throw new SocketException("The receive was interrupted by delivery of a signal before any data were available; see signal(7).");
-
-					case EINVAL:
-					throw new SocketException("Invalid argument passed.");
-
-					case ENOMEM:
-					throw new SocketException("Could not allocate memory for recvmsg().");
-
-					case ENOTCONN:
-					throw new SocketException("The socket is associated with a connection-oriented protocol and has not been connected (see connect(2) and  accept(2)).");
-
-					case ENOTSOCK:
-					throw new SocketException("The argument s does not refer to a socket.");
-
-					default:
-					slog << "Unknow exception: " << errno << "\n";
-					break;
+					slog << "Disconnected from server.\n";
+					reconnectLoop();
 				}
-			}
-			else if (status == 0)
-			{
-				slog << "Disconnected from server.\n";
-				reconnectLoop();
-			}
-			else if (status > 0)
-			{
-				data = buf;
+				else if (status > 0)
+				{
+					data = buf;
 
-				myInQueue.push(data);
+					myInQueue.push(data);
 
-				setEvent(ASYNCSOCKET_EVENT_DATA);
+					setEvent(ASYNCSOCKET_EVENT_DATA);
+					
+					timeSince = time(NULL);
+				}
+				
+				if (timeSince + 10 < time(NULL))
+				{
+					setEvent(ASYNCSOCKET_EVENT_INACTIVITY);
+					timeSince = time(NULL);
+				}
 			}
 		}
 	}
@@ -231,12 +268,25 @@ void AsyncSocket::connect()
 	
 	mySocket = ::socket(AF_INET, SOCK_STREAM, 0);
 
-	// TIME_WAIT - argh
 	int on = 1;
 	int status = setsockopt(mySocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on));
 	if (status == -1)
 	{
-		throw new SocketException("Connect: " + itos(errno));
+		throw new SocketException("Connect:Reuseaddress: " + itos(errno));
+	}
+
+	///FIXME: Verify that this works
+	status = setsockopt(mySocket, SOL_SOCKET, SO_KEEPALIVE, (const char*)&on, sizeof(on));
+	if (status == -1)
+	{
+		throw new SocketException("Connect:Keepalive: " + itos(errno));
+	}
+
+	///FIXME: Verify that this works
+	status = setsockopt(mySocket, SOL_TCP, TCP_KEEPIDLE, (const char*)&on, sizeof(on));
+	if (status == -1)
+	{
+		throw new SocketException("Connect:Keepidle: " + itos(errno));
 	}
 
 	memset(&myAddressStruct, 0, sizeof(myAddressStruct));
@@ -322,6 +372,8 @@ void AsyncSocket::connect()
 		throw new SocketException("Async socket fcntl failed");
 
 	fcntl(mySocket, F_SETFL, flags | O_NONBLOCK | FASYNC);
+
+	myForceReconnect = false;
 }
 
 void AsyncSocket::close()
@@ -392,8 +444,15 @@ void AsyncSocket::setEvent(int event)
 	myEventSemaphore.broadcast();
 }
 
+void AsyncSocket::forceReconnect()
+{
+	myForceReconnect = true;
+	mySemaphore.broadcast();
+}
+
 void AsyncSocket::signalHandler(int signum)
 {
+	//FIXME: We must know which socket is ready to read by using select... 
 	//cout << "DEBUG: signalHandler signum: " << signum << endl;
 	mySemaphore.broadcast();
 }

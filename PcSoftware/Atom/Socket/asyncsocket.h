@@ -39,6 +39,8 @@ using namespace std;
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <signal.h>
+#include <netinet/tcp.h>
+
 
 #include "../Threads/thread.h"
 #include "../Threads/semaphore.h"
@@ -51,7 +53,8 @@ using namespace std;
 #define ASYNCSOCKET_EVENT_NONE 0
 #define ASYNCSOCKET_EVENT_DATA 1
 #define ASYNCSOCKET_EVENT_CLOSED 2
-#define ASYNCSOCKET_EVENT_DIED 2
+#define ASYNCSOCKET_EVENT_DIED 3
+#define ASYNCSOCKET_EVENT_INACTIVITY 4
 
 const int MAXBUFFER = 1024;
 
@@ -74,6 +77,7 @@ public:
 	bool availableData();
 	string getData();
 	bool sendData(string data);
+	void forceReconnect();
 
 	static void signalHandler(int signum);
 	
@@ -88,6 +92,8 @@ protected:
 private:
 	Semaphore myEventSemaphore;
 	int myEvent;
+
+	bool myForceReconnect;
 	
 	ThreadSafeQueue<string> myInQueue;
 	ThreadSafeQueue<string> myOutQueue;

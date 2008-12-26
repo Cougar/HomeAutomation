@@ -302,14 +302,22 @@ sub tcpServerThread {
 					$line =~ s/\r.*//gm;	#remove linefeed and everything after it
 					print "Got packet '".$line."' from client ".$tcpSsocket->fileno."\n";
 					
-					$rxerror = 0;
-					testPacket($line, 0, $rxerror);
-					
-					if ($rxerror == 0) {
-						#Add newline to each packet
-						$line .= "\n";
-											
-						&tcpServerBroadcastExcept($line, $tcpSsocket);
+					if ($line eq "PING") {
+						print "Sending PONG to client ".$tcpSsocket->fileno."\n";
+						
+						$tcpSsocket->send("PONG\n");
+					}
+					else
+					{
+						$rxerror = 0;
+						testPacket($line, 0, $rxerror);
+						
+						if ($rxerror == 0) {
+							#Add newline to each packet
+							$line .= "\n";
+												
+							&tcpServerBroadcastExcept($line, $tcpSsocket);
+						}
 					}
 				}
 			}

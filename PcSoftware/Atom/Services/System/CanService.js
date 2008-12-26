@@ -43,10 +43,18 @@ CanService.prototype.checkOffline = function()
 		var date = new Date();
 		if (this.myHeartbeatTime + 10 < date.getTimestamp())
 		{
-			log(this.myName + ":" + this.myId + "> Service went offline\n");
-			this.myIsOnline = false;
-			this.callEvent("offline", null);
+			this.setOffline();
 		}
+	}
+}
+
+CanService.prototype.setOffline = function()
+{
+	if (this.myIsOnline)
+	{
+		log(this.myName + ":" + this.myId + "> Service went offline\n");
+		this.myIsOnline = false;
+		this.callEvent("offline", null);
 	}
 }
 

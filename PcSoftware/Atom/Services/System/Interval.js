@@ -57,20 +57,26 @@ Interval.prototype.setCallback = function(callback)
 
 Interval.prototype.start = function()
 {
-	this.myIsRunning = true;
-	this.myId = startIntervalThread(this.myTimeout)
-	Interval.myIntervals[this.myId] = this;
+	if (!this.myIsRunning)
+	{
+		this.myIsRunning = true;
+		this.myId = startIntervalThread(this.myTimeout)
+		Interval.myIntervals[this.myId] = this;
+	}
 }
 
 Interval.prototype.stop = function()
 {
-	this.myIsRunning = false;
-	
-	if (!stopIntervalThread(this.myId))
+	if (this.myIsRunning)
 	{
-		log("Interval:" + this.myId + "> Interval thread could not be stopped.\n");
+		this.myIsRunning = false;
+		
+		if (!stopIntervalThread(this.myId))
+		{
+			log("Interval:" + this.myId + "> Interval thread could not be stopped.\n");
+		}
+		
+		delete Interval.myIntervals[this.myId];
+		this.myId = null;
 	}
-	
-	delete Interval.myIntervals[this.myId];
-	this.myId = null;
 }
