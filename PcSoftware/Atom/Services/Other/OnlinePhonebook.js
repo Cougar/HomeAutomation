@@ -39,8 +39,6 @@ OnlinePhonebook.prototype.httpCallback = function(result, header, content)
 				break;
 			}
 		
-			var lookFor
-		
 			var pos = line.indexOf(nameStartString + (persons.length+1) + ".");
 			
 			if (pos != -1)

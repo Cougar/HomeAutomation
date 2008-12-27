@@ -18,5 +18,4 @@ LESS IMPORTANT
 * Build service example... commented
 * Http interface, post, get etc...
 * Mysql-interface
-* Complete the OnlinePhonebook script... parseing of result html is left.
 * AsyncSocket, move logging to some messagesystem with events
