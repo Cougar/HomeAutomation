@@ -36,6 +36,7 @@ using namespace std;
 #include "../Threads/semaphore.h"
 #include "../Threads/threadsafequeue.h"
 #include "intervalthread.h"
+#include "socketthread.h"
 
 using namespace v8;
 
@@ -44,6 +45,9 @@ Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args);
 Handle<Value> VirtualMachine_loadScript(const Arguments& args);
 Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args);
 Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args);
+Handle<Value> VirtualMachine_stopSocketThread(const Arguments& args);
+Handle<Value> VirtualMachine_startSocketThread(const Arguments& args);
+Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args);
 
 class VirtualMachine : public Thread<VirtualMachine>
 {
@@ -57,8 +61,13 @@ public:
 	void run();
 
 	bool loadScript(string scriptName);
+
 	unsigned int startIntervalThread(unsigned int timeout);
 	bool stopIntervalThread(unsigned int id);
+
+	unsigned int startSocketThread(string address, int port, unsigned int reconnectTimeout);
+	bool stopSocketThread(unsigned int id);
+	void sendToSocketThread(unsigned int id, string data);
 
 private:
 	void callHandleHeartbeat(int hardwareId);
@@ -84,6 +93,7 @@ private:
 	ThreadSafeQueue<CanMessage> myCanMessages;
 
 	map<int, IntervalThread> myIntervalThreads;
+	map<int, SocketThread> mySocketThreads;
 };
 
 #endif	/* _VIRTUALMACHINE_H */

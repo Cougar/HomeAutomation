@@ -53,6 +53,8 @@ string str_replace(string search, string replace, string str);
 string file_get_contents(string filename);
 bool file_exists(string filename);
 string escape(string in);
+string rpad(string in, int length, char c);
+string lpad(string in, int length, char c);
 
 class FileTools
 {

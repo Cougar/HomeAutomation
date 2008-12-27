@@ -38,6 +38,8 @@
     <logicalFolder name="f6" displayName="VM" projectFiles="true">
       <itemPath>VM/intervalthread.cpp</itemPath>
       <itemPath>VM/intervalthread.h</itemPath>
+      <itemPath>../../../../NetBeansProjects/Atom/VM/socketthread.cpp</itemPath>
+      <itemPath>../../../../NetBeansProjects/Atom/VM/socketthread.h</itemPath>
       <itemPath>VM/virtualmachine.cpp</itemPath>
       <itemPath>VM/virtualmachine.h</itemPath>
     </logicalFolder>
@@ -81,6 +83,12 @@
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../../NetBeansProjects/Atom/VM/socketthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../../NetBeansProjects/Atom/VM/socketthread.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="CanNet/canidtranslator.cpp">
         <itemTool>1</itemTool>
       </item>
@@ -203,6 +211,12 @@
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../../NetBeansProjects/Atom/VM/socketthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="../../../../NetBeansProjects/Atom/VM/socketthread.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="CanNet/canidtranslator.cpp">
         <itemTool>1</itemTool>
       </item>

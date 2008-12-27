@@ -20,13 +20,13 @@
  ***************************************************************************/
 
 #include "asyncsocket.h"
-#include <iostream>
+
 Semaphore AsyncSocket::mySemaphore;
 
 AsyncSocket::AsyncSocket()
 {
 	mySocket = -1;
-	myReconnectTimeout = 10;
+	myReconnectTimeout = 0;
 	myForceReconnect = false;
 
 	Thread<AsyncSocket>();
@@ -47,7 +47,14 @@ void AsyncSocket::run()
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	reconnectLoop();
+	if (myReconnectTimeout == 0)
+	{
+		connect();
+	}
+	else
+	{
+		reconnectLoop();
+	}
 
 	char buf[MAXBUFFER + 1];
 	string data;
@@ -55,13 +62,24 @@ void AsyncSocket::run()
 	int rc;
 	int timeSince = time(NULL) + 10;
 	
-	AsyncSocket::mySemaphore.lock();
+	
 
 	try
 	{
 		while (1)
 		{
-			rc = mySemaphore.wait(5);
+			AsyncSocket::mySemaphore.lock();
+
+			if (myReconnectTimeout == 0)
+			{
+				rc = mySemaphore.wait();
+			}
+			else
+			{
+				rc = mySemaphore.wait(10);
+			}
+
+			AsyncSocket::mySemaphore.unlock();
 
 			if (myForceReconnect)
 			{
@@ -147,7 +165,7 @@ void AsyncSocket::run()
 							throw new SocketException("The  local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
 
 							default:
-							slog << "Unknow exception: " << errno << "\n";
+							slog << "Unknow exception: " + itos(errno) + "\n";
 							break;
 						}
 					}
@@ -156,8 +174,6 @@ void AsyncSocket::run()
 				memset(buf, 0, MAXBUFFER + 1);
 
 				status = ::recv(mySocket, buf, MAXBUFFER, 0);
-
-				//slog << "Receiving: " << buf << "\n";
 
 				if (status == -1)
 				{
@@ -183,6 +199,7 @@ void AsyncSocket::run()
 						//throw new SocketException("2Invalid argument passed.");
 						slog << "Disconnected from server.\n";
 						reconnectLoop();
+						timeSince = time(NULL) + 10;
 						break;
 
 						case ENOMEM:
@@ -195,7 +212,7 @@ void AsyncSocket::run()
 						throw new SocketException("The argument s does not refer to a socket.");
 
 						default:
-						slog << "Unknow exception: " << errno << "\n";
+						slog << "Unknow exception: " + itos(errno) + "\n";
 						break;
 					}
 				}
@@ -203,16 +220,19 @@ void AsyncSocket::run()
 				{
 					slog << "Disconnected from server.\n";
 					reconnectLoop();
+					timeSince = time(NULL);
 				}
 				else if (status > 0)
 				{
+					timeSince = time(NULL) + 10;
+
 					data = buf;
+
+					//slog << "Receiving: " + data + "\n";
 
 					myInQueue.push(data);
 
 					setEvent(ASYNCSOCKET_EVENT_DATA);
-					
-					timeSince = time(NULL);
 				}
 				
 				if (timeSince + 10 < time(NULL))
@@ -225,34 +245,37 @@ void AsyncSocket::run()
 	}
 	catch (SocketException *e)
 	{
-		slog << "Exception: " << e->getDescription() << "\n";
-		mySemaphore.unlock();
+		slog << "Exception: " + e->getDescription() + "\n";
+		//mySemaphore.unlock();
 		setEvent(ASYNCSOCKET_EVENT_DIED);
 		stop();
 	}
 
 	close();
 
-	mySemaphore.unlock();
+	//mySemaphore.unlock();
 }
 
 void AsyncSocket::reconnectLoop()
 {
+	if (myReconnectTimeout == 0)
+	{
+		throw new SocketException("Connection is closed.");
+	}
+
 	SyslogStream &slog = SyslogStream::getInstance();
 
 	while (1)
 	{
 		try
 		{
-			slog << "Trying to connect...\n";
 			connect();
-			slog << "Connection established.\n";
 			break;
 		}
 		catch (SocketException *e)
 		{
-			slog << "Could not connect: " << e->getDescription() << "\n";
-			slog << "Will try again in " << myReconnectTimeout << " seconds\n";
+			slog << "Could not connect: " + e->getDescription() + "\n";
+			slog << "Will try again in " + itos(myReconnectTimeout) + " seconds\n";
 			sleep(myReconnectTimeout);
 		}
 	}
@@ -260,8 +283,12 @@ void AsyncSocket::reconnectLoop()
 
 void AsyncSocket::connect()
 {
+	SyslogStream &slog = SyslogStream::getInstance();
+
 	close();
-	
+
+	slog << "Trying to connect...\n";
+
 	mySocket = ::socket(AF_INET, SOCK_STREAM, 0);
 
 	int on = 1;
@@ -290,6 +317,14 @@ void AsyncSocket::connect()
 	myAddressStruct.sin_family = AF_INET;
 	myAddressStruct.sin_port = htons(myPort);
 
+	struct hostent *hptr = gethostbyname(myAddress.c_str());
+	if (hptr == NULL)
+	{
+		throw new SocketException("Connect: Could not resolv ip address");
+	}
+
+	memcpy(&myAddressStruct.sin_addr, hptr->h_addr, hptr->h_length);
+	/*
 	status = inet_pton(AF_INET, myAddress.c_str(), &myAddressStruct.sin_addr);
 
 	if (status == -1)
@@ -297,6 +332,8 @@ void AsyncSocket::connect()
 		if (errno == EAFNOSUPPORT)
 			throw new SocketException("Connect: EAFNOSUPPORT");
 	}
+	*/
+
 	
 	status = ::connect(mySocket, (sockaddr*)&myAddressStruct, sizeof(myAddressStruct));
 
@@ -370,6 +407,8 @@ void AsyncSocket::connect()
 	fcntl(mySocket, F_SETFL, flags | O_NONBLOCK | FASYNC);
 
 	myForceReconnect = false;
+
+	slog << "Connection established.\n";
 }
 
 void AsyncSocket::close()
