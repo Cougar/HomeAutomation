@@ -37,11 +37,11 @@ bool Settings::read(string filename)
 
 	if (!file)
 	{
-		slog << "Could not find settings file: " << myFilename << "\n";
+		slog << "Could not find settings file: " + myFilename + ".\n";
 		return false;
 	}
 
-	slog << "Loading settings from " << filename << ".\n";
+	slog << "Loading settings from " + filename + ".\n";
 
 	while (!file.eof())
 	{

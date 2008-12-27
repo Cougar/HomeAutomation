@@ -65,6 +65,8 @@ void CanNetManager::openChannel()
 
 	myChannel->setAddress(address, stoi(port));
 
+	myChannel->setReconnectTimeout(10);
+
 	myChannel->start();
 
 	myChannel->startEvent();
@@ -87,6 +89,7 @@ void CanNetManager::openChannel()
 
 				try
 				{
+					///FIXME: Verify that \n is right here, have seen that it does not always work
 					vector<string> dataLines = explode("\n", data);
 
 					for (int n = 0; n < dataLines.size(); n++)
@@ -117,13 +120,18 @@ void CanNetManager::openChannel()
 				catch (CanMessageException* e)
 				{
 					slog << "CanMessageException was caught:\n";
-					slog << e->getDescription() << "\n";
+					slog << e->getDescription() + "\n";
 				}
 			}
 		}
 		else if (event == ASYNCSOCKET_EVENT_CLOSED)
 		{
 			vm.queueExpression("setAllOffline();");
+		}
+		else if (event == ASYNCSOCKET_EVENT_DIED)
+		{
+			vm.queueExpression("setAllOffline();");
+			break;
 		}
 		else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
 		{
@@ -136,7 +144,7 @@ void CanNetManager::openChannel()
 			}
 			else
 			{
-				slog << "We have not received anything from the canDaemon in some time.\n";
+				//slog << "We have not received anything from the canDaemon in some time.\n";
 				waitingForPong = true;
 				slog << "Sending ping.\n";
 				myChannel->sendData("PING");

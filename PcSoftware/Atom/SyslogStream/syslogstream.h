@@ -28,7 +28,7 @@ using namespace std;
 #include <syslog.h>
 #include <ostream>
 #include <iostream>
-
+#include <time.h>
 #include "../Tools/tools.h"
 
 class SyslogStream : public ostream

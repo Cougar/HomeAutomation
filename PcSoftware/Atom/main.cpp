@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	slog << "Atom " << VERSION << " starting...\n";
+	slog << "Atom " + ftos(VERSION) + " starting...\n";
 	slog << "Written by Mattias Runge 2008\n\n";
 
 	if (file_exists("/etc/atom.conf"))

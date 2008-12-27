@@ -330,8 +330,19 @@ string escape(string in)
 	{
 		switch (in[n])
 		{
+			case '\r':
+				break;
+
 			case '\n':
 				out += "\\n";
+				break;
+
+			case '\'':
+				out += "\\'";
+				break;
+
+			case '"':
+				out += "\\\"";
 				break;
 
 			default:
@@ -342,6 +353,27 @@ string escape(string in)
 
 	return out;
 }
+
+string rpad(string in, int length, char c)
+{
+	while (in.length() < length)
+	{
+		in += c;
+	}
+
+	return in;
+}
+
+string lpad(string in, int length, char c)
+{
+	while (in.length() < length)
+	{
+		in = c + in;
+	}
+
+	return in;
+}
+
 
 // FileTools
 

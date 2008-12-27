@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 29, 2008 by Mattias Runge                             *
+ *   Copyright (C) December 26, 2008 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   semaphore.h                                            *
+ *   socketthread.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,40 +19,34 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _SEMAPHORE_H
-#define	_SEMAPHORE_H
+#ifndef _SOCKETTHREAD_H
+#define	_SOCKETTHREAD_H
 
-#include "mutex.h"
-#include <sys/time.h>
+using namespace std;
 
-class Semaphore : public Mutex
+#include <string>
+#include <time.h>
+
+#include "../Socket/asyncsocket.h"
+#include "../Threads/thread.h"
+#include "../Tools/tools.h"
+
+class SocketThread : public Thread<SocketThread>
 {
 public:
-	Semaphore() { pthread_cond_init(&myCondition, NULL); };
-	~Semaphore() { pthread_cond_destroy(&myCondition); };
+	SocketThread() { Thread<SocketThread>(); };
+	SocketThread(string address, int port, unsigned int reconnectTimeout);
+	~SocketThread();
 
-	int broadcast() { return pthread_cond_broadcast(&myCondition); };
-	int wait() { return pthread_cond_wait(&myCondition, &myMutex); };
-	int wait(int timeout) // Returns ETIMEDOUT on timeout
-	{
-		struct timeval timeval;
+	unsigned int getId() { return myId; };
+	void send(string data);
 
-		gettimeofday(&timeval, NULL);
+	void run();
 
-		 /* Convert from timeval to timespec */
-		myTimespec.tv_sec  = timeval.tv_sec;
-		myTimespec.tv_nsec = timeval.tv_usec * 1000;
-		myTimespec.tv_sec += timeout;
-
-		return pthread_cond_timedwait(&myCondition, &myMutex, &myTimespec);
-	}
-
-protected:
-	pthread_cond_t myCondition;
-	struct timespec myTimespec;
-	
+private:
+	unsigned int myId;
+	AsyncSocket mySocket;
 };
 
-
-#endif	/* _SEMAPHORE_H */
+#endif	/* _SOCKETTHREAD_H */
 

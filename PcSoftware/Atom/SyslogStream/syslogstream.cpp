@@ -56,7 +56,25 @@ void SyslogStream::add(string str)
 {
 	syslog(LOG_ODELAY, str.c_str());
 
-	cout << str;
+	if (str == "\n")
+	{
+		cout << str;
+	}
+	else
+	{
+		struct tm tmStruct;
+		time_t t = time(NULL);
+		gmtime_r(&t, &tmStruct);
+
+		cout	<< "["
+				<< lpad(itos(tmStruct.tm_hour), 2, '0')
+				<< ":"
+				<< lpad(itos(tmStruct.tm_min), 2, '0')
+				<< ":"
+				<< lpad(itos(tmStruct.tm_sec), 2, '0')
+				<< "] "
+				<< str;
+	}
 }
 
 SyslogStream& SyslogStream::operator <<(const string& str)

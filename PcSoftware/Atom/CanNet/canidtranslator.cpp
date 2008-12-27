@@ -47,7 +47,7 @@ CanIdTranslator::CanIdTranslator()
 
 	xmlNode.load(filename.c_str());
 
-	slog << "Loading definitions from " << filename << ".\n";
+	slog << "Loading definitions from " + filename + ".\n";
 }
 
 string CanIdTranslator::lookupClassName(int classId)

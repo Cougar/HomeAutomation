@@ -65,7 +65,7 @@ void VirtualMachine::run()
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load :" << scriptFileName << "\n";
+		slog << "Failed to load :" + scriptFileName + "\n";
 	}
 
 	string scriptSource = file_get_contents(scriptFileName);
@@ -83,6 +83,9 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine_loadScript));
 	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine_startIntervalThread));
 	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine_stopIntervalThread));
+	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine_startSocketThread));
+	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine_stopSocketThread));
+	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine_sendToSocketThread));
 
 	//create context for the script
 	myContext = Context::New(NULL, myGlobal);
@@ -101,7 +104,8 @@ void VirtualMachine::run()
 
 		// Print errors that happened during compilation.
 		String::AsciiValue error(try_catch.Exception());
-		slog << "Failed to compile script: " << *error << "\n";
+		string sError = *error;
+		slog << "Failed to compile script: " + sError + "\n";
 	}
 	else
 	{
@@ -113,7 +117,8 @@ void VirtualMachine::run()
 		{
 			// Print errors that happened during execution.
 			String::AsciiValue error(try_catch.Exception());
-			slog << "Constructor: Failed to run script: " << *error << "\n";
+			string sError = *error;
+			slog << "Constructor: Failed to run script: " << sError << "\n";
 		}
 		else
 		{
@@ -192,7 +197,7 @@ bool VirtualMachine::loadScript(string scriptName)
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load :" << scriptFileName << "\n";
+		slog << "Failed to load :" + scriptFileName + "\n";
 		return false;
 	}
 
@@ -214,7 +219,8 @@ bool VirtualMachine::loadScript(string scriptName)
 	{
 		// Print errors that happened during compilation.
 		String::AsciiValue error(try_catch.Exception());
-		slog << "Failed to compile script: " << *error << "\n";
+		string sError = *error;
+		slog << "loadScript: Failed to compile script: " + sError + "\n";
 		return false;
 	}
 	else
@@ -227,7 +233,8 @@ bool VirtualMachine::loadScript(string scriptName)
 		{
 			// Print errors that happened during execution.
 			String::AsciiValue error(try_catch.Exception());
-			slog << "loadScript: Failed to run script: " << *error << "\n";
+			string sError = *error;
+			slog << "loadScript: Failed to run script: " + sError + "\n";
 			return false;
 		}
 	}
@@ -277,6 +284,34 @@ bool VirtualMachine::stopIntervalThread(unsigned int id)
 	return false;
 }
 
+unsigned int VirtualMachine::startSocketThread(string address, int port, unsigned int reconnectTimeout)
+{
+	SocketThread socketThread(address, port, reconnectTimeout);
+	mySocketThreads[socketThread.getId()] = socketThread;
+	mySocketThreads[socketThread.getId()].start();
+
+	return socketThread.getId();
+}
+
+bool VirtualMachine::stopSocketThread(unsigned int id)
+{
+	if (mySocketThreads.find(id) != mySocketThreads.end())
+	{
+		mySocketThreads.erase(id);
+		return true;
+	}
+
+	return false;
+}
+
+void VirtualMachine::sendToSocketThread(unsigned int id, string data)
+{
+	if (mySocketThreads.find(id) != mySocketThreads.end())
+	{
+		mySocketThreads[id].send(data);
+	}
+}
+
 bool VirtualMachine::runExpression(string expression)
 {
 	SyslogStream &slog = SyslogStream::getInstance();
@@ -299,8 +334,9 @@ bool VirtualMachine::runExpression(string expression)
 	{
 		// Print errors that happened during compilation.
 		String::AsciiValue error(try_catch.Exception());
-		slog << "Failed to compile script: " << *error << "\n";
-		
+		string sError = *error;
+		slog << "runExpression: Failed to compile script: " + sError + "\n";
+		slog << expression << "\n\n";
 		return false;
 	}
 	else
@@ -313,7 +349,8 @@ bool VirtualMachine::runExpression(string expression)
 		{
 			// Print errors that happened during execution.
 			String::AsciiValue error(try_catch.Exception());
-			slog << "runExpression: Failed to run script: " << *error << "\n";
+			string sError = *error;
+			slog << "runExpression: Failed to run script: " + sError + "\n";
 			return false;
 		}
 	}
@@ -334,7 +371,7 @@ Handle<Value> VirtualMachine_log(const Arguments& args)
 
 Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	//SyslogStream &slog = SyslogStream::getInstance();
 	CanNetManager &canMan = CanNetManager::getInstance();
 
 	CanMessage canMessage;
@@ -394,5 +431,38 @@ Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args)
 
 	unsigned int id = args[0]->Uint32Value();
 
-	return Integer::New(vm.stopIntervalThread(id));
+	return Boolean::New(vm.stopIntervalThread(id));
 }
+
+Handle<Value> VirtualMachine_startSocketThread(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	String::AsciiValue address(args[0]);
+	int port = args[1]->Uint32Value();
+	unsigned int reconnectTimeout = args[2]->Uint32Value();
+
+	return Integer::New(vm.startSocketThread(*address, port, reconnectTimeout));
+}
+
+Handle<Value> VirtualMachine_stopSocketThread(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	unsigned int id = args[0]->Uint32Value();
+
+	return Boolean::New(vm.stopSocketThread(id));
+}
+
+Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	unsigned int id = args[0]->Uint32Value();
+	String::AsciiValue data(args[1]);
+
+	vm.sendToSocketThread(id, *data);
+
+	return Undefined();
+}
+

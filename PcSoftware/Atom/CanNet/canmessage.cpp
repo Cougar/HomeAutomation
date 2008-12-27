@@ -27,7 +27,7 @@
 void CanMessage::setRaw(string rawHex)
 {
 	CanIdTranslator &translator = CanIdTranslator::getInstance();
-	SyslogStream &slog = SyslogStream::getInstance();
+	//SyslogStream &slog = SyslogStream::getInstance();
 
 	//PKT 00060102 1 0 00 00 c4
 
@@ -38,7 +38,7 @@ void CanMessage::setRaw(string rawHex)
 
 	if (parts.size() < 2 || parts[0].compare("PKT") != 0)
 	{
-		slog << "Malformed can message received from canDaemon: \"" << rawHex << "\"\n";
+		//slog << "Malformed can message received from canDaemon: \"" << rawHex << "\"\n";
 		throw new CanMessageException("Malformed can message received from canDaemon");
 	}
 
