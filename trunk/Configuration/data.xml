@@ -150,6 +150,7 @@
     <module id="10" name="Dimmer230" class="act"/>
     <module id="11" name="KS0108" class="act"/>
     <module id="12" name="RGBdriver" class="act"/>
+    <module id="13" name="LEDPWM" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
