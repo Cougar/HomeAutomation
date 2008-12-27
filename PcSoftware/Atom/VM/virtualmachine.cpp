@@ -237,6 +237,8 @@ bool VirtualMachine::loadScript(string scriptName)
 			slog << "loadScript: Failed to run script: " + sError + "\n";
 			return false;
 		}
+
+		slog << "Loaded " + scriptName + "\n";
 	}
 
 	return true;

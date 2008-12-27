@@ -16,10 +16,6 @@ ServiceManager.getService = function(type, name, id)
 				//log("Could not load " + name + ".js\n");
 				return null;
 			}
-			else
-			{
-				log("Successfully loaded " + name + ".js\n");
-			}
 		}
 		
 		ServiceManager.Services[fullId] = eval("(new " + name + "('" + name + "', " + id + "))");///FIXME: Can we do this without eval??
