@@ -52,7 +52,7 @@ void Can_Process(Can_Message_t* msg)
 	unsigned char n;
 	/* Check if there is room on the queue. */
 	if (RxQ_Len < STDCAN_RX_QUEUE_SIZE) {
-		
+
 #if (STDCAN_FILTER)
 		/* Try to match each filter in turn. */
 		for (n = 0; n < STDCAN_NUM_FILTERS; n++) {
@@ -61,7 +61,7 @@ void Can_Process(Can_Message_t* msg)
 				break;
 			}
 		}
-		
+
 		if (n == STDCAN_NUM_FILTERS) return; // No match found, discard message.
 #endif
 		/* Copy the message from lower layer into the queue. */
@@ -90,7 +90,7 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 {
 #endif
 	StdCan_Ret_t retval;
-	
+
 	/* Reset all queue variables. */
 	RxQ_Rd_idx = 0;
 	RxQ_Wr_idx = 0;
@@ -100,7 +100,7 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	TxQ_Wr_idx = 0;
 	TxQ_Len    = 0;
 #endif
-	
+
 #if defined(_AVRLIB_BIOS_)
 	/* Initialize BIOS' interface for CAN. */
 	BIOS_CanCallback = Can_Process;
@@ -112,15 +112,15 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	else
 		retval = StdCan_Ret_Fail;
 #endif
-	
-	//TODO: Do something with the Node Descriptor. 
+
+	//TODO: Do something with the Node Descriptor.
 	//(why have constats passed as parameters? they are defined at compiletime /arune)
 #if defined(_AVRLIB_BIOS_)
 	/* TODO: When a Tx queue is implemented, the startup message should
 	 * be sent via StdCan_Put instead of directly to lower layer.
 	 */
 	Can_Message_t Startup;
-	
+
 	/* Set up Startup message format. */
 	Startup.ExtendedFlag = 1;
 	Startup.RemoteFlag = 0;
@@ -141,17 +141,17 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	/* Try to send it. */
 	Can_Send(&Startup);
 #endif
-	
+
 	return retval;
 }
 
 StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 {
 	unsigned char n;
-	
+
 	/* Check if there's a message waiting. */
 	if (RxQ_Len) {
-		
+
 		/* Copy message to user buffer. */
 		msg->Id     = RxQ[RxQ_Rd_idx].Id;
 		msg->Length = RxQ[RxQ_Rd_idx].Length;
@@ -159,11 +159,11 @@ StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 		for (n = 0; n < RxQ[RxQ_Rd_idx].Length; n++) {
 			msg->Data[n] = RxQ[RxQ_Rd_idx].Data[n];
 		}
-		
+
 		/* Increment read index and decrease queue length. */
 		if (++RxQ_Rd_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Rd_idx = 0;
 		RxQ_Len--;
-		
+
 		return StdCan_Ret_OK;
 	} else {
 		/* Queue is empty. */
@@ -180,10 +180,10 @@ StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
 {
 	Can_Message_t Can_Msg;
 	unsigned char n;
-	
+
 	/* Validate message. */
 	if ((unsigned)msg->Length > 8) return StdCan_Ret_DataErr;
-	
+
 	/* Copy message directly to lower layer until a proper
 	 * queue has been implemented.
 	 * TODO: Implement a proper queue. This requires TX interrupt
@@ -213,26 +213,27 @@ void StdCan_SendHeartbeat(uint8_t n)
 	 * be sent via StdCan_Put instead of directly to lower layer.
 	 */
 	Can_Message_t Heartbeat;
-	
+
 	/* Set up Heartbeat message format. */
 	Heartbeat.ExtendedFlag = 1;
 	Heartbeat.RemoteFlag = 0;
 #ifdef MODULE_APPLICATION
-	Heartbeat.DataLength = 4;
+	Heartbeat.DataLength = 5;
 	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE);
-	Heartbeat.Data.bytes[0] = NODE_HW_ID&0xff;
-	Heartbeat.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
-	Heartbeat.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
-	Heartbeat.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+	Heartbeat.Data.bytes[0] = NODE_HW_ID_BYTE0;
+	Heartbeat.Data.bytes[1] = NODE_HW_ID_BYTE1;
+	Heartbeat.Data.bytes[2] = NODE_HW_ID_BYTE2;
+	Heartbeat.Data.bytes[3] = NODE_HW_ID_BYTE3;
+	Heartbeat.Data.bytes[4] = NUMBER_OF_MODULES;
 #else
-	
-	
+
+
 	Heartbeat.DataLength = 0;
 	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS)
 				 | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE)
 				 | (NODE_ID << CAN_SHIFT_NMT_SID);
 #endif
-	
+
 	/* Try to send it. */
 	Can_Send(&Heartbeat);
 }

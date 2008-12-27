@@ -1,4 +1,4 @@
-// Built on Tue Dec 23 16:45:56 2008 by makeCanId.pl
+// Built on Sat Dec 27 19:33:55 2008 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -56,6 +56,7 @@
 #define CAN_MODULE_TYPE_ACT_DIMMER230 10
 #define CAN_MODULE_TYPE_ACT_KS0108 11
 #define CAN_MODULE_TYPE_ACT_RGBDRIVER 12
+#define CAN_MODULE_TYPE_ACT_LEDPWM 13
 
 //----------------- //
 // Misc definitions //
