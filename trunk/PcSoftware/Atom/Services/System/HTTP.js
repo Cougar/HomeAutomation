@@ -103,5 +103,7 @@ HTTP.prototype.processBuffer = function()
 		header[headerParts[0]] = headerParts[1].trim(' ');
 	}
 	
+	this.myBuffer = "";
+	
 	this.myUserCallback(result, header, contentData);
 }
