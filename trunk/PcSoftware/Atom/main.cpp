@@ -91,7 +91,8 @@ int cleanUp()
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	slog << "\nGoodbye!\n";
+	slog << "\n";
+	slog << "Goodbye!\n";
 	
 	CanNetManager::deleteInstance();
 	VirtualMachine::deleteInstance();

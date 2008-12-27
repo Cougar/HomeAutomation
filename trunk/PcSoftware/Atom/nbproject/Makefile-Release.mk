@@ -37,7 +37,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/CanNet/canidtranslator.o \
 	${OBJECTDIR}/CanNet/canmessage.o \
 	${OBJECTDIR}/Tools/tools.o \
-	${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/VM/socketthread.o \
+	${OBJECTDIR}/VM/socketthread.o \
 	${OBJECTDIR}/SyslogStream/syslogstream.o \
 	${OBJECTDIR}/Socket/asyncsocket.o
 
@@ -108,10 +108,10 @@ ${OBJECTDIR}/Tools/tools.o: Tools/tools.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Tools/tools.o Tools/tools.cpp
 
-${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/VM/socketthread.o: ../../../../NetBeansProjects/Atom/VM/socketthread.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/VM
+${OBJECTDIR}/VM/socketthread.o: VM/socketthread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/VM/socketthread.o ../../../../NetBeansProjects/Atom/VM/socketthread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/socketthread.o VM/socketthread.cpp
 
 ${OBJECTDIR}/SyslogStream/syslogstream.o: SyslogStream/syslogstream.cpp 
 	${MKDIR} -p ${OBJECTDIR}/SyslogStream
