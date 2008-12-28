@@ -45,7 +45,7 @@ public:
 
 private:
 	unsigned int myId;
-	AsyncSocket mySocket;
+	AsyncSocket *mySocket;
 };
 
 #endif	/* _SOCKETTHREAD_H */

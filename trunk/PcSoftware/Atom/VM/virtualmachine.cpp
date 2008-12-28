@@ -289,17 +289,22 @@ bool VirtualMachine::stopIntervalThread(unsigned int id)
 
 unsigned int VirtualMachine::startSocketThread(string address, int port, unsigned int reconnectTimeout)
 {
-	SocketThread socketThread(address, port, reconnectTimeout);
-	mySocketThreads[socketThread.getId()] = socketThread;
-	mySocketThreads[socketThread.getId()].start();
+	SocketThread *socketThread = new SocketThread(address, port, reconnectTimeout);
+	mySocketThreads[socketThread->getId()] = socketThread;
+	mySocketThreads[socketThread->getId()]->start();
 
-	return socketThread.getId();
+	return socketThread->getId();
 }
 
 bool VirtualMachine::stopSocketThread(unsigned int id)
 {
+	
+
 	if (mySocketThreads.find(id) != mySocketThreads.end())
 	{
+		//mySocketThreads[id]->stop();
+		delete mySocketThreads[id];
+
 		mySocketThreads.erase(id);
 		return true;
 	}
@@ -311,7 +316,7 @@ void VirtualMachine::sendToSocketThread(unsigned int id, string data)
 {
 	if (mySocketThreads.find(id) != mySocketThreads.end())
 	{
-		mySocketThreads[id].send(data);
+		mySocketThreads[id]->send(data);
 	}
 }
 

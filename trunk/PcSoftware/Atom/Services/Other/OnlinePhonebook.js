@@ -48,6 +48,10 @@ OnlinePhonebook.prototype.httpCallback = function(result, header, content)
 			}
 		}
 	}
+	else
+	{
+		log("OnlinePhonebook: Failed to do name lookup, result was: " + result + "\n");
+	}
 	
 	this.myCallback(this.myPhonenumber, persons);
 }
