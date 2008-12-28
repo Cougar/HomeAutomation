@@ -6,6 +6,7 @@ function HTTP()
 HTTP.prototype.mySocket = null;
 HTTP.prototype.myUserCallback = null;
 HTTP.prototype.myBuffer = null;
+HTTP.prototype.myRequest = null;
 
 HTTP.prototype.request = function(callback, url)
 {
@@ -29,12 +30,10 @@ HTTP.prototype.request = function(callback, url)
 	this.mySocket = new Socket(function(event, data) { self.socketCallback(event, data); }, urlData['hostname'], urlData['port'], 0);
 	this.mySocket.start();
 	
-	var request = "GET " + urlData['path'] + " HTTP/1.1\r\n";
-	request += "Host: " + urlData['hostname'] + ":" + urlData['port'] + "\r\n";
-	request += "Connection: close\r\n";
-	request += "\r\n";
-	
-	this.mySocket.send(request);
+	this.myRequest = "GET " + urlData['path'] + " HTTP/1.1\r\n";
+	this.myRequest += "Host: " + urlData['hostname'] + ":" + urlData['port'] + "\r\n";
+	this.myRequest += "Connection: close\r\n";
+	this.myRequest += "\r\n";
 }
 
 HTTP.prototype.parseUrl = function(url)
@@ -70,10 +69,15 @@ HTTP.prototype.socketCallback = function(event, data)
 {
 	switch (event)
 	{
+	case "EVENT_CONNECTED":
+	this.mySocket.send(this.myRequest);
+	break;
+	
 	case "EVENT_DATA":
 	this.myBuffer += unescape(data);
 	break;
 	
+	case "EVENT_RESET":
 	case "EVENT_CLOSED":
 	case "EVENT_DIED":
 	this.mySocket.stop();

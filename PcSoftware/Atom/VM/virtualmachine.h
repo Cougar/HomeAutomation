@@ -94,7 +94,7 @@ private:
 	ThreadSafeQueue<CanMessage> myCanMessages;
 
 	map<int, IntervalThread> myIntervalThreads;
-	map<int, SocketThread> mySocketThreads;
+	map<int, SocketThread*> mySocketThreads;
 };
 
 #endif	/* _VIRTUALMACHINE_H */

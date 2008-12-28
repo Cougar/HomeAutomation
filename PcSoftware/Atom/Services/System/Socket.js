@@ -26,7 +26,7 @@ Socket.triggerSocketCallback = function(id, event, data)
 		
 		if (!stopSocketThread(id))
 		{
-			log("Socket:" + id + "> Socket thread could not be stopped.\n");
+			//log("Socket:" + id + "> Socket thread could not be stopped.\n");
 		}
 	}
 }

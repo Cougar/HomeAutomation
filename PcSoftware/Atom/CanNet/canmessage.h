@@ -35,7 +35,7 @@ using namespace std;
 class CanMessage
 {
 public:
-	CanMessage() { myIsUnknown = false; myModuleId = 0; };
+	CanMessage() { myIsUnknown = false; myModuleId = 0; myIsHeartbeat = false; };
 	CanMessage(string raw) { setRaw(raw); };
 
 	void setRaw(string rawHex);

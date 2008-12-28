@@ -52,6 +52,7 @@ CanNetManager::CanNetManager()
 CanNetManager::~CanNetManager()
 {
 	CanIdTranslator::deleteInstance();
+	myChannel->stop();
 	delete myChannel;
 }
 
@@ -78,84 +79,91 @@ void CanNetManager::openChannel()
 	{
 		myChannel->waitForEvent();
 
-		int event = myChannel->getEvent();
-
-		if (event == ASYNCSOCKET_EVENT_DATA)
+		while (myChannel->availableEvent())
 		{
-			while (myChannel->availableData())
+			int event = myChannel->getEvent();
+
+			if (event == ASYNCSOCKET_EVENT_DATA)
 			{
-				waitingForPong = false;
-
-				string data = myChannel->getData();
-
-				try
+				while (myChannel->availableData())
 				{
-					///FIXME: Verify that \n is right here, have seen that it does not always work
-					vector<string> dataLines = explode("\n", data);
+					waitingForPong = false;
 
-					for (int n = 0; n < dataLines.size(); n++)
+					string data = myChannel->getData();
+
+					try
 					{
-						data = trim(dataLines[n], '\n');
+						///FIXME: Verify that \n is right here, have seen that it does not always work
+						vector<string> dataLines = explode("\n", data);
 
-						if (data == "PONG")
+						for (int n = 0; n < dataLines.size(); n++)
 						{
-							slog << "Received pong.\n";
-							continue;
+							data = trim(dataLines[n], '\n');
+
+							if (data == "PONG")
+							{
+								slog << "Received pong.\n";
+								continue;
+							}
+
+							CanMessage canMessage;
+							canMessage.setRaw(data);
+
+							//slog << "Received: " << data;
+
+							if (!canMessage.isUnknown())
+							{
+								vm.queueCanMessage(canMessage);
+								canDebug.sendCanMessage(canMessage);
+							}
+							else
+							{
+								canDebug.sendData(data + "\n");
+							}
+							/*else
+							{
+								slog << "Received unknown message. Skipping...\n";
+							}*/
 						}
-
-						CanMessage canMessage;
-						canMessage.setRaw(data);
-
-						//slog << "Received: " << data;
-
-						if (!canMessage.isUnknown())
-						{
-							vm.queueCanMessage(canMessage);
-							canDebug.sendCanMessage(canMessage);
-						}
-						else
-						{
-							canDebug.sendData(data + "\n");
-						}
-						/*else
-						{
-							slog << "Received unknown message. Skipping...\n";
-						}*/
+					}
+					catch (CanMessageException* e)
+					{
+						slog << "CanMessageException was caught:\n";
+						slog << e->getDescription() + "\n";
 					}
 				}
-				catch (CanMessageException* e)
-				{
-					slog << "CanMessageException was caught:\n";
-					slog << e->getDescription() + "\n";
-				}
 			}
-		}
-		else if (event == ASYNCSOCKET_EVENT_CLOSED)
-		{
-			vm.queueExpression("setAllOffline();");
-		}
-		else if (event == ASYNCSOCKET_EVENT_DIED)
-		{
-			vm.queueExpression("setAllOffline();");
-			break;
-		}
-		else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
-		{
-			if (waitingForPong)
+			else if (event == ASYNCSOCKET_EVENT_CONNECTED)
 			{
-				slog << "We have not received a pong for our ping.\n";
-				waitingForPong = false;
+				slog << "Connected to " + address + ":" + port + "\n";
+			}
+			else if (event == ASYNCSOCKET_EVENT_CLOSED)
+			{
 				vm.queueExpression("setAllOffline();");
-				myChannel->forceReconnect();
 			}
-			else
+			else if (event == ASYNCSOCKET_EVENT_DIED)
 			{
-				//slog << "We have not received anything from the canDaemon in some time.\n";
-				waitingForPong = true;
-				slog << "Sending ping.\n";
-				myChannel->sendData("PING");
+				vm.queueExpression("setAllOffline();");
+				break;
 			}
+			else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
+			{
+				if (waitingForPong)
+				{
+					slog << "We have not received a pong for our ping.\n";
+					waitingForPong = false;
+					vm.queueExpression("setAllOffline();");
+					myChannel->forceReconnect();
+				}
+				else
+				{
+					//slog << "We have not received anything from the canDaemon in some time.\n";
+					waitingForPong = true;
+					slog << "Sending ping.\n";
+					myChannel->sendData("PING");
+				}
 
+			}
 		}
 	}
 

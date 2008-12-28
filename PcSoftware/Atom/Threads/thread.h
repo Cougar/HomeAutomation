@@ -44,6 +44,7 @@ public:
 			return true;
 
 		myError = pthread_cancel(myHandle);
+		join();
 		myIsCreated = false;
 
 		return myError == 0;

@@ -53,9 +53,13 @@ using namespace std;
 
 #define ASYNCSOCKET_EVENT_NONE 0
 #define ASYNCSOCKET_EVENT_DATA 1
-#define ASYNCSOCKET_EVENT_CLOSED 2
-#define ASYNCSOCKET_EVENT_DIED 3
-#define ASYNCSOCKET_EVENT_INACTIVITY 4
+#define ASYNCSOCKET_EVENT_CONNECTED 2
+#define ASYNCSOCKET_EVENT_CONNECT_FAILED 3
+#define ASYNCSOCKET_EVENT_WAITING_TO_RECONNECT 4
+#define ASYNCSOCKET_EVENT_CLOSED 5
+#define ASYNCSOCKET_EVENT_RESET 6
+#define ASYNCSOCKET_EVENT_DIED 7
+#define ASYNCSOCKET_EVENT_INACTIVITY 8
 
 const int MAXBUFFER = 1024;
 const int MAXCONNECTIONS = 10;
@@ -74,6 +78,7 @@ public:
 	void setSocket(int socket);
 	int getSocket();
 
+	bool availableEvent();
 	void startEvent();
 	int getEvent();
 	void waitForEvent();
@@ -88,12 +93,12 @@ public:
 	bool accept(AsyncSocket* newSocket);
 	bool isConnected();
 
-	static void signalHandler(int signum);
+	//static void signalHandler(int signum);
 	string getId() { return myId; };
 
-	static Mutex mySocketsMutex;
-	static map<string, AsyncSocket*> mySockets;
-	Semaphore mySemaphore;
+	//static Mutex mySocketsMutex;
+	//static map<string, AsyncSocket*> mySockets;
+	//static Semaphore mySemaphore;
 
 protected:
 	void reconnectLoop();
@@ -107,12 +112,12 @@ protected:
 private:
 	string myId;
 	Semaphore myEventSemaphore;
-	int myEvent;
+	ThreadSafeQueue<int> myEventQueue;
 
 	bool myForceReconnect;
 	
 	ThreadSafeQueue<string> myInQueue;
-	ThreadSafeQueue<string> myOutQueue;
+	//ThreadSafeQueue<string> myOutQueue;
 
 	int mySocket;
 	sockaddr_in myAddressStruct;

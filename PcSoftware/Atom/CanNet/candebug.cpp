@@ -49,6 +49,8 @@ CanDebug::CanDebug()
 
 CanDebug::~CanDebug()
 {
+	stop();
+
 	map<int, AsyncSocket*>::iterator iter;
 
 	for (iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
@@ -60,8 +62,6 @@ CanDebug::~CanDebug()
 
 		delete iter->second;
 	}
-
-	stop();
 }
 
 void CanDebug::run()
@@ -123,7 +123,7 @@ void CanDebug::sendData(string data)
 
 void CanDebug::sendCanMessage(CanMessage canMessage)
 {
-	if (!canMessage.isHeartbeat())
+	if (!canMessage.isHeartbeat() && myClientSockets.size() > 0)
 	{
 		string debugData = "";
 

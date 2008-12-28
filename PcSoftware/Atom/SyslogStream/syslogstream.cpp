@@ -54,7 +54,7 @@ SyslogStream::~SyslogStream()
 
 void SyslogStream::add(string str)
 {
-	syslog(LOG_ODELAY, str.c_str());
+	//syslog(LOG_ODELAY, str.c_str());
 
 	if (str == "\n")
 	{
