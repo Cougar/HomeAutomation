@@ -31,6 +31,8 @@ using namespace std;
 #include <sys/types.h>
 #include <dirent.h>
 
+string niceTime();
+
 string hex2bin(string hex);
 string bin2hex(string bin);
 
@@ -40,6 +42,8 @@ string float2bin(float num, int length);
 unsigned int bin2uint(string bin);
 string uint2bin(unsigned int num, int length);
 
+string uint2hex(unsigned int num, int length);
+
 vector<string> explode(string delimiter, string str);
 string strtoupper(string s);
 string strtolower(string s);
@@ -47,6 +51,8 @@ string trim(string s);
 string trim(string s, char c);
 int stoi(const string s);
 string itos(int i);
+string utos(unsigned int i);
+unsigned int stou(const string s);
 float stof(const string s);
 string ftos(float f);
 string str_replace(string search, string replace, string str);

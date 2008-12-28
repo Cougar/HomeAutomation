@@ -70,10 +70,10 @@ void CanMessage::setRaw(string rawHex)
 		myDirectionFlag = translator.lookupDirectionFlag(bin2uint(myRawHeaderBin.substr(7, 1)));
 		myModuleName = translator.lookupModuleName(bin2uint(myRawHeaderBin.substr(8, 8)));
 
-		myModuleId = (unsigned int)bin2uint(myRawHeaderBin.substr(16, 8));
+		myModuleId = bin2uint(myRawHeaderBin.substr(16, 8));
 
 		int commandId = bin2uint(myRawHeaderBin.substr(24, 8));
-		myCommandName = translator.lookupCommandName(commandId, translator.lookupModuleName(myModuleId));
+		myCommandName = translator.lookupCommandName(commandId, myModuleName);
 
 		string rawHexData = "";
 		for (int n = 4; n < parts.size(); n++)
@@ -218,7 +218,7 @@ string CanMessage::getJSON()
 		{
 			json += iter->second.getValue();
 		}
-		else if (iter->second.getType() == "ascii")
+		else if (iter->second.getType() == "ascii" || iter->second.getType() == "hexstring")
 		{
 			json += "'" + iter->second.getValue() + "'";
 		}
@@ -251,7 +251,7 @@ string CanMessage::getJSONData()
 		{
 			json += iter->second.getValue();
 		}
-		else if (iter->second.getType() == "ascii")
+		else if (iter->second.getType() == "ascii" || iter->second.getType() == "hexstring")
 		{
 			json += "'" + escape(iter->second.getValue()) + "'";
 		}

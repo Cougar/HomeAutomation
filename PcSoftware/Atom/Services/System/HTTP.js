@@ -29,10 +29,10 @@ HTTP.prototype.request = function(callback, url)
 	this.mySocket = new Socket(function(event, data) { self.socketCallback(event, data); }, urlData['hostname'], urlData['port'], 0);
 	this.mySocket.start();
 	
-	var request = "GET " + urlData['path'] + " HTTP/1.1\n";
-	request += "Host: " + urlData['hostname'] + "\n";
-	request += "Connection: close\n";
-	request += "\n";
+	var request = "GET " + urlData['path'] + " HTTP/1.1\r\n";
+	request += "Host: " + urlData['hostname'] + ":" + urlData['port'] + "\r\n";
+	request += "Connection: close\r\n";
+	request += "\r\n";
 	
 	this.mySocket.send(request);
 }
@@ -87,6 +87,8 @@ HTTP.prototype.socketCallback = function(event, data)
 
 HTTP.prototype.processBuffer = function()
 {
+	///FIXME: This is a bit ugly code... also not fully HTTP/1.1 compliant look at http://www.jmarshall.com/easy/http/
+
 	var pos = this.myBuffer.indexOf("\n\n");
 	
 	var headerData = this.myBuffer.substr(0, pos);

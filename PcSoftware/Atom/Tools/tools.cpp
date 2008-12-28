@@ -22,6 +22,22 @@
  ***************************************************************************/
 #include "tools.h"
 
+string niceTime()
+{
+	string result;
+	struct tm tmStruct;
+	time_t t = time(NULL);
+	gmtime_r(&t, &tmStruct);
+
+	result += lpad(itos(tmStruct.tm_hour), 2, '0');
+	result += ":";
+	result += lpad(itos(tmStruct.tm_min), 2, '0');
+	result += ":";
+	result += lpad(itos(tmStruct.tm_sec), 2, '0');
+
+	return result;
+}
+
 unsigned int bin2uint(string bin)
 {
 	unsigned int num = 0;
@@ -183,6 +199,10 @@ string uint2bin(unsigned int num, int length)
 	return bin;
 }
 
+string uint2hex(unsigned int num, int length)
+{
+	return bin2hex(uint2bin(num, length));
+}
 
 vector<string> explode(string delimiter, string str)
 {
@@ -245,6 +265,21 @@ int stoi(const string s)
 }
 
 string itos(int i)
+{
+	ostringstream out;
+	out << i;
+	return out.str();
+}
+
+unsigned int stou(const string s)
+{
+	istringstream in(s);
+	unsigned int i;
+	in >> i;
+	return i;
+}
+
+string utos(unsigned int i)
 {
 	ostringstream out;
 	out << i;

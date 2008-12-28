@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 29, 2008 by Mattias Runge                             *
+ *   Copyright (C) December 27, 2008 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   cannetmanager.h                                            *
+ *   candebug.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,35 +19,39 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _CANNETMANAGER_H
-#define	_CANNETMANAGER_H
+#ifndef _CANDEBUG_H
+#define	_CANDEBUG_H
 
 using namespace std;
 
-#include <queue>
+#include <string>
+#include <map>
 
+#include "../Threads/thread.h"
 #include "../Socket/asyncsocket.h"
-#include "../VM/virtualmachine.h"
+#include "../Socket/socketexception.h"
+#include "../Settings/settings.h"
 #include "canmessage.h"
-#include "candebug.h"
 
-class CanNetManager
+class CanDebug : public Thread<CanDebug>
 {
 public:
-	static CanNetManager& getInstance();
+	static CanDebug& getInstance();
 	static void deleteInstance();
 
-	void sendMessage(CanMessage canMessage);
-	void openChannel();
-
-protected:
-	CanNetManager();
-	~CanNetManager();
+	void run();
+	void sendData(string data);
+	void sendCanMessage(CanMessage canMessage);
 
 private:
-	static CanNetManager* myInstance;
-	AsyncSocket *myChannel;
+	CanDebug();
+	~CanDebug();
+	static CanDebug* myInstance;
+
+	AsyncSocket mySocket;
+	map<int, AsyncSocket*> myClientSockets;
 };
 
-#endif	/* _CANNETMANAGER_H */
+
+#endif	/* _CANDEBUG_H */
 

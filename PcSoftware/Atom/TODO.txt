@@ -11,11 +11,10 @@ LESS IMPORTANT
 * Error checking...
 * FIXMEs
 * Javascript command interface
-* Check with linus what he wants for canInterpreter output
 * Implement support for nmt-messages to restart applications and program nodes. Build interaface to replace canDude
 * Implement internal canDaemon functionality
 * Implement more module-services...
 * Build service example... commented
-* Http interface, post, get etc...
 * Mysql-interface
 * AsyncSocket, move logging to some messagesystem with events
+* Check uint conversion, sometimes negative values are the result

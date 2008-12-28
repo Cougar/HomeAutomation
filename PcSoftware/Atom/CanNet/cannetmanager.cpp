@@ -59,6 +59,7 @@ void CanNetManager::openChannel()
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 	VirtualMachine &vm = VirtualMachine::getInstance();
+	CanDebug &canDebug = CanDebug::getInstance();
 
 	string address = Settings::get("CanNetAddress");
 	string port = Settings::get("CanNetPort");
@@ -94,7 +95,7 @@ void CanNetManager::openChannel()
 
 					for (int n = 0; n < dataLines.size(); n++)
 					{
-						data = trim(data, '\n');
+						data = trim(dataLines[n], '\n');
 
 						if (data == "PONG")
 						{
@@ -110,6 +111,11 @@ void CanNetManager::openChannel()
 						if (!canMessage.isUnknown())
 						{
 							vm.queueCanMessage(canMessage);
+							canDebug.sendCanMessage(canMessage);
+						}
+						else
+						{
+							canDebug.sendData(data + "\n");
 						}
 						/*else
 						{
@@ -158,6 +164,8 @@ void CanNetManager::openChannel()
 
 void CanNetManager::sendMessage(CanMessage canMessage)
 {
+	CanDebug &canDebug = CanDebug::getInstance();
+	canDebug.sendCanMessage(canMessage);
 	myChannel->sendData(canMessage.getRaw());
 }
 
