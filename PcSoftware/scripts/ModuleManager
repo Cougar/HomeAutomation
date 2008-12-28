@@ -303,7 +303,6 @@ def newModule(moduleName):
 	os.mkdir(moddir + "/" + moduleName + "/")
 
 	createFile(moduleName, "config.inc.template", "config.inc.template")
-	createFile(moduleName, "protocol.h", "protocol.h")
 	createFile(moduleName, "sources.list", "sources.list")
 	createFile(moduleName, "template.h", moduleName + ".h")
 	createFile(moduleName, "template.c", moduleName + ".c")
