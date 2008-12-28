@@ -102,7 +102,7 @@ function handleHeartbeat(hardwareId)
 	
 	if (!found)
 	{
-		log("Received heartbeat from unknown node, requesting module listing for hardware id " + hardwareId + "\n");
+		log("Received heartbeat from unknown node, requesting module listing for hardware id 0x" + uint2hex(hardwareId, 32) + "\n");
 		var canMessage = new CanMessage("nmt", "To_Owner", "", 0, "List");
 		canMessage.setData("HardwareId", hardwareId);
 		sendMessage(canMessage);

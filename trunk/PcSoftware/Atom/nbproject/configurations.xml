@@ -2,6 +2,8 @@
 <configurationDescriptor version="51">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="CanNet" displayName="CanNet" projectFiles="true">
+      <itemPath>../../../../NetBeansProjects/Atom/CanNet/candebug.cpp</itemPath>
+      <itemPath>../../../../NetBeansProjects/Atom/CanNet/candebug.h</itemPath>
       <itemPath>CanNet/canidtranslator.cpp</itemPath>
       <itemPath>CanNet/canidtranslator.h</itemPath>
       <itemPath>CanNet/canmessage.cpp</itemPath>
@@ -83,10 +85,10 @@
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
-      <item path="VM/socketthread.cpp">
+      <item path="../../../../NetBeansProjects/Atom/CanNet/candebug.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/socketthread.h">
+      <item path="../../../../NetBeansProjects/Atom/CanNet/candebug.h">
         <itemTool>3</itemTool>
       </item>
       <item path="CanNet/canidtranslator.cpp">
@@ -159,6 +161,12 @@
         <itemTool>1</itemTool>
       </item>
       <item path="VM/intervalthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/socketthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/socketthread.h">
         <itemTool>3</itemTool>
       </item>
       <item path="VM/virtualmachine.cpp">
@@ -211,10 +219,10 @@
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
-      <item path="VM/socketthread.cpp">
+      <item path="../../../../NetBeansProjects/Atom/CanNet/candebug.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/socketthread.h">
+      <item path="../../../../NetBeansProjects/Atom/CanNet/candebug.h">
         <itemTool>3</itemTool>
       </item>
       <item path="CanNet/canidtranslator.cpp">
@@ -287,6 +295,12 @@
         <itemTool>1</itemTool>
       </item>
       <item path="VM/intervalthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/socketthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/socketthread.h">
         <itemTool>3</itemTool>
       </item>
       <item path="VM/virtualmachine.cpp">

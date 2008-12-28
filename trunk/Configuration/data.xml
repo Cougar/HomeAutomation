@@ -49,7 +49,11 @@
         <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Volt" description=""/>
       </variables>
     </command>
-    <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data"/>
+    <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data">
+      <variables>
+        <variable name="Number" type="hexstring" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
     <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status">
       <variables>
         <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>

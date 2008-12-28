@@ -48,6 +48,7 @@ Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args);
 Handle<Value> VirtualMachine_stopSocketThread(const Arguments& args);
 Handle<Value> VirtualMachine_startSocketThread(const Arguments& args);
 Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args);
+Handle<Value> VirtualMachine_uint2hex(const Arguments& args);
 
 class VirtualMachine : public Thread<VirtualMachine>
 {

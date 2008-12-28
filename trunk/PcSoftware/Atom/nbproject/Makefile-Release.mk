@@ -29,6 +29,7 @@ OBJECTDIR=build/Release/${PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/VM/virtualmachine.o \
+	${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/CanNet/candebug.o \
 	${OBJECTDIR}/CanNet/cannetmanager.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Xml/xmlnode.o \
@@ -67,6 +68,11 @@ ${OBJECTDIR}/VM/virtualmachine.o: VM/virtualmachine.cpp
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o VM/virtualmachine.cpp
+
+${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/CanNet/candebug.o: ../../../../NetBeansProjects/Atom/CanNet/candebug.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/CanNet
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/migan/NetBeansProjects/Atom/../../../../NetBeansProjects/Atom/CanNet/candebug.o ../../../../NetBeansProjects/Atom/CanNet/candebug.cpp
 
 ${OBJECTDIR}/CanNet/cannetmanager.o: CanNet/cannetmanager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet

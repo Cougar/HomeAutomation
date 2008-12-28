@@ -26,6 +26,7 @@ using namespace std;
 
 #include <string>
 #include <queue>
+#include <map>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -57,6 +58,7 @@ using namespace std;
 #define ASYNCSOCKET_EVENT_INACTIVITY 4
 
 const int MAXBUFFER = 1024;
+const int MAXCONNECTIONS = 10;
 
 class AsyncSocket : public Thread<AsyncSocket>
 {
@@ -68,6 +70,9 @@ public:
 
 	void setReconnectTimeout(unsigned int timeout);
 	void setAddress(string address, int port);
+	void setPort(int port);
+	void setSocket(int socket);
+	int getSocket();
 
 	void startEvent();
 	int getEvent();
@@ -77,19 +82,30 @@ public:
 	bool availableData();
 	string getData();
 	bool sendData(string data);
+	void sendDataDirect(string data);
 	void forceReconnect();
+	void startListen();
+	bool accept(AsyncSocket* newSocket);
+	bool isConnected();
 
 	static void signalHandler(int signum);
-	
+	string getId() { return myId; };
+
+	static Mutex mySocketsMutex;
+	static map<string, AsyncSocket*> mySockets;
+	Semaphore mySemaphore;
+
 protected:
 	void reconnectLoop();
 	void connect();
+	void create();
 	void close();
 	void setEvent(int event);
 
-	static Semaphore mySemaphore;
+
 
 private:
+	string myId;
 	Semaphore myEventSemaphore;
 	int myEvent;
 

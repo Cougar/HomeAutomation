@@ -19,9 +19,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <map>
-
-
 #include "virtualmachine.h"
 
 VirtualMachine* VirtualMachine::myInstance = NULL;
@@ -47,12 +44,12 @@ void VirtualMachine::deleteInstance()
 
 VirtualMachine::VirtualMachine()
 {
-	
+	Thread<VirtualMachine>();
 }
 
 VirtualMachine::~VirtualMachine()
 {
-	
+	stop();
 }
 
 void VirtualMachine::run()
@@ -86,6 +83,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine_startSocketThread));
 	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine_stopSocketThread));
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine_sendToSocketThread));
+	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine_uint2hex));
 
 	//create context for the script
 	myContext = Context::New(NULL, myGlobal);
@@ -192,12 +190,12 @@ bool VirtualMachine::loadScript(string scriptName)
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	string basePath = Settings::get("BasePath") + "/Services/";
+	string basePath = Settings::get("BasePath") + "Services/";
 	string scriptFileName = basePath + scriptName;
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load :" + scriptFileName + "\n";
+		slog << "Failed to load " + scriptFileName + "\n";
 		return false;
 	}
 
@@ -255,12 +253,15 @@ void VirtualMachine::callHandleHeartbeat(int hardwareId)
 void VirtualMachine::callHandleMessage(CanMessage canMessage)
 {
 	const int argc = 6;
+
+	string jsonData = canMessage.getJSONData();
+
 	Handle<Value> argv[argc] = {String::New(canMessage.getClassName().c_str()),
 								String::New(canMessage.getDirectionFlag().c_str()),
 								String::New(canMessage.getModuleName().c_str()),
 								Integer::New(canMessage.getModuleId()),
 								String::New(canMessage.getCommandName().c_str()),
-								String::New(canMessage.getJSONData().c_str()) };
+								String::New(jsonData.c_str()) };
 
 	Handle<Value> result = myFunctionHandleMessage->Call(myFunctionHandleMessage, argc, argv); // argc and argv are your standard arguments to a function
 }
@@ -466,5 +467,16 @@ Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args)
 	vm.sendToSocketThread(id, *data);
 
 	return Undefined();
+}
+
+Handle<Value> VirtualMachine_uint2hex(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	unsigned int id = args[0]->Uint32Value();
+	unsigned int length = args[1]->Uint32Value();
+	string hexId = uint2hex(id, length);
+
+	return String::New(hexId.c_str());
 }
 

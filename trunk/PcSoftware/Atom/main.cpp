@@ -21,7 +21,6 @@
 
 using namespace std;
 
-
 #include <stdlib.h>
 #include <iostream>
 #include <signal.h>
@@ -33,6 +32,7 @@ using namespace std;
 #include "CanNet/cannetmanager.h"
 #include "Socket/asyncsocket.h"
 #include "VM/virtualmachine.h"
+#include "CanNet/candebug.h"
 
 int cleanUp();
 void handler(int status);
@@ -65,10 +65,11 @@ int main(int argc, char** argv)
 		}
 	}
 
-
 	VirtualMachine &vm = VirtualMachine::getInstance();
-
 	vm.start();
+
+	CanDebug &canDebug = CanDebug::getInstance();
+	canDebug.start();
 
 	if (Settings::get("DaemonMode") == "yes")
 	{
@@ -79,6 +80,8 @@ int main(int argc, char** argv)
 			return cleanUp();
 		}
 	}
+
+
 
 	CanNetManager &canMan = CanNetManager::getInstance();
 
@@ -93,7 +96,8 @@ int cleanUp()
 
 	slog << "\n";
 	slog << "Goodbye!\n";
-	
+
+	CanDebug::deleteInstance();
 	CanNetManager::deleteInstance();
 	VirtualMachine::deleteInstance();
 	SyslogStream::deleteInstance();

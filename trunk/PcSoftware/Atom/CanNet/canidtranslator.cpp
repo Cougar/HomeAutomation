@@ -95,7 +95,7 @@ string CanIdTranslator::lookupCommandName(int commandId, string moduleName)
 	{
 		map<string, string> attributes = commandNodes[n].getAttributes();
 
-		if (commandId > 128)
+		if (commandId >= 128)
 		{
 			if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
 			{
@@ -124,7 +124,7 @@ int CanIdTranslator::resolveCommandId(string commandName, string moduleName)
 		{
 			int commandId = stoi(attributes["id"]);
 
-			if (commandId > 128)
+			if (commandId >= 128)
 			{
 				if (attributes["module"] == moduleName)
 				{
@@ -244,7 +244,7 @@ string CanIdTranslator::translateDataToHex(int commandId, string moduleName, map
 
 		bool correct = false;
 
-		if (commandId > 128)
+		if (commandId >= 128)
 		{
 			if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
 			{
@@ -296,7 +296,7 @@ string CanIdTranslator::translateDataToHex(int commandId, string moduleName, map
 				heighestBit = iter->second.getStartBit() + iter->second.getBitLength();
 
 			//cout << iter->first << ":" <<  stoi(iter->second.getValue()) << endl;
-			int a = stoi(iter->second.getValue());
+			unsigned int a = stoi(iter->second.getValue());
 			
 			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
 		}
@@ -317,6 +317,19 @@ string CanIdTranslator::translateDataToHex(int commandId, string moduleName, map
 
 				//cout << iter->second.getValue()[n] << ":" << (unsigned int)iter->second.getValue()[n] << endl;
 				bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin((unsigned int)iter->second.getValue()[n], 8));
+			}
+		}
+		else if (iter->second.getType() == "hexstring")
+		{
+			for (int n = 0; n < iter->second.getValue().length(); n++)
+			{
+				if (iter->second.getStartBit()+n*4 + 4 > heighestBit)
+					heighestBit = iter->second.getStartBit()+n*4 + 4;
+
+				string character;
+				character += iter->second.getValue()[n];
+
+				bin.replace(iter->second.getStartBit()+n*4, 4, hex2bin(character));
 			}
 		}
 	}
@@ -343,7 +356,7 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 
 		bool correct = false;
 
-		if (commandId > 128)
+		if (commandId >= 128)
 		{
 			if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
 			{
@@ -405,6 +418,18 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 					variable.setValue(str);
 					//cout << "Parsed ascii: " << str << "\n";
 					//dataString += "'";
+				}
+				else if (attributes["type"] == "hexstring")
+				{
+					string str;
+
+					for (int k = 0; k < bits.length(); k += 4)
+					{
+						str += bin2hex(bits.substr(k, 4));
+						//dataString += (char)bin2uint(bits.substr(k, 4));
+					}
+
+					variable.setValue(str);
 				}
 
 				variables[attributes["name"]] = variable;
