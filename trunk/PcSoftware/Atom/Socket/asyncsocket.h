@@ -47,19 +47,9 @@ using namespace std;
 #include "../Threads/semaphore.h"
 #include "../Threads/threadsafequeue.h"
 #include "../Tools/tools.h"
-#include "../SyslogStream/syslogstream.h"
 
 #include "socketexception.h"
-
-#define ASYNCSOCKET_EVENT_NONE 0
-#define ASYNCSOCKET_EVENT_DATA 1
-#define ASYNCSOCKET_EVENT_CONNECTED 2
-#define ASYNCSOCKET_EVENT_CONNECT_FAILED 3
-#define ASYNCSOCKET_EVENT_WAITING_TO_RECONNECT 4
-#define ASYNCSOCKET_EVENT_CLOSED 5
-#define ASYNCSOCKET_EVENT_RESET 6
-#define ASYNCSOCKET_EVENT_DIED 7
-#define ASYNCSOCKET_EVENT_INACTIVITY 8
+#include "socketevent.h"
 
 const int MAXBUFFER = 1024;
 const int MAXCONNECTIONS = 10;
@@ -72,58 +62,60 @@ public:
 
 	void run();
 
-	void setReconnectTimeout(unsigned int timeout);
-	void setAddress(string address, int port);
-	void setPort(int port);
-	void setSocket(int socket);
-	int getSocket();
+	string getId() { return myId; };
+	bool isConnected() { return mySocket != -1; };
 
-	bool availableEvent();
-	void startEvent();
-	int getEvent();
-	void waitForEvent();
-	void stopEvent();
+	void forceReconnect() { myForceReconnect = true; };
+	void setReconnectTimeout(unsigned int reconnectTimeout) { myReconnectTimeout = reconnectTimeout; };
+	unsigned int getReconnectTimeout() { return myReconnectTimeout; };
+	void setAddress(string address) { myAddress = address; };
+	string getAddress() { return myAddress; };
+	void setPort(int port) { myPort = port; };
+	int getPort() { return myPort; };
+	void setSocket(int socket) { mySocket = socket; };
+	int getSocket() { return mySocket; };
 
-	bool availableData();
-	string getData();
-	bool sendData(string data);
-	void sendDataDirect(string data);
-	void forceReconnect();
+	void eventStartListen() { myEventSemaphore.lock(); };
+	void eventWait() { myEventSemaphore.wait(); };
+	void eventStopListen() { myEventSemaphore.unlock(); };
+	bool eventIsAvailable() { return myEventQueue.size() > 0; };
+	SocketEvent eventFetch() { return myEventQueue.pop(); };
+
+
+	void sendData(string data);
+
+	
 	void startListen();
 	bool accept(AsyncSocket* newSocket);
-	bool isConnected();
+	
 
-	//static void signalHandler(int signum);
-	string getId() { return myId; };
-
-	//static Mutex mySocketsMutex;
-	//static map<string, AsyncSocket*> mySockets;
-	//static Semaphore mySemaphore;
+	
 
 protected:
 	void reconnectLoop();
-	void connect();
 	void create();
-	void close();
-	void setEvent(int event);
 
+	void connect();
+	
+	void silentClose();
+	void close();
 
 
 private:
 	string myId;
-	Semaphore myEventSemaphore;
-	ThreadSafeQueue<int> myEventQueue;
-
-	bool myForceReconnect;
-	
-	ThreadSafeQueue<string> myInQueue;
-	//ThreadSafeQueue<string> myOutQueue;
-
-	int mySocket;
-	sockaddr_in myAddressStruct;
 	string myAddress;
 	int myPort;
 	unsigned int myReconnectTimeout;
+	int mySocket;
+	bool myForceReconnect;
+	sockaddr_in myAddressStruct;
+
+	Semaphore myEventSemaphore;
+	ThreadSafeQueue<SocketEvent> myEventQueue;
+	void eventAdd(unsigned int eventType, string eventData);
+	void eventAdd(unsigned int eventType);
+
+	bool receiveData();
 };
 
 #endif	/* _ASYNCSOCKET_H */

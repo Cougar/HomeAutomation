@@ -1,22 +1,22 @@
 /***************************************************************************
- *   Copyright (C) December 6, 2008 by Mattias Runge                             *
- *   mattias@runge.se                                                      *
- *   asyncsocket.cpp                                            *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *  Copyright (C) December 6, 2008 by Mattias Runge               *
+ *  mattias@runge.se                           *
+ *  asyncsocket.cpp                      *
+ *                                     *
+ *  This program is free software; you can redistribute it and/or modify *
+ *  it under the terms of the GNU General Public License as published by *
+ *  the Free Software Foundation; either version 2 of the License, or   *
+ *  (at your option) any later version.                  *
+ *                                     *
+ *  This program is distributed in the hope that it will be useful,    *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of    *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the     *
+ *  GNU General Public License for more details.             *
+ *                                     *
+ *  You should have received a copy of the GNU General Public License   *
+ *  along with this program; if not, write to the             *
+ *  Free Software Foundation, Inc.,                    *
+ *  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.       *
  ***************************************************************************/
 
 #include "asyncsocket.h"
@@ -29,152 +29,167 @@ AsyncSocket::AsyncSocket()
 	mySocket = -1;
 	myReconnectTimeout = 0;
 	myForceReconnect = false;
-
-	Thread<AsyncSocket>();
 }
 
 AsyncSocket::~AsyncSocket()
 {
-	if (mySocket != -1)
-	{
-		::close(mySocket);
-	}
-
 	stop();
+	silentClose();
 }
 
 void AsyncSocket::run()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
-
+	// If connection is already up then we should not connect again
 	if (!isConnected())
 	{
+		// If we have choosen to not use automatic reconnect do not start reconnect loop
 		if (myReconnectTimeout == 0)
 		{
+			// Connect to somewhere
 			connect();
 		}
 		else
 		{
+			// Start the reconnect loop
 			reconnectLoop();
 		}
 	}
-
-	char buf[MAXBUFFER + 1];
-	string data;
-	int status;
 
 	bool loop = true;
 	try
 	{
 		while (loop)
 		{
+			// If we have triggered a forced reconnect do it here
 			if (myForceReconnect)
 			{
+				myForceReconnect = false;
 				reconnectLoop();
 			}
 
-			memset(buf, 0, MAXBUFFER + 1);
-			status = ::recv(mySocket, buf, MAXBUFFER, 0);
-
-			if (status == -1)
-			{
-				switch (errno)
-				{
-					case EAGAIN:
-					throw new SocketException("The socket is marked non-blocking and the receive operation would block, or a receive timeout had been set and the timeout expired before data was received.");
-					break;
-
-					case EBADF:
-					throw new SocketException("The argument s is an invalid descriptor.");
-
-					case ECONNREFUSED:
-					throw new SocketException("A remote host refused to allow the network connection (typically because it is not running the requested service).");
-
-					case EFAULT:
-					throw new SocketException("The receive buffer pointer(s) point outside the process's address space.");
-
-					case EINTR:
-					throw new SocketException("The receive was interrupted by delivery of a signal before any data were available; see signal(7).");
-
-					case EINVAL:
-					throw new SocketException("Invalid argument passed.");
-					break;
-
-					case ENOMEM:
-					throw new SocketException("Could not allocate memory for recvmsg().");
-
-					case ENOTCONN:
-					throw new SocketException("The socket is associated with a connection-oriented protocol and has not been connected (see connect(2) and  accept(2)).");
-
-					case ENOTSOCK:
-					throw new SocketException("The argument s does not refer to a socket.");
-
-					case ECONNRESET:
-					setEvent(ASYNCSOCKET_EVENT_RESET);
-					if (myReconnectTimeout > 0)
-					{
-						reconnectLoop();
-					}
-					else
-					{
-						loop = false;
-					}
-					break;
-
-					default:
-					throw new SocketException("Unknow exception: " + itos(errno));
-					break;
-				}
-			}
-			else if (status == 0)
-			{
-				setEvent(ASYNCSOCKET_EVENT_CLOSED);
-				if (myReconnectTimeout > 0)
-				{
-					reconnectLoop();
-				}
-				else
-				{
-					loop = false;
-				}
-			}
-			else if (status > 0)
-			{
-				data = buf;
-
-				//slog << "Received: " + data + "\n";
-
-				myInQueue.push(data);
-				setEvent(ASYNCSOCKET_EVENT_DATA);
-			}
+			// Receive data
+			loop = receiveData();
 		}
 	}
 	catch (SocketException *e)
 	{
-		slog << "Exception: " + e->getDescription() + "\n";
-		setEvent(ASYNCSOCKET_EVENT_DIED);
+		// Something bad happend and we can not continue
+		eventAdd(SocketEvent::TYPE_CONNECTION_DIED, e->getDescription());
 	}
 
-	close();
+	// Clean up socket if we would want to restart
+	silentClose();
+}
+
+bool AsyncSocket::receiveData()
+{
+	char buffer[MAXBUFFER + 1];
+	memset(buffer, 0, MAXBUFFER + 1);
+
+	int status = ::recv(mySocket, buffer, MAXBUFFER, 0);
+
+	if (status == -1)
+	{
+		switch (errno)
+		{
+			case EAGAIN:
+			throw new SocketException("The socket is marked non-blocking and the receive operation would block, or a receive timeout had been set and the timeout expired before data was received.");
+
+			case EBADF:
+			throw new SocketException("The argument s is an invalid descriptor.");
+
+			case ECONNREFUSED:
+			throw new SocketException("A remote host refused to allow the network connection (typically because it is not running the requested service).");
+
+			case EFAULT:
+			throw new SocketException("The receive buffer pointer(s) point outside the process's address space.");
+
+			case EINTR:
+			throw new SocketException("The receive was interrupted by delivery of a signal before any data were available; see signal(7).");
+
+			case EINVAL:
+			throw new SocketException("Invalid argument passed.");
+
+			case ENOMEM:
+			throw new SocketException("Could not allocate memory for recvmsg().");
+
+			case ENOTCONN:
+			throw new SocketException("The socket is associated with a connection-oriented protocol and has not been connected (see connect(2) and accept(2)).");
+
+			case ENOTSOCK:
+			throw new SocketException("The argument s does not refer to a socket.");
+
+			case ECONNRESET:
+			eventAdd(SocketEvent::TYPE_CONNECTION_RESET);
+
+			// If we have automatic reconnect we want to start it now
+			if (myReconnectTimeout == 0)
+			{
+				reconnectLoop();
+			}
+			else
+			{
+				// Otherwise we would like to end the main loop
+				return false;
+			}
+			break;
+
+			default:
+			throw new SocketException("Unknow exception: " + itos(errno));
+			break;
+		}
+	}
+	else if (status == 0)
+	{
+		// Remote host have done a normal shutdown
+		eventAdd(SocketEvent::TYPE_CONNECTION_CLOSED);
+
+		if (myReconnectTimeout > 0)
+		{
+			reconnectLoop();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (status > 0)
+	{
+		// We have received data
+		eventAdd(SocketEvent::TYPE_DATA, buffer);
+	}
+
+	return true;
+}
+
+void AsyncSocket::silentClose()
+{
+	if (mySocket != -1)
+	{
+		::close(mySocket);
+		mySocket = -1;
+	}
+}
+
+void AsyncSocket::close()
+{
+	silentClose();
+	eventAdd(SocketEvent::TYPE_CONNECTION_CLOSED);
 }
 
 void AsyncSocket::reconnectLoop()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
-
-	while (1)
+	while (true)
 	{
 		try
 		{
 			connect();
-			break;
+			return;
 		}
 		catch (SocketException *e)
 		{
-			setEvent(ASYNCSOCKET_EVENT_CONNECT_FAILED);
-			setEvent(ASYNCSOCKET_EVENT_WAITING_TO_RECONNECT);
-			slog << "Could not connect: " + e->getDescription() + "\n";//FIXME: Remove these
-			slog << "Will try again in " + itos(myReconnectTimeout) + " seconds\n";
+			eventAdd(SocketEvent::TYPE_CONNECTION_FAILED, e->getDescription());
+			eventAdd(SocketEvent::TYPE_WAITING_RECONNECT);
 			sleep(myReconnectTimeout);
 		}
 	}
@@ -182,7 +197,7 @@ void AsyncSocket::reconnectLoop()
 
 void AsyncSocket::create()
 {
-	close();
+	silentClose();
 
 	mySocket = ::socket(AF_INET, SOCK_STREAM, 0);
 
@@ -190,7 +205,7 @@ void AsyncSocket::create()
 	int status = setsockopt(mySocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on));
 	if (status == -1)
 	{
-		close();
+		silentClose();
 		throw new SocketException("Create:Reuseaddress: " + itos(errno));
 	}
 }
@@ -207,7 +222,7 @@ void AsyncSocket::startListen()
 
 	if (status == -1)
 	{
-		close();
+		silentClose();
 		switch (errno)
 		{
 			case EACCES:
@@ -265,7 +280,7 @@ void AsyncSocket::startListen()
 
 	if (status == -1)
 	{
-		close();
+		silentClose();
 		switch (errno)
 		{
 			case EADDRINUSE:
@@ -303,7 +318,7 @@ bool AsyncSocket::accept(AsyncSocket* newSocket)
 
 void AsyncSocket::connect()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	eventAdd(SocketEvent::TYPE_CONNECTING);
 
 	create();
 
@@ -312,30 +327,27 @@ void AsyncSocket::connect()
 	myAddressStruct.sin_family = AF_INET;
 	myAddressStruct.sin_port = htons(myPort);
 
-	//slog << "Trying to resolv " + myAddress + "\n";
-
 	struct hostent *hptr = gethostbyname(myAddress.c_str());
 	if (hptr == NULL)
 	{
-		close();
+		silentClose();
 		throw new SocketException("Connect: Could not resolv ip address");
 	}
 
-	
 	memcpy(&myAddressStruct.sin_addr, hptr->h_addr, hptr->h_length);
 
 	int status = ::connect(mySocket, (sockaddr*)&myAddressStruct, sizeof(myAddressStruct));
 
 	if (status == -1)
 	{
-		close();
+		silentClose();
 		switch (errno)
 		{
 			case EACCES:
-			throw new SocketException("For Unix domain sockets, which are identified by pathname: Write permission is denied on the socket file, or search per- mission is denied for one of the directories in the path prefix.  (See also path_resolution(7).)");
+			throw new SocketException("For Unix domain sockets, which are identified by pathname: Write permission is denied on the socket file, or search per- mission is denied for one of the directories in the path prefix. (See also path_resolution(7).)");
 
 			case EPERM:
-			throw new SocketException("The user tried to connect to a broadcast address without having the socket broadcast  flag  enabled  or  the  connection request failed because of a local firewall rule.");
+			throw new SocketException("The user tried to connect to a broadcast address without having the socket broadcast flag enabled or the connection request failed because of a local firewall rule.");
 
 			case EADDRINUSE:
 			throw new SocketException("Local address is already in use.");
@@ -344,7 +356,7 @@ void AsyncSocket::connect()
 			throw new SocketException("The passed address didn't have the correct address family in its sa_family field.");
 
 			case EAGAIN:
-			throw new SocketException("No more free local ports or insufficient entries in the routing cache.  For AF_INET see the net.ipv4.ip_local_port_range sysctl in ip(7) on how to increase the number of local ports.");
+			throw new SocketException("No more free local ports or insufficient entries in the routing cache. For AF_INET see the net.ipv4.ip_local_port_range sysctl in ip(7) on how to increase the number of local ports.");
 
 			case EALREADY:
 			throw new SocketException("The socket is non-blocking and a previous connection attempt has not yet been completed.");
@@ -359,7 +371,7 @@ void AsyncSocket::connect()
 			throw new SocketException("The socket structure address is outside the user's address space.");
 
 			case EINPROGRESS:
-			throw new SocketException("The socket is non-blocking and the connection cannot be completed immediately.  It is possible to select(2)  or  poll(2) for  completion  by  selecting the socket for writing.  After select(2) indicates writability, use getsockopt(2) to read the SO_ERROR option at level SOL_SOCKET to determine whether connect() completed  successfully  (SO_ERROR  is  zero)  or unsuccessfully (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure).");
+			throw new SocketException("The socket is non-blocking and the connection cannot be completed immediately. It is possible to select(2) or poll(2) for completion by selecting the socket for writing. After select(2) indicates writability, use getsockopt(2) to read the SO_ERROR option at level SOL_SOCKET to determine whether connect() completed successfully (SO_ERROR is zero) or unsuccessfully (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure).");
 
 			case EINTR:
 			throw new SocketException("The system call was interrupted by a signal that was caught; see signal(7).");
@@ -374,189 +386,86 @@ void AsyncSocket::connect()
 			throw new SocketException("The file descriptor is not associated with a socket.");
 
 			case ETIMEDOUT:
-			throw new SocketException("Timeout  while  attempting  connection.  The server may be too busy to accept new connections.  Note that for IP sockets the timeout may be very long when syncookies are enabled on the server.");
+			throw new SocketException("Timeout while attempting connection. The server may be too busy to accept new connections. Note that for IP sockets the timeout may be very long when syncookies are enabled on the server.");
 
 			default:
 			throw new SocketException("Other errors may be generated by the underlying protocol modules. : " + itos(errno));
 		}
 	}
 
-	myForceReconnect = false;
-
-	setEvent(ASYNCSOCKET_EVENT_CONNECTED);
+	eventAdd(SocketEvent::TYPE_CONNECTED);
 }
 
-void AsyncSocket::close()
+void AsyncSocket::sendData(string data)
 {
-	if (mySocket != -1)
-	{
-		::close(mySocket);
-		mySocket = -1;
-		setEvent(ASYNCSOCKET_EVENT_CLOSED);
-	}
-}
-
-bool AsyncSocket::isConnected()
-{
-	return mySocket != -1;
-}
-
-void AsyncSocket::setReconnectTimeout(unsigned int timeout)
-{
-	myReconnectTimeout = timeout;
-}
-
-void AsyncSocket::startEvent()
-{
-	myEventSemaphore.lock();
-}
-
-bool AsyncSocket::availableEvent()
-{
-	return (myEventQueue.size() > 0);
-}
-
-int AsyncSocket::getEvent()
-{
-	return myEventQueue.pop();
-}
-
-void AsyncSocket::waitForEvent()
-{
-	myEventSemaphore.wait();
-}
-
-void AsyncSocket::stopEvent()
-{
-	myEventSemaphore.unlock();
-}
-
-void AsyncSocket::setAddress(string address, int port)
-{
-	myAddress = address;
-	myPort = port;
-}
-
-void AsyncSocket::setPort(int port)
-{
-	myPort = port;
-}
-
-void AsyncSocket::setSocket(int socket)
-{
-	mySocket = socket;
-}
-
-int AsyncSocket::getSocket()
-{
-	return mySocket;
-}
-
-bool AsyncSocket::availableData()
-{
-	return (myInQueue.size() > 0);
-}
-
-string AsyncSocket::getData()
-{
-	return myInQueue.pop();
-}
-
-bool AsyncSocket::sendData(string data)
-{
-	//cout << "SendData on " + myAddress + ":" + itos(myPort) + ".\n";
-	sendDataDirect(data);
-	//myOutQueue.push(data);
-	//mySemaphore.broadcast();
-	return true;
-}
-
-void AsyncSocket::sendDataDirect(string data)
-{
-	SyslogStream &slog = SyslogStream::getInstance();
-
-	//slog << "Sending: " << data << "\n";
-
 	int status = ::send(mySocket, data.c_str(), data.size(), 0);
 
-	//slog << "Status: " << status << "\n";
-
-	try
+	if (status == -1)
 	{
-		if (status == -1)
+		switch (errno)
 		{
-			switch (errno)
-			{
-				case EACCES:
-				throw new SocketException("(For  Unix  domain sockets, which are identified by pathname) Write permission is denied on the destination socket file, or search permission is denied for one of the directories the path prefix.  (See path_resolution(7).)");
+			case EACCES:
+			throw new SocketException("(For Unix domain sockets, which are identified by pathname) Write permission is denied on the destination socket file, or search permission is denied for one of the directories the path prefix. (See path_resolution(7).)");
 
-				case EAGAIN:
-				//slog << "The socket is marked non-blocking and the requested operation would block.\n";
-				break;
+			case EAGAIN:
+			throw new SocketException("The socket is marked non-blocking and the requested operation would block.");
 
-				case EBADF:
-				throw new SocketException("An invalid descriptor was specified.");
+			case EBADF:
+			throw new SocketException("An invalid descriptor was specified.");
 
-				case ECONNRESET:
-				throw new SocketException("Connection reset by peer.");
+			case ECONNRESET:
+			throw new SocketException("Connection reset by peer.");
 
-				case EDESTADDRREQ:
-				throw new SocketException("The socket is not connection-mode, and no peer address is set.");
+			case EDESTADDRREQ:
+			throw new SocketException("The socket is not connection-mode, and no peer address is set.");
 
-				case EFAULT:
-				throw new SocketException("An invalid user space address was specified for an argument.");
+			case EFAULT:
+			throw new SocketException("An invalid user space address was specified for an argument.");
 
-				case EINTR:
-				throw new SocketException("A signal occurred before any data was transmitted; see signal(7).");
+			case EINTR:
+			throw new SocketException("A signal occurred before any data was transmitted; see signal(7).");
 
-				case EINVAL:
-				throw new SocketException("1Invalid argument passed.");
+			case EINVAL:
+			throw new SocketException("1Invalid argument passed.");
 
-				case EISCONN:
-				throw new SocketException("The connection-mode socket was connected already but a recipient was specified. (Now either this error is returned, or the recipient specification is ignored.)");
+			case EISCONN:
+			throw new SocketException("The connection-mode socket was connected already but a recipient was specified. (Now either this error is returned, or the recipient specification is ignored.)");
 
-				case EMSGSIZE:
-				throw new SocketException("The socket type requires that message be sent atomically, and the size of the message to be sent made this impossible.");
+			case EMSGSIZE:
+			throw new SocketException("The socket type requires that message be sent atomically, and the size of the message to be sent made this impossible.");
 
-				case ENOBUFS:
-				throw new SocketException("The output queue for a network interface was full.  This generally indicates that the interface has stopped sending, but may be caused by transient congestion.  (Normally, this does not occur in Linux.  Packets are just silently dropped when a device queue overflows.)");
+			case ENOBUFS:
+			throw new SocketException("The output queue for a network interface was full. This generally indicates that the interface has stopped sending, but may be caused by transient congestion. (Normally, this does not occur in Linux. Packets are just silently dropped when a device queue overflows.)");
 
-				case ENOMEM:
-				throw new SocketException("No memory available.");
+			case ENOMEM:
+			throw new SocketException("No memory available.");
 
-				case ENOTCONN:
-				throw new SocketException("The socket is not connected, and no target has been given.");
+			case ENOTCONN:
+			throw new SocketException("The socket is not connected, and no target has been given.");
 
-				case ENOTSOCK:
-				throw new SocketException("The argument s is not a socket.");
+			case ENOTSOCK:
+			throw new SocketException("The argument s is not a socket.");
 
-				case EOPNOTSUPP:
-				throw new SocketException("Some bit in the flags argument is inappropriate for the socket type.");
+			case EOPNOTSUPP:
+			throw new SocketException("Some bit in the flags argument is inappropriate for the socket type.");
 
-				case EPIPE:
-				throw new SocketException("The  local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
+			case EPIPE:
+			throw new SocketException("The local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
 
-				default:
-				slog << "Unknow exception: " + itos(errno) + "\n";
-				break;
-			}
+			default:
+			throw new SocketException("Unknow exception: " + itos(errno));
 		}
 	}
-	catch (SocketException *e)
-	{
-		slog << "sendDataDirect: Exception: " + e->getDescription() + "\n";
-	}
 }
 
-void AsyncSocket::setEvent(int event)
+void AsyncSocket::eventAdd(unsigned int eventType)
 {
-	myEventQueue.push(event);
+	eventAdd(eventType, "");
+}
+
+void AsyncSocket::eventAdd(unsigned int eventType, string eventData)
+{
+	SocketEvent socketEvent(eventType, eventData);
+	myEventQueue.push(socketEvent);
 	myEventSemaphore.broadcast();
 }
-
-void AsyncSocket::forceReconnect()
-{
-	///FIXME: Threadsafe?
-	myForceReconnect = true;
-}
-

@@ -32,6 +32,7 @@ using namespace std;
 #include "../Socket/socketexception.h"
 #include "../Settings/settings.h"
 #include "canmessage.h"
+#include "../version.h"
 
 class CanDebug : public Thread<CanDebug>
 {

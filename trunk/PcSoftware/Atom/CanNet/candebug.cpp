@@ -84,12 +84,11 @@ void CanDebug::run()
 
 			if (mySocket.accept(newSocket))
 			{
-				newSocket->sendDataDirect("Welcome to Atom CanDebug\n");
+				newSocket->sendData("Welcome to Atom " + ftos(VERSION) + " - CanDebug output\n");
 
 				slog << "CanDebug accepted new client on socket " + itos(newSocket->getSocket()) + ".\n";
 				myClientSockets[newSocket->getSocket()] = newSocket;
-
-				
+				myClientSockets[newSocket->getSocket()]->start();
 			}
 		}
 	}
@@ -109,12 +108,20 @@ void CanDebug::sendData(string data)
 	{
 		if (iter->second->isConnected())
 		{
-			//slog << "CanDebug sent data to client " + itos(iter->second->getSocket()) + ".\n";
-			iter->second->sendDataDirect(data);
+			//slog << "CanDebug: sent data to client " + itos(iter->second->getSocket()) + ".\n";
+			
+			try
+			{
+				iter->second->sendData(data);
+			}
+			catch (SocketException* e)
+			{
+				slog << "CanDebug caught an exception:" + e->getDescription() + ".\n";
+			}
 		}
 		else
 		{
-			slog << "CanDebug client " + itos(iter->second->getSocket()) + " has disconnected.\n";
+			slog << "CanDebug had a client disconnect.\n";
 			delete iter->second;
 			myClientSockets.erase(iter);
 		}

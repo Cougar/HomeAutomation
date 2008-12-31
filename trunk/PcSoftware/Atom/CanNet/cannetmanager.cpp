@@ -65,89 +65,94 @@ void CanNetManager::openChannel()
 	string address = Settings::get("CanNetAddress");
 	string port = Settings::get("CanNetPort");
 
-	myChannel->setAddress(address, stoi(port));
-
+	myChannel->setAddress(address);
+	myChannel->setPort(stoi(port));
 	myChannel->setReconnectTimeout(10);
 
 	myChannel->start();
 
-	myChannel->startEvent();
+	myChannel->eventStartListen();
 
 	bool waitingForPong = false;
+	vector<string> dataLines;
+	string data;
+	CanMessage canMessage;
 
 	while (1)
 	{
-		myChannel->waitForEvent();
+		myChannel->eventWait();
 
-		while (myChannel->availableEvent())
+		while (myChannel->eventIsAvailable())
 		{
-			int event = myChannel->getEvent();
+			SocketEvent socketEvent = myChannel->eventFetch();
 
-			if (event == ASYNCSOCKET_EVENT_DATA)
+			switch (socketEvent.getType())
 			{
-				while (myChannel->availableData())
-				{
-					waitingForPong = false;
+				case SocketEvent::TYPE_CONNECTED:
+				slog << "Connected to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n";
+				break;
 
-					string data = myChannel->getData();
+				case SocketEvent::TYPE_CONNECTING:
+				slog << "Connecting to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n";
+				break;
 
-					try
-					{
-						///FIXME: Verify that \n is right here, have seen that it does not always work
-						vector<string> dataLines = explode("\n", data);
-
-						for (int n = 0; n < dataLines.size(); n++)
-						{
-							data = trim(dataLines[n], '\n');
-
-							if (data == "PONG")
-							{
-								slog << "Received pong.\n";
-								continue;
-							}
-
-							CanMessage canMessage;
-							canMessage.setRaw(data);
-
-							//slog << "Received: " << data;
-
-							if (!canMessage.isUnknown())
-							{
-								vm.queueCanMessage(canMessage);
-								canDebug.sendCanMessage(canMessage);
-							}
-							else
-							{
-								canDebug.sendData(data + "\n");
-							}
-							/*else
-							{
-								slog << "Received unknown message. Skipping...\n";
-							}*/
-						}
-					}
-					catch (CanMessageException* e)
-					{
-						slog << "CanMessageException was caught:\n";
-						slog << e->getDescription() + "\n";
-					}
-				}
-			}
-			else if (event == ASYNCSOCKET_EVENT_CONNECTED)
-			{
-				slog << "Connected to " + address + ":" + port + "\n";
-			}
-			else if (event == ASYNCSOCKET_EVENT_CLOSED)
-			{
-				vm.queueExpression("setAllOffline();");
-			}
-			else if (event == ASYNCSOCKET_EVENT_DIED)
-			{
+				case SocketEvent::TYPE_CONNECTION_CLOSED:
+				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " closed.\n";
 				vm.queueExpression("setAllOffline();");
 				break;
-			}
-			else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
-			{
+
+				case SocketEvent::TYPE_CONNECTION_DIED:
+				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " died :: " + socketEvent.getData() + "\n";
+				vm.queueExpression("setAllOffline();");
+				break;
+
+				case SocketEvent::TYPE_CONNECTION_RESET:
+				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " was reset :: " + socketEvent.getData() + "\n";
+				vm.queueExpression("setAllOffline();");
+				break;
+
+				case SocketEvent::TYPE_CONNECTION_FAILED:
+				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " failed :: " + socketEvent.getData() + "\n";
+				vm.queueExpression("setAllOffline();");
+				break;
+
+				case SocketEvent::TYPE_DATA:
+				waitingForPong = false;
+				try
+				{
+					dataLines = explode("\n", socketEvent.getData());
+
+					for (int n = 0; n < dataLines.size(); n++)
+					{
+						data = trim(dataLines[n], '\n');
+
+						if (data == "PONG")
+						{
+							slog << "Received pong.\n";
+							continue;
+						}
+
+						canMessage.setRaw(data);
+
+						if (!canMessage.isUnknown())
+						{
+							vm.queueCanMessage(canMessage);
+							canDebug.sendCanMessage(canMessage);
+						}
+						else
+						{
+							canDebug.sendData(data + "\n");
+						}
+					}
+				}
+				catch (CanMessageException* e)
+				{
+					slog << "CanMessageException was caught:\n";
+					slog << e->getDescription() + "\n";
+				}
+				break;
+
+				case SocketEvent::TYPE_INACTIVITY:
 				if (waitingForPong)
 				{
 					slog << "We have not received a pong for our ping.\n";
@@ -162,12 +167,16 @@ void CanNetManager::openChannel()
 					slog << "Sending ping.\n";
 					myChannel->sendData("PING");
 				}
+				break;
 
+				case SocketEvent::TYPE_WAITING_RECONNECT:
+				slog << "Will try to reconnect to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " in " + itos(myChannel->getReconnectTimeout()) + " seconds.\n";
+				break;
 			}
 		}
 	}
 
-	myChannel->stopEvent();
+	myChannel->eventStopListen();
 }
 
 void CanNetManager::sendMessage(CanMessage canMessage)
