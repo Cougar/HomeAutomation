@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) December 26, 2008 by Mattias Runge                             *
+ *   Copyright (C) December 30, 2008 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   socketthread.h                                            *
+ *   socketevent.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,34 +19,57 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _SOCKETTHREAD_H
-#define	_SOCKETTHREAD_H
+#ifndef _SOCKETEVENT_H
+#define	_SOCKETEVENT_H
 
 using namespace std;
 
 #include <string>
-#include <time.h>
 
-#include "../Socket/asyncsocket.h"
-#include "../Threads/thread.h"
-#include "../Tools/tools.h"
+#define ASYNCSOCKET_EVENT_NONE 0
+#define ASYNCSOCKET_EVENT_DATA 1
+#define ASYNCSOCKET_EVENT_CONNECTED 2
+#define ASYNCSOCKET_EVENT_CONNECT_FAILED 3
+#define ASYNCSOCKET_EVENT_WAITING_TO_RECONNECT 4
+#define ASYNCSOCKET_EVENT_CLOSED 5
+#define ASYNCSOCKET_EVENT_RESET 6
+#define ASYNCSOCKET_EVENT_DIED 7
+#define ASYNCSOCKET_EVENT_INACTIVITY 8
 
-class SocketThread : public Thread<SocketThread>
+class SocketEvent
 {
 public:
-	SocketThread() { Thread<SocketThread>(); };
-	SocketThread(string address, unsigned int port, unsigned int reconnectTimeout);
-	~SocketThread();
+	SocketEvent(unsigned int type, string data)
+	{
+		myType = type;
+		myData = data;
+	}
 
-	unsigned int getId() { return myId; };
-	void send(string data);
+	SocketEvent(const SocketEvent& socketEvent)
+	{
+		myType = socketEvent.myType;
+		myData = socketEvent.myData;
+	}
 
-	void run();
+	unsigned int getType() { return myType; };
+	string getData() { return myData; };
+
+	static const unsigned int TYPE_NONE					= 0;
+	static const unsigned int TYPE_DATA					= 1;
+	static const unsigned int TYPE_INACTIVITY			= 2;
+
+	static const unsigned int TYPE_CONNECTING			= 3;
+	static const unsigned int TYPE_CONNECTED			= 4;
+	static const unsigned int TYPE_WAITING_RECONNECT	= 5;
+	static const unsigned int TYPE_CONNECTION_CLOSED	= 6;
+	static const unsigned int TYPE_CONNECTION_RESET		= 7;
+	static const unsigned int TYPE_CONNECTION_DIED		= 8;
+	static const unsigned int TYPE_CONNECTION_FAILED	= 9;
 
 private:
-	unsigned int myId;
-	AsyncSocket *mySocket;
+	unsigned int myType;
+	string myData;
 };
 
-#endif	/* _SOCKETTHREAD_H */
+#endif	/* _SOCKETEVENT_H */
 

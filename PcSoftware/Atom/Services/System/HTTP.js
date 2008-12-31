@@ -69,22 +69,19 @@ HTTP.prototype.socketCallback = function(event, data)
 {
 	switch (event)
 	{
-	case "EVENT_CONNECTED":
+	case "CONNECTED":
 	this.mySocket.send(this.myRequest);
 	break;
 	
-	case "EVENT_DATA":
+	case "DATA":
 	this.myBuffer += unescape(data);
 	break;
 	
-	case "EVENT_RESET":
-	case "EVENT_CLOSED":
-	case "EVENT_DIED":
+	case "RESET":
+	case "CLOSED":
+	case "DIED":
 	this.mySocket.stop();
 	this.processBuffer();
-	break;
-	
-	case "EVENT_INACTIVITY":
 	break;
 	}
 }

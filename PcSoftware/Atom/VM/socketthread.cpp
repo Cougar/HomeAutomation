@@ -22,16 +22,15 @@
 #include "socketthread.h"
 #include "virtualmachine.h"
 
-SocketThread::SocketThread(string address, int port, unsigned int reconnectTimeout)
+SocketThread::SocketThread(string address, unsigned int port, unsigned int reconnectTimeout)
 {
 	myId = time(NULL);
 
 	mySocket = new AsyncSocket();
 
-	mySocket->setAddress(address, port);
+	mySocket->setAddress(address);
+	mySocket->setPort(port);
 	mySocket->setReconnectTimeout(reconnectTimeout);
-
-	Thread<SocketThread>();
 }
 
 SocketThread::~SocketThread()
@@ -41,69 +40,74 @@ SocketThread::~SocketThread()
 		cout << "~SocketThread() :: Failed to stop thread :: Error code is " + itos(getError()) + "\n";
 
 	}
-	else
+/*	else
 	{
-	//	cout << "~SocketThread() :: Successfully stopped thread\n";
-	}
+		cout << "~SocketThread() :: Successfully stopped thread\n";
+	}*/
 	delete mySocket;
 }
 
 void SocketThread::run()
 {
-	//SyslogStream &slog = SyslogStream::getInstance();
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
 	mySocket->start();
 
-	mySocket->startEvent();
+	mySocket->eventStartListen();
 
-	while (1)
+	while (true)
 	{
-		mySocket->waitForEvent();
+		mySocket->eventWait();
 
-		while (mySocket->availableEvent())
+		while (mySocket->eventIsAvailable())
 		{
-			int event = mySocket->getEvent();
+			SocketEvent socketEvent = mySocket->eventFetch();
 
-			if (event == ASYNCSOCKET_EVENT_DATA)
+			switch (socketEvent.getType())
 			{
-				while (mySocket->availableData())
-				{
-					string data = mySocket->getData();
-					vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_DATA', '" + escape(data) + "');");
-				}
-			}
-			else if (event == ASYNCSOCKET_EVENT_CONNECTED)
-			{
-				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_CONNECTED', '');");
-			}
-			else if (event == ASYNCSOCKET_EVENT_CLOSED)
-			{
-				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_CLOSED', '');");
-			}
-			else if (event == ASYNCSOCKET_EVENT_DIED)
-			{
-				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_DIED', '');");
+				case SocketEvent::TYPE_CONNECTED:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'CONNECTED', '" + escape(socketEvent.getData()) + "');");
 				break;
-			}
-			else if (event == ASYNCSOCKET_EVENT_RESET)
-			{
-				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_RESET', '');");
+
+				case SocketEvent::TYPE_CONNECTING:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'CONNECTING', '" + escape(socketEvent.getData()) + "');");
 				break;
-			}
-			else if (event == ASYNCSOCKET_EVENT_INACTIVITY)
-			{
-				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'EVENT_INACTIVITY', '');");
+
+				case SocketEvent::TYPE_CONNECTION_CLOSED:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'CLOSED', '" + escape(socketEvent.getData()) + "');");
+				break;
+
+				case SocketEvent::TYPE_CONNECTION_DIED:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'DIED', '" + escape(socketEvent.getData()) + "');");
+				break;
+
+				case SocketEvent::TYPE_CONNECTION_RESET:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'RESET', '" + escape(socketEvent.getData()) + "');");
+				break;
+
+				case SocketEvent::TYPE_CONNECTION_FAILED:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'CONNECTION_FAILED', '" + escape(socketEvent.getData()) + "');");
+				break;
+
+				case SocketEvent::TYPE_DATA:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'DATA', '" + escape(socketEvent.getData()) + "');");
+				break;
+
+				case SocketEvent::TYPE_INACTIVITY:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'INACTIVITY', '" + escape(socketEvent.getData()) + "');");
+
+				case SocketEvent::TYPE_WAITING_RECONNECT:
+				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'WAITING_RECONNECT', '" + escape(socketEvent.getData()) + "');");
+				break;
 			}
 		}
 	}
 
-	mySocket->stopEvent();
+	mySocket->eventStopListen();
 }
 
 void SocketThread::send(string data)
 {
-
 	mySocket->sendData(data);
 }
 

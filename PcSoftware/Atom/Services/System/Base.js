@@ -53,6 +53,30 @@ String.prototype.trim = function(charlist)
 	return str.rtrim(charlist);
 }
 
+String.prototype.html_entity_decode = function()
+{
+	var str = this.replace(/&#197;/g, "Ä");
+	str = str.replace(/&Auml;/g, "Ä");
+	
+	str = str.replace(/&#196;/g, "Å");
+	str = str.replace(/&Aring;/g, "Å");
+	
+	str = str.replace(/&#214;/g, "Ö");
+	str = str.replace(/&Ouml;/g, "Ö");
+	
+	str = str.replace(/&#228;/g, "ä");
+	str = str.replace(/&auml;/g, "ä");
+	
+	str = str.replace(/&#229;/g, "å");
+	str = str.replace(/&aring;/g, "å");
+	
+	str = str.replace(/&#246;/g, "ö");
+	str = str.replace(/&ouml;/g, "ö");
+	
+	//FIXME: Add more characters
+	
+	return str;
+}
 
 Date.prototype.getTimestamp = function()
 {

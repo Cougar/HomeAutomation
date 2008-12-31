@@ -44,7 +44,7 @@ OnlinePhonebook.prototype.httpCallback = function(result, header, content)
 			if (pos != -1)
 			{
 				pos += nameStartString.length + 2
-				persons[persons.length] = line.substr(pos, line.length-pos-nameEndString.length).replace("  ", " ");
+				persons[persons.length] = line.substr(pos, line.length-pos-nameEndString.length).html_entity_decode().replace("  ", " ");
 			}
 		}
 	}
