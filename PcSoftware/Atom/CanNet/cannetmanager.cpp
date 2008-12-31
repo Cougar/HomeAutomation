@@ -63,7 +63,16 @@ void CanNetManager::openChannel()
 	CanDebug &canDebug = CanDebug::getInstance();
 
 	string address = Settings::get("CanNetAddress");
+	if (address == "")
+	{
+		throw new Atom::Exception("CanNetAddress is not defined in the config file, can not start.");
+	}
+
 	string port = Settings::get("CanNetPort");
+	if (port == "")
+	{
+		throw new Atom::Exception("CanNetPort is not defined in the config file, can not start.");
+	}
 
 	myChannel->setAddress(address);
 	myChannel->setPort(stoi(port));

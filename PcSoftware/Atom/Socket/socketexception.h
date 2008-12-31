@@ -24,7 +24,7 @@
 
 #include "../exception.h"
 
-class SocketException : public Exception
+class SocketException : public Atom::Exception
 {
 public:
 	SocketException(string description) : Exception(description) {};
