@@ -26,6 +26,9 @@ using namespace std;
 
 #include <string>
 
+namespace Atom
+{
+
 class Exception
 {
 public:
@@ -37,6 +40,7 @@ private:
 	string myDescription;
 };
 
+}
 
 #endif	/* _EXCEPTION_H */
 

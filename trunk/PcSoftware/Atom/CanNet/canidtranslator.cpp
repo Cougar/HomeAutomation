@@ -45,9 +45,16 @@ CanIdTranslator::CanIdTranslator()
 
 	string filename = Settings::get("CanIdXMLFile");
 
-	xmlNode.load(filename.c_str());
+	if (file_exists(filename))
+	{
+		xmlNode.load(filename.c_str());
 
-	slog << "Loading definitions from " + filename + ".\n";
+		slog << "Loading definitions from " + filename + ".\n";
+	}
+	else
+	{
+		slog << "CanIdXMLFile is not defined in the config file, this will probably not work at all.\n";
+	}
 }
 
 string CanIdTranslator::lookupClassName(int classId)

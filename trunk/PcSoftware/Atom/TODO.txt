@@ -16,5 +16,4 @@ LESS IMPORTANT
 * Implement more module-services...
 * Build service example... commented
 * Mysql-interface
-* AsyncSocket, move logging to some messagesystem with events
 * Check uint conversion, sometimes negative values are the result

@@ -76,7 +76,7 @@ string Settings::get(string name)
 	map<string, string>::const_iterator iterator = mySettings.find(name);
 
 	if (iterator == mySettings.end())
-		return NULL;
+		return "";
 
 	return iterator->second;
 }

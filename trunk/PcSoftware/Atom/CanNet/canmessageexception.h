@@ -24,7 +24,7 @@
 
 #include "../exception.h"
 
-class CanMessageException : public Exception
+class CanMessageException : public Atom::Exception
 {
 public:
 	CanMessageException(string description) : Exception(description) {};

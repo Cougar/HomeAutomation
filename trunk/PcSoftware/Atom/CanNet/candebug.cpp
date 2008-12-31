@@ -70,6 +70,12 @@ void CanDebug::run()
 
 	string port = Settings::get("CanDebugPort");
 
+	if (port == "")
+	{
+		slog << "CanDebugPort is not defined in the config file, will not start debug interface\n";
+		return;
+	}
+
 	try
 	{
 		mySocket.setPort(stoi(port));
