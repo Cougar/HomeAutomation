@@ -85,7 +85,7 @@ void CanNetManager::openChannel()
 	bool waitingForPong = false;
 	vector<string> dataLines;
 	string data;
-	CanMessage canMessage;
+	CanMessage *canMessage = NULL;
 
 	while (1)
 	{
@@ -141,21 +141,29 @@ void CanNetManager::openChannel()
 							continue;
 						}
 
-						canMessage.setRaw(data);
+						canMessage = new CanMessage(data);
 
-						if (!canMessage.isUnknown())
+						if (!canMessage->isUnknown())
 						{
-							vm.queueCanMessage(canMessage);
-							canDebug.sendCanMessage(canMessage);
+							vm.queueCanMessage(*canMessage);
+							canDebug.sendCanMessage(*canMessage);
 						}
 						else
 						{
 							canDebug.sendData(data + "\n");
 						}
+
+						delete canMessage;
+						canMessage = NULL;
 					}
 				}
 				catch (CanMessageException* e)
 				{
+					if (canMessage != NULL)
+					{
+						delete canMessage;
+					}
+
 					slog << "CanMessageException was caught:\n";
 					slog << e->getDescription() + "\n";
 				}

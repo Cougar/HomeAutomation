@@ -18,14 +18,29 @@ SimpleDTMF.prototype.canMessageHandler = function(canMessage)
 		
 		this.myLastPhonenumber = canMessage.getData("Number");
 		
-		if (this.myLastPhonenumber[this.myLastPhonenumber.length-1] == 'f')
+		if (this.myLastPhonenumber == "b00c") // No number sent
 		{
-			this.myLastPhonenumber = this.myLastPhonenumber.substr(0, this.myLastPhonenumber.length-1);
+			log(this.myName + ":" + this.myId + "> New phonenumber: No number sent\n");
+			this.myLastPhonenumber = "None";
+			this.callEvent("newNoPhonenumber", null);
 		}
+		if (this.myLastPhonenumber == "b10c") // Hidden number sent
+		{
+			log(this.myName + ":" + this.myId + "> New phonenumber: Hidden number sent\n");
+			this.myLastPhonenumber = "Hidden";
+			this.callEvent("newHiddenPhonenumber", null);
+		}
+		else if (this.myLastPhonenumber[0] == 'a')
+		{
+			this.myLastPhonenumber = this.myLastPhonenumber.ltrim('a');
+			
+			var pos = this.myLastPhonenumber.indexOf('c');
 		
-		log(this.myName + ":" + this.myId + "> New phonenumber: " + this.myLastPhonenumber + "\n");
+			this.myLastPhonenumber = this.myLastPhonenumber.substr(0, pos);
 		
-		this.callEvent("newPhonenumber", null);
+			log(this.myName + ":" + this.myId + "> New phonenumber: " + this.myLastPhonenumber + "\n");
+			this.callEvent("newPhonenumber", null);
+		}
 		break;
 		}
 	}
