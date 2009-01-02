@@ -1,74 +1,47 @@
 
-
 function CanService(name, id)
 {
 	this.Service(name, id);
 
-	this.myIsOnline = false;
-	this.myHardwareId = null;
-	this.myHeartbeatTime = 0;
+	this.myNode = null;
 }
 
 extend(CanService, Service);
 
-CanService.prototype.myIsOnline = null;
-CanService.prototype.myHardwareId = null;
-CanService.prototype.myHeartbeatTime = null;
+CanService.prototype.myNode = null;
 
 CanService.prototype.canMessageHandler = function(canMessage)
 {
 }
 
-CanService.prototype.onlineHandler = function()
+CanService.prototype.setOnline = function()
 {
 	log(this.myName + ":" + this.myId + "> Service went online\n");
-	var date = new Date();
-	this.myHeartbeatTime = date.getTimestamp();
-	this.myIsOnline = true;
 	this.callEvent("online", null);
-}
-
-CanService.prototype.heartbeatHandler = function()
-{
-	var date = new Date();
-	this.myHeartbeatTime = date.getTimestamp();
-	this.myIsOnline = true;
-	this.callEvent("heartbeat", null);
-}
-
-CanService.prototype.checkOffline = function()
-{
-	if (this.myIsOnline)
-	{
-		var date = new Date();
-		if (this.myHeartbeatTime + 10 < date.getTimestamp())
-		{
-			this.setOffline();
-		}
-	}
 }
 
 CanService.prototype.setOffline = function()
 {
-	if (this.myIsOnline)
-	{
-		log(this.myName + ":" + this.myId + "> Service went offline\n");
-		this.myIsOnline = false;
-		this.callEvent("offline", null);
-	}
+	log(this.myName + ":" + this.myId + "> Service went offline\n");
+	this.callEvent("offline", null);
 }
 
 CanService.prototype.isOnline = function()
 {
-	return this.myIsOnline;
+	if (this.myNode)
+	{
+		return this.myNode.isOnline();
+	}
+	
+	return false;
 }
 
-CanService.prototype.setHardwareId = function(hardwareId)
+CanService.prototype.setNode = function(node)
 {
-	this.myHardwareId = hardwareId;
+	this.myNode = node;
 }
 
-CanService.prototype.getHardwareId = function()
+CanService.prototype.getNode = function()
 {
-	return this.myHardwareId;
+	return this.myNode;
 }

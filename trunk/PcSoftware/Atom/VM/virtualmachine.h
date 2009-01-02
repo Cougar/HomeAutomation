@@ -42,6 +42,7 @@ using namespace v8;
 
 Handle<Value> VirtualMachine_log(const Arguments& args);
 Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args);
+Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args);
 Handle<Value> VirtualMachine_loadScript(const Arguments& args);
 Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args);
 Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args);
@@ -71,7 +72,7 @@ public:
 	void sendToSocketThread(unsigned int id, string data);
 
 private:
-	void callHandleHeartbeat(int hardwareId);
+	void callHandleNMTMessage(CanMessage canMessage);
 	void callHandleMessage(CanMessage canMessage);
 	bool runExpression(string expression);
 
@@ -79,7 +80,7 @@ private:
 	~VirtualMachine();
 	static VirtualMachine* myInstance;
 
-	Handle<Function> myFunctionHandleHeartbeat;
+	Handle<Function> myFunctionHandleNMTMessage;
 	Handle<Function> myFunctionOfflineCheck;
 	Handle<Function> myFunctionHandleMessage;
 	Handle<Function> myFunctionStartup;

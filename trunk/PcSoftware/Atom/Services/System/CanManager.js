@@ -1,11 +1,72 @@
 
+CanNodes = new Array();
 CanServices = new Array();
 CanOfflineTimer = new Interval(offlineCheck, 10000);
+
+function handleNMTMessage(className, commandName, data)
+{
+	var canMessage = new CanNMTMessage(className, commandName, eval("(" + data + ")"));
+
+	switch (canMessage.getCommandName())
+	{
+	case "Reset":
+	break;
+	
+	case "Bios_Start":
+	break;
+	
+	case "Pgm_Start":
+	break;
+	
+	case "Pgm_Data":
+	break;
+	
+	case "Pgm_End":
+	break;
+	
+	case "Pgm_Copy":
+	break;
+	
+	case "Pgm_Ack":
+	break;
+	
+	case "Pgm_Nack":
+	break;
+	
+	case "Start_App":
+	break;
+	
+	case "App_Start":
+	break;
+	
+	case "Heartbeat":
+	var node = CanNodes[canMessage.getData("HardwareId")];
+	
+	if (!node)
+	{
+		log("A can node with hardware id " + uint2hex(canMessage.getData("HardwareId"), 32) + " was not found, starting.\n");
+		node = new CanNode(canMessage.getData("HardwareId"), canMessage.getData("NumberOfModules"));
+		CanNodes[canMessage.getData("HardwareId")] = node;
+	}
+	
+	node.handleHeartbeat(canMessage.getData("NumberOfModules"));
+	break;
+	}
+}
+
+// This is used to send messages to the can network
+function sendNMTMessage(canMessage)
+{
+	sendCanNMTMessage(	canMessage.getClassName(), 
+				canMessage.getCommandName(), 
+				canMessage.getDataString());
+}
 
 // This is called when a message has been received from the can network
 function handleMessage(className, directionFlag, moduleName, moduleId, commandName, data)
 {
 	var canMessage = new CanMessage(className, directionFlag, moduleName, moduleId, commandName, eval("(" + data + ")"));
+	
 	var fullId = canMessage.getModuleName() + canMessage.getModuleId();
 
 	if (canMessage.getCommandName() == "List" && canMessage.getDirectionFlag() == "From_Owner")
@@ -16,9 +77,16 @@ function handleMessage(className, directionFlag, moduleName, moduleId, commandNa
 
 			if (service != null)
 			{
+				var node = CanNodes[canMessage.getData("HardwareId")];
+			
+				if (node)
+				{
+					service.setNode(node);
+					node.addService(canMessage.getData("SequenceNumber"), service);
+					CanNodes[canMessage.getData("HardwareId")] = node;
+				}
+				
 				CanServices[fullId] = service;
-				CanServices[fullId].setHardwareId(canMessage.getData("HardwareId"));
-				CanServices[fullId].onlineHandler();
 			}
 			else
 			{
@@ -56,55 +124,19 @@ function sendMessage(canMessage)
 			canMessage.getDataString());
 }
 
-function startOfflineCheck()
-{
-	CanOfflineTimer.start();
-}
-
 // This will be called at reqular intervals
 function offlineCheck()
 {
-	for (var n in CanServices)
+	for (var n in CanNodes)
 	{
-		CanServices[n].checkOffline();
+		CanNodes[n].checkOffline();
 	}
 }
 
 function setAllOffline()
 {
-	for (var n in CanServices)
+	for (var n in CanNodes)
 	{
-		CanServices[n].setOffline();
-	}
-}
-
-// This is called when a node sends a heartbeat
-function handleHeartbeat(hardwareId)
-{
-	var found = false;
-
-	for (var n in CanServices)
-	{
-		if (CanServices[n].getHardwareId() == hardwareId)
-		{
-			found = true;
-			
-			if (CanServices[n].isOnline())
-			{
-				CanServices[n].heartbeatHandler();
-			}
-			else
-			{
-				CanServices[n].onlineHandler();
-			}
-		}
-	}
-	
-	if (!found)
-	{
-		log("Received heartbeat from unknown node, requesting module listing for hardware id 0x" + uint2hex(hardwareId, 32) + "\n");
-		var canMessage = new CanMessage("nmt", "To_Owner", "", 0, "List");
-		canMessage.setData("HardwareId", hardwareId);
-		sendMessage(canMessage);
+		CanNodes[n].setOffline();
 	}
 }

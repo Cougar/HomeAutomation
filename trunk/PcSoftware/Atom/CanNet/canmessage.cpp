@@ -42,45 +42,39 @@ void CanMessage::setRaw(string rawHex)
 		throw new CanMessageException("Malformed can message received from canDaemon");
 	}
 
-	myRawHeaderBin = hex2bin(parts[1]);
+	string rawHeaderBin = hex2bin(parts[1]);
 
-	myIsHeartbeat = (parts[1] == translator.getDefineId("HeartbeatHeader", "None"));
+	myClassName = translator.lookupClassName(bin2uint(rawHeaderBin.substr(3, 4)));
 
-	// This is not a module id header, but heartbeats are sent this way so we want to check it anyway
-	if (myIsHeartbeat)
+	if (myClassName == "")
 	{
-		string rawHexData = "";
-		for (int n = 4; n < parts.size(); n++)
-		{
-			rawHexData += parts[n];
-		}
+		myIsUnknown = true;
+		return;
+	}
 
-		myData = translator.translateHeartbeatData(rawHexData);
+	string rawHexData = "";
+	for (int n = 4; n < parts.size(); n++)
+	{
+		rawHexData += parts[n];
+	}
+
+	if (myClassName == "nmt")
+	{
+		int commandId = bin2uint(rawHeaderBin.substr(8, 8));
+		myCommandName = translator.lookupNMTCommandName(commandId);
+		
+		myData = translator.translateNMTData(commandId, rawHexData);
 	}
 	else
 	{
-		myClassName = translator.lookupClassName(bin2uint(myRawHeaderBin.substr(3, 4)));
+		myDirectionFlag = translator.lookupDirectionFlag(bin2uint(rawHeaderBin.substr(7, 1)));
+		myModuleName = translator.lookupModuleName(bin2uint(rawHeaderBin.substr(8, 8)));
 
-		if (myClassName == "")
-		{
-			myIsUnknown = true;
-			return;
-		}
+		myModuleId = bin2uint(rawHeaderBin.substr(16, 8));
 
-		myDirectionFlag = translator.lookupDirectionFlag(bin2uint(myRawHeaderBin.substr(7, 1)));
-		myModuleName = translator.lookupModuleName(bin2uint(myRawHeaderBin.substr(8, 8)));
-
-		myModuleId = bin2uint(myRawHeaderBin.substr(16, 8));
-
-		int commandId = bin2uint(myRawHeaderBin.substr(24, 8));
+		int commandId = bin2uint(rawHeaderBin.substr(24, 8));
 		myCommandName = translator.lookupCommandName(commandId, myModuleName);
 
-		string rawHexData = "";
-		for (int n = 4; n < parts.size(); n++)
-		{
-			rawHexData += parts[n];
-		}
-		
 		myData = translator.translateData(commandId, myModuleName, rawHexData);
 	}
 }
@@ -88,6 +82,8 @@ void CanMessage::setRaw(string rawHex)
 string CanMessage::getRaw()
 {
 	CanIdTranslator &translator = CanIdTranslator::getInstance();
+
+	string dataHex;
 
 	string rawHex = "PKT ";
 
@@ -99,34 +95,48 @@ string CanMessage::getRaw()
 	else
 		bin += uint2bin(classId, 4);
 
+	if (myClassName == "nmt")
+	{
+		bin +="0";
 
-	bin += uint2bin(translator.resolveDirectionFlag(myDirectionFlag), 1);
+		int commandNameId = translator.resolveNMTCommandId(myCommandName);
+		if (commandNameId == -1)
+			bin += "00000000";
+		else
+			bin += uint2bin(commandNameId, 8);
 
+		bin += "0000000000000000";
 
-	int moduleTypeId = translator.resolveModuleId(myModuleName);
-	if (moduleTypeId == -1)
-		bin += "00000000";
+		dataHex = translator.translateNMTDataToHex(commandNameId, myData);
+	}
 	else
-		bin += uint2bin(moduleTypeId, 8);
+	{
+		bin += uint2bin(translator.resolveDirectionFlag(myDirectionFlag), 1);
 
 
-	int moduleId = myModuleId;
-	bin += uint2bin(moduleId, 8);
+		int moduleTypeId = translator.resolveModuleId(myModuleName);
+		if (moduleTypeId == -1)
+			bin += "00000000";
+		else
+			bin += uint2bin(moduleTypeId, 8);
 
 
-	int commandNameId = translator.resolveCommandId(myCommandName, myModuleName);
-	if (commandNameId == -1)
-		bin += "00000000";
-	else
-		bin += uint2bin(commandNameId, 8);
+		int moduleId = myModuleId;
+		bin += uint2bin(moduleId, 8);
 
 
-	
+		int commandNameId = translator.resolveCommandId(myCommandName, myModuleName);
+		if (commandNameId == -1)
+			bin += "00000000";
+		else
+			bin += uint2bin(commandNameId, 8);
+
+		dataHex = translator.translateDataToHex(commandNameId, myModuleName, myData);
+	}
+
 	rawHex += bin2hex(bin);
-	
-	rawHex += " 1 0";
 
-	string dataHex = translator.translateDataToHex(commandNameId, myModuleName, myData);
+	rawHex += " 1 0";
 
 	while (dataHex.size() > 0)
 	{
@@ -138,99 +148,6 @@ string CanMessage::getRaw()
 	rawHex += "\n";
 
 	return rawHex;
-}
-
-void CanMessage::setJSON(string json)
-{
-	cout << json << "\n";
-	string data = trim(json, '(');
-	data = trim(data, ')');
-	data = trim(data, '{');
-	data = trim(data, '{');
-	data = trim(data, ' ');
-
-	vector<string> parts = explode(",", data);
-
-	for (int n = 0; n < parts.size(); n++)
-	{
-		string part = trim(parts[n], ' ');
-		vector<string> innerParts = explode(":", part);
-
-		int c = 0;
-		if (innerParts[0] == "data")
-			c++;
-
-		string name = trim(innerParts[c], ' ');
-		name = trim(name, '{');
-		name = trim(name, '}');
-		string value = trim(innerParts[c+1], ' ');
-		value = trim(value, '{');
-		value = trim(value, '}');
-		value = trim(value, '"');
-		
-		cout << "\n" << name << "=" << value << "\n";
-
-		if (name == "className")
-			myClassName = value;
-		else if (name == "directionFlag")
-			myDirectionFlag = value;
-		else if (name == "moduleName")
-			myModuleName = value;
-		else if (name == "moduleId")
-			myModuleId = stoi(value);
-		else if (name == "commandName")
-			myCommandName = value;
-		else
-		{
-			CanVariable canVariable(name, value, "", "");
-			myData[name] = canVariable;
-		}
-	}
-}
-
-string CanMessage::getJSON()
-{
-	string json = "{ ";
-
-	json += "className : '" + myClassName + "', ";
-	json += "directionFlag : '" + myDirectionFlag + "', ";
-	json += "moduleName : '" + myModuleName + "', ";
-	json += "moduleId : " + itos(myModuleId) + ", ";
-	json += "commandName : '" + myCommandName + "', ";
-
-	json += "data : {";
-
-	map<string, CanVariable>::iterator iter;
-
-	for (iter = myData.begin(); iter != myData.end(); iter++)
-	{
-		json += " " + iter->first + " : { ";
-
-		json += "unit : '" + iter->second.getUnit() + "', ";
-		json += "type : '" + iter->second.getType() + "', ";
-		json += "value : ";
-
-		if (iter->second.getType() == "uint")
-		{
-			json += iter->second.getValue();
-		}
-		else if (iter->second.getType() == "float")
-		{
-			json += iter->second.getValue();
-		}
-		else if (iter->second.getType() == "ascii" || iter->second.getType() == "hexstring")
-		{
-			json += "'" + iter->second.getValue() + "'";
-		}
-
-		json += " },";
-	}
-
-	json = trim(json, ',');
-
-	json += " }";
-
-	return json + " }";
 }
 
 string CanMessage::getJSONData()

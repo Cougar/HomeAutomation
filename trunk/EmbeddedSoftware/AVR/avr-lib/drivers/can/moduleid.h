@@ -1,4 +1,4 @@
-// Built on Sat Dec 27 19:33:55 2008 by makeCanId.pl
+// Built on Fri Jan  2 02:16:09 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -8,7 +8,8 @@
 // Class definitions //
 //------------------ //
 
-#define CAN_MODULE_CLASS_NMT 11
+#define CAN_MODULE_CLASS_NMT 0
+#define CAN_MODULE_CLASS_MNMT 11
 #define CAN_MODULE_CLASS_ACT 12
 #define CAN_MODULE_CLASS_SNS 13
 #define CAN_MODULE_CLASS_DEF 14
@@ -64,6 +65,5 @@
 
 #define DIRECTIONFLAG_FROM_OWNER 1
 #define DIRECTIONFLAG_TO_OWNER 0
-#define NONE_HEARTBEATHEADER 002c0000
 
 #endif /*MODULEID_H_*/

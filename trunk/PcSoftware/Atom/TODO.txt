@@ -1,19 +1,30 @@
 TODO
 ====
+Bugs
+----
+* Check uint conversion, sometimes negative values are the result
+* CanTranslator and CanMessage should use unsigned int maybe
 
-IMPORTANT
-* Do not output everything to syslog only the most important, other things to diffrent logfiles or sockets
-
-LESS IMPORTANT
+Features
+--------
+* Loggingsystem with own logfile and diffrent levels, some to syslog some to own file etc...
 * Commandline options override settings
-* Validity on incomming and outgoing canmessages based on information in the xml-file
 * Variable value types as Linus suggested
+* Validity on incomming and outgoing canmessages based on information in the xml-file
+* Javascript command interface
+* Implement internal canDaemon functionality
+* Mysql-interface
+* Build javascript for programming a node
+
+Other
+-----
+* Remove code duplication in CanTranslator, easy to do
 * Error checking...
 * FIXMEs
-* Javascript command interface
-* Implement support for nmt-messages to restart applications and program nodes. Build interaface to replace canDude
-* Implement internal canDaemon functionality
 * Implement more module-services...
-* Build service example... commented
-* Mysql-interface
-* Check uint conversion, sometimes negative values are the result
+* Think out a simple way of replacing canDude, maybe a script that sends the commands to Atom over a socket
+
+Documentation
+-------------
+* Commented javascript examples for modules and logic scripts
+* Wiki-text to describe all aspects of Atom

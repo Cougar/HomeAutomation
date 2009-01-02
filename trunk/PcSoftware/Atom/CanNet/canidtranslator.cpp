@@ -148,6 +148,42 @@ int CanIdTranslator::resolveCommandId(string commandName, string moduleName)
 	return -1;
 }
 
+string CanIdTranslator::lookupNMTCommandName(int commandId)
+{
+	XmlNode commandsNode = xmlNode.findChild("nmt_messages");
+	vector<XmlNode> commandNodes = commandsNode.getChildren();
+
+	for (int n = 0; n < commandNodes.size(); n++)
+	{
+		map<string, string> attributes = commandNodes[n].getAttributes();
+
+		if (stoi(attributes["id"]) == commandId)
+		{
+			return attributes["name"];
+		}
+	}
+
+	return "";
+}
+
+int CanIdTranslator::resolveNMTCommandId(string commandName)
+{
+	XmlNode commandsNode = xmlNode.findChild("nmt_messages");
+	vector<XmlNode> commandNodes = commandsNode.getChildren();
+
+	for (int n = 0; n < commandNodes.size(); n++)
+	{
+		map<string, string> attributes = commandNodes[n].getAttributes();
+
+		if (attributes["name"].compare(commandName) == 0)
+		{
+			return stoi(attributes["id"]);
+		}
+	}
+
+	return -1;
+}
+
 string CanIdTranslator::getDefineId(string name, string group)
 {
 	XmlNode definesNode = xmlNode.findChild("defines");
@@ -355,7 +391,6 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 	vector<XmlNode> commandNodes = commandsNode.getChildren();
 
 	string dataBin = hex2bin(dataHex);
-	//string dataString = "{";
 
 	for (int n = 0; n < commandNodes.size(); n++)
 	{
@@ -397,34 +432,24 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 				variable.setUnit(attributes["unit"]);
 				variable.setBitLength(bitLength);
 
-				//dataString += " " + attributes["name"] + " : { value : ";
-				//dataString += attributes["name"] + "=";
-				//dataString += attributes["name"] + ":" + attributes["type"] + ":" + attributes["bit_length"] + "=\"";
-
 				if (attributes["type"] == "uint")
 				{
 					variable.setValue(itos(bin2uint(bits)));
-					//dataString += itos(bin2uint(bits));
 				}
 				else if (attributes["type"] == "float")
 				{
 					variable.setValue(ftos(bin2float(bits)));
-					//dataString += ftos(bin2float(bits));
 				}
 				else if (attributes["type"] == "ascii")
 				{
 					string str;
-					//dataString += "'";
 
 					for (int k = 0; k < bits.length(); k += 8)
 					{
 						str += (char)bin2uint(bits.substr(k, 8));
-						//dataString += (char)bin2uint(bits.substr(k, 4));
 					}
 
 					variable.setValue(str);
-					//cout << "Parsed ascii: " << str << "\n";
-					//dataString += "'";
 				}
 				else if (attributes["type"] == "hexstring")
 				{
@@ -433,26 +458,88 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 					for (int k = 0; k < bits.length(); k += 4)
 					{
 						str += bin2hex(bits.substr(k, 4));
-						//dataString += (char)bin2uint(bits.substr(k, 4));
 					}
 
 					variable.setValue(str);
 				}
 
 				variables[attributes["name"]] = variable;
-
-				//dataString += ", type : '" + attributes["type"] + "', bits : " + attributes["bit_length"] + ", unit : '" + attributes["unit"] + "' },";
-
-				//dataString += ",";
-				//dataString += "\",";
 			}
 
-			//dataString = trim(dataString, ',');
+			return variables;
+		}
+	}
 
-			//dataString += " }";
+	return variables;
+}
 
-			//return dataString;
+map<string, CanVariable> CanIdTranslator::translateNMTData(int commandId, string dataHex)
+{
+	map<string, CanVariable> variables;
+	XmlNode commandsNode = xmlNode.findChild("nmt_messages");
+	vector<XmlNode> commandNodes = commandsNode.getChildren();
 
+	string dataBin = hex2bin(dataHex);
+
+	for (int n = 0; n < commandNodes.size(); n++)
+	{
+		map<string, string> attributes = commandNodes[n].getAttributes();
+
+		if (stoi(attributes["id"]) == commandId)
+		{
+			XmlNode varablesNode = commandNodes[n].findChild("variables");
+
+			vector<XmlNode> variableNodes = varablesNode.getChildren();
+
+			for (int c = 0; c < variableNodes.size(); c++)
+			{
+				map<string, string> attributes = variableNodes[c].getAttributes();
+
+				int bitStart = stoi(attributes["start_bit"]);
+				int bitLength = stoi(attributes["bit_length"]);
+
+				string bits = dataBin.substr(bitStart, bitLength);
+
+				CanVariable variable;
+
+				variable.setName(attributes["name"]);
+				variable.setType(attributes["type"]);
+				variable.setUnit(attributes["unit"]);
+				variable.setBitLength(bitLength);
+
+				if (attributes["type"] == "uint")
+				{
+					variable.setValue(itos(bin2uint(bits)));
+				}
+				else if (attributes["type"] == "float")
+				{
+					variable.setValue(ftos(bin2float(bits)));
+				}
+				else if (attributes["type"] == "ascii")
+				{
+					string str;
+
+					for (int k = 0; k < bits.length(); k += 8)
+					{
+						str += (char)bin2uint(bits.substr(k, 8));
+					}
+
+					variable.setValue(str);
+				}
+				else if (attributes["type"] == "hexstring")
+				{
+					string str;
+
+					for (int k = 0; k < bits.length(); k += 4)
+					{
+						str += bin2hex(bits.substr(k, 4));
+					}
+
+					variable.setValue(str);
+				}
+
+				variables[attributes["name"]] = variable;
+			}
 
 			return variables;
 		}
@@ -462,20 +549,99 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 	return variables;
 }
 
-map<string, CanVariable> CanIdTranslator::translateHeartbeatData(string dataHex)
+string CanIdTranslator::translateNMTDataToHex(int commandId, map<string, CanVariable> data)
 {
-	map<string, CanVariable> variables;
+	XmlNode commandsNode = xmlNode.findChild("nmt_messages");
+	vector<XmlNode> commandNodes = commandsNode.getChildren();
 
-	string dataBin = hex2bin(dataHex);
-	string bits = dataBin.substr(0, 32);
+	map<string, CanVariable> sortedData;
 
-	CanVariable canVariable("HardwareId", itos(bin2uint(bits)), "uint", "");
-	canVariable.setBitLength(32);
+	for (int n = 0; n < commandNodes.size(); n++)
+	{
+		map<string, string> attributes = commandNodes[n].getAttributes();
 
-	variables["HardwareId"] = canVariable;
+		if (stoi(attributes["id"]) == commandId)
+		{
+			XmlNode varablesNode = commandNodes[n].findChild("variables");
 
-	return variables;
+			vector<XmlNode> variableNodes = varablesNode.getChildren();
 
-	//return "{ HardwareId : { value : " + itos(bin2uint(bits)) + ", type : 'uint', bits : 32, unit : '' }";
-	//return "HardwareId:uint:32=\"" + itos(bin2uint(bits)) + "\"";
+			for (int c = 0; c < variableNodes.size(); c++)
+			{
+				map<string, string> attributes = variableNodes[c].getAttributes();
+
+				if (data.find(attributes["name"]) != data.end())
+				{
+					int bitStart = stoi(attributes["start_bit"]);///FIXME: This is not a good way
+					int bitLength = stoi(attributes["bit_length"]);
+
+					sortedData[attributes["name"]].setType(attributes["type"]);
+					sortedData[attributes["name"]].setUnit(attributes["unit"]);
+					sortedData[attributes["name"]].setBitLength(bitLength);
+					sortedData[attributes["name"]].setBitLength(bitLength);
+					sortedData[attributes["name"]].setStartBit(bitStart);
+					sortedData[attributes["name"]].setName(attributes["name"]);
+					sortedData[attributes["name"]].setValue(data[attributes["name"]].getValue());
+				}
+			}
+		}
+	}
+
+	string bin = "0000000000000000000000000000000000000000000000000000000000000000";
+	int heighestBit = 0;
+
+	map<string, CanVariable>::iterator iter;
+
+	for (iter = sortedData.begin(); iter != sortedData.end(); iter++)///FIXME: We should check order and length
+	{
+		if (iter->second.getType() == "uint")
+		{
+			if (iter->second.getStartBit() + iter->second.getBitLength() > heighestBit)
+				heighestBit = iter->second.getStartBit() + iter->second.getBitLength();
+
+			//cout << iter->first << ":" <<  stoi(iter->second.getValue()) << endl;
+			unsigned int a = stoi(iter->second.getValue());
+
+			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
+		}
+		else if (iter->second.getType() == "float")
+		{
+			if (iter->second.getStartBit() + iter->second.getBitLength() > heighestBit)
+				heighestBit = iter->second.getStartBit() + iter->second.getBitLength();
+
+			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), float2bin(stof(iter->second.getValue()), iter->second.getBitLength()));
+		}
+		else if (iter->second.getType() == "ascii")
+		{
+			//cout << iter->second.getValue() << endl;
+			for (int n = 0; n < iter->second.getValue().length(); n++)
+			{
+				if (iter->second.getStartBit()+n*8 + 8 > heighestBit)
+					heighestBit = iter->second.getStartBit()+n*8 + 8;
+
+				//cout << iter->second.getValue()[n] << ":" << (unsigned int)iter->second.getValue()[n] << endl;
+				bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin((unsigned int)iter->second.getValue()[n], 8));
+			}
+		}
+		else if (iter->second.getType() == "hexstring")
+		{
+			for (int n = 0; n < iter->second.getValue().length(); n++)
+			{
+				if (iter->second.getStartBit()+n*4 + 4 > heighestBit)
+					heighestBit = iter->second.getStartBit()+n*4 + 4;
+
+				string character;
+				character += iter->second.getValue()[n];
+
+				bin.replace(iter->second.getStartBit()+n*4, 4, hex2bin(character));
+			}
+		}
+	}
+
+	bin = bin.substr(0, heighestBit);
+
+	//cout << bin2hex(bin) << endl;
+
+	return bin2hex(bin);
 }
+

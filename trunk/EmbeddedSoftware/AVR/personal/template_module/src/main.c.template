@@ -37,7 +37,7 @@ int main(void)
 	
 		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK)
 		{
-			if (	StdCan_Ret_class(rxMsg.Header) == CAN_MODULE_CLASS_NMT &&
+			if (	StdCan_Ret_class(rxMsg.Header) == CAN_MODULE_CLASS_MNMT &&
 				StdCan_Ret_direction(rxMsg.Header) == DIRECTIONFLAG_TO_OWNER &&
 				rxMsg.Header.Command == CAN_MODULE_CMD_GLOBAL_LIST &&
 				rxMsg.Data[0] == NODE_HW_ID_BYTE0 &&
