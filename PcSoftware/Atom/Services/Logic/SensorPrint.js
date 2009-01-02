@@ -12,9 +12,11 @@ extend(SensorPrint, Service);
 
 /* Declaration of instance variables, for static variables remove prototype */
 SensorPrint.prototype.myLCDService = null;
+SensorPrint.prototype.myDTMFService = null;
 SensorPrint.prototype.myTempService = null;
 SensorPrint.prototype.myVoltService = null;
 SensorPrint.prototype.myInterval = null;
+SensorPrint.prototype.myOnlinePhonebook = null;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
@@ -52,6 +54,44 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	this.myVoltService.registerEventCallback("online", function(args) { self.voltOnline(); });
 	/* If the service is already online we should call the handler here */
 	this.voltOnline();
+	
+	
+	this.myDTMFService = ServiceManager.getService("Can", "SimpleDTMF", this.myInitialArguments["SimpleDTMF"]["Id"]);
+	this.myDTMFService.registerEventCallback("newPhonenumber", function(args) { self.dtmfUpdate(args); });
+	//this.myDTMFService.registerEventCallback("online", function(args) { self.dtmfOnline(); });
+	this.dtmfOnline();
+
+	this.myOnlinePhonebook = new OnlinePhonebook(function(phonenumber, persons) { self.phonebookLookupCallback(phonenumber, persons); });
+}
+
+SensorPrint.prototype.dtmfOnline = function()
+{
+}
+
+SensorPrint.prototype.dtmfUpdate = function(args)
+{
+	this.myOnlinePhonebook.lookup(this.myDTMFService.getLastPhonenumber());
+}
+
+SensorPrint.prototype.phonebookLookupCallback = function(phonenumber, persons)
+{
+	if (this.myLCDService.isOnline())
+	{
+		var personString = "";
+	
+		for (var n = 0; n < persons.length; n++)
+		{
+			this.myLCDService.printText(0, n+1, persons[n].pad(18, ' ', 1));
+			/* Print out what we are doing to the console */
+			log(this.myName + ":" + this.myId + "> Trying to print " + persons[n] + " value to LCD\n");
+		}
+		
+		for (var c = n+1; c < 4; c++)
+		{
+			var str = "                  ";
+			this.myLCDService.printText(0, c, str);
+		}
+	}
 }
 
 SensorPrint.prototype.lcdOnline = function()

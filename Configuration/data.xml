@@ -1,5 +1,4 @@
 <?xml version="1.0" standalone="yes"?>
-<!-- Written on 2009-01-01 22:00:00 -->
 <root>
   <classes>
     <class id="0" name="nmt" description="Networkmanagement used only for packets with the nmt-protcol header"/>
