@@ -98,6 +98,7 @@ CanMessage.prototype.toString = function()
 					this.getDirectionFlag() + ", " + 
 					this.getModuleName() + ", " + 
 					this.getModuleId() + ", " + 
+					this.getCommandName() + ", " + 
 					this.getDataString();
 					
 }

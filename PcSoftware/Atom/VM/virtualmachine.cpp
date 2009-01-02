@@ -77,6 +77,7 @@ void VirtualMachine::run()
 	//associates "print" on script to the Print function
 	myGlobal->Set(String::New("log"), FunctionTemplate::New(VirtualMachine_log));
 	myGlobal->Set(String::New("sendCanMessage"), FunctionTemplate::New(VirtualMachine_sendCanMessage));
+	myGlobal->Set(String::New("sendCanNMTMessage"), FunctionTemplate::New(VirtualMachine_sendCanNMTMessage));
 	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine_loadScript));
 	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine_startIntervalThread));
 	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine_stopIntervalThread));
@@ -127,7 +128,7 @@ void VirtualMachine::run()
 				loadScript("Autostart.js");
 			}
 			
-			myFunctionHandleHeartbeat = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleHeartbeat")));
+			myFunctionHandleNMTMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleNMTMessage")));
 			myFunctionOfflineCheck = Handle<Function>::Cast(myContext->Global()->Get(String::New("offlineCheck")));
 			myFunctionHandleMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleMessage")));
 			myFunctionStartup = Handle<Function>::Cast(myContext->Global()->Get(String::New("startup")));
@@ -158,9 +159,9 @@ void VirtualMachine::run()
 		{
 			canMessage = myCanMessages.pop();
 
-			if (canMessage.isHeartbeat())
+			if (canMessage.getClassName() == "nmt")
 			{
-				callHandleHeartbeat(stoi(canMessage.getData()["HardwareId"].getValue()));
+				callHandleNMTMessage(canMessage);
 			}
 			else
 			{
@@ -242,12 +243,17 @@ bool VirtualMachine::loadScript(string scriptName)
 	return true;
 }
 
-void VirtualMachine::callHandleHeartbeat(int hardwareId)
+void VirtualMachine::callHandleNMTMessage(CanMessage canMessage)
 {
-	const int argc = 1;
-	Handle<Value> argv[argc] = { Integer::New(hardwareId) };
+	const int argc = 3;
 
-	Handle<Value> result = myFunctionHandleHeartbeat->Call(myFunctionHandleHeartbeat, argc, argv); // argc and argv are your standard arguments to a function
+	string jsonData = canMessage.getJSONData();
+
+	Handle<Value> argv[argc] = {String::New(canMessage.getClassName().c_str()),
+								String::New(canMessage.getCommandName().c_str()),
+								String::New(jsonData.c_str()) };
+
+	Handle<Value> result = myFunctionHandleNMTMessage->Call(myFunctionHandleNMTMessage, argc, argv); // argc and argv are your standard arguments to a function
 }
 
 void VirtualMachine::callHandleMessage(CanMessage canMessage)
@@ -410,6 +416,39 @@ Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 
 	canMessage.setData(data);
 	
+	canMan.sendMessage(canMessage);
+
+	return Undefined();
+}
+
+Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args)
+{
+	//SyslogStream &slog = SyslogStream::getInstance();
+	CanNetManager &canMan = CanNetManager::getInstance();
+
+	CanMessage canMessage;
+
+	String::AsciiValue className(args[0]);
+	canMessage.setClassName(*className);
+	String::AsciiValue commandName(args[1]);
+	canMessage.setCommandName(*commandName);
+
+	String::AsciiValue dataString(args[2]);
+
+	vector<string> parts = explode(",", trim(*dataString, ','));
+	map<string, CanVariable> data;
+
+	for (int n = 0; n < parts.size(); n++)
+	{
+		vector<string> keyAndValue = explode(":", parts[n]);
+
+		//string key = trim(keyAndValue[0], ' ');
+		//string value = trim(keyAndValue[1], ' ');
+		data[keyAndValue[0]] = CanVariable(keyAndValue[0], keyAndValue[1]);
+	}
+
+	canMessage.setData(data);
+
 	canMan.sendMessage(canMessage);
 
 	return Undefined();

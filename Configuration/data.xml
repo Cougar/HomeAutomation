@@ -1,10 +1,11 @@
 <?xml version="1.0" standalone="yes"?>
-<!-- Written on 23-dec-2008 13:40:00 -->
+<!-- Written on 2009-01-01 22:00:00 -->
 <root>
   <classes>
-    <class id="11" name="nmt" description="Networkmanagement"/>
-    <class id="12" name="act" description="Actuator messages"/>
-    <class id="13" name="sns" description="Sensor messages"/>
+    <class id="0" name="nmt" description="Networkmanagement used only for packets with the nmt-protcol header"/>
+    <class id="11" name="mnmt" description="Module networkmanagement, right now only used for requesting module listing from a node"/>
+    <class id="12" name="act" description="Actuator nmt_messages"/>
+    <class id="13" name="sns" description="Sensor nmt_messages"/>
     <class id="14" name="def" description="Default, not to be used"/>
     <class id="15" name="tst" description="Testing stuff"/>
   </classes>
@@ -23,7 +24,6 @@
         <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
       </variables>
     </command>
-    
     
     <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data">
       <variables>
@@ -69,7 +69,6 @@
       </variables>
     </command>
     
-    
     <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
      <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
@@ -106,7 +105,6 @@
       </variables>
     </command>
     
-    
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
@@ -138,7 +136,7 @@
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
         <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	<variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
     </command>
   </commands>
@@ -159,6 +157,66 @@
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
     <define id="0" group="DirectionFlag" name="To_Owner"/>
-    <define id="002c0000" group="None" name="HeartbeatHeader"/>
   </defines>
+  <nmt_messages>
+    <nmt_message id="0" name="Time"/>
+    <nmt_message id="4" name="Reset">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="8" name="Bios_Start">
+      <variables>
+        <variable name="BiosVersion" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="HasApplication" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="12" name="Pgm_Start">
+      <variables>
+        <variable name="Address" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="20" name="Pgm_End"/>
+    <nmt_message id="24" name="Pgm_Copy">
+      <variables>
+        <variable name="Source" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Destination" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+        <variable name="Length" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="28" name="Pgm_Ack">
+      <variables>
+        <variable name="Data" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="32" name="Pgm_Nack">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="36" name="Start_App" description="Send to node to start the application in the node">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="40" name="App_Start" description="Sent by the application in a node when it starts">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="44" name="Heartbeat">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+        <variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+  </nmt_messages>
 </root>

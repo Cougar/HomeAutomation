@@ -6,8 +6,10 @@ loadScript("System/HTTP.js");
 loadScript("System/Service.js");
 loadScript("System/ServiceManager.js");
 loadScript("System/CanMessage.js");
+loadScript("System/CanNMTMessage.js");
 loadScript("System/CanManager.js");
 loadScript("System/CanService.js");
+loadScript("System/CanNode.js");
 
 loadScript("Other/OnlinePhonebook.js");
 
@@ -20,5 +22,5 @@ function startup()
 		autostart();
 	}
 
-	startOfflineCheck();
+	CanOfflineTimer.start();
 }

@@ -35,16 +35,12 @@ using namespace std;
 class CanMessage
 {
 public:
-	CanMessage() { myIsUnknown = false; myModuleId = 0; myIsHeartbeat = false; };
+	CanMessage() { myIsUnknown = false; myModuleId = 0; };
 	CanMessage(string raw) { setRaw(raw); };
 
 	void setRaw(string rawHex);
 	string getRaw();
-	string getJSON();
-	void setJSON(string json);
-	string getRawHeaderBin() { return myRawHeaderBin; };
 
-	bool isHeartbeat() { return myIsHeartbeat; };
 	bool isUnknown() { return myIsUnknown; };
 	
 	string getClassName() { return myClassName; };
@@ -68,14 +64,12 @@ public:
 	
 private:
 	bool myIsUnknown;
-	bool myIsHeartbeat;
 	string myClassName;
 	string myDirectionFlag;
 	string myModuleName;
 	unsigned int myModuleId;
 	string myCommandName;
 	map<string, CanVariable> myData;
-	string myRawHeaderBin;
 };
 
 #endif	/* _CANMESSAGE_H */

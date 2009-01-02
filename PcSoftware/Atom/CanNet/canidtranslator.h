@@ -38,8 +38,6 @@ public:
 	static CanIdTranslator& getInstance();
 	static void deleteInstance();
 
-	map<string, CanVariable> translateHeartbeatData(string dataHex);
-
 	string lookupClassName(int classId);
 	int resolveClassId(string className);
 
@@ -58,6 +56,11 @@ public:
 	map<string, CanVariable> translateData(string commandName, string moduleName, string dataHex) { return translateData(resolveCommandId(commandName, moduleName), moduleName, dataHex); };
 	string translateDataToHex(int commandId, string moduleName, map<string, CanVariable> data);
 	string translateDataToHex(string commandName, string moduleName, map<string, CanVariable> data) { return translateDataToHex(resolveCommandId(commandName, moduleName), moduleName, data); };
+
+	string lookupNMTCommandName(int commandId);
+	int resolveNMTCommandId(string commandName);
+	map<string, CanVariable> translateNMTData(int commandId, string rawHexData);
+	string translateNMTDataToHex(int commandName, map<string, CanVariable> data);
 
 protected:
 	CanIdTranslator();

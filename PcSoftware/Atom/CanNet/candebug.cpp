@@ -136,26 +136,34 @@ void CanDebug::sendData(string data)
 
 void CanDebug::sendCanMessage(CanMessage canMessage)
 {
-	if (!canMessage.isHeartbeat() && myClientSockets.size() > 0)
+	if (myClientSockets.size() > 0)
 	{
 		string debugData = "";
 
-		if (canMessage.getDirectionFlag() == "To_Owner")
+		if (canMessage.getClassName() == "nmt")
 		{
-			debugData += "RX";
-		}
-		else if (canMessage.getDirectionFlag() == "From_Owner")
-		{
-			debugData += "TX";
+			debugData += "NMT";
 		}
 		else
 		{
-			debugData += "??";
+			if (canMessage.getDirectionFlag() == "To_Owner")
+			{
+				debugData += "RX";
+			}
+			else if (canMessage.getDirectionFlag() == "From_Owner")
+			{
+				debugData += "TX";
+			}
+			else
+			{
+				debugData += "??";
+			}
+
+			debugData += " " + canMessage.getClassName();
+			debugData += "_" + canMessage.getModuleName();
+			debugData += ":" + itos(canMessage.getModuleId());
 		}
 
-		debugData += " " + canMessage.getClassName();
-		debugData += "_" + canMessage.getModuleName();
-		debugData += ":" + itos(canMessage.getModuleId());
 		debugData += " CMD=" + canMessage.getCommandName() + " ";
 
 		map<string, CanVariable> vars = canMessage.getData();
