@@ -60,7 +60,7 @@ public:
 
 	map<string, CanVariable>& getData() { return myData; };
 	string getJSONData();
-	void setData(map<string, CanVariable> data) { myData = data; }; ///FIXME: Check if data is valid
+	void setData(map<string, CanVariable> data);
 	
 private:
 	bool myIsUnknown;

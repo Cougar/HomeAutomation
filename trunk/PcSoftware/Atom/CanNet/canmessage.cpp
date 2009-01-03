@@ -150,6 +150,24 @@ string CanMessage::getRaw()
 	return rawHex;
 }
 
+void CanMessage::setData(map<string, CanVariable> data)
+{
+	myData = data;
+
+	CanIdTranslator &translator = CanIdTranslator::getInstance();
+
+	int commandNameId = translator.resolveNMTCommandId(myCommandName);
+
+	if (myClassName == "nmt")
+	{
+		translator.makeNMTDataValid(commandNameId, data);
+	}
+	else
+	{
+		translator.makeDataValid(commandNameId, myModuleName, data);
+	}
+}
+
 string CanMessage::getJSONData()
 {
 	string json = "{";

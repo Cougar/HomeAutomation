@@ -53,14 +53,15 @@ public:
 	string getDefineId(string name, string group);
 
 	map<string, CanVariable> translateData(int commandId, string moduleName, string dataHex);
-	map<string, CanVariable> translateData(string commandName, string moduleName, string dataHex) { return translateData(resolveCommandId(commandName, moduleName), moduleName, dataHex); };
-	string translateDataToHex(int commandId, string moduleName, map<string, CanVariable> data);
-	string translateDataToHex(string commandName, string moduleName, map<string, CanVariable> data) { return translateDataToHex(resolveCommandId(commandName, moduleName), moduleName, data); };
+	string translateDataToHex(int commandId, string moduleName, map<string, CanVariable> &data);
+	void makeDataValid(int commandId, string moduleName, map<string, CanVariable> &data);
 
 	string lookupNMTCommandName(int commandId);
 	int resolveNMTCommandId(string commandName);
+
 	map<string, CanVariable> translateNMTData(int commandId, string rawHexData);
-	string translateNMTDataToHex(int commandName, map<string, CanVariable> data);
+	string translateNMTDataToHex(int commandId, map<string, CanVariable> &data);
+	void makeNMTDataValid(int commandId, map<string, CanVariable> &data);
 
 protected:
 	CanIdTranslator();
@@ -68,6 +69,10 @@ protected:
 private:
 	static CanIdTranslator* myInstance;
 	XmlNode xmlNode;
+
+	void makeDataValid(vector<XmlNode> variableNodes, map<string, CanVariable> &data);
+	string translateValidDataToHex(map<string, CanVariable> &data);
+	map<string, CanVariable> translateData(vector<XmlNode> variableNodes, string dataHex);
 };
 
 #endif	/* _CANIDTRANSLATOR_H */

@@ -9,8 +9,7 @@ Features
 --------
 * Loggingsystem with own logfile and diffrent levels, some to syslog some to own file etc...
 * Commandline options override settings
-* Variable value types as Linus suggested
-* Validity on incomming and outgoing canmessages based on information in the xml-file
+* Variable value types as Linus and Arune suggested
 * Javascript command interface
 * Implement internal canDaemon functionality
 * Mysql-interface
@@ -18,7 +17,6 @@ Features
 
 Other
 -----
-* Remove code duplication in CanTranslator, easy to do
 * Error checking...
 * FIXMEs
 * Implement more module-services...
