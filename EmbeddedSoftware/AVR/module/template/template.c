@@ -35,7 +35,7 @@ void <template>_List(uint8_t ModuleSequenceNumber)
 	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_TYPE_MODULE_def_default; ///TODO: Change this to the actual module type
 	txMsg.Header.ModuleId = <template>_ID;
-	txMsg.Header.Command = CAN_CMD_MODULE_NMT_LIST;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
 	txMsg.Data[0] = NODE_HW_ID_BYTE0;
