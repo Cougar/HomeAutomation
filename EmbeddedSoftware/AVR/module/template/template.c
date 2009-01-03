@@ -13,9 +13,9 @@ void <template>_Process(void)
 
 void <template>_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_DEF && ///TODO: Change this to the actual class type
-		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_def_default && ///TODO: Change this to the actual module type
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_xyz && ///TODO: Change this to the actual class type
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_xyz && ///TODO: Change this to the actual module type
 		rxMsg->Header.ModuleId == <template>_ID)
 	{
 		switch (rxMsg->Header.Command)
@@ -31,9 +31,9 @@ void <template>_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_CLASS_MODULE_DEF); ///TODO: Change this to the actual class type
-	StdCan_Set_direction(txMsg.Header, DIR_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_TYPE_MODULE_def_default; ///TODO: Change this to the actual module type
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_xyz); ///TODO: Change this to the actual class type
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_xyz; ///TODO: Change this to the actual module type
 	txMsg.Header.ModuleId = <template>_ID;
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
