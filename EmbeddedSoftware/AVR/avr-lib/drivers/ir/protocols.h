@@ -90,6 +90,11 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_BUTTON_DOWN		0x0
 #define IR_BUTTON_UP		0xf
 
+// defined for the module, uses same definitions for pressed and released as other buttons
+#define IR_BUTTON_RELEASED	0x0
+#define IR_BUTTON_PRESSED	0x1
+
+
 #define CYCLES_PER_US       (F_CPU/1000000)
 #define TIMER_PRESC			8
 

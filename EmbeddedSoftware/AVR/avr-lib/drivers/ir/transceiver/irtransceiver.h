@@ -1,3 +1,16 @@
+/** 
+ * @defgroup infrared IR Driver Library
+ * @code #include <drivers/ir/transceiver/transceiver.h> @endcode
+ * 
+ * @brief  
+ *
+ *
+ * @author	Andreas Fritiofson, Anders Runeson
+ * @date	2007
+ */
+
+/**@{*/
+
 #ifndef IRTRANSCEIVER_H_
 #define IRTRANSCEIVER_H_
 
