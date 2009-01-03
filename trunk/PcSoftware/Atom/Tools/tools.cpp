@@ -27,7 +27,7 @@ string niceTime()
 	string result;
 	struct tm tmStruct;
 	time_t t = time(NULL);
-	gmtime_r(&t, &tmStruct);
+	localtime_r(&t, &tmStruct);
 
 	result += lpad(itos(tmStruct.tm_hour), 2, '0');
 	result += ":";
