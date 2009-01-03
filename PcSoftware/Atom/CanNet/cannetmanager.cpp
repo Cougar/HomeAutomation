@@ -199,7 +199,7 @@ void CanNetManager::openChannel()
 void CanNetManager::sendMessage(CanMessage canMessage)
 {
 	CanDebug &canDebug = CanDebug::getInstance();
-	canDebug.sendCanMessage(canMessage);
 	myChannel->sendData(canMessage.getRaw());
+	canDebug.sendCanMessage(canMessage);
 }
 

@@ -2,4 +2,5 @@ BasePath = ./
 DaemonMode = no
 CanNetAddress = localhost
 CanNetPort = 1200
+CanDebugPort = 1201
 CanIdXMLFile = ../../Configuration/data.xml

@@ -51,9 +51,7 @@ CanDebug::~CanDebug()
 {
 	stop();
 
-	map<int, AsyncSocket*>::iterator iter;
-
-	for (iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
+	for (map<int, AsyncSocket*>::iterator iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
 	{
 		if (iter->second->isConnected())
 		{
@@ -108,9 +106,7 @@ void CanDebug::sendData(string data)
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	map<int, AsyncSocket*>::iterator iter;
-
-	for (iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
+	for (map<int, AsyncSocket*>::iterator iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
 	{
 		if (iter->second->isConnected())
 		{
@@ -167,12 +163,16 @@ void CanDebug::sendCanMessage(CanMessage canMessage)
 		debugData += " CMD=" + canMessage.getCommandName() + " ";
 
 		map<string, CanVariable> vars = canMessage.getData();
+		map<int, string> sortMap;
 
-		map<string, CanVariable>::iterator iter;
-
-		for (iter = vars.begin(); iter != vars.end(); iter++)
+		for (map<string, CanVariable>::iterator iter = vars.begin(); iter != vars.end(); iter++)
 		{
-			debugData += " " + iter->second.getName() + "=" + iter->second.getValue();
+			sortMap[iter->second.getStartBit()] = " " + iter->second.getName() + "=" + iter->second.getValue();
+		}
+
+		for (map<int, string>::iterator iter = sortMap.begin(); iter != sortMap.end(); iter++)
+		{
+			debugData += iter->second;
 		}
 
 		sendData("[" + niceTime() + "] " + debugData + "\n");
