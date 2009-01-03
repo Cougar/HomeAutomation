@@ -67,7 +67,22 @@
         <variable name="Status" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
+    <command id="71" name="IR" type="physical" module="" description="IR data protocol encoding">
+      <variables>
+        <variable name="Status" type="uint" start_bit="0" bit_length="8" unit="" description="State of remote button"/>
+        <variable name="Protocol" type="uint" start_bit="8" bit_length="8" unit="" description="Button protocol"/>
+        <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
+      </variables>
+    </command>
     
+    <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Millisecond" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Millisecond" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
+      </variables>
+    </command>
     <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
      <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
@@ -152,6 +167,7 @@
     <module id="11" name="KS0108" class="act"/>
     <module id="12" name="RGBdriver" class="act"/>
     <module id="13" name="LEDPWM" class="act"/>
+    <module id="14" name="irReceive" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
