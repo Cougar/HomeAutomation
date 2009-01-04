@@ -75,6 +75,7 @@ private:
 	void callHandleNMTMessage(CanMessage canMessage);
 	void callHandleMessage(CanMessage canMessage);
 	bool runExpression(string expression);
+	void printException(TryCatch* tryCatch);
 
 	VirtualMachine();
 	~VirtualMachine();
