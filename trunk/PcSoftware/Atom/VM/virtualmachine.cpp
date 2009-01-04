@@ -93,18 +93,16 @@ void VirtualMachine::run()
 	//access global context within this scope
 	Context::Scope context_scope(myContext);
 	//exception handler
-	TryCatch try_catch;
+	TryCatch tryCatch;
 	//compile script to binary code - JIT
 	Handle<Script> script = Script::Compile(source, name);
 
 	//check if we got problems on compilation
 	if (script.IsEmpty())
 	{
-
-		// Print errors that happened during compilation.
-		String::AsciiValue error(try_catch.Exception());
-		string sError = *error;
-		slog << "Failed to compile script: " + sError + "\n";
+		printException(&tryCatch);
+		slog << "\n";
+		return;
 	}
 	else
 	{
@@ -114,10 +112,9 @@ void VirtualMachine::run()
 		//check if execution ended with errors
 		if (result.IsEmpty())
 		{
-			// Print errors that happened during execution.
-			String::AsciiValue error(try_catch.Exception());
-			string sError = *error;
-			slog << "Constructor: Failed to run script: " << sError << "\n";
+			printException(&tryCatch);
+			slog << "\n";
+			return;
 		}
 		else
 		{
@@ -209,17 +206,15 @@ bool VirtualMachine::loadScript(string scriptName)
 	//access global context within this scope
 	Context::Scope context_scope(myContext);
 	//exception handler
-	TryCatch try_catch;
+	TryCatch tryCatch;
 	//compile script to binary code - JIT
 	Handle<Script> script = Script::Compile(source, name);
 
 	//check if we got problems on compilation
 	if (script.IsEmpty())
 	{
-		// Print errors that happened during compilation.
-		String::AsciiValue error(try_catch.Exception());
-		string sError = *error;
-		slog << "loadScript: Failed to compile script: " + sError + "\n";
+		printException(&tryCatch);
+		slog << "\n";
 		return false;
 	}
 	else
@@ -230,10 +225,8 @@ bool VirtualMachine::loadScript(string scriptName)
 		//check if execution ended with errors
 		if (result.IsEmpty())
 		{
-			// Print errors that happened during execution.
-			String::AsciiValue error(try_catch.Exception());
-			string sError = *error;
-			slog << "loadScript: Failed to run script: " + sError + "\n";
+			printException(&tryCatch);
+			slog << "\n";
 			return false;
 		}
 
@@ -339,18 +332,15 @@ bool VirtualMachine::runExpression(string expression)
 	//access global context within this scope
 	Context::Scope context_scope(myContext);
 	//exception handler
-	TryCatch try_catch;
+	TryCatch tryCatch;
 	//compile script to binary code - JIT
 	Handle<Script> script = Script::Compile(source, name);
 
 	//check if we got problems on compilation
 	if (script.IsEmpty())
 	{
-		// Print errors that happened during compilation.
-		String::AsciiValue error(try_catch.Exception());
-		string sError = *error;
-		slog << "runExpression: Failed to compile script: " + sError + "\n";
-		slog << expression << "\n\n";
+		printException(&tryCatch);
+		slog << "\n";
 		return false;
 	}
 	else
@@ -361,16 +351,65 @@ bool VirtualMachine::runExpression(string expression)
 		//check if execution ended with errors
 		if (result.IsEmpty())
 		{
-			// Print errors that happened during execution.
-			String::AsciiValue error(try_catch.Exception());
-			string sError = *error;
-			slog << "runExpression: Failed to run script: " + sError + "\n";
+			printException(&tryCatch);
+			slog << "\n";
 			return false;
 		}
 	}
 
 	return true;
 }
+
+void VirtualMachine::printException(TryCatch* tryCatch)
+{
+	SyslogStream &slog = SyslogStream::getInstance();
+
+	HandleScope handle_scope;
+	String::Utf8Value exception(tryCatch->Exception());
+	Handle<v8::Message> message = tryCatch->Message();
+
+	string strException = *exception;
+
+	if (message.IsEmpty())
+	{
+		// V8 didn't provide any extra information about this error; just print the exception.
+		slog << strException + "\n";
+	}
+	else
+	{
+		// Print (filename):(line number): (message).
+		String::Utf8Value filename(message->GetScriptResourceName());
+		int linenum = message->GetLineNumber();
+
+		string strFilename = *filename;
+		
+		slog << strFilename + ":" + itos(linenum) + ": " + strException + "\n";
+
+		// Print line of source code.
+		String::Utf8Value sourceline(message->GetSourceLine());
+
+		string strSourceline = *sourceline;
+
+		slog << strSourceline + "\n";
+
+		string underline;
+		// Print wavy underline (GetUnderline is deprecated).
+		int start = message->GetStartColumn();
+		for (int i = 0; i < start; i++)
+		{
+			underline += " ";
+		}
+
+		int end = message->GetEndColumn();
+		for (int i = start; i < end; i++)
+		{
+			underline += "^";
+		}
+
+		slog << underline + "\n";
+	}
+}
+
 
 Handle<Value> VirtualMachine_log(const Arguments& args)
 {
