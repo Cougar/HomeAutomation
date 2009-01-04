@@ -432,7 +432,15 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 		}
 	}
 
-	bin = bin.substr(0, highestBit);
+	try
+	{
+		bin = bin.substr(0, highestBit);
+	}
+	catch (std::out_of_range& e)
+	{
+		cout << "DEBUG: translateValidDataToHex exception: " << e.what() << "\n";
+		cout << "DEBUG: A bin=" << bin << " :: highestBit=" << highestBit << endl;
+	}
 
 	return bin2hex(bin);
 }
@@ -441,6 +449,7 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 {
 	map<string, CanVariable> variables;
 	string dataBin = hex2bin(dataHex);
+	//dataBin = rpad(dataBin, 64, '0');
 
 	for (int c = 0; c < variableNodes.size(); c++)
 	{
@@ -448,8 +457,16 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 
 		int bitStart = stoi(attributes["start_bit"]);
 		int bitLength = stoi(attributes["bit_length"]);
+		string bits;
 
-		string bits = dataBin.substr(bitStart, bitLength);
+		try
+		{
+			bits = dataBin.substr(bitStart, bitLength);
+		}
+		catch (std::out_of_range& e)
+		{
+			return variables;
+		}
 
 		CanVariable variable;
 
@@ -473,7 +490,16 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 
 			for (int k = 0; k < bits.length(); k += 8)
 			{
-				str += (char)bin2uint(bits.substr(k, 8));
+				try
+				{
+					str += (char)bin2uint(bits.substr(k, 8));
+				}
+				catch (std::out_of_range& e)
+				{
+					cout << "DEBUG: TranslateData exception: " << e.what() << "\n";
+					cout << "DEBUG: B bits=" << bits << " :: k=" << k << endl;
+					continue;
+				}
 			}
 
 			variable.setValue(str);
@@ -484,7 +510,16 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 
 			for (int k = 0; k < bits.length(); k += 4)
 			{
-				str += bin2hex(bits.substr(k, 4));
+				try
+				{
+					str += bin2hex(bits.substr(k, 4));
+				}
+				catch (std::out_of_range& e)
+				{
+					cout << "DEBUG: TranslateData exception: " << e.what() << "\n";
+					cout << "DEBUG: C bits=" << bits << " :: k=" << k << endl;
+					continue;
+				}
 			}
 
 			variable.setValue(str);

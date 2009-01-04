@@ -27,6 +27,7 @@ using namespace std;
 #include <string>
 #include <vector>
 #include <map>
+#include <stdexcept>
 
 #include "xmlexception.h"
 #include "../Tools/tools.h"

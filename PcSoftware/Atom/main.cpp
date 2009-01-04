@@ -98,8 +98,8 @@ int cleanUp()
 	slog << "Goodbye!\n";
 
 	CanDebug::deleteInstance();
-	CanNetManager::deleteInstance();
 	VirtualMachine::deleteInstance();
+	CanNetManager::deleteInstance();
 	SyslogStream::deleteInstance();
 
 	return EXIT_SUCCESS;

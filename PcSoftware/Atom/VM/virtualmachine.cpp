@@ -44,37 +44,23 @@ void VirtualMachine::deleteInstance()
 
 VirtualMachine::VirtualMachine()
 {
-	Thread<VirtualMachine>();
 }
 
 VirtualMachine::~VirtualMachine()
 {
 	stop();
+
+	///FIXME: Verify that this works and does not cause segfaults
+	for (map<int, SocketThread*>::iterator iter = mySocketThreads.begin(); iter != mySocketThreads.end(); iter++)
+	{
+		delete iter->second;
+		mySocketThreads.erase(iter);
+	}
 }
 
 void VirtualMachine::run()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
-
-	string basePath = Settings::get("BasePath") + "Services/";
-	string scriptName = "Base.js";
-	string scriptFileName = basePath + "System/" + scriptName;
-
-	if (!file_exists(scriptFileName))
-	{
-		slog << "Failed to load :" + scriptFileName + "\n";
-	}
-
-	string scriptSource = file_get_contents(scriptFileName);
-
-	Handle<String> source =  String::New(scriptSource.c_str(), scriptSource.length());
-	//each script name must be unique , for this demo I just run one embedded script, so the name can be fixed
-	Handle<String> name = String::New(scriptName.c_str(), scriptName.length());
-
-	// Create a template for the global object.
 	myGlobal = ObjectTemplate::New();
-
-	//associates "print" on script to the Print function
 	myGlobal->Set(String::New("log"), FunctionTemplate::New(VirtualMachine_log));
 	myGlobal->Set(String::New("sendCanMessage"), FunctionTemplate::New(VirtualMachine_sendCanMessage));
 	myGlobal->Set(String::New("sendCanNMTMessage"), FunctionTemplate::New(VirtualMachine_sendCanNMTMessage));
@@ -85,72 +71,44 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine_stopSocketThread));
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine_sendToSocketThread));
 	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine_uint2hex));
-
-	//create context for the script
 	myContext = Context::New(NULL, myGlobal);
 
 
-	//access global context within this scope
-	Context::Scope context_scope(myContext);
-	//exception handler
-	TryCatch tryCatch;
-	//compile script to binary code - JIT
-	Handle<Script> script = Script::Compile(source, name);
-
-	//check if we got problems on compilation
-	if (script.IsEmpty())
+	if (loadScript("System/Base.js"))
 	{
-		printException(&tryCatch);
-		slog << "\n";
-		return;
+		loadScript("System/Startup.js");
+
+		loadScript("Autostart.js");
+
+		Context::Scope contextScope(myContext);
+
+		myFunctionHandleNMTMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleNMTMessage")));
+		myFunctionOfflineCheck = Handle<Function>::Cast(myContext->Global()->Get(String::New("offlineCheck")));
+		myFunctionHandleMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleMessage")));
+		myFunctionStartup = Handle<Function>::Cast(myContext->Global()->Get(String::New("startup")));
 	}
 	else
 	{
-		//no errors , let's continue
-		Handle<Value> result = script->Run();
-
-		//check if execution ended with errors
-		if (result.IsEmpty())
-		{
-			printException(&tryCatch);
-			slog << "\n";
-			return;
-		}
-		else
-		{
-			loadScript("System/Startup.js");
-
-			if (file_exists(basePath + "Autostart.js"))
-			{
-				loadScript("Autostart.js");
-			}
-			
-			myFunctionHandleNMTMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleNMTMessage")));
-			myFunctionOfflineCheck = Handle<Function>::Cast(myContext->Global()->Get(String::New("offlineCheck")));
-			myFunctionHandleMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleMessage")));
-			myFunctionStartup = Handle<Function>::Cast(myContext->Global()->Get(String::New("startup")));
-		}
+		///FIXME: We should probably exit the application here
+		return;
 	}
 
 	const int argc = 0;
 	Handle<Value> argv[argc] = { };
-
-	Handle<Value> result = myFunctionStartup->Call(myFunctionStartup, argc, argv); // argc and argv are your standard arguments to a function
+	Handle<Value> result = myFunctionStartup->Call(myFunctionStartup, argc, argv);
 
 	mySemaphore.lock();
 
-	while (1)
-	{
-		string expression;
+	string expression;
+	CanMessage canMessage;
 
+	while (true)
+	{
 		while (myExpressions.size() > 0)
 		{
 			expression = myExpressions.pop();
-
 			runExpression(expression);
 		}
-
-		CanMessage canMessage;
 
 		while (myCanMessages.size() > 0)
 		{
@@ -158,11 +116,24 @@ void VirtualMachine::run()
 
 			if (canMessage.getClassName() == "nmt")
 			{
-				callHandleNMTMessage(canMessage);
+				expression = "handleNMTMessage(";
+				expression += "'" + canMessage.getClassName() + "', ";
+				expression += "'" + canMessage.getCommandName() + "', ";
+				expression += canMessage.getJSONData();
+				expression += ");";
+				runExpression(expression);
 			}
 			else
 			{
-				callHandleMessage(canMessage);
+				expression = "handleMessage(";
+				expression += "'" + canMessage.getClassName() + "', ";
+				expression += "'" + canMessage.getDirectionFlag() + "', ";
+				expression += "'" + canMessage.getModuleName() + "', ";
+				expression += "" + itos(canMessage.getModuleId()) + ", ";
+				expression += "'" + canMessage.getCommandName() + "', ";
+				expression += canMessage.getJSONData();
+				expression += ");";
+				runExpression(expression);
 			}
 		}
 
@@ -193,40 +164,33 @@ bool VirtualMachine::loadScript(string scriptName)
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load " + scriptFileName + "\n";
+		slog << "Failed to load " + scriptFileName + ", file does not exist.\n";
 		return false;
 	}
 
 	string scriptSource = file_get_contents(scriptFileName);
 
 	Handle<String> source =  String::New(scriptSource.c_str(), scriptSource.length());
-	//each script name must be unique , for this demo I just run one embedded script, so the name can be fixed
 	Handle<String> name = String::New(scriptName.c_str(), scriptName.length());
 
-	//access global context within this scope
-	Context::Scope context_scope(myContext);
-	//exception handler
+	Context::Scope contextScope(myContext);
+
 	TryCatch tryCatch;
-	//compile script to binary code - JIT
+
 	Handle<Script> script = Script::Compile(source, name);
 
-	//check if we got problems on compilation
 	if (script.IsEmpty())
 	{
 		printException(&tryCatch);
-		slog << "\n";
 		return false;
 	}
 	else
 	{
-		//no errors , let's continue
 		Handle<Value> result = script->Run();
 
-		//check if execution ended with errors
 		if (result.IsEmpty())
 		{
 			printException(&tryCatch);
-			slog << "\n";
 			return false;
 		}
 
@@ -297,11 +261,8 @@ unsigned int VirtualMachine::startSocketThread(string address, int port, unsigne
 
 bool VirtualMachine::stopSocketThread(unsigned int id)
 {
-	
-
 	if (mySocketThreads.find(id) != mySocketThreads.end())
 	{
-		//mySocketThreads[id]->stop();
 		delete mySocketThreads[id];
 
 		mySocketThreads.erase(id);
@@ -321,38 +282,29 @@ void VirtualMachine::sendToSocketThread(unsigned int id, string data)
 
 bool VirtualMachine::runExpression(string expression)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
-
 	string scriptName = "runExpression";
 
 	Handle<String> source =  String::New(expression.c_str(), expression.length());
-	//each script name must be unique , for this demo I just run one embedded script, so the name can be fixed
 	Handle<String> name = String::New(scriptName.c_str(), scriptName.length());
 
-	//access global context within this scope
-	Context::Scope context_scope(myContext);
-	//exception handler
+	Context::Scope contextScope(myContext);
+
 	TryCatch tryCatch;
-	//compile script to binary code - JIT
+
 	Handle<Script> script = Script::Compile(source, name);
 
-	//check if we got problems on compilation
 	if (script.IsEmpty())
 	{
 		printException(&tryCatch);
-		slog << "\n";
 		return false;
 	}
 	else
 	{
-		//no errors , let's continue
 		Handle<Value> result = script->Run();
 
-		//check if execution ended with errors
 		if (result.IsEmpty())
 		{
 			printException(&tryCatch);
-			slog << "\n";
 			return false;
 		}
 	}
@@ -364,7 +316,7 @@ void VirtualMachine::printException(TryCatch* tryCatch)
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
-	HandleScope handle_scope;
+	HandleScope handleScope;
 	String::Utf8Value exception(tryCatch->Exception());
 	Handle<v8::Message> message = tryCatch->Message();
 
@@ -372,41 +324,24 @@ void VirtualMachine::printException(TryCatch* tryCatch)
 
 	if (message.IsEmpty())
 	{
-		// V8 didn't provide any extra information about this error; just print the exception.
-		slog << strException + "\n";
+		slog << strException + "\n\n";
 	}
 	else
 	{
-		// Print (filename):(line number): (message).
 		String::Utf8Value filename(message->GetScriptResourceName());
-		int linenum = message->GetLineNumber();
-
 		string strFilename = *filename;
 		
-		slog << strFilename + ":" + itos(linenum) + ": " + strException + "\n";
+		slog << strFilename + ":" + itos(message->GetLineNumber()) + ": " + strException + "\n";
 
-		// Print line of source code.
 		String::Utf8Value sourceline(message->GetSourceLine());
-
 		string strSourceline = *sourceline;
 
 		slog << strSourceline + "\n";
 
-		string underline;
-		// Print wavy underline (GetUnderline is deprecated).
-		int start = message->GetStartColumn();
-		for (int i = 0; i < start; i++)
-		{
-			underline += " ";
-		}
+		string underline = rpad("", message->GetStartColumn(), ' ');
+		underline = rpad(underline, message->GetEndColumn(), '^');
 
-		int end = message->GetEndColumn();
-		for (int i = start; i < end; i++)
-		{
-			underline += "^";
-		}
-
-		slog << underline + "\n";
+		slog << underline + "\n\n";
 	}
 }
 
@@ -424,7 +359,6 @@ Handle<Value> VirtualMachine_log(const Arguments& args)
 
 Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 {
-	//SyslogStream &slog = SyslogStream::getInstance();
 	CanNetManager &canMan = CanNetManager::getInstance();
 
 	CanMessage canMessage;
@@ -448,8 +382,6 @@ Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 	{
 		vector<string> keyAndValue = explode(":", parts[n]);
 
-		//string key = trim(keyAndValue[0], ' ');
-		//string value = trim(keyAndValue[1], ' ');
 		data[keyAndValue[0]] = CanVariable(keyAndValue[0], keyAndValue[1]);
 	}
 
@@ -462,7 +394,6 @@ Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 
 Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args)
 {
-	//SyslogStream &slog = SyslogStream::getInstance();
 	CanNetManager &canMan = CanNetManager::getInstance();
 
 	CanMessage canMessage;
@@ -481,8 +412,6 @@ Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args)
 	{
 		vector<string> keyAndValue = explode(":", parts[n]);
 
-		//string key = trim(keyAndValue[0], ' ');
-		//string value = trim(keyAndValue[1], ' ');
 		data[keyAndValue[0]] = CanVariable(keyAndValue[0], keyAndValue[1]);
 	}
 

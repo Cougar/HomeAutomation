@@ -26,6 +26,7 @@ using namespace std;
 
 #include <string>
 #include <map>
+#include <stdexcept>
 
 #include "canmessageexception.h"
 #include "canidtranslator.h"
@@ -61,6 +62,8 @@ public:
 	map<string, CanVariable>& getData() { return myData; };
 	string getJSONData();
 	void setData(map<string, CanVariable> data);
+
+	string toString();
 	
 private:
 	bool myIsUnknown;

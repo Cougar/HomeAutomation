@@ -43,13 +43,26 @@ void CanMessage::setRaw(string rawHex)
 	}
 
 	string rawHeaderBin = hex2bin(parts[1]);
+	
+	try
+	{
+		myClassName = translator.lookupClassName(bin2uint(rawHeaderBin.substr(3, 4)));
+	}
+	catch (std::out_of_range& e)
+	{
+		cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+		cout << "DEBUG: A rawHeaderBin=" << rawHeaderBin << endl;
+	}
 
-	myClassName = translator.lookupClassName(bin2uint(rawHeaderBin.substr(3, 4)));
 
 	if (myClassName == "")
 	{
 		myIsUnknown = true;
 		return;
+	}
+	else
+	{
+		myIsUnknown = false;
 	}
 
 	string rawHexData = "";
@@ -60,19 +73,66 @@ void CanMessage::setRaw(string rawHex)
 
 	if (myClassName == "nmt")
 	{
-		int commandId = bin2uint(rawHeaderBin.substr(8, 8));
+		int commandId;
+
+		try
+		{
+			commandId = bin2uint(rawHeaderBin.substr(8, 8));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: B rawHeaderBin=" << rawHeaderBin << endl;
+		}
+
 		myCommandName = translator.lookupNMTCommandName(commandId);
-		
+
 		myData = translator.translateNMTData(commandId, rawHexData);
 	}
 	else
 	{
-		myDirectionFlag = translator.lookupDirectionFlag(bin2uint(rawHeaderBin.substr(7, 1)));
-		myModuleName = translator.lookupModuleName(bin2uint(rawHeaderBin.substr(8, 8)));
+		try
+		{
+			myDirectionFlag = translator.lookupDirectionFlag(bin2uint(rawHeaderBin.substr(7, 1)));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: C rawHeaderBin=" << rawHeaderBin << endl;
+		}
 
-		myModuleId = bin2uint(rawHeaderBin.substr(16, 8));
+		try
+		{
+			myModuleName = translator.lookupModuleName(bin2uint(rawHeaderBin.substr(8, 8)));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: D rawHeaderBin=" << rawHeaderBin << endl;
+		}
 
-		int commandId = bin2uint(rawHeaderBin.substr(24, 8));
+		try
+		{
+			myModuleId = bin2uint(rawHeaderBin.substr(16, 8));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: E rawHeaderBin=" << rawHeaderBin << endl;
+		}
+
+		int commandId;
+
+		try
+		{
+			commandId = bin2uint(rawHeaderBin.substr(24, 8));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: setRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: F rawHeaderBin=" << rawHeaderBin << endl;
+		}
+		
 		myCommandName = translator.lookupCommandName(commandId, myModuleName);
 
 		myData = translator.translateData(commandId, myModuleName, rawHexData);
@@ -140,7 +200,20 @@ string CanMessage::getRaw()
 
 	while (dataHex.size() > 0)
 	{
-		string hex = dataHex.substr(0, 2);
+		string hex;
+
+		try
+		{
+			hex = dataHex.substr(0, 2);
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: getRaw exception: " << e.what() << "\n";
+			cout << "DEBUG: A dataHex=" << dataHex << endl;
+			continue;
+		}
+
+		
 		dataHex.erase(0, 2);
 		rawHex += " " + hex;
 	}
@@ -197,4 +270,16 @@ string CanMessage::getJSONData()
 	json = trim(json, ',');
 
 	return json + " }";
+}
+
+string CanMessage::toString()
+{
+	string result = "[CanMessage] ClassName: " + myClassName + "\n";
+	result += "             DirectionFlag: " + myDirectionFlag + "\n";
+	result += "             ModuleName: " + myModuleName + "\n";
+	result += "             ModuleId: " + itos(myModuleId) + "\n";
+	result += "             CommandName: " + myCommandName + "\n";
+	result += "             Data: " + getJSONData() + "\n";
+
+	return result;
 }

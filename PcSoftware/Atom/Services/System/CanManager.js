@@ -5,7 +5,7 @@ CanOfflineTimer = new Interval(offlineCheck, 10000);
 
 function handleNMTMessage(className, commandName, data)
 {
-	var canMessage = new CanNMTMessage(className, commandName, eval("(" + data + ")"));
+	var canMessage = new CanNMTMessage(className, commandName, data);
 
 	switch (canMessage.getCommandName())
 	{
@@ -65,8 +65,8 @@ function sendNMTMessage(canMessage)
 // This is called when a message has been received from the can network
 function handleMessage(className, directionFlag, moduleName, moduleId, commandName, data)
 {
-	var canMessage = new CanMessage(className, directionFlag, moduleName, moduleId, commandName, eval("(" + data + ")"));
-	
+	var canMessage = new CanMessage(className, directionFlag, moduleName, moduleId, commandName, data);
+
 	var fullId = canMessage.getModuleName() + canMessage.getModuleId();
 
 	if (canMessage.getCommandName() == "List" && canMessage.getDirectionFlag() == "From_Owner")
@@ -78,14 +78,14 @@ function handleMessage(className, directionFlag, moduleName, moduleId, commandNa
 			if (service != null)
 			{
 				var node = CanNodes[canMessage.getData("HardwareId")];
-			
+
 				if (node)
 				{
 					service.setNode(node);
 					node.addService(canMessage.getData("SequenceNumber"), service);
 					CanNodes[canMessage.getData("HardwareId")] = node;
 				}
-				
+
 				CanServices[fullId] = service;
 			}
 			else
