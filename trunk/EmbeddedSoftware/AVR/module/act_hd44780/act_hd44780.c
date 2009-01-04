@@ -10,7 +10,7 @@ void act_hd44780_Init(void)
 	// Contrast
 	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
-	OCR0B = 0x10;
+	OCR0B = act_hd44780_INITIAL_CONTRAST;
 	DDRD |= (1<<DDD5);
 
 
