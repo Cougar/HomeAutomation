@@ -44,7 +44,6 @@ void CanDebug::deleteInstance()
 
 CanDebug::CanDebug()
 {
-	Thread<CanDebug>();
 }
 
 CanDebug::~CanDebug()

@@ -96,7 +96,19 @@ string bin2hex(string bin)
 
 	while (bin.size() > 0)
 	{
-		string part = bin.substr(0, 4);
+		string part;
+
+		try
+		{
+			part = bin.substr(0, 4);
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: bin2hex exception: " << e.what() << "\n";
+			cout << "DEBUG: A bin=" << bin << endl;
+			continue;
+		}
+		
 		bin.erase(0, part.size());
 
 		while (part.size() < 4)
@@ -212,13 +224,31 @@ vector<string> explode(string delimiter, string str)
 
 	while ((endPos = str.find(delimiter, startPos)) != string::npos)
 	{
-		parts.push_back(str.substr(startPos, endPos-startPos));
+		try
+		{
+			parts.push_back(str.substr(startPos, endPos-startPos));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: explode exception: " << e.what() << "\n";
+			cout << "DEBUG: A str=" << str << " :: startPos=" << startPos << " :: endPos=" << endPos << endl;
+			continue;
+		}
+		
 		startPos = endPos+delimiter.length();
 	}
 
 	if (startPos < str.length())
 	{
-		parts.push_back(str.substr(startPos, str.length()-startPos));
+		try
+		{
+			parts.push_back(str.substr(startPos, str.length()-startPos));
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << "DEBUG: explode exception: " << e.what() << "\n";
+			cout << "DEBUG: B str=" << str << " :: startPos=" << startPos << " :: endPos=" << endPos << endl;
+		}
 	}
 
 	return parts;

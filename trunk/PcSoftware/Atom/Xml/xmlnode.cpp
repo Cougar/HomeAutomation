@@ -58,7 +58,17 @@ int XmlNode::parseTag(string xmlData, int position)
 		return endPosition;
 	}
 
-	string tagString = xmlData.substr(position, endPosition-position);
+	string tagString;
+
+	try
+	{
+		tagString = xmlData.substr(position, endPosition-position);
+	}
+	catch (std::out_of_range& e)
+	{
+		cout << "DEBUG: parseTag exception: " << e.what() << "\n";
+		cout << "DEBUG: A xmlData=" << xmlData << " :: position=" << position << " :: endPosition=" << endPosition << endl;
+	}
 
 	tagString = trim(tagString);
 	tagString = trim(tagString, '\n');
@@ -96,7 +106,18 @@ int XmlNode::parseTag(string xmlData, int position)
 				s = tagString.find('"', pos)+1;
 				e = tagString.find('"', s);
 
-				myAttributes[buffer] = tagString.substr(s, e-s);
+				try
+				{
+					myAttributes[buffer] = tagString.substr(s, e-s);
+				}
+				catch (std::out_of_range& ex)
+				{
+					cout << "DEBUG: parseTag exception: " << ex.what() << "\n";
+					cout << "DEBUG: B tagString=" << tagString << " :: s=" << s << " :: e=" << e << endl;
+					continue;
+				}
+
+
 				//cout << "Found attribute: " << buffer << " = " << myAttributes[buffer] << endl;
 				pos = e;
 				buffer = "";
@@ -125,15 +146,26 @@ int XmlNode::parseTag(string xmlData, int position)
 						position += 2;
 						endPosition = xmlData.find('>', position);
 
-						if (myTagName.compare(xmlData.substr(position, endPosition-position)) == 0)
+						try
 						{
-							//cout << "Found end tag: " << myTagName << endl;
-							return endPosition;
+							if (myTagName.compare(xmlData.substr(position, endPosition-position)) == 0)
+							{
+								//cout << "Found end tag: " << myTagName << endl;
+								return endPosition;
+							}
+							else
+							{
+								throw new XmlException("Invalid end tag found. " + xmlData.substr(position, endPosition-position) + "::" + myTagName);
+							}
 						}
-						else
+						catch (std::out_of_range& e)
 						{
-							throw new XmlException("Invalid end tag found. " + xmlData.substr(position, endPosition-position) + "::" + myTagName);
+							cout << "DEBUG: parseTag exception: " << e.what() << "\n";
+							cout << "DEBUG: C xmlData=" << xmlData << " :: position=" << position << " :: endPosition=" << endPosition << endl;
+							continue;
 						}
+
+						
 					}
 
 					XmlNode subNode;

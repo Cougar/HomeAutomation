@@ -41,6 +41,10 @@ SimpleDTMF.prototype.canMessageHandler = function(canMessage)
 			log(this.myName + ":" + this.myId + "> New phonenumber: " + this.myLastPhonenumber + "\n");
 			this.callEvent("newPhonenumber", null);
 		}
+		else
+		{
+			log(this.myName + ":" + this.myId + "> Received malformed phonenumber: " + this.myLastPhonenumber + "\n");
+		}
 		break;
 		}
 	}

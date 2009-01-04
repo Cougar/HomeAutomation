@@ -26,6 +26,7 @@ using namespace std;
 
 #include <string>
 #include <time.h>
+#include <stdexcept>
 
 #include "../Socket/asyncsocket.h"
 #include "../Threads/thread.h"
