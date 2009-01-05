@@ -1,7 +1,7 @@
 
-function irReceive(name, id)
+function irReceive(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 }
 
 extend(irReceive, CanService);

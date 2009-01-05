@@ -29,14 +29,17 @@ OBJECTDIR=build/Debug/${PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/VM/virtualmachine.o \
-	${OBJECTDIR}/CanNet/candebug.o \
+	${OBJECTDIR}/Socket/server.o \
+	${OBJECTDIR}/singleton.o \
 	${OBJECTDIR}/CanNet/cannetmanager.o \
+	${OBJECTDIR}/VM/commandthread.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Xml/xmlnode.o \
 	${OBJECTDIR}/VM/intervalthread.o \
 	${OBJECTDIR}/Settings/settings.o \
 	${OBJECTDIR}/CanNet/canidtranslator.o \
 	${OBJECTDIR}/CanNet/canmessage.o \
+	${OBJECTDIR}/CanNet/candebug.o \
 	${OBJECTDIR}/Tools/tools.o \
 	${OBJECTDIR}/VM/socketthread.o \
 	${OBJECTDIR}/SyslogStream/syslogstream.o \
@@ -69,15 +72,25 @@ ${OBJECTDIR}/VM/virtualmachine.o: VM/virtualmachine.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o VM/virtualmachine.cpp
 
-${OBJECTDIR}/CanNet/candebug.o: CanNet/candebug.cpp 
-	${MKDIR} -p ${OBJECTDIR}/CanNet
+${OBJECTDIR}/Socket/server.o: Socket/server.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Socket
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/candebug.o CanNet/candebug.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/server.o Socket/server.cpp
+
+${OBJECTDIR}/singleton.o: singleton.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/singleton.o singleton.cpp
 
 ${OBJECTDIR}/CanNet/cannetmanager.o: CanNet/cannetmanager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/cannetmanager.o CanNet/cannetmanager.cpp
+
+${OBJECTDIR}/VM/commandthread.o: VM/commandthread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/VM
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/commandthread.o VM/commandthread.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -108,6 +121,11 @@ ${OBJECTDIR}/CanNet/canmessage.o: CanNet/canmessage.cpp
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canmessage.o CanNet/canmessage.cpp
+
+${OBJECTDIR}/CanNet/candebug.o: CanNet/candebug.cpp 
+	${MKDIR} -p ${OBJECTDIR}/CanNet
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/candebug.o CanNet/candebug.cpp
 
 ${OBJECTDIR}/Tools/tools.o: Tools/tools.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Tools

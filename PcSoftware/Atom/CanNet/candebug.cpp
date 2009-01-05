@@ -48,88 +48,9 @@ CanDebug::CanDebug()
 
 CanDebug::~CanDebug()
 {
-	stop();
-
-	for (map<int, AsyncSocket*>::iterator iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
-	{
-		if (iter->second->isConnected())
-		{
-			iter->second->stop();
-		}
-
-		delete iter->second;
-	}
 }
 
-void CanDebug::run()
-{
-	SyslogStream &slog = SyslogStream::getInstance();
-
-	string port = Settings::get("CanDebugPort");
-
-	if (port == "")
-	{
-		slog << "CanDebugPort is not defined in the config file, will not start debug interface\n";
-		return;
-	}
-
-	try
-	{
-		mySocket.setPort(stoi(port));
-
-		mySocket.startListen();
-
-		slog << "CanDebug is listening for connections on port " + port + ".\n";
-
-		while (true)
-		{
-			AsyncSocket *newSocket = new AsyncSocket();
-
-			if (mySocket.accept(newSocket))
-			{
-				newSocket->sendData("Welcome to Atom " + ftos(VERSION) + " - CanDebug output\n");
-
-				slog << "CanDebug accepted new client on socket " + itos(newSocket->getSocket()) + ".\n";
-				myClientSockets[newSocket->getSocket()] = newSocket;
-				myClientSockets[newSocket->getSocket()]->start();
-			}
-		}
-	}
-	catch (SocketException* e)
-	{
-		slog << "Exception was caught:" + e->getDescription() + ".\n";
-	}
-}
-
-void CanDebug::sendData(string data)
-{
-	SyslogStream &slog = SyslogStream::getInstance();
-
-	for (map<int, AsyncSocket*>::iterator iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
-	{
-		if (iter->second->isConnected())
-		{
-			//slog << "CanDebug: sent data to client " + itos(iter->second->getSocket()) + ".\n";
-			
-			try
-			{
-				iter->second->sendData(data);
-			}
-			catch (SocketException* e)
-			{
-				slog << "CanDebug caught an exception:" + e->getDescription() + ".\n";
-			}
-		}
-		else
-		{
-			slog << "CanDebug had a client disconnect.\n";
-			delete iter->second;
-			myClientSockets.erase(iter);
-		}
-	}
-}
-
-void CanDebug::sendCanMessage(CanMessage canMessage)
+void CanDebug::sendCanMessageToAll(CanMessage canMessage)
 {
 	if (myClientSockets.size() > 0)
 	{
@@ -174,6 +95,11 @@ void CanDebug::sendCanMessage(CanMessage canMessage)
 			debugData += iter->second;
 		}
 
-		sendData("[" + niceTime() + "] " + debugData + "\n");
+		sendToAll("[" + niceTime() + "] " + debugData + "\n");
 	}
+}
+
+void CanDebug::handleClientData(int id, string data)
+{
+
 }

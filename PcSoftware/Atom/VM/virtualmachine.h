@@ -37,19 +37,10 @@ using namespace std;
 #include "../Threads/threadsafequeue.h"
 #include "intervalthread.h"
 #include "socketthread.h"
+#include "commandthread.h"
+#include "expression.h"
 
 using namespace v8;
-
-Handle<Value> VirtualMachine_log(const Arguments& args);
-Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args);
-Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args);
-Handle<Value> VirtualMachine_loadScript(const Arguments& args);
-Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args);
-Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args);
-Handle<Value> VirtualMachine_stopSocketThread(const Arguments& args);
-Handle<Value> VirtualMachine_startSocketThread(const Arguments& args);
-Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args);
-Handle<Value> VirtualMachine_uint2hex(const Arguments& args);
 
 class VirtualMachine : public Thread<VirtualMachine>
 {
@@ -57,10 +48,10 @@ public:
 	static VirtualMachine& getInstance();
 	static void deleteInstance();
 
-	void queueCanMessage(CanMessage canMessage);
-	void queueExpression(string expression);
-
 	void run();
+
+	void queueExpression(Expression expression);
+	void queueExpression(string script) { queueExpression(Expression(script)); };
 
 	bool loadScript(string scriptName);
 
@@ -71,19 +62,32 @@ public:
 	bool stopSocketThread(unsigned int id);
 	void sendToSocketThread(unsigned int id, string data);
 
+	void sendToCommandClient(unsigned int id, string data);
+	void disconnectCommandClient(unsigned int id);
+
+	void print(unsigned int id, string data);
+
+	static Handle<Value> _quit(const Arguments& args);
+	static Handle<Value> _print(const Arguments& args);
+	static Handle<Value> _log(const Arguments& args);
+	static Handle<Value> _sendCanMessage(const Arguments& args);
+	static Handle<Value> _sendCanNMTMessage(const Arguments& args);
+	static Handle<Value> _loadScript(const Arguments& args);
+	static Handle<Value> _stopIntervalThread(const Arguments& args);
+	static Handle<Value> _startIntervalThread(const Arguments& args);
+	static Handle<Value> _stopSocketThread(const Arguments& args);
+	static Handle<Value> _startSocketThread(const Arguments& args);
+	static Handle<Value> _sendToSocketThread(const Arguments& args);
+	static Handle<Value> _uint2hex(const Arguments& args);
+
 private:
-	void callHandleNMTMessage(CanMessage canMessage);
-	void callHandleMessage(CanMessage canMessage);
-	bool runExpression(string expression);
-	void printException(TryCatch* tryCatch);
+	bool runExpression(Expression expression);
+	string formatException(TryCatch* tryCatch);
 
 	VirtualMachine();
 	~VirtualMachine();
 	static VirtualMachine* myInstance;
 
-	Handle<Function> myFunctionHandleNMTMessage;
-	Handle<Function> myFunctionOfflineCheck;
-	Handle<Function> myFunctionHandleMessage;
 	Handle<Function> myFunctionStartup;
 
 	Handle<ObjectTemplate> myGlobal;
@@ -92,11 +96,12 @@ private:
 
 	Semaphore mySemaphore;
 
-	ThreadSafeQueue<string> myExpressions;
-	ThreadSafeQueue<CanMessage> myCanMessages;
+	ThreadSafeQueue<Expression> myExpressions;
 
-	map<int, IntervalThread> myIntervalThreads;
+	map<int, IntervalThread*> myIntervalThreads;
 	map<int, SocketThread*> mySocketThreads;
+
+	CommandThread myCommandThread;
 };
 
 #endif	/* _VIRTUALMACHINE_H */

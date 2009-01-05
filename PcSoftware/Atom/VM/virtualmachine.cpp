@@ -50,27 +50,43 @@ VirtualMachine::~VirtualMachine()
 {
 	stop();
 
+	myCommandThread.stop();
+
 	///FIXME: Verify that this works and does not cause segfaults
 	for (map<int, SocketThread*>::iterator iter = mySocketThreads.begin(); iter != mySocketThreads.end(); iter++)
 	{
+		iter->second->stop();
 		delete iter->second;
-		mySocketThreads.erase(iter);
+		//mySocketThreads.erase(iter);
 	}
+
+	mySocketThreads.clear();
+
+	for (map<int, IntervalThread*>::iterator iter = myIntervalThreads.begin(); iter != myIntervalThreads.end(); iter++)
+	{
+		iter->second->stop();
+		delete iter->second;
+		//myIntervalThreads.erase(iter);
+	}
+
+	myIntervalThreads.clear();
 }
 
 void VirtualMachine::run()
 {
 	myGlobal = ObjectTemplate::New();
-	myGlobal->Set(String::New("log"), FunctionTemplate::New(VirtualMachine_log));
-	myGlobal->Set(String::New("sendCanMessage"), FunctionTemplate::New(VirtualMachine_sendCanMessage));
-	myGlobal->Set(String::New("sendCanNMTMessage"), FunctionTemplate::New(VirtualMachine_sendCanNMTMessage));
-	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine_loadScript));
-	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine_startIntervalThread));
-	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine_stopIntervalThread));
-	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine_startSocketThread));
-	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine_stopSocketThread));
-	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine_sendToSocketThread));
-	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine_uint2hex));
+	myGlobal->Set(String::New("_quit"), FunctionTemplate::New(VirtualMachine::_quit));
+	myGlobal->Set(String::New("_print"), FunctionTemplate::New(VirtualMachine::_print));
+	myGlobal->Set(String::New("log"), FunctionTemplate::New(VirtualMachine::_log));
+	myGlobal->Set(String::New("sendCanMessage"), FunctionTemplate::New(VirtualMachine::_sendCanMessage));
+	myGlobal->Set(String::New("sendCanNMTMessage"), FunctionTemplate::New(VirtualMachine::_sendCanNMTMessage));
+	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine::_loadScript));
+	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine::_startIntervalThread));
+	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine::_stopIntervalThread));
+	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine::_startSocketThread));
+	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine::_stopSocketThread));
+	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
+	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
 	myContext = Context::New(NULL, myGlobal);
 
 
@@ -82,9 +98,6 @@ void VirtualMachine::run()
 
 		Context::Scope contextScope(myContext);
 
-		myFunctionHandleNMTMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleNMTMessage")));
-		myFunctionOfflineCheck = Handle<Function>::Cast(myContext->Global()->Get(String::New("offlineCheck")));
-		myFunctionHandleMessage = Handle<Function>::Cast(myContext->Global()->Get(String::New("handleMessage")));
 		myFunctionStartup = Handle<Function>::Cast(myContext->Global()->Get(String::New("startup")));
 	}
 	else
@@ -97,44 +110,27 @@ void VirtualMachine::run()
 	Handle<Value> argv[argc] = { };
 	Handle<Value> result = myFunctionStartup->Call(myFunctionStartup, argc, argv);
 
-	mySemaphore.lock();
 
-	string expression;
-	CanMessage canMessage;
+	string commandPort = Settings::get("CommandPort");
+	if (commandPort != "")
+	{
+		myCommandThread.setSettings(stoi(commandPort), "Command console");
+		myCommandThread.start();
+	}
+	else
+	{
+		SyslogStream &slog = SyslogStream::getInstance();
+		slog << "CommandPort is not defined, can not start Command console socket\n";
+	}
+
+
+	mySemaphore.lock();
 
 	while (true)
 	{
 		while (myExpressions.size() > 0)
 		{
-			expression = myExpressions.pop();
-			runExpression(expression);
-		}
-
-		while (myCanMessages.size() > 0)
-		{
-			canMessage = myCanMessages.pop();
-
-			if (canMessage.getClassName() == "nmt")
-			{
-				expression = "handleNMTMessage(";
-				expression += "'" + canMessage.getClassName() + "', ";
-				expression += "'" + canMessage.getCommandName() + "', ";
-				expression += canMessage.getJSONData();
-				expression += ");";
-				runExpression(expression);
-			}
-			else
-			{
-				expression = "handleMessage(";
-				expression += "'" + canMessage.getClassName() + "', ";
-				expression += "'" + canMessage.getDirectionFlag() + "', ";
-				expression += "'" + canMessage.getModuleName() + "', ";
-				expression += "" + itos(canMessage.getModuleId()) + ", ";
-				expression += "'" + canMessage.getCommandName() + "', ";
-				expression += canMessage.getJSONData();
-				expression += ");";
-				runExpression(expression);
-			}
+			runExpression(myExpressions.pop());
 		}
 
 		mySemaphore.wait();
@@ -143,16 +139,45 @@ void VirtualMachine::run()
 	mySemaphore.unlock();
 }
 
-void VirtualMachine::queueCanMessage(CanMessage canMessage)
-{
-	myCanMessages.push(canMessage);
-	mySemaphore.broadcast();
-}
-
-void VirtualMachine::queueExpression(string expression)
+void VirtualMachine::queueExpression(Expression expression)
 {
 	myExpressions.push(expression);
 	mySemaphore.broadcast();
+}
+
+string VirtualMachine::formatException(TryCatch* tryCatch)
+{
+	string result;
+
+	HandleScope handleScope;
+	String::Utf8Value exception(tryCatch->Exception());
+	Handle<v8::Message> message = tryCatch->Message();
+
+	string strException = *exception;
+
+	if (message.IsEmpty())
+	{
+		result += strException + "\n";
+	}
+	else
+	{
+		String::Utf8Value filename(message->GetScriptResourceName());
+		string strFilename = *filename;
+
+		result += strFilename + ":" + itos(message->GetLineNumber()) + ": " + strException + "\n";
+
+		String::Utf8Value sourceline(message->GetSourceLine());
+		string strSourceline = *sourceline;
+
+		result += strSourceline + "\n";
+
+		string underline = rpad("", message->GetStartColumn(), ' ');
+		underline = rpad(underline, message->GetEndColumn(), '^');
+
+		result += underline + "\n";
+	}
+
+	return result;
 }
 
 bool VirtualMachine::loadScript(string scriptName)
@@ -181,7 +206,7 @@ bool VirtualMachine::loadScript(string scriptName)
 
 	if (script.IsEmpty())
 	{
-		printException(&tryCatch);
+		slog << formatException(&tryCatch);
 		return false;
 	}
 	else
@@ -190,7 +215,7 @@ bool VirtualMachine::loadScript(string scriptName)
 
 		if (result.IsEmpty())
 		{
-			printException(&tryCatch);
+			slog << formatException(&tryCatch);
 			return false;
 		}
 
@@ -200,49 +225,21 @@ bool VirtualMachine::loadScript(string scriptName)
 	return true;
 }
 
-void VirtualMachine::callHandleNMTMessage(CanMessage canMessage)
-{
-	const int argc = 3;
-
-	string jsonData = canMessage.getJSONData();
-
-	Handle<Value> argv[argc] = {String::New(canMessage.getClassName().c_str()),
-								String::New(canMessage.getCommandName().c_str()),
-								String::New(jsonData.c_str()) };
-
-	Handle<Value> result = myFunctionHandleNMTMessage->Call(myFunctionHandleNMTMessage, argc, argv); // argc and argv are your standard arguments to a function
-}
-
-void VirtualMachine::callHandleMessage(CanMessage canMessage)
-{
-	const int argc = 6;
-
-	string jsonData = canMessage.getJSONData();
-
-	Handle<Value> argv[argc] = {String::New(canMessage.getClassName().c_str()),
-								String::New(canMessage.getDirectionFlag().c_str()),
-								String::New(canMessage.getModuleName().c_str()),
-								Integer::New(canMessage.getModuleId()),
-								String::New(canMessage.getCommandName().c_str()),
-								String::New(jsonData.c_str()) };
-
-	Handle<Value> result = myFunctionHandleMessage->Call(myFunctionHandleMessage, argc, argv); // argc and argv are your standard arguments to a function
-}
-
 unsigned int VirtualMachine::startIntervalThread(unsigned int timeout)
 {
-	IntervalThread intervalThread(timeout);
+	IntervalThread *intervalThread = new IntervalThread(timeout);
 
-	myIntervalThreads[intervalThread.getId()] = intervalThread;
-	myIntervalThreads[intervalThread.getId()].start();
+	myIntervalThreads[intervalThread->getId()] = intervalThread;
+	myIntervalThreads[intervalThread->getId()]->start();
 
-	return intervalThread.getId();
+	return intervalThread->getId();
 }
 
 bool VirtualMachine::stopIntervalThread(unsigned int id)
 {
 	if (myIntervalThreads.find(id) != myIntervalThreads.end())
 	{
+		delete myIntervalThreads[id];
 		myIntervalThreads.erase(id);
 		return true;
 	}
@@ -264,7 +261,6 @@ bool VirtualMachine::stopSocketThread(unsigned int id)
 	if (mySocketThreads.find(id) != mySocketThreads.end())
 	{
 		delete mySocketThreads[id];
-
 		mySocketThreads.erase(id);
 		return true;
 	}
@@ -280,11 +276,39 @@ void VirtualMachine::sendToSocketThread(unsigned int id, string data)
 	}
 }
 
-bool VirtualMachine::runExpression(string expression)
+void VirtualMachine::disconnectCommandClient(unsigned int id)
+{
+	myCommandThread.disconnectClient(id);
+}
+
+void VirtualMachine::sendToCommandClient(unsigned int id, string data)
+{
+	myCommandThread.sendTo(id, data);
+}
+
+void VirtualMachine::print(unsigned int id, string data)
+{
+	if (id == 0)
+	{
+		SyslogStream &slog = SyslogStream::getInstance();
+		slog << data;
+	}
+	else
+	{
+		VirtualMachine &vm = VirtualMachine::getInstance();
+		vm.sendToCommandClient(id, data);
+	}
+}
+
+bool VirtualMachine::runExpression(Expression expression)
 {
 	string scriptName = "runExpression";
 
-	Handle<String> source =  String::New(expression.c_str(), expression.length());
+	string scriptData = expression.getScript();
+
+	scriptData = "setClientId(" + itos(expression.getTargetId()) + ");\n" + scriptData;
+
+	Handle<String> source =  String::New(scriptData.c_str(), scriptData.length());
 	Handle<String> name = String::New(scriptName.c_str(), scriptName.length());
 
 	Context::Scope contextScope(myContext);
@@ -295,7 +319,7 @@ bool VirtualMachine::runExpression(string expression)
 
 	if (script.IsEmpty())
 	{
-		printException(&tryCatch);
+		print(expression.getTargetId(), formatException(&tryCatch));
 		return false;
 	}
 	else
@@ -304,49 +328,35 @@ bool VirtualMachine::runExpression(string expression)
 
 		if (result.IsEmpty())
 		{
-			printException(&tryCatch);
+			print(expression.getTargetId(), formatException(&tryCatch));
 			return false;
+		}
+		else if (expression.getTargetId() != 0)
+		{
+			 String::AsciiValue ascii(result);
+			 string resultString = *ascii;
+
+			 if (resultString != "undefined")
+			 {
+				print(expression.getTargetId(), resultString + "\n");
+			 }
 		}
 	}
 
 	return true;
 }
 
-void VirtualMachine::printException(TryCatch* tryCatch)
+
+Handle<Value> VirtualMachine::_quit(const Arguments& args)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	HandleScope handleScope;
-	String::Utf8Value exception(tryCatch->Exception());
-	Handle<v8::Message> message = tryCatch->Message();
+	vm.disconnectCommandClient(args[0]->Uint32Value());
 
-	string strException = *exception;
-
-	if (message.IsEmpty())
-	{
-		slog << strException + "\n\n";
-	}
-	else
-	{
-		String::Utf8Value filename(message->GetScriptResourceName());
-		string strFilename = *filename;
-		
-		slog << strFilename + ":" + itos(message->GetLineNumber()) + ": " + strException + "\n";
-
-		String::Utf8Value sourceline(message->GetSourceLine());
-		string strSourceline = *sourceline;
-
-		slog << strSourceline + "\n";
-
-		string underline = rpad("", message->GetStartColumn(), ' ');
-		underline = rpad(underline, message->GetEndColumn(), '^');
-
-		slog << underline + "\n\n";
-	}
+	return Undefined();
 }
 
-
-Handle<Value> VirtualMachine_log(const Arguments& args)
+Handle<Value> VirtualMachine::_log(const Arguments& args)
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 
@@ -357,7 +367,18 @@ Handle<Value> VirtualMachine_log(const Arguments& args)
 	return Undefined();
 }
 
-Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
+Handle<Value> VirtualMachine::_print(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	String::AsciiValue str(args[1]);
+
+	vm.print(args[0]->Uint32Value(), *str);
+
+	return Undefined();
+}
+
+Handle<Value> VirtualMachine::_sendCanMessage(const Arguments& args)
 {
 	CanNetManager &canMan = CanNetManager::getInstance();
 
@@ -392,7 +413,7 @@ Handle<Value> VirtualMachine_sendCanMessage(const Arguments& args)
 	return Undefined();
 }
 
-Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args)
+Handle<Value> VirtualMachine::_sendCanNMTMessage(const Arguments& args)
 {
 	CanNetManager &canMan = CanNetManager::getInstance();
 
@@ -422,7 +443,7 @@ Handle<Value> VirtualMachine_sendCanNMTMessage(const Arguments& args)
 	return Undefined();
 }
 
-Handle<Value> VirtualMachine_loadScript(const Arguments& args)
+Handle<Value> VirtualMachine::_loadScript(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
@@ -431,63 +452,50 @@ Handle<Value> VirtualMachine_loadScript(const Arguments& args)
 	return Boolean::New(vm.loadScript(*str));
 }
 
-Handle<Value> VirtualMachine_startIntervalThread(const Arguments& args)
+Handle<Value> VirtualMachine::_startIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
-
-	unsigned int timeout = args[0]->Uint32Value();
-
-	return Integer::New(vm.startIntervalThread(timeout));
+	return Integer::New(vm.startIntervalThread(args[0]->Uint32Value()));
 }
 
-Handle<Value> VirtualMachine_stopIntervalThread(const Arguments& args)
+Handle<Value> VirtualMachine::_stopIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
-
-	unsigned int id = args[0]->Uint32Value();
-
-	return Boolean::New(vm.stopIntervalThread(id));
+	return Boolean::New(vm.stopIntervalThread(args[0]->Uint32Value()));
 }
 
-Handle<Value> VirtualMachine_startSocketThread(const Arguments& args)
+Handle<Value> VirtualMachine::_startSocketThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
 	String::AsciiValue address(args[0]);
-	int port = args[1]->Uint32Value();
-	unsigned int reconnectTimeout = args[2]->Uint32Value();
 
-	return Integer::New(vm.startSocketThread(*address, port, reconnectTimeout));
+	return Integer::New(vm.startSocketThread(*address, args[1]->Uint32Value(), args[2]->Uint32Value()));
 }
 
-Handle<Value> VirtualMachine_stopSocketThread(const Arguments& args)
+Handle<Value> VirtualMachine::_stopSocketThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	unsigned int id = args[0]->Uint32Value();
-
-	return Boolean::New(vm.stopSocketThread(id));
+	return Boolean::New(vm.stopSocketThread(args[0]->Uint32Value()));
 }
 
-Handle<Value> VirtualMachine_sendToSocketThread(const Arguments& args)
+Handle<Value> VirtualMachine::_sendToSocketThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	unsigned int id = args[0]->Uint32Value();
 	String::AsciiValue data(args[1]);
 
-	vm.sendToSocketThread(id, *data);
+	vm.sendToSocketThread(args[0]->Uint32Value(), *data);
 
 	return Undefined();
 }
 
-Handle<Value> VirtualMachine_uint2hex(const Arguments& args)
+Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	unsigned int id = args[0]->Uint32Value();
-	unsigned int length = args[1]->Uint32Value();
-	string hexId = uint2hex(id, length);
+	string hexId = uint2hex(args[0]->Uint32Value(), args[1]->Uint32Value());
 
 	return String::New(hexId.c_str());
 }

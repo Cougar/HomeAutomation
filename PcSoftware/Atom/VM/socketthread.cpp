@@ -95,7 +95,8 @@ void SocketThread::run()
 
 				case SocketEvent::TYPE_INACTIVITY:
 				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'INACTIVITY', '" + escape(socketEvent.getData()) + "');");
-
+				break;
+				
 				case SocketEvent::TYPE_WAITING_RECONNECT:
 				vm.queueExpression("Socket.triggerSocketCallback(" + itos(myId) + ", 'WAITING_RECONNECT', '" + escape(socketEvent.getData()) + "');");
 				break;

@@ -19,6 +19,9 @@
  *  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.       *
  ***************************************************************************/
 
+#include "socketeventcallback.h"
+
+
 #include "asyncsocket.h"
 
 int socketCount = 1;
@@ -29,6 +32,7 @@ AsyncSocket::AsyncSocket()
 	mySocket = -1;
 	myReconnectTimeout = 0;
 	myForceReconnect = false;
+	myEventCallback = NULL;
 }
 
 AsyncSocket::~AsyncSocket()
@@ -466,6 +470,19 @@ void AsyncSocket::eventAdd(unsigned int eventType)
 void AsyncSocket::eventAdd(unsigned int eventType, string eventData)
 {
 	SocketEvent socketEvent(eventType, eventData);
-	myEventQueue.push(socketEvent);
-	myEventSemaphore.broadcast();
+
+	if (myEventCallback == NULL)
+	{
+		myEventQueue.push(socketEvent);
+		myEventSemaphore.broadcast();
+	}
+	else
+	{
+		myEventCallback->handleEvent(myId, socketEvent);
+	}
+}
+
+void AsyncSocket::eventSetCallback(SocketEventCallback* eventCallback)
+{
+	myEventCallback = eventCallback;
 }

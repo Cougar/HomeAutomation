@@ -28,17 +28,19 @@ using namespace std;
 
 #include "../Socket/asyncsocket.h"
 #include "../VM/virtualmachine.h"
+#include "../Threads/thread.h"
 #include "canmessage.h"
 #include "candebug.h"
 
-class CanNetManager
+class CanNetManager : public Thread<CanNetManager>
 {
 public:
 	static CanNetManager& getInstance();
 	static void deleteInstance();
 
+	void run();
+
 	void sendMessage(CanMessage canMessage);
-	void openChannel();
 
 protected:
 	CanNetManager();

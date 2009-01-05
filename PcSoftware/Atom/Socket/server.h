@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 29, 2008 by Mattias Runge                             *
+ *   Copyright (C) January 4, 2009 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   thread.h                                            *
+ *   server.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,85 +19,45 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _THREAD_H
-#define	_THREAD_H
+#ifndef _SERVER_H
+#define	_SERVER_H
 
-#include <pthread.h>
+using namespace std;
 
-template <class T>
-class Thread
+#include <string>
+#include <map>
+
+#include "../Threads/thread.h"
+#include "asyncsocket.h"
+#include "socketexception.h"
+#include "socketeventcallback.h"
+#include "../version.h"
+#include "../SyslogStream/syslogstream.h"
+
+class Server : public Thread<Server>, public SocketEventCallback
 {
 public:
-	Thread()
-	{
-		myIsCreated = false;
-		myError = 0;
-	};
-	~Thread()
-	{
-		stop();
-	};
+	Server() { };
+	Server(int port, string name);
+	~Server();
 
-	bool stop()
-	{
-		if (!myIsCreated)
-			return true;
+	void setSettings(int port, string name);
+	void sendToAll(string data);
+	void sendTo(int id, string data);
+	void disconnectClient(int id);
 
-		myError = pthread_cancel(myHandle);
-		join();
-		myIsCreated = false;
+	void run();
+	void handleEvent(int id, SocketEvent socketEvent);
 
-		return myError == 0;
-	};
+protected:
+	virtual void handleClientData(int id, string data);
+
+	string myName;
 	
-	bool start()
-	{
-		myError = pthread_create(&myHandle, NULL, T::doThread, (void*)this);
-		
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
-	};
-
-	bool join()
-	{
-		if (!myIsCreated)
-			return false;
-
-		myError = pthread_join(myHandle, NULL);
-
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
-	};
-
-	int getError()
-	{
-		return myError;
-	};
-
-	static void *doThread(void* ptr)
-	{
-		((T*)ptr)->run();
-	};
-
-	virtual void run() { };
-
-private:
-	bool myIsCreated;
-	pthread_t myHandle;
-	int myError;
+	AsyncSocket mySocket;
+	map<int, AsyncSocket*> myClientSockets;
 };
 
-#endif	/* _THREAD_H */
+
+#endif	/* _SERVER_H */
 

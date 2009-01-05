@@ -97,3 +97,10 @@ Date.prototype.getDateTimeFormated = function()
 {
 	return this.getDateFormated() + " " + this.getTimeFormated();
 }
+
+var ClientId = 0;
+
+function setClientId(clientId)
+{
+	ClientId = clientId;
+}

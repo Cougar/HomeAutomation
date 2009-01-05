@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 29, 2008 by Mattias Runge                             *
+ *   Copyright (C) January 5, 2009 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   thread.h                                            *
+ *   socketeventcallback.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,85 +19,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _THREAD_H
-#define	_THREAD_H
+#ifndef _SOCKETEVENTCALLBACK_H
+#define	_SOCKETEVENTCALLBACK_H
 
-#include <pthread.h>
+#include "socketevent.h"
 
-template <class T>
-class Thread
+class SocketEventCallback
 {
 public:
-	Thread()
-	{
-		myIsCreated = false;
-		myError = 0;
-	};
-	~Thread()
-	{
-		stop();
-	};
-
-	bool stop()
-	{
-		if (!myIsCreated)
-			return true;
-
-		myError = pthread_cancel(myHandle);
-		join();
-		myIsCreated = false;
-
-		return myError == 0;
-	};
-	
-	bool start()
-	{
-		myError = pthread_create(&myHandle, NULL, T::doThread, (void*)this);
-		
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
-	};
-
-	bool join()
-	{
-		if (!myIsCreated)
-			return false;
-
-		myError = pthread_join(myHandle, NULL);
-
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
-	};
-
-	int getError()
-	{
-		return myError;
-	};
-
-	static void *doThread(void* ptr)
-	{
-		((T*)ptr)->run();
-	};
-
-	virtual void run() { };
-
-private:
-	bool myIsCreated;
-	pthread_t myHandle;
-	int myError;
+	virtual void handleEvent(int id, SocketEvent socketEvent) = 0;
 };
 
-#endif	/* _THREAD_H */
+#endif	/* _SOCKETEVENTCALLBACK_H */
 

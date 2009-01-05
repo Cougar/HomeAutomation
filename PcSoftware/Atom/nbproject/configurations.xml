@@ -21,7 +21,10 @@
     <logicalFolder name="Socket" displayName="Socket" projectFiles="true">
       <itemPath>Socket/asyncsocket.cpp</itemPath>
       <itemPath>Socket/asyncsocket.h</itemPath>
+      <itemPath>Socket/server.cpp</itemPath>
+      <itemPath>Socket/server.h</itemPath>
       <itemPath>Socket/socketevent.h</itemPath>
+      <itemPath>Socket/socketeventcallback.h</itemPath>
       <itemPath>Socket/socketexception.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f3" displayName="SyslogStream" projectFiles="true">
@@ -39,6 +42,9 @@
       <itemPath>Tools/tools.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f6" displayName="VM" projectFiles="true">
+      <itemPath>VM/commandthread.cpp</itemPath>
+      <itemPath>VM/commandthread.h</itemPath>
+      <itemPath>VM/expression.h</itemPath>
       <itemPath>VM/intervalthread.cpp</itemPath>
       <itemPath>VM/intervalthread.h</itemPath>
       <itemPath>VM/socketthread.cpp</itemPath>
@@ -60,6 +66,8 @@
     </logicalFolder>
     <itemPath>exception.h</itemPath>
     <itemPath>main.cpp</itemPath>
+    <itemPath>singleton.cpp</itemPath>
+    <itemPath>singleton.h</itemPath>
     <itemPath>version.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -131,7 +139,16 @@
       <item path="Socket/asyncsocket.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="Socket/server.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Socket/server.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="Socket/socketevent.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/socketeventcallback.h">
         <itemTool>3</itemTool>
       </item>
       <item path="Socket/socketexception.h">
@@ -159,6 +176,15 @@
         <itemTool>1</itemTool>
       </item>
       <item path="Tools/tools.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/commandthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/commandthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/expression.h">
         <itemTool>3</itemTool>
       </item>
       <item path="VM/intervalthread.cpp">
@@ -193,6 +219,12 @@
       </item>
       <item path="main.cpp">
         <itemTool>1</itemTool>
+      </item>
+      <item path="singleton.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="singleton.h">
+        <itemTool>3</itemTool>
       </item>
       <item path="version.h">
         <itemTool>3</itemTool>
@@ -268,7 +300,16 @@
       <item path="Socket/asyncsocket.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="Socket/server.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Socket/server.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="Socket/socketevent.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="Socket/socketeventcallback.h">
         <itemTool>3</itemTool>
       </item>
       <item path="Socket/socketexception.h">
@@ -296,6 +337,15 @@
         <itemTool>1</itemTool>
       </item>
       <item path="Tools/tools.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/commandthread.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="VM/commandthread.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="VM/expression.h">
         <itemTool>3</itemTool>
       </item>
       <item path="VM/intervalthread.cpp">
@@ -330,6 +380,12 @@
       </item>
       <item path="main.cpp">
         <itemTool>1</itemTool>
+      </item>
+      <item path="singleton.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="singleton.h">
+        <itemTool>3</itemTool>
       </item>
       <item path="version.h">
         <itemTool>3</itemTool>

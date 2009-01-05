@@ -1,7 +1,7 @@
 
-function HD44789(name, id)
+function HD44789(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 }
 
 extend(HD44789, CanService);

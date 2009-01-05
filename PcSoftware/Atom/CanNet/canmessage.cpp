@@ -34,11 +34,13 @@ void CanMessage::setRaw(string rawHex)
 	rawHex = trim(rawHex, '\n');
 	rawHex = trim(rawHex);
 
+	myRawHex = rawHex;
+
 	vector<string> parts = explode(" ", rawHex);
 
 	if (parts.size() < 2 || parts[0].compare("PKT") != 0)
 	{
-		//slog << "Malformed can message received from canDaemon: \"" << rawHex << "\"\n";
+		cout << "Malformed can message received from canDaemon: \"" << rawHex << "\"\n";
 		throw new CanMessageException("Malformed can message received from canDaemon");
 	}
 
@@ -88,6 +90,10 @@ void CanMessage::setRaw(string rawHex)
 		myCommandName = translator.lookupNMTCommandName(commandId);
 
 		myData = translator.translateNMTData(commandId, rawHexData);
+
+		myDirectionFlag = "";
+		myModuleName = "";
+		myModuleId = 0;
 	}
 	else
 	{
@@ -280,6 +286,7 @@ string CanMessage::toString()
 	result += "             ModuleId: " + itos(myModuleId) + "\n";
 	result += "             CommandName: " + myCommandName + "\n";
 	result += "             Data: " + getJSONData() + "\n";
+	result += "             RawHex: " + myRawHex + "\n";
 
 	return result;
 }

@@ -10,6 +10,8 @@ loadScript("System/CanNMTMessage.js");
 loadScript("System/CanManager.js");
 loadScript("System/CanService.js");
 loadScript("System/CanNode.js");
+loadScript("System/Console.js");
+loadScript("System/TextTable.js");
 
 loadScript("Other/OnlinePhonebook.js");
 

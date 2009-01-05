@@ -18,7 +18,7 @@ ServiceManager.getService = function(type, name, id)
 			}
 		}
 		
-		ServiceManager.Services[fullId] = eval("(new " + name + "('" + name + "', " + id + "))");///FIXME: Can we do this without eval??
+		ServiceManager.Services[fullId] = eval("(new " + name + "('" + type + "', '" + name + "', " + id + "))");///FIXME: Can we do this without eval??
 	}
 	
 	return ServiceManager.Services[fullId];
