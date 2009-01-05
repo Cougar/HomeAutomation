@@ -7,7 +7,7 @@ void act_hd44780_Init(void)
 {
 	///FIXME: What is this, this needs to be more clear by far....
 
-	// Contrast
+	// Contrast (brightness on an oled display)
 	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
 	OCR0B = act_hd44780_INITIAL_CONTRAST;
@@ -82,8 +82,13 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		break;
 
 		case CAN_MODULE_CMD_HD44789_LCD_BACKLIGHT:
-		if (rxMsg->Length > 0)
+		if (rxMsg->Length > 0) {
+#if (act_hd44780_TYPE==0)
 			OCR1AL = rxMsg->Data[0];
+#else
+			OCR0B = rxMsg->Data[0];
+#endif
+		}
 
 		StdCan_Msg_t txMsg;
 
@@ -94,7 +99,11 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		txMsg.Header.Command = CAN_MODULE_CMD_HD44789_LCD_BACKLIGHT;
 		txMsg.Length = 1;
 
-		txMsg.Data[0] = OCR1AL;
+#if (act_hd44780_TYPE==0)
+			txMsg.Data[0] = OCR1AL;
+#else
+			txMsg.Data[0] = OCR0B;
+#endif
 
 		StdCan_Put(&txMsg);
 		break;
