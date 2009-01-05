@@ -83,7 +83,7 @@ SensorPrint.prototype.phonebookLookupCallback = function(phonenumber, persons)
 		{
 			this.myLCDService.printText(0, n+1, persons[n].pad(18, ' ', 1));
 			/* Print out what we are doing to the console */
-			log(this.myName + ":" + this.myId + "> Trying to print " + persons[n] + " value to LCD\n");
+			log(this.myName + ":" + this.myId + "> Trying to print " + persons[n] + " to LCD\n");
 		}
 		
 		for (var c = n+1; c < 4; c++)

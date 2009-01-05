@@ -29,6 +29,7 @@ using namespace std;
 #include "Tools/tools.h"
 #include "SyslogStream/syslogstream.h"
 #include "Settings/settings.h"
+#include "Socket/server.h"
 #include "CanNet/cannetmanager.h"
 #include "Socket/asyncsocket.h"
 #include "VM/virtualmachine.h"
@@ -48,7 +49,7 @@ int main(int argc, char** argv)
 	SyslogStream &slog = SyslogStream::getInstance();
 
 	slog << "Atom " + ftos(VERSION) + " starting...\n";
-	slog << "Written by Mattias Runge 2008\n\n";
+	slog << "Written by Mattias Runge 2008-2009\n\n";
 
 	if (file_exists("/etc/atom.conf"))
 	{
@@ -68,8 +69,20 @@ int main(int argc, char** argv)
 	VirtualMachine &vm = VirtualMachine::getInstance();
 	vm.start();
 
-	CanDebug &canDebug = CanDebug::getInstance();
-	canDebug.start();
+	string canDebugPort = Settings::get("CanDebugPort");
+	if (canDebugPort != "")
+	{
+		CanDebug &canDebug = CanDebug::getInstance();
+		canDebug.setSettings(stoi(canDebugPort), "CanDebug");
+		canDebug.start();
+	}
+	else
+	{
+		slog << "CanDebugPort is not defined, can not start CanDebug socket\n";
+	}
+
+	CanNetManager &canMan = CanNetManager::getInstance();
+	canMan.start();
 
 	if (Settings::get("DaemonMode") == "yes")
 	{
@@ -81,11 +94,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-
-
-	CanNetManager &canMan = CanNetManager::getInstance();
-
-	canMan.openChannel();
+	vm.join();
 
 	return cleanUp();
 }
@@ -107,22 +116,5 @@ int cleanUp()
 
 void handler(int status)
 {
-	//cout << "In the handler function. Status: " << status << endl;
-
-/*
-	cout << "SIGTERM: " << SIGTERM << endl;
-	cout << "SIGINT: " << SIGINT << endl;
-	cout << "SIGQUIT: " << SIGQUIT << endl;
-	cout << "SIGABRT: " << SIGABRT << endl;
-	cout << "SIGIO: " << SIGIO << endl;
-	cout << "SIGPIPE: " << SIGPIPE << endl;
-
-*/
-	cleanUp();
-
-	/*The SIGTERM signal tells a process to exit, so we exit. You can't make a
-	process invincible by ignoreing SIGTERM as there are still the
-	SIGKILL and SIGSTOP signals which you can't set a handler for (catch) or
-	ignore*/
-	exit(EXIT_SUCCESS);
+	exit(cleanUp());
 }

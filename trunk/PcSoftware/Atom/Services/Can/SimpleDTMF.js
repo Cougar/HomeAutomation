@@ -1,7 +1,7 @@
 
-function SimpleDTMF(name, id)
+function SimpleDTMF(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 }
 
 extend(SimpleDTMF, CanService);

@@ -1,12 +1,14 @@
 
-function Service(name, id)
+function Service(type, name, id)
 {
+	this.myType = type;
 	this.myName = name;
 	this.myId = id;
 	this.myEventCallbacks = new Array();
 	this.myInitialArguments = new Array();
 }
 
+Service.prototype.myType = null;
 Service.prototype.myName = null;
 Service.prototype.myId = null;
 Service.prototype.myInitialArguments = null;
@@ -15,6 +17,11 @@ Service.prototype.myEventCallbacks = null;
 Service.prototype.initialize = function(initialArguments)
 {
 	this.myInitialArguments = initialArguments;
+}
+
+Service.prototype.getType = function()
+{
+	return this.myType;
 }
 
 Service.prototype.getName = function()

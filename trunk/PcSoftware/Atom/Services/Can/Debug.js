@@ -1,7 +1,7 @@
 
-function Debug(name, id)
+function Debug(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 	
 	this.myString = "";
 }

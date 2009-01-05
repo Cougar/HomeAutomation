@@ -1,7 +1,7 @@
 
-function BusVoltage(name, id)
+function BusVoltage(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 	
 	this.myLastValue = new Array();
 }

@@ -1,7 +1,7 @@
 
-function DS18x20(name, id)
+function DS18x20(type, name, id)
 {
-	this.CanService(name, id);
+	this.CanService(type, name, id);
 	
 	this.myLastValue = new Array();
 }

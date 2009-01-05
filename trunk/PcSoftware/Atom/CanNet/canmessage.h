@@ -66,6 +66,7 @@ public:
 	string toString();
 	
 private:
+	string myRawHex;
 	bool myIsUnknown;
 	string myClassName;
 	string myDirectionFlag;

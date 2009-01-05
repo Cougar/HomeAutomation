@@ -25,32 +25,29 @@
 using namespace std;
 
 #include <string>
-#include <map>
 
 #include "../Threads/thread.h"
 #include "../Socket/asyncsocket.h"
 #include "../Socket/socketexception.h"
+#include "../Socket/server.h"
 #include "../Settings/settings.h"
 #include "canmessage.h"
-#include "../version.h"
 
-class CanDebug : public Thread<CanDebug>
+class CanDebug : public Server
 {
 public:
 	static CanDebug& getInstance();
 	static void deleteInstance();
 
-	void run();
-	void sendData(string data);
-	void sendCanMessage(CanMessage canMessage);
+	void sendCanMessageToAll(CanMessage canMessage);
+
+protected:
+	void handleClientData(int id, string data);
 
 private:
 	CanDebug();
 	~CanDebug();
 	static CanDebug* myInstance;
-
-	AsyncSocket mySocket;
-	map<int, AsyncSocket*> myClientSockets;
 };
 
 

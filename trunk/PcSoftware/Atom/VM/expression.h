@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 29, 2008 by Mattias Runge                             *
+ *   Copyright (C) January 5, 2009 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   thread.h                                            *
+ *   expression.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,85 +19,37 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _THREAD_H
-#define	_THREAD_H
+#ifndef _EXPRESSION_H
+#define	_EXPRESSION_H
 
-#include <pthread.h>
+using namespace std;
 
-template <class T>
-class Thread
+#include <string>
+
+class Expression
 {
 public:
-	Thread()
+	Expression(string script)
 	{
-		myIsCreated = false;
-		myError = 0;
-	};
-	~Thread()
-	{
-		stop();
+		myTargetId = 0;
+		myScript = script;
 	};
 
-	bool stop()
+	Expression(unsigned int targetId, string script)
 	{
-		if (!myIsCreated)
-			return true;
-
-		myError = pthread_cancel(myHandle);
-		join();
-		myIsCreated = false;
-
-		return myError == 0;
-	};
-	
-	bool start()
-	{
-		myError = pthread_create(&myHandle, NULL, T::doThread, (void*)this);
-		
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
+		myTargetId = targetId;
+		myScript = script;
 	};
 
-	bool join()
-	{
-		if (!myIsCreated)
-			return false;
+	~Expression() { };
 
-		myError = pthread_join(myHandle, NULL);
-
-		if (myError != 0)
-		{
-			myIsCreated = false;
-			return false;
-		}
-
-		myIsCreated = true;
-		return true;
-	};
-
-	int getError()
-	{
-		return myError;
-	};
-
-	static void *doThread(void* ptr)
-	{
-		((T*)ptr)->run();
-	};
-
-	virtual void run() { };
+	unsigned int getTargetId() { return myTargetId; };
+	string getScript() { return myScript; };
 
 private:
-	bool myIsCreated;
-	pthread_t myHandle;
-	int myError;
+	string myScript;
+	unsigned int myTargetId;
 };
 
-#endif	/* _THREAD_H */
+#endif	/* _EXPRESSION_H */
 

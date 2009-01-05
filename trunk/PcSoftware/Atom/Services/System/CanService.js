@@ -1,7 +1,7 @@
 
-function CanService(name, id)
+function CanService(type, name, id)
 {
-	this.Service(name, id);
+	this.Service(type, name, id);
 
 	this.myNode = null;
 }

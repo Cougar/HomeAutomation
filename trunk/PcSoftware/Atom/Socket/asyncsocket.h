@@ -50,6 +50,7 @@ using namespace std;
 
 #include "socketexception.h"
 #include "socketevent.h"
+#include "socketeventcallback.h"
 
 const int MAXBUFFER = 1024;
 const int MAXCONNECTIONS = 10;
@@ -62,7 +63,7 @@ public:
 
 	void run();
 
-	string getId() { return myId; };
+	int getId() { return myId; };
 	bool isConnected() { return mySocket != -1; };
 
 	void forceReconnect() { myForceReconnect = true; };
@@ -89,7 +90,7 @@ public:
 	bool accept(AsyncSocket* newSocket);
 	
 
-	
+	void eventSetCallback(SocketEventCallback *eventCallback);
 
 protected:
 	void reconnectLoop();
@@ -102,7 +103,7 @@ protected:
 
 
 private:
-	string myId;
+	int myId;
 	string myAddress;
 	int myPort;
 	unsigned int myReconnectTimeout;
@@ -110,8 +111,10 @@ private:
 	bool myForceReconnect;
 	sockaddr_in myAddressStruct;
 
+
 	Semaphore myEventSemaphore;
 	ThreadSafeQueue<SocketEvent> myEventQueue;
+	SocketEventCallback *myEventCallback;
 	void eventAdd(unsigned int eventType, string eventData);
 	void eventAdd(unsigned int eventType);
 

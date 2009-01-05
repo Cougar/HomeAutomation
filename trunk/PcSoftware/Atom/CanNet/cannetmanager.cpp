@@ -51,12 +51,13 @@ CanNetManager::CanNetManager()
 
 CanNetManager::~CanNetManager()
 {
+	stop();
 	CanIdTranslator::deleteInstance();
 	myChannel->stop();
 	delete myChannel;
 }
 
-void CanNetManager::openChannel()
+void CanNetManager::run()
 {
 	SyslogStream &slog = SyslogStream::getInstance();
 	VirtualMachine &vm = VirtualMachine::getInstance();
@@ -86,6 +87,7 @@ void CanNetManager::openChannel()
 	vector<string> dataLines;
 	string data;
 	CanMessage *canMessage = NULL;
+	string expression;
 
 	while (1)
 	{
@@ -145,12 +147,32 @@ void CanNetManager::openChannel()
 
 						if (!canMessage->isUnknown())
 						{
-							vm.queueCanMessage(*canMessage);
-							canDebug.sendCanMessage(*canMessage);
+							if (canMessage->getClassName() == "nmt")
+							{
+								expression = "handleNMTMessage(";
+								expression += "'" + canMessage->getClassName() + "', ";
+								expression += "'" + canMessage->getCommandName() + "', ";
+								expression += canMessage->getJSONData();
+								expression += ");";
+							}
+							else
+							{
+								expression = "handleMessage(";
+								expression += "'" + canMessage->getClassName() + "', ";
+								expression += "'" + canMessage->getDirectionFlag() + "', ";
+								expression += "'" + canMessage->getModuleName() + "', ";
+								expression += "" + itos(canMessage->getModuleId()) + ", ";
+								expression += "'" + canMessage->getCommandName() + "', ";
+								expression += canMessage->getJSONData();
+								expression += ");";
+							}
+
+							vm.queueExpression(expression);
+							canDebug.sendCanMessageToAll(*canMessage);
 						}
 						else
 						{
-							canDebug.sendData(data + "\n");
+							canDebug.sendToAll(data + "\n");
 						}
 
 						delete canMessage;
@@ -200,6 +222,6 @@ void CanNetManager::sendMessage(CanMessage canMessage)
 {
 	CanDebug &canDebug = CanDebug::getInstance();
 	myChannel->sendData(canMessage.getRaw());
-	canDebug.sendCanMessage(canMessage);
+	canDebug.sendCanMessageToAll(canMessage);
 }
 
