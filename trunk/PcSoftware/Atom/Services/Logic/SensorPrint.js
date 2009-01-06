@@ -1,9 +1,9 @@
 
-function SensorPrint(name, id)
+function SensorPrint(type, name, id)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
-	this.Service(name, id);
+	this.Service(type, name, id);
 }
 
 /* We inherit from Service with this call, it must always be next
@@ -28,6 +28,30 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	/* This is used for function decalrations like the callbacks below */
 	var self = this;
 
+	if (!this.myInitialArguments["HD44789"])
+	{
+		log(this.myName + ":" + this.myId + "> Failed to initialize, HD44789-config missing from config.\n");
+		return;
+	}
+	
+	if (!this.myInitialArguments["DS18x20"])
+	{
+		log(this.myName + ":" + this.myId + "> Failed to initialize, DS18x20-config missing from config.\n");
+		return;
+	}
+	
+	if (!this.myInitialArguments["BusVoltage"])
+	{
+		log(this.myName + ":" + this.myId + "> Failed to initialize, BusVoltage-config missing from config.\n");
+		return;
+	}
+	
+	if (!this.myInitialArguments["SimpleDTMF"])
+	{
+		log(this.myName + ":" + this.myId + "> Failed to initialize, SimpleDTMF-config missing from config.\n");
+		return;
+	}
+	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myLCDService = ServiceManager.getService("Can", "HD44789", this.myInitialArguments["HD44789"]["Id"]);
 	/* Add a callback for when the service goes online */
@@ -36,7 +60,7 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	this.lcdOnline();
 	/* Add a callback for when the service goes offline */
 	this.myLCDService.registerEventCallback("offline", function(args) { self.lcdOffline(); });
-
+	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myTempService = ServiceManager.getService("Can", "DS18x20", this.myInitialArguments["DS18x20"]["Id"]);
 	/* Add a callback for when the sensor reports a new value */
@@ -45,7 +69,7 @@ SensorPrint.prototype.initialize = function(initialArguments)
 	this.myTempService.registerEventCallback("online", function(args) { self.tempOnline(); });
 	/* If the service is already online we should call the handler here */
 	this.tempOnline();
-
+	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myVoltService = ServiceManager.getService("Can", "BusVoltage", this.myInitialArguments["BusVoltage"]["Id"]);
 	/* Add a callback for when the sensor reports a new value */
@@ -110,10 +134,10 @@ SensorPrint.prototype.lcdOnline = function()
 			var self = this;
 		
 			/* Start interval timer for our printout. Arguments are the callback function and time in seconds */
-			this.myInterval = new Interval(function() { self.timerUpdate() }, 1000);
+			//this.myInterval = new Interval(function() { self.timerUpdate() }, 1000);
 		}
 		
-		this.myInterval.start();
+		//this.myInterval.start();
 	}
 }
 
