@@ -83,6 +83,18 @@
         <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
       </variables>
     </command>
+    <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
+	<variables>
+		<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+		<variable name="Lat_min" type="uint" start_bit="8" bit_length="8" unit="'" description="Minutes lat"/>
+		<variable name="Lat_sec" type="uint" start_bit="16" bit_length="15" unit="''" description="Seconds Lat"/>
+		<variable name="Lat_CD" type="uint" start_bit="31" bit_length="1" unit="" description="N/S"/>
+		<variable name="Lon_deg" type="uint" start_bit="32" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+		<variable name="Lon_min" type="uint" start_bit="40" bit_length="8" unit="'" description="Minutes lat"/>
+		<variable name="Lon_sec" type="uint" start_bit="48" bit_length="15" unit="''" description="Seconds Lat"/>
+		<variable name="Lon_CD" type="uint" start_bit="63" bit_length="1" unit="" description="E/W"/>		
+	</variables>
+    </command>
     <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
      <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
@@ -168,6 +180,7 @@
     <module id="12" name="RGBdriver" class="act"/>
     <module id="13" name="LEDPWM" class="act"/>
     <module id="14" name="irReceive" class="sns"/>
+    <module id="15" name="nmea" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

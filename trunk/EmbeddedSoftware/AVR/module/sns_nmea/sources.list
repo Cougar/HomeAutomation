@@ -1,0 +1,4 @@
+# List all files that needs to be compiled here
+sns_nmea/sns_nmea.c
+drivers/uart/serial.c
+drivers/uart/uart.c
