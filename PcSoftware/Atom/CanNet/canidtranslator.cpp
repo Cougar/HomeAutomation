@@ -424,7 +424,7 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 			if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
 				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
 
-			unsigned int a = stoi(iter->second.getValue());
+			unsigned int a = stou(iter->second.getValue());
 
 			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
 		}
@@ -506,7 +506,7 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 
 		if (attributes["type"] == "uint")
 		{
-			variable.setValue(itos(bin2uint(bits)));
+			variable.setValue(utos(bin2uint(bits)));
 		}
 		else if (attributes["type"] == "float")
 		{
