@@ -301,7 +301,21 @@ void CanIdTranslator::makeDataValid(int commandId, string moduleName, map<string
 	{
 		map<string, string> attributes = commandNodes[n].getAttributes();
 
-		if ((stoi(attributes["id"]) == commandId) || (commandId >= 128 && (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)))
+		bool correct = false;
+
+		if (commandId >= 128)
+		{
+			if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
+			{
+				correct = true;
+			}
+		}
+		else if (stoi(attributes["id"]) == commandId)
+		{
+			correct = true;
+		}
+
+		if (correct)
 		{
 			XmlNode varablesNode = commandNodes[n].findChild("variables");
 
@@ -345,7 +359,21 @@ map<string, CanVariable> CanIdTranslator::translateData(int commandId, string mo
 	{
 		map<string, string> attributes = commandNodes[n].getAttributes();
 
-		if ((stoi(attributes["id"]) == commandId) || (commandId >= 128 && (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)))
+		bool correct = false;
+
+		if (commandId >= 128)
+		{
+			if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
+			{
+				correct = true;
+			}
+		}
+		else if (stoi(attributes["id"]) == commandId)
+		{
+			correct = true;
+		}
+
+		if (correct)
 		{
 			XmlNode varablesNode = commandNodes[n].findChild("variables");
 

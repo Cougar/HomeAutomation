@@ -43,7 +43,16 @@ SimpleDTMF.prototype.canMessageHandler = function(canMessage)
 		}
 		else
 		{
-			log(this.myName + ":" + this.myId + "> Received malformed phonenumber: " + this.myLastPhonenumber + "\n");
+			this.myLastPhonenumber = this.myLastPhonenumber.trim('f');
+			
+			//var pos = this.myLastPhonenumber.indexOf('c');
+		
+			//this.myLastPhonenumber = this.myLastPhonenumber.substr(0, pos);
+		
+			log(this.myName + ":" + this.myId + "> New phonenumber: " + this.myLastPhonenumber + "\n");
+			this.callEvent("newPhonenumber", null);
+		
+			//log(this.myName + ":" + this.myId + "> Received malformed phonenumber: " + this.myLastPhonenumber + "\n");
 		}
 		break;
 		}
