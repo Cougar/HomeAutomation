@@ -2,7 +2,6 @@ TODO
 ====
 Bugs
 ----
-* Check uint conversion, sometimes negative values are the result
 * CanTranslator and CanMessage should use unsigned int maybe
 
 Features

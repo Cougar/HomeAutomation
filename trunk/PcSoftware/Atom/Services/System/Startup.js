@@ -19,7 +19,7 @@ loadScript("Other/OnlinePhonebook.js");
    Put things that needs to start here */
 function startup()
 {
-	if (autostart)
+	if (typeof autostart != "undefined")
 	{
 		autostart();
 	}
