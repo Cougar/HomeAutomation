@@ -11,6 +11,7 @@ loadScript("System/CanManager.js");
 loadScript("System/CanService.js");
 loadScript("System/CanNode.js");
 loadScript("System/Console.js");
+loadScript("System/DataStore.js");
 loadScript("System/TextTable.js");
 
 loadScript("Other/OnlinePhonebook.js");

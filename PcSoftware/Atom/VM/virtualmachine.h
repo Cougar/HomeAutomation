@@ -54,6 +54,7 @@ public:
 	void queueExpression(string script) { queueExpression(Expression(script)); };
 
 	bool loadScript(string scriptName);
+	bool loadDataStore(string storeName);
 
 	unsigned int startIntervalThread(unsigned int timeout);
 	bool stopIntervalThread(unsigned int id);
@@ -79,6 +80,7 @@ public:
 	static Handle<Value> _startSocketThread(const Arguments& args);
 	static Handle<Value> _sendToSocketThread(const Arguments& args);
 	static Handle<Value> _uint2hex(const Arguments& args);
+	static Handle<Value> _loadDataStore(const Arguments& args);
 
 private:
 	bool runExpression(Expression expression);

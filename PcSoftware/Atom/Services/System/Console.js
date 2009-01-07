@@ -39,7 +39,14 @@ function services()
 		row[row.length] = ServiceManager.Services[n].getType();
 		row[row.length] = ServiceManager.Services[n].getName();
 		row[row.length] = ServiceManager.Services[n].getId();
-		row[row.length] = ServiceManager.Services[n].isOnline();
+		if (ServiceManager.Services[n].getType() == "CAN")
+		{
+			row[row.length] = ServiceManager.Services[n].isOnline();
+		}
+		else
+		{
+			row[row.length] = "";
+		}
 		
 		list[list.length] = row;
 	}
