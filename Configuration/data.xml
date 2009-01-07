@@ -130,7 +130,30 @@
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
-    
+    <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD"/>
+    <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
+      <variables>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD">
+      <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
+      <variables>
+        <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+      <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
+      <variables>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </command>
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
