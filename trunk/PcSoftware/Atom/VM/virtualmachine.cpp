@@ -87,6 +87,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine::_stopSocketThread));
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
 	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
+	myGlobal->Set(String::New("loadDataStore"), FunctionTemplate::New(VirtualMachine::_loadDataStore));
 	myContext = Context::New(NULL, myGlobal);
 
 
@@ -178,6 +179,53 @@ string VirtualMachine::formatException(TryCatch* tryCatch)
 	}
 
 	return result;
+}
+
+bool VirtualMachine::loadDataStore(string storeName)
+{
+	SyslogStream &slog = SyslogStream::getInstance();
+
+	string basePath = Settings::get("BasePath") + "Services/DataStores/";
+	string scriptFileName = basePath + storeName + ".js";
+
+	if (!file_exists(scriptFileName))
+	{
+		slog << "Failed to load datastore " + scriptFileName + ", file does not exist.\n";
+		return false;
+	}
+
+	string scriptSource = file_get_contents(scriptFileName);
+
+	scriptSource = "DataStore.addStore('" + storeName + "', " + str_replace("\n", "", scriptSource) + ");";
+
+	Handle<String> source =  String::New(scriptSource.c_str(), scriptSource.length());
+	Handle<String> name = String::New(scriptFileName.c_str(), scriptFileName.length());
+
+	Context::Scope contextScope(myContext);
+
+	TryCatch tryCatch;
+
+	Handle<Script> script = Script::Compile(source, name);
+
+	if (script.IsEmpty())
+	{
+		slog << formatException(&tryCatch);
+		return false;
+	}
+	else
+	{
+		Handle<Value> result = script->Run();
+
+		if (result.IsEmpty())
+		{
+			slog << formatException(&tryCatch);
+			return false;
+		}
+
+		slog << "Loaded datastore " + storeName + "\n";
+	}
+
+	return true;
 }
 
 bool VirtualMachine::loadScript(string scriptName)
@@ -452,6 +500,15 @@ Handle<Value> VirtualMachine::_loadScript(const Arguments& args)
 	return Boolean::New(vm.loadScript(*str));
 }
 
+Handle<Value> VirtualMachine::_loadDataStore(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+
+	String::AsciiValue str(args[0]);
+
+	return Boolean::New(vm.loadDataStore(*str));
+}
+
 Handle<Value> VirtualMachine::_startIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
@@ -499,4 +556,3 @@ Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
 
 	return String::New(hexId.c_str());
 }
-
