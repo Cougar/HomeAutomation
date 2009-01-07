@@ -8,7 +8,8 @@
 
 #include <avr/pgmspace.h>
 
-GrLcdStateType GrLcdState;
+
+volatile GrLcdStateType GrLcdState;
 
 
 void SetControls(uint8_t RS, uint8_t RW){
@@ -32,19 +33,10 @@ void Disable(){
 	LCD_CONTROL_PORT &= ~(1<<LCD_CONTROL_PIN_E);
 }
 
-void Delay(){ //OBS!! BEH�VER VEEERKLIGEN FIXAS!
+void Delay(){
 	delay_us(1);
-}// 1-8us      ...2-13us     ...5-31us
- /*                              // 10-60us    ...50-290us
-unsigned int i;             // 100-580us  ...500-2,9ms
-unsigned char j;            // 1000-5,8ms ...5000-29ms
-uint8_t p = 250;                             // 10000-56ms ...30000-170ms
-                             // 50000-295ms...60000-345ms
-//  for (i = 0; i < p; i++) for (j = 0; j < 10; j++) asm volatile ("nop");
-    for (i = 0; i < p; i++) for (j = 0; j < 50; j++);
-
 }
-*/
+
 void Enable(){
 	Delay();
 	LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_E);
@@ -87,8 +79,14 @@ void glcdPowerOn(){
 	LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS2)|(1<<LCD_CONTROL_PIN_CS1);
 	Disable();
 	Delay();
+	//set display on
 	SetControls(0,0);
 	SetData(0x3F);
+	Enable();
+
+	//set startaddress of the first row (set to row 0)
+	SetControls(0,0);
+	SetData(0xc0);
 	Enable();
 
 	glcdClear();
@@ -99,7 +97,6 @@ void glcdClear(){
 	Enable();
 	Delay();
 	Disable();
-
 
 	uint8_t i;
 	uint8_t j;
@@ -134,52 +131,15 @@ void glcdSetXY(uint8_t x, uint8_t y){
 		LCD_CONTROL_PORT_CS &= ~(1<<LCD_CONTROL_PIN_CS2);
 	}
 
-
 	//Steg 2: S�tt r�tt x-adress p� det aktiva chippet
 	SetControls(0,0);
 	SetData(0x40 + x%64);
-
 	Enable();
 
 	//Steg 3: S�tt r�tt y-adress p� det aktiva chippet
 	SetData(0xB8 + y);
-
-
 	Enable();
-
 }
-
-
-//New:
-/*
-void glcdWriteChar(char c)
-{
-	uint8_t i = 0;
-	if (GrLcdState.lcdXAddr > (128-5)){
-		glcdSetXY(0,GrLcdState.lcdYAddr + 1);
-	}
-
-	for(i=0; i<5; i++)
-	{
-		glcdWriteData(0xFF);
-		//glcdWriteData(pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i])); //Borde snyggas till med pekare
-	}
-	glcdWriteData(0x00);
-
-}
-
-
-void glcdPutStr(const char *s)
-{
-	register char c;
-
-    while ( (c = *s++) ) {
-    	glcdWriteChar(c);
-
-    }
-}
-
-*/
 
 void glcdWriteChar(char c)
 {
@@ -194,7 +154,6 @@ void glcdWriteChar(char c)
 		glcdWriteData(~pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i])); //Borde snyggas till med pekare
 	}
 	glcdWriteData(~0x00);
-
 }
 
 void glcdPutStr(char *data){
