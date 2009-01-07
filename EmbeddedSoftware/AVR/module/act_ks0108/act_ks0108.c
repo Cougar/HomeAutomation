@@ -28,17 +28,12 @@ void act_ks0108_Init(void)
 
 	glcdPowerOn();
 
-	glcdSetXY(0,0);
-	glcdSetXY(0,0);
-	glcdSetXY(0,0);
-
 	for (jxa = 0; jxa< 8; jxa++){
 		glcdSetXY(0,jxa);
 		for (ixa = 0; ixa < 128; ixa++){
 			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
 		}
 	}
-
 }
 
 void act_ks0108_Process(void)
@@ -49,43 +44,29 @@ void act_ks0108_Process(void)
 void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	static uint8_t saer=0;
+	static uint8_t saer2=0;
 	saer++;
-	if (saer>6) {
-		//glcdSetXY(0,0);
-		//glcdPutStr("rad0.1");
-		glcdSetXY(78,1);
-		glcdPutStr("Hej!");
-		glcdSetXY(78,2);
-		glcdPutStr("28 grader");
-		//glcdSetXY(3,3);
-		//glcdPutStr("rad3.4");
-		glcdSetXY(78,4);
-		glcdPutStr("En för lång text");
-		/*glcdSetXY(5,5);
-		glcdPutStr("rad5.6");
-		glcdSetXY(6,6);
-		glcdPutStr("rad6.7");
-		glcdSetXY(7,7);
-		glcdPutStr("rad7.8");
-		glcdSetXY(8,8);
-		glcdPutStr("rad7.8");
-		*/
-
-	}
-	/*
-	if (	StdCan_Ret_class(rxMsg->Header) == CAN_CLASS_MODULE_DEF && ///TODO: Change this to the actual class type
-		StdCan_Ret_direction(rxMsg->Header) == DIR_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_TYPE_MODULE_def_default && ///TODO: Change this to the actual module type
-		rxMsg->Header.ModuleId == act_ks0108_ID)
-	{
-		switch (rxMsg->Header.Command)
-		{
-		case CAN_CMD_MODULE_DUMMY:
-		///TODO: Do something dummy
-		break;
+	if (saer>10) {
+		saer2++;
+		for (jxa = 0; jxa< 8; jxa++){
+			glcdSetXY(0,jxa);
+			for (ixa = 0; ixa < 128; ixa++){
+				glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
+			}
 		}
+		saer=0;
+		glcdSetXY(83,1);
+		glcdPutStr("Tycker ");
+		glcdSetXY(83,2);
+		glcdPutStr(" detta ");
+		glcdSetXY(83,3);
+		glcdPutStr("funkar!");
+		glcdSetXY(83,4);
+		char buffer[20];	
+		//numtoascii((int16_t)saer2 ,*buffer);
+		unsignedtoascii((int16_t)saer2,0,buffer,1);
+		glcdPutStr(buffer);
 	}
-	*/
 }
 
 void act_ks0108_List(uint8_t ModuleSequenceNumber)
