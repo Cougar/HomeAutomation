@@ -1,6 +1,9 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+/* set to 0 for not sending timestamps on bus */
+#define SENDTIMESTAMP                   1
+
 // Kolla makefile för att sätta MCU!!
 
 //#define F_CPU 					8000000UL

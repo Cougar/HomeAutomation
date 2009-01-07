@@ -55,9 +55,6 @@ static uint8_t buffpoint;
 #define C2S_START_BYTE 253
 #define C2S_END_BYTE 250
 
-/* set to 0 for not sending timestamps on bus */
-#define SENDTIMESTAMP	0
-
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
 
