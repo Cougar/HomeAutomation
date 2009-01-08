@@ -39,7 +39,7 @@ protected:
 	void handleClientData(int id, string data);
 
 private:
-
+	string myBuffer;
 };
 
 #endif	/* _COMMANDTHREAD_H */

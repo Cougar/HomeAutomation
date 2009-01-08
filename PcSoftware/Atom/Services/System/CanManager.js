@@ -2,6 +2,7 @@
 CanNodes = new Array();
 CanServices = new Array();
 CanOfflineTimer = new Interval(offlineCheck, 10000);
+CanProgrammingNode = null;
 
 function handleNMTMessage(className, commandName, data)
 {
@@ -10,33 +11,68 @@ function handleNMTMessage(className, commandName, data)
 	switch (canMessage.getCommandName())
 	{
 	case "Reset":
+	// Someone sent a reset command... should we do something?
 	break;
 	
 	case "Bios_Start":
+	var node = CanNodes[canMessage.getData("HardwareId")];
+	
+	if (!node)
+	{
+		log("A can node with hardware id " + uint2hex(canMessage.getData("HardwareId"), 32) + " was not found, starting.\n");
+		node = new CanNode(canMessage.getData("HardwareId"), null);
+		CanNodes[canMessage.getData("HardwareId")] = node;
+	}
+	
+	node.handleBiosStart(canMessage.getData("BiosVersion"), canMessage.getData("HasApplication"));
 	break;
 	
 	case "Pgm_Start":
+	// Someone sent a programming start command... should we do something?
 	break;
 	
 	case "Pgm_Data":
+	// Someone sent a programming data command... should we do something?
 	break;
 	
 	case "Pgm_End":
+	// Someone sent a programming end command... should we do something?
 	break;
 	
 	case "Pgm_Copy":
+	// Someone sent a programming copy command... should we do something?
 	break;
 	
 	case "Pgm_Ack":
+	if (CanProgrammingNode)
+	{
+		CanProgrammingNode.handleAck(canMessage.getData("Data"));
+	}
+	//else
+	//{
+		// A node sent pgm ack but we are not in the progress of programming, probably to someone else
+	//}
 	break;
 	
 	case "Pgm_Nack":
+	// I do not now what this is for...
 	break;
 	
 	case "Start_App":
+	// Someone sent a app start command... should we do something?
 	break;
 	
 	case "App_Start":
+	var node = CanNodes[canMessage.getData("HardwareId")];
+	
+	if (!node)
+	{
+		log("A can node with hardware id " + uint2hex(canMessage.getData("HardwareId"), 32) + " was not found, starting.\n");
+		node = new CanNode(canMessage.getData("HardwareId"), null);
+		CanNodes[canMessage.getData("HardwareId")] = node;
+	}
+	
+	node.handleHeartbeat();
 	break;
 	
 	case "Heartbeat":

@@ -19,6 +19,11 @@ function print(text)
 	}
 }
 
+function printTo(clientId, text)
+{
+	_print(ClientId, text);
+}
+
 function services()
 {
 	var list = new Array();
@@ -39,7 +44,7 @@ function services()
 		row[row.length] = ServiceManager.Services[n].getType();
 		row[row.length] = ServiceManager.Services[n].getName();
 		row[row.length] = ServiceManager.Services[n].getId();
-		if (ServiceManager.Services[n].getType() == "CAN")
+		if (ServiceManager.Services[n].getType() == "Can")
 		{
 			row[row.length] = ServiceManager.Services[n].isOnline();
 		}
@@ -69,4 +74,50 @@ function getService(id, name)
 	}
 	
 	return ServiceManager.Services[fullId];
+}
+
+var ProgrammingClientId = null;
+
+function programNodeCallback(status, text)
+{
+	printTo(ProgrammingClientId, text + "\n");
+}
+
+function programNode(hardwareId, hexData, bios)
+{
+	ProgrammingClientId = ClientId;
+
+	var node = CanNodes[hardwareId];
+	
+	if (!node)
+	{
+		print("Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		return;
+	}
+	
+	hexData = unescape(hexData);
+	
+	//var hexData = getFileContents(hexFilename);
+	
+	if (hexData)
+	{
+		var hexLinesOrg = hexData.split('\n');
+		var hexLines = new Array();
+		
+		for (var n = 0; n < hexLinesOrg.length; n++)
+		{
+			var line = hexLinesOrg[n].trim(' ');
+			
+			if (line != "")
+			{
+				hexLines[hexLines.length] = line;
+			}
+		}
+		
+		node.startProgramming(hexLines, programNodeCallback, bios);
+	}
+	else
+	{
+		print("File was not found, " + hexFilename + "\n");
+	}
 }

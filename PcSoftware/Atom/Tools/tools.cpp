@@ -275,15 +275,16 @@ string trim(string s)
 	return trim(s, ' ');
 }
 
-string trim(string s, char c)
+string trim(const string s, char c)
 {
-	while (s[0] == c)
-		s.erase(0, 1);
+	string result = s;
+	while (result[0] == c)
+		result.erase(0, 1);
 
-	while (s[s.length()-1] == c)
-		s.erase(s.length()-1, 1);
+	while (result[result.length()-1] == c)
+		result.erase(result.length()-1, 1);
 
-	return s;
+	return result;
 }
 
 int stoi(const string s)

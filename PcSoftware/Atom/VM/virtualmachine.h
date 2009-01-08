@@ -81,6 +81,7 @@ public:
 	static Handle<Value> _sendToSocketThread(const Arguments& args);
 	static Handle<Value> _uint2hex(const Arguments& args);
 	static Handle<Value> _loadDataStore(const Arguments& args);
+	static Handle<Value> _getFileContents(const Arguments& args);
 
 private:
 	bool runExpression(Expression expression);
