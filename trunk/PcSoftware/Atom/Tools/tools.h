@@ -50,7 +50,7 @@ vector<string> explode(string delimiter, string str);
 string strtoupper(string s);
 string strtolower(string s);
 string trim(string s);
-string trim(string s, char c);
+string trim(const string s, char c);
 int stoi(const string s);
 string itos(int i);
 string utos(unsigned int i);

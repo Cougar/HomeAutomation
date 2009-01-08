@@ -56,6 +56,13 @@ CanNMTMessage.prototype.getDataString = function()
 	return str.rtrim(",");
 }
 
+CanNMTMessage.prototype.send = function()
+{
+	sendCanNMTMessage(	this.getClassName(), 
+				this.getCommandName(), 
+				this.getDataString());
+}
+
 CanNMTMessage.prototype.toString = function()
 {
 	return "[CanNMTMessage] " + 	this.getClassName() + ", " + 

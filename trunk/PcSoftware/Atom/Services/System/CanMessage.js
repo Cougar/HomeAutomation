@@ -92,6 +92,17 @@ CanMessage.prototype.getDataString = function()
 	return str.rtrim(",");
 }
 
+
+CanMessage.prototype.send = function()
+{
+	sendCanMessage(	this.getClassName(), 
+			this.getDirectionFlag(), 
+			this.getModuleName(), 
+			this.getModuleId(), 
+			this.getCommandName(), 
+			this.getDataString());
+}
+
 CanMessage.prototype.toString = function()
 {
 	return "[CanMessage] " + 	this.getClassName() + ", " + 

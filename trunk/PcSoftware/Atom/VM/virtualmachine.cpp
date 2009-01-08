@@ -88,6 +88,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
 	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
 	myGlobal->Set(String::New("loadDataStore"), FunctionTemplate::New(VirtualMachine::_loadDataStore));
+	myGlobal->Set(String::New("getFileContents"), FunctionTemplate::New(VirtualMachine::_getFileContents));
 	myContext = Context::New(NULL, myGlobal);
 
 
@@ -354,7 +355,7 @@ bool VirtualMachine::runExpression(Expression expression)
 
 	string scriptData = expression.getScript();
 
-	scriptData = "setClientId(" + itos(expression.getTargetId()) + ");\n" + scriptData;
+	scriptData = "setClientId(" + itos(expression.getTargetId()) + ");\n" + scriptData + "\n";
 
 	Handle<String> source =  String::New(scriptData.c_str(), scriptData.length());
 	Handle<String> name = String::New(scriptName.c_str(), scriptName.length());
@@ -556,3 +557,18 @@ Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
 
 	return String::New(hexId.c_str());
 }
+
+Handle<Value> VirtualMachine::_getFileContents(const Arguments& args)
+{
+	String::AsciiValue filename(args[0]);
+
+	if (!file_exists(*filename))
+	{
+		return Undefined();
+	}
+
+	string content = file_get_contents(*filename);
+
+	return String::New(content.c_str());
+}
+

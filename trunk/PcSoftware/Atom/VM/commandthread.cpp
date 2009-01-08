@@ -24,6 +24,7 @@
 
 CommandThread::CommandThread()
 {
+	myBuffer = "";
 }
 
 CommandThread::~CommandThread()
@@ -34,5 +35,14 @@ void CommandThread::handleClientData(int id, string data)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 
-	vm.queueExpression(Expression(id, data));
+	myBuffer += data;
+	
+	string tempBuffer = str_replace("\r", "", myBuffer);
+	tempBuffer = str_replace("\n", "\\n", tempBuffer);
+	
+	if (tempBuffer[tempBuffer.size()-1] == ';')
+	{
+		vm.queueExpression(Expression(id, tempBuffer));
+		myBuffer = "";
+	}
 }
