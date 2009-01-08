@@ -21,7 +21,7 @@ function print(text)
 
 function printTo(clientId, text)
 {
-	_print(ClientId, text);
+	_print(clientId, text);
 }
 
 function services()
@@ -78,9 +78,9 @@ function getService(id, name)
 
 var ProgrammingClientId = null;
 
-function programNodeCallback(status, text)
+function programNodeCallback(status, event, text)
 {
-	printTo(ProgrammingClientId, text + "\n");
+	printTo(ProgrammingClientId, event + ": " + text + "\n");
 }
 
 function programNode(hardwareId, hexData, bios)
