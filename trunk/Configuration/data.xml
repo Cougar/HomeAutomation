@@ -225,14 +225,30 @@
     </nmt_message>
     <nmt_message id="12" name="Pgm_Start">
       <variables>
-        <variable name="Address" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+        <variable name="AddressLow" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="AddressHigh" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
         <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
-    <nmt_message id="16" name="Pgm_Data">
+    <nmt_message id="16" name="Pgm_Data_16">
       <variables>
         <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
+        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_32">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+        <variable name="DataMid" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_48">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+        <variable name="DataMid" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+        <variable name="DataHigh" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="20" name="Pgm_End"/>
