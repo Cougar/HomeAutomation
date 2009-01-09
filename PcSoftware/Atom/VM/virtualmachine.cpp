@@ -607,7 +607,7 @@ Handle<Value> VirtualMachine::_bin2uint(const Arguments& args)
 {
 	String::AsciiValue bin(args[0]);
 	unsigned int num = bin2uint(*bin);
-	return Uint32::New(num);
+	return Number::New(num);
 }
 
 Handle<Value> VirtualMachine::_uint2bin(const Arguments& args)
@@ -620,5 +620,5 @@ Handle<Value> VirtualMachine::_hex2uint(const Arguments& args)
 {
 	String::AsciiValue hex(args[0]);
 	unsigned int num = hex2uint(*hex);
-	return Uint32::New(num);
+	return Number::New(num);
 }
