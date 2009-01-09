@@ -87,37 +87,52 @@ function programNode(hardwareId, hexData, bios)
 {
 	ProgrammingClientId = ClientId;
 
-	var node = CanNodes[hardwareId];
+	if (hardwareId.length > 2)
+	{
+		if (hardwareId.substr(0,2)=="0x") 
+		{
+			hardwareId = hex2uint(hardwareId.substring(2,hardwareId.length));
+			//hardwareId += hex2uint(hardwareId.substring(0,hardwareId.length-1));
+		}
+	}
 	
+	var node = CanNodes[hardwareId];
+
 	if (!node)
 	{
 		print("Failed. No node is online that has that hardware id, " + hardwareId + "\n");
 		return;
 	}
-	
+
 	hexData = unescape(hexData);
-	
+
+	//print("helo, hexData: " + hexData);
+
 	//var hexData = getFileContents(hexFilename);
-	
 	if (hexData)
 	{
 		var hexLinesOrg = hexData.split('\n');
 		var hexLines = new Array();
-		
+	
 		for (var n = 0; n < hexLinesOrg.length; n++)
 		{
 			var line = hexLinesOrg[n].trim(' ');
-			
+		
 			if (line != "")
 			{
 				hexLines[hexLines.length] = line;
 			}
 		}
-		
-		node.startProgramming(hexLines, programNodeCallback, bios);
+
+		var hexObj = new IntelHex(hexLines);
+		if (hexObj.isValid()) {
+			//print("hexfile is valid");
+			//for (var i = 0; i < 16; i++) { print(hexObj.getByte(i)+" "); }
+			node.startProgramming(hexObj, programNodeCallback, bios);
+		}
 	}
 	else
 	{
-		print("File was not found, " + hexFilename + "\n");
+		//print("File was not found, " + hexFilename + "\n");
 	}
 }
