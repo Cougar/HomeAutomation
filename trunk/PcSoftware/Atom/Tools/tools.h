@@ -35,6 +35,8 @@ using namespace std;
 
 string niceTime();
 
+unsigned int hex2uint(string hex);
+
 string hex2bin(string hex);
 string bin2hex(string bin);
 
