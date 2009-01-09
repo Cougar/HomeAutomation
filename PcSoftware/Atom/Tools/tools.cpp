@@ -38,6 +38,11 @@ string niceTime()
 	return result;
 }
 
+unsigned int hex2uint(string hex)
+{
+	return bin2uint(hex2bin(hex));
+}
+
 unsigned int bin2uint(string bin)
 {
 	unsigned int num = 0;

@@ -13,6 +13,7 @@ loadScript("System/CanNode.js");
 loadScript("System/Console.js");
 loadScript("System/DataStore.js");
 loadScript("System/TextTable.js");
+loadScript("System/IntelHex.js");
 
 loadScript("Other/OnlinePhonebook.js");
 

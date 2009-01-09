@@ -86,9 +86,16 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine::_startSocketThread));
 	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine::_stopSocketThread));
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
-	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
 	myGlobal->Set(String::New("loadDataStore"), FunctionTemplate::New(VirtualMachine::_loadDataStore));
 	myGlobal->Set(String::New("getFileContents"), FunctionTemplate::New(VirtualMachine::_getFileContents));
+	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
+	myGlobal->Set(String::New("hex2bin"), FunctionTemplate::New(VirtualMachine::_hex2bin));
+	myGlobal->Set(String::New("bin2hex"), FunctionTemplate::New(VirtualMachine::_bin2hex));
+	myGlobal->Set(String::New("bin2float"), FunctionTemplate::New(VirtualMachine::_bin2float));
+	myGlobal->Set(String::New("float2bin"), FunctionTemplate::New(VirtualMachine::_float2bin));
+	myGlobal->Set(String::New("bin2uint"), FunctionTemplate::New(VirtualMachine::_bin2uint));
+	myGlobal->Set(String::New("uint2bin"), FunctionTemplate::New(VirtualMachine::_uint2bin));
+	myGlobal->Set(String::New("hex2uint"), FunctionTemplate::New(VirtualMachine::_hex2uint));
 	myContext = Context::New(NULL, myGlobal);
 
 
@@ -609,4 +616,9 @@ Handle<Value> VirtualMachine::_uint2bin(const Arguments& args)
 	return String::New(bin.c_str());
 }
 
-
+Handle<Value> VirtualMachine::_hex2uint(const Arguments& args)
+{
+	String::AsciiValue hex(args[0]);
+	unsigned int num = hex2uint(*hex);
+	return Uint32::New(num);
+}
