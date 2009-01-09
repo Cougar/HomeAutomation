@@ -166,12 +166,12 @@ int main(void)
 	glcdSetXY(0,0);
 	glcdSetXY(0,0);
 
-	//glcdPutStr("This is a test....... Let us try another row.. And another.. And some more..");
+	//glcdPutStr("This is a test....... Let us try another row.. And another.. And some more..",1);
 
 	for (jxa = 0; jxa< 8; jxa++){
 		glcdSetXY(0,jxa);
 		for (ixa = 0; ixa < 128; ixa++){
-			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
+			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128),1);
 		}
 	}
 	
@@ -181,9 +181,9 @@ int main(void)
 	//glcdPutStr("I can write text. This is cool. Yeah baby! Pixelina!");
 	
 	/*glcdSetXY(5,5);
-	glcdPutStr("I can write text.");
+	glcdPutStr("I can write text.",1);
 	glcdSetXY(8,10);
-	glcdPutStr("Everywhere!");
+	glcdPutStr("Everywhere!",1);
 	*/
 	
 
@@ -206,7 +206,8 @@ int main(void)
 					for (jxa = 0; jxa< 8; jxa++){
 						glcdSetXY(0,jxa);
 						for (ixa = 0; ixa < 128; ixa++){
-							glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
+							
+glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128),1);
 						}
 					}
 					
@@ -218,19 +219,19 @@ int main(void)
 					
 					if (rxMsg.Id == 0x040a0413){
 						glcdSetXY(78,1);
-						glcdPutStr("UT:");
-						glcdPutStr(buffer);
-						//glcdPutStr("C");
+						glcdPutStr("UT:",1);
+						glcdPutStr(buffer,1);
+						//glcdPutStr("C",1);
 					} else if (rxMsg.Id == 0x040a0213) {
 						glcdSetXY(78,2);
-						glcdPutStr("IN:");
-						glcdPutStr(buffer);
-						//glcdPutStr("C");
+						glcdPutStr("IN:",1);
+						glcdPutStr(buffer,1);
+						//glcdPutStr("C",1);
 					} else if (rxMsg.Id == 0x040a0211) {
 						glcdSetXY(78,3);
-						glcdPutStr("TV:");
-						glcdPutStr(buffer);
-						//glcdPutStr("C");
+						glcdPutStr("TV:",1);
+						glcdPutStr(buffer,1);
+						//glcdPutStr("C",1);
 					}
 
 				break;
