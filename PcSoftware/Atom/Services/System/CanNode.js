@@ -81,6 +81,8 @@ CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 	this.myProgrammingHex = hexData;
 	this.myProgrammingCallback = progressCallback;
 	
+	CanProgrammingNode = this;
+	
 	this.reset();
 }
 
@@ -178,6 +180,8 @@ CanNode.prototype.stopProgramming = function(status, text)
 	this.myProgrammingHexAddress = 0;
 	this.myProgrammingCallback = function() {};
 	this.myProgrammingWantAck = null;
+	
+	CanProgrammingNode = null;
 }
 
 
