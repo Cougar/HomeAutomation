@@ -5,6 +5,7 @@ function CanNode(hardwareId, numberOfModules)
 	this.myNumberOfModules = numberOfModules;
 	this.myModules = new Array();
 	this.myHeartbeatTime = 0;
+	this.myProgrammingHexAddress = 0;
 	this.myIsOnline = false;
 	
 	this.stopProgramming();
@@ -18,7 +19,7 @@ CanNode.prototype.myHeartbeatTime = null;
 CanNode.prototype.myProgrammingIsBios = null;
 CanNode.prototype.myProgramming = null;
 CanNode.prototype.myProgrammingHex = null;
-CanNode.prototype.myProgrammingHexIndex = null;
+CanNode.prototype.myProgrammingHexAddress = null;
 CanNode.prototype.myProgrammingCallback = null;
 CanNode.prototype.myProgrammingWantAck = null;
 
@@ -69,7 +70,7 @@ CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 {
 	if (isBios)
 	{
-		this.myProgrammingIsBios = bios;
+		this.myProgrammingIsBios = isBios;
 	}
 	else
 	{
@@ -85,18 +86,16 @@ CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 
 CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 {
+//print("node was reset and bios just started, ver:" + biosVersion);
 	if (this.myProgramming)
 	{
-		var hexLine = this.myProgrammingHex[this.myProgrammingHexIndex];
-		this.myProgrammingHexIndex++;
-	
-		var address = ""; ///TODO: Fill in something here
-	
-		this.myProgrammingWantAck = "";  ///TODO: Fill in the 16 lower bits of address
+		var address = this.myProgrammingHex.getAddrLower(); 
+		this.myProgrammingWantAck = address&0xffff;
 	
 		var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
 		canMessage.setData("HardwareId", this.myHardwareId);
-		canMessage.setData("Address", address);
+		canMessage.setData("AddressLow", address&0xffff);
+		canMessage.setData("AddressHigh", (address>16)&0xffff);
 		canMessage.send();
 		
 		this.myProgrammingCallback(true, "START", "Started programming of node");
@@ -105,10 +104,11 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 
 CanNode.prototype.handleAck = function(data)
 {
-	if (data == this.myProgrammingWantAck)
+this.myProgrammingCallback(true, "DBG", "data: "+data+", myProgrammingWantAck: "+this.myProgrammingWantAck+"\n");
+	
+//dont do this right now
+	if (data == this.myProgrammingWantAck && false)	
 	{
-		var hexLine = this.myProgrammingHex[this.myProgrammingHexIndex];
-		this.myProgrammingHexIndex++;
 		
 		var type = ""; ///TODO: Fill in which type of data we have
 		
@@ -125,7 +125,7 @@ CanNode.prototype.handleAck = function(data)
 			canMessage.setData("Data", data);
 			canMessage.send();
 			
-			this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexIndex + ":" + this.myProgrammingHex.length);
+			this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexAddress + ":" + this.myProgrammingHex.length);
 			break;
 		
 		case "END":///TODO: Maybe it is called something else, maybe a number
@@ -175,7 +175,7 @@ CanNode.prototype.stopProgramming = function(status, text)
 	this.myProgrammingIsBios = false;
 	this.myProgramming = false;
 	this.myProgrammingHex = new Array();
-	this.myProgrammingHexIndex = 0;
+	this.myProgrammingHexAddress = 0;
 	this.myProgrammingCallback = function() {};
 	this.myProgrammingWantAck = null;
 }
