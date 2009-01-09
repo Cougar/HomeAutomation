@@ -79,7 +79,16 @@ public:
 	static Handle<Value> _stopSocketThread(const Arguments& args);
 	static Handle<Value> _startSocketThread(const Arguments& args);
 	static Handle<Value> _sendToSocketThread(const Arguments& args);
+
 	static Handle<Value> _uint2hex(const Arguments& args);
+	static Handle<Value> _hex2bin(const Arguments& args);
+	static Handle<Value> _bin2hex(const Arguments& args);
+	static Handle<Value> _bin2float(const Arguments& args);
+	static Handle<Value> _float2bin(const Arguments& args);
+	static Handle<Value> _bin2uint(const Arguments& args);
+	static Handle<Value> _uint2bin(const Arguments& args);
+
+
 	static Handle<Value> _loadDataStore(const Arguments& args);
 	static Handle<Value> _getFileContents(const Arguments& args);
 

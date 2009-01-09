@@ -549,15 +549,6 @@ Handle<Value> VirtualMachine::_sendToSocketThread(const Arguments& args)
 	return Undefined();
 }
 
-Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
-{
-	VirtualMachine &vm = VirtualMachine::getInstance();
-
-	string hexId = uint2hex(args[0]->Uint32Value(), args[1]->Uint32Value());
-
-	return String::New(hexId.c_str());
-}
-
 Handle<Value> VirtualMachine::_getFileContents(const Arguments& args)
 {
 	String::AsciiValue filename(args[0]);
@@ -571,4 +562,51 @@ Handle<Value> VirtualMachine::_getFileContents(const Arguments& args)
 
 	return String::New(content.c_str());
 }
+
+Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
+{
+	string hex = uint2hex(args[0]->Uint32Value(), args[1]->Uint32Value());
+	return String::New(hex.c_str());
+}
+
+Handle<Value> VirtualMachine::_hex2bin(const Arguments& args)
+{
+	String::AsciiValue hex(args[0]);
+	string bin = hex2bin(*hex);
+	return String::New(bin.c_str());
+}
+
+Handle<Value> VirtualMachine::_bin2hex(const Arguments& args)
+{
+	String::AsciiValue bin(args[0]);
+	string hex = bin2hex(*bin);
+	return String::New(hex.c_str());
+}
+
+Handle<Value> VirtualMachine::_bin2float(const Arguments& args)
+{
+	String::AsciiValue bin(args[0]);
+	float f = bin2float(*bin);
+	return Number::New(f);
+}
+
+Handle<Value> VirtualMachine::_float2bin(const Arguments& args)
+{
+	string bin = float2bin(args[0]->NumberValue(), args[1]->Uint32Value());
+	return String::New(bin.c_str());
+}
+
+Handle<Value> VirtualMachine::_bin2uint(const Arguments& args)
+{
+	String::AsciiValue bin(args[0]);
+	unsigned int num = bin2uint(*bin);
+	return Uint32::New(num);
+}
+
+Handle<Value> VirtualMachine::_uint2bin(const Arguments& args)
+{
+	string bin = uint2bin(args[0]->Uint32Value(), args[1]->Uint32Value());
+	return String::New(bin.c_str());
+}
+
 
