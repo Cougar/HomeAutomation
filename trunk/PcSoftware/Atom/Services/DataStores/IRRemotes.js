@@ -141,5 +141,53 @@
 			1637771909 : 'VOLUME_DOWN', 
 			1621060229 : 'VOLUME_UP'
 		}
+	},
+	{
+		name : 'Philips_???_Remote', 
+		protocol : 'RC5', 
+		brand : 'Philips', 
+		model : '??? Remote', 
+		codes : 
+		{
+			12300 : 'POWER', 
+			12326 : 'SLEEP', 
+			12344 : 'AUX', 
+			12323 : 'MONO_STEREO', 
+			12324 : 'I.S.', 
+			12303 : 'INFORMATION', 
+			12288 : '0', 
+			12289 : '1', 
+			12290 : '2', 
+			12291 : '3', 
+			12292 : '4', 
+			12293 : '5', 
+			12294 : '6', 
+			12295 : '7', 
+			12296 : '8', 
+			12297 : '9', 
+			12491 : 'AUDIO_MODE', 
+			12490 : 'VIDEO_MODE', 
+			8210 : 'MENU', 
+			12348 : 'OK', 
+			8208 : 'UP', 
+			8209 : 'DOWN', 
+			8213 : 'LEFT', 
+			8214 : 'RIGHT', 
+			12304 : 'VOLUME_UP', 
+			12305 : 'VOLUME_DOWN', 
+			12320 : 'CHANNEL_UP', 
+			12321 : 'CHANNEL_DOWN', 
+			12301 : 'MUTE', 
+			8235 : 'RED', 
+			8236 : 'GREEN', 
+			8237 : 'YELLOW', 
+			8238 : 'BLUE', 
+			12333 : 'UNKNOWN1', 
+			12331 : 'UNKNOWN2', 
+			12329 : 'UNKNOWN3', 
+			12334 : 'UNKNOWN4', 
+			12332 : 'UNKNOWN5', 
+			8239 : 'UNKNOWN6'
+		}
 	}
 ]}
