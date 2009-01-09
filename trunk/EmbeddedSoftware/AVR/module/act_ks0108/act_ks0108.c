@@ -27,11 +27,28 @@ void act_ks0108_Init(void)
 	uint16_t ixa = 0;
 	uint8_t jxa = 0;
 	for (jxa = 0; jxa< 8; jxa++){
-		glcdSetXY(0,jxa);
+		glcdSetXY(0,jxa*8);
 		for (ixa = 0; ixa < 128; ixa++){
-			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128));
+			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128), GLCD_COLOR_CLEAR);
 		}
 	}
+	glcdSetXY(0,0);
+	glcdPutStrTransparent("=_-[]_-=",GLCD_COLOR_SET);
+	glcdSetXY(0,8);
+	glcdPutStrTransparent("--------",GLCD_COLOR_SET);
+	glcdSetXY(0,16);
+	glcdPutStr("-_=[]=-_",GLCD_COLOR_SET);
+	glcdDrawRect(32, 32, 40, 16, GLCD_COLOR_SET);
+	glcdDrawLine(10, 10, 100, 60, GLCD_COLOR_SET);
+	glcdFillRect(90, 10, 20, 20, GLCD_COLOR_SET);
+	glcdInvertRect(28, 10, 20, 20);
+	glcdInvert();
+	glcdDrawRoundRect(85, 5, 30, 30, 5, GLCD_COLOR_SET);
+	glcdDrawCircle(64, 32, 10, 1);
+	glcdSetXY(12,40);
+	glcdPutStrTransparent("Hejsan",GLCD_COLOR_CLEAR);
+	glcdDrawLine(10, 62, 50, 5, GLCD_COLOR_CLEAR);
+	
 }
 
 void act_ks0108_Process(void)
@@ -52,6 +69,7 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 	switch (rxMsg->Header.Command)
 	{
 		case CAN_MODULE_CMD_KS0108_LCD_CLEAR:
+		  glcdSetColor((0x7f&rxMsg->Data[0])>>7);
 		  glcdClear();
 		  break;
 
@@ -60,17 +78,17 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		  break;
 
 		case CAN_MODULE_CMD_KS0108_LCD_TEXTAT:
-		  glcdSetXY(rxMsg->Data[0], rxMsg->Data[1]);
+		  glcdSetXY((0x3f&rxMsg->Data[0])*6, rxMsg->Data[1]*8);
 		  for (n = 2; n < rxMsg->Length; n++)
 		  {
-			  glcdWriteChar((char)rxMsg->Data[n]);
+			  glcdWriteChar((char)rxMsg->Data[n], (0x7f&rxMsg->Data[0])>>7);
 		  }
 		break;
 
 		case CAN_MODULE_CMD_KS0108_LCD_TEXT:
 		for (n = 0; n < rxMsg->Length; n++)
 		{
-			glcdWriteChar((char)rxMsg->Data[n]);
+			glcdWriteChar((char)rxMsg->Data[n], GLCD_COLOR_SET);
 		}
 		break;
 
@@ -88,9 +106,6 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 #endif
 */
 		}
-
-		StdCan_Msg_t txMsg;
-
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_KS0108;

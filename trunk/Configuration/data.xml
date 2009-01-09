@@ -130,7 +130,11 @@
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
-    <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD"/>
+    <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
+      <variables>
+        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+      </variables>
+    </command>
     <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
       <variables>
         <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
@@ -149,7 +153,9 @@
     </command>
       <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
       <variables>
-        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	<variable name="Transparent" type="uint" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background"/>
+	<variable name="X" type="uint" start_bit="2" bit_length="8" unit="" description=""/>
         <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
