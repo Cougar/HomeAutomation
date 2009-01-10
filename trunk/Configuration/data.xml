@@ -246,38 +246,85 @@
     </nmt_message>
     <nmt_message id="12" name="Pgm_Start">
       <variables>
-        <variable name="AddressLow" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="AddressHigh" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+        <variable name="Address0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Address1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Address2" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Address3" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
         <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
-    <nmt_message id="16" name="Pgm_Data_16">
+    <nmt_message id="16" name="Pgm_Data">
       <variables>
         <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-      </variables>
-    </nmt_message>
-    <nmt_message id="16" name="Pgm_Data_32">
-      <variables>
-        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-        <variable name="DataMid" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_48">
       <variables>
-        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="DataLow" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-        <variable name="DataMid" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-        <variable name="DataHigh" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_8">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_16">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_24">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_32">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_40">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="20" name="Pgm_End"/>
     <nmt_message id="24" name="Pgm_Copy">
       <variables>
-        <variable name="Source" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="Destination" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-        <variable name="Length" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+        <variable name="Source0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Source1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Destination0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Destination1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Length0" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Length1" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="28" name="Pgm_Ack">
