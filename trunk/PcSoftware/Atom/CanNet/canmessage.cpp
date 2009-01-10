@@ -173,7 +173,7 @@ string CanMessage::getRaw()
 
 		bin += "0000000000000000";
 
-		dataHex = translator.translateNMTDataToHex(commandNameId, myData);
+		dataHex = translator.translateNMTDataToHex(myCommandName, myData);
 	}
 	else
 	{
@@ -239,7 +239,7 @@ void CanMessage::setData(map<string, CanVariable> data)
 
 	if (myClassName == "nmt")
 	{
-		translator.makeNMTDataValid(commandNameId, data);
+		translator.makeNMTDataValid(myCommandName, data);
 	}
 	else
 	{

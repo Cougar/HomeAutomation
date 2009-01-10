@@ -274,7 +274,7 @@ int CanIdTranslator::resolveModuleId(string moduleName)
 	return -1;
 }
 
-void CanIdTranslator::makeNMTDataValid(int commandId, map<string, CanVariable> &data)
+void CanIdTranslator::makeNMTDataValid(string commandName, map<string, CanVariable> &data)
 {
 	vector<XmlNode> commandNodes = xmlNode.findChild("nmt_messages").getChildren();
 
@@ -282,7 +282,7 @@ void CanIdTranslator::makeNMTDataValid(int commandId, map<string, CanVariable> &
 	{
 		map<string, string> attributes = commandNodes[n].getAttributes();
 
-		if (stoi(attributes["id"]) == commandId)
+		if (attributes["name"] == commandName)
 		{
 			XmlNode varablesNode = commandNodes[n].findChild("variables");
 
@@ -405,9 +405,9 @@ map<string, CanVariable> CanIdTranslator::translateNMTData(int commandId, string
 	return variables;
 }
 
-string CanIdTranslator::translateNMTDataToHex(int commandId, map<string, CanVariable> &data)
+string CanIdTranslator::translateNMTDataToHex(string commandName, map<string, CanVariable> &data)
 {
-	makeNMTDataValid(commandId, data);
+	makeNMTDataValid(commandName, data);
 
 	return translateValidDataToHex(data);
 }

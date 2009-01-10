@@ -60,8 +60,8 @@ public:
 	int resolveNMTCommandId(string commandName);
 
 	map<string, CanVariable> translateNMTData(int commandId, string rawHexData);
-	string translateNMTDataToHex(int commandId, map<string, CanVariable> &data);
-	void makeNMTDataValid(int commandId, map<string, CanVariable> &data);
+	string translateNMTDataToHex(string commandName, map<string, CanVariable> &data);
+	void makeNMTDataValid(string commandName, map<string, CanVariable> &data);
 
 protected:
 	CanIdTranslator();
