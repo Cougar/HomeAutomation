@@ -5,3 +5,4 @@ CanNetPort = 1200
 CanDebugPort = 1201
 CommandPort = 1202
 CanIdXMLFile = ../../Configuration/data.xml
+Logfile = atom.log

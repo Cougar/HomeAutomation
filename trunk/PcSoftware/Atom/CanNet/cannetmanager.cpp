@@ -59,7 +59,7 @@ CanNetManager::~CanNetManager()
 
 void CanNetManager::run()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 	VirtualMachine &vm = VirtualMachine::getInstance();
 	CanDebug &canDebug = CanDebug::getInstance();
 
@@ -100,30 +100,30 @@ void CanNetManager::run()
 			switch (socketEvent.getType())
 			{
 				case SocketEvent::TYPE_CONNECTED:
-				slog << "Connected to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n";
+				log.add("Connected to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n");
 				break;
 
 				case SocketEvent::TYPE_CONNECTING:
-				slog << "Connecting to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n";
+				log.add("Connecting to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + ".\n");
 				break;
 
 				case SocketEvent::TYPE_CONNECTION_CLOSED:
-				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " closed.\n";
+				log.add("Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " closed.\n");
 				vm.queueExpression("setAllOffline();");
 				break;
 
 				case SocketEvent::TYPE_CONNECTION_DIED:
-				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " died :: " + socketEvent.getData() + "\n";
+				log.add("Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " died :: " + socketEvent.getData() + "\n");
 				vm.queueExpression("setAllOffline();");
 				break;
 
 				case SocketEvent::TYPE_CONNECTION_RESET:
-				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " was reset :: " + socketEvent.getData() + "\n";
+				log.add("Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " was reset :: " + socketEvent.getData() + "\n");
 				vm.queueExpression("setAllOffline();");
 				break;
 
 				case SocketEvent::TYPE_CONNECTION_FAILED:
-				slog << "Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " failed :: " + socketEvent.getData() + "\n";
+				log.add("Connection to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " failed :: " + socketEvent.getData() + "\n");
 				vm.queueExpression("setAllOffline();");
 				break;
 
@@ -139,7 +139,7 @@ void CanNetManager::run()
 
 						if (data == "PONG")
 						{
-							slog << "Received pong.\n";
+							log.add("Received pong.\n");
 							continue;
 						}
 
@@ -186,30 +186,30 @@ void CanNetManager::run()
 						delete canMessage;
 					}
 
-					slog << "CanMessageException was caught:\n";
-					slog << e->getDescription() + "\n";
+					log.add("CanMessageException was caught:\n");
+					log.add(e->getDescription() + "\n");
 				}
 				break;
 
 				case SocketEvent::TYPE_INACTIVITY:
 				if (waitingForPong)
 				{
-					slog << "We have not received a pong for our ping.\n";
+					log.add("We have not received a pong for our ping.\n");
 					waitingForPong = false;
 					vm.queueExpression("setAllOffline();");
 					myChannel->forceReconnect();
 				}
 				else
 				{
-					//slog << "We have not received anything from the canDaemon in some time.\n";
+					//log.add("We have not received anything from the canDaemon in some time.\n";
 					waitingForPong = true;
-					slog << "Sending ping.\n";
+					log.add("Sending ping.\n");
 					myChannel->sendData("PING");
 				}
 				break;
 
 				case SocketEvent::TYPE_WAITING_RECONNECT:
-				slog << "Will try to reconnect to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " in " + itos(myChannel->getReconnectTimeout()) + " seconds.\n";
+				log.add("Will try to reconnect to " + myChannel->getAddress() + ":" + itos(myChannel->getPort()) + " in " + itos(myChannel->getReconnectTimeout()) + " seconds.\n");
 				break;
 			}
 		}

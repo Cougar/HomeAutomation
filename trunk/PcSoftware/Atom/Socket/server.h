@@ -32,7 +32,7 @@ using namespace std;
 #include "socketexception.h"
 #include "socketeventcallback.h"
 #include "../version.h"
-#include "../SyslogStream/syslogstream.h"
+#include "../Logger/logger.h"
 
 class Server : public Thread<Server>, public SocketEventCallback
 {

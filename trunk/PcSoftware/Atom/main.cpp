@@ -27,7 +27,7 @@ using namespace std;
 
 #include "version.h"
 #include "Tools/tools.h"
-#include "SyslogStream/syslogstream.h"
+#include "Logger/logger.h"
 #include "Settings/settings.h"
 #include "Socket/server.h"
 #include "CanNet/cannetmanager.h"
@@ -46,10 +46,10 @@ int main(int argc, char** argv)
 	signal(SIGABRT, handler);
 	signal(SIGPIPE, handler);
 
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
-	slog << "Atom " + ftos(VERSION) + " starting...\n";
-	slog << "Written by Mattias Runge 2008-2009\n\n";
+	log.addToSyslog("Atom " + ftos(VERSION) + " starting...\n");
+	log.add("Written by Mattias Runge 2008-2009\n\n");
 
 	if (file_exists("/etc/atom.conf"))
 	{
@@ -66,6 +66,23 @@ int main(int argc, char** argv)
 		}
 	}
 
+	string logfile = Settings::get("Logfile");
+	if (logfile != "")
+	{
+		if (!log.open(logfile))
+		{
+			log.addToSyslog("Could not open logfile, " + logfile + "\n");
+		}
+		else
+		{
+			log.add("Logging to " + logfile + "\n");
+		}
+	}
+	else
+	{
+		log.add("Logfile is not defined, logging will be done to syslog and console only\n");
+	}
+
 	VirtualMachine &vm = VirtualMachine::getInstance();
 	vm.start();
 
@@ -78,7 +95,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		slog << "CanDebugPort is not defined, can not start CanDebug socket\n";
+		log.add("CanDebugPort is not defined, can not start CanDebug socket\n");
 	}
 
 	CanNetManager &canMan = CanNetManager::getInstance();
@@ -86,10 +103,10 @@ int main(int argc, char** argv)
 
 	if (Settings::get("DaemonMode") == "yes")
 	{
-		slog << "Entering daemon mode...\n";
+		log.add("Entering daemon mode...\n");
 		if (daemon(0, 0) == -1)
 		{
-			slog << "Could not enter daemon mode. Exiting...\n";
+			log.addToSyslog("Could not enter daemon mode. Exiting...\n");
 			return cleanUp();
 		}
 	}
@@ -101,15 +118,15 @@ int main(int argc, char** argv)
 
 int cleanUp()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
-	slog << "\n";
-	slog << "Goodbye!\n";
+	log.add("\n");
+	log.addToSyslog("Thank you for using Atom. Goodbye!\n");
 
 	CanDebug::deleteInstance();
 	VirtualMachine::deleteInstance();
 	CanNetManager::deleteInstance();
-	SyslogStream::deleteInstance();
+	Logger::deleteInstance();
 
 	return EXIT_SUCCESS;
 }

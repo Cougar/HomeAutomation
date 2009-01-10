@@ -29,7 +29,7 @@ using namespace std;
 #include <queue>
 
 #include "../v8/include/v8.h"
-#include "../SyslogStream/syslogstream.h"
+#include "../Logger/logger.h"
 #include "../Settings/settings.h"
 #include "../CanNet/cannetmanager.h"
 #include "../CanNet/canmessage.h"

@@ -27,7 +27,6 @@
 void CanMessage::setRaw(string rawHex)
 {
 	CanIdTranslator &translator = CanIdTranslator::getInstance();
-	//SyslogStream &slog = SyslogStream::getInstance();
 
 	//PKT 00060102 1 0 00 00 c4
 

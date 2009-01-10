@@ -29,6 +29,7 @@ OBJECTDIR=build/Debug/${PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/VM/virtualmachine.o \
+	${OBJECTDIR}/Logger/logger.o \
 	${OBJECTDIR}/Socket/server.o \
 	${OBJECTDIR}/singleton.o \
 	${OBJECTDIR}/CanNet/cannetmanager.o \
@@ -42,7 +43,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/CanNet/candebug.o \
 	${OBJECTDIR}/Tools/tools.o \
 	${OBJECTDIR}/VM/socketthread.o \
-	${OBJECTDIR}/SyslogStream/syslogstream.o \
 	${OBJECTDIR}/Socket/asyncsocket.o
 
 # C Compiler Flags
@@ -71,6 +71,11 @@ ${OBJECTDIR}/VM/virtualmachine.o: VM/virtualmachine.cpp
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o VM/virtualmachine.cpp
+
+${OBJECTDIR}/Logger/logger.o: Logger/logger.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Logger
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Logger/logger.o Logger/logger.cpp
 
 ${OBJECTDIR}/Socket/server.o: Socket/server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Socket
@@ -136,11 +141,6 @@ ${OBJECTDIR}/VM/socketthread.o: VM/socketthread.cpp
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/socketthread.o VM/socketthread.cpp
-
-${OBJECTDIR}/SyslogStream/syslogstream.o: SyslogStream/syslogstream.cpp 
-	${MKDIR} -p ${OBJECTDIR}/SyslogStream
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/SyslogStream/syslogstream.o SyslogStream/syslogstream.cpp
 
 ${OBJECTDIR}/Socket/asyncsocket.o: Socket/asyncsocket.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Socket

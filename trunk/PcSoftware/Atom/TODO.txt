@@ -13,6 +13,7 @@ Features
 * Implement internal canDaemon functionality
 * Mysql-interface
 * Build javascript for programming a node
+* Optional variables to commands?
 
 Other
 -----

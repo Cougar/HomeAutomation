@@ -14,6 +14,10 @@
       <itemPath>CanNet/cantranslatorexception.h</itemPath>
       <itemPath>CanNet/canvariable.h</itemPath>
     </logicalFolder>
+    <logicalFolder name="Logger" displayName="Logger" projectFiles="true">
+      <itemPath>Logger/logger.cpp</itemPath>
+      <itemPath>Logger/logger.h</itemPath>
+    </logicalFolder>
     <logicalFolder name="f2" displayName="Settings" projectFiles="true">
       <itemPath>Settings/settings.cpp</itemPath>
       <itemPath>Settings/settings.h</itemPath>
@@ -26,10 +30,6 @@
       <itemPath>Socket/socketevent.h</itemPath>
       <itemPath>Socket/socketeventcallback.h</itemPath>
       <itemPath>Socket/socketexception.h</itemPath>
-    </logicalFolder>
-    <logicalFolder name="f3" displayName="SyslogStream" projectFiles="true">
-      <itemPath>SyslogStream/syslogstream.cpp</itemPath>
-      <itemPath>SyslogStream/syslogstream.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f4" displayName="Threads" projectFiles="true">
       <itemPath>Threads/mutex.h</itemPath>
@@ -127,6 +127,12 @@
       <item path="CanNet/canvariable.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="Logger/logger.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Logger/logger.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="Settings/settings.cpp">
         <itemTool>1</itemTool>
       </item>
@@ -152,12 +158,6 @@
         <itemTool>3</itemTool>
       </item>
       <item path="Socket/socketexception.h">
-        <itemTool>3</itemTool>
-      </item>
-      <item path="SyslogStream/syslogstream.cpp">
-        <itemTool>1</itemTool>
-      </item>
-      <item path="SyslogStream/syslogstream.h">
         <itemTool>3</itemTool>
       </item>
       <item path="Threads/mutex.h">
@@ -288,6 +288,12 @@
       <item path="CanNet/canvariable.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="Logger/logger.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="Logger/logger.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="Settings/settings.cpp">
         <itemTool>1</itemTool>
       </item>
@@ -313,12 +319,6 @@
         <itemTool>3</itemTool>
       </item>
       <item path="Socket/socketexception.h">
-        <itemTool>3</itemTool>
-      </item>
-      <item path="SyslogStream/syslogstream.cpp">
-        <itemTool>1</itemTool>
-      </item>
-      <item path="SyslogStream/syslogstream.h">
         <itemTool>3</itemTool>
       </item>
       <item path="Threads/mutex.h">
