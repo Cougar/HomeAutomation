@@ -92,12 +92,14 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 	if (this.myProgramming)
 	{
 		this.myProgrammingHexAddress = this.myProgrammingHex.getAddrLower(); 
-		this.myProgrammingWantAck = this.myProgrammingHexAddress&0xffff;
+		this.myProgrammingWantAck = ((this.myProgrammingHexAddress<<8)|(this.myProgrammingHexAddress>>8))&0xffff;
 	
 		var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
 		canMessage.setData("HardwareId", this.myHardwareId);
-		canMessage.setData("AddressLow", this.myProgrammingHexAddress&0xffff);
-		canMessage.setData("AddressHigh", (this.myProgrammingHexAddress>16)&0xffff);
+		canMessage.setData("Address0", this.myProgrammingHexAddress&0xff);
+		canMessage.setData("Address1", (this.myProgrammingHexAddress>>8)&0xff);
+		canMessage.setData("Address3", (this.myProgrammingHexAddress>>16)&0xff);
+		canMessage.setData("Address4", (this.myProgrammingHexAddress>>24)&0xff);
 		canMessage.send();
 		this.myProgrammingState = "DATA";
 		
@@ -126,65 +128,54 @@ CanNode.prototype.handleAck = function(data)
 		case "DATA":
 			var offset = this.myProgrammingHexOffset;
 		
-			this.myProgrammingWantAck = offset;
+			this.myProgrammingWantAck = ((offset<<8)|(offset>>8))&0xffff;
 			//var bytesLeft = this.myProgrammingHex.getAddrUpper() - (this.myProgrammingHexAddress+this.myProgrammingHexOffset);
 			var bytesLeft = this.myProgrammingHex.getLength() - this.myProgrammingHexOffset;
 			
-this.myProgrammingCallback(true, "DBG", "bytesLeft: "+bytesLeft+", this.myProgrammingHex.getLength(): "+this.myProgrammingHex.getLength()+"");
 			//here we must handle the possibility that data is less then 48 bits
 			var canMessage = new CanNMTMessage("nmt", "Pgm_Data_48");
 			switch (bytesLeft)
 			{
 			case 1:
 				canMessage = new CanNMTMessage("nmt", "Pgm_Data_8");
-this.myProgrammingCallback(true, "DBG", "Pgm_Data_8");
 				break;
 			case 2:
 				canMessage = new CanNMTMessage("nmt", "Pgm_Data_16");
-this.myProgrammingCallback(true, "DBG", "Pgm_Data_16");
 				break;
 			case 3:
 				canMessage = new CanNMTMessage("nmt", "Pgm_Data_24");
-this.myProgrammingCallback(true, "DBG", "Pgm_Data_24");
 				break;
 			case 4:
 				canMessage = new CanNMTMessage("nmt", "Pgm_Data_32");
-this.myProgrammingCallback(true, "DBG", "Pgm_Data_32");
 				break;
 			case 5:
 				canMessage = new CanNMTMessage("nmt", "Pgm_Data_40");
-this.myProgrammingCallback(true, "DBG", "Pgm_Data_40");
 				break;
 			}
 			
-			canMessage.setData("Offset", offset);
+			canMessage.setData("Offset0", offset&0xff);
+			canMessage.setData("Offset1", (offset>>8)&0xff);
 			for (var i=0; i<bytesLeft && i<6; i++)
 			{
 				switch (i)
 				{
 				case 0:
 					canMessage.setData("Data0", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data0");
 					break;
 				case 1:
 					canMessage.setData("Data1", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data1");
 					break;
 				case 2:
 					canMessage.setData("Data2", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data2");
 					break;
 				case 3:
 					canMessage.setData("Data3", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data3");
 					break;
 				case 4:
 					canMessage.setData("Data4", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data4");
 					break;
 				case 5:
 					canMessage.setData("Data5", this.myProgrammingHex.getByte(offset));
-this.myProgrammingCallback(true, "DBG", "Data5");
 					break;
 				}
 				offset++;
@@ -200,7 +191,7 @@ this.myProgrammingCallback(true, "DBG", "Data5");
 			break;
 		
 		case "END":
-			this.myProgrammingWantAck = this.myProgrammingHex.getCRC16();  ///TODO: Fill in something here
+			this.myProgrammingWantAck = ((this.myProgrammingHex.getCRC16()<<8)|(this.myProgrammingHex.getCRC16()>>8))&0xffff;
 		
 			var canMessage = new CanNMTMessage("nmt", "Pgm_End");
 			canMessage.send();
