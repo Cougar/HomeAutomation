@@ -29,7 +29,8 @@ using namespace std;
 #include <fstream>
 
 #include "../Tools/tools.h"
-#include "../SyslogStream/syslogstream.h"
+#include "../Logger/logger.h"
+#include "../Threads/mutex.h"
 
 ///FIXME: Do we need to make this threadsafe... 
 
@@ -43,6 +44,7 @@ public:
 private:
 	static string myFilename;
 	static map<string, string> mySettings;
+	static Mutex myMutex;
 };
 
 #endif	/* _SETTINGS_H */

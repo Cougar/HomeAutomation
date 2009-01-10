@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 27, 2008, 11:57 AM by Mattias Runge            *
+ *   Copyright (C) January 10, 2009 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   syslogstream.cpp                                                      *
+ *   logger.cpp                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,21 +19,21 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "syslogstream.h"
+#include "logger.h"
 
-SyslogStream* SyslogStream::myInstance = NULL;
+Logger* Logger::myInstance = NULL;
 
-SyslogStream& SyslogStream::getInstance()
+Logger& Logger::getInstance()
 {
 	if (myInstance == NULL)
 	{
-		myInstance = new SyslogStream();
+		myInstance = new Logger();
 	}
 
 	return *myInstance;
 }
 
-void SyslogStream::deleteInstance()
+void Logger::deleteInstance()
 {
 	if (myInstance != NULL)
 	{
@@ -42,47 +42,69 @@ void SyslogStream::deleteInstance()
 	}
 }
 
-SyslogStream::SyslogStream()
+Logger::Logger()
 {
 	openlog("Atom", LOG_ODELAY, LOG_DAEMON);
 }
 
-SyslogStream::~SyslogStream()
+Logger::~Logger()
 {
+	if (myLogfile.is_open())
+	{
+		myLogfile << "\n\n";
+		myLogfile.flush();
+		myLogfile.close();
+	}
+
 	closelog();
 }
 
-void SyslogStream::add(string str)
+bool Logger::open(string filename)
 {
-	//syslog(LOG_ODELAY, str.c_str());
+	myLogfile.open(filename.c_str(), ios::app);
 
-	if (str == "\n")
+	if (myLogfile.is_open())
 	{
-		cout << str;
+		myLogfile.close();
+		return false;
 	}
-	else
+
+	return true;
+}
+
+void Logger::addToSyslog(string message)
+{
+	mySyslogMutex.lock();
+	syslog(LOG_ODELAY, message.c_str());
+	mySyslogMutex.unlock();
+	add(message);
+}
+
+void Logger::add(string message)
+{
+	addRaw(formatMessage(message));
+}
+
+void Logger::addRaw(string message)
+{
+	cout << message;
+
+	myMutex.lock();
+	if (myLogfile.is_open())
 	{
-		struct tm tmStruct;
-		time_t t = time(NULL);
-		gmtime_r(&t, &tmStruct);
-
-		cout << "[" << niceTime() << "] " << str;
+		myLogfile << message;
+		myLogfile.flush();
 	}
+
+	myMutex.unlock();
 }
 
-SyslogStream& SyslogStream::operator <<(const string& str)
+string Logger::formatMessage(string message)
 {
-	add(str);
+	if (message != "\n")
+	{
+		return "[" + niceTime() + "] " + message;
+	}
+
+	return message;
 }
-
-SyslogStream& SyslogStream::operator <<(const char* str)
-{
-	add(str);
-}
-
-SyslogStream& SyslogStream::operator <<(const int num)
-{
-	add(itos(num));
-}
-
-

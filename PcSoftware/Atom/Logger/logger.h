@@ -1,7 +1,7 @@
 /***************************************************************************
- *   Copyright (C) November 27, 2008, 11:57 AM by Mattias Runge            *
+ *   Copyright (C) January 10, 2009 by Mattias Runge                             *
  *   mattias@runge.se                                                      *
- *   syslogstream.cpp                                                      *
+ *   logger.h                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,37 +19,43 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _SYSLOGSTREAM_H
-#define	_SYSLOGSTREAM_H
+#ifndef _LOGGER_H
+#define	_LOGGER_H
 
 using namespace std;
 
 #include <stddef.h>
 #include <syslog.h>
-#include <ostream>
 #include <iostream>
-#include <time.h>
 #include "../Tools/tools.h"
+#include "../Threads/mutex.h"
 
-class SyslogStream : public ostream
+class Logger
 {
 public:
-	static SyslogStream& getInstance();
+	static Logger& getInstance();
 	static void deleteInstance();
 
-	void add(string str);
+	bool open(string filename);
 
-	SyslogStream& operator <<(const string& str);
-	SyslogStream& operator <<(const char* str);
-	SyslogStream& operator <<(const int num);
-	
+	void addToSyslog(string message);
+	void add(string message);
+
 protected:
-	SyslogStream();
-	~SyslogStream();
+	Logger();
+	~Logger();
+
+	void addRaw(string message);
+
+	string formatMessage(string message);
 
 private:
-	static SyslogStream* myInstance;
+	static Logger* myInstance;
+
+	Mutex mySyslogMutex;
+	Mutex myMutex;
+	ofstream myLogfile;
 };
 
-#endif	/* _SYSLOGSTREAM_H */
+#endif	/* _LOGGER_H */
 

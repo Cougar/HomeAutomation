@@ -34,20 +34,14 @@ using namespace std;
 #include <dirent.h>
 
 string niceTime();
-
 unsigned int hex2uint(string hex);
-
 string hex2bin(string hex);
 string bin2hex(string bin);
-
 float bin2float(string bin);
 string float2bin(float num, int length);
-
 unsigned int bin2uint(string bin);
 string uint2bin(unsigned int num, int length);
-
 string uint2hex(unsigned int num, int length);
-
 vector<string> explode(string delimiter, string str);
 string strtoupper(string s);
 string strtolower(string s);
@@ -65,18 +59,5 @@ bool file_exists(string filename);
 string escape(string in);
 string rpad(string in, int length, char c);
 string lpad(string in, int length, char c);
-
-class FileTools
-{
-public:
-	static vector<string> GetDirList(string path);
-	static string GetUniqeFilename(string path, string prefix, string postfix);
-	static string GetUniqeFilename(string path) { return GetUniqeFilename(path, "", ""); }
-	static bool SaveFile(string filepath, string data);
-	static string Get(string src);
-	static bool Copy(string src, string dest);
-	static bool Exist(string filename);
-
-};
 
 #endif // _TOOLS_H

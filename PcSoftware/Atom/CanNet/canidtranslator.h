@@ -29,6 +29,7 @@ using namespace std;
 
 #include "canvariable.h"
 #include "cantranslatorexception.h"
+#include "../Logger/logger.h"
 #include "../Settings/settings.h"
 #include "../Xml/xmlnode.h"
 

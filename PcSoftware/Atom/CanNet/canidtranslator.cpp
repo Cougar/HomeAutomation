@@ -41,7 +41,7 @@ void CanIdTranslator::deleteInstance()
 
 CanIdTranslator::CanIdTranslator()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	string filename = Settings::get("CanIdXMLFile");
 
@@ -49,11 +49,11 @@ CanIdTranslator::CanIdTranslator()
 	{
 		xmlNode.load(filename.c_str());
 
-		slog << "Loading definitions from " + filename + ".\n";
+		log.add("Loading definitions from " + filename + ".\n");
 	}
 	else
 	{
-		slog << "CanIdXMLFile is not defined in the config file, this will probably not work at all.\n";
+		log.add("CanIdXMLFile is not defined in the config file, this will probably not work at all.\n");
 	}
 }
 

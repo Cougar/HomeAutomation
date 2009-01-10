@@ -49,13 +49,13 @@ void Server::setSettings(int port, string name)
 
 void Server::run()
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	try
 	{
 		mySocket.startListen();
 
-		slog << myName + " is listening for connections on port " + itos(mySocket.getPort()) + ".\n";
+		log.add(myName + " is listening for connections on port " + itos(mySocket.getPort()) + ".\n");
 
 		while (true)
 		{
@@ -65,7 +65,7 @@ void Server::run()
 			{
 				newSocket->sendData("Welcome to Atom " + ftos(VERSION) + " - " + myName + "\n");
 
-				slog << myName + " accepted new client with id " + itos(newSocket->getId()) + ".\n";
+				log.add(myName + " accepted new client with id " + itos(newSocket->getId()) + ".\n");
 				myClientSockets[newSocket->getId()] = newSocket;
 				myClientSockets[newSocket->getId()]->eventSetCallback(this);
 				myClientSockets[newSocket->getId()]->start();
@@ -74,19 +74,19 @@ void Server::run()
 	}
 	catch (SocketException* e)
 	{
-		slog << myName + " caught an exception:" + e->getDescription() + ".\n";
+		log.add(myName + " caught an exception:" + e->getDescription() + ".\n");
 	}
 }
 
 void Server::sendToAll(string data)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	for (map<int, AsyncSocket*>::iterator iter = myClientSockets.begin(); iter != myClientSockets.end(); iter++)
 	{
 		if (iter->second->isConnected())
 		{
-			//slog << "Server: sent data to client " + itos(iter->second->getSocket()) + ".\n";
+			//log.add("Server: sent data to client " + itos(iter->second->getSocket()) + ".\n";
 
 			try
 			{
@@ -94,12 +94,12 @@ void Server::sendToAll(string data)
 			}
 			catch (SocketException* e)
 			{
-				slog << myName + " caught an exception:" + e->getDescription() + ".\n";
+				log.add(myName + " caught an exception:" + e->getDescription() + ".\n");
 			}
 		}
 		else
 		{
-			slog << myName + " had a client disconnect.\n";
+			log.add(myName + " had a client disconnect.\n");
 			delete iter->second;
 			myClientSockets.erase(iter);
 		}
@@ -108,13 +108,13 @@ void Server::sendToAll(string data)
 
 void Server::sendTo(int id, string data)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	if (myClientSockets.find(id) != myClientSockets.end())
 	{
 		if (myClientSockets[id]->isConnected())
 		{
-			//slog << "Server: sent data to client " + itos(iter->second->getSocket()) + ".\n";
+			//log.add("Server: sent data to client " + itos(iter->second->getSocket()) + ".\n";
 
 			try
 			{
@@ -122,12 +122,12 @@ void Server::sendTo(int id, string data)
 			}
 			catch (SocketException* e)
 			{
-				slog << myName + " caught an exception:" + e->getDescription() + ".\n";
+				log.add(myName + " caught an exception:" + e->getDescription() + ".\n");
 			}
 		}
 		else
 		{
-			slog << myName + " had a client disconnect.\n";
+			log.add(myName + " had a client disconnect.\n");
 			delete myClientSockets[id];
 			myClientSockets.erase(id);
 		}
@@ -136,11 +136,11 @@ void Server::sendTo(int id, string data)
 
 void Server::disconnectClient(int id)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	if (myClientSockets.find(id) != myClientSockets.end())
 	{
-		slog << myName + " had a client disconnect.\n";
+		log.add(myName + " had a client disconnect.\n");
 		delete myClientSockets[id];
 		myClientSockets.erase(id);
 	}
@@ -164,6 +164,6 @@ void Server::handleEvent(int id, SocketEvent socketEvent)
 
 void Server::handleClientData(int id, string data)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
-	slog << myName + " received data from client " + itos(id) + ": \"" + data + "\"\n";
+	Logger &log = Logger::getInstance();
+	log.add(myName + " received data from client " + itos(id) + ": \"" + data + "\"\n");
 }

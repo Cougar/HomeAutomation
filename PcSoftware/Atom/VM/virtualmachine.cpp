@@ -128,8 +128,8 @@ void VirtualMachine::run()
 	}
 	else
 	{
-		SyslogStream &slog = SyslogStream::getInstance();
-		slog << "CommandPort is not defined, can not start Command console socket\n";
+		Logger &log = Logger::getInstance();
+		log.add("CommandPort is not defined, can not start Command console socket\n");
 	}
 
 
@@ -191,14 +191,14 @@ string VirtualMachine::formatException(TryCatch* tryCatch)
 
 bool VirtualMachine::loadDataStore(string storeName)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	string basePath = Settings::get("BasePath") + "Services/DataStores/";
 	string scriptFileName = basePath + storeName + ".js";
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load datastore " + scriptFileName + ", file does not exist.\n";
+		log.add("Failed to load datastore " + scriptFileName + ", file does not exist.\n");
 		return false;
 	}
 
@@ -217,7 +217,7 @@ bool VirtualMachine::loadDataStore(string storeName)
 
 	if (script.IsEmpty())
 	{
-		slog << formatException(&tryCatch);
+		log.add(formatException(&tryCatch));
 		return false;
 	}
 	else
@@ -226,11 +226,11 @@ bool VirtualMachine::loadDataStore(string storeName)
 
 		if (result.IsEmpty())
 		{
-			slog << formatException(&tryCatch);
+			log.add(formatException(&tryCatch));
 			return false;
 		}
 
-		slog << "Loaded datastore " + storeName + "\n";
+		log.add("Loaded datastore " + storeName + "\n");
 	}
 
 	return true;
@@ -238,14 +238,14 @@ bool VirtualMachine::loadDataStore(string storeName)
 
 bool VirtualMachine::loadScript(string scriptName)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	string basePath = Settings::get("BasePath") + "Services/";
 	string scriptFileName = basePath + scriptName;
 
 	if (!file_exists(scriptFileName))
 	{
-		slog << "Failed to load " + scriptFileName + ", file does not exist.\n";
+		log.add("Failed to load " + scriptFileName + ", file does not exist.\n");
 		return false;
 	}
 
@@ -262,7 +262,7 @@ bool VirtualMachine::loadScript(string scriptName)
 
 	if (script.IsEmpty())
 	{
-		slog << formatException(&tryCatch);
+		log.addToSyslog(formatException(&tryCatch));
 		return false;
 	}
 	else
@@ -271,11 +271,11 @@ bool VirtualMachine::loadScript(string scriptName)
 
 		if (result.IsEmpty())
 		{
-			slog << formatException(&tryCatch);
+			log.addToSyslog(formatException(&tryCatch));
 			return false;
 		}
 
-		slog << "Loaded " + scriptName + "\n";
+		log.add("Loaded " + scriptName + "\n");
 	}
 
 	return true;
@@ -346,8 +346,8 @@ void VirtualMachine::print(unsigned int id, string data)
 {
 	if (id == 0)
 	{
-		SyslogStream &slog = SyslogStream::getInstance();
-		slog << data;
+		Logger &log = Logger::getInstance();
+		log.add(data);
 	}
 	else
 	{
@@ -414,11 +414,11 @@ Handle<Value> VirtualMachine::_quit(const Arguments& args)
 
 Handle<Value> VirtualMachine::_log(const Arguments& args)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	Logger &log = Logger::getInstance();
 
 	String::AsciiValue str(args[0]);
 
-	slog << *str;
+	log.add(*str);
 
 	return Undefined();
 }

@@ -19,17 +19,17 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <string>
-
-
 #include "settings.h"
 
 string Settings::myFilename;
 map<string, string> Settings::mySettings;
+Mutex Settings::myMutex;
 
 bool Settings::read(string filename)
 {
-	SyslogStream &slog = SyslogStream::getInstance();
+	myMutex.lock();
+
+	Logger &log = Logger::getInstance();
 
 	myFilename = filename;
 
@@ -37,11 +37,12 @@ bool Settings::read(string filename)
 
 	if (!file)
 	{
-		slog << "Could not find settings file: " + myFilename + ".\n";
+		log.add("Could not find settings file: " + myFilename + ".\n");
+		myMutex.unlock();
 		return false;
 	}
 
-	slog << "Loading settings from " + filename + ".\n";
+	log.add("Loading settings from " + filename + ".\n");
 
 	while (!file.eof())
 	{
@@ -63,6 +64,7 @@ bool Settings::read(string filename)
 
 	file.close();
 
+	myMutex.unlock();
 	return true;
 }
 
@@ -73,10 +75,18 @@ void Settings::add(string name, string value)
 
 string Settings::get(string name)
 {
+	myMutex.lock();
+
 	map<string, string>::const_iterator iterator = mySettings.find(name);
 
-	if (iterator == mySettings.end())
-		return "";
+	string value = "";
 
-	return iterator->second;
+	if (iterator != mySettings.end())
+	{
+		value = iterator->second;
+	}
+
+	myMutex.unlock();
+
+	return value;
 }
