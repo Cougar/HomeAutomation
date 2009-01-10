@@ -1,4 +1,6 @@
 
+const MAX_SIZE = 524288;
+
 function IntelHex(hexLines)
 {
 //print("constructor of IntelHex\n");
@@ -6,8 +8,8 @@ function IntelHex(hexLines)
 	this.myHexLength = 0;
 	this.myAddrLower = 0x7FFFFFFF;
 	this.myAddrUpper = 0;
-	this.myHexData = new Array(524288);
-	for (var i = 0; i < 524288; i++) this.myHexData[i] = 0xFF;
+	this.myHexData = new Array(MAX_SIZE);
+	for (var i = 0; i < MAX_SIZE; i++) this.myHexData[i] = 0xFF;
 
 	var lineDataCount = 0;
 	var lineAddrHigh = 0;
@@ -55,6 +57,57 @@ IntelHex.prototype.myAddrLower = null;
 IntelHex.prototype.myAddrUpper = null;
 IntelHex.prototype.myValid = null;
 
+/*
+public int calcCRC(HexFile hf) {
+	int crc=0;
+	for (ulong i=hf.getAddrLower(); i <= hf.getAddrUpper(); i++) {
+		crc = crc16_update(crc, hf.getByte(i));
+	}
+	return crc;
+}
+*/
+
+IntelHex.prototype.getCRC16 = function()
+{
+	var crc=0;
+	for (var i = 0; i < this.myHexLength; i++)
+	{
+		crc = this.crc16_update(crc, this.myHexData[i]);
+	}
+	return crc&0xffff;
+}
+
+IntelHex.prototype.crc16_update = function(crc, byte)
+{
+	crc ^= byte;
+	for (var i = 0; i<8; ++i)
+	{
+		if ((crc & 1) != 0)
+		{
+			crc = (crc >> 1) ^ 0xA001;
+		}
+		else
+		{
+			crc = (crc >> 1);
+		}
+	}
+	return crc;
+}
+
+/*
+public int crc16_update(int crc, byte a) {
+	int i;
+	crc ^= a;
+	for (i = 0; i < 8; ++i) {
+		if ((crc & 1) != 0)
+			crc = (crc >> 1) ^ 0xA001;
+		else
+			crc = (crc >> 1);
+	}
+	return crc;
+}
+*/
+
 IntelHex.prototype.getLength = function()
 {
 	return this.myHexLength;
@@ -70,10 +123,15 @@ IntelHex.prototype.getAddrLower = function()
 	return this.myAddrLower;
 }
 
+IntelHex.prototype.getAddrUpper = function()
+{
+	return this.myAddrUpper;
+}
+
 IntelHex.prototype.getByte = function(address)
 {
 	var byte = 0xff;
-	if (address < 524288 && this.myValid) {
+	if (address < MAX_SIZE && this.myValid) {
 		byte = this.myHexData[address]; 
 	}
 

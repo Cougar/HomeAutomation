@@ -55,6 +55,10 @@ function handleNMTMessage(className, commandName, data)
 	break;
 	
 	case "Pgm_Nack":
+	if (CanProgrammingNode)
+	{
+		CanProgrammingNode.handleNack(canMessage.getData("Data"));
+	}
 	// I do not now what this is for...
 	break;
 	

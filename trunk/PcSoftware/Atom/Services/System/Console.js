@@ -83,6 +83,11 @@ function programNodeCallback(status, event, text)
 	printTo(ProgrammingClientId, event + ": " + text + "\n");
 }
 
+function testCRC()
+{
+	
+}
+
 function programNode(hardwareId, hexData, bios)
 {
 	ProgrammingClientId = ClientId;
@@ -128,6 +133,7 @@ function programNode(hardwareId, hexData, bios)
 		if (hexObj.isValid()) {
 			//print("hexfile is valid");
 			//for (var i = 0; i < 16; i++) { print(hexObj.getByte(i)+" "); }
+			//print("len: "+hexObj.getLength()+" laddr: "+hexObj.getAddrLower()+" uaddr: "+hexObj.getAddrUpper()+"\n");
 			node.startProgramming(hexObj, programNodeCallback, bios);
 		}
 	}
