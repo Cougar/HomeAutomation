@@ -2,73 +2,73 @@
 <configurationDescriptor version="51">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="CanNet" displayName="CanNet" projectFiles="true">
-      <itemPath>CanNet/candebug.cpp</itemPath>
-      <itemPath>CanNet/candebug.h</itemPath>
-      <itemPath>CanNet/canidtranslator.cpp</itemPath>
-      <itemPath>CanNet/canidtranslator.h</itemPath>
-      <itemPath>CanNet/canmessage.cpp</itemPath>
-      <itemPath>CanNet/canmessage.h</itemPath>
-      <itemPath>CanNet/canmessageexception.h</itemPath>
-      <itemPath>CanNet/cannetmanager.cpp</itemPath>
-      <itemPath>CanNet/cannetmanager.h</itemPath>
-      <itemPath>CanNet/cantranslatorexception.h</itemPath>
-      <itemPath>CanNet/canvariable.h</itemPath>
+      <itemPath>src/CanNet/candebug.cpp</itemPath>
+      <itemPath>src/CanNet/candebug.h</itemPath>
+      <itemPath>src/CanNet/canidtranslator.cpp</itemPath>
+      <itemPath>src/CanNet/canidtranslator.h</itemPath>
+      <itemPath>src/CanNet/canmessage.cpp</itemPath>
+      <itemPath>src/CanNet/canmessage.h</itemPath>
+      <itemPath>src/CanNet/canmessageexception.h</itemPath>
+      <itemPath>src/CanNet/cannetmanager.cpp</itemPath>
+      <itemPath>src/CanNet/cannetmanager.h</itemPath>
+      <itemPath>src/CanNet/cantranslatorexception.h</itemPath>
+      <itemPath>src/CanNet/canvariable.h</itemPath>
     </logicalFolder>
     <logicalFolder name="Logger" displayName="Logger" projectFiles="true">
-      <itemPath>Logger/logger.cpp</itemPath>
-      <itemPath>Logger/logger.h</itemPath>
+      <itemPath>src/Logger/logger.cpp</itemPath>
+      <itemPath>src/Logger/logger.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f2" displayName="Settings" projectFiles="true">
-      <itemPath>Settings/settings.cpp</itemPath>
-      <itemPath>Settings/settings.h</itemPath>
+      <itemPath>src/Settings/settings.cpp</itemPath>
+      <itemPath>src/Settings/settings.h</itemPath>
     </logicalFolder>
     <logicalFolder name="Socket" displayName="Socket" projectFiles="true">
-      <itemPath>Socket/asyncsocket.cpp</itemPath>
-      <itemPath>Socket/asyncsocket.h</itemPath>
-      <itemPath>Socket/server.cpp</itemPath>
-      <itemPath>Socket/server.h</itemPath>
-      <itemPath>Socket/socketevent.h</itemPath>
-      <itemPath>Socket/socketeventcallback.h</itemPath>
-      <itemPath>Socket/socketexception.h</itemPath>
+      <itemPath>src/Socket/asyncsocket.cpp</itemPath>
+      <itemPath>src/Socket/asyncsocket.h</itemPath>
+      <itemPath>src/Socket/server.cpp</itemPath>
+      <itemPath>src/Socket/server.h</itemPath>
+      <itemPath>src/Socket/socketevent.h</itemPath>
+      <itemPath>src/Socket/socketeventcallback.h</itemPath>
+      <itemPath>src/Socket/socketexception.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f4" displayName="Threads" projectFiles="true">
-      <itemPath>Threads/mutex.h</itemPath>
-      <itemPath>Threads/semaphore.h</itemPath>
-      <itemPath>Threads/thread.h</itemPath>
-      <itemPath>Threads/threadsafequeue.h</itemPath>
+      <itemPath>src/Threads/mutex.h</itemPath>
+      <itemPath>src/Threads/semaphore.h</itemPath>
+      <itemPath>src/Threads/thread.h</itemPath>
+      <itemPath>src/Threads/threadsafequeue.h</itemPath>
     </logicalFolder>
     <logicalFolder name="Tools" displayName="Tools" projectFiles="true">
-      <itemPath>Tools/tools.cpp</itemPath>
-      <itemPath>Tools/tools.h</itemPath>
+      <itemPath>src/Tools/tools.cpp</itemPath>
+      <itemPath>src/Tools/tools.h</itemPath>
     </logicalFolder>
     <logicalFolder name="f6" displayName="VM" projectFiles="true">
-      <itemPath>VM/commandthread.cpp</itemPath>
-      <itemPath>VM/commandthread.h</itemPath>
-      <itemPath>VM/expression.h</itemPath>
-      <itemPath>VM/intervalthread.cpp</itemPath>
-      <itemPath>VM/intervalthread.h</itemPath>
-      <itemPath>VM/socketthread.cpp</itemPath>
-      <itemPath>VM/socketthread.h</itemPath>
-      <itemPath>VM/virtualmachine.cpp</itemPath>
-      <itemPath>VM/virtualmachine.h</itemPath>
+      <itemPath>src/VM/commandthread.cpp</itemPath>
+      <itemPath>src/VM/commandthread.h</itemPath>
+      <itemPath>src/VM/expression.h</itemPath>
+      <itemPath>src/VM/intervalthread.cpp</itemPath>
+      <itemPath>src/VM/intervalthread.h</itemPath>
+      <itemPath>src/VM/socketthread.cpp</itemPath>
+      <itemPath>src/VM/socketthread.h</itemPath>
+      <itemPath>src/VM/virtualmachine.cpp</itemPath>
+      <itemPath>src/VM/virtualmachine.h</itemPath>
     </logicalFolder>
     <logicalFolder name="XML" displayName="XML" projectFiles="true">
-      <itemPath>Xml/xmlexception.h</itemPath>
-      <itemPath>Xml/xmlnode.cpp</itemPath>
-      <itemPath>Xml/xmlnode.h</itemPath>
+      <itemPath>src/Xml/xmlexception.h</itemPath>
+      <itemPath>src/Xml/xmlnode.cpp</itemPath>
+      <itemPath>src/Xml/xmlnode.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
-      <itemPath>fetchV8.sh</itemPath>
+      <itemPath>src/fetchV8.sh</itemPath>
       <itemPath>Makefile</itemPath>
       <itemPath>Services</itemPath>
     </logicalFolder>
-    <itemPath>exception.h</itemPath>
-    <itemPath>main.cpp</itemPath>
-    <itemPath>singleton.cpp</itemPath>
-    <itemPath>singleton.h</itemPath>
-    <itemPath>version.h</itemPath>
+    <itemPath>src/exception.h</itemPath>
+    <itemPath>src/main.cpp</itemPath>
+    <itemPath>src/singleton.cpp</itemPath>
+    <itemPath>src/singleton.h</itemPath>
+    <itemPath>src/version.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -89,144 +89,144 @@
           <output>atom</output>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
-            <linkerLibFileItem>v8/libv8.a</linkerLibFileItem>
+            <linkerLibFileItem>src/v8/libv8.a</linkerLibFileItem>
           </linkerLibItems>
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
-      <item path="CanNet/candebug.cpp">
+      <item path="src/CanNet/candebug.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/candebug.h">
+      <item path="src/CanNet/candebug.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canidtranslator.cpp">
+      <item path="src/CanNet/canidtranslator.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/canidtranslator.h">
+      <item path="src/CanNet/canidtranslator.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canmessage.cpp">
+      <item path="src/CanNet/canmessage.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/canmessage.h">
+      <item path="src/CanNet/canmessage.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canmessageexception.h">
+      <item path="src/CanNet/canmessageexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/cannetmanager.cpp">
+      <item path="src/CanNet/cannetmanager.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/cannetmanager.h">
+      <item path="src/CanNet/cannetmanager.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/cantranslatorexception.h">
+      <item path="src/CanNet/cantranslatorexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canvariable.h">
+      <item path="src/CanNet/canvariable.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Logger/logger.cpp">
+      <item path="src/Logger/logger.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Logger/logger.h">
+      <item path="src/Logger/logger.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Settings/settings.cpp">
+      <item path="src/Settings/settings.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Settings/settings.h">
+      <item path="src/Settings/settings.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/asyncsocket.cpp">
+      <item path="src/Socket/asyncsocket.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Socket/asyncsocket.h">
+      <item path="src/Socket/asyncsocket.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/server.cpp">
+      <item path="src/Socket/server.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Socket/server.h">
+      <item path="src/Socket/server.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketevent.h">
+      <item path="src/Socket/socketevent.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketeventcallback.h">
+      <item path="src/Socket/socketeventcallback.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketexception.h">
+      <item path="src/Socket/socketexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/mutex.h">
+      <item path="src/Threads/mutex.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/semaphore.h">
+      <item path="src/Threads/semaphore.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/thread.h">
+      <item path="src/Threads/thread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/threadsafequeue.h">
+      <item path="src/Threads/threadsafequeue.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Tools/tools.cpp">
+      <item path="src/Tools/tools.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Tools/tools.h">
+      <item path="src/Tools/tools.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/commandthread.cpp">
+      <item path="src/VM/commandthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/commandthread.h">
+      <item path="src/VM/commandthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/expression.h">
+      <item path="src/VM/expression.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/intervalthread.cpp">
+      <item path="src/VM/intervalthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/intervalthread.h">
+      <item path="src/VM/intervalthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/socketthread.cpp">
+      <item path="src/VM/socketthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/socketthread.h">
+      <item path="src/VM/socketthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/virtualmachine.cpp">
+      <item path="src/VM/virtualmachine.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/virtualmachine.h">
+      <item path="src/VM/virtualmachine.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Xml/xmlexception.h">
+      <item path="src/Xml/xmlexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Xml/xmlnode.cpp">
+      <item path="src/Xml/xmlnode.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Xml/xmlnode.h">
+      <item path="src/Xml/xmlnode.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="exception.h">
+      <item path="src/exception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="main.cpp">
+      <item path="src/main.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="singleton.cpp">
+      <item path="src/singleton.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="singleton.h">
+      <item path="src/singleton.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="version.h">
+      <item path="src/version.h">
         <itemTool>3</itemTool>
       </item>
     </conf>
@@ -250,144 +250,144 @@
           <output>atom</output>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
-            <linkerLibFileItem>v8/libv8.a</linkerLibFileItem>
+            <linkerLibFileItem>src/v8/libv8.a</linkerLibFileItem>
           </linkerLibItems>
           <commandLine>-m32</commandLine>
         </linkerTool>
       </compileType>
-      <item path="CanNet/candebug.cpp">
+      <item path="src/CanNet/candebug.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/candebug.h">
+      <item path="src/CanNet/candebug.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canidtranslator.cpp">
+      <item path="src/CanNet/canidtranslator.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/canidtranslator.h">
+      <item path="src/CanNet/canidtranslator.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canmessage.cpp">
+      <item path="src/CanNet/canmessage.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/canmessage.h">
+      <item path="src/CanNet/canmessage.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canmessageexception.h">
+      <item path="src/CanNet/canmessageexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/cannetmanager.cpp">
+      <item path="src/CanNet/cannetmanager.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="CanNet/cannetmanager.h">
+      <item path="src/CanNet/cannetmanager.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/cantranslatorexception.h">
+      <item path="src/CanNet/cantranslatorexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="CanNet/canvariable.h">
+      <item path="src/CanNet/canvariable.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Logger/logger.cpp">
+      <item path="src/Logger/logger.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Logger/logger.h">
+      <item path="src/Logger/logger.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Settings/settings.cpp">
+      <item path="src/Settings/settings.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Settings/settings.h">
+      <item path="src/Settings/settings.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/asyncsocket.cpp">
+      <item path="src/Socket/asyncsocket.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Socket/asyncsocket.h">
+      <item path="src/Socket/asyncsocket.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/server.cpp">
+      <item path="src/Socket/server.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Socket/server.h">
+      <item path="src/Socket/server.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketevent.h">
+      <item path="src/Socket/socketevent.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketeventcallback.h">
+      <item path="src/Socket/socketeventcallback.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Socket/socketexception.h">
+      <item path="src/Socket/socketexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/mutex.h">
+      <item path="src/Threads/mutex.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/semaphore.h">
+      <item path="src/Threads/semaphore.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/thread.h">
+      <item path="src/Threads/thread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Threads/threadsafequeue.h">
+      <item path="src/Threads/threadsafequeue.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Tools/tools.cpp">
+      <item path="src/Tools/tools.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Tools/tools.h">
+      <item path="src/Tools/tools.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/commandthread.cpp">
+      <item path="src/VM/commandthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/commandthread.h">
+      <item path="src/VM/commandthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/expression.h">
+      <item path="src/VM/expression.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/intervalthread.cpp">
+      <item path="src/VM/intervalthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/intervalthread.h">
+      <item path="src/VM/intervalthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/socketthread.cpp">
+      <item path="src/VM/socketthread.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/socketthread.h">
+      <item path="src/VM/socketthread.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="VM/virtualmachine.cpp">
+      <item path="src/VM/virtualmachine.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="VM/virtualmachine.h">
+      <item path="src/VM/virtualmachine.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Xml/xmlexception.h">
+      <item path="src/Xml/xmlexception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="Xml/xmlnode.cpp">
+      <item path="src/Xml/xmlnode.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="Xml/xmlnode.h">
+      <item path="src/Xml/xmlnode.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="exception.h">
+      <item path="src/exception.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="main.cpp">
+      <item path="src/main.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="singleton.cpp">
+      <item path="src/singleton.cpp">
         <itemTool>1</itemTool>
       </item>
-      <item path="singleton.h">
+      <item path="src/singleton.h">
         <itemTool>3</itemTool>
       </item>
-      <item path="version.h">
+      <item path="src/version.h">
         <itemTool>3</itemTool>
       </item>
     </conf>
