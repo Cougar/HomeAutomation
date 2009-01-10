@@ -5,9 +5,7 @@ function CanNode(hardwareId, numberOfModules)
 	this.myNumberOfModules = numberOfModules;
 	this.myModules = new Array();
 	this.myHeartbeatTime = 0;
-	this.myProgrammingHexAddress = 0;
 	this.myIsOnline = false;
-	
 	this.stopProgramming();
 }
 
@@ -20,8 +18,10 @@ CanNode.prototype.myProgrammingIsBios = null;
 CanNode.prototype.myProgramming = null;
 CanNode.prototype.myProgrammingHex = null;
 CanNode.prototype.myProgrammingHexAddress = null;
+CanNode.prototype.myProgrammingOffset = null;
 CanNode.prototype.myProgrammingCallback = null;
 CanNode.prototype.myProgrammingWantAck = null;
+CanNode.prototype.myProgrammingState = null;
 
 CanNode.prototype.isOnline = function()
 {
@@ -91,79 +91,178 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 //print("node was reset and bios just started, ver:" + biosVersion);
 	if (this.myProgramming)
 	{
-		var address = this.myProgrammingHex.getAddrLower(); 
-		this.myProgrammingWantAck = address&0xffff;
+		this.myProgrammingHexAddress = this.myProgrammingHex.getAddrLower(); 
+		this.myProgrammingWantAck = this.myProgrammingHexAddress&0xffff;
 	
 		var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
 		canMessage.setData("HardwareId", this.myHardwareId);
-		canMessage.setData("AddressLow", address&0xffff);
-		canMessage.setData("AddressHigh", (address>16)&0xffff);
+		canMessage.setData("AddressLow", this.myProgrammingHexAddress&0xffff);
+		canMessage.setData("AddressHigh", (this.myProgrammingHexAddress>16)&0xffff);
 		canMessage.send();
+		this.myProgrammingState = "DATA";
 		
 		this.myProgrammingCallback(true, "START", "Started programming of node");
 	}
 }
 
+CanNode.prototype.handleNack = function(data)
+{
+	stopProgramming(true, "Failed, got NACK, sending reset");
+	this.reset();
+	if (false)	
+	{
+	}
+}
+
 CanNode.prototype.handleAck = function(data)
 {
-this.myProgrammingCallback(true, "DBG", "data: "+data+", myProgrammingWantAck: "+this.myProgrammingWantAck+"\n");
+//this.myProgrammingCallback(true, "DBG", "data: "+data+", myProgrammingWantAck: "+this.myProgrammingWantAck+"");
 	
-//dont do this right now
-	if (data == this.myProgrammingWantAck && false)	
+	if (data == this.myProgrammingWantAck)	
 	{
-		
-		var type = ""; ///TODO: Fill in which type of data we have
-		
-		switch (type)
+
+		switch (this.myProgrammingState)
 		{
-		case "DATA":///TODO: Maybe it is called something else, maybe a number
-			var offset = ""; ///TODO: Fill in something here
-			var data = ""; ///TODO: Fill in something here
+		case "DATA":
+			var offset = this.myProgrammingHexOffset;
 		
-			this.myProgrammingWantAck = "";  ///TODO: Fill in something here
-		
-			var canMessage = new CanNMTMessage("nmt", "Pgm_Data");
-			canMessage.setData("Offset", offset);
-			canMessage.setData("Data", data);
-			canMessage.send();
+			this.myProgrammingWantAck = offset;
+			//var bytesLeft = this.myProgrammingHex.getAddrUpper() - (this.myProgrammingHexAddress+this.myProgrammingHexOffset);
+			var bytesLeft = this.myProgrammingHex.getLength() - this.myProgrammingHexOffset;
 			
-			this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexAddress + ":" + this.myProgrammingHex.length);
+this.myProgrammingCallback(true, "DBG", "bytesLeft: "+bytesLeft+", this.myProgrammingHex.getLength(): "+this.myProgrammingHex.getLength()+"");
+			//here we must handle the possibility that data is less then 48 bits
+			var canMessage = new CanNMTMessage("nmt", "Pgm_Data_48");
+			switch (bytesLeft)
+			{
+			case 1:
+				canMessage = new CanNMTMessage("nmt", "Pgm_Data_8");
+this.myProgrammingCallback(true, "DBG", "Pgm_Data_8");
+				break;
+			case 2:
+				canMessage = new CanNMTMessage("nmt", "Pgm_Data_16");
+this.myProgrammingCallback(true, "DBG", "Pgm_Data_16");
+				break;
+			case 3:
+				canMessage = new CanNMTMessage("nmt", "Pgm_Data_24");
+this.myProgrammingCallback(true, "DBG", "Pgm_Data_24");
+				break;
+			case 4:
+				canMessage = new CanNMTMessage("nmt", "Pgm_Data_32");
+this.myProgrammingCallback(true, "DBG", "Pgm_Data_32");
+				break;
+			case 5:
+				canMessage = new CanNMTMessage("nmt", "Pgm_Data_40");
+this.myProgrammingCallback(true, "DBG", "Pgm_Data_40");
+				break;
+			}
+			
+			canMessage.setData("Offset", offset);
+			for (var i=0; i<bytesLeft && i<6; i++)
+			{
+				switch (i)
+				{
+				case 0:
+					canMessage.setData("Data0", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data0");
+					break;
+				case 1:
+					canMessage.setData("Data1", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data1");
+					break;
+				case 2:
+					canMessage.setData("Data2", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data2");
+					break;
+				case 3:
+					canMessage.setData("Data3", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data3");
+					break;
+				case 4:
+					canMessage.setData("Data4", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data4");
+					break;
+				case 5:
+					canMessage.setData("Data5", this.myProgrammingHex.getByte(offset));
+this.myProgrammingCallback(true, "DBG", "Data5");
+					break;
+				}
+				offset++;
+			}
+			canMessage.send();
+			this.myProgrammingHexOffset = offset;
+
+			if (this.myProgrammingHexOffset >= this.myProgrammingHex.getLength()) {
+				this.myProgrammingState = "END";
+			}
+			
+			this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexOffset + ":" + this.myProgrammingHex.getLength());
 			break;
 		
-		case "END":///TODO: Maybe it is called something else, maybe a number
-			this.myProgrammingWantAck = "";  ///TODO: Fill in something here
+		case "END":
+			this.myProgrammingWantAck = this.myProgrammingHex.getCRC16();  ///TODO: Fill in something here
 		
 			var canMessage = new CanNMTMessage("nmt", "Pgm_End");
 			canMessage.send();
+
+			this.myProgrammingState = "CRC";
+			break;
 			
-			this.myProgrammingCallback(true, "END", ""); ///TODO: Fill in something meaningfull text
+		case "CRC":
+			//is this a bios programming?
+			if (false) 
+			{
+				this.myProgrammingState = "COPY";
+				this.myProgrammingCallback(true, "PROGRESS", "Start to copy bios to new location");
+				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
+				canMessage.setData("Source", source);
+				canMessage.setData("Destination", destination);
+				canMessage.setData("Length", length);
+				canMessage.send();
+				this.stopProgramming();
+			} 
+			else 
+			{
+				this.stopProgramming(true, "Done, sucessful");
+				this.reset();
+			}
 			break;
 		
-		case "COPY":///TODO: Maybe it is called something else, maybe a number
+		case "COPY":	//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
 			var source = ""; ///TODO: Fill in something here
 			var destination = ""; ///TODO: Fill in something here
 			var length = ""; ///TODO: Fill in something here
 			
 			this.myProgrammingWantAck = "";  ///TODO: Fill in something here
 		
-			var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
-			canMessage.setData("Source", source);
-			canMessage.setData("Destination", destination);
-			canMessage.setData("Length", length);
-			canMessage.send();
 			
 			this.myProgrammingCallback(true, "END", ""); ///TODO: Fill in something meaningfull text
 			break;
 			
 		default:
-		///TODO: Are we done here? I have no idea :)
-		///TODO: But we should call this.stopProgramming(true, "All done"); we are done, maybe restart node?
+			break;
 		}
 	}
 	else
 	{
-		///TODO: We got something that was not correct... we should abort
-		stopProgramming(false, ""); ///TODO: Fill in some kind of error text
+		switch (this.myProgrammingState)
+		{
+		case "DATA":
+			//Fall through
+		case "END":
+			///TODO: We got something that was not correct... we should abort
+			this.stopProgramming(true, "Failed to program, ack had wrong offset, expected data: "+this.myProgrammingWantAck+" got: "+data);
+			this.reset();
+			break;
+		case "CRC":
+			this.stopProgramming(true, "Failed to program, CRC not matching, expected data: "+this.myProgrammingWantAck+" got: "+data);
+			this.reset();
+			break;
+		case "COPY":	//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -173,13 +272,15 @@ CanNode.prototype.stopProgramming = function(status, text)
 	{
 		this.myProgrammingCallback(status, "STOP", text);
 	}
-	
+
 	this.myProgrammingIsBios = false;
 	this.myProgramming = false;
 	this.myProgrammingHex = new Array();
 	this.myProgrammingHexAddress = 0;
+	this.myProgrammingHexOffset = 0;
 	this.myProgrammingCallback = function() {};
 	this.myProgrammingWantAck = null;
+	this.myProgrammingState = "";
 	
 	CanProgrammingNode = null;
 }
