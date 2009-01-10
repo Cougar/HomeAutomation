@@ -24,7 +24,7 @@ PLATFORM=GNU-Linux-x86
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/Debug/${PLATFORM}
+OBJECTDIR=src/build/Debug/${PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -56,103 +56,103 @@ CXXFLAGS=-m32
 FFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lpthread v8/libv8.a
+LDLIBSOPTIONS=-lpthread src/v8/libv8.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-Debug.mk atom
 
-atom: v8/libv8.a
+atom: src/v8/libv8.a
 
 atom: ${OBJECTFILES}
 	${LINK.cc} -m32 -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/VM/virtualmachine.o: VM/virtualmachine.cpp 
+${OBJECTDIR}/VM/virtualmachine.o: src/VM/virtualmachine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o VM/virtualmachine.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o src/VM/virtualmachine.cpp
 
-${OBJECTDIR}/Logger/logger.o: Logger/logger.cpp 
+${OBJECTDIR}/Logger/logger.o: src/Logger/logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Logger
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Logger/logger.o Logger/logger.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Logger/logger.o src/Logger/logger.cpp
 
-${OBJECTDIR}/Socket/server.o: Socket/server.cpp 
+${OBJECTDIR}/Socket/server.o: src/Socket/server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Socket
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/server.o Socket/server.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/server.o src/Socket/server.cpp
 
-${OBJECTDIR}/singleton.o: singleton.cpp 
+${OBJECTDIR}/singleton.o: src/singleton.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/singleton.o singleton.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/singleton.o src/singleton.cpp
 
-${OBJECTDIR}/CanNet/cannetmanager.o: CanNet/cannetmanager.cpp 
+${OBJECTDIR}/CanNet/cannetmanager.o: src/CanNet/cannetmanager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/cannetmanager.o CanNet/cannetmanager.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/cannetmanager.o src/CanNet/cannetmanager.cpp
 
-${OBJECTDIR}/VM/commandthread.o: VM/commandthread.cpp 
+${OBJECTDIR}/VM/commandthread.o: src/VM/commandthread.cpp 
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/commandthread.o VM/commandthread.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/commandthread.o src/VM/commandthread.cpp
 
-${OBJECTDIR}/main.o: main.cpp 
+${OBJECTDIR}/main.o: src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o src/main.cpp
 
-${OBJECTDIR}/Xml/xmlnode.o: Xml/xmlnode.cpp 
+${OBJECTDIR}/Xml/xmlnode.o: src/Xml/xmlnode.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Xml
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Xml/xmlnode.o Xml/xmlnode.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Xml/xmlnode.o src/Xml/xmlnode.cpp
 
-${OBJECTDIR}/VM/intervalthread.o: VM/intervalthread.cpp 
+${OBJECTDIR}/VM/intervalthread.o: src/VM/intervalthread.cpp 
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/intervalthread.o VM/intervalthread.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/intervalthread.o src/VM/intervalthread.cpp
 
-${OBJECTDIR}/Settings/settings.o: Settings/settings.cpp 
+${OBJECTDIR}/Settings/settings.o: src/Settings/settings.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Settings
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Settings/settings.o Settings/settings.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Settings/settings.o src/Settings/settings.cpp
 
-${OBJECTDIR}/CanNet/canidtranslator.o: CanNet/canidtranslator.cpp 
+${OBJECTDIR}/CanNet/canidtranslator.o: src/CanNet/canidtranslator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canidtranslator.o CanNet/canidtranslator.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canidtranslator.o src/CanNet/canidtranslator.cpp
 
-${OBJECTDIR}/CanNet/canmessage.o: CanNet/canmessage.cpp 
+${OBJECTDIR}/CanNet/canmessage.o: src/CanNet/canmessage.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canmessage.o CanNet/canmessage.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canmessage.o src/CanNet/canmessage.cpp
 
-${OBJECTDIR}/CanNet/candebug.o: CanNet/candebug.cpp 
+${OBJECTDIR}/CanNet/candebug.o: src/CanNet/candebug.cpp 
 	${MKDIR} -p ${OBJECTDIR}/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/candebug.o CanNet/candebug.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/candebug.o src/CanNet/candebug.cpp
 
-${OBJECTDIR}/Tools/tools.o: Tools/tools.cpp 
+${OBJECTDIR}/Tools/tools.o: src/Tools/tools.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Tools
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Tools/tools.o Tools/tools.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Tools/tools.o src/Tools/tools.cpp
 
-${OBJECTDIR}/VM/socketthread.o: VM/socketthread.cpp 
+${OBJECTDIR}/VM/socketthread.o: src/VM/socketthread.cpp 
 	${MKDIR} -p ${OBJECTDIR}/VM
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/socketthread.o VM/socketthread.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/socketthread.o src/VM/socketthread.cpp
 
-${OBJECTDIR}/Socket/asyncsocket.o: Socket/asyncsocket.cpp 
+${OBJECTDIR}/Socket/asyncsocket.o: src/Socket/asyncsocket.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Socket
 	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/asyncsocket.o Socket/asyncsocket.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/asyncsocket.o src/Socket/asyncsocket.cpp
 
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
 .clean-conf:
-	${RM} -r build/Debug
+	${RM} -r src/build/Debug
 	${RM} atom
 
 # Subprojects
