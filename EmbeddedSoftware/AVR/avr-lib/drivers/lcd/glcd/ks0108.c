@@ -257,6 +257,13 @@ void glcdSetXY(uint8_t x, uint8_t y){
 	SetData(0xB8 + GrLcdState.lcdYpage);
 	Enable();
 }
+uint8_t glcdGetX(void){
+	return GrLcdState.lcdXAddr;
+}
+uint8_t glcdGetY(void){
+	return GrLcdState.lcdYAddr;
+}
+
 
 void glcdWriteChar(char c, uint8_t color)
 {
