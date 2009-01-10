@@ -83,11 +83,6 @@ function programNodeCallback(status, event, text)
 	printTo(ProgrammingClientId, event + ": " + text + "\n");
 }
 
-function testCRC()
-{
-	
-}
-
 function programNode(hardwareId, hexData, bios)
 {
 	ProgrammingClientId = ClientId;
@@ -97,7 +92,6 @@ function programNode(hardwareId, hexData, bios)
 		if (hardwareId.substr(0,2)=="0x") 
 		{
 			hardwareId = hex2uint(hardwareId.substring(2,hardwareId.length));
-			//hardwareId += hex2uint(hardwareId.substring(0,hardwareId.length-1));
 		}
 	}
 	
