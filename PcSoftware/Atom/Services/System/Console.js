@@ -76,6 +76,36 @@ function getService(id, name)
 	return ServiceManager.Services[fullId];
 }
 
+function testOutput()
+{
+_print(ClientId, "====");
+_print(ClientId, "\r");
+_print(ClientId, "=AR=");
+
+}
+
+function resetNode(hardwareId)
+{
+	ProgrammingClientId = ClientId;
+
+	if (hardwareId.length > 2)
+	{
+		if (hardwareId.substr(0,2)=="0x") 
+		{
+			hardwareId = hex2uint(hardwareId.substring(2,hardwareId.length));
+		}
+	}
+	
+	var node = CanNodes[hardwareId];
+
+	if (!node)
+	{
+		print("Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		return;
+	}
+	node.reset();
+}
+
 var ProgrammingClientId = null;
 
 function programNodeCallback(status, event, text)

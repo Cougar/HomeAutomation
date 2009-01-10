@@ -206,9 +206,12 @@ CanNode.prototype.handleAck = function(data)
 				this.myProgrammingState = "COPY";
 				this.myProgrammingCallback(true, "PROGRESS", "Start to copy bios to new location");
 				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
-				canMessage.setData("Source", source);
-				canMessage.setData("Destination", destination);
-				canMessage.setData("Length", length);
+				canMessage.setData("Source0", source);
+				canMessage.setData("Source1", source);
+				canMessage.setData("Destination0", destination);
+				canMessage.setData("Destination1", destination);
+				canMessage.setData("Length0", length);
+				canMessage.setData("Length1", length);
 				canMessage.send();
 				this.stopProgramming();
 			} 
@@ -220,14 +223,6 @@ CanNode.prototype.handleAck = function(data)
 			break;
 		
 		case "COPY":	//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
-			var source = ""; ///TODO: Fill in something here
-			var destination = ""; ///TODO: Fill in something here
-			var length = ""; ///TODO: Fill in something here
-			
-			this.myProgrammingWantAck = "";  ///TODO: Fill in something here
-		
-			
-			this.myProgrammingCallback(true, "END", ""); ///TODO: Fill in something meaningfull text
 			break;
 			
 		default:
