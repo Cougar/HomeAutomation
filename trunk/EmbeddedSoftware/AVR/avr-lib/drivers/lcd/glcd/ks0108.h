@@ -90,6 +90,10 @@ void SetData(uint8_t Data);
 
 void glcdSetXY(uint8_t x, uint8_t y);
 
+uint8_t glcdGetX(void);
+
+uint8_t glcdGetY(void);
+
 void glcdPowerOn(void);
 
 void glcdClear(void);

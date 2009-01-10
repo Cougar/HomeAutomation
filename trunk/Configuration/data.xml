@@ -130,6 +130,10 @@
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
+    
+    
+    
+    
     <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
       <variables>
         <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
@@ -137,13 +141,20 @@
     </command>
     <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
       <variables>
-        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description="Char position in x direction"/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description="Char position in y direction"/>
+	<variable name="Inverted" type="uint" start_bit="16" bit_length="1" unit="" description="Set to 1 of you want an inverted output"/>
+	<variable name="Transparent" type="uint" start_bit="17" bit_length="1" unit="" description="Set to 1 of you want to keep screen background"/>
       </variables>
     </command>
-    <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD">
+    <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD on current postion, according to the latest LCD_Cursor command">
       <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="LCD_Invert" type="specific" module="KS0108" description="Invert LCD">
+      <variables>
+        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
       </variables>
     </command>
     <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
@@ -160,6 +171,10 @@
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
+    
+    
+    
+    
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
