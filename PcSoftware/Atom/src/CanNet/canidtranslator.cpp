@@ -462,7 +462,11 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 
 	try
 	{
-		bin = bin.substr(0, ((uint)((highestBit+8)/8))*8);
+		while (highestBit%8 != 0)
+		{
+		    highestBit++;
+		}
+		bin = bin.substr(0, highestBit);
 	}
 	catch (std::out_of_range& e)
 	{
