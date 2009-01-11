@@ -37,13 +37,13 @@ if ( @ARGV > 0 ) {
 if ($help) {
 	print "Usage ./$binaryname [options]\n";
 	print "Options:\n";
-	print "  -x 						Make canDaemon detach as a UNIX daemon\n";
-	print "  -d <device> (udp or /dev/ttyXYZ)		Choose hardware for communication\n";
-	print "  -b <baudrate> 					Baudrate, for serial devices\n";
-	print "  -s <server>					Server, for udp devices\n";
-	print "  -p <port>					Port, for udp devices\n";
-	print "  -t <tcpport>					Port, for tcp server (default 1200)\n";
-	print "  -h 						Shows this usage\n";
+	print "  -x 					Make canDaemon detach as a UNIX daemon\n";
+	print "  -d <device> (udp or /dev/ttyXYZ)	Choose hardware for communication\n";
+	print "  -b <baudrate> 			Baudrate, for serial devices\n";
+	print "  -s <server>				Server, for udp devices\n";
+	print "  -p <port>				Port, for udp devices\n";
+	print "  -t <tcpport>				Port, for tcp server (default 1200)\n";
+	print "  -h 					Shows this usage\n";
 	print "\n";
 	print "example: ./$binaryname -d /dev/ttyUSB0 -b 38400\n";
 	print "example: ./$binaryname -d udp -s 192.168.0.10 -p 1100\n";
@@ -298,25 +298,26 @@ sub tcpServerThread {
 				if ($line eq "") {
 					&tcpServerClientDis;
 				} else {
-					$line =~ s/\n.*//gm;	#remove newline and everything after it
-					$line =~ s/\r.*//gm;	#remove linefeed and everything after it
-					print "Got packet '".$line."' from client ".$tcpSsocket->fileno."\n";
-					
-					if ($line eq "PING") {
-						print "Sending PONG to client ".$tcpSsocket->fileno."\n";
+					$line =~ s/\r//gm;	#remove linefeed
+					@lines = split(/\n/, $line);
+					foreach $line (@lines) {
+						print "Got packet '".$line."' from client ".$tcpSsocket->fileno."\n";
+						if ($line eq "PING") {
+							print "Sending PONG to client ".$tcpSsocket->fileno."\n";
 						
-						$tcpSsocket->send("PONG\n");
-					}
-					else
-					{
-						$rxerror = 0;
-						testPacket($line, 0, $rxerror);
+							$tcpSsocket->send("PONG\n");
+						}
+						else
+						{
+							$rxerror = 0;
+							testPacket($line, 0, $rxerror);
 						
-						if ($rxerror == 0) {
-							#Add newline to each packet
-							$line .= "\n";
+							if ($rxerror == 0) {
+								#Add newline to each packet
+								$line .= "\n";
 												
-							&tcpServerBroadcastExcept($line, $tcpSsocket);
+								&tcpServerBroadcastExcept($line, $tcpSsocket);
+							}
 						}
 					}
 				}
