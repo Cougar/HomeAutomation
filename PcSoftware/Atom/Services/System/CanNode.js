@@ -28,6 +28,7 @@ CanNode.prototype.myProgrammingnrOfTicks = null;
 CanNode.prototype.myProgrammingTimeout = null;
 CanNode.prototype.myProgrammingResend = null;
 CanNode.prototype.myProgrammingLastPacket = null;
+CanNode.prototype.myProgrammingTimeStarted = null;
 
 CanNode.prototype.isOnline = function()
 {
@@ -155,6 +156,9 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 		//this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
 		//this.myProgrammingResend.start();
 
+		var date = new Date();
+		this.myProgrammingTimeStarted = date.getTime();
+
 		this.myProgrammingCallback(true, "START", "Started programming of node", false);
 		this.myProgrammingCallback(true, "", "  0% [", true);
 	}
@@ -263,7 +267,16 @@ CanNode.prototype.handleAck = function(data)
 		
 		case "END":
 			this.myProgrammingWantAck = ((this.myProgrammingHex.getCRC16()<<8)|(this.myProgrammingHex.getCRC16()>>8))&0xffff;
-		
+			
+			var timeElapsed = 0;
+			var printTime = "";
+			if (this.myProgrammingTimeStarted>0)
+			{
+				var date = new Date();
+				timeElapsed = date.getTime() - this.myProgrammingTimeStarted;
+				printTime = " in " + Math.round(timeElapsed/1000) + "s, " + Math.round(this.myProgrammingHex.getLength()*1000/timeElapsed)+"bytes/s";
+			}
+			
 			var canMessage = new CanNMTMessage("nmt", "Pgm_End");
 			canMessage.send();
 
@@ -271,7 +284,7 @@ CanNode.prototype.handleAck = function(data)
 			for (var i=this.myProgrammingnrOfTicks; i<40; i++) this.myProgrammingCallback(true, "", " ", true);
 			this.myProgrammingCallback(true, "", "]", true);
 			this.myProgrammingCallback(true, "", "\r", true);
-			this.myProgrammingCallback(true, "", "100% [========================================]", true);
+			this.myProgrammingCallback(true, "", "100% [========================================]"+printTime, true);
 
 			if (this.myProgrammingResend != null)
 			{
@@ -352,6 +365,7 @@ CanNode.prototype.stopProgramming = function(status, text)
 	this.myProgrammingLastPercent = 0;
 	this.myProgrammingLastTenPercent = 0;
 	this.myProgrammingnrOfTicks = 0;
+	this.myProgrammingTimeStarted = 0;
 
 	if (this.myProgrammingTimeout != null)
 	{
