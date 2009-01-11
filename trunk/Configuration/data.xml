@@ -162,18 +162,54 @@
         <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
       </variables>
     </command>
-      <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
+    <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
       <variables>
         <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
 	<variable name="Transparent" type="uint" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background"/>
-	<variable name="X" type="uint" start_bit="2" bit_length="8" unit="" description=""/>
+	<variable name="X" type="uint" start_bit="2" bit_length="6" unit="" description=""/>
         <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
+    <command id="134" name="LCD_DrawRect" type="specific" module="KS0108" description="Draw a rectangle on LCD">
+      <variables>
+        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	<variable name="Fill" type="uint" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want the rectangle filled"/>
+	<variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Width" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Height" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Radius" type="uint" start_bit="40" bit_length="8" unit="" description="Only valid for non-fill rectangles"/>
+      </variables>
+      </command>
+      
+      <command id="135" name="LCD_DrawLine" type="specific" module="KS0108" description="Draw a line on LCD">
+	<variables>
+	  <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	  <variable name="X1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="Y1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	  <variable name="X2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	  <variable name="Y2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
     
-    
-    
+      <command id="136" name="LCD_DrawCircle" type="specific" module="KS0108" description="Draw a circle on LCD">
+	<variables>
+	  <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	  <variable name="Xcentre" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="Ycentre" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	  <variable name="Radius" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>    
+
+    <command id="137" name="LCD_InvertRect" type="specific" module="KS0108" description="Invert pixels in an rectangle on the LCD">
+      <variables>
+	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Width" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Height" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
     
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
      <variables>
@@ -182,6 +218,7 @@
         <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
+    
     <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
