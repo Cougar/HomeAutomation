@@ -45,13 +45,15 @@ KS0108.prototype.onlineHandler = function()
 	sendMessage(canMessage);
 }
 
-KS0108.prototype.printText = function(x, y, text)
+KS0108.prototype.printText = function(x, y, text, inverted, transparent)
 {
 	while (text.length > 0)
 	{
 		var text6 = text.substr(0, 6);
 
 		var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_TextAt");
+		canMessage.setData("Inverted", inverted);
+		canMessage.setData("Transparent", transparent);
 		canMessage.setData("X", x);
 		canMessage.setData("Y", y);
 		canMessage.setData("Text", text6);
@@ -62,9 +64,10 @@ KS0108.prototype.printText = function(x, y, text)
 	}
 }
 
-KS0108.prototype.clearScreen = function()
+KS0108.prototype.clearScreen = function(inverted)
 {
 	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_Clear");
+	canMessage.setData("Inverted", inverted);
 	sendMessage(canMessage);
 }
 
@@ -78,4 +81,48 @@ KS0108.prototype.setBacklight = function(strength)
 KS0108.prototype.getBacklight = function()
 {
 	return this.myBacklight;
+}
+
+KS0108.prototype.drawLine = function(xStart, yStart , xEnd, yEnd, inverted)
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_DrawLine");
+	canMessage.setData("Inverted", inverted);
+	canMessage.setData("X1", xStart);
+	canMessage.setData("Y1", yStart);
+	canMessage.setData("X2", xEnd);
+	canMessage.setData("Y2", yEnd);
+	sendMessage(canMessage);
+}
+
+KS0108.prototype.drawCircle = function(xCentre, yCentre , radius , inverted)
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_DrawCircle");
+	canMessage.setData("Inverted", inverted);
+	canMessage.setData("Xcentre", xCentre);
+	canMessage.setData("Ycentre", yCentre);
+	canMessage.setData("Radius", radius);
+	sendMessage(canMessage);
+}
+
+KS0108.prototype.invertRect = function(x, y , width, height)
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_InvertRect")
+	canMessage.setData("X", x);
+	canMessage.setData("Y", y);
+	canMessage.setData("Width", width);
+	canMessage.setData("Height", height);
+	sendMessage(canMessage);
+}
+
+KS0108.prototype.DrawRect = function(x, y , width, height, inverted, fill, radius)
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_DrawRect")
+	canMessage.setData("X", x);
+	canMessage.setData("Y", y);
+	canMessage.setData("Width", width);
+	canMessage.setData("Height", height);
+	canMessage.setData("Inverted", inverted);
+	canMessage.setData("Fill", fill);
+	canMessage.setData("Radius", radius);
+	sendMessage(canMessage);
 }
