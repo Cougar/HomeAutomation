@@ -108,9 +108,16 @@ function resetNode(hardwareId)
 
 var ProgrammingClientId = null;
 
-function programNodeCallback(status, event, text)
+function programNodeCallback(status, event, text, raw)
 {
-	printTo(ProgrammingClientId, event + ": " + text + "\n");
+	if (raw)
+	{
+		printTo(ProgrammingClientId, text);
+	}
+	else
+	{
+		printTo(ProgrammingClientId, event + ": " + text + "\n");
+	}
 }
 
 function programNode(hardwareId, hexData, bios)
