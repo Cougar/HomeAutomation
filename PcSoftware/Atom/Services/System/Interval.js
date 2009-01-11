@@ -20,11 +20,11 @@ Interval.triggerIntervalCallback = function(id)
 	}
 	else
 	{
-		log("Interval:" + id + "> Encountered a thread that have no javascript Interval object. This is not supposed to be possible, report this.\n");
+		log("Interval:" + id + "> Encountered a thread that have no javascript Interval object. This is not supposed to be possible, will try to remove this thread also.\n");
 		
 		if (!stopIntervalThread(id))
 		{
-			log("Interval:" + id + "> Interval thread could not be stopped.\n");
+			log("Interval:" + this.myId + "> Interval thread seems to have already been stopped.\n");
 		}
 	}
 }
@@ -73,7 +73,7 @@ Interval.prototype.stop = function()
 		
 		if (!stopIntervalThread(this.myId))
 		{
-			log("Interval:" + this.myId + "> Interval thread could not be stopped.\n");
+			log("Interval:" + this.myId + "> Interval thread seems to have already been stopped.\n");
 		}
 		
 		delete Interval.myIntervals[this.myId];
