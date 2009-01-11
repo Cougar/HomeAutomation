@@ -42,11 +42,12 @@ using namespace std;
 #include <signal.h>
 #include <netinet/tcp.h>
 
-
+#include "../Threads/mutex.h"
 #include "../Threads/thread.h"
 #include "../Threads/semaphore.h"
 #include "../Threads/threadsafequeue.h"
 #include "../Tools/tools.h"
+#include "../Logger/logger.h"
 
 #include "socketexception.h"
 #include "socketevent.h"
@@ -111,6 +112,7 @@ private:
 	bool myForceReconnect;
 	sockaddr_in myAddressStruct;
 
+	Mutex mySendMutex;
 
 	Semaphore myEventSemaphore;
 	ThreadSafeQueue<SocketEvent> myEventQueue;

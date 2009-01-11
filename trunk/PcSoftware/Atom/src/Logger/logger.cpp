@@ -87,9 +87,10 @@ void Logger::add(string message)
 
 void Logger::addRaw(string message)
 {
-	cout << message;
-
 	myMutex.lock();
+
+	cout << message;
+	
 	if (myLogfile.is_open())
 	{
 		myLogfile << message;
