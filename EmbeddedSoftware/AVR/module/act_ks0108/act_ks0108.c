@@ -74,7 +74,7 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		case CAN_MODULE_CMD_KS0108_LCD_CLEAR:
 		  if (rxMsg->Length == 1) {
-			glcdSetColor((0x7f&rxMsg->Data[0])>>7);
+			glcdSetColor((0x80&rxMsg->Data[0])>>7);
 		  }
 		  glcdClear();
 		  rxMsg->Data[0] = glcdGetColor()<<7;
@@ -84,7 +84,7 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		  break;
 		case CAN_MODULE_CMD_KS0108_LCD_INVERT:
 		  if (rxMsg->Length == 1) {
-			if ((0x7f&rxMsg->Data[0])>>7 != glcdGetColor())
+			if ((0x80&rxMsg->Data[0])>>7 != glcdGetColor())
 				glcdInvert();
 		  } else
 			glcdInvert();
@@ -96,8 +96,8 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_KS0108_LCD_CURSOR:
 		  if (rxMsg->Length == 2) {
 			glcdSetXY((0x3f&rxMsg->Data[0])*6, rxMsg->Data[1]*8);
-			color = ((0x7f&rxMsg->Data[2])>>7);
-			Transparent = ((0xbf&rxMsg->Data[2])>>6);
+			color = ((0x80&rxMsg->Data[2])>>7);
+			Transparent = ((0x40&rxMsg->Data[2])>>6);
 		  }
   		  rxMsg->Data[0] = glcdGetColor()<<7;
 		  rxMsg->Data[0] = Transparent<<6;
@@ -113,10 +113,10 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		  glcdSetXY((0x3f&rxMsg->Data[0])*6, rxMsg->Data[1]*8);
 		  for (n = 2; n < rxMsg->Length; n++)
 		  {
-			  if (((0xbf&rxMsg->Data[0])>>6)== TRANSPARENT)
-				glcdWriteCharTransparent((char)rxMsg->Data[n], (0x7f&rxMsg->Data[0])>>7);
+			  if (((0x40&rxMsg->Data[0])>>6)== TRANSPARENT)
+				glcdWriteCharTransparent((char)rxMsg->Data[n], (0x80&rxMsg->Data[0])>>7);
 			  else
-				glcdWriteChar((char)rxMsg->Data[n], (0x7f&rxMsg->Data[0])>>7);
+				glcdWriteChar((char)rxMsg->Data[n], (0x80&rxMsg->Data[0])>>7);
 		  }
 		break;
 
@@ -164,21 +164,21 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		break;
 		
 		case CAN_MODULE_CMD_KS0108_LCD_DRAWRECT:
-		  if ((0xbf&rxMsg->Data[0])>>6)
-			glcdFillRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x7f&rxMsg->Data[0])>>7);
+		  if ((0x40&rxMsg->Data[0])>>6)
+			glcdFillRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x80&rxMsg->Data[0])>>7);
 		  else
 			if (rxMsg->Data[5] == 0)
-				glcdDrawRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x7f&rxMsg->Data[0])>>7);
+				glcdDrawRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x80&rxMsg->Data[0])>>7);
 			else
-				glcdDrawRoundRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], rxMsg->Data[5],(0x7f&rxMsg->Data[0])>>7);
+				glcdDrawRoundRect(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], rxMsg->Data[5],(0x80&rxMsg->Data[0])>>7);
 		  break;
 		
 		case CAN_MODULE_CMD_KS0108_LCD_DRAWLINE:
-		  glcdDrawLine(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x7f&rxMsg->Data[0])>>7);
+		  glcdDrawLine(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], rxMsg->Data[4], (0x80&rxMsg->Data[0])>>7);
 		  break;
 
 		case CAN_MODULE_CMD_KS0108_LCD_DRAWCIRCLE:
-		  glcdDrawCircle(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], (0x7f&rxMsg->Data[0])>>7);
+		  glcdDrawCircle(rxMsg->Data[1], rxMsg->Data[2], rxMsg->Data[3], (0x80&rxMsg->Data[0])>>7);
 		  break;
 	
 		case CAN_MODULE_CMD_KS0108_LCD_INVERTRECT:
