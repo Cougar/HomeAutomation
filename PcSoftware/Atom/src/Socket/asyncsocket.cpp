@@ -402,7 +402,14 @@ void AsyncSocket::connect()
 
 void AsyncSocket::sendData(string data)
 {
+	mySendMutex.lock();
+
 	int status = ::send(mySocket, data.c_str(), data.size(), 0);
+
+	mySendMutex.unlock();
+
+	Logger &log = Logger::getInstance();
+	log.add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
 
 	if (status == -1)
 	{
