@@ -22,6 +22,12 @@ CanNode.prototype.myProgrammingOffset = null;
 CanNode.prototype.myProgrammingCallback = null;
 CanNode.prototype.myProgrammingWantAck = null;
 CanNode.prototype.myProgrammingState = null;
+CanNode.prototype.myProgrammingLastPercent = null;
+CanNode.prototype.myProgrammingLastTenPercent = null;
+CanNode.prototype.myProgrammingnrOfTicks = null;
+CanNode.prototype.myProgrammingTimeout = null;
+CanNode.prototype.myProgrammingResend = null;
+CanNode.prototype.myProgrammingLastPacket = null;
 
 CanNode.prototype.isOnline = function()
 {
@@ -83,7 +89,47 @@ CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 	
 	CanProgrammingNode = this;
 	
+	var self = this;
+	this.myProgrammingTimeout = new Interval(function() { self.programmingTimeout() }, 6000);
+	this.myProgrammingTimeout.start();
+	this.myProgrammingState = "RESET";
+
 	this.reset();
+}
+
+CanNode.prototype.programmingTimeout = function()
+{
+	switch (this.myProgrammingState)
+	{
+	case "RESET":
+		this.stopProgramming(true, "Timeout while waiting for node to reset");
+		this.reset();
+		break;
+	case "DATA":
+		this.stopProgramming(true, "Timeout while waiting for node to ack data packet");
+		this.reset();
+		break;
+	case "END":
+		this.stopProgramming(true, "Timeout while waiting for node to ack data packet*");
+		this.reset();
+		break;
+	case "CRC":
+		this.stopProgramming(true, "Timeout while waiting for node to send crc");
+		this.reset();
+		break;
+	case "COPY":
+		//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
+		break;
+	default:
+		break;
+	}
+}
+
+CanNode.prototype.programmingResend = function()
+{
+	this.myProgrammingResend.setTimeout(200);
+	//if we did not got ack then try to resend the data
+	this.myProgrammingLastPacket.send();
 }
 
 CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
@@ -103,7 +149,14 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 		canMessage.send();
 		this.myProgrammingState = "DATA";
 		
-		this.myProgrammingCallback(true, "START", "Started programming of node");
+		var self = this;
+		this.myProgrammingTimeout.setTimeout(1000);
+		
+		//this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
+		//this.myProgrammingResend.start();
+
+		this.myProgrammingCallback(true, "START", "Started programming of node", false);
+		this.myProgrammingCallback(true, "", "  0% [", true);
 	}
 }
 
@@ -118,15 +171,15 @@ CanNode.prototype.handleNack = function(data)
 
 CanNode.prototype.handleAck = function(data)
 {
-//this.myProgrammingCallback(true, "DBG", "data: "+data+", myProgrammingWantAck: "+this.myProgrammingWantAck+"");
-	
+	this.myProgrammingTimeout.setTimeout(1000);
+
 	if (data == this.myProgrammingWantAck)	
 	{
-
 		switch (this.myProgrammingState)
 		{
 		case "DATA":
 			var offset = this.myProgrammingHexOffset;
+			//this.myProgrammingResend.setTimeout(100);
 		
 			this.myProgrammingWantAck = ((offset<<8)|(offset>>8))&0xffff;
 			//var bytesLeft = this.myProgrammingHex.getAddrUpper() - (this.myProgrammingHexAddress+this.myProgrammingHexOffset);
@@ -187,7 +240,25 @@ CanNode.prototype.handleAck = function(data)
 				this.myProgrammingState = "END";
 			}
 			
-			this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexOffset + ":" + this.myProgrammingHex.getLength());
+			//this.myProgrammingCallback(true, "PROGRESS", this.myProgrammingHexOffset + ":" + this.myProgrammingHex.getLength(), false);
+			var percent = 100*this.myProgrammingHexOffset / this.myProgrammingHex.getLength();
+			if (percent >= this.myProgrammingLastPercent+2.5)
+			{
+				this.myProgrammingCallback(true, "", "=", true);
+				this.myProgrammingLastPercent+=2.5;
+				this.myProgrammingnrOfTicks++;
+			}
+			if (percent > this.myProgrammingLastTenPercent+10)
+			{
+				for (var i=this.myProgrammingnrOfTicks; i<40; i++) this.myProgrammingCallback(true, "", " ", true);
+				this.myProgrammingCallback(true, "", "]", true);
+				this.myProgrammingCallback(true, "", "\r", true);
+				this.myProgrammingCallback(true, "", " "+Math.round(percent)+"% [", true);
+				this.myProgrammingLastTenPercent+=10;
+				for (var i=0; i<this.myProgrammingnrOfTicks; i++) this.myProgrammingCallback(true, "", "=", true);
+			}
+			
+			this.myProgrammingLastPacket = canMessage;
 			break;
 		
 		case "END":
@@ -197,6 +268,17 @@ CanNode.prototype.handleAck = function(data)
 			canMessage.send();
 
 			this.myProgrammingState = "CRC";
+			for (var i=this.myProgrammingnrOfTicks; i<40; i++) this.myProgrammingCallback(true, "", " ", true);
+			this.myProgrammingCallback(true, "", "]", true);
+			this.myProgrammingCallback(true, "", "\r", true);
+			this.myProgrammingCallback(true, "", "100% [========================================]", true);
+
+			if (this.myProgrammingResend != null)
+			{
+				/* Stop the interval */
+				this.myProgrammingResend.stop();
+			}
+
 			break;
 			
 		case "CRC":
@@ -204,7 +286,7 @@ CanNode.prototype.handleAck = function(data)
 			if (false) 
 			{
 				this.myProgrammingState = "COPY";
-				this.myProgrammingCallback(true, "PROGRESS", "Start to copy bios to new location");
+				this.myProgrammingCallback(true, "PROGRESS", "Start to copy bios to new location", false);
 				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
 				canMessage.setData("Source0", source);
 				canMessage.setData("Source1", source);
@@ -217,7 +299,7 @@ CanNode.prototype.handleAck = function(data)
 			} 
 			else 
 			{
-				this.stopProgramming(true, "Done, sucessful");
+				this.stopProgramming(true, "Done, successful");
 				this.reset();
 			}
 			break;
@@ -256,7 +338,7 @@ CanNode.prototype.stopProgramming = function(status, text)
 {
 	if (status && text)
 	{
-		this.myProgrammingCallback(status, "STOP", text);
+		this.myProgrammingCallback(status, "\nSTOP", text, false);
 	}
 
 	this.myProgrammingIsBios = false;
@@ -267,7 +349,21 @@ CanNode.prototype.stopProgramming = function(status, text)
 	this.myProgrammingCallback = function() {};
 	this.myProgrammingWantAck = null;
 	this.myProgrammingState = "";
-	
+	this.myProgrammingLastPercent = 0;
+	this.myProgrammingLastTenPercent = 0;
+	this.myProgrammingnrOfTicks = 0;
+
+	if (this.myProgrammingTimeout != null)
+	{
+		/* Stop the interval */
+		this.myProgrammingTimeout.stop();
+	}
+	if (this.myProgrammingResend != null)
+	{
+		/* Stop the interval */
+		this.myProgrammingResend.stop();
+	}
+
 	CanProgrammingNode = null;
 }
 
