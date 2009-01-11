@@ -188,7 +188,7 @@ void glcdPowerOn(){
 	LCD_CONTROL_DDR_CS |= (1<<LCD_CONTROL_PIN_CS2);
 
 	SetDirection(OUTPUT);
-	GrLcdState.color = GLCD_COLOR_BLACK;
+	GrLcdState.color = GLCD_COLOR_WHITE;
 	LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS2)|(1<<LCD_CONTROL_PIN_CS1);
 	Disable();
 	Delay();
@@ -275,9 +275,9 @@ void glcdWriteChar(char c, uint8_t color)
 
 	for(i=0; i<5; i++)
 	{
-		glcdWriteData(pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i]), color); //Borde snyggas till med pekare
+		glcdWriteData(~pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i]), color); //Borde snyggas till med pekare
 	}
-	glcdWriteData(0x00, color); //space between this and the next char
+	glcdWriteData(0xff, color); //space between this and the next char
 }
 
 void glcdPutStr(char *data, uint8_t color){
@@ -296,9 +296,9 @@ void glcdWriteCharTransparent(char c, uint8_t color)
 
 	for(i=0; i<5; i++)
 	{
-		glcdWriteDataTransparent(pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i]), color); //Borde snyggas till med pekare
+		glcdWriteDataTransparent(~pgm_read_byte(&Font5x7[((c - 0x20) * 5) + i]), color); //Borde snyggas till med pekare
 	}
-	glcdWriteDataTransparent(0x00, color); //space between this and the next char
+	glcdWriteDataTransparent(0xff, color); //space between this and the next char
 }
 
 void glcdPutStrTransparent(char *data, uint8_t color){
