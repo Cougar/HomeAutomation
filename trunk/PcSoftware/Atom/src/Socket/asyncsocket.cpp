@@ -408,8 +408,8 @@ void AsyncSocket::sendData(string data)
 
 	mySendMutex.unlock();
 
-	Logger &log = Logger::getInstance();
-	log.add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
+	//Logger &log = Logger::getInstance();
+	//log.add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
 
 	if (status == -1)
 	{
