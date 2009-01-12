@@ -26,6 +26,8 @@ ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
 #Commands used to upload a new version of bios over can, see makefile for more details
 CANUPLOAD         = mono ../../../../PcSoftware/canDude/canDude.exe
 CANULFLAGS        = -h localhost -p 1200
+#CANUPLOAD          = ../../../../PcSoftware/Atom/atomDude.pl
+#CANULFLAGS         = -h localhost -p 1202
 
 ##### BUILD BINARIES #####
 #Define the binaries to use on your system, if not in path then add path (example: AWK=/usr/bin/awk)
