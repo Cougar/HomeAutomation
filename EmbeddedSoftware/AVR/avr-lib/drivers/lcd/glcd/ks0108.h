@@ -54,8 +54,8 @@
 
 #define GLCD_COLOR_BLACK 0
 #define GLCD_COLOR_WHITE 1
-#define GLCD_COLOR_SET	 1
-#define GLCD_COLOR_CLEAR 0
+#define GLCD_COLOR_SET	 0
+#define GLCD_COLOR_CLEAR 1
 
 //H�r har vi n�gon slags tillst�ndsvariabel
 typedef struct struct_GrLcdStateType
