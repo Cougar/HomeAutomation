@@ -84,6 +84,12 @@ _print(ClientId, "=AR=");
 
 }
 
+function ethStart()
+{
+	var canMessage = new CanNMTMessage("nmt", "Time");
+	canMessage.send(); 
+}
+
 function resetNode(hardwareId)
 {
 	ProgrammingClientId = ClientId;
@@ -100,10 +106,21 @@ function resetNode(hardwareId)
 
 	if (!node)
 	{
-		print("Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		printTo(ProgrammingClientId, "Failed. No node is online that has that hardware id, " + hardwareId + "\n");
 		return;
 	}
-	node.reset();
+	
+	node.reset(	function(status)
+			{
+				if (status)
+				{
+					printTo(ProgrammingClientId, "Success: Node reset and bios started okay.\n");
+				}
+				else
+				{
+					printTo(ProgrammingClientId, "Failed. Node did not respond failed.\n");
+				}
+			});
 }
 
 var ProgrammingClientId = null;

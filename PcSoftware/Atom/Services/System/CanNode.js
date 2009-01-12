@@ -29,6 +29,8 @@ CanNode.prototype.myProgrammingTimeout = null;
 CanNode.prototype.myProgrammingResend = null;
 CanNode.prototype.myProgrammingLastPacket = null;
 CanNode.prototype.myProgrammingTimeStarted = null;
+CanNode.prototype.myResetCallback = null;
+CanNode.prototype.myResetTimer = null;
 
 CanNode.prototype.isOnline = function()
 {
@@ -42,11 +44,30 @@ CanNode.prototype.start = function()
 	canMessage.send();
 }
 
-CanNode.prototype.reset = function()
+CanNode.prototype.reset = function(callback)
 {
+	var self = this;
+	
+	this.myResetCallback = callback;
+	if (this.myResetTimer)
+	{
+		this.myResetTimer.stop();
+	}
+	
+	this.myResetTimer = new Interval(	function()
+						{
+							self.myResetTimer.stop();
+							self.myResetTimer = null;
+							self.myResetCallback(false);
+							self.myResetCallback = null;
+						}, 5000);
+	this.myResetTimer.start();
+
 	var canMessage = new CanNMTMessage("nmt", "Reset");
 	canMessage.setData("HardwareId", this.myHardwareId);
 	canMessage.send();
+	
+	this.setOffline();
 }
 
 CanNode.prototype.startApplication = function()
@@ -135,6 +156,18 @@ CanNode.prototype.programmingResend = function()
 
 CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 {
+	if (this.myResetCallback)
+	{
+		this.myResetCallback(true);
+		this.myResetCallback = null;
+	}
+	
+	if (this.myResetTimer)
+	{
+		this.myResetTimer.stop();
+		this.myResetTimer = null;
+	}
+
 //print("node was reset and bios just started, ver:" + biosVersion);
 	if (this.myProgramming)
 	{
