@@ -48,20 +48,23 @@ CanNode.prototype.reset = function(callback)
 {
 	var self = this;
 	
-	this.myResetCallback = callback;
-	if (this.myResetTimer)
+	if (callback)
 	{
-		this.myResetTimer.stop();
+		this.myResetCallback = callback;
+		if (this.myResetTimer)
+		{
+			this.myResetTimer.stop();
+		}
+		
+		this.myResetTimer = new Interval(	function()
+							{
+								self.myResetTimer.stop();
+								self.myResetTimer = null;
+								self.myResetCallback(false);
+								self.myResetCallback = null;
+							}, 5000);
+		this.myResetTimer.start();
 	}
-	
-	this.myResetTimer = new Interval(	function()
-						{
-							self.myResetTimer.stop();
-							self.myResetTimer = null;
-							self.myResetCallback(false);
-							self.myResetCallback = null;
-						}, 5000);
-	this.myResetTimer.start();
 
 	var canMessage = new CanNMTMessage("nmt", "Reset");
 	canMessage.setData("HardwareId", this.myHardwareId);
@@ -208,7 +211,7 @@ CanNode.prototype.handleNack = function(data)
 
 CanNode.prototype.handleAck = function(data)
 {
-	this.myProgrammingTimeout.setTimeout(1000);
+	this.myProgrammingTimeout.reset();
 
 	if (data == this.myProgrammingWantAck)	
 	{

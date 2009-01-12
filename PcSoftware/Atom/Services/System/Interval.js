@@ -16,6 +16,7 @@ Interval.triggerIntervalCallback = function(id)
 {
 	if (Interval.myIntervals[id])
 	{
+		//log("Interval:" + id + "> Triggered!\n");
 		Interval.myIntervals[id].triggerCallback();
 	}
 	else
@@ -24,7 +25,7 @@ Interval.triggerIntervalCallback = function(id)
 		
 		if (!stopIntervalThread(id))
 		{
-			log("Interval:" + this.myId + "> Interval thread seems to have already been stopped.\n");
+			log("Interval:" + id + "> Interval thread seems to have already been stopped.\n");
 		}
 	}
 }
@@ -36,18 +37,16 @@ Interval.prototype.triggerCallback = function()
 
 Interval.prototype.setTimeout = function(timeout)
 {
-	var isRunning = this.myIsRunning;
-	if (isRunning)
+	if (this.myTimeout != timeout)
 	{
-		this.stop();
+		this.myTimeout = timeout;
+		setIntervalThreadTimeout(this.myId, timeout);
 	}
+}
 
-	this.myTimeout = timeout;
-	
-	if (isRunning)
-	{
-		this.start();
-	}
+Interval.prototype.reset = function()
+{
+	setIntervalThreadTimeout(this.myId, this.myTimeout);
 }
 
 Interval.prototype.setCallback = function(callback)

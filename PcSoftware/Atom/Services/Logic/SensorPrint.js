@@ -134,10 +134,10 @@ SensorPrint.prototype.lcdOnline = function()
 			var self = this;
 		
 			/* Start interval timer for our printout. Arguments are the callback function and time in seconds */
-			//this.myInterval = new Interval(function() { self.timerUpdate() }, 1000);
+			this.myInterval = new Interval(function() { self.timerUpdate() }, 1000);
 		}
 		
-		//this.myInterval.start();
+		this.myInterval.start();
 	}
 }
 

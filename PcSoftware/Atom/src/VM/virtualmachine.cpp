@@ -83,6 +83,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("loadScript"), FunctionTemplate::New(VirtualMachine::_loadScript));
 	myGlobal->Set(String::New("startIntervalThread"), FunctionTemplate::New(VirtualMachine::_startIntervalThread));
 	myGlobal->Set(String::New("stopIntervalThread"), FunctionTemplate::New(VirtualMachine::_stopIntervalThread));
+	myGlobal->Set(String::New("setIntervalThreadTimeout"), FunctionTemplate::New(VirtualMachine::_setIntervalThreadTimeout));
 	myGlobal->Set(String::New("startSocketThread"), FunctionTemplate::New(VirtualMachine::_startSocketThread));
 	myGlobal->Set(String::New("stopSocketThread"), FunctionTemplate::New(VirtualMachine::_stopSocketThread));
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
@@ -295,8 +296,21 @@ bool VirtualMachine::stopIntervalThread(unsigned int id)
 {
 	if (myIntervalThreads.find(id) != myIntervalThreads.end())
 	{
+		myIntervalThreads[id]->stop();
 		delete myIntervalThreads[id];
 		myIntervalThreads.erase(id);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool VirtualMachine::setIntervalThreadTimeout(unsigned int id, unsigned int timeout)
+{
+	if (myIntervalThreads.find(id) != myIntervalThreads.end())
+	{
+		myIntervalThreads[id]->setTimeout(timeout);
 		return true;
 	}
 
@@ -527,6 +541,12 @@ Handle<Value> VirtualMachine::_stopIntervalThread(const Arguments& args)
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
 	return Boolean::New(vm.stopIntervalThread(args[0]->Uint32Value()));
+}
+
+Handle<Value> VirtualMachine::_setIntervalThreadTimeout(const Arguments& args)
+{
+	VirtualMachine &vm = VirtualMachine::getInstance();
+	return Integer::New(vm.setIntervalThreadTimeout(args[0]->Uint32Value(), args[1]->Uint32Value()));
 }
 
 Handle<Value> VirtualMachine::_startSocketThread(const Arguments& args)
