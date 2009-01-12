@@ -29,6 +29,7 @@ using namespace std;
 
 #include "../Threads/thread.h"
 #include "../Tools/tools.h"
+#include "../Threads/mutex.h"
 
 class IntervalThread : public Thread<IntervalThread>
 {
@@ -39,11 +40,20 @@ public:
 
 	unsigned int getId() { return myId; };
 
+	unsigned int getTimeout();
+	void setTimeout(unsigned int timeout);
+
 	void run();
 
 private:
 	unsigned int myId;
 	unsigned int myTimeout;
+
+	bool myReset;
+	Mutex myResetMutex;
+
+	static unsigned int myCount;
+	static Mutex myCountMutex;
 };
 
 #endif	/* _INTERVALTHREAD_H */

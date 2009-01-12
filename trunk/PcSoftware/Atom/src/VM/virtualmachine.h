@@ -57,6 +57,7 @@ public:
 	bool loadDataStore(string storeName);
 
 	unsigned int startIntervalThread(unsigned int timeout);
+	bool setIntervalThreadTimeout(unsigned int id, unsigned int timeout);
 	bool stopIntervalThread(unsigned int id);
 
 	unsigned int startSocketThread(string address, int port, unsigned int reconnectTimeout);
@@ -76,6 +77,7 @@ public:
 	static Handle<Value> _loadScript(const Arguments& args);
 	static Handle<Value> _stopIntervalThread(const Arguments& args);
 	static Handle<Value> _startIntervalThread(const Arguments& args);
+	static Handle<Value> _setIntervalThreadTimeout(const Arguments& args);
 	static Handle<Value> _stopSocketThread(const Arguments& args);
 	static Handle<Value> _startSocketThread(const Arguments& args);
 	static Handle<Value> _sendToSocketThread(const Arguments& args);

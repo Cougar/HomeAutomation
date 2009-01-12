@@ -22,9 +22,15 @@
 #include "intervalthread.h"
 #include "virtualmachine.h"
 
+unsigned int IntervalThread::myCount = 0;
+Mutex IntervalThread::myCountMutex;
+
 IntervalThread::IntervalThread(unsigned int timeout)
 {
-	myId = time(NULL);
+	myCountMutex.lock();
+	myId = myCount++;
+	myCountMutex.unlock();
+
 	myTimeout = timeout;
 
 	Thread<IntervalThread>();
@@ -33,10 +39,40 @@ IntervalThread::IntervalThread(unsigned int timeout)
 void IntervalThread::run()
 {
 	VirtualMachine &vm = VirtualMachine::getInstance();
-
+	myReset = false;
+	bool localReset = myReset;
 	while (true)
 	{
-		usleep(myTimeout*1000);
-		vm.queueExpression("Interval.triggerIntervalCallback(" + itos(myId) + ");");
+		usleep(getTimeout()*1000);
+
+		myResetMutex.lock();
+		localReset = myReset;
+		myResetMutex.unlock();
+		
+		if (!localReset)
+		{
+			vm.queueExpression("Interval.triggerIntervalCallback(" + itos(myId) + ");");
+		}
+	}
+}
+
+unsigned int IntervalThread::getTimeout()
+{
+	return myTimeout;
+}
+
+void IntervalThread::setTimeout(unsigned int timeout)
+{
+	if (myTimeout == timeout)
+	{
+		myResetMutex.lock();
+		myReset = true;
+		myResetMutex.unlock();
+	}
+	else
+	{
+		stop();
+		myTimeout = timeout;
+		start();
 	}
 }
