@@ -108,7 +108,7 @@ if ($filename ne "")
 		}
 		else
 		{
-			print "Connection closed by other side!";
+			print "Connection closed by other side!\n";
 			close($sock);
 			exit 1;
 		}
@@ -137,7 +137,7 @@ if ($reset eq "true")
 		}
 		elsif ($text eq '')
 		{
-			print "Connection closed by other side!";
+			print "Connection closed by other side!\n";
 			close($sock);
 			exit 1;
 		}

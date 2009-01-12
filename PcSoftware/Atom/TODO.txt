@@ -3,6 +3,7 @@ TODO
 Bugs
 ----
 * CanTranslator and CanMessage should use unsigned int maybe
+* When doing flashing with command console and aborting with ctrl+c, atom segfaults
 
 Features
 --------
