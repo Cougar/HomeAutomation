@@ -28,7 +28,7 @@ function IntelHex(hexLines)
 			switch(lineCode) 
 			{
 				case 0:
-					this.myHexLength +=lineDataCount;
+					//this.myHexLength +=lineDataCount; //(this does now work since it does not count "holes" in hexfile)
 					if ((fullAddr + lineDataCount - 1) > this.myAddrUpper) this.myAddrUpper = fullAddr + lineDataCount - 1;
 					if (lineCode == 0 && fullAddr < this.myAddrLower) this.myAddrLower = fullAddr;
 					for (var j = 0; j < lineDataCount; j++) {
@@ -48,6 +48,7 @@ function IntelHex(hexLines)
 				
 			}
 		}
+		this.myHexLength = this.myAddrUpper - this.myAddrLower;
 	}
 }
 

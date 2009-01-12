@@ -15,6 +15,7 @@ CanNode.prototype.myNumberOfModules = null;
 CanNode.prototype.myModules = null;
 CanNode.prototype.myHeartbeatTime = null;
 CanNode.prototype.myProgrammingIsBios = null;
+CanNode.prototype.myProgrammingBiosOffset = null;
 CanNode.prototype.myProgramming = null;
 CanNode.prototype.myProgrammingHex = null;
 CanNode.prototype.myProgrammingHexAddress = null;
@@ -102,6 +103,8 @@ CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 	if (isBios)
 	{
 		this.myProgrammingIsBios = isBios;
+		this.myProgrammingBiosOffset = hexData.getAddrLower();
+this.myProgrammingCallback(true, "", "got IsBios, address: " + this.myProgrammingBiosOffset, false);
 	}
 	else
 	{
@@ -152,7 +155,8 @@ CanNode.prototype.programmingTimeout = function()
 
 CanNode.prototype.programmingResend = function()
 {
-	this.myProgrammingResend.setTimeout(200);
+this.myProgrammingCallback(true, "", "Resend timeout, a packet was lost, either program data or ack", false);
+	this.myProgrammingResend.reset();
 	//if we did not got ack then try to resend the data
 	this.myProgrammingLastPacket.send();
 }
@@ -175,22 +179,22 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 	if (this.myProgramming)
 	{
 		this.myProgrammingHexAddress = this.myProgrammingHex.getAddrLower(); 
-		this.myProgrammingWantAck = ((this.myProgrammingHexAddress<<8)|(this.myProgrammingHexAddress>>8))&0xffff;
-	
+		this.myProgrammingWantAck = (((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)<<8)|((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8))&0xffff;
+
 		var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
 		canMessage.setData("HardwareId", this.myHardwareId);
-		canMessage.setData("Address0", this.myProgrammingHexAddress&0xff);
-		canMessage.setData("Address1", (this.myProgrammingHexAddress>>8)&0xff);
-		canMessage.setData("Address3", (this.myProgrammingHexAddress>>16)&0xff);
-		canMessage.setData("Address4", (this.myProgrammingHexAddress>>24)&0xff);
+		canMessage.setData("Address0", (this.myProgrammingHexAddress-this.myProgrammingBiosOffset)&0xff);
+		canMessage.setData("Address1", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8)&0xff);
+		canMessage.setData("Address3", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>16)&0xff);
+		canMessage.setData("Address4", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>24)&0xff);
 		canMessage.send();
 		this.myProgrammingState = "DATA";
 		
 		var self = this;
 		this.myProgrammingTimeout.setTimeout(1000);
 		
-		//this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
-		//this.myProgrammingResend.start();
+		this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
+		this.myProgrammingResend.start();
 
 		var date = new Date();
 		this.myProgrammingTimeStarted = date.getTime();
@@ -202,7 +206,7 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 
 CanNode.prototype.handleNack = function(data)
 {
-	stopProgramming(true, "Failed, got NACK, sending reset");
+	this.stopProgramming(true, "Failed, got NACK, sending reset");
 	this.reset();
 	if (false)	
 	{
@@ -219,10 +223,10 @@ CanNode.prototype.handleAck = function(data)
 		{
 		case "DATA":
 			var offset = this.myProgrammingHexOffset;
-			//this.myProgrammingResend.setTimeout(100);
+			this.myProgrammingResend.setTimeout(100);
+			this.myProgrammingResend.reset();
 		
 			this.myProgrammingWantAck = ((offset<<8)|(offset>>8))&0xffff;
-			//var bytesLeft = this.myProgrammingHex.getAddrUpper() - (this.myProgrammingHexAddress+this.myProgrammingHexOffset);
 			var bytesLeft = this.myProgrammingHex.getLength() - this.myProgrammingHexOffset;
 			
 			//here we must handle the possibility that data is less then 48 bits
@@ -253,22 +257,22 @@ CanNode.prototype.handleAck = function(data)
 				switch (i)
 				{
 				case 0:
-					canMessage.setData("Data0", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data0", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				case 1:
-					canMessage.setData("Data1", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data1", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				case 2:
-					canMessage.setData("Data2", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data2", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				case 3:
-					canMessage.setData("Data3", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data3", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				case 4:
-					canMessage.setData("Data4", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data4", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				case 5:
-					canMessage.setData("Data5", this.myProgrammingHex.getByte(offset));
+					canMessage.setData("Data5", this.myProgrammingHex.getByte(this.myProgrammingHexAddress+offset));
 					break;
 				}
 				offset++;
@@ -332,17 +336,17 @@ CanNode.prototype.handleAck = function(data)
 			
 		case "CRC":
 			//is this a bios programming?
-			if (false) 
+			if (this.myProgrammingIsBios)
 			{
 				this.myProgrammingState = "COPY";
-				this.myProgrammingCallback(true, "PROGRESS", "Start to copy bios to new location", false);
+				this.myProgrammingCallback(true, "\nBIOS", "Start to copy bios to new location", false);
 				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
-				canMessage.setData("Source0", source);
-				canMessage.setData("Source1", source);
-				canMessage.setData("Destination0", destination);
-				canMessage.setData("Destination1", destination);
-				canMessage.setData("Length0", length);
-				canMessage.setData("Length1", length);
+				canMessage.setData("Source0", 0);
+				canMessage.setData("Source1", 0);
+				canMessage.setData("Destination0", this.myProgrammingBiosOffset&0xff);
+				canMessage.setData("Destination1", (this.myProgrammingBiosOffset>>8)&0xff);
+				canMessage.setData("Length0", (this.myProgrammingHex.getLength()+1)&0xff);
+				canMessage.setData("Length1", ((this.myProgrammingHex.getLength()+1)>>8)&0xff);
 				canMessage.send();
 				this.stopProgramming();
 			} 
@@ -402,6 +406,7 @@ CanNode.prototype.stopProgramming = function(status, text)
 	this.myProgrammingLastTenPercent = 0;
 	this.myProgrammingnrOfTicks = 0;
 	this.myProgrammingTimeStarted = 0;
+	this.myProgrammingBiosOffset = 0;
 
 	if (this.myProgrammingTimeout != null)
 	{
