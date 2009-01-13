@@ -57,15 +57,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 		txMsg.Data.bytes[7] = (buffer[index+3]>>0)&0xff;
 		
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		//while (BIOS_CanSend(&txMsg) != CAN_OK) {}
-		BIOS_CanSend(&txMsg);
-		
-		uint16_t dummycnt = 1;
-		while (dummycnt > 0) {
-			dummycnt++;
-			asm("nop");
-			asm("nop");
-		}
+		while (BIOS_CanSend(&txMsg) != CAN_OK) {}
 	}
 	
 	uint8_t lastpacketcnt = len&0x03;
@@ -76,8 +68,8 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 			txMsg.Data.bytes[(i<<1)+1] = (buffer[(len&0xfc)|i]>>0)&0xff;
 		}
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		//while (BIOS_CanSend(&txMsg) != CAN_OK) {}
-		BIOS_CanSend(&txMsg);
+		while (BIOS_CanSend(&txMsg) != CAN_OK) {}
+		//BIOS_CanSend(&txMsg);
 	}
 
 }
