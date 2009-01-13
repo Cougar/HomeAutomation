@@ -80,6 +80,48 @@ foreach my $command ($root->first_child('commands')->children('command'))
 }
 
 print MYFILE "\n";
+print MYFILE "//------------------------------- //\n";
+print MYFILE "// Command enum value definitions //\n";
+print MYFILE "//------------------------------- //\n";
+print MYFILE "\n";
+
+foreach my $command ($root->first_child('commands')->children('command'))
+{
+	my $commandName = $command->att('name');
+	$commandName =~ tr/a-z/A-Z/;
+	my $commandType = $command->att('type');
+	$commandType =~ tr/a-z/A-Z/;
+	
+	if ($commandType eq "SPECIFIC")
+	{
+		$commandType = $command->att('module');
+		$commandType =~ tr/a-z/A-Z/;
+	}
+	
+	if ($command->first_child('variables'))
+	{
+		foreach my $variable ($command->first_child('variables')->children('variable'))
+		{
+			my $variableName = $variable->att('name');
+			$variableName =~ tr/a-z/A-Z/;
+			my $variableType = $variable->att('type');
+			$variableType =~ tr/a-z/A-Z/;
+			
+			if ($variableType eq "ENUM")
+			{
+				foreach my $value ($variable->children('value'))
+				{
+					my $valueName = $value->att('name');
+					$valueName =~ tr/a-z/A-Z/;
+				
+					print MYFILE "#define CAN_MODULE_CMD_ENUM_" . $commandType . "_" . $commandName . "_" . $variableName . "_" . $valueName . " " . $value->att('id') . "\n";
+				}
+			}
+		}
+	}
+}
+
+print MYFILE "\n";
 print MYFILE "//------------------- //\n";
 print MYFILE "// Module definitions //\n";
 print MYFILE "//------------------- //\n";

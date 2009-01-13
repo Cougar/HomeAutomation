@@ -26,11 +26,11 @@ irReceive.prototype.canMessageHandler = function(canMessage)
 		
 		if (this.myLastButton == null)
 		{
-			log(this.myName + ":" + this.myId + "> New IR, protocol: " + this.getProtocolName(this.myLastProtocol) + ", data: " + this.myLastIRdata + ", button was " + this.getStatusName(this.myLastStatus).toLowerCase() + "\n");
+			log(this.myName + ":" + this.myId + "> New IR, protocol: " + this.getProtocolName(this.myLastProtocol) + ", data: " + this.myLastIRdata + ", button was " + this.myLastStatus + "\n");
 		}
 		else
 		{
-			log(this.myName + ":" + this.myId + "> New IR, remote: " + this.myLastRemote + ", button: " + this.myLastButton + ", button was " + this.getStatusName(this.myLastStatus).toLowerCase() + "\n");
+			log(this.myName + ":" + this.myId + "> New IR, remote: " + this.myLastRemote + ", button: " + this.myLastButton + ", button was " + this.myLastStatus + "\n");
 		}
 		
 		this.callEvent("newIRdata", null);

@@ -1,4 +1,4 @@
-// Built on Sun Jan 11 14:08:43 2009 by makeCanId.pl
+// Built on Tue Jan 13 22:22:32 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -54,6 +54,15 @@
 #define CAN_MODULE_CMD_DIMMER230_STOP_FADE 130
 #define CAN_MODULE_CMD_DIMMER230_ABS_FADE 131
 #define CAN_MODULE_CMD_DIMMER230_REL_FADE 132
+
+//------------------------------- //
+// Command enum value definitions //
+//------------------------------- //
+
+#define CAN_MODULE_CMD_ENUM_PHYSICAL_BUTTON_STATUS_PRESSED 1
+#define CAN_MODULE_CMD_ENUM_PHYSICAL_BUTTON_STATUS_RELEASED 0
+#define CAN_MODULE_CMD_ENUM_PHYSICAL_IR_STATUS_PRESSED 1
+#define CAN_MODULE_CMD_ENUM_PHYSICAL_IR_STATUS_RELEASED 0
 
 //------------------- //
 // Module definitions //
