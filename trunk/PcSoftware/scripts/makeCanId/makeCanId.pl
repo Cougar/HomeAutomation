@@ -114,7 +114,7 @@ foreach my $command ($root->first_child('commands')->children('command'))
 					my $valueName = $value->att('name');
 					$valueName =~ tr/a-z/A-Z/;
 				
-					print MYFILE "#define CAN_MODULE_CMD_ENUM_" . $commandType . "_" . $commandName . "_" . $variableName . "_" . $valueName . " " . $value->att('id') . "\n";
+					print MYFILE "#define CAN_MODULE_ENUM_" . $commandType . "_" . $commandName . "_" . $variableName . "_" . $valueName . " " . $value->att('id') . "\n";
 				}
 			}
 		}

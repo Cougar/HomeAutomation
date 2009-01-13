@@ -81,7 +81,7 @@ void sns_irReceive_Process(void)
 				irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRRECEIVE;
 				irTxMsg.Header.ModuleId = sns_irReceive_ID;
 				irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
-				irTxMsg.Data[0] = IR_BUTTON_PRESSED;
+				irTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
 				irTxMsg.Data[1] = proto.protocol;
 				irTxMsg.Data[2] = (proto.data>>24)&0xff;
 				irTxMsg.Data[3] = (proto.data>>16)&0xff;
@@ -125,7 +125,7 @@ void sns_irReceive_Process(void)
 	case sns_irReceive_STATE_START_IDLE:
 		if (proto.protocol != IR_PROTO_UNKNOWN) {
 			//skicka på can
-			irTxMsg.Data[0] = IR_BUTTON_RELEASED;
+			irTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
 			StdCan_Put(&irTxMsg);
 		}
 		state = sns_irReceive_STATE_IDLE;
