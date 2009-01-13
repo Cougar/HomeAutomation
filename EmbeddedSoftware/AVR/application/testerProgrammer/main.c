@@ -4,7 +4,6 @@
 #include <string.h>
 #include <config.h> // All configuration parameters
 #include <bios.h>   // BIOS interface declarations, including CAN structure and ID defines.
-#include <drivers/uart/serial.h>
 #include <drivers/timer/timer.h>
 #include <drivers/adc/adc.h>
 
@@ -46,7 +45,6 @@ int main(void)
 	sei();
 	
 	Timer_Init();
-	Serial_Init();
 	ADC_Init();
 	
 	unsigned long time;
@@ -84,23 +82,28 @@ int main(void)
 	while (1) {
 		if (Timer_Expired(1)) {
 			if (!(PINC & (1<<PC2))) {
-				DUTconnectcnt++;
+				if (DUTconnectcnt < 10) {
+					DUTconnectcnt++;
+				}
 			} else {
 				DUTconnected = 0;
+				//DUTconnectcnt --;
 				DUTconnectcnt = 0;
 			}
-			if (DUTconnectcnt = 5) {
+			if (DUTconnectcnt == 10) {
 				DUTconnected = 1;
-			}
-			
+			} //else if (DUTconnectcnt == 0) {
+				//DUTconnected = 0;
+			//}
+
 			reg5Vfeedback = ADC_Get(ADREG5VFEEDBACK);
 			reg5Vfeedback = (reg5Vfeedback & 0x03ff) * ADC_FACTOR;	//get voltage in mV (typical 5000mV)
 			currentfeedback = ADC_Get(ADCURRENTFEEDBACK);
 			currentfeedback = (currentfeedback>>1);		//get current in mA (  cur [A] = (ad*Vcc /1024)/R, R=10  ) (typical 20mA)
 			
-			/*if (reg5Vfeedback > 5200 || currentfeedback > 40) {
+			if (reg5Vfeedback > 6000 || currentfeedback > 40) {
 				PORTD &= ~(1<<PD7);		//turn off output
-			}*/
+			}
 		}
 		if (Timer_Expired(0)) {
 			/*reg5Vfeedback = ADC_Get(ADREG5VFEEDBACK);
@@ -108,12 +111,15 @@ int main(void)
 			currentfeedback = ADC_Get(ADCURRENTFEEDBACK);
 			currentfeedback = (currentfeedback>>1);		//get current in mA (  cur [A] = (ad*Vcc /1024)/R, R=10  ) (typical 20mA)
 */
-			PORTB ^= (1<<PB7);
-			PORTD ^= (1<<PD7);	//toggle output
+			//PORTB ^= (1<<PB7);
+			//PORTD ^= (1<<PD7);	//toggle output
 			
+/*if (DUTconnected) {
+			PORTD |= (1<<PD7);	//toggle output
+}*/
 
 			txMsg.Id = 0;
-			txMsg.DataLength = 5;
+			txMsg.DataLength = 6;
 			txMsg.RemoteFlag = 0;
 			txMsg.ExtendedFlag = 1;
 			txMsg.Data.bytes[0] = (reg5Vfeedback>>8)&0xff;
@@ -122,6 +128,7 @@ int main(void)
 			txMsg.Data.bytes[3] = currentfeedback&0xff;
 
 			txMsg.Data.bytes[4] = DUTconnected;
+			txMsg.Data.bytes[5] = ((PORTD & (1<<PD7))>>PD7);
 	
 			// Send CAN_NMT_APP_START
 			BIOS_CanSend(&txMsg);
