@@ -25,6 +25,7 @@
 using namespace std;
 
 #include <string>
+#include <map>
 
 class CanVariable
 {
@@ -56,19 +57,38 @@ public:
 	string getUnit() { return myUnit; };
 	void setUnit(string unit) { myUnit = unit; };
 
-	int getBitLength() { return myBitLength; };
+	unsigned int getBitLength() { return myBitLength; };
 	void setBitLength(int bitLength) { myBitLength = bitLength; };
 
-	int getStartBit() { return myStartBit; };
+	unsigned int getStartBit() { return myStartBit; };
 	void setStartBit(int startBit) { myStartBit = startBit; };
+
+	string getEnumIdValue()
+	{
+		for (map<string, string>::iterator iter; iter != myEnumValues.end(); iter++)
+		{
+			if (iter->second == myValue)
+			{
+				return iter->first;
+			}
+		}
+
+		return "";
+	}
+
+	void addEnumValue(string id, string name)
+	{
+		myEnumValues[id] = name;
+	}
 
 private:
 	string myName;
 	string myValue;
 	string myType;
 	string myUnit;
-	int myBitLength;
-	int myStartBit;
+	unsigned int myBitLength;
+	unsigned int myStartBit;
+	map<string, string> myEnumValues;
 };
 
 #endif	/* _CANVARIABLE_H */

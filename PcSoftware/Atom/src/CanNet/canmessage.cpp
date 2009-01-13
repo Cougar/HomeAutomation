@@ -264,7 +264,9 @@ string CanMessage::getJSONData()
 		{
 			json += iter->second.getValue();
 		}
-		else if (iter->second.getType() == "ascii" || iter->second.getType() == "hexstring")
+		else if (iter->second.getType() == "ascii" || 
+				iter->second.getType() == "hexstring" ||
+				iter->second.getType() == "enum")
 		{
 			json += "'" + escape(iter->second.getValue()) + "'";
 		}

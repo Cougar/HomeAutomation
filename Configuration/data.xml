@@ -64,12 +64,18 @@
     <command id="70" name="Button" type="physical" module="" description="">
       <variables>
         <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Status" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
       </variables>
     </command>
     <command id="71" name="IR" type="physical" module="" description="IR data protocol encoding">
       <variables>
-        <variable name="Status" type="uint" start_bit="0" bit_length="8" unit="" description="State of remote button"/>
+        <variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="State of remote button">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
         <variable name="Protocol" type="uint" start_bit="8" bit_length="8" unit="" description="Button protocol"/>
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
       </variables>

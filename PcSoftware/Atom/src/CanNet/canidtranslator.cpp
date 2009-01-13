@@ -19,6 +19,12 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "canvariable.h"
+
+
+#include <vector>
+
+
 #include "canidtranslator.h"
 
 CanIdTranslator* CanIdTranslator::myInstance = NULL;
@@ -339,6 +345,17 @@ void CanIdTranslator::makeDataValid(vector<XmlNode> variableNodes, map<string, C
 			data[attributes["name"]].setUnit(attributes["unit"]);
 			data[attributes["name"]].setBitLength(stoi(attributes["bit_length"]));
 			data[attributes["name"]].setStartBit(stoi(attributes["start_bit"]));
+
+			if (attributes["type"] == "enum")
+			{
+				vector<XmlNode> values = variableNodes[c].getChildren();
+
+				for (int k = 0; k < values.size(); k++)
+				{
+					map<string, string> valueAttributes = values[k].getAttributes();
+					data[attributes["name"]].addEnumValue(valueAttributes["id"], valueAttributes["name"]);
+				}
+			}
 		}
 	}
 }
@@ -435,6 +452,14 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 
 			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), float2bin(stof(iter->second.getValue()), iter->second.getBitLength()));
 		}
+		else if (iter->second.getType() == "enum")
+		{
+			if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
+				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
+
+			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(stou(iter->second.getEnumIdValue()), iter->second.getBitLength()));
+
+		}
 		else if (iter->second.getType() == "ascii")
 		{
 			for (int n = 0; n < iter->second.getValue().length(); n++)
@@ -515,6 +540,23 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 		else if (attributes["type"] == "float")
 		{
 			variable.setValue(ftos(bin2float(bits)));
+		}
+		else if (attributes["type"] == "enum")
+		{
+			vector<XmlNode> values = variableNodes[c].getChildren();
+
+			string value = utos(bin2uint(bits));
+
+			for (int k = 0; k < values.size(); k++)
+			{
+				map<string, string> valueAttributes = values[k].getAttributes();
+				variable.addEnumValue(valueAttributes["id"], valueAttributes["name"]);
+
+				if (valueAttributes["id"] == value)
+				{
+					variable.setValue(valueAttributes["name"]);
+				}
+			}
 		}
 		else if (attributes["type"] == "ascii")
 		{
