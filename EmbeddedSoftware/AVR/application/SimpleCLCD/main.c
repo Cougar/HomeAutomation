@@ -70,8 +70,8 @@
  * Defines
  *---------------------------------------------------------------------------*/
 #define SIZE_X	20
-#define SIZE_Y	4
-#define SIZE_LCD LCD_SIZE_20x4
+#define SIZE_Y	2
+#define SIZE_LCD LCD_SIZE_20x2
 
 #define BUFFER_SIZE SIZE_X
 #define TRUE 1
@@ -101,7 +101,7 @@ void can_receive(Can_Message_t *msg){
 }
 
 ISR( PCINT2_vect ){
-// For ROTENC_A and ROTENC_B FIXME Šr inte riktigt rŠtt. Verkar vara bra tycker jag?
+// For ROTENC_A and ROTENC_B FIXME ï¿½r inte riktigt rï¿½tt. Verkar vara bra tycker jag?
 	rotenc();
 }
 
@@ -120,6 +120,7 @@ int main(void) {
 
 	sei();
 
+#if 0
 	/*
 	 * Initialize rotaryencoders and buttons
 	 */
@@ -134,20 +135,22 @@ int main(void) {
 	// Unmask PB7, PB0 and PD2
 	PCMSK2 |= (1<<PCINT18);
 	PCMSK0 |= (1<<PCINT7)|(1<<PCINT0);
-
+#endif
+	
 	// Contrast
 	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
-	OCR0B = 0x10;
+	OCR0B = 0xf0;
 	DDRD |= (1<<DDD5);
 
+#if 0
 	// Backlight
 	TCCR1A |= (1<<COM1A1)|(1<<WGM11);
 	TCCR1B |= (1<<WGM13)|(1<<WGM12)|(1<<CS10);
 	ICR1 = 0xFF; // Make it 8 bits
 	OCR1A = 0xFF;
 	DDRB |= (1<<DDB1);
-
+#endif
 
 	Can_Message_t txMsg;
 	txMsg.ExtendedFlag=1;
@@ -162,13 +165,80 @@ int main(void) {
 	send_dimensions();
 	lcd_puts("CAN Connected!\n");
 
+	uint8_t cnt=0;
     /* main loop */
 	while(1){
         /* check if any messages have been received */
 		if(rxMsgFull){
+			if (cnt == 0) {
+				lcd_home();
+				lcd_puts(".                   ");
+			} else if (cnt == 1) {
+				lcd_home();
+				lcd_puts(" .                  ");
+			} else if (cnt == 2) {
+				lcd_home();
+				lcd_puts("  .                 ");
+			} else if (cnt == 3) {
+				lcd_home();
+				lcd_puts("   .                ");
+			} else if (cnt == 4) {
+				lcd_home();
+				lcd_puts("    .               ");
+			} else if (cnt == 5) {
+				lcd_home();
+				lcd_puts("     .              ");
+			} else if (cnt == 6) {
+				lcd_home();
+				lcd_puts("      .             ");
+			} else if (cnt == 7) {
+				lcd_home();
+				lcd_puts("       .            ");
+			} else if (cnt == 8) {
+				lcd_home();
+				lcd_puts("        .           ");
+			} else if (cnt == 9) {
+				lcd_home();
+				lcd_puts("         .          ");
+			} else if (cnt == 10) {
+				lcd_home();
+				lcd_puts("          .         ");
+			} else if (cnt == 11) {
+				lcd_home();
+				lcd_puts("           .        ");
+			} else if (cnt == 12) {
+				lcd_home();
+				lcd_puts("            .       ");
+			} else if (cnt == 13) {
+				lcd_home();
+				lcd_puts("             .      ");
+			} else if (cnt == 14) {
+				lcd_home();
+				lcd_puts("              .     ");
+			} else if (cnt == 15) {
+				lcd_home();
+				lcd_puts("               .    ");
+			} else if (cnt == 16) {
+				lcd_home();
+				lcd_puts("                .   ");
+			} else if (cnt == 17) {
+				lcd_home();
+				lcd_puts("                 .  ");
+			} else if (cnt == 18) {
+				lcd_home();
+				lcd_puts("                  . ");
+			} else if (cnt == 19) {
+				lcd_home();
+				lcd_puts("                   .");
+			}
+			cnt += 1;
+			if (cnt == 20) {
+				cnt = 0;
+			}
+			
 			uint16_t act_type;
 			uint8_t lcdid;
-			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett jŠkla herk, stŠda upp
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_ACT){// FIXME ett jï¿½kla herk, stï¿½da upp
 				
 				
 				act_type =(uint16_t)((rxMsg.Id & CAN_MASK_ACT_TYPE) >> CAN_SHIFT_ACT_TYPE);
