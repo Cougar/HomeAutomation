@@ -142,15 +142,24 @@
     
     <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
       <variables>
-        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
       </variables>
     </command>
     <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
       <variables>
         <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description="Char position in x direction"/>
         <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description="Char position in y direction"/>
-	<variable name="Inverted" type="uint" start_bit="16" bit_length="1" unit="" description="Set to 1 of you want an inverted output"/>
-	<variable name="Transparent" type="uint" start_bit="17" bit_length="1" unit="" description="Set to 1 of you want to keep screen background"/>
+	<variable name="Inverted" type="enum" start_bit="16" bit_length="1" unit="" description="Set to 1 of you want an inverted output">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Transparent" type="enum" start_bit="17" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Transparent"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD on current postion, according to the latest LCD_Cursor command">
@@ -160,7 +169,10 @@
     </command>
     <command id="131" name="LCD_Invert" type="specific" module="KS0108" description="Invert LCD">
       <variables>
-        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
       </variables>
     </command>
     <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
@@ -170,8 +182,14 @@
     </command>
     <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
       <variables>
-        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
-	<variable name="Transparent" type="uint" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background"/>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Transparent" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Transparent"/>
+	</variable>  
 	<variable name="X" type="uint" start_bit="2" bit_length="6" unit="" description=""/>
         <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
@@ -179,8 +197,14 @@
     </command>
     <command id="134" name="LCD_DrawRect" type="specific" module="KS0108" description="Draw a rectangle on LCD">
       <variables>
-        <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
-	<variable name="Fill" type="uint" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want the rectangle filled"/>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Fill" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want the rectangle filled">
+	  <value id="0" name="NoFill"/>
+	  <value id="1" name="Fill"/>
+	</variable>  
 	<variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	<variable name="Width" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
@@ -191,7 +215,10 @@
       
       <command id="135" name="LCD_DrawLine" type="specific" module="KS0108" description="Draw a line on LCD">
 	<variables>
-	  <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	    <value id="0" name="Standard"/>
+	    <value id="1" name="Inverted"/>
+	  </variable>
 	  <variable name="X1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
 	  <variable name="Y1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	  <variable name="X2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
@@ -201,7 +228,10 @@
     
       <command id="136" name="LCD_DrawCircle" type="specific" module="KS0108" description="Draw a circle on LCD">
 	<variables>
-	  <variable name="Inverted" type="uint" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen"/>
+	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	    <value id="0" name="Standard"/>
+	    <value id="1" name="Inverted"/>
+	  </variable>
 	  <variable name="Xcentre" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
 	  <variable name="Ycentre" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	  <variable name="Radius" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
