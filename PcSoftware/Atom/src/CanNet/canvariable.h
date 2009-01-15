@@ -67,12 +67,9 @@ public:
 
 	string getEnumIdValue()
 	{
-		for (map<string, string>::iterator iter; iter != myEnumValues.end(); iter++)
+		if (myEnumValues.find(myValue) != myEnumValues.end())
 		{
-			if (iter->second == myValue)
-			{
-				return iter->first;
-			}
+			return myEnumValues[myValue];
 		}
 
 		return "";
