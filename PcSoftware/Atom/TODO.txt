@@ -5,6 +5,7 @@ Bugs
 * CanTranslator and CanMessage should use unsigned int maybe
 * When doing flashing with command console and aborting with ctrl+c, atom segfaults
 * For some reason the logfile can not be opened
+* atom start services when it sees the bios_start shall be appl_start....
 
 Features
 --------
@@ -17,6 +18,8 @@ Features
 
 Other
 -----
+* When a node comes online, atom shall reset what it remembers from when it was online before, if you now add a module and install this application atom will not recognice it
+* Atom does not complain if you try to set a command that do not exist
 * Error checking...
 * FIXMEs
 * Implement more module-services...
