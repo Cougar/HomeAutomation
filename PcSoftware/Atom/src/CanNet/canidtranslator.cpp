@@ -19,6 +19,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "canmessageexception.h"
+
+
 #include "canvariable.h"
 
 
@@ -457,8 +460,16 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 			if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
 				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
 
-			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(stou(iter->second.getEnumIdValue()), iter->second.getBitLength()));
+			string value = iter->second.getEnumIdValue();
 
+			if (value == "")
+			{
+				throw new CanMessageException("Got enum that could not be converterd to a value. value = \"" + iter->second.getValue() + "\" enumString is \"" + iter->second.getEnumsString() + "\"\n");
+			}
+			else
+			{
+				bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(stou(value), iter->second.getBitLength()));
+			}
 		}
 		else if (iter->second.getType() == "ascii")
 		{

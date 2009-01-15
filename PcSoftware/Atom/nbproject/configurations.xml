@@ -89,7 +89,7 @@
           <output>atom</output>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
-            <linkerLibFileItem>src/v8/libv8.a</linkerLibFileItem>
+            <linkerLibFileItem>src/v8/libv8_g.a</linkerLibFileItem>
           </linkerLibItems>
           <commandLine>-m32</commandLine>
         </linkerTool>

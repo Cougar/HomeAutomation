@@ -41,12 +41,14 @@ void IntervalThread::run()
 	VirtualMachine &vm = VirtualMachine::getInstance();
 	myReset = false;
 	bool localReset = myReset;
+
 	while (true)
 	{
 		usleep(getTimeout()*1000);
 
 		myResetMutex.lock();
 		localReset = myReset;
+		myReset = false;
 		myResetMutex.unlock();
 		
 		if (!localReset)

@@ -27,6 +27,8 @@ using namespace std;
 #include <string>
 #include <map>
 
+#include "../Tools/tools.h"
+
 class CanVariable
 {
 public:
@@ -74,6 +76,19 @@ public:
 		}
 
 		return "";
+	}
+
+	string getEnumsString()
+	{
+		string enumString = "";
+		for (map<string, string>::iterator iter; iter != myEnumValues.end(); iter++)
+		{
+			enumString += iter->first + "=" + iter->second + ",";
+		}
+
+		enumString = trim(enumString, ',');
+
+		return enumString;
 	}
 
 	void addEnumValue(string id, string name)
