@@ -4,6 +4,7 @@ Bugs
 ----
 * CanTranslator and CanMessage should use unsigned int maybe
 * When doing flashing with command console and aborting with ctrl+c, atom segfaults
+* For some reason the logfile can not be opened
 
 Features
 --------

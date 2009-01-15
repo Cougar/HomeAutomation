@@ -24,33 +24,33 @@ PLATFORM=GNU-Linux-x86
 include Makefile
 
 # Object Directory
-OBJECTDIR=src/build/Release/${PLATFORM}
+OBJECTDIR=build/Release/${PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/VM/virtualmachine.o \
-	${OBJECTDIR}/Logger/logger.o \
-	${OBJECTDIR}/Socket/server.o \
-	${OBJECTDIR}/singleton.o \
-	${OBJECTDIR}/CanNet/cannetmanager.o \
-	${OBJECTDIR}/VM/commandthread.o \
-	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/Xml/xmlnode.o \
-	${OBJECTDIR}/VM/intervalthread.o \
-	${OBJECTDIR}/Settings/settings.o \
-	${OBJECTDIR}/CanNet/canidtranslator.o \
-	${OBJECTDIR}/CanNet/canmessage.o \
-	${OBJECTDIR}/CanNet/candebug.o \
-	${OBJECTDIR}/Tools/tools.o \
-	${OBJECTDIR}/VM/socketthread.o \
-	${OBJECTDIR}/Socket/asyncsocket.o
+	${OBJECTDIR}/src/Socket/server.o \
+	${OBJECTDIR}/src/Logger/logger.o \
+	${OBJECTDIR}/src/CanNet/canmessage.o \
+	${OBJECTDIR}/src/VM/intervalthread.o \
+	${OBJECTDIR}/src/main.o \
+	${OBJECTDIR}/src/CanNet/cannetmanager.o \
+	${OBJECTDIR}/src/VM/virtualmachine.o \
+	${OBJECTDIR}/src/VM/commandthread.o \
+	${OBJECTDIR}/src/singleton.o \
+	${OBJECTDIR}/src/VM/socketthread.o \
+	${OBJECTDIR}/src/CanNet/canidtranslator.o \
+	${OBJECTDIR}/src/CanNet/candebug.o \
+	${OBJECTDIR}/src/Xml/xmlnode.o \
+	${OBJECTDIR}/src/Tools/tools.o \
+	${OBJECTDIR}/src/Settings/settings.o \
+	${OBJECTDIR}/src/Socket/asyncsocket.o
 
 # C Compiler Flags
-CFLAGS=-m32
+CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m32
-CXXFLAGS=-m32
+CCFLAGS=
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -67,92 +67,92 @@ atom: src/v8/libv8.a
 atom: ${OBJECTFILES}
 	${LINK.cc} -m32 -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/VM/virtualmachine.o: src/VM/virtualmachine.cpp 
-	${MKDIR} -p ${OBJECTDIR}/VM
+${OBJECTDIR}/src/Socket/server.o: src/Socket/server.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Socket
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/virtualmachine.o src/VM/virtualmachine.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Socket/server.o src/Socket/server.cpp
 
-${OBJECTDIR}/Logger/logger.o: src/Logger/logger.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Logger
+${OBJECTDIR}/src/Logger/logger.o: src/Logger/logger.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Logger
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Logger/logger.o src/Logger/logger.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Logger/logger.o src/Logger/logger.cpp
 
-${OBJECTDIR}/Socket/server.o: src/Socket/server.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Socket
+${OBJECTDIR}/src/CanNet/canmessage.o: src/CanNet/canmessage.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/server.o src/Socket/server.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CanNet/canmessage.o src/CanNet/canmessage.cpp
 
-${OBJECTDIR}/singleton.o: src/singleton.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/VM/intervalthread.o: src/VM/intervalthread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/VM
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/singleton.o src/singleton.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/VM/intervalthread.o src/VM/intervalthread.cpp
 
-${OBJECTDIR}/CanNet/cannetmanager.o: src/CanNet/cannetmanager.cpp 
-	${MKDIR} -p ${OBJECTDIR}/CanNet
+${OBJECTDIR}/src/main.o: src/main.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/cannetmanager.o src/CanNet/cannetmanager.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
 
-${OBJECTDIR}/VM/commandthread.o: src/VM/commandthread.cpp 
-	${MKDIR} -p ${OBJECTDIR}/VM
+${OBJECTDIR}/src/CanNet/cannetmanager.o: src/CanNet/cannetmanager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/commandthread.o src/VM/commandthread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CanNet/cannetmanager.o src/CanNet/cannetmanager.cpp
 
-${OBJECTDIR}/main.o: src/main.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/VM/virtualmachine.o: src/VM/virtualmachine.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/VM
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o src/main.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/VM/virtualmachine.o src/VM/virtualmachine.cpp
 
-${OBJECTDIR}/Xml/xmlnode.o: src/Xml/xmlnode.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Xml
+${OBJECTDIR}/src/VM/commandthread.o: src/VM/commandthread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/VM
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Xml/xmlnode.o src/Xml/xmlnode.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/VM/commandthread.o src/VM/commandthread.cpp
 
-${OBJECTDIR}/VM/intervalthread.o: src/VM/intervalthread.cpp 
-	${MKDIR} -p ${OBJECTDIR}/VM
+${OBJECTDIR}/src/singleton.o: src/singleton.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/intervalthread.o src/VM/intervalthread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/singleton.o src/singleton.cpp
 
-${OBJECTDIR}/Settings/settings.o: src/Settings/settings.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Settings
+${OBJECTDIR}/src/VM/socketthread.o: src/VM/socketthread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/VM
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Settings/settings.o src/Settings/settings.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/VM/socketthread.o src/VM/socketthread.cpp
 
-${OBJECTDIR}/CanNet/canidtranslator.o: src/CanNet/canidtranslator.cpp 
-	${MKDIR} -p ${OBJECTDIR}/CanNet
+${OBJECTDIR}/src/CanNet/canidtranslator.o: src/CanNet/canidtranslator.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canidtranslator.o src/CanNet/canidtranslator.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CanNet/canidtranslator.o src/CanNet/canidtranslator.cpp
 
-${OBJECTDIR}/CanNet/canmessage.o: src/CanNet/canmessage.cpp 
-	${MKDIR} -p ${OBJECTDIR}/CanNet
+${OBJECTDIR}/src/CanNet/candebug.o: src/CanNet/candebug.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/CanNet
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/canmessage.o src/CanNet/canmessage.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/CanNet/candebug.o src/CanNet/candebug.cpp
 
-${OBJECTDIR}/CanNet/candebug.o: src/CanNet/candebug.cpp 
-	${MKDIR} -p ${OBJECTDIR}/CanNet
+${OBJECTDIR}/src/Xml/xmlnode.o: src/Xml/xmlnode.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Xml
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CanNet/candebug.o src/CanNet/candebug.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Xml/xmlnode.o src/Xml/xmlnode.cpp
 
-${OBJECTDIR}/Tools/tools.o: src/Tools/tools.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Tools
+${OBJECTDIR}/src/Tools/tools.o: src/Tools/tools.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Tools
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Tools/tools.o src/Tools/tools.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Tools/tools.o src/Tools/tools.cpp
 
-${OBJECTDIR}/VM/socketthread.o: src/VM/socketthread.cpp 
-	${MKDIR} -p ${OBJECTDIR}/VM
+${OBJECTDIR}/src/Settings/settings.o: src/Settings/settings.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Settings
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VM/socketthread.o src/VM/socketthread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Settings/settings.o src/Settings/settings.cpp
 
-${OBJECTDIR}/Socket/asyncsocket.o: src/Socket/asyncsocket.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Socket
+${OBJECTDIR}/src/Socket/asyncsocket.o: src/Socket/asyncsocket.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Socket
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Socket/asyncsocket.o src/Socket/asyncsocket.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Socket/asyncsocket.o src/Socket/asyncsocket.cpp
 
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
 .clean-conf:
-	${RM} -r src/build/Release
+	${RM} -r build/Release
 	${RM} atom
 
 # Subprojects
