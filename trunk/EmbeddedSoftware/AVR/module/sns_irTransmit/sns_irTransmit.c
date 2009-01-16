@@ -90,13 +90,14 @@ void sns_irTransmit_Process(void)
 void sns_irTransmit_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
-		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_IRTRANSMIT && 
 		rxMsg->Header.ModuleId == sns_irTransmit_ID)
 	{
 		switch (rxMsg->Header.Command)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_IR:
+		
 		if (sns_irTransmit_state == sns_irTransmit_STATE_IDLE && rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED)
 		{
 			sns_irTransmit_proto.protocol = rxMsg->Data[1];
