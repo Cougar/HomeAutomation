@@ -22,11 +22,11 @@ irReceive.prototype.canMessageHandler = function(canMessage)
 		this.myLastIRdata = canMessage.getData("IRdata");
 		this.myLastProtocol = canMessage.getData("Protocol");
 		this.myLastStatus = canMessage.getData("Status");
-		this.lookupName(this.getProtocolName(this.myLastProtocol), this.myLastIRdata);
+		this.lookupName(this.myLastProtocol, this.myLastIRdata);
 		
 		if (this.myLastButton == null)
 		{
-			log(this.myName + ":" + this.myId + "> New IR, protocol: " + this.getProtocolName(this.myLastProtocol) + ", data: " + this.myLastIRdata + ", button was " + this.myLastStatus + "\n");
+			log(this.myName + ":" + this.myId + "> New IR, protocol: " + this.myLastProtocol + ", data: " + this.myLastIRdata + ", button was " + this.myLastStatus + "\n");
 		}
 		else
 		{
@@ -78,51 +78,4 @@ irReceive.prototype.getLastProtocol = function()
 irReceive.prototype.getLastStatus = function()
 {
 	return this.myLastStatus;
-}
-
-irReceive.prototype.getStatusName = function(status)
-{
-	var returnData = "Released";
-	if (status == 1) {
-		returnData = "Pressed";
-	}
-	return returnData;
-}
-irReceive.prototype.getProtocolName = function(protocol)
-{
-	var returnData = "Unknown";
-	switch (protocol)
-	{
-	case 0:
-		returnData = "RC5";
-	break;
-	case 1:
-		returnData = "RC6";
-	break;
-	case 2:
-		returnData = "RCMM";
-	break;
-	case 3:
-		returnData = "SIRC";
-	break;
-	case 4:
-		returnData = "Sharp";
-	break;
-	case 5:
-		returnData = "NEC";
-	break;
-	case 6:
-		returnData = "Samsung";
-	break;
-	case 7:
-		returnData = "Marantz";
-	break;
-	case 255:
-		returnData = "Unknown";
-	break;
-	default:
-		returnData = "New protocol, irReceive.js must be updated";
-	break;
-	}
-	return returnData;
 }

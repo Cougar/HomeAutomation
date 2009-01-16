@@ -91,6 +91,7 @@ public:
 	static Handle<Value> _uint2bin(const Arguments& args);
 	static Handle<Value> _hex2uint(const Arguments& args);
 
+	static Handle<Value> _sleep(const Arguments& args);
 
 	static Handle<Value> _loadDataStore(const Arguments& args);
 	static Handle<Value> _getFileContents(const Arguments& args);
