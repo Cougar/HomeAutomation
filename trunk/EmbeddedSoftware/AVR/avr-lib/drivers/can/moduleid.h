@@ -1,4 +1,4 @@
-// Built on Thu Jan 15 17:50:14 2009 by makeCanId.pl
+// Built on Fri Jan 16 18:49:26 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -102,6 +102,7 @@
 #define CAN_MODULE_TYPE_ACT_LEDPWM 13
 #define CAN_MODULE_TYPE_SNS_IRRECEIVE 14
 #define CAN_MODULE_TYPE_SNS_NMEA 15
+#define CAN_MODULE_TYPE_SNS_IRTRANSMIT 16
 
 //----------------- //
 // Misc definitions //

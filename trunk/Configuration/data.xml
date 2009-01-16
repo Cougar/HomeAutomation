@@ -298,6 +298,7 @@
     <module id="13" name="LEDPWM" class="act"/>
     <module id="14" name="irReceive" class="sns"/>
     <module id="15" name="nmea" class="sns"/>
+    <module id="16" name="irTransmit" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
