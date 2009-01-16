@@ -76,7 +76,17 @@
           <value id="1" name="Pressed"/>
           <value id="0" name="Released"/>
         </variable>
-        <variable name="Protocol" type="uint" start_bit="8" bit_length="8" unit="" description="Button protocol"/>
+        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Button protocol">
+          <value id="0" name="RC5"/>
+          <value id="1" name="RC6"/>
+          <value id="2" name="RCMM"/>
+          <value id="3" name="SIRC"/>
+          <value id="4" name="Sharp"/>
+          <value id="5" name="NEC"/>
+          <value id="6" name="Samsung"/>
+          <value id="7" name="Marantz"/>
+          <value id="255" name="Unknown"/>
+        </variable>
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
