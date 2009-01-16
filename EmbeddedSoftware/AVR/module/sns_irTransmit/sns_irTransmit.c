@@ -67,7 +67,7 @@ void sns_irTransmit_Process(void)
 	else if (sns_irTransmit_state == sns_irTransmit_STATE_PAUSING)
 	{
 		//när timeout har gått (timebase) så gå till sns_irTransmit_STATE_START_TRANSMIT
-		if (Timer_Expired(sns_irReceive_REPEATE_TIMER))
+		if (Timer_Expired(sns_irTransmit_REPEAT_TIMER))
 		{
 			sns_irTransmit_state = sns_irTransmit_STATE_START_TRANSMIT;
 		}
