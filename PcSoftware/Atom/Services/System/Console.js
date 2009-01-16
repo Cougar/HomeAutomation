@@ -190,3 +190,9 @@ function programNode(hardwareId, hexData, bios)
 		//print("File was not found, " + hexFilename + "\n");
 	}
 }
+
+function p()
+{
+	var t = ServiceManager.getService("CAN", "irTransmit", 1);
+	t.sendClick('KiSS_DP-1500_Remote','POWER');
+}

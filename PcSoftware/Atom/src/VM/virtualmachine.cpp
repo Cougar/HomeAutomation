@@ -97,6 +97,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("bin2uint"), FunctionTemplate::New(VirtualMachine::_bin2uint));
 	myGlobal->Set(String::New("uint2bin"), FunctionTemplate::New(VirtualMachine::_uint2bin));
 	myGlobal->Set(String::New("hex2uint"), FunctionTemplate::New(VirtualMachine::_hex2uint));
+	myGlobal->Set(String::New("sleep"), FunctionTemplate::New(VirtualMachine::_sleep));
 	myContext = Context::New(NULL, myGlobal);
 
 
@@ -641,4 +642,10 @@ Handle<Value> VirtualMachine::_hex2uint(const Arguments& args)
 	String::AsciiValue hex(args[0]);
 	unsigned int num = hex2uint(*hex);
 	return Number::New(num);
+}
+
+Handle<Value> VirtualMachine::_sleep(const Arguments& args)
+{
+	usleep(args[0]->Uint32Value());
+	return Undefined();
 }
