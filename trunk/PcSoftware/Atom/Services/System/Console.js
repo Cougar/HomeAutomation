@@ -191,8 +191,8 @@ function programNode(hardwareId, hexData, bios)
 	}
 }
 
-function p()
+function p(time, button)
 {
 	var t = ServiceManager.getService("CAN", "irTransmit", 1);
-	t.sendClick('KiSS_DP-1500_Remote','POWER');
+	t.sendClick('KiSS_DP-1500_Remote', button, time);
 }

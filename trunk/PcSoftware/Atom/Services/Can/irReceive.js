@@ -79,3 +79,13 @@ irReceive.prototype.getLastStatus = function()
 {
 	return this.myLastStatus;
 }
+
+irReceive.prototype.getLastButton = function()
+{
+	return this.myLastButton;
+}
+
+irReceive.prototype.getLastRemote = function()
+{
+	return this.myLastRemote;
+}
