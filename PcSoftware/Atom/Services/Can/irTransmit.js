@@ -20,10 +20,19 @@ irTransmit.prototype.canMessageHandler = function(canMessage)
 	this.CanService.prototype.canMessageHandler.call(this, canMessage);
 }
 
-irTransmit.prototype.sendClick = function(remoteName, buttonName)
+irTransmit.prototype.sendClick = function(remoteName, buttonName, time)
 {
 	this.sendButton(remoteName, buttonName, true);
-	sleep(50000);
+	
+	if (time)
+	{
+		sleep(time);
+	}
+	else
+	{
+		sleep(50000);
+	}
+	
 	this.sendButton(remoteName, buttonName, false);
 }
 
