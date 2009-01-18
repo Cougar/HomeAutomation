@@ -100,11 +100,12 @@ CanNode.prototype.handleHeartbeat = function(numberOfModules)
 
 CanNode.prototype.startProgramming = function(hexData, progressCallback, isBios)
 {
+	this.myProgrammingCallback = progressCallback;
 	if (isBios)
 	{
 		this.myProgrammingIsBios = isBios;
 		this.myProgrammingBiosOffset = hexData.getAddrLower();
-this.myProgrammingCallback(true, "", "got IsBios, address: " + this.myProgrammingBiosOffset, false);
+		//this.myProgrammingCallback(true, "", "got IsBios, address: " + this.myProgrammingBiosOffset, false);
 	}
 	else
 	{
@@ -113,7 +114,6 @@ this.myProgrammingCallback(true, "", "got IsBios, address: " + this.myProgrammin
 	
 	this.myProgramming = true;
 	this.myProgrammingHex = hexData;
-	this.myProgrammingCallback = progressCallback;
 	
 	CanProgrammingNode = this;
 	
@@ -147,8 +147,10 @@ CanNode.prototype.programmingTimeout = function()
 		break;
 	case "COPY":
 		//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
+		this.myProgrammingCallback(true, "ERROR", "Unexpected error 100", false);
 		break;
 	default:
+		this.myProgrammingCallback(true, "ERROR", "Unexpected error 101, state: " + this.myProgrammingState, false);
 		break;
 	}
 }
@@ -178,29 +180,54 @@ CanNode.prototype.handleBiosStart = function(biosVersion, hasApplication)
 //print("node was reset and bios just started, ver:" + biosVersion);
 	if (this.myProgramming)
 	{
-		this.myProgrammingHexAddress = this.myProgrammingHex.getAddrLower(); 
-		this.myProgrammingWantAck = (((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)<<8)|((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8))&0xffff;
+		switch (this.myProgrammingState)
+		{
+		case "RESET":
+			this.myProgrammingHexAddress = this.myProgrammingHex.getAddrLower(); 
+			this.myProgrammingWantAck = (((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)<<8)|((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8))&0xffff;
 
-		var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
-		canMessage.setData("HardwareId", this.myHardwareId);
-		canMessage.setData("Address0", (this.myProgrammingHexAddress-this.myProgrammingBiosOffset)&0xff);
-		canMessage.setData("Address1", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8)&0xff);
-		canMessage.setData("Address3", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>16)&0xff);
-		canMessage.setData("Address4", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>24)&0xff);
-		canMessage.send();
-		this.myProgrammingState = "DATA";
+			var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
+			canMessage.setData("HardwareId", this.myHardwareId);
+			canMessage.setData("Address0", (this.myProgrammingHexAddress-this.myProgrammingBiosOffset)&0xff);
+			canMessage.setData("Address1", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>8)&0xff);
+			canMessage.setData("Address3", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>16)&0xff);
+			canMessage.setData("Address4", ((this.myProgrammingHexAddress-this.myProgrammingBiosOffset)>>24)&0xff);
+			canMessage.send();
+			this.myProgrammingState = "DATA";
 		
-		var self = this;
-		this.myProgrammingTimeout.setTimeout(1000);
+			var self = this;
+			this.myProgrammingTimeout.setTimeout(1000);
 		
-		this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
-		this.myProgrammingResend.start();
+			this.myProgrammingResend = new Interval(function() { self.programmingResend() }, 1100);
+			this.myProgrammingResend.start();
 
-		var date = new Date();
-		this.myProgrammingTimeStarted = date.getTime();
+			var date = new Date();
+			this.myProgrammingTimeStarted = date.getTime();
 
-		this.myProgrammingCallback(true, "START", "Started programming of node", false);
-		this.myProgrammingCallback(true, "", "  0% [", true);
+			this.myProgrammingCallback(true, "START", "Started programming of node", false);
+			this.myProgrammingCallback(true, "", "  0% [", true);
+			break;
+		case "COPY":
+			//bios was moved and now started (so it seems like it was successfully programmed and moved)
+			//now we should send a new programming with one empty packet to erase application area
+			this.myProgrammingWantAck = 0;
+			var canMessage = new CanNMTMessage("nmt", "Pgm_Start");
+			canMessage.setData("HardwareId", this.myHardwareId);
+			canMessage.setData("Address0", 0);
+			canMessage.setData("Address1", 0);
+			canMessage.setData("Address3", 0);
+			canMessage.setData("Address4", 0);
+			canMessage.send();
+			this.myProgrammingState = "APPCLEANDATA";
+			break;
+		case "DONE":
+			this.stopProgramming(true, "Done, successful");
+			break;
+		default:
+			this.myProgrammingCallback(true, "ERROR", "Unexpected error 105, state: " + this.myProgrammingState, false);
+			break;
+		}
+	
 	}
 }
 
@@ -338,6 +365,7 @@ CanNode.prototype.handleAck = function(data)
 			//is this a bios programming?
 			if (this.myProgrammingIsBios)
 			{
+				this.myProgrammingTimeout.setTimeout(6000);
 				this.myProgrammingState = "COPY";
 				this.myProgrammingCallback(true, "\nBIOS", "Start to copy bios to new location", false);
 				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
@@ -345,22 +373,41 @@ CanNode.prototype.handleAck = function(data)
 				canMessage.setData("Source1", 0);
 				canMessage.setData("Destination0", this.myProgrammingBiosOffset&0xff);
 				canMessage.setData("Destination1", (this.myProgrammingBiosOffset>>8)&0xff);
-				canMessage.setData("Length0", (this.myProgrammingHex.getLength()+1)&0xff);
-				canMessage.setData("Length1", ((this.myProgrammingHex.getLength()+1)>>8)&0xff);
+				canMessage.setData("Length0", (this.myProgrammingHex.getLength())&0xff);
+				canMessage.setData("Length1", (this.myProgrammingHex.getLength()>>8)&0xff);
 				canMessage.send();
-				this.stopProgramming();
+				//this.stopProgramming();
 			} 
 			else 
 			{
-				this.stopProgramming(true, "Done, successful");
+				this.myProgrammingState = "DONE";
 				this.reset();
 			}
 			break;
 		
 		case "COPY":	//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
 			break;
-			
+		case "APPCLEANDATA":
+			var canMessage = new CanNMTMessage("nmt", "Pgm_Data_16");
+			this.myProgrammingWantAck = 0;
+			this.myProgrammingState = "APPCLEANEND";
+			canMessage.setData("Data0", 0xff);
+			canMessage.setData("Data1", 0xff);
+			canMessage.send();
+			break;
+		case "APPCLEANEND":
+			this.myProgrammingWantAck = 0x1b0;
+			this.myProgrammingState = "APPCLEANCRC";
+			var canMessage = new CanNMTMessage("nmt", "Pgm_End");
+			canMessage.send();
+			break;
+		case "APPCLEANCRC":
+			this.myProgrammingState = "DONE";
+			this.reset();
+			break;
+		
 		default:
+			this.myProgrammingCallback(true, "ERROR", "Unexpected error 104, state: " + this.myProgrammingState, false);
 			break;
 		}
 	}
@@ -380,8 +427,10 @@ CanNode.prototype.handleAck = function(data)
 			this.reset();
 			break;
 		case "COPY":	//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
+			this.myProgrammingCallback(true, "ERROR", "Unexpected error 103", false);
 			break;
 		default:
+			this.myProgrammingCallback(true, "ERROR", "Unexpected error 102, state: " + this.myProgrammingState, false);
 			break;
 		}
 	}
