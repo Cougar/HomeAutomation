@@ -1,9 +1,35 @@
 
 #include "<template>.h"
 
+#ifdef <template>_USEEEPROM
+struct eeprom_<template> EEMEM eeprom_<template> = 
+{
+	{
+		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
+		0xAB,	// x
+		0x1234	// y
+	},
+	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
+}; 
+#endif
+
 void <template>_Init(void)
 {
+#ifdef <template>_USEEEPROM
+	if (EEDATA_OK)
+	{
+	  ///TODO: Use stored data to set initial values for the module
+	  blablaX = eeprom_read_byte(EEDATA.x);
+	  blablaY = eeprom_read_word(EEDATA.y);
+	} else
+	{	//The CRC of the EEPROM is not correct, store default values and update CRC
+	  eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
+	  eeprom_write_word_crc(EEDATA.y, 0x1234, WITHOUT_CRC);
+	  EEDATA_UPDATE_CRC;
+	}
+#endif  
 	///TODO: Initialize hardware etc here
+
 }
 
 void <template>_Process(void)
