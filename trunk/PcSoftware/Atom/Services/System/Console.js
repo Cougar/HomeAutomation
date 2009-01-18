@@ -184,6 +184,10 @@ function programNode(hardwareId, hexData, bios)
 			//print("len: "+hexObj.getLength()+" laddr: "+hexObj.getAddrLower()+" uaddr: "+hexObj.getAddrUpper()+"\n");
 			node.startProgramming(hexObj, programNodeCallback, bios);
 		}
+		else
+		{
+			print("Failed. Invalid hexfile\n");
+		}
 	}
 	else
 	{

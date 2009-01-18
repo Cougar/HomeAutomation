@@ -5,7 +5,6 @@ function IntelHex(hexLines)
 {
 //print("constructor of IntelHex\n");
 	this.myValid = false;
-	this.myHexLength = 0;
 	this.myAddrLower = 0x7FFFFFFF;
 	this.myAddrUpper = 0;
 	this.myHexData = new Array(MAX_SIZE);
@@ -28,7 +27,6 @@ function IntelHex(hexLines)
 			switch(lineCode) 
 			{
 				case 0:
-					//this.myHexLength +=lineDataCount; //(this does now work since it does not count "holes" in hexfile)
 					if ((fullAddr + lineDataCount - 1) > this.myAddrUpper) this.myAddrUpper = fullAddr + lineDataCount - 1;
 					if (lineCode == 0 && fullAddr < this.myAddrLower) this.myAddrLower = fullAddr;
 					for (var j = 0; j < lineDataCount; j++) {
@@ -39,7 +37,7 @@ function IntelHex(hexLines)
 //print("found a record of type 0, fulladdr: "+fullAddr+"\nhexLines.length: "+hexLines.length+"\n"+hexLines[n]+"\n");
 					break;
 				case 4:
-					lineAddrHigh = hex2uint(hexLines[n].Substring(9, 4)) & 65535;
+					lineAddrHigh = hex2uint(hexLines[n].substr(9, 4)) & 65535;
 					break;
 				case 1: 
 //print("found a record of type 1");
@@ -48,12 +46,10 @@ function IntelHex(hexLines)
 				
 			}
 		}
-		this.myHexLength = this.myAddrUpper - this.myAddrLower;
 	}
 }
 
 IntelHex.prototype.myHexData = null;
-IntelHex.prototype.myHexLength = null;
 IntelHex.prototype.myAddrLower = null;
 IntelHex.prototype.myAddrUpper = null;
 IntelHex.prototype.myValid = null;
@@ -61,7 +57,7 @@ IntelHex.prototype.myValid = null;
 IntelHex.prototype.getCRC16 = function()
 {
 	var crc=0;
-	for (var i = 0; i < this.myHexLength; i++)
+	for (var i = this.myAddrLower; i <= this.myAddrUpper; i++)
 	{
 		crc = this.crc16_update(crc, this.myHexData[i]);
 	}
@@ -87,7 +83,14 @@ IntelHex.prototype.crc16_update = function(crc, byte)
 
 IntelHex.prototype.getLength = function()
 {
-	return this.myHexLength;
+	if (this.myAddrUpper+1>this.myAddrLower)
+	{
+		return (this.myAddrUpper - this.myAddrLower + 1);
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 IntelHex.prototype.isValid = function()
