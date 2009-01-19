@@ -76,14 +76,6 @@ function getService(id, name)
 	return ServiceManager.Services[fullId];
 }
 
-function testOutput()
-{
-_print(ClientId, "====");
-_print(ClientId, "\r");
-_print(ClientId, "=AR=");
-
-}
-
 function ethStart()
 {
 	var canMessage = new CanNMTMessage("nmt", "Time");
@@ -106,7 +98,7 @@ function resetNode(hardwareId)
 
 	if (!node)
 	{
-		printTo(ProgrammingClientId, "Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		printTo(ProgrammingClientId, "STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
 		return;
 	}
 	
@@ -114,11 +106,11 @@ function resetNode(hardwareId)
 			{
 				if (status)
 				{
-					printTo(ProgrammingClientId, "Success: Node reset and bios started okay.\n");
+					printTo(ProgrammingClientId, "STOP: Success: Node reset and bios started okay.\n");
 				}
 				else
 				{
-					printTo(ProgrammingClientId, "Failed. Node did not respond failed.\n");
+					printTo(ProgrammingClientId, "STOP: Failed. Node did not respond failed.\n");
 				}
 			});
 }
@@ -153,15 +145,12 @@ function programNode(hardwareId, hexData, bios)
 
 	if (!node)
 	{
-		print("Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		print("STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
 		return;
 	}
 
 	hexData = unescape(hexData);
 
-	//print("helo, hexData: " + hexData);
-
-	//var hexData = getFileContents(hexFilename);
 	if (hexData)
 	{
 		var hexLinesOrg = hexData.split('\n');
@@ -179,14 +168,11 @@ function programNode(hardwareId, hexData, bios)
 
 		var hexObj = new IntelHex(hexLines);
 		if (hexObj.isValid()) {
-			//print("hexfile is valid");
-			//for (var i = 0; i < 16; i++) { print(hexObj.getByte(i)+" "); }
-			//print("len: "+hexObj.getLength()+" laddr: "+hexObj.getAddrLower()+" uaddr: "+hexObj.getAddrUpper()+"\n");
 			node.startProgramming(hexObj, programNodeCallback, bios);
 		}
 		else
 		{
-			print("Failed. Invalid hexfile\n");
+			print("STOP: Failed. Invalid hexfile\n");
 		}
 	}
 	else

@@ -149,6 +149,10 @@ CanNode.prototype.programmingTimeout = function()
 		//this will never occur, bios does not send ack for copy command, it just moves data in flash then reset itself
 		this.myProgrammingCallback(true, "ERROR", "Unexpected error 100", false);
 		break;
+	case "DONE":
+		this.stopProgramming(true, "Timeout while waiting for node to start bios");
+		this.reset();
+		break;
 	default:
 		this.myProgrammingCallback(true, "ERROR", "Unexpected error 101, state: " + this.myProgrammingState, false);
 		break;
@@ -362,10 +366,10 @@ CanNode.prototype.handleAck = function(data)
 			break;
 			
 		case "CRC":
+			this.myProgrammingTimeout.setTimeout(6000);
 			//is this a bios programming?
 			if (this.myProgrammingIsBios)
 			{
-				this.myProgrammingTimeout.setTimeout(6000);
 				this.myProgrammingState = "COPY";
 				this.myProgrammingCallback(true, "\nBIOS", "Start to copy bios to new location", false);
 				var canMessage = new CanNMTMessage("nmt", "Pgm_Copy");
