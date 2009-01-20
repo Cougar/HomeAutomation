@@ -98,8 +98,13 @@ function resetNode(hardwareId)
 
 	if (!node)
 	{
-		printTo(ProgrammingClientId, "STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
-		return;
+		//printTo(ProgrammingClientId, "STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		//log("A can node with hardware id " + uint2hex(canMessage.getData("HardwareId"), 32) + " was not found, starting.\n");
+
+		/* As a node with this hardware id has not been seen it could just be that it was started before atom and has no application installed */
+		node = new CanNode(hardwareId, null);
+		CanNodes[hardwareId] = node;
+		//return;
 	}
 	
 	node.reset(	function(status)
@@ -145,8 +150,11 @@ function programNode(hardwareId, hexData, bios)
 
 	if (!node)
 	{
-		print("STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
-		return;
+		//print("STOP: Failed. No node is online that has that hardware id, " + hardwareId + "\n");
+		//return;
+		/* As a node with this hardware id has not been seen it could just be that it was started before atom and has no application installed */
+		node = new CanNode(hardwareId, null);
+		CanNodes[hardwareId] = node;
 	}
 
 	hexData = unescape(hexData);
