@@ -55,9 +55,10 @@ ISR (TIMER1_COMPA_vect)
 
 ISR (act_dimmer230_ZC_PCINT_vect) 
 {
-	//only execute if zerocross pin is low
-	if (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
+	//only execute if zerocross pin is high
+	if ((act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
 	{
+PORTD ^= (1<<PD2);
 		uint16_t newTimerVal = xcTimeDiff;
 
 		//here new timer value is calculated 
@@ -162,6 +163,9 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 
 void act_dimmer230_Init(void)
 {
+DDRD |= (1<<PD2);
+PORTD &= ~(1<<PD2);
+
 	// set dimmer channel1 port to output 0
 	act_dimmer230_CHAN1_PORT &= ~_BV(act_dimmer230_CHAN1_BIT);
 	act_dimmer230_CHAN1_DDR |= _BV(act_dimmer230_CHAN1_BIT);
@@ -172,21 +176,21 @@ void act_dimmer230_Init(void)
 	TIMSK1=0;							//disable timer interrupt
 	TCCR1A=0;
 	
-	//wait for high (ac leaving zero cross)
-	while (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) { }
-	TCCR1B=(1<<CS11);					//enable timer, set to prescaler 8, must be changed if cpu freq is changed
-	//wait for low (ac approaching zero cross)
+	//wait for low (ac leaving zero cross)
 	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
-	uint16_t timeAtFall = TCNT1;	//Timer_GetTicks();
-	//wait for high (ac leaving zero cross)
+	TCCR1B=(1<<CS11);					//enable timer, set to prescaler 8, must be changed if cpu freq is changed
+	//wait for high (ac approaching zero cross)
 	while (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) { }
+	uint16_t timeAtFall = TCNT1;	//Timer_GetTicks();
+	//wait for low (ac leaving zero cross)
+	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
 	uint16_t timeAtRise = TCNT1;	//Timer_GetTicks();
 
 #ifdef MEASURE_PERIOD
-	//wait for low (ac approaching zero cross)
-	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
-	//wait for high (ac leaving zero cross)
+	//wait for high (ac approaching zero cross)
 	while (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) { }
+	//wait for low (ac leaving zero cross)
+	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
 	uint16_t timeAtRise2 = TCNT1;	//Timer_GetTicks();
 	if (timeAtRise < timeAtRise2) {
 		periodTime = timeAtRise2 - timeAtRise;
@@ -201,9 +205,11 @@ void act_dimmer230_Init(void)
 	}
 
 	//setup interrupt on zerocross, pcint
-	PCMSK0=(1<<act_dimmer230_ZC_PCINT_BIT);
+	act_dimmer230_ZC_PCMSK=(1<<act_dimmer230_ZC_PCINT_BIT);
 	PCIFR=(1<<act_dimmer230_ZC_PCIF);	//clear any pending interrupt before enabling interrupts
 	PCICR=(1<<act_dimmer230_ZC_PCIE);	//enable interrupt for PCINT
+
+//PORTD ^= (1<<PD2);
 
 
 	//printf("Hello world!\n");
@@ -212,6 +218,12 @@ void act_dimmer230_Init(void)
 void act_dimmer230_Process(void)
 {
 	///TODO: Stuff that needs doing is done here
+/*if (PIND & (1<<PD7)) {
+	PORTD |= (1<<PD2);
+} else {
+	PORTD &= ~(1<<PD2);
+}*/
+
 }
 
 void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
