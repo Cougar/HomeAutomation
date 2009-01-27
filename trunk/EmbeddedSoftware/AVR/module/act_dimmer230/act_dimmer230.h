@@ -29,6 +29,7 @@
 #define act_dimmer230_ZC_PCINT_vect	PCINT0_vect		//interrupt vector
 #define act_dimmer230_ZC_PCIE		PCIE0			//interrupt enable
 #define act_dimmer230_ZC_PCIF		PCIF0			//interrupt flag
+#define act_dimmer230_ZC_PCMSK		PCMSK0			//mask register
 #define act_dimmer230_ZC_PCINT_BIT	act_dimmer230_ZC_PCINT		//interrupt bit
 #endif
 
@@ -36,6 +37,7 @@
 #define act_dimmer230_ZC_PCINT_vect	PCINT1_vect		//interrupt vector
 #define act_dimmer230_ZC_PCIE		PCIE1			//interrupt enable
 #define act_dimmer230_ZC_PCIF		PCIF1			//interrupt flag
+#define act_dimmer230_ZC_PCMSK		PCMSK1			//mask register
 #define act_dimmer230_ZC_PCINT_BIT	act_dimmer230_ZC_PCINT-8	//interrupt bit
 #endif
 
@@ -43,6 +45,7 @@
 #define act_dimmer230_ZC_PCINT_vect	PCINT2_vect		//interrupt vector
 #define act_dimmer230_ZC_PCIE		PCIE2			//interrupt enable
 #define act_dimmer230_ZC_PCIF		PCIF2			//interrupt flag
+#define act_dimmer230_ZC_PCMSK		PCMSK2			//mask register
 #define act_dimmer230_ZC_PCINT_BIT	act_dimmer230_ZC_PCINT-16	//interrupt bit
 #endif
 
