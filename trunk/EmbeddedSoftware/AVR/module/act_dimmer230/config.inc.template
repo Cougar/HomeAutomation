@@ -11,14 +11,14 @@ act_dimmer230_SYNC=100
 
 #### HW-defines ####
 #io defines for zerocross
-act_dimmer230_ZC_PCINT=1				//port PCINT, numeric 0-23
-act_dimmer230_ZC_PORT=PORTB
-act_dimmer230_ZC_PIN=PINB
-act_dimmer230_ZC_DDR=DDRB
-act_dimmer230_ZC_BIT=PB1
+act_dimmer230_ZC_PCINT=23                               //port PCINT, numeric 0-23
+act_dimmer230_ZC_PORT=PORTD
+act_dimmer230_ZC_PIN=PIND
+act_dimmer230_ZC_DDR=DDRD
+act_dimmer230_ZC_BIT=PD7
 #io defines for dimmer channel 1
-act_dimmer230_CHAN1_PORT=PORTC
-act_dimmer230_CHAN1_DDR=DDRC
-act_dimmer230_CHAN1_BIT=PC4
+act_dimmer230_CHAN1_PORT=PORTD
+act_dimmer230_CHAN1_DDR=DDRD
+act_dimmer230_CHAN1_BIT=PD4
 
 ## End section act_dimmer230 -- Do not edit this line

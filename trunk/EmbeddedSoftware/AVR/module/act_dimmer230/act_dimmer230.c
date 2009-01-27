@@ -204,6 +204,9 @@ void act_dimmer230_Init(void)
 	PCMSK0=(1<<act_dimmer230_ZC_PCINT_BIT);
 	PCIFR=(1<<act_dimmer230_ZC_PCIF);	//clear any pending interrupt before enabling interrupts
 	PCICR=(1<<act_dimmer230_ZC_PCIE);	//enable interrupt for PCINT
+
+
+	//printf("Hello world!\n");
 }
 
 void act_dimmer230_Process(void)
