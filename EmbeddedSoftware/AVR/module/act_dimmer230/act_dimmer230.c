@@ -42,7 +42,7 @@ void Send_Status_callback(uint8_t timer)
 	txMsg.Header.ModuleId = act_dimmer230_ID;
 	txMsg.Header.Command = CAN_MODULE_CMD_DIMMER230_NETINFO;
 	txMsg.Length = 1;
-	txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<6);
+	txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<5);
 	StdCan_Put(&txMsg);
 }
 
