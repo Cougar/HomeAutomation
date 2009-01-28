@@ -189,5 +189,30 @@
 			12332 : 'UNKNOWN5', 
 			8239 : 'UNKNOWN6'
 		}
+	},
+	{
+		name : 'Logitech_Z5500_Remote', 
+		protocol : 'NEC', 
+		brand : 'Logitech', 
+		model : 'z-5500', 
+		codes : 
+		{
+			4010866440 : 'POWER', 
+			4194694920 : 'TEST', 
+			4111136520 : 'DIRECT', 
+			4094424840 : 'OPTICAL', 
+			4077713160 : 'COAX', 
+			3793614600 : 'EFFECT', 
+			3760191240 : 'SETTINGS', 
+			4278253320 : 'SURR_VOL_UP', 
+			4211406600 : 'SURR_VOL_DOWN', 
+			4244829960 : 'CENTER_VOL_UP', 
+			4177983240 : 'CENTER_VOL_DOWN', 
+			4228118280 : 'SUB_VOL_UP',
+			4261541640 : 'SUB_VOL_DOWN', 
+			3843749640 : 'VOLUME_UP', 
+			4044289800 : 'VOLUME_DOWN', 
+			3910596360 : 'MUTE'
+		}
 	}
 ]}
