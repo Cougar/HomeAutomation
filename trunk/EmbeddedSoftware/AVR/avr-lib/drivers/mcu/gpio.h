@@ -68,5 +68,56 @@ HAL_ASSIGN_PIN(EXP_Q, C, 7);
 // the macros for the manipulation by EXP_R
 HAL_ASSIGN_PIN(EXP_R, C, 7);
 
+// the macros for the manipulation by PORTB BIT0
+HAL_ASSIGN_PIN(GPIO_B0, B, 0);
+// the macros for the manipulation by PORTB BIT1
+HAL_ASSIGN_PIN(GPIO_B1, B, 1);
+// the macros for the manipulation by PORTB BIT2
+HAL_ASSIGN_PIN(GPIO_B2, B, 2);
+// the macros for the manipulation by PORTB BIT3	bit 3-5 are spi communication with mcp2515
+//HAL_ASSIGN_PIN(GPIO_B3, B, 3);
+// the macros for the manipulation by PORTB BIT4
+//HAL_ASSIGN_PIN(GPIO_B4, B, 4);
+// the macros for the manipulation by PORTB BIT5
+//HAL_ASSIGN_PIN(GPIO_B5, B, 5);
+// the macros for the manipulation by PORTB BIT6	bit 6 is external clock from mcp2515
+//HAL_ASSIGN_PIN(GPIO_B6, B, 6);
+// the macros for the manipulation by PORTB BIT7
+HAL_ASSIGN_PIN(GPIO_B7, B, 7);
+
+// the macros for the manipulation by PORTD BIT0
+HAL_ASSIGN_PIN(GPIO_D0, D, 0);
+// the macros for the manipulation by PORTD BIT1
+HAL_ASSIGN_PIN(GPIO_D1, D, 1);
+// the macros for the manipulation by PORTD BIT2
+HAL_ASSIGN_PIN(GPIO_D2, D, 2);
+// the macros for the manipulation by PORTD BIT3	bit 3 is interrup from mcp2515
+//HAL_ASSIGN_PIN(GPIO_D3, D, 3);
+// the macros for the manipulation by PORTD BIT4
+HAL_ASSIGN_PIN(GPIO_D4, D, 4);
+// the macros for the manipulation by PORTD BIT5
+HAL_ASSIGN_PIN(GPIO_D5, D, 5);
+// the macros for the manipulation by PORTD BIT6
+HAL_ASSIGN_PIN(GPIO_D6, D, 6);
+// the macros for the manipulation by PORTD BIT7
+HAL_ASSIGN_PIN(GPIO_D7, D, 7);
+
+// the macros for the manipulation by PORTC BIT0
+HAL_ASSIGN_PIN(GPIO_C0, C, 0);
+// the macros for the manipulation by PORTC BIT1
+HAL_ASSIGN_PIN(GPIO_C1, C, 1);
+// the macros for the manipulation by PORTC BIT2
+HAL_ASSIGN_PIN(GPIO_C2, C, 2);
+// the macros for the manipulation by PORTC BIT3	bit 3 is cs on corecard but could be used on nodes
+HAL_ASSIGN_PIN(GPIO_C3, C, 3);
+// the macros for the manipulation by PORTC BIT4
+HAL_ASSIGN_PIN(GPIO_C4, C, 4);
+// the macros for the manipulation by PORTC BIT5
+HAL_ASSIGN_PIN(GPIO_C5, C, 5);
+// the macros for the manipulation by PORTC BIT6	bit 6 is reset
+//HAL_ASSIGN_PIN(GPIO_C6, C, 6);
+
+
+
 #endif
 //eof gpio.h
