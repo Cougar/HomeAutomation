@@ -257,39 +257,51 @@
       </variables>
     </command>
     
-    <command id="128" name="Demo" type="specific" module="Dimmer230" description="">
+    <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps/2, then to x-steps/2 and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
      <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
         <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     
-    <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="">
+    <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
      <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
         <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
-    <command id="130" name="Stop_Fade" type="specific" module="Dimmer230" description="">
+    <command id="130" name="Stop_Fade" type="specific" module="Dimmer230" description="If a fade is in progress, then stop">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
-    <command id="131" name="Abs_Fade" type="specific" module="Dimmer230" description="">
+    <command id="131" name="Abs_Fade" type="specific" module="Dimmer230" description="Fade to a defined value, stops when another command is received">
      <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
         <variable name="EndValue" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
-    <command id="132" name="Rel_Fade" type="specific" module="Dimmer230" description="">
+    <command id="132" name="Rel_Fade" type="specific" module="Dimmer230" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
      <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+		    <value id="0" name="Decrease"/>
+		    <value id="1" name="Increase"/>
+	    </variable>
+        <variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description="Number of steps to fade"/>
+      </variables>
+    </command>
+    <command id="133" name="Netinfo" type="specific" module="Dimmer230" description="Information about the connected net power">
+     <variables>
+        <variable name="Connection" type="enum" start_bit="0" bit_length="1" unit="" description="If the dimmer is connected to net power">
+		    <value id="0" name="Disconnected"/>
+		    <value id="1" name="Connected"/>
+		</variable>
+        <variable name="Frequency" type="float" start_bit="8" bit_length="16" unit="" description="Measured frequency of the net power"/>
       </variables>
     </command>
   </commands>
