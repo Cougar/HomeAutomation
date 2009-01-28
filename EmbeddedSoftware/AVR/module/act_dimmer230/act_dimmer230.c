@@ -1,31 +1,24 @@
 
 #include "act_dimmer230.h"
 
-//#define USEDEMO
 
-int8_t fadeSpeedCh1 = 0;
-uint8_t fadeSpeedFracCh1 = 0;
-uint8_t fadeTargetCh1 = 0;
-uint8_t fadeSpeedCntCh1 = 0;
+int8_t fadeSpeed = 0;
+uint8_t fadeSpeedFrac = 0;
+uint8_t fadeTarget = 0;
+uint8_t fadeSpeedCnt = 0;
 
-#ifdef USEDEMO
-uint8_t demo = 0;
-//uint8_t demo = 2;	//demo one way
-//uint8_t demo = 3;	//disable demo 
-uint8_t democnt = 0;
-#define DEMOSTEPS 2
-#define DEMOSTEPS2 1
-#endif
+uint8_t demoEndValue = 0;
+uint8_t demoHighValue = 0;
+uint8_t demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 
-//#define MEASURE_PERIOD
-#ifdef MEASURE_PERIOD
-uint16_t periodTime = 0;
-			//measured during init (by taking the time difference between two zero cross)
-			//not used, bad idea, the powerStepTable below asumes 10000
-#endif
+uint8_t netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_DISCONNECTED;
+
+uint8_t frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_ERROR_UNKNOWN;	
+			//don't calculate net frequency since the internal oscillator is not to be trusted, instead check if 50Hz or 60Hz system
+			//should be used for switching powerStepTable depending on frequency
 uint16_t xcTimeDiff=0;
 			//zero cross sync (time between pos flank of xc-detection and real zero cross)
-uint8_t dimmerValueCh1 = 0;
+uint8_t dimmerValue = ACT_DIMMMER230_MIN_DIM;
 			//store in eeprom later
 			//value of 0 is zero output, value of 255 is max output (ACT_DIMMMER230_MIN_DIM, ACT_DIMMMER230_MAX_DIM)
 uint8_t state = ACT_DIMMMER230_STATE_IDLE;
@@ -34,6 +27,24 @@ const uint16_t powerStepTable[] PROGMEM = {845, 1068, 1225, 1352, 1459, 1553, 16
 #if act_dimmer230_SYNC>0
 uint8_t zeroCrossCnt = 0;
 #endif
+
+void Net_Connection_callback(uint8_t timer)
+{
+	netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_DISCONNECTED;
+}
+
+void Send_Status_callback(uint8_t timer)
+{
+	StdCan_Msg_t txMsg;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_DIMMER230;
+	txMsg.Header.ModuleId = act_dimmer230_ID;
+	txMsg.Header.Command = CAN_MODULE_CMD_DIMMER230_NETINFO;
+	txMsg.Length = 1;
+	txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<6);
+	StdCan_Put(&txMsg);
+}
 
 ISR (TIMER1_COMPA_vect) 
 {
@@ -55,35 +66,83 @@ ISR (TIMER1_COMPA_vect)
 
 ISR (act_dimmer230_ZC_PCINT_vect) 
 {
-	//only execute if zerocross pin is high
-	if ((act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
+	//only execute if zerocross pin is low (after real zerocross)
+	if (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
 	{
-PORTD ^= (1<<PD2);
+		xcTimeDiff = TCNT1;
+		xcTimeDiff = xcTimeDiff >> 1; //divide by two
+		if (xcTimeDiff > 600) {
+			xcTimeDiff = 600;
+		}
+	}	
+	//only execute if zerocross pin is high (before real zerocross)
+	else if ((act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
+	{
+
+		Timer_SetTimeout(act_dimmer230_NET_CONNECT_TIMEOUT, 500, TimerTypeOneShot, &Net_Connection_callback);
+		netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_CONNECTED;
+		
+		/* check frequency */
+		uint16_t periodTime = TCNT1;
+		if (periodTime > ACT_DIMMMER230_50HZ_PERIOD_TIME-ACT_DIMMMER230_50HZ_PERIOD_TIME/10 && periodTime < ACT_DIMMMER230_50HZ_PERIOD_TIME+ACT_DIMMMER230_50HZ_PERIOD_TIME/10)
+		{
+			frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_50HZ;
+		}
+		else if (periodTime > ACT_DIMMMER230_60HZ_PERIOD_TIME-ACT_DIMMMER230_60HZ_PERIOD_TIME/10 && periodTime < ACT_DIMMMER230_60HZ_PERIOD_TIME+ACT_DIMMMER230_60HZ_PERIOD_TIME/10)
+		{
+			frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_60HZ;
+		}
+		else
+		{
+			frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_ERROR_UNKNOWN;
+		}
+		
+		/* check demo states */
+		if (dimmerValue == fadeTarget) {
+			switch (demoState)
+			{
+			case ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING:
+			break;
+			case ACT_DIMMMER230_DEMO_STATE_DECREASE:
+				demoState = ACT_DIMMMER230_DEMO_STATE_INCREASE;
+				fadeTarget = demoHighValue;
+				fadeSpeed = -fadeSpeed;
+			break;
+			case ACT_DIMMMER230_DEMO_STATE_INCREASE:
+				demoState = ACT_DIMMMER230_DEMO_STATE_GOBACK;
+				fadeTarget = demoEndValue;
+				fadeSpeed = -fadeSpeed;
+			break;
+			case ACT_DIMMMER230_DEMO_STATE_GOBACK:
+				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
+			break;
+			}
+		}
+		
+		/* calculate new time to triac triggering */
 		uint16_t newTimerVal = xcTimeDiff;
 
-		//here new timer value is calculated 
-
-		if (dimmerValueCh1 > 0 && dimmerValueCh1 <= 127)
+		if (dimmerValue > 0 && dimmerValue <= 127)
 		{
-			newTimerVal += ACT_DIMMMER230_PERIOD_TIME - pgm_read_word(&powerStepTable[dimmerValueCh1-1]);
+			newTimerVal += ACT_DIMMMER230_50HZ_PERIOD_TIME - pgm_read_word(&powerStepTable[dimmerValue-1]);
 		} 
-		else if (dimmerValueCh1 < 255)
+		else if (dimmerValue < 255)
 		{
-			newTimerVal += pgm_read_word(&powerStepTable[254-dimmerValueCh1]);
+			newTimerVal += pgm_read_word(&powerStepTable[254-dimmerValue]);
 		} 
-		else if (dimmerValueCh1 == 255)
+		else if (dimmerValue == 255)
 		{
 			newTimerVal += 100;	//almost max, to make sure we don't fire before zerocross
 		}
 		
-		if (newTimerVal > ACT_DIMMMER230_PERIOD_TIME)
+		if (newTimerVal > ACT_DIMMMER230_50HZ_PERIOD_TIME)
 		{
-			newTimerVal -= ACT_DIMMMER230_PERIOD_TIME;
+			newTimerVal -= ACT_DIMMMER230_50HZ_PERIOD_TIME;
 		}
 
-		if (dimmerValueCh1 > 0) 
+		TCNT1 = 0;				//reset timer1 count register
+		if (dimmerValue > 0) 
 		{
-			TCNT1 = 0;				//reset timer1 count register
 			OCR1A = newTimerVal;
 
 			//enable timer and timer interrupt
@@ -93,20 +152,18 @@ PORTD ^= (1<<PD2);
 			state = ACT_DIMMMER230_STATE_TIMER_ON;
 		}
 		
-		fadeSpeedCntCh1++;
-		if (fadeSpeedCntCh1 == fadeSpeedFracCh1) 
+		fadeSpeedCnt++;
+		if (fadeSpeedCnt == fadeSpeedFrac && dimmerValue != fadeTarget) 
 		{
-			fadeSpeedCntCh1 = 0;
-			uint8_t tempDimVal = dimmerValueCh1;
-			dimmerValueCh1 += fadeSpeedCh1;
-			if ((fadeSpeedCh1 > 0 && (dimmerValueCh1 < tempDimVal || dimmerValueCh1 >= fadeTargetCh1)) || 
-				(fadeSpeedCh1 < 0 && (dimmerValueCh1 > tempDimVal || dimmerValueCh1 <= fadeTargetCh1))) 
+			fadeSpeedCnt = 0;
+			uint8_t tempDimVal = dimmerValue;
+			dimmerValue += fadeSpeed;
+			if ((fadeSpeed > 0 && (dimmerValue < tempDimVal || dimmerValue >= fadeTarget)) || 
+				(fadeSpeed < 0 && (dimmerValue > tempDimVal || dimmerValue <= fadeTarget))) 
 			{
-				dimmerValueCh1 = fadeTargetCh1;
-				fadeSpeedCh1 = 0;
+				dimmerValue = fadeTarget;
 			}
 		}
-		
 		
 #if act_dimmer230_SYNC>0
 		zeroCrossCnt++;
@@ -115,57 +172,25 @@ PORTD ^= (1<<PD2);
 			zeroCrossCnt = 0;
 			//TODO: send sync-message on can
 
-			StdCan_Msg_t txMsg;
+			/*StdCan_Msg_t txMsg;
 			txMsg.Length = 6;
 			txMsg.Data[0] = (newTimerVal>>8)&0xff;
 			txMsg.Data[1] = newTimerVal&0xff;
-			//txMsg.Data[2] = (periodTime>>8)&0xff;
+			txMsg.Data[2] = frequency;	//(periodTime>>8)&0xff;
 			//txMsg.Data[3] = periodTime&0xff;
 			txMsg.Data[4] = (xcTimeDiff>>8)&0xff;
 			txMsg.Data[5] = xcTimeDiff&0xff;
-			StdCan_Put(&txMsg);
-
-#ifdef USEDEMO
-			if (demo == 0 || demo == 2) {
-				democnt++;
-				if (democnt==DEMOSTEPS)
-				{
-					democnt = 0;
-					uint8_t tempDim=dimmerValueCh1;
-					dimmerValueCh1+=DEMOSTEPS2;
-					if (dimmerValueCh1<tempDim && demo == 0) {
-						dimmerValueCh1=ACT_DIMMMER230_MAX_DIM;
-					}
-				}
-				if (dimmerValueCh1 == ACT_DIMMMER230_MAX_DIM && demo == 0) {
-					demo = 1;
-				}
-			} else if (demo == 1) {
-				democnt++;
-				if (democnt==DEMOSTEPS)
-				{
-					democnt = 0;
-					uint8_t tempDim=dimmerValueCh1;
-					dimmerValueCh1-=DEMOSTEPS2;
-					if (dimmerValueCh1>tempDim) {
-						dimmerValueCh1=ACT_DIMMMER230_MIN_DIM;
-					}
-				}
-				if (dimmerValueCh1 == ACT_DIMMMER230_MIN_DIM) {
-					demo = 0;
-				}
-			}
-#endif //USEDEMO
+			StdCan_Put(&txMsg); */
 		}
 #endif		
 	}
+
+//lastDimmerValue = dimmerValue;
+//timerValue = TCNT1;
 }
 
 void act_dimmer230_Init(void)
 {
-DDRD |= (1<<PD2);
-PORTD &= ~(1<<PD2);
-
 	// set dimmer channel1 port to output 0
 	act_dimmer230_CHAN1_PORT &= ~_BV(act_dimmer230_CHAN1_BIT);
 	act_dimmer230_CHAN1_DDR |= _BV(act_dimmer230_CHAN1_BIT);
@@ -176,53 +201,19 @@ PORTD &= ~(1<<PD2);
 	TIMSK1=0;							//disable timer interrupt
 	TCCR1A=0;
 	
-	//wait for low (ac leaving zero cross)
-	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
 	TCCR1B=(1<<CS11);					//enable timer, set to prescaler 8, must be changed if cpu freq is changed
-	//wait for high (ac approaching zero cross)
-	while (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) { }
-	uint16_t timeAtFall = TCNT1;	//Timer_GetTicks();
-	//wait for low (ac leaving zero cross)
-	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
-	uint16_t timeAtRise = TCNT1;	//Timer_GetTicks();
-
-#ifdef MEASURE_PERIOD
-	//wait for high (ac approaching zero cross)
-	while (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) { }
-	//wait for low (ac leaving zero cross)
-	while (act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT)) { }
-	uint16_t timeAtRise2 = TCNT1;	//Timer_GetTicks();
-	if (timeAtRise < timeAtRise2) {
-		periodTime = timeAtRise2 - timeAtRise;
-	}
-#endif
-
-	// warning, watch out for wrap around on timestamps (something is broken if wrapped)
-	if (timeAtFall < timeAtRise) {
-		//calculate time from falling edge to ac zero cross value
-		xcTimeDiff = timeAtRise-timeAtFall;
-		xcTimeDiff = xcTimeDiff >> 1; //divide by two
-	}
 
 	//setup interrupt on zerocross, pcint
-	act_dimmer230_ZC_PCMSK=(1<<act_dimmer230_ZC_PCINT_BIT);
+	act_dimmer230_ZC_PCMSK=(1<<(act_dimmer230_ZC_PCINT_BIT));
 	PCIFR=(1<<act_dimmer230_ZC_PCIF);	//clear any pending interrupt before enabling interrupts
 	PCICR=(1<<act_dimmer230_ZC_PCIE);	//enable interrupt for PCINT
 
-//PORTD ^= (1<<PD2);
-
-
-	//printf("Hello world!\n");
+	Timer_SetTimeout(act_dimmer230_SEND_STATUS_TIMEOUT, act_dimmer230_SEND_STATUS_INTERVAL*1000, TimerTypeFreeRunning, &Send_Status_callback);
 }
 
 void act_dimmer230_Process(void)
 {
 	///TODO: Stuff that needs doing is done here
-/*if (PIND & (1<<PD7)) {
-	PORTD |= (1<<PD2);
-} else {
-	PORTD &= ~(1<<PD2);
-}*/
 
 }
 
@@ -237,18 +228,62 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 		{
 		case CAN_MODULE_CMD_DIMMER230_DEMO:		// Demo(channel, speed, steps)
 			if (rxMsg->Length == 3) {
+				uint8_t channel = rxMsg->Data[0];
+				uint8_t speed = rxMsg->Data[1];
+				uint8_t steps = rxMsg->Data[2];
 				
+				if (speed == 0) {
+					//do nothing
+				} else {
+					uint8_t diffToMin = dimmerValue - ACT_DIMMMER230_MIN_DIM;
+					uint8_t diffToMax = ACT_DIMMMER230_MAX_DIM - dimmerValue;
+				
+					demoEndValue = dimmerValue;
+					if (diffToMin >= steps && diffToMax >= steps)
+					{
+						//not close to min or max
+						fadeTarget = dimmerValue - steps;
+						demoHighValue = dimmerValue + steps;
+					}
+					else if (diffToMin >= steps)
+					{
+						//close to max
+						fadeTarget = dimmerValue - steps - diffToMax;
+						demoHighValue = ACT_DIMMMER230_MAX_DIM;
+					}
+					else if (diffToMax >= steps)
+					{
+						//close to min
+						fadeTarget = ACT_DIMMMER230_MIN_DIM;
+						demoHighValue = dimmerValue + steps + diffToMin;
+					}
+					demoState = ACT_DIMMMER230_DEMO_STATE_DECREASE;
+				
+					if (fadeTarget != dimmerValue) {
+						if ((speed&0x80) == 0) {
+							fadeSpeed = speed&0x7f;
+							fadeSpeedFrac = 1;
+						} else {
+							fadeSpeed = 1;
+							fadeSpeedFrac = speed&0x7f;
+						}
+						if (fadeTarget < dimmerValue) {
+							fadeSpeed = -fadeSpeed;
+						}
+					}
+				}
 			}
 		break;
 		
-		case CAN_MODULE_CMD_DIMMER230_START_FADE:	// StartFade(channel, speed, direction), just an alias of ABS_FADE
+		case CAN_MODULE_CMD_DIMMER230_START_FADE:	// StartFade(channel, speed, direction), just an alias of AbsFade
 			if (rxMsg->Length == 3) {
+				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				
-				fadeSpeedCntCh1 = 0;
-				fadeSpeedCh1 = 0;
+				fadeSpeedCnt = 0;
+				fadeSpeed = 0;
 				uint8_t endValue = 0;
 				if (direction == 1) {
 					endValue = ACT_DIMMMER230_MAX_DIM;
@@ -257,19 +292,19 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 					
 				if (speed == 0) {
-					dimmerValueCh1 = endValue;	//set dimmer value immediately
+					dimmerValue = endValue;	//set dimmer value immediately
 				} else {
-					fadeTargetCh1 = endValue;
-					if (fadeTargetCh1 != dimmerValueCh1) {
+					fadeTarget = endValue;
+					if (fadeTarget != dimmerValue) {
 						if ((speed&0x80) == 0) {
-							fadeSpeedCh1 = speed&0x7f;
-							fadeSpeedFracCh1 = 1;
+							fadeSpeed = speed&0x7f;
+							fadeSpeedFrac = 1;
 						} else {
-							fadeSpeedCh1 = 1;
-							fadeSpeedFracCh1 = speed&0x7f;
+							fadeSpeed = 1;
+							fadeSpeedFrac = speed&0x7f;
 						}
-						if (fadeTargetCh1 < dimmerValueCh1) {
-							fadeSpeedCh1 = -fadeSpeedCh1;
+						if (fadeTarget < dimmerValue) {
+							fadeSpeed = -fadeSpeed;
 						}
 					}
 				}
@@ -278,32 +313,34 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_DIMMER230_STOP_FADE:	// StopFade(channel)
 			if (rxMsg->Length == 1) {
-				fadeSpeedCh1 = 0;
+				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
+				fadeSpeed = 0;
 			}
 		break;
 
 		case CAN_MODULE_CMD_DIMMER230_ABS_FADE:	// AbsFade(channel, speed, endValue)
 			if (rxMsg->Length == 3) {
+				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t endValue = rxMsg->Data[2];
 
-				fadeSpeedCntCh1 = 0;
-				fadeSpeedCh1 = 0;
+				fadeSpeedCnt = 0;
+				fadeSpeed = 0;
 				if (speed == 0) {
-					dimmerValueCh1 = endValue;	//set dimmer value immediately
+					dimmerValue = endValue;	//set dimmer value immediately
 				} else {
-					fadeTargetCh1 = endValue;
-					if (fadeTargetCh1 != dimmerValueCh1) {
+					fadeTarget = endValue;
+					if (fadeTarget != dimmerValue) {
 						if ((speed&0x80) == 0) {
-							fadeSpeedCh1 = speed&0x7f;
-							fadeSpeedFracCh1 = 1;
+							fadeSpeed = speed&0x7f;
+							fadeSpeedFrac = 1;
 						} else {
-							fadeSpeedCh1 = 1;
-							fadeSpeedFracCh1 = speed&0x7f;
+							fadeSpeed = 1;
+							fadeSpeedFrac = speed&0x7f;
 						}
-						if (fadeTargetCh1 < dimmerValueCh1) {
-							fadeSpeedCh1 = -fadeSpeedCh1;
+						if (fadeTarget < dimmerValue) {
+							fadeSpeed = -fadeSpeed;
 						}
 					}
 				}
@@ -312,15 +349,16 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_DIMMER230_REL_FADE:	// RelFade(channel, speed, direction, steps)
 			if (rxMsg->Length == 4) {
+				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 				uint8_t channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				uint8_t steps = rxMsg->Data[3];
 				
-				fadeSpeedCntCh1 = 0;
-				fadeSpeedCh1 = 0;
-				uint8_t tempDimVal = dimmerValueCh1;
-				uint8_t tempDimVal2 = dimmerValueCh1;
+				fadeSpeedCnt = 0;
+				fadeSpeed = 0;
+				uint8_t tempDimVal = dimmerValue;
+				uint8_t tempDimVal2 = dimmerValue;
 				if (direction == 1) {					//if increase
 					tempDimVal2 += steps;				//calculate new value
 					if (tempDimVal2 < tempDimVal) {		//make overflow test
@@ -333,24 +371,23 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 					}
 				}
 				if (speed == 0) {
-					dimmerValueCh1 = tempDimVal2;		//set dimmer value immediately
+					dimmerValue = tempDimVal2;		//set dimmer value immediately
 				} else {
-					fadeTargetCh1 = tempDimVal2;		//set the fade target
+					fadeTarget = tempDimVal2;		//set the fade target
 					
-					if (fadeTargetCh1 != dimmerValueCh1) {
+					if (fadeTarget != dimmerValue) {
 						if ((speed&0x80) == 0) {
-							fadeSpeedCh1 = speed&0x7f;
-							fadeSpeedFracCh1 = 1;
+							fadeSpeed = speed&0x7f;
+							fadeSpeedFrac = 1;
 						} else {
-							fadeSpeedCh1 = 1;
-							fadeSpeedFracCh1 = speed&0x7f;
+							fadeSpeed = 1;
+							fadeSpeedFrac = speed&0x7f;
 						}
-						if (fadeTargetCh1 < dimmerValueCh1) {
-							fadeSpeedCh1 = -fadeSpeedCh1;
+						if (fadeTarget < dimmerValue) {
+							fadeSpeed = -fadeSpeed;
 						}
 					}
 				}
-				
 			}
 		break;
 }

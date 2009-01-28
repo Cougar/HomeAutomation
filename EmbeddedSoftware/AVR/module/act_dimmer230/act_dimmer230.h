@@ -14,16 +14,24 @@
 #include <bios.h>
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
+#include <drivers/mcu/gpio.h>
 
 #define ACT_DIMMMER230_STATE_IDLE			0
 #define ACT_DIMMMER230_STATE_TIMER_ON		1
 #define ACT_DIMMMER230_STATE_xyz			2
+
+#define ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING	0
+#define ACT_DIMMMER230_DEMO_STATE_DECREASE		1
+#define ACT_DIMMMER230_DEMO_STATE_INCREASE		2
+#define ACT_DIMMMER230_DEMO_STATE_GOBACK		3
 
 #define ACT_DIMMMER230_PERIOD_TIME			10000
 
 #define ACT_DIMMMER230_MAX_DIM				255
 #define ACT_DIMMMER230_MIN_DIM				0
 
+#define ACT_DIMMMER230_50HZ_PERIOD_TIME		10000
+#define ACT_DIMMMER230_60HZ_PERIOD_TIME		8000
 
 #if act_dimmer230_ZC_PCINT<8
 #define act_dimmer230_ZC_PCINT_vect	PCINT0_vect		//interrupt vector
