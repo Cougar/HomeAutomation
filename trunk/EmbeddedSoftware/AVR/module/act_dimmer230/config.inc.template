@@ -1,13 +1,15 @@
 ## Section act_dimmer230 -- Do not edit this line
 
 act_dimmer230_ID=<ID>
-#act_dimmer230_DUMMY=1
-#act_dimmer230_DUMMY_TIMER=<TIMER>
+act_dimmer230_NET_CONNECT_TIMEOUT=<TIMER>
+act_dimmer230_SEND_STATUS_TIMEOUT=<TIMER>
 
 # send sync message on can, value defines how many 10ms-pulses to count
-# set to 0 if not used
+# set to 0 if not used, 100 equals one message per second
 act_dimmer230_SYNC=100
 
+#report interval in secons
+act_dimmer230_SEND_STATUS_INTERVAL=5	
 
 #### HW-defines ####
 #io defines for zerocross
