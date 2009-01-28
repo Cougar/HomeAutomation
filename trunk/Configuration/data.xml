@@ -257,7 +257,7 @@
       </variables>
     </command>
     
-    <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps/2, then to x-steps/2 and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
+    <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
         <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
@@ -301,7 +301,11 @@
 		    <value id="0" name="Disconnected"/>
 		    <value id="1" name="Connected"/>
 		</variable>
-        <variable name="Frequency" type="float" start_bit="8" bit_length="16" unit="" description="Measured frequency of the net power"/>
+        <variable name="Frequency" type="enum" start_bit="1" bit_length="2" unit="" description="Frequency of the net power">
+		    <value id="0" name="Error_Unknown"/>
+		    <value id="1" name="50Hz"/>
+		    <value id="2" name="60Hz"/>
+		</variable>
       </variables>
     </command>
   </commands>
