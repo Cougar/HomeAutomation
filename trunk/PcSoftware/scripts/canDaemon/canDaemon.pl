@@ -274,6 +274,15 @@ sub udpServerInit {
     	or die "socket: $@";
 	
 	#här ska keep-alive/start-paket skickas till ipt enligt commandline-arg
+	#just nu skickas bara ett initialiseringspaket
+	my $retstring;
+	&stringToc2s("PKT 00000000 1 0", $retstring);
+        if ($retstring) {
+		### Send data ###
+		if (length($hardwareSendFunction) > 0) {
+			&{$hardwareSendFunction}($retstring);
+		}
+	}
 
 	### create a connection between the hardware and the tcp-server ###
 	&hardwareConnInit;
