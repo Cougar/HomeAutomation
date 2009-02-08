@@ -3,6 +3,8 @@
 act_dimmer230_ID=<ID>
 act_dimmer230_NET_CONNECT_TIMEOUT=<TIMER>
 act_dimmer230_SEND_STATUS_TIMEOUT=<TIMER>
+act_dimmer230_STORE_VALUE_TIMEOUT=<TIMER>
+act_dimmer230_USEEEPROM=1
 
 # send sync message on can, value defines how many 10ms-pulses to count
 # set to 0 if not used, 100 equals one message per second
