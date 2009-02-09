@@ -65,7 +65,7 @@ void Send_Status_callback(uint8_t timer)
 /*	When the timer reaches its compare value the triac should be trigged */
 ISR (TIMER1_COMPA_vect) 
 {
-	act_dimmer230_CHAN1_PORT |= _BV(act_dimmer230_CHAN1_BIT);
+	gpio_set_pin(act_dimmer230_CHAN1_IO);
 	uint8_t dummycnt = 40;
 	while (dummycnt > 0) 
 	{
@@ -73,7 +73,7 @@ ISR (TIMER1_COMPA_vect)
 		asm("nop");
 		asm("nop");
 	}
-	act_dimmer230_CHAN1_PORT &= ~_BV(act_dimmer230_CHAN1_BIT);			
+	gpio_clr_pin(act_dimmer230_CHAN1_IO);
 	
 	TIMSK1=0;							//disable timer interrupt
 	state = ACT_DIMMMER230_STATE_IDLE;
@@ -88,7 +88,7 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 	/* only execute if zerocross pin is low (after real zerocross). 
 	Calculate the diff from real zero-cross.
 	*/
-	if (!(act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
+	if (!gpio_get_state(act_dimmer230_ZC_IO)) 
 	{
 		xcTimeDiff = TCNT1;
 		xcTimeDiff = xcTimeDiff >> 1; //divide by two
@@ -97,7 +97,7 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 		}
 	}	
 	/* only execute if zerocross pin is high (before real zerocross) */
-	else if ((act_dimmer230_ZC_PIN&(1<<act_dimmer230_ZC_BIT))) 
+	else
 	{
 		/* Reset the timer for checking net connection. If no zero-cross has come in 500ms then consider us disconnected */
 		Timer_SetTimeout(act_dimmer230_NET_CONNECT_TIMEOUT, 500, TimerTypeOneShot, &Net_Connection_callback);
@@ -244,11 +244,11 @@ void act_dimmer230_Init(void)
 #endif  
 
 	/* set dimmer port to output 0 */
-	act_dimmer230_CHAN1_PORT &= ~_BV(act_dimmer230_CHAN1_BIT);
-	act_dimmer230_CHAN1_DDR |= _BV(act_dimmer230_CHAN1_BIT);
+	gpio_clr_pin(act_dimmer230_CHAN1_IO);
+	gpio_set_out(act_dimmer230_CHAN1_IO);
 	/* set zero cross detection port to input, no pullup */
-	act_dimmer230_ZC_PORT &= ~_BV(act_dimmer230_ZC_BIT);
-	act_dimmer230_ZC_DDR &= ~_BV(act_dimmer230_ZC_BIT);
+	gpio_set_in(act_dimmer230_ZC_IO);
+	gpio_clr_pullup(act_dimmer230_ZC_IO);
 	
 	TIMSK1=0;							/* disable timer interrupt */
 	TCCR1A=0;
