@@ -35,32 +35,19 @@
 volatile GrLcdStateType GrLcdState;
 
 void SetControls(uint8_t RS, uint8_t RW){
-	if(RS) {gpio_set_pin(LCD_CONTROL_RS);} else {gpio_clr_pin(LCD_CONTROL_RS);};
-	if(RW) {gpio_set_pin(LCD_CONTROL_RW);} else {gpio_clr_pin(LCD_CONTROL_RW);};
-	
-	//if(RS) {LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_RS);} else { LCD_CONTROL_PORT &= ~(1<<LCD_CONTROL_PIN_RS);};
-	//if(RW) {LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_RW);} else { LCD_CONTROL_PORT &= ~(1<<LCD_CONTROL_PIN_RW);};
+	if(RS) {gpio_set_pin(LCD_CONTROL_RS);} else {gpio_clr_pin(LCD_CONTROL_RS);}
+	if(RW) {gpio_set_pin(LCD_CONTROL_RW);} else {gpio_clr_pin(LCD_CONTROL_RW);}
 }
 
 void SetData(uint8_t Data){
-	if(Data&0x01) {gpio_set_pin(LCD_DATA_DB0);} else {gpio_clr_pin(LCD_DATA_DB0);};
-	if(Data&0x02) {gpio_set_pin(LCD_DATA_DB1);} else {gpio_clr_pin(LCD_DATA_DB1);};
-	if(Data&0x04) {gpio_set_pin(LCD_DATA_DB2);} else {gpio_clr_pin(LCD_DATA_DB2);};
-	if(Data&0x08) {gpio_set_pin(LCD_DATA_DB3);} else {gpio_clr_pin(LCD_DATA_DB3);};
-	if(Data&0x10) {gpio_set_pin(LCD_DATA_DB4);} else {gpio_clr_pin(LCD_DATA_DB4);};
-	if(Data&0x20) {gpio_set_pin(LCD_DATA_DB5);} else {gpio_clr_pin(LCD_DATA_DB5);};
-	if(Data&0x40) {gpio_set_pin(LCD_DATA_DB6);} else {gpio_clr_pin(LCD_DATA_DB6);};
-	if(Data&0x80) {gpio_set_pin(LCD_DATA_DB7);} else {gpio_clr_pin(LCD_DATA_DB7);};
-/*    
-	if(Data&0x01) {LCD_DATA_PORT_DB0 |= (1<<LCD_DATA_PIN_DB0);} else { LCD_DATA_PORT_DB0 &= ~(1<<LCD_DATA_PIN_DB0);};
-	if(Data&0x02) {LCD_DATA_PORT_DB1 |= (1<<LCD_DATA_PIN_DB1);} else { LCD_DATA_PORT_DB1 &= ~(1<<LCD_DATA_PIN_DB1);};
-	if(Data&0x04) {LCD_DATA_PORT_DB2 |= (1<<LCD_DATA_PIN_DB2);} else { LCD_DATA_PORT_DB2 &= ~(1<<LCD_DATA_PIN_DB2);};
-	if(Data&0x08) {LCD_DATA_PORT_DB3 |= (1<<LCD_DATA_PIN_DB3);} else { LCD_DATA_PORT_DB3 &= ~(1<<LCD_DATA_PIN_DB3);};
-	if(Data&0x10) {LCD_DATA_PORT_DB4 |= (1<<LCD_DATA_PIN_DB4);} else { LCD_DATA_PORT_DB4 &= ~(1<<LCD_DATA_PIN_DB4);};
-	if(Data&0x20) {LCD_DATA_PORT_DB5 |= (1<<LCD_DATA_PIN_DB5);} else { LCD_DATA_PORT_DB5 &= ~(1<<LCD_DATA_PIN_DB5);};
-	if(Data&0x40) {LCD_DATA_PORT_DB6 |= (1<<LCD_DATA_PIN_DB6);} else { LCD_DATA_PORT_DB6 &= ~(1<<LCD_DATA_PIN_DB6);};
-	if(Data&0x80) {LCD_DATA_PORT_DB7 |= (1<<LCD_DATA_PIN_DB7);} else { LCD_DATA_PORT_DB7 &= ~(1<<LCD_DATA_PIN_DB7);};
-*/
+	if(Data&0x01) {gpio_set_pin(LCD_DATA_DB0);} else {gpio_clr_pin(LCD_DATA_DB0);}
+	if(Data&0x02) {gpio_set_pin(LCD_DATA_DB1);} else {gpio_clr_pin(LCD_DATA_DB1);}
+	if(Data&0x04) {gpio_set_pin(LCD_DATA_DB2);} else {gpio_clr_pin(LCD_DATA_DB2);}
+	if(Data&0x08) {gpio_set_pin(LCD_DATA_DB3);} else {gpio_clr_pin(LCD_DATA_DB3);}
+	if(Data&0x10) {gpio_set_pin(LCD_DATA_DB4);} else {gpio_clr_pin(LCD_DATA_DB4);}
+	if(Data&0x20) {gpio_set_pin(LCD_DATA_DB5);} else {gpio_clr_pin(LCD_DATA_DB5);}
+	if(Data&0x40) {gpio_set_pin(LCD_DATA_DB6);} else {gpio_clr_pin(LCD_DATA_DB6);}
+	if(Data&0x80) {gpio_set_pin(LCD_DATA_DB7);} else {gpio_clr_pin(LCD_DATA_DB7);}
 }
 uint8_t GetData(void){
 	uint8_t input = 0;
@@ -72,22 +59,11 @@ uint8_t GetData(void){
 	if (gpio_get_state(LCD_DATA_DB5)) {input += 32;}
 	if (gpio_get_state(LCD_DATA_DB6)) {input += 64;}
 	if (gpio_get_state(LCD_DATA_DB7)) {input += 128;}
-/*
-	if (LCD_DATA_IN_DB0 & (1<<LCD_DATA_PIN_DB0)) {input += 1;}
-	if (LCD_DATA_IN_DB1 & (1<<LCD_DATA_PIN_DB1)) {input += 2;}
-	if (LCD_DATA_IN_DB2 & (1<<LCD_DATA_PIN_DB2)) {input += 4;}
-	if (LCD_DATA_IN_DB3 & (1<<LCD_DATA_PIN_DB3)) {input += 8;}
-	if (LCD_DATA_IN_DB4 & (1<<LCD_DATA_PIN_DB4)) {input += 16;}
-	if (LCD_DATA_IN_DB5 & (1<<LCD_DATA_PIN_DB5)) {input += 32;}
-	if (LCD_DATA_IN_DB6 & (1<<LCD_DATA_PIN_DB6)) {input += 64;}
-	if (LCD_DATA_IN_DB7 & (1<<LCD_DATA_PIN_DB7)) {input += 128;}
-*/
 	return input;
 }
 
 void Disable(){
 	gpio_clr_pin(LCD_CONTROL_E);
-	//LCD_CONTROL_PORT &= ~(1<<LCD_CONTROL_PIN_E);
 }
 
 void Delay(){
@@ -96,7 +72,7 @@ void Delay(){
 
 void Enable(){
 	Delay();
-	gpio_set_pin(LCD_CONTROL_E);	//LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_E);
+	gpio_set_pin(LCD_CONTROL_E);
 	Delay();
 	Disable();
 	Delay();
@@ -112,16 +88,6 @@ void SetDirection(uint8_t dir){
     gpio_set_out(LCD_DATA_DB5);
     gpio_set_out(LCD_DATA_DB6);
     gpio_set_out(LCD_DATA_DB7);
-/*
-    LCD_DATA_DDR_DB0 |= (1<<LCD_DATA_PIN_DB0);
-    LCD_DATA_DDR_DB1 |= (1<<LCD_DATA_PIN_DB1);
-    LCD_DATA_DDR_DB2 |= (1<<LCD_DATA_PIN_DB2);
-    LCD_DATA_DDR_DB3 |= (1<<LCD_DATA_PIN_DB3);
-    LCD_DATA_DDR_DB4 |= (1<<LCD_DATA_PIN_DB4);
-    LCD_DATA_DDR_DB5 |= (1<<LCD_DATA_PIN_DB5);
-    LCD_DATA_DDR_DB6 |= (1<<LCD_DATA_PIN_DB6);
-    LCD_DATA_DDR_DB7 |= (1<<LCD_DATA_PIN_DB7);
-*/
   }else if (dir == INPUT){
     gpio_set_in(LCD_DATA_DB0);
     gpio_set_in(LCD_DATA_DB1);
@@ -131,16 +97,6 @@ void SetDirection(uint8_t dir){
     gpio_set_in(LCD_DATA_DB5);
     gpio_set_in(LCD_DATA_DB6);
     gpio_set_in(LCD_DATA_DB7);
-/*
-    LCD_DATA_DDR_DB0 &= ~(1<<LCD_DATA_PIN_DB0);
-    LCD_DATA_DDR_DB1 &= ~(1<<LCD_DATA_PIN_DB1);
-    LCD_DATA_DDR_DB2 &= ~(1<<LCD_DATA_PIN_DB2);
-    LCD_DATA_DDR_DB3 &= ~(1<<LCD_DATA_PIN_DB3);
-    LCD_DATA_DDR_DB4 &= ~(1<<LCD_DATA_PIN_DB4);
-    LCD_DATA_DDR_DB5 &= ~(1<<LCD_DATA_PIN_DB5);
-    LCD_DATA_DDR_DB6 &= ~(1<<LCD_DATA_PIN_DB6);
-    LCD_DATA_DDR_DB7 &= ~(1<<LCD_DATA_PIN_DB7);
-*/
   }
 }
 void glcdSetColor(uint8_t color){
@@ -174,7 +130,6 @@ void glcdWriteDataTransparent(uint8_t inputdata, uint8_t color){
 	Enable();	//dummy read
 	Delay();
 	gpio_set_pin(LCD_CONTROL_E);
-	//LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_E);
 	Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
 	  data = GetData();
@@ -212,7 +167,6 @@ uint8_t glcdReadData(void){
 	Enable();	//dummy read
 	Delay();
 	gpio_set_pin(LCD_CONTROL_E);
-	//LCD_CONTROL_PORT |= (1<<LCD_CONTROL_PIN_E);
 	Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
 	  data = GetData();
@@ -227,17 +181,17 @@ uint8_t glcdReadData(void){
 }
 
 void glcdPowerOn(){
-	gpio_set_out(LCD_CONTROL_RS); //LCD_CONTROL_DDR |= (1<<LCD_CONTROL_PIN_RS);
-	gpio_set_out(LCD_CONTROL_RW); //LCD_CONTROL_DDR |= (1<<LCD_CONTROL_PIN_RW);
-	gpio_set_out(LCD_CONTROL_E); //LCD_CONTROL_DDR |= (1<<LCD_CONTROL_PIN_E);
-	gpio_set_out(LCD_CONTROL_CS1); //LCD_CONTROL_DDR_CS |= (1<<LCD_CONTROL_PIN_CS1);
-	gpio_set_out(LCD_CONTROL_CS2); //LCD_CONTROL_DDR_CS |= (1<<LCD_CONTROL_PIN_CS2);
+	gpio_set_out(LCD_CONTROL_RS);
+	gpio_set_out(LCD_CONTROL_RW);
+	gpio_set_out(LCD_CONTROL_E);
+	gpio_set_out(LCD_CONTROL_CS1);
+	gpio_set_out(LCD_CONTROL_CS2);
 
 	SetDirection(OUTPUT);
 	GrLcdState.color = GLCD_COLOR_WHITE;
 	gpio_set_pin(LCD_CONTROL_CS1);
 	gpio_set_pin(LCD_CONTROL_CS2);
-//LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS2)|(1<<LCD_CONTROL_PIN_CS1);
+
 	Disable();
 	Delay();
 	//set display on
@@ -256,7 +210,7 @@ void glcdPowerOn(){
 void glcdClear(){
 	gpio_set_pin(LCD_CONTROL_CS1);
 	gpio_set_pin(LCD_CONTROL_CS2);
-//LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS2)|(1<<LCD_CONTROL_PIN_CS1);
+
 	Enable();
 	Delay();
 	Disable();
@@ -293,13 +247,9 @@ void glcdSetXY(uint8_t x, uint8_t y){
 	if (x > 63){
 		gpio_set_pin(LCD_CONTROL_CS2);
 		gpio_clr_pin(LCD_CONTROL_CS1);
-		//LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS2);
-		//LCD_CONTROL_PORT_CS &= ~(1<<LCD_CONTROL_PIN_CS1);
 	} else {
 		gpio_set_pin(LCD_CONTROL_CS1);
 		gpio_clr_pin(LCD_CONTROL_CS2);
-		//LCD_CONTROL_PORT_CS |= (1<<LCD_CONTROL_PIN_CS1);
-		//LCD_CONTROL_PORT_CS &= ~(1<<LCD_CONTROL_PIN_CS2);
 	}
 
 	//Steg 2: S�tt r�tt x-adress p� det aktiva chippet
