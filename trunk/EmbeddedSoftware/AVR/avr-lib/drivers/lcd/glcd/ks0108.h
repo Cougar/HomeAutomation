@@ -1,53 +1,24 @@
 #include <inttypes.h>
 #include <config.h>
 #include <drivers/sensor/ds18s20/delay.h>
+#include <drivers/mcu/gpio.h>
 
-#ifndef LCD_CONTROL_PIN_E
+#ifndef LCD_CONTROL_E
 
-#define LCD_DATA_PORT_DB0	PORTB
-#define LCD_DATA_DDR_DB0	DDRB
-#define LCD_DATA_IN_DB0		PINB
-#define LCD_DATA_PORT_DB1	PORTD
-#define LCD_DATA_DDR_DB1	DDRD
-#define LCD_DATA_IN_DB1		PIND
-#define LCD_DATA_PORT_DB2	PORTD
-#define LCD_DATA_DDR_DB2	DDRD
-#define LCD_DATA_IN_DB2		PIND
-#define LCD_DATA_PORT_DB3	PORTD
-#define LCD_DATA_DDR_DB3	DDRD
-#define LCD_DATA_IN_DB3		PIND
-#define LCD_DATA_PORT_DB4	PORTD
-#define LCD_DATA_DDR_DB4	DDRD
-#define LCD_DATA_IN_DB4		PIND
-#define LCD_DATA_PORT_DB5	PORTD
-#define LCD_DATA_DDR_DB5	DDRD
-#define LCD_DATA_IN_DB5		PIND
-#define LCD_DATA_PORT_DB6	PORTD
-#define LCD_DATA_DDR_DB6	DDRD
-#define LCD_DATA_IN_DB6		PIND
-#define LCD_DATA_PORT_DB7	PORTD
-#define LCD_DATA_DDR_DB7	DDRD
-#define LCD_DATA_IN_DB7		PIND
+#define LCD_DATA_DB0	EXP_D
+#define LCD_DATA_DB1	EXP_E
+#define LCD_DATA_DB2	EXP_F
+#define LCD_DATA_DB3	EXP_G
+#define LCD_DATA_DB4	EXP_H
+#define LCD_DATA_DB5	EXP_I
+#define LCD_DATA_DB6	EXP_J
+#define LCD_DATA_DB7	EXP_K
 
-#define LCD_DATA_PIN_DB0	0x00
-#define LCD_DATA_PIN_DB1	0x07
-#define LCD_DATA_PIN_DB2	0x06
-#define LCD_DATA_PIN_DB3	0x05
-#define LCD_DATA_PIN_DB4	0x04
-#define LCD_DATA_PIN_DB5	0x02
-#define LCD_DATA_PIN_DB6	0x01
-#define LCD_DATA_PIN_DB7	0x00
-
-#define LCD_CONTROL_PORT	PORTB
-#define LCD_CONTROL_DDR		DDRB
-#define LCD_CONTROL_PORT_CS	PORTC
-#define LCD_CONTROL_DDR_CS	DDRC
-
-#define LCD_CONTROL_PIN_RS	0x07
-#define LCD_CONTROL_PIN_RW	0x02
-#define LCD_CONTROL_PIN_E	0x01
-#define LCD_CONTROL_PIN_CS1	0x05
-#define LCD_CONTROL_PIN_CS2	0x04
+#define LCD_CONTROL_RS	EXP_A
+#define LCD_CONTROL_RW	EXP_B
+#define LCD_CONTROL_E	EXP_C
+#define LCD_CONTROL_CS1	EXP_N
+#define LCD_CONTROL_CS2	EXP_O
 
 #endif
 
