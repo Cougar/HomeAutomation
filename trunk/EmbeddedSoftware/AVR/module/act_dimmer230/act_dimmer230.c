@@ -314,12 +314,12 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 					demoState = ACT_DIMMMER230_DEMO_STATE_DECREASE;
 				
 					if (fadeTarget != dimmerValue) {
-						if ((speed&0x80) == 0) {
-							fadeSpeed = speed&0x7f;
+						if ((speed&0x80) == 0x80) {
+							fadeSpeed = (speed&0x7f)+1;
 							fadeSpeedFrac = 1;
 						} else {
 							fadeSpeed = 1;
-							fadeSpeedFrac = speed&0x7f;
+							fadeSpeedFrac = 0x80-(speed&0x7f);
 						}
 						if (fadeTarget < dimmerValue) {
 							fadeSpeed = -fadeSpeed;
@@ -339,9 +339,9 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				fadeSpeedCnt = 0;
 				fadeSpeed = 0;
 				uint8_t endValue = 0;
-				if (direction == 1) {
+				if (direction == CAN_MODULE_ENUM_DIMMER230_START_FADE_DIRECTION_INCREASE) {
 					endValue = ACT_DIMMMER230_MAX_DIM;
-				} else if (direction == 0) {
+				} else if (direction == CAN_MODULE_ENUM_DIMMER230_START_FADE_DIRECTION_DECREASE) {
 					endValue = ACT_DIMMMER230_MIN_DIM;
 				}
 					
@@ -350,12 +350,12 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				} else {
 					fadeTarget = endValue;
 					if (fadeTarget != dimmerValue) {
-						if ((speed&0x80) == 0) {
-							fadeSpeed = speed&0x7f;
+						if ((speed&0x80) == 0x80) {
+							fadeSpeed = (speed&0x7f)+1;
 							fadeSpeedFrac = 1;
 						} else {
 							fadeSpeed = 1;
-							fadeSpeedFrac = speed&0x7f;
+							fadeSpeedFrac = 0x80-(speed&0x7f);
 						}
 						if (fadeTarget < dimmerValue) {
 							fadeSpeed = -fadeSpeed;
@@ -386,12 +386,12 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				} else {
 					fadeTarget = endValue;
 					if (fadeTarget != dimmerValue) {
-						if ((speed&0x80) == 0) {
-							fadeSpeed = speed&0x7f;
+						if ((speed&0x80) == 0x80) {
+							fadeSpeed = (speed&0x7f)+1;
 							fadeSpeedFrac = 1;
 						} else {
 							fadeSpeed = 1;
-							fadeSpeedFrac = speed&0x7f;
+							fadeSpeedFrac = 0x80-(speed&0x7f);
 						}
 						if (fadeTarget < dimmerValue) {
 							fadeSpeed = -fadeSpeed;
@@ -413,12 +413,12 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				fadeSpeed = 0;
 				uint8_t tempDimVal = dimmerValue;
 				uint8_t tempDimVal2 = dimmerValue;
-				if (direction == 1) {					/* if increase */
+				if (direction == CAN_MODULE_ENUM_DIMMER230_REL_FADE_DIRECTION_INCREASE) {					/* if increase */
 					tempDimVal2 += steps;				/* calculate new value */
 					if (tempDimVal2 < tempDimVal) {		/* make overflow test */
 						tempDimVal2 = ACT_DIMMMER230_MAX_DIM;
 					}
-				} else if (direction == 0) {			/* if decrease */
+				} else if (direction == CAN_MODULE_ENUM_DIMMER230_REL_FADE_DIRECTION_DECREASE) {			/* if decrease */
 					tempDimVal2 -= steps;
 					if (tempDimVal2 > tempDimVal) {
 						tempDimVal2 = ACT_DIMMMER230_MIN_DIM;
@@ -430,12 +430,12 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 					fadeTarget = tempDimVal2;		/* set the fade target */
 					
 					if (fadeTarget != dimmerValue) {
-						if ((speed&0x80) == 0) {
-							fadeSpeed = speed&0x7f;
+						if ((speed&0x80) == 0x80) {
+							fadeSpeed = (speed&0x7f)+1;
 							fadeSpeedFrac = 1;
 						} else {
 							fadeSpeed = 1;
-							fadeSpeedFrac = speed&0x7f;
+							fadeSpeedFrac = 0x80-(speed&0x7f);
 						}
 						if (fadeTarget < dimmerValue) {
 							fadeSpeed = -fadeSpeed;
