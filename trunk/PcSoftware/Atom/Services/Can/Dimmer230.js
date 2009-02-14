@@ -5,11 +5,7 @@ function Dimmer230(type, name, id)
 }
 
 
-/*
-	should have variable that holds current dimmervalue
-*/
 Dimmer230.prototype.currentValue = 0;
-
 Dimmer230.prototype.connection = "Disconnected";
 Dimmer230.prototype.frequency = "Error / Unknown";
 
@@ -25,6 +21,7 @@ Dimmer230.prototype.canMessageHandler = function(canMessage)
 		case "Netinfo":
 		this.connection = canMessage.getData("Connection");
 		this.frequency = canMessage.getData("Frequency");
+		this.currentValue = canMessage.getData("DimmerValue");
 		var connectString = "disconnected.";
 		var frequencyString = "";
 		if (this.connection == "Connected")
