@@ -14,9 +14,6 @@ uint8_t demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 /*	This bool is set to make process routine send the NetInfo packet */
 uint8_t sendNetInfo = 0;
 
-/*	This bool is set to make process routine save dimmervalue to eeprom */
-uint8_t saveEEdata = 0;
-
 /*	netConnected stores the connection status, if connected to the net or not */
 uint8_t netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_DISCONNECTED;
 
@@ -42,11 +39,6 @@ const uint16_t powerStepTable[] PROGMEM = {845, 1068, 1225, 1352, 1459, 1553, 16
 uint8_t zeroCrossCnt = 0;
 #endif
 
-/*	Store dimmer value in eeprom if user has not changed it for a while */
-void Store_value_callback(uint8_t timer)
-{
-	saveEEdata = 1;
-}
 
 /*	Set the variable to "disconnected" if no zerocross have arrived for a while */
 void Net_Connection_callback(uint8_t timer)
@@ -191,7 +183,7 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 				sendNetInfo = 1;
 			}
 			/* 5 seconds after we have stopped fading we should store the current dimmerValue to eeprom */
-			Timer_SetTimeout(act_dimmer230_STORE_VALUE_TIMEOUT, 5000, TimerTypeOneShot, &Store_value_callback);
+			Timer_SetTimeout(act_dimmer230_STORE_VALUE_TIMEOUT, 5000, TimerTypeOneShot, 0);
 		}
 		
 #if act_dimmer230_SYNC>0
@@ -272,6 +264,7 @@ void act_dimmer230_Init(void)
 /*	Process funtion of dimmer-module, currently everything is done interrupted */
 void act_dimmer230_Process(void)
 {
+	/* Send netinfo packet (if dimmervalue has changed, and periodically) */
 	if (sendNetInfo)
 	{
 		sendNetInfo = 0;
@@ -287,9 +280,9 @@ void act_dimmer230_Process(void)
 		StdCan_Put(&txMsg);
 	}
 	
-	if (saveEEdata)
+	/* If dimmervalue was changed over 5 seconds ago then store the new dimmervalue */
+	if (Timer_Expired(act_dimmer230_STORE_VALUE_TIMEOUT))
 	{
-		saveEEdata = 0;
 		eeprom_write_byte_crc(EEDATA.eeDimmerValue, dimmerValue, WITH_CRC);
 	}
 }
