@@ -309,6 +309,7 @@
 		    <value id="1" name="50Hz"/>
 		    <value id="2" name="60Hz"/>
 		</variable>
+		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
       </variables>
     </command>
   </commands>
