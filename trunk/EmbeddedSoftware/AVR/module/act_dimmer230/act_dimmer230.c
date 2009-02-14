@@ -11,6 +11,9 @@ uint8_t demoEndValue = 0;
 uint8_t demoHighValue = 0;
 uint8_t demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 
+/*	This bool is set to make process routine send the NetInfo packet */
+uint8_t sendNetInfo = 0;
+
 /*	netConnected stores the connection status, if connected to the net or not */
 uint8_t netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_DISCONNECTED;
 
@@ -51,15 +54,7 @@ void Net_Connection_callback(uint8_t timer)
 /*	This function will send the dimmer-status-packet containing connection status and frequency */
 void Send_Status_callback(uint8_t timer)
 {
-	StdCan_Msg_t txMsg;
-	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
-	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_DIMMER230;
-	txMsg.Header.ModuleId = act_dimmer230_ID;
-	txMsg.Header.Command = CAN_MODULE_CMD_DIMMER230_NETINFO;
-	txMsg.Length = 1;
-	txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<5);
-	StdCan_Put(&txMsg);
+	sendNetInfo = 1;
 }
 
 /*	When the timer reaches its compare value the triac should be trigged */
@@ -186,6 +181,12 @@ ISR (act_dimmer230_ZC_PCINT_vect)
 			{
 				dimmerValue = fadeTarget;
 			}
+			
+			/* if targetvalue was reached then send the netinfo packet */
+			if (dimmerValue == fadeTarget)
+			{
+				sendNetInfo = 1;
+			}
 			/* 5 seconds after we have stopped fading we should store the current dimmerValue to eeprom */
 			Timer_SetTimeout(act_dimmer230_STORE_VALUE_TIMEOUT, 5000, TimerTypeOneShot, &Store_value_callback);
 		}
@@ -264,11 +265,26 @@ void act_dimmer230_Init(void)
 	Timer_SetTimeout(act_dimmer230_SEND_STATUS_TIMEOUT, act_dimmer230_SEND_STATUS_INTERVAL*1000, TimerTypeFreeRunning, &Send_Status_callback);
 }
 
+
 /*	Process funtion of dimmer-module, currently everything is done interrupted */
 void act_dimmer230_Process(void)
 {
-
+	if (sendNetInfo)
+	{
+		sendNetInfo = 0;
+		StdCan_Msg_t txMsg;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_DIMMER230;
+		txMsg.Header.ModuleId = act_dimmer230_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_DIMMER230_NETINFO;
+		txMsg.Length = 2;
+		txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<5);
+		txMsg.Data[1] = dimmerValue;
+		StdCan_Put(&txMsg);
+	}
 }
+
 
 /*	Handle incoming message function of dimmer-module */
 void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
@@ -347,6 +363,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 					
 				if (speed == 0) {
 					dimmerValue = endValue;	/* set dimmer value immediately */
+					sendNetInfo = 1;		/* send netinfo with the current dimmervalue*/
 				} else {
 					fadeTarget = endValue;
 					if (fadeTarget != dimmerValue) {
@@ -369,6 +386,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (rxMsg->Length == 1) {
 				demoState = ACT_DIMMMER230_DEMO_STATE_NOT_RUNNING;
 				fadeSpeed = 0;
+				sendNetInfo = 1;		/* send netinfo with the current dimmervalue*/
 			}
 		break;
 
@@ -383,6 +401,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				fadeSpeed = 0;
 				if (speed == 0) {
 					dimmerValue = endValue;	/* set dimmer value immediately */
+					sendNetInfo = 1;		/* send netinfo with the current dimmervalue*/
 				} else {
 					fadeTarget = endValue;
 					if (fadeTarget != dimmerValue) {
@@ -426,6 +445,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				if (speed == 0) {
 					dimmerValue = tempDimVal2;		/* set dimmer value immediately */
+					sendNetInfo = 1;				/* send netinfo with the current dimmervalue*/
 				} else {
 					fadeTarget = tempDimVal2;		/* set the fade target */
 					
