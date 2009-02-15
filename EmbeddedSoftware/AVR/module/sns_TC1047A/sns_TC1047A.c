@@ -27,7 +27,7 @@ void sns_TC1047A_Process(void)
 		txMsg.Length = 3;
 		txMsg.Data[0] = 0;
 		txMsg.Data[1] = (temperature>>(2))&0xff;
-		txMsg.Data[2] = (temperature>>(10))&0xff;
+		txMsg.Data[2] = (temperature<<(2))&0xff;
 
 		StdCan_Put(&txMsg);
 	}
