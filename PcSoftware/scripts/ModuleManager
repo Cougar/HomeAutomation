@@ -306,6 +306,7 @@ def newModule(moduleName):
 	createFile(moduleName, "sources.list", "sources.list")
 	createFile(moduleName, "template.h", moduleName + ".h")
 	createFile(moduleName, "template.c", moduleName + ".c")
+	createFile(moduleName, "template_eeprom.h", moduleName + "_eeprom.h")
 
 def usage():
 	print "Syntax: ./ModuleManager [options]"

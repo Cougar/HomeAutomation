@@ -2,6 +2,7 @@
 #include "<template>.h"
 
 #ifdef <template>_USEEEPROM
+#include "<template>_eeprom.h"
 struct eeprom_<template> EEMEM eeprom_<template> = 
 {
 	{
