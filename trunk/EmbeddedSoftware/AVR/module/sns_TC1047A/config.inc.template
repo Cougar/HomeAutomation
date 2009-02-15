@@ -1,0 +1,11 @@
+## Section sns_TC1047A -- Do not edit this line
+
+sns_TC1047A_ID=<ID>
+sns_TC1047A_TIMER=<TIMER>
+sns_TC1047A_SEND_PERIOD=20
+sns_TC1047A_SEND_DELAY=500
+
+TC1047AAD=1
+ADCHAN1=1
+
+## End section sns_TC1047A -- Do not edit this line
