@@ -15,9 +15,8 @@ void sns_TC1047A_Process(void)
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_TC1047A_TIMER)) {
 		uint16_t temperature = ADC_Get(TC1047AAD);
-		uint32_t test = 0;
 		/* Use 5 volt as reference */
-		temperature = (((temperature * 500)/(16))-50);
+		temperature = (((temperature * 125)/(4))-3200);
 		//temperature = temperature * 5;
 		//temperature = ((uint16_t)(((uint32_t)temperature * 100) / 1024) - 50);
 		StdCan_Msg_t txMsg;
