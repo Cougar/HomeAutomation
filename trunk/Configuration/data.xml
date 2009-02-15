@@ -90,6 +90,12 @@
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
+    <command id="72" name="SlowPwm" type="physical" module="" description="Message for pwm data, 0 to 9999">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
     
     <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
      <variables>
@@ -147,9 +153,21 @@
       </variables>
     </command>
     
-    
-    
-    
+    <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
+	<variables>
+	  <variable name="P-term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="I-term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="D-term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+	</variables>
+      </command>
+    <command id="129" name="CONFIG" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="sensorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	  <variable name="sensorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
     <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
       <variables>
         <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
@@ -330,6 +348,8 @@
     <module id="15" name="nmea" class="sns"/>
     <module id="16" name="irTransmit" class="sns"/>
     <module id="17" name="TC1047A" class="sns"/>
+    <module id="18" name="PID" class="act"/>
+    <module id="19" name="SlowPWM" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
