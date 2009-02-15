@@ -1,5 +1,6 @@
 
 #include "act_dimmer230.h"
+#include "act_dimmer230_eeprom.h"
 
 
 int8_t fadeSpeed = 0;
