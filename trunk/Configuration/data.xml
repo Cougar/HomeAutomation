@@ -168,7 +168,22 @@
 	  <variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	</variables>
       </command>
-    <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
+      <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="pwmPeriod" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="pwmDefaultValue" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="DefaultState" type="enum" start_bit="32" bit_length="2" unit="" description="">
+	    <value id="0" name="LOW"/>
+	    <value id="1" name="HIGH"/>
+	    <value id="2" name="TRISTATE"/>
+	  </variable>
+	   <variable name="StartUpState" type="enum" start_bit="34" bit_length="1" unit="" description="">
+	    <value id="0" name="ON"/>
+	    <value id="1" name="OFF"/>
+	  </variable>
+	</variables>
+      </command>
+      <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
       <variables>
         <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
 	  <value id="0" name="Standard"/>
