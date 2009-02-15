@@ -1,4 +1,4 @@
-// Built on Wed Feb 11 18:21:36 2009 by makeCanId.pl
+// Built on Sun Feb 15 13:25:05 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -122,6 +122,7 @@
 #define CAN_MODULE_TYPE_SNS_IRRECEIVE 14
 #define CAN_MODULE_TYPE_SNS_NMEA 15
 #define CAN_MODULE_TYPE_SNS_IRTRANSMIT 16
+#define CAN_MODULE_TYPE_SNS_TC1047A 17
 
 //----------------- //
 // Misc definitions //
