@@ -1,0 +1,5 @@
+# List all files that needs to be compiled here
+act_PID/act_PID.c
+drivers/misc/pid.c
+#Uncomment the line below if you want to use EEPROM with this module
+drivers/misc/eeprom_crc8.c
