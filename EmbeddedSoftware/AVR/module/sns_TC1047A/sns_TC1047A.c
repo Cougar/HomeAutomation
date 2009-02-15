@@ -15,9 +15,11 @@ void sns_TC1047A_Process(void)
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_TC1047A_TIMER)) {
 		uint16_t temperature = ADC_Get(TC1047AAD);
+		uint32_t test = 0;
 		/* Use 5 volt as reference */
-		temperature = temperature * 5;
-		temperature = ((uint16_t)(((uint32_t)temperature * 100) / 1024) - 50);
+		temperature = (((temperature * 5000)/(16))-500)/10;
+		//temperature = temperature * 5;
+		//temperature = ((uint16_t)(((uint32_t)temperature * 100) / 1024) - 50);
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -26,8 +28,8 @@ void sns_TC1047A_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
 		txMsg.Length = 3;
 		txMsg.Data[0] = 0;
-		txMsg.Data[1] = (temperature>>(2))&0xff;
-		txMsg.Data[2] = (temperature<<(2))&0xff;
+		txMsg.Data[1] = (temperature>>8)&0xff;
+		txMsg.Data[2] = (temperature)&0xff;
 
 		StdCan_Put(&txMsg);
 	}
