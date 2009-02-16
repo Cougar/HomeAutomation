@@ -17,8 +17,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <canid.h>
+#include <config.h>
 /* lib files */
+#if USE_STDCAN == 1
+#include <stdcan.h>
+#else
 #include <mcp2515.h>
+#endif
 //#include <serial.h>
 #include <timebase.h>
 #include <mcu.h>
@@ -55,8 +61,10 @@ static uint8_t buffpoint;
 #define C2S_START_BYTE 253
 #define C2S_END_BYTE 250
 
+#if USE_STDCAN == 0
 volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
+#endif
 
 /*----------------------------------------------------------------------------
  * Putchar for udp
@@ -80,6 +88,7 @@ volatile uint8_t rxMsgFull;   // Synchronization flag
 static FILE mystdout = FDEV_SETUP_STREAM(udp_putchar, NULL, _FDEV_SETUP_WRITE); 
 */
 
+#if USE_STDCAN == 0
 void Can_Process(Can_Message_t* msg) {
 	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
 
@@ -88,6 +97,7 @@ void Can_Process(Can_Message_t* msg) {
 		rxMsgFull = 1;
 	}
 }
+#endif
 
 /*-----------------------------------------------------------------------------
  * Main Program
@@ -107,13 +117,6 @@ int main(void) {
 	buffpoint = 0;
 	
 	//can vars
-	Can_Message_t txMsg;
-	txMsg.Id = 3;
-	txMsg.DataLength = 0;
-	txMsg.RemoteFlag = 0;
-	txMsg.ExtendedFlag = 1;
-
-	rxMsgFull = 0;
 	
  	uint32_t timeStamp = 0;
 
@@ -131,8 +134,17 @@ int main(void) {
     //alla printf ska skriva till udp
     //stdout = &mystdout;    //set the output stream 
 
-	if (Can_Init() != CAN_OK) {
-	}
+#if USE_STDCAN == 0
+	Can_Init();
+	Can_Message_t txMsg;
+	txMsg.RemoteFlag = 0;
+	txMsg.ExtendedFlag = 1;
+	rxMsgFull = 0;
+#else
+	StdCan_Init(0);
+	StdCan_Msg_t txMsg;
+	StdCan_Msg_t rxMsg;
+#endif
 
 	sei();
 
@@ -161,16 +173,26 @@ int main(void) {
 		/* send CAN message and check for CAN errors once every second */
 		if (Timebase_PassedTimeMillis(timeStamp) >= 1000) {
 			timeStamp = Timebase_CurrentTime();
+
 			/* send timestamp, to keep network alive */
-			txMsg.Id = 0;
+			txMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
+#if USE_STDCAN == 0
 			txMsg.DataLength = 0;
 			Can_Send(&txMsg);
+#else
+			txMsg.Length = 0;
+			StdCan_Put(&txMsg);
+#endif
 			
 		}
 #endif
 		
 		/* check if any messages have been received */
-		if (rxMsgFull) { //(Can_Receive(&rxMsg) == CAN_OK) {
+#if USE_STDCAN == 0
+		if (rxMsgFull) {
+#else
+		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
+#endif
 			uint8_t i;
 			
 			/*if (gotdumpserver != 0) {
@@ -191,20 +213,37 @@ int main(void) {
 				sendbuf2[2] = (uint8_t)(rxMsg.Id>>8);
 				sendbuf2[3] = (uint8_t)(rxMsg.Id>>16);
 				sendbuf2[4] = (uint8_t)(rxMsg.Id>>24);
+#if USE_STDCAN == 0
 				sendbuf2[5] = rxMsg.ExtendedFlag;
 				sendbuf2[6] = rxMsg.RemoteFlag;
 				sendbuf2[7] = rxMsg.DataLength;
 	    		for (i=0; i<8; i++) {
 	    			sendbuf2[8+i] = rxMsg.Data.bytes[i];
 	    		}
+#else
+				sendbuf2[5] = 1;
+				sendbuf2[6] = 0;
+				sendbuf2[7] = rxMsg.Length;
+	    		for (i=0; i<8; i++) {
+	    			sendbuf2[8+i] = rxMsg.Data[i];
+	    		}
+#endif
 				sendbuf2[16] = C2S_END_BYTE;
 				
-				MCP_INT_DISABLE();
+#ifndef ENC28J60_USART_SPI_MODE 
+				//MCP_INT_DISABLE();
+				cli();
+#endif
 				send_udp(buf, sendbuf2, 18, rmCan2SerPrt, prgremotemac, prgremoteip);
-				MCP_INT_ENABLE();
+#ifndef ENC28J60_USART_SPI_MODE 
+				sei();
+				//MCP_INT_ENABLE();
+#endif
 	   		}
 	   		
-	   		rxMsgFull = 0;
+#if USE_STDCAN == 0
+			rxMsgFull = 0;
+#endif
 		}
 		
 		//test-debug-kod
@@ -263,6 +302,7 @@ int main(void) {
 					        gotcan2serserver = 1;
 
 							if ((buf[UDP_DATA_P]==C2S_START_BYTE) && (buf[UDP_DATA_P+16]==C2S_END_BYTE) && (payloadlen==17)) {
+#if USE_STDCAN == 0
 								Can_Message_t cm;
 								//cm.Id = 0;
 								cm.DataLength = buf[UDP_DATA_P+7];
@@ -274,7 +314,17 @@ int main(void) {
 									cm.Data.bytes[i] = buf[UDP_DATA_P+8+i];
 								}
 								Can_Send(&cm);
-								
+#else
+								static StdCan_Msg_t cm;
+								//cm.Id = 0;
+								cm.Length = buf[UDP_DATA_P+7];
+								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
+								uint8_t i;
+								for (i = 0; i < cm.Length; i++) {
+									cm.Data[i] = buf[UDP_DATA_P+8+i];
+								}
+								StdCan_Put(&cm);
+#endif
 								/*if (gotdumpserver != 0) {
 									printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", cm.Id, (uint16_t)(cm.DataLength), (uint16_t)(cm.ExtendedFlag), (uint16_t)(cm.RemoteFlag));
 									printf("data={ ");
