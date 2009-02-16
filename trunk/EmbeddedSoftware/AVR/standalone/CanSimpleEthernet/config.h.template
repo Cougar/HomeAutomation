@@ -3,6 +3,9 @@
 
 /* set to 0 for not sending timestamps on bus */
 #define SENDTIMESTAMP                   1
+#define USE_STDCAN			1
+#define NODE_ID 			0
+#define STDCAN_FILTER 			0
 
 // Kolla makefile för att sätta MCU!!
 

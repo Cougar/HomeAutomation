@@ -36,7 +36,9 @@
 # - DEPFLAGS according to Eric Weddingtion's fix (avrfreaks/gcc-forum)
 # - F_OSC Define in CFLAGS and AFLAGS
 
+## HomeAutomation-users! Make sure you have a system.inc in your EmbeddedSoftware/AVR/personal folder ##
 
+## FUSES, will automatically be programmed ##
 # MCU name
 MCU = atmega168
 HIGHFUSE=0xdc
@@ -67,7 +69,9 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)drivers/eth/ip_arp_udp_tcp.c\
 		$(LIBDIR)drivers/timer/timebase.c\
 		$(LIBDIR)drivers/mcu/mcu.c\
+		$(LIBDIR)drivers/can/stdcan.c\
 		$(LIBDIR)drivers/can/mcp2515/mcp2515.c
+
 
 #		$(LIBDIR)mcu/uart.c\
 #		$(LIBDIR)mcu/serial.c\
@@ -96,7 +100,7 @@ DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = $(LIBDIR)mcu $(LIBDIR)drivers/eth $(LIBDIR)drivers/eth/enc28j60 $(LIBDIR)drivers/can/mcp2515/ $(LIBDIR)/drivers/timer $(LIBDIR)/drivers/mcu $(LIBDIR) 
+EXTRAINCDIRS = $(LIBDIR)mcu $(LIBDIR)drivers/eth $(LIBDIR)drivers/eth/enc28j60 $(LIBDIR)drivers/can/mcp2515/ $(LIBDIR)drivers/can/ $(LIBDIR)/drivers/timer $(LIBDIR)/drivers/mcu $(LIBDIR) 
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
