@@ -6,6 +6,7 @@ Bugs
 * When doing flashing with command console and aborting with ctrl+c, atom segfaults
 * For some reason the logfile can not be opened
 * atom start services when it sees the bios_start shall be appl_start....
+* Send only variables that we want, optional
 
 Features
 --------
@@ -15,6 +16,7 @@ Features
 * Mysql-interface
 * Build javascript for programming a node
 * Optional variables to commands?
+* Command interface with tabbing
 
 Other
 -----
@@ -23,8 +25,10 @@ Other
 * Error checking...
 * FIXMEs
 * Implement more module-services...
-* Think out a simple way of replacing canDude, maybe a script that sends the commands to Atom over a socket
 * CanTranslator needs more structure... it is hard to know what is what now
+* Change XML-file, make command-names unique. Remove type, remove module attributes on commands and specify which commands a module supports in the module list
+* Local xml-file
+* Use RemoteFlag as direction, extend moduletype to the first 13 bits of the can header instead of class, dirFlag and modtype
 
 Documentation
 -------------
