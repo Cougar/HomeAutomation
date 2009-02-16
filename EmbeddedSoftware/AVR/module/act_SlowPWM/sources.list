@@ -1,4 +1,4 @@
 # List all files that needs to be compiled here
 act_SlowPWM/act_SlowPWM.c
 #Uncomment the line below if you want to use EEPROM with this module
-#drivers/misc/eeprom_crc8.c
+drivers/misc/eeprom_crc8.c
