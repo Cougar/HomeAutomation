@@ -92,7 +92,7 @@
     </command>
     <command id="72" name="SlowPwm" type="physical" module="" description="Message for pwm data, 0 to 9999">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="ChannelId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
         <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
@@ -155,9 +155,9 @@
     
     <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
 	<variables>
-	  <variable name="P-term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-	  <variable name="I-term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="D-term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="I_term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="D_term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
 	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
 	</variables>
       </command>
