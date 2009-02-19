@@ -9,13 +9,14 @@ struct eeprom_act_SlowPWM EEMEM eeprom_act_SlowPWM =
 		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
 		0xABcd,	// x
 		0x1234,	// y
-		0x00
+		0x00,
+		0x14	//Reportinteval 20 sec.
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 }; 
 #endif
 
-uint8_t pwmDefaultState,pwmDefaultStartState;
+uint8_t pwmDefaultState,pwmDefaultStartState,act_SlowPWM_ReportInterval;
 uint16_t pwmDefaultValue;
 uint16_t pwmPeriod, pwmValue;
 uint8_t pwmStatus;
@@ -25,16 +26,38 @@ uint8_t pwmStatus;
 #define PWM_OFF 2
 void updatePWM_callback(uint8_t timer) {
 	//pwmValue = DEFAULT_PWM_VALUE;
+StdCan_Msg_t txMsg;
 	if (pwmStatus == PWM_HIGH) { //Pwm output is low
 		gpio_clr_pin(PWM_PIN);	//Sets low
-		pwmStatus = 1;
-		Timer_SetTimeout(act_SlowPWM_TIMER, pwmValue, TimerTypeOneShot, &updatePWM_callback);
-		
+		pwmStatus = PWM_LOW;
+		Timer_SetTimeout(timer, pwmValue, TimerTypeOneShot, &updatePWM_callback);
+
+/*
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SLOWPWM;
+		txMsg.Header.ModuleId = act_SlowPWM_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+		txMsg.Length = 1;
+
+		txMsg.Data[0] = 10;
+		StdCan_Put(&txMsg);
+		*/
 	} else if (pwmStatus == PWM_LOW){ //Pwm output is high
 		gpio_set_pin(PWM_PIN);	//Sets high
-		pwmStatus = 0;
-		Timer_SetTimeout(act_SlowPWM_TIMER, pwmPeriod - pwmValue, TimerTypeOneShot, &updatePWM_callback);
-	} else	//PWM_OFF
+		pwmStatus = PWM_HIGH;
+		Timer_SetTimeout(timer, pwmPeriod - pwmValue, TimerTypeOneShot, &updatePWM_callback);
+/*
+StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SLOWPWM;
+		txMsg.Header.ModuleId = act_SlowPWM_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+		txMsg.Length = 1;
+
+		txMsg.Data[0] = 20;
+		StdCan_Put(&txMsg);
+*/	} else	//PWM_OFF
 	{
 	  if (pwmDefaultState == CAN_MODULE_ENUM_SLOWPWM_CONFIG_DEFAULTSTATE_LOW)
 	  {
@@ -89,12 +112,15 @@ void act_SlowPWM_Init(void)
 		eeprom_write_word_crc(EEDATA16.PwmPeriod, DEFAULT_PWM_PERIOD , WITHOUT_CRC);
 		eeprom_write_word_crc(EEDATA16.defaultPwmValue, DEFAULT_PWM_VALUE , WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.defaultStates, 0xa0 , WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ReportInterval, 0x14 , WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 	pwmDefaultValue = eeprom_read_word(EEDATA16.defaultPwmValue);
 	pwmPeriod = eeprom_read_word(EEDATA16.PwmPeriod);
 	pwmDefaultState = (eeprom_read_byte(EEDATA.defaultStates)>>6) & 0x03;
 	pwmDefaultStartState = ((eeprom_read_byte(EEDATA.defaultStates)>>5) & 0x01);
+	act_SlowPWM_ReportInterval = (eeprom_read_byte(EEDATA.ReportInterval));
+	Timer_SetTimeout(act_SlowPWM_SEND_TIMER, act_SlowPWM_ReportInterval*1000 , TimerTypeFreeRunning, 0);
 #endif  
 	///TODO: Initialize hardware etc here
 	pwmInit();
@@ -103,6 +129,19 @@ void act_SlowPWM_Init(void)
 void act_SlowPWM_Process(void)
 {
 	///TODO: Stuff that needs doing is done here
+	if (Timer_Expired(act_SlowPWM_SEND_TIMER)) {
+		StdCan_Msg_t txMsg;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SLOWPWM;
+		txMsg.Header.ModuleId = act_SlowPWM_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_SLOWPWM;
+		txMsg.Length = 3;
+		txMsg.Data[0] = PWMSENSORID;
+		txMsg.Data[1] = (pwmValue>>8)&0xff;
+		txMsg.Data[2] = (pwmValue)&0xff;
+		StdCan_Put(&txMsg);
+	}
 }
 
 void act_SlowPWM_HandleMessage(StdCan_Msg_t *rxMsg)
@@ -122,6 +161,10 @@ void act_SlowPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 					pwmValue= (rxMsg->Data[1]<<8) + rxMsg->Data[2];
 					if (pwmValue > pwmPeriod)
 						pwmValue = pwmPeriod;
+					Timer_SetTimeout(act_SlowPWM_TIMER, pwmValue, TimerTypeOneShot, &updatePWM_callback);
+					pwmStatus = PWM_LOW;
+					gpio_set_out(PWM_PIN);
+					gpio_clr_pin(PWM_PIN);
 				} else
 				{	
 					rxMsg->Data[1] = (pwmValue>>8)&0xff;
@@ -153,6 +196,27 @@ void act_SlowPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				rxMsg->Length = 5;
 				while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
 			}
+		break;
+		
+		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
+		if (rxMsg->Length > 0)
+		{
+			act_SlowPWM_ReportInterval = rxMsg->Data[0];
+			eeprom_write_byte_crc(EEDATA.ReportInterval, act_SlowPWM_ReportInterval , WITH_CRC);
+			Timer_SetTimeout(act_SlowPWM_SEND_TIMER, act_SlowPWM_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+		}
+
+		StdCan_Msg_t txMsg;
+
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SLOWPWM;
+		txMsg.Header.ModuleId = act_SlowPWM_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+		txMsg.Length = 1;
+
+		txMsg.Data[0] = act_SlowPWM_ReportInterval;
+		StdCan_Put(&txMsg);
 		break;
 		}
 	}
