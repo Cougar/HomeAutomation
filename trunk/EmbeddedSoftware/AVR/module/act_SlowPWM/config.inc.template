@@ -11,6 +11,6 @@ DEFAULT_PWM_PERIOD=10000
 act_SlowPWM_ID=<ID>
 #act_SlowPWM_DUMMY=1
 act_SlowPWM_TIMER=<TIMER>
-
+act_SlowPWM_SEND_TIMER=<TIMER>
 
 ## End section act_SlowPWM -- Do not edit this line

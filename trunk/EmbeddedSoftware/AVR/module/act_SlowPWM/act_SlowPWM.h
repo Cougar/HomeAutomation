@@ -28,6 +28,7 @@ void act_SlowPWM_List(uint8_t ModuleSequenceNumber);
 		uint16_t PwmPeriod;
 		uint16_t defaultPwmValue;
 		uint8_t defaultStates;
+		uint8_t ReportInterval;
 	};	
 #endif
 
