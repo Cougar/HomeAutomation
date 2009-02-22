@@ -96,7 +96,19 @@
         <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
-    
+    <command id="73" name="ElectricPower" type="physical" module="" description="Message with data from a power meter">
+      <variables>
+        <variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
+        <variable name="EnergySum" type="uint" start_bit="16" bit_length="16" unit="W/h" description=""/>
+	<variable name="Power4" type="uint" start_bit="32" bit_length="16" unit="Watt" description="Average of 4 measurments"/>
+	<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
+      </variables>
+    </command>
+    <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
+      <variables>
+        <variable name="Energy" type="uint" start_bit="0" bit_length="16" unit="W/h" description=""/>
+      </variables>
+    </command>
     <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
@@ -365,6 +377,7 @@
     <module id="17" name="TC1047A" class="sns"/>
     <module id="18" name="PID" class="act"/>
     <module id="19" name="SlowPWM" class="act"/>
+    <module id="20" name="power" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
