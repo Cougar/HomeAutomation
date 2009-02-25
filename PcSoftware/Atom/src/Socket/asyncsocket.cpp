@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #include "socketeventcallback.h"
-
+#include "../Logger/logger.h"
 
 #include "asyncsocket.h"
 
@@ -405,7 +405,7 @@ void AsyncSocket::sendData(string data)
 	mySendMutex.lock();
 
 	int status = ::send(mySocket, data.c_str(), data.size(), 0);
-
+//Logger::getInstance().add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
 	mySendMutex.unlock();
 
 	//Logger &log = Logger::getInstance();

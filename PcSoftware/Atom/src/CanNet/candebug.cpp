@@ -95,7 +95,7 @@ void CanDebug::sendCanMessageToAll(CanMessage canMessage)
 			debugData += iter->second;
 		}
 
-		sendToAll("[" + niceTime() + "] " + debugData + "\n");
+		sendToAll("[" + niceTime() + "] " + debugData + "\r\n");
 	}
 }
 
