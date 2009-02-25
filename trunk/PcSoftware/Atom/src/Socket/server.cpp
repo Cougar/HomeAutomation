@@ -63,7 +63,7 @@ void Server::run()
 
 			if (mySocket.accept(newSocket))
 			{
-				newSocket->sendData("Welcome to Atom " + ftos(VERSION) + " - " + myName + "\n");
+				newSocket->sendData("Welcome to Atom " + ftos(VERSION) + " - " + myName + "\r\n");
 
 				log.add(myName + " accepted new client with id " + itos(newSocket->getId()) + ".\n");
 				myClientSockets[newSocket->getId()] = newSocket;
@@ -128,7 +128,9 @@ void Server::sendTo(int id, string data)
 		else
 		{
 			log.add(myName + " had a client disconnect.\n");
+			
 			delete myClientSockets[id];
+			myClientSockets[id]=0;
 			myClientSockets.erase(id);
 		}
 	}
@@ -140,9 +142,14 @@ void Server::disconnectClient(int id)
 
 	if (myClientSockets.find(id) != myClientSockets.end())
 	{
-		log.add(myName + " had a client disconnect.\n");
-		delete myClientSockets[id];
-		myClientSockets.erase(id);
+//		log.add(myName + " had a client disconnect!.\n");
+		
+//		delete myClientSockets[id];
+
+//		myClientSockets.erase(id);
+//delete myClientSockets[id];
+//			myClientSockets[id]=0;
+//			myClientSockets.erase(id);
 	}
 }
 
