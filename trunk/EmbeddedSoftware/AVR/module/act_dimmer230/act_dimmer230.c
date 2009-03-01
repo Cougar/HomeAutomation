@@ -74,7 +74,7 @@ ISR (TIMER1_COMPA_vect)
 	The zero-cross pin will go high just before the real zero-cross and
 	low just after the real zero-cross. The time difference is measured
 	and adjusted for. */
-ISR (act_dimmer230_ZC_PCINT_vect) 
+void act_dimmer230_pcint_callback(uint8_t id) //ISR (act_dimmer230_ZC_PCINT_vect) 
 {
 	/* only execute if zerocross pin is low (after real zerocross). 
 	Calculate the diff from real zero-cross.
@@ -253,10 +253,11 @@ void act_dimmer230_Init(void)
 	TCCR1B=(1<<CS11);					/* enable timer, set to prescaler 8, must be changed if cpu freq is changed */
 
 	/* setup interrupt on zerocross, pcint */
-	act_dimmer230_ZC_PCMSK=(1<<(act_dimmer230_ZC_PCINT_BIT));
-	PCIFR=(1<<act_dimmer230_ZC_PCIF);	/* clear any pending interrupt before enabling interrupts */
-	PCICR=(1<<act_dimmer230_ZC_PCIE);	/* enable interrupt for PCINT */
-
+	//act_dimmer230_ZC_PCMSK=(1<<(act_dimmer230_ZC_PCINT_BIT));
+	//PCIFR=(1<<act_dimmer230_ZC_PCIF);	/* clear any pending interrupt before enabling interrupts */
+	//PCICR=(1<<act_dimmer230_ZC_PCIE);	/* enable interrupt for PCINT */
+	Pcint_SetCallbackPin(act_dimmer230_PCINT, act_dimmer230_ZC_IO, &act_dimmer230_pcint_callback);
+	
 	/* Setup timeout for sending the net status packet */
 	Timer_SetTimeout(act_dimmer230_SEND_STATUS_TIMEOUT, act_dimmer230_SEND_STATUS_INTERVAL*1000, TimerTypeFreeRunning, &Send_Status_callback);
 }

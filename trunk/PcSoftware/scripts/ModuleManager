@@ -153,6 +153,7 @@ def updateConfigFile():
 				moduleSections[moduleName] = readConfigSection(localmoddir + "/" + moduleName + "/config.inc.template", moduleName)
 	
 	timers = 0
+	pcints = 0
 		
 	for moduleName, moduleSection in moduleSections.iteritems():
 		c = 0
@@ -162,7 +163,10 @@ def updateConfigFile():
 			elif line.find("<TIMER>") != -1:
 				line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
 				timers += 1
-				
+			elif line.find("<PCINT>") != -1:
+				line = line[:line.find("=")+1] + hex(timers) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
+				pcints += 1
+	
 			moduleSection[c] = line;
 			c += 1
 	
@@ -175,7 +179,11 @@ def updateConfigFile():
 			line = "TIMER_NUM_TIMERS=" + hex(timers)
 		elif line.find("NUMBER_OF_MODULES=") != -1:
 			line = "NUMBER_OF_MODULES=" + hex(len(modules))
-		
+		elif line.find("<PCINT>") != -1:
+			line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
+			pcints += 1
+		elif line.find("PCINT_NUM_PCINTS=") != -1:
+			line = "PCINT_NUM_PCINTS=" + hex(pcints)
 		applicationSection[c] = line;
 		c += 1
 		

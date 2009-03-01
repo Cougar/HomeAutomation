@@ -31,6 +31,9 @@ void <template>_Init(void)
 #endif  
 	///TODO: Initialize hardware etc here
 
+	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
+	// Pcint_SetCallbackPin(<template>_PCINT, EXP_C , &<template>_pcint_callback);
+
 }
 
 void <template>_Process(void)

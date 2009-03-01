@@ -7,14 +7,11 @@ sns_power_ID=<ID>
 
 sns_power_SEND_TIMER=<TIMER>
 
+sns_power_PCINT=<PCINT>
+
 #Default report interval in seconds, not greater then 64.
 sns_power_SEND_PERIOD=10
 
 POWER_SNS_PIN=EXP_C
-
-POWER_SNS_PCINT=PCINT1
-POWER_SNS_PCIE=PCIE0
-POWER_SNS_PCMSK=PCMSK0
-POWER_SNS_PCINT_vector=PCINT0_vect
 
 ## End section sns_power -- Do not edit this line

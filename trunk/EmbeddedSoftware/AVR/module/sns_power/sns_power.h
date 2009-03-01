@@ -15,6 +15,8 @@
 #include <drivers/timer/timer.h>
 #include <drivers/mcu/gpio.h>
 
+#include <drivers/mcu/pcint.h>
+
 void sns_power_Init(void);
 void sns_power_Process(void);
 void sns_power_HandleMessage(StdCan_Msg_t *rxMsg);
