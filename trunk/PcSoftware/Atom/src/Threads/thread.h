@@ -23,6 +23,7 @@
 #define	_THREAD_H
 
 #include <pthread.h>
+#include <iostream>
 
 template <class T>
 class Thread
@@ -40,11 +41,26 @@ public:
 
 	bool stop()
 	{
+		
 		if (!myIsCreated)
+		{
+			//cout << "Thread is not running, can not be stopped " << endl;
 			return true;
-
-		myError = pthread_cancel(myHandle);
-		join();
+		}
+		
+		//cout << "Thread cancel to run " << endl;
+		
+		//myError = pthread_cancel(myHandle);
+		myError = pthread_detach(myHandle);
+		//cout << "Thread cancel returned " << myError << endl;
+		
+		
+		
+		//if (joinThread)
+		{
+			//join();
+		}
+		
 		myIsCreated = false;
 
 		return myError == 0;
