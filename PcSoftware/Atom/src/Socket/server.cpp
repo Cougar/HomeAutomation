@@ -127,10 +127,9 @@ void Server::sendTo(int id, string data)
 		}
 		else
 		{
-			log.add(myName + " had a client disconnect.\n");
+			log.add(myName + " had a client disconnect2.\n");
 			
 			delete myClientSockets[id];
-			myClientSockets[id]=0;
 			myClientSockets.erase(id);
 		}
 	}
@@ -142,14 +141,10 @@ void Server::disconnectClient(int id)
 
 	if (myClientSockets.find(id) != myClientSockets.end())
 	{
-//		log.add(myName + " had a client disconnect!.\n");
+		log.add(myName + " had client " + itos(id) + " disconnect!.\n");
 		
-//		delete myClientSockets[id];
-
-//		myClientSockets.erase(id);
-//delete myClientSockets[id];
-//			myClientSockets[id]=0;
-//			myClientSockets.erase(id);
+		delete myClientSockets[id];
+		myClientSockets.erase(id);
 	}
 }
 

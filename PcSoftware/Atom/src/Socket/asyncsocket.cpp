@@ -77,6 +77,7 @@ void AsyncSocket::run()
 	}
 	catch (SocketException *e)
 	{
+		cout << "DEBUG: socket got an exception: " << e->getDescription() << endl;
 		// Something bad happend and we can not continue
 		eventAdd(SocketEvent::TYPE_CONNECTION_DIED, e->getDescription());
 	}
@@ -90,8 +91,10 @@ bool AsyncSocket::receiveData()
 	char buffer[MAXBUFFER + 1];
 	memset(buffer, 0, MAXBUFFER + 1);
 
+	//cout << "recv start" << endl;
 	int status = ::recv(mySocket, buffer, MAXBUFFER, 0);
-
+	//cout << "recv end" << endl;
+	
 	if (status == -1)
 	{
 		switch (errno)
@@ -404,7 +407,7 @@ void AsyncSocket::sendData(string data)
 {
 	mySendMutex.lock();
 
-	int status = ::send(mySocket, data.c_str(), data.size(), 0);
+	int status = ::send(mySocket, data.c_str(), data.size(), MSG_NOSIGNAL);
 //Logger::getInstance().add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
 	mySendMutex.unlock();
 
@@ -461,7 +464,10 @@ void AsyncSocket::sendData(string data)
 			throw new SocketException("Some bit in the flags argument is inappropriate for the socket type.");
 
 			case EPIPE:
-			throw new SocketException("The local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
+			close();
+			stop();
+			//throw new SocketException("The local end has been shut down on a connection oriented socket. In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.");
+			break;
 
 			default:
 			throw new SocketException("Unknow exception: " + itos(errno));
