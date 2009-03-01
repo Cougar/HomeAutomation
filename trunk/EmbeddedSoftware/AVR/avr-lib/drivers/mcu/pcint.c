@@ -67,7 +67,7 @@ Purpose:  Executed when pin change on PCINT1.
 Input:    -
 Returns:  -
 **************************************************************************/
-#if ((__GNUC__ == 4  && __GNUC_MINOR__ > 2)||__GNUC__ > 4)
+#if ((__GNUC__ == 4  && __GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ > 1)||(__GNUC__ == 4  && __GNUC_MINOR__ > 2)||__GNUC__ > 4)
 ISR(PCINT1_vect, ISR_ALIASOF(PCINT0_vect));
 #else
 ISR_ALIAS(PCINT1_vect, PCINT0_vect);
@@ -78,7 +78,7 @@ Purpose:  Executed when pin change on PCINT2.
 Input:    -
 Returns:  -
 **************************************************************************/
-#if ((__GNUC__ == 4  && __GNUC_MINOR__ > 2)||__GNUC__ > 4)
+#if ((__GNUC__ == 4  && __GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ > 1)||(__GNUC__ == 4  && __GNUC_MINOR__ > 2)||__GNUC__ > 4)
 ISR(PCINT2_vect, ISR_ALIASOF(PCINT0_vect));
 #else
 ISR_ALIAS(PCINT2_vect, PCINT0_vect);
