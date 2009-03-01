@@ -16,6 +16,8 @@
 #include <drivers/timer/timer.h>
 #include <drivers/mcu/gpio.h>
 
+#include <drivers/mcu/pcint.h>
+
 #define ACT_DIMMMER230_STATE_IDLE			0
 #define ACT_DIMMMER230_STATE_TIMER_ON		1
 #define ACT_DIMMMER230_STATE_xyz			2

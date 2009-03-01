@@ -7,5 +7,7 @@
 #<template>_DUMMY=1
 #<template>_DUMMY_TIMER=<TIMER>
 
+#Uncomment to use the pcint driver
+#<template>_DUMMY_PCINT=<PCINT>
 
 ## End section <template> -- Do not edit this line

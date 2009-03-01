@@ -1,4 +1,5 @@
 # List all files that needs to be compiled here
 sns_power/sns_power.c
+drivers/mcu/pcint.c
 #Uncomment the line below if you want to use EEPROM with this module
 drivers/misc/eeprom_crc8.c

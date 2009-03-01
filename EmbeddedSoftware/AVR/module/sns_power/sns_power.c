@@ -20,16 +20,12 @@ struct eeprom_sns_power EEMEM eeprom_sns_power =
 }; 
 #endif
 
-/*********************************************************************//**
-Function: SIGNAL(POWER_SNS_PCINT_vector)
-Purpose:  Executed when pin change on ROTARY_CH1 is seen.
-Input:    -
-Returns:  -
-**************************************************************************/
-SIGNAL(POWER_SNS_PCINT_vector) {
-	if (gpio_get_state(POWER_SNS_PIN) == 1)
+
+void sns_power_pcint_callback(uint8_t id) 
+{
+	if (gpio_get_state(POWER_SNS_PIN) == 0)
 	{
-		if (Timer_GetTicks() - PreviusTimerValue >= 1)
+		if (Timer_GetTicks() - PreviusTimerValue >= 16)
 		{
 			lastMeasurment =  Timer_GetTicks() - PreviusTimerValue;
 			PreviusTimerValue = Timer_GetTicks();
@@ -40,8 +36,7 @@ SIGNAL(POWER_SNS_PCINT_vector) {
 			}
 		}
 	}
-} /* SIGNAL(POWER_SNS_PCINT_vector) */
-
+}
 void sns_power_Init(void)
 {
 #ifdef sns_power_USEEEPROM
@@ -61,8 +56,10 @@ void sns_power_Init(void)
 	gpio_set_pin(POWER_SNS_PIN);	// Enable pull-up
 	
 	// Enable IO-pin interrupt
-	PCICR |= (1<<POWER_SNS_PCIE);
-	POWER_SNS_PCMSK |= (1<<POWER_SNS_PCINT);
+	//PCICR |= (1<<POWER_SNS_PCIE);
+	//POWER_SNS_PCMSK |= (1<<POWER_SNS_PCINT);
+	Pcint_SetCallbackPin(sns_power_PCINT, POWER_SNS_PIN, &sns_power_pcint_callback);
+
 	MeasurmentBufferPointer = 0;
 	Timer_SetTimeout(sns_power_SEND_TIMER, sns_power_ReportInterval*1000 , TimerTypeFreeRunning, 0);
 }
@@ -133,7 +130,7 @@ void sns_power_HandleMessage(StdCan_Msg_t *rxMsg)
 		StdCan_Put(&txMsg);
 		break;
 		case CAN_MODULE_CMD_POWER_SETENERGY:
-		if (rxMsg->Length = 2)
+		if (rxMsg->Length == 2)
 		{
 			EnergyCounter = rxMsg->Data[1];
 			EnergyCounter += ((uint16_t)rxMsg->Data[0])<<8;

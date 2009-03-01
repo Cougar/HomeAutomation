@@ -14,6 +14,9 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
+//to use PCINT lib. uncomment the line below
+//#include <drivers/mcu/pcint.h>
+
 void <template>_Init(void);
 void <template>_Process(void);
 void <template>_HandleMessage(StdCan_Msg_t *rxMsg);
