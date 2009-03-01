@@ -38,6 +38,7 @@ Returns:  -
 ISR(PCINT0_vect) {
 	uint8_t p;
 	/* Check which pin that have had a change and call the callback.*/
+	//printf("I\n");
 	for (p = 0; p < PCINT_NUM_PCINTS; p++)
 	{
 		if (pcints[p].pcintBit < 8) {
@@ -66,22 +67,29 @@ Purpose:  Executed when pin change on PCINT1.
 Input:    -
 Returns:  -
 **************************************************************************/
+#if ((__GNUC__ == 4  && __GNUC_MINOR__ >= 2)||__GNUC__ > 4)
 ISR(PCINT1_vect, ISR_ALIASOF(PCINT0_vect));
-
+#else
+ISR_ALIAS(PCINT1_vect, PCINT0_vect);
+#endif
 /*********************************************************************//**
 Function: ISR(PCINT0_vect)
 Purpose:  Executed when pin change on PCINT2.
 Input:    -
 Returns:  -
 **************************************************************************/
+#if ((__GNUC__ == 4  && __GNUC_MINOR__ >= 2)||__GNUC__ > 4)
 ISR(PCINT2_vect, ISR_ALIASOF(PCINT0_vect));
-
+#else
+ISR_ALIAS(PCINT2_vect, PCINT0_vect);
+#endif
 /*-----------------------------------------------------------------------------
  * Public Functions
  *---------------------------------------------------------------------------*/
 
 void Pcint_SetCallback(uint8_t pcint_id, uint8_t pcintBit, pcintCallback_t callback)
 {
+	//printf("Test\n");
 	if (pcint_id<PCINT_NUM_PCINTS)
 	{
 		uint8_t sreg = SREG;
@@ -99,12 +107,15 @@ void Pcint_SetCallback(uint8_t pcint_id, uint8_t pcintBit, pcintCallback_t callb
 			if (pcints[pcint_id].pcintBit < 8) {
 				pcints[pcint_id].lastStatus = ((PINB & (1 << pcints[pcint_id].pcintBit%8)) != 0);
 				PCMSK0 |= (1<<pcints[pcint_id].pcintBit%8);
+//printf("PCMSK %u\n", PCMSK0);
 			} else if (pcints[pcint_id].pcintBit < 16) {
 				pcints[pcint_id].lastStatus = ((PINC & (1 << pcints[pcint_id].pcintBit%8)) != 0);
 				PCMSK1 |= (1<<pcints[pcint_id].pcintBit%8);
+//printf("PCMSK1 %u\n", PCMSK1);
 			} else if (pcints[pcint_id].pcintBit < 24) {
 				pcints[pcint_id].lastStatus = ((PIND & (1 << pcints[pcint_id].pcintBit%8)) != 0);
 				PCMSK2 |= (1<<pcints[pcint_id].pcintBit%8);
+//printf("PCMSK2 %u\n", PCMSK2);
 			}
 		} else { //turn off interupt
 			if (pcints[pcint_id].pcintBit < 8) {
