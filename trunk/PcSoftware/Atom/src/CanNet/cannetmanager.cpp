@@ -172,7 +172,7 @@ void CanNetManager::run()
 						}
 						else
 						{
-							canDebug.sendToAll(data + "\n");
+							canDebug.sendToAll(data + "\r\n");
 						}
 
 						delete canMessage;
