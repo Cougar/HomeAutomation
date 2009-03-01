@@ -101,10 +101,14 @@ void sns_irTransmit_HandleMessage(StdCan_Msg_t *rxMsg)
 		if (sns_irTransmit_state == sns_irTransmit_STATE_IDLE && rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED)
 		{
 			sns_irTransmit_proto.protocol = rxMsg->Data[1];
-			sns_irTransmit_proto.data = rxMsg->Data[5];
-			sns_irTransmit_proto.data |= (rxMsg->Data[4]<<8);
-			sns_irTransmit_proto.data |= ((uint32_t)rxMsg->Data[3]<<16);
-			sns_irTransmit_proto.data |= ((uint32_t)rxMsg->Data[2]<<24);
+
+			sns_irTransmit_proto.data = rxMsg->Data[2];
+			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
+			sns_irTransmit_proto.data |= rxMsg->Data[3];
+			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
+			sns_irTransmit_proto.data |= rxMsg->Data[4];
+			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
+			sns_irTransmit_proto.data |= rxMsg->Data[5];
 
 			sns_irTransmit_state = sns_irTransmit_STATE_START_TRANSMIT;
 		}
