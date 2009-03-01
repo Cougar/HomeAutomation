@@ -164,7 +164,7 @@ def updateConfigFile():
 				line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
 				timers += 1
 			elif line.find("<PCINT>") != -1:
-				line = line[:line.find("=")+1] + hex(timers) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
+				line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
 				pcints += 1
 	
 			moduleSection[c] = line;
