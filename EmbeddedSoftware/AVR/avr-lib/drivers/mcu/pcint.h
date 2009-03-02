@@ -14,10 +14,13 @@
 
 #ifndef PCINT_H_
 #define PCINT_H_
+
 #include <config.h>
 #ifndef PCINT_NUM_PCINTS
 #	error PCINT_NUM_PCINTS is not defined! Edit config.inc.
 #endif
+
+#if PCINT_NUM_PCINTS > 0
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -42,7 +45,7 @@
 /**
  * @brief Type of the callback function pointer
  */
-typedef void (*pcintCallback_t)(uint8_t);
+typedef void (*pcintCallback_t)(uint8_t, uint8_t);
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
@@ -79,5 +82,6 @@ void Pcint_SetCallback(uint8_t pcint_id, uint8_t pcintBit, pcintCallback_t callb
  */ 
 static inline __attribute__ ((always_inline)) void Pcint_SetCallbackPin(uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint, pcintCallback_t callback) {Pcint_SetCallback(pcint_id, pcint, *callback);}
 
+#endif	/*PCINT_NUM_PCINTS > 0*/
 /**@}*/
 #endif /*PCINT_H_*/

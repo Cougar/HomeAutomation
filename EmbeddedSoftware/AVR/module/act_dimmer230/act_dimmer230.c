@@ -74,7 +74,7 @@ ISR (TIMER1_COMPA_vect)
 	The zero-cross pin will go high just before the real zero-cross and
 	low just after the real zero-cross. The time difference is measured
 	and adjusted for. */
-void act_dimmer230_pcint_callback(uint8_t id) //ISR (act_dimmer230_ZC_PCINT_vect) 
+void act_dimmer230_pcint_callback(uint8_t id, uint8_t status) //ISR (act_dimmer230_ZC_PCINT_vect) 
 {
 	/* only execute if zerocross pin is low (after real zerocross). 
 	Calculate the diff from real zero-cross.
