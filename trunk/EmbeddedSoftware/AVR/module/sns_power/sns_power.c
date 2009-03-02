@@ -21,9 +21,10 @@ struct eeprom_sns_power EEMEM eeprom_sns_power =
 #endif
 
 
-void sns_power_pcint_callback(uint8_t id) 
+void sns_power_pcint_callback(uint8_t id, uint8_t status) 
 {
-	if (gpio_get_state(POWER_SNS_PIN) == 0)
+	//if (gpio_get_state(POWER_SNS_PIN) == 0)
+	if (status == 0)
 	{
 		if (Timer_GetTicks() - PreviusTimerValue >= 16)
 		{
