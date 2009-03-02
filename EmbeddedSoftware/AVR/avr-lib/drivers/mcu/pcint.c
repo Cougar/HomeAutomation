@@ -41,24 +41,27 @@ Returns:  -
 **************************************************************************/
 ISR(PCINT0_vect) {
 	uint8_t p;
+	uint8_t rPinB=PINB;
+	uint8_t rPinC=PINC;
+	uint8_t rPinD=PIND;
 
 	/* Check which pin that have had a change and call the callback.*/
 	//printf("I\n");
 	for (p = 0; p < PCINT_NUM_PCINTS; p++)
 	{
 		if (pcints[p].pcintBit < 8) {
-			if (pcints[p].lastStatus != ((PINB & (1 << pcints[p].pcintBit)) != 0)) {
-				pcints[p].lastStatus = ((PINB & (1 << pcints[p].pcintBit)) != 0);
+			if (pcints[p].lastStatus != ((rPinB & (1 << pcints[p].pcintBit)) != 0)) {
+				pcints[p].lastStatus = ((rPinB & (1 << pcints[p].pcintBit)) != 0);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		} else if (pcints[p].pcintBit < 16) {
-			if (pcints[p].lastStatus != ((PINC & (1 << pcints[p].pcintBit%8)) != 0)) {
-				pcints[p].lastStatus = ((PINC & (1 << pcints[p].pcintBit%8)) != 0);
+			if (pcints[p].lastStatus != ((rPinC & (1 << pcints[p].pcintBit%8)) != 0)) {
+				pcints[p].lastStatus = ((rPinC & (1 << pcints[p].pcintBit%8)) != 0);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		} else if (pcints[p].pcintBit < 24) {
-			if (pcints[p].lastStatus != ((PIND & (1 << pcints[p].pcintBit%8)) != 0)) {
-				pcints[p].lastStatus = ((PIND & (1 << pcints[p].pcintBit%8)) != 0);
+			if (pcints[p].lastStatus != ((rPinD & (1 << pcints[p].pcintBit%8)) != 0)) {
+				pcints[p].lastStatus = ((rPinD & (1 << pcints[p].pcintBit%8)) != 0);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		}

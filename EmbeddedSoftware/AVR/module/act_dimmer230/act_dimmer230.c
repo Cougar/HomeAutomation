@@ -79,7 +79,7 @@ void act_dimmer230_pcint_callback(uint8_t id, uint8_t status) //ISR (act_dimmer2
 	/* only execute if zerocross pin is low (after real zerocross). 
 	Calculate the diff from real zero-cross.
 	*/
-	if (!gpio_get_state(act_dimmer230_ZC_IO)) 
+	if (!status)
 	{
 		xcTimeDiff = TCNT1;
 		xcTimeDiff = xcTimeDiff >> 1; //divide by two
