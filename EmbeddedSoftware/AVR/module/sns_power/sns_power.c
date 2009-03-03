@@ -28,7 +28,9 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 	{
 		if (Timer_GetTicks() - PreviusTimerValue >= 16)
 		{
+			MeasurmentBufferPointer++;
 			lastMeasurment =  Timer_GetTicks() - PreviusTimerValue;
+			MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) (lastMeasurment & 0x0000FFFF);
 			PreviusTimerValue = Timer_GetTicks();
 			tmpCounter++;
 			if(tmpCounter >= 10) {
@@ -67,11 +69,12 @@ void sns_power_Init(void)
 
 void sns_power_Process(void)
 {
+/*
 	if (lastMeasurment != 0) {
 	      MeasurmentBufferPointer++;
 	      MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) lastMeasurment;//(uint16_t) 360000/lastMeasurment;
 	      lastMeasurment=0;
-	}
+	}*/
 	StdCan_Msg_t txMsg;
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_power_SEND_TIMER)) {
