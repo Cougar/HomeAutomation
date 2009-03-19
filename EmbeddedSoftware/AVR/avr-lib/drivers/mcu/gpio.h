@@ -270,5 +270,75 @@
 #define DDR_EXP_P		DDRC
 #define NR_EXP_P		PC0
 
+// for NodeEssential:
+#define Essential_0		&PORTD,&PIND,&DDRD,PD2,18
+#define Essential_0_PCINT_vect	PCINT2_vect
+#define PORT_Essential_0	PORTD
+#define PIN_Essential_0		PIND
+#define DDR_Essential_0		DDRD
+#define NR_Essential_0		PD2
+
+#define Essential_1		&PORTD,&PIND,&DDRD,PD1,17
+#define Essential_1_PCINT_vect	PCINT2_vect
+#define PORT_Essential_1	PORTD
+#define PIN_Essential_1		PIND
+#define DDR_Essential_1		DDRD
+#define NR_Essential_1		PD1
+
+#define Essential_2		&PORTD,&PIND,&DDRD,PD0,16
+#define Essential_2_PCINT_vect	PCINT2_vect
+#define PORT_Essential_2	PORTD
+#define PIN_Essential_2		PIND
+#define DDR_Essential_2		DDRD
+#define NR_Essential_2		PD0
+
+#define Essential_3		&PORTD,&PIND,&DDRD,PD4,20
+#define Essential_3_PCINT_vect	PCINT2_vect
+#define PORT_Essential_3	PORTD
+#define PIN_Essential_3		PIND
+#define DDR_Essential_3		DDRD
+#define NR_Essential_3		PD4
+
+#define Essential_4		&PORTD,&PIND,&DDRD,PD5,21
+#define Essential_4_PCINT_vect	PCINT2_vect
+#define PORT_Essential_4	PORTD
+#define PIN_Essential_4		PIND
+#define DDR_Essential_4		DDRD
+#define NR_Essential_4		PD5
+
+#define Essential_5		&PORTD,&PINd,&DDRD,PD6,22
+#define Essential_5_PCINT_vect	PCINT2_vect
+#define PORT_Essential_5	PORTD
+#define PIN_Essential_5		PIND
+#define DDR_Essential_5		DDRD
+#define NR_Essential_5		PD6
+
+#define Essential_6		&PORTB,&PINB,&DDRB,PB0,0
+#define Essential_6_PCINT_vect	PCINT0_vect
+#define PORT_Essential_6	PORTB
+#define PIN_Essential_6		PINB
+#define DDR_Essential_6		DDRB
+#define NR_Essential_6		PB0
+
+#define Essential_7		&PORTB,&PINB,&DDRB,PB1,1
+#define Essential_7_PCINT_vect	PCINT0_vect
+#define PORT_Essential_7	PORTB
+#define PIN_Essential_7		PINB
+#define DDR_Essential_7		DDRB
+#define NR_Essential_7		PB1
+
+#define Essential_8		&PORTC,&PINC,&DDRC,PC4,12
+#define Essential_8_PCINT_vect	PCINT1_vect
+#define PORT_Essential_8	PORTC
+#define PIN_Essential_8		PINC
+#define DDR_Essential_8		DDRC
+#define NR_Essential_8		PC4
+
+#define Essential_9		&PORTC,&PINC,&DDRC,PC5,13
+#define Essential_9_PCINT_vect	PCINT1_vect
+#define PORT_Essential_9	PORTC
+#define PIN_Essential_9		PINC
+#define DDR_Essential_9		DDRC
+#define NR_Essential_9		PC5
 #endif
 //eof gpio.h
