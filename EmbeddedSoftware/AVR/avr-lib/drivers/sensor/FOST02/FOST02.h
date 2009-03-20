@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <config.h>
+#include <drivers/mcu/gpio.h>
 
 /*-----------------------------------------------
  * Defines
@@ -14,20 +15,14 @@
 
 /* 
  * Define which PORT/PIN to use:
- * FOST02_DATA_PIN, FOST02_DATA_DIR, FOST02_DATA_PORT
- * FOST02_CLK_PIN, FOST02_CLK_DIR, FOST02_CLK_PORT
- * The defines are moved to settings.h
 */
 #ifndef FOST02_DATA
-
-#define FOST02_DATA		PC4
-#define FOST02_DATA_PIN		PINC
-#define FOST02_DATA_DIR		DDRC
-#define FOST02_DATA_PORT	PORTC
-
-#define FOST02_CLK		PC5
-#define FOST02_CLK_DIR		DDRC
-#define FOST02_CLK_PORT		PORTC
+#warning FOST02_DATA not defined, useing EXP_M
+#define FOST02_DATA		EXP_M
+#endif 
+#ifndef FOST02_CLK
+#warning FOST02_CLK not defined, useing EXP_L
+#define FOST02_CLK		EXP_L
 #endif 
 
 /*-----------------------------------------------
