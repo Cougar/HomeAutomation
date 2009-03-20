@@ -38,8 +38,9 @@ void GetTemperature(void)
 		getFOST02DataByte(&byte1, &byte2);
 		TmpV = (uint16_t) (byte1<<8) + byte2;
 		TmpV = TmpV << 4;
-		TmpV = TmpV/25;
+		TmpV = TmpV/5;
 		TmpV = TmpV << 2;
+		TmpV = TmpV/5;
 		TmpV = TmpV-(40*64);
 		txMsg.Data[2]= (uint8_t) (TmpV & 0xFF);
 		txMsg.Data[1]= (uint8_t) ((TmpV >> 8) & 0xFF);
