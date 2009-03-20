@@ -43,10 +43,10 @@ void GetTemperature(void)
 		TmpV = TmpV/25;
 		txMsg.Data[3]= (uint8_t) ((TmpV >> 8) & 0x00FF);
 		txMsg.Data[4]= (uint8_t) (TmpV & 0x00FF);
-		TmpV= TmpV <<4;
-		TmpV = TmpV-0x2800;
-		txMsg.Data[2]= (uint8_t) (TmpV & 0x00FF);
-		txMsg.Data[1]= (uint8_t) ((TmpV >> 8) & 0x00FF);
+		TmpV = TmpV << 4;
+		TmpV = TmpV-10240;
+		txMsg.Data[2]= (uint8_t) (TmpV & 0xFF);
+		txMsg.Data[1]= (uint8_t) ((TmpV >> 8) & 0xFF);
 		StdCan_Put(&txMsg);
 		
 		FlagGetTemperature = 0;
