@@ -42,8 +42,8 @@ void GetTemperature(void)
 		txMsg.Data[4]= byte2;
 		
 		TmpV = TmpV << 4;
-		TmpV = TmpV*0.04;
-		TmpV= TmpV <<4;
+		TmpV = TmpV/100;
+		TmpV= TmpV <<6;
 		TmpV = TmpV-0x2800;
 		txMsg.Data[2]= (uint8_t) (TmpV & 0x00FF);
 		txMsg.Data[1]= (uint8_t) ((TmpV >> 8) & 0x00FF);
