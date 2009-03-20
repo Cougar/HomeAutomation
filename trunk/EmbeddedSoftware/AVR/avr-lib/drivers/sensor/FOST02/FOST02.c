@@ -28,28 +28,28 @@
  */
 void FOST02Init(void)
 {
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
-	FOST02_CLK_DIR |=(1<<FOST02_CLK); //set 1 in DDR line CLK = Out
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	FOST02_DATA_PORT &= ~(1<<FOST02_DATA); //set 0 in FOST_DATA
+	gpio_clr_pin(FOST02_CLK);
+	gpio_set_out(FOST02_CLK);	
+	gpio_set_in(FOST02_DATA);
+	gpio_clr_pin(FOST02_DATA);
 }
 void sendReset(void)
 {
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	delay_us(2);
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_DATA_DIR |=(1<<FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
+	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	delay_us(2);
 }
 uint8_t sendCommand(uint8_t cmd)
@@ -59,40 +59,40 @@ uint8_t sendCommand(uint8_t cmd)
 	for (i = 0; i<8 ; i++)
 	{
 		if ((cmd & 0x80) == 0x80)
-			FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+			gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 		else
-			FOST02_DATA_DIR |=(1<<FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
+			gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
 		delay_us(2);
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		cmd = cmd << 1;
 		delay_us(2);
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		delay_us(2);
 	}
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		
 	delay_us(2);
-	if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) == 0) 
+	if ( !gpio_get_state(FOST02_DATA)) 
 	{
 		ret = 1;
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		delay_us(2);
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
-		while ((FOST02_DATA_PIN & (1<<FOST02_DATA)) == 0);
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
+		while (!gpio_get_state(FOST02_DATA));
 		delay_us(2);
 	}
 	else
 		ret = 0;
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	delay_us(2);
 	return ret;
 }
 
 uint8_t getFOST02PinStatus(void)
 {
-	if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) != 0) 
+	if ( gpio_get_state(FOST02_DATA)) 
 		return 1;
 	else
 		return 0; 
@@ -106,37 +106,37 @@ uint16_t getFOST02Data(void)
 	data2=0; 
 	for (i = 0; i<8 ; i++)
 	{
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		delay_us(2);
 		data1 = data1 << 1;
-		if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) != 0) 
+		if ( gpio_get_state(FOST02_DATA)) 
 			data1 = data1 | 0x0001;
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		delay_us(2);
 	}
-	FOST02_DATA_DIR |=(1<<FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
+	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
 	for (i = 0; i<8 ; i++)
 	{
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		delay_us(2);
 		data2 = data2 << 1;
-		if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) != 0) 
+		if ( gpio_get_state(FOST02_DATA)) 
 			data2 = data2 | 0x0001;
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		delay_us(2);
 	}
 	//skip Ack
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	data = (uint16_t) (data1<<8);
 	data += data2;
 	return data;
@@ -150,37 +150,37 @@ void getFOST02DataByte(uint8_t *data1in, uint8_t *data2in)
 	uint8_t data2 = 0;
 	for (i = 0; i<8 ; i++)
 	{
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		delay_us(2);
 		data1 = data1 << 1;
-		if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) != 0) 
+		if ( gpio_get_state(FOST02_DATA)) 
 			data1 = data1 | 0x0001;
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		delay_us(2);
 	}
-	FOST02_DATA_DIR |=(1<<FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
+	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
 	for (i = 0; i<8 ; i++)
 	{
-		FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		delay_us(2);
 		data2 = data2 << 1;
-		if ( (FOST02_DATA_PIN & (1<<FOST02_DATA)) != 0) 
+		if ( gpio_get_state(FOST02_DATA)) 
 			data2 = data2 | 0x0001;
-		FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		delay_us(2);
 	}
 	//skip Ack
-	FOST02_DATA_DIR &= ~(1<<FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
+	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 	delay_us(2);
-	FOST02_CLK_PORT |= (1<<FOST02_CLK); //set 1 in FOST_CLK
+	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 	delay_us(2);
-	FOST02_CLK_PORT &= ~(1<<FOST02_CLK); //set 0 in FOST_CLK
+	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	*data1in = data1;
 	*data2in = data2;
 }
