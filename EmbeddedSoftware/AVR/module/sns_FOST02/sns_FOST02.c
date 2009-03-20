@@ -32,12 +32,15 @@ void GetTemperature(void)
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_FOST02;
 		txMsg.Header.ModuleId = sns_FOST02_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
-		txMsg.Length = 3;
+		txMsg.Length = 5;
 		txMsg.Data[0] = FOST02_ID;
 	
 		
 		getFOST02DataByte(&byte1, &byte2);
 		TmpV = (uint16_t) (byte1<<8) + byte2;
+		txMsg.Data[3]= byte1;
+		txMsg.Data[4]= byte2;
+		
 		TmpV = TmpV << 4;
 		TmpV = TmpV/25;
 		TmpV= TmpV <<4;
