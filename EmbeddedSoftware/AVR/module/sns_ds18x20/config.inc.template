@@ -6,9 +6,6 @@ sns_ds18x20_SEND_PERIOD=20
 sns_ds18x20_SEND_DELAY=500
 sns_ds18x20_SEARCH_TIMEOUT=5
 
-#OW_PIN=PD6
-#OW_IN=PIND
-#OW_OUT=PORTD
-#OW_DDR=DDRD
+OW_PIN=EXP_F
 
 ## End section sns_ds18x20 -- Do not edit this line

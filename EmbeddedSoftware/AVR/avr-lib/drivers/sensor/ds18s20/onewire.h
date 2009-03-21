@@ -2,7 +2,8 @@
 #define _1wire_h_
 
 #include <inttypes.h>
-
+#include <drivers/mcu/gpio.h>
+#include "config.h"
 /*******************************************/
 /* Hardware connection                     */
 /*******************************************/
@@ -17,17 +18,14 @@
 #ifdef OW_ONE_BUS
 
 #ifndef OW_PIN
-
-#define OW_PIN  PD6
-#define OW_IN   PIND
-#define OW_OUT  PORTD
-#define OW_DDR  DDRD
-
+  #warning OW_PIN shall be defined in config.inc, useing OW_PIN=EXP_F... 
+  #define OW_PIN  EXP_F
 #endif
 
 #define OW_CONF_DELAYOFFSET 0
 
-#else 
+#else
+#error The lib does not support not defining OW_ONE_BUS 
 #if F_CPU<1843200
  #warning | experimental multi-bus-mode is not tested for 
  #warning | frequencies below 1,84MHz - use OW_ONE_WIRE or
