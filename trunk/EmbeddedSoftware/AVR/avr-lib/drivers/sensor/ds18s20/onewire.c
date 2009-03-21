@@ -18,11 +18,12 @@
 
 #ifdef OW_ONE_BUS
 
-#define OW_GET_IN()   ( OW_IN & (1<<OW_PIN))
-#define OW_OUT_LOW()  ( OW_OUT &= (~(1 << OW_PIN)) )
-#define OW_OUT_HIGH() ( OW_OUT |= (1 << OW_PIN) )
-#define OW_DIR_IN()   ( OW_DDR &= (~(1 << OW_PIN )) )
-#define OW_DIR_OUT()  ( OW_DDR |= (1 << OW_PIN) )
+#define OW_GET_IN()   gpio_get_state(OW_PIN)
+#define OW_OUT_LOW()  gpio_clr_pin(OW_PIN)
+#define OW_OUT_HIGH() gpio_set_pin(OW_PIN)
+#define OW_DIR_IN()   gpio_set_in(OW_PIN)
+#define OW_DIR_OUT()  gpio_set_out(OW_PIN)
+
 
 #else
 
