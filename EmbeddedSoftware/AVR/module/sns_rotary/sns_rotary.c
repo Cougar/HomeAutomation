@@ -5,26 +5,21 @@ uint8_t rotaryEncoder_Position_old = 0;
 uint8_t rotaryEncoder_Button_Position = 0;
 uint8_t rotaryEncoder_Button_Position_old = 0;
 
-/*********************************************************************//**
-Function: SIGNAL(ROTARY_CH1_SIGNAL)
-Purpose:  Executed when pin change on ROTARY_CH1 is seen.
-Input:    -
-Returns:  -
-**************************************************************************/
-SIGNAL(ROTARY_BTN_PCINT_vector) {
+
+void sns_rotary_pcint_callback(uint8_t id, uint8_t status) 
+{
 	uint8_t rot_data = 0;
 	static uint8_t rot_lastdir = 0, rot_laststate = 0;
 
 	//Take care of button push
-	if ((ROTARY_BTN_PIN&(1<<ROTARY_BTN)) != rotaryEncoder_Button_Position){ //The buttonstate has changed!
-		rotaryEncoder_Button_Position = ROTARY_BTN_PIN&(1<<ROTARY_BTN);
+	if (gpio_get_state(ROTARY_BTN) != rotaryEncoder_Button_Position){ //The buttonstate has changed!
+		rotaryEncoder_Button_Position = gpio_get_state(ROTARY_BTN);
 	}
-
 	//Take care of rotary encoder movement
-	if(ROTARY_CH1_PIN&(1<<ROTARY_CH1)){
+	if(gpio_get_state(ROTARY_CH1)){
 		rot_data |= 0x01;
 	}
-	if(ROTARY_CH2_PIN&(1<<ROTARY_CH2)){
+	if(gpio_get_state(ROTARY_CH2)){
 		rot_data |= 0x02;
 	}
 
@@ -48,29 +43,9 @@ SIGNAL(ROTARY_BTN_PCINT_vector) {
 	} else { // No, only one of the signals are high. We can use this to find out what direction we are moving.
 		rot_lastdir = rot_data;
 	}
-} /* SIGNAL(ROTARY_CH1_SIGNAL) */
+} 
 
 
-/*********************************************************************//**
-Function: SIGNAL(ROTARY_CH2_SIGNAL)
-Purpose:  Executed when pin change on ROTARY_CH1 is seen.
-		  This executes SIGNAL(ROTARY_BTN_SIGNAL) interupt code
-Input:    -
-Returns:  -
-**************************************************************************/
-#if (ROTARY_CH1_PCINT_vector != ROTARY_BTN_PCINT_vector)
-ISR(ROTARY_CH1_PCINT_vector, ISR_ALIASOF(ROTARY_BTN_PCINT_vector));
-#endif
-/*********************************************************************//**
-Function: SIGNAL(ROTARY_CH2_SIGNAL)
-Purpose:  Executed when pin change on ROTARY_CH2 is seen.
-		  This executes SIGNAL(ROTARY_BTN_SIGNAL) interupt code
-Input:    -
-Returns:  -
-**************************************************************************/
-#if (ROTARY_CH2_PCINT_vector != ROTARY_BTN_PCINT_vector && ROTARY_CH2_PCINT_vector != ROTARY_CH1_PCINT_vector)
-ISR(ROTARY_CH2_PCINT_vector, ISR_ALIASOF(ROTARY_BTN_PCINT_vector));
-#endif
 
 void sns_rotary_Init(void)
 {
@@ -80,20 +55,17 @@ void sns_rotary_Init(void)
 	rotaryEncoder_Position = 0;	// Set initial value to 0
 	rotaryEncoder_Position_old = 0;	// Set initial value to 0
 
-	ROTARY_CH1_DDR &= ~(1<<ROTARY_CH1);	// set as input
-	ROTARY_CH2_DDR &= ~(1<<ROTARY_CH2);	// set as input
-	ROTARY_BTN_DDR &= ~(1<<ROTARY_BTN);	// set as input
-	ROTARY_CH1_PORT |= (1<<ROTARY_CH1);	// Enable pull-up
-	ROTARY_CH2_PORT |= (1<<ROTARY_CH2);	// Enable pull-up
-	ROTARY_BTN_PORT |= (1<<ROTARY_BTN);	// Enable pull-up
+	gpio_set_in(ROTARY_CH1);	// Set to input
+	gpio_set_pin(ROTARY_CH1);	// Enable pull-up
+	gpio_set_in(ROTARY_CH2);	// Set to input
+	gpio_set_pin(ROTARY_CH2);	// Enable pull-up
+	gpio_set_in(ROTARY_BTN);	// Set to input
+	gpio_set_pin(ROTARY_BTN);	// Enable pull-up
 
 	// Enable IO-pin interrupt
-	PCICR |= (1<<ROTARY_CH1_PCIE);
-	ROTARY_CH1_PCMSK |= (1<<ROTARY_CH1_PCINT);
-	PCICR |= (1<<ROTARY_CH2_PCIE);
-	ROTARY_CH2_PCMSK |= (1<<ROTARY_CH2_PCINT);
-	PCICR |= (1<<ROTARY_BTN_PCIE);
-	ROTARY_BTN_PCMSK |= (1<<ROTARY_BTN_PCINT);
+	Pcint_SetCallbackPin(sns_rotary_PCINT_CH1, ROTARY_CH1, &sns_rotary_pcint_callback);
+	Pcint_SetCallbackPin(sns_rotary_PCINT_CH2, ROTARY_CH2, &sns_rotary_pcint_callback);
+	Pcint_SetCallbackPin(sns_rotary_PCINT_BTN, ROTARY_BTN, &sns_rotary_pcint_callback);
 }
 
 void sns_rotary_Process(void)

@@ -1,2 +1,3 @@
 # List all files that needs to be compiled here
 sns_rotary/sns_rotary.c
+drivers/mcu/pcint.c
