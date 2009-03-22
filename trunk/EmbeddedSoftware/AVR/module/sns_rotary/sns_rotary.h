@@ -14,6 +14,10 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
+#include <drivers/mcu/gpio.h>
+
+#include <drivers/mcu/pcint.h>
+
 void sns_rotary_Init(void);
 void sns_rotary_Process(void);
 void sns_rotary_HandleMessage(StdCan_Msg_t *rxMsg);
