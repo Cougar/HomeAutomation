@@ -15,7 +15,7 @@ RANLIB=ranlib
 CC=gcc
 CCC=g++
 CXX=g++
-FC=gfortran
+FC=
 
 # Macros
 PLATFORM=GNU-Linux-x86
@@ -56,7 +56,7 @@ CXXFLAGS=-m32
 FFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lpthread src/v8/libv8_g.a
+LDLIBSOPTIONS=-lpthread src/v8/libv8_g.a -lrt
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
