@@ -90,6 +90,7 @@
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibFileItem>src/v8/libv8_g.a</linkerLibFileItem>
+            <linkerOptionItem>-lrt</linkerOptionItem>
           </linkerLibItems>
           <commandLine>-m32</commandLine>
         </linkerTool>
@@ -251,6 +252,7 @@
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibFileItem>src/v8/libv8.a</linkerLibFileItem>
+            <linkerOptionItem>-lrt</linkerOptionItem>
           </linkerLibItems>
           <commandLine>-m32</commandLine>
         </linkerTool>
