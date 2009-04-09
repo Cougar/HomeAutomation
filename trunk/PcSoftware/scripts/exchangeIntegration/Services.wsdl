@@ -1122,7 +1122,7 @@
   </wsdl:binding>
    <wsdl:service name="ExchangeServices">
      <wsdl:port name="ExchangeServicePort" binding="tns:ExchangeServiceBinding">
-       <soap:address location="https://mail.qrtech.se/EWS/Exchange.asmx"/>
+       <soap:address location="https://server.com/EWS/Exchange.asmx"/>
      </wsdl:port>
   </wsdl:service> 
 </wsdl:definitions>
