@@ -1,0 +1,35 @@
+#ifndef ACT_SOFTPWM
+#define ACT_SOFTPWM
+
+/*-----------------------------------------------------------------------------
+ * Includes
+ *---------------------------------------------------------------------------*/
+/* system files */
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdio.h>
+/* lib files */
+#include <config.h>
+#include <bios.h>
+#include <drivers/can/stdcan.h>
+#include <drivers/timer/timer.h>
+#include <drivers/mcu/gpio.h>
+
+//to use PCINT lib. uncomment the line below
+//#include <drivers/mcu/pcint.h>
+
+void act_softPWM_Init(void);
+void act_softPWM_Process(void);
+void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg);
+void act_softPWM_List(uint8_t ModuleSequenceNumber);
+
+
+#ifdef act_softPWM_USEEEPROM
+	struct act_softPWM_Data{
+		///TODO: Define EEPROM variables needed by the module
+		uint8_t x;
+		uint16_t y;
+	};	
+#endif
+
+#endif // ACT_SOFTPWM
