@@ -11,15 +11,14 @@ void act_hd44780_Init(void)
 	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
 	OCR0B = act_hd44780_INITIAL_CONTRAST;
-	DDRD |= (1<<DDD5);
+	DDRD |= (1<<PD5);
 
 
 	// Backlight
-	TCCR1A |= (1<<COM1A1)|(1<<WGM11);
-	TCCR1B |= (1<<WGM13)|(1<<WGM12)|(1<<CS10);
-	ICR1 = 0xFF; // Make it 8 bits
-	OCR1A = act_hd44780_INITIAL_BACKLIGHT;
-	DDRB |= (1<<DDB1);
+	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
+	TCCR0B |= (1<<CS00);
+	OCR0A = act_hd44780_INITIAL_BACKLIGHT;
+	DDRD |= (1<<PD6);
 
 
 	lcd_init(LCD_DISP_ON);
@@ -59,7 +58,15 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 			lcd_putc((char)rxMsg->Data[n]);
 		}
 		break;
-		
+/*
+		case CAN_MODULE_CMD_HD44789_LCD_CLEARROW:
+		lcd_gotoxy(0, rxMsg->Data[0]);
+		for (n = 0; n < act_hd44780_WIDTH; n++)
+		{
+			lcd_putc(' ');
+		}
+		break;
+*/
 		case CAN_MODULE_CMD_HD44789_LCD_TEXT:
 		for (n = 0; n < rxMsg->Length; n++)
 		{
@@ -78,13 +85,13 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		txMsg.Data[0] = act_hd44780_WIDTH;
 		txMsg.Data[1] = act_hd44780_HEIGHT;
 
-		StdCan_Put(&txMsg);
+		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		break;
 
 		case CAN_MODULE_CMD_HD44789_LCD_BACKLIGHT:
 		if (rxMsg->Length > 0) {
 #if (act_hd44780_TYPE==0)
-			OCR1AL = rxMsg->Data[0];
+			OCR0A = rxMsg->Data[0];
 #else
 			OCR0B = rxMsg->Data[0];
 #endif
@@ -100,12 +107,12 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		txMsg.Length = 1;
 
 #if (act_hd44780_TYPE==0)
-			txMsg.Data[0] = OCR1AL;
+			txMsg.Data[0] = OCR0A;
 #else
 			txMsg.Data[0] = OCR0B;
 #endif
 
-		StdCan_Put(&txMsg);
+		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		break;
 		}
 	}
