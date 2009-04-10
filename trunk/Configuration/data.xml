@@ -357,6 +357,13 @@
 		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
       </variables>
     </command>
+    <command id="128" name="RGB_value" type="specific" module="softPWM" description="Set an RGB-value">
+     <variables>
+        <variable name="RED" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="GREEN" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="BLUE" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	</variables>
+    </command>
   </commands>
   <modules>
     <module id="0" name="Debug" class="tst"/>
@@ -378,6 +385,7 @@
     <module id="18" name="PID" class="act"/>
     <module id="19" name="SlowPWM" class="act"/>
     <module id="20" name="power" class="sns"/>
+    <module id="21" name="softPWM" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

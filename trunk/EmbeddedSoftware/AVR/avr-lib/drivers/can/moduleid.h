@@ -1,4 +1,4 @@
-// Built on Sun Feb 22 12:29:23 2009 by makeCanId.pl
+// Built on Fri Apr 10 15:48:14 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -61,6 +61,7 @@
 #define CAN_MODULE_CMD_DIMMER230_ABS_FADE 131
 #define CAN_MODULE_CMD_DIMMER230_REL_FADE 132
 #define CAN_MODULE_CMD_DIMMER230_NETINFO 133
+#define CAN_MODULE_CMD_SOFTPWM_RGB_VALUE 128
 
 //------------------------------- //
 // Command enum value definitions //
@@ -137,6 +138,7 @@
 #define CAN_MODULE_TYPE_ACT_PID 18
 #define CAN_MODULE_TYPE_ACT_SLOWPWM 19
 #define CAN_MODULE_TYPE_SNS_POWER 20
+#define CAN_MODULE_TYPE_ACT_SOFTPWM 21
 
 //----------------- //
 // Misc definitions //

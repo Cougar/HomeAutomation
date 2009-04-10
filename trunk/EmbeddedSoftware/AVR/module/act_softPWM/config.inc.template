@@ -1,0 +1,16 @@
+## Section act_softPWM -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#act_softPWM_USEEEPROM=1
+
+act_softPWM_ID=<ID>
+#act_softPWM_DUMMY=1
+act_softPWM_TIMER=<TIMER>
+PIN_RED = EXP_C
+PIN_GREEN = EXP_E
+PIN_BLUE = EXP_H
+
+#Uncomment to use the pcint driver
+#act_softPWM_DUMMY_PCINT=<PCINT>
+
+## End section act_softPWM -- Do not edit this line
