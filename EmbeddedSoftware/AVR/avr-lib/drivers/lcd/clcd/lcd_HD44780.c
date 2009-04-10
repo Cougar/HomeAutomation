@@ -48,24 +48,19 @@ unsigned char __attribute__ ((progmem)) LcdCustomChar[] =
 /* 
 ** constants/macros 
 */
-#define DDR(x) (*(&x - 1))      /* address of data direction register of port x */
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
-    /* on ATmega64/128 PINF is on port 0x00 and not 0x60 */
-    #define PIN(x) ( &PORTF==&(x) ? _SFR_IO8(0x00) : (*(&x - 2)) )
-#else
-	#define PIN(x) (*(&x - 2))    /* address of input register of port x          */
-#endif
+//#define DDR(x) (*(&x - 1))      /* address of data direction register of port x */
+//#define PIN(x) (*(&x - 2))    /* address of input register of port x          */
 
 
 #if LCD_IO_MODE
 #define lcd_e_delay()   __asm__ __volatile__( "rjmp 1f\n 1:" );
-#define lcd_e_high()    LCD_E_PORT  |=  _BV(LCD_E_PIN);
-#define lcd_e_low()     LCD_E_PORT  &= ~_BV(LCD_E_PIN);
-#define lcd_e_toggle()  toggle_e()
-#define lcd_rw_high()   LCD_RW_PORT |=  _BV(LCD_RW_PIN)
-#define lcd_rw_low()    LCD_RW_PORT &= ~_BV(LCD_RW_PIN)
-#define lcd_rs_high()   LCD_RS_PORT |=  _BV(LCD_RS_PIN)
-#define lcd_rs_low()    LCD_RS_PORT &= ~_BV(LCD_RS_PIN)
+#define lcd_e_high()    gpio_set_pin(LCD_E);
+#define lcd_e_low()     gpio_clr_pin(LCD_E);
+#define lcd_e_toggle()  toggle_e();
+#define lcd_rw_high()   gpio_set_pin(LCD_RW)
+#define lcd_rw_low()    gpio_clr_pin(LCD_RW)
+#define lcd_rs_high()   gpio_set_pin(LCD_RS)
+#define lcd_rs_low()    gpio_clr_pin(LCD_RS)
 #endif
 
 #if LCD_IO_MODE
@@ -150,9 +145,6 @@ Returns:  none
 #if LCD_IO_MODE
 static void lcd_write(uint8_t data,uint8_t rs) 
 {
-    unsigned char dataBits ;
-
-
     if (rs) {   /* write data        (RS=1, RW=0) */
        lcd_rs_high();
     } else {    /* write instruction (RS=0, RW=0) */
@@ -160,60 +152,41 @@ static void lcd_write(uint8_t data,uint8_t rs)
     }
     lcd_rw_low();
 
-    if ( ( &LCD_DATA0_PORT == &LCD_DATA1_PORT) && ( &LCD_DATA1_PORT == &LCD_DATA2_PORT ) && ( &LCD_DATA2_PORT == &LCD_DATA3_PORT )
-      && (LCD_DATA0_PIN == 0) && (LCD_DATA1_PIN == 1) && (LCD_DATA2_PIN == 2) && (LCD_DATA3_PIN == 3) )
-    {
         /* configure data pins as output */
-        DDR(LCD_DATA0_PORT) |= 0x0F;
 
-        /* output high nibble first */
-        dataBits = LCD_DATA0_PORT & 0xF0;
-        LCD_DATA0_PORT = dataBits |((data>>4)&0x0F);
-        lcd_e_toggle();
-
-        /* output low nibble */
-        LCD_DATA0_PORT = dataBits | (data&0x0F);
-        lcd_e_toggle();
-
-        /* all data pins high (inactive) */
-        LCD_DATA0_PORT = dataBits | 0x0F;
-    }
-    else
-    {
-        /* configure data pins as output */
-        DDR(LCD_DATA0_PORT) |= _BV(LCD_DATA0_PIN);
-        DDR(LCD_DATA1_PORT) |= _BV(LCD_DATA1_PIN);
-        DDR(LCD_DATA2_PORT) |= _BV(LCD_DATA2_PIN);
-        DDR(LCD_DATA3_PORT) |= _BV(LCD_DATA3_PIN);
+	
+        gpio_set_out(LCD_DB4);	//DDR(LCD_DATA0_PORT) |= _BV(LCD_DATA0_PIN);
+        gpio_set_out(LCD_DB5); //DDR(LCD_DATA1_PORT) |= _BV(LCD_DATA1_PIN);
+        gpio_set_out(LCD_DB6); //DDR(LCD_DATA2_PORT) |= _BV(LCD_DATA2_PIN);
+        gpio_set_out(LCD_DB7); //DDR(LCD_DATA3_PORT) |= _BV(LCD_DATA3_PIN);
         
         /* output high nibble first */
-        LCD_DATA3_PORT &= ~_BV(LCD_DATA3_PIN);
-        LCD_DATA2_PORT &= ~_BV(LCD_DATA2_PIN);
-        LCD_DATA1_PORT &= ~_BV(LCD_DATA1_PIN);
-        LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);
-    	if(data & 0x80) LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
-    	if(data & 0x40) LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
-    	if(data & 0x20) LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
-    	if(data & 0x10) LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);   
+        gpio_clr_pin(LCD_DB7); //LCD_DATA3_PORT &= ~_BV(LCD_DATA3_PIN);
+        gpio_clr_pin(LCD_DB6); //LCD_DATA2_PORT &= ~_BV(LCD_DATA2_PIN);
+        gpio_clr_pin(LCD_DB5); //LCD_DATA1_PORT &= ~_BV(LCD_DATA1_PIN);
+        gpio_clr_pin(LCD_DB4); //LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);
+    	if(data & 0x80) gpio_set_pin(LCD_DB7); //LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
+    	if(data & 0x40) gpio_set_pin(LCD_DB6); //LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
+    	if(data & 0x20) gpio_set_pin(LCD_DB5); //LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
+    	if(data & 0x10) gpio_set_pin(LCD_DB4); //LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);   
         lcd_e_toggle();
         
         /* output low nibble */
-        LCD_DATA3_PORT &= ~_BV(LCD_DATA3_PIN);
-        LCD_DATA2_PORT &= ~_BV(LCD_DATA2_PIN);
-        LCD_DATA1_PORT &= ~_BV(LCD_DATA1_PIN);
-        LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);
-    	if(data & 0x08) LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
-    	if(data & 0x04) LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
-    	if(data & 0x02) LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
-    	if(data & 0x01) LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);
+	gpio_clr_pin(LCD_DB7); //LCD_DATA3_PORT &= ~_BV(LCD_DATA3_PIN);
+        gpio_clr_pin(LCD_DB6); //LCD_DATA2_PORT &= ~_BV(LCD_DATA2_PIN);
+        gpio_clr_pin(LCD_DB5); //LCD_DATA1_PORT &= ~_BV(LCD_DATA1_PIN);
+        gpio_clr_pin(LCD_DB4); //LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);
+    	if(data & 0x08) gpio_set_pin(LCD_DB7); //LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
+    	if(data & 0x04) gpio_set_pin(LCD_DB6); //LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
+    	if(data & 0x02) gpio_set_pin(LCD_DB5); //LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
+    	if(data & 0x01) gpio_set_pin(LCD_DB4); //LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);
         lcd_e_toggle();        
         
         /* all data pins high (inactive) */
-        LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);
-        LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
-        LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
-        LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
-    }
+        gpio_set_pin(LCD_DB7); //LCD_DATA3_PORT |= _BV(LCD_DATA3_PIN);
+    	gpio_set_pin(LCD_DB6); //LCD_DATA2_PORT |= _BV(LCD_DATA2_PIN);
+    	gpio_set_pin(LCD_DB5); //LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);
+    	gpio_set_pin(LCD_DB4); //LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);
 }
 #else
 #define lcd_write(d,rs) if (rs) *(volatile uint8_t*)(LCD_IO_DATA) = d; else *(volatile uint8_t*)(LCD_IO_FUNCTION) = d;
@@ -240,52 +213,33 @@ static uint8_t lcd_read(uint8_t rs)
         lcd_rs_low();                        /* RS=0: read busy flag */
     lcd_rw_high();                           /* RW=1  read mode      */
     
-    if ( ( &LCD_DATA0_PORT == &LCD_DATA1_PORT) && ( &LCD_DATA1_PORT == &LCD_DATA2_PORT ) && ( &LCD_DATA2_PORT == &LCD_DATA3_PORT )
-      && ( LCD_DATA0_PIN == 0 )&& (LCD_DATA1_PIN == 1) && (LCD_DATA2_PIN == 2) && (LCD_DATA3_PIN == 3) )
-    {
-        DDR(LCD_DATA0_PORT) &= 0xF0;         /* configure data pins as input */
-        
-        lcd_e_high();
-        lcd_e_delay();        
-        data = PIN(LCD_DATA0_PORT) << 4;     /* read high nibble first */
-        lcd_e_low();
-        
-        lcd_e_delay();                       /* Enable 500ns low       */
-        
-        lcd_e_high();
-        lcd_e_delay();
-        data |= PIN(LCD_DATA0_PORT)&0x0F;    /* read low nibble        */
-        lcd_e_low();
-    }
-    else
-    {
-        /* configure data pins as input */
-        DDR(LCD_DATA0_PORT) &= ~_BV(LCD_DATA0_PIN);
-        DDR(LCD_DATA1_PORT) &= ~_BV(LCD_DATA1_PIN);
-        DDR(LCD_DATA2_PORT) &= ~_BV(LCD_DATA2_PIN);
-        DDR(LCD_DATA3_PORT) &= ~_BV(LCD_DATA3_PIN);
-                
-        /* read high nibble first */
-        lcd_e_high();
-        lcd_e_delay();        
-        data = 0;
-        if ( PIN(LCD_DATA0_PORT) & _BV(LCD_DATA0_PIN) ) data |= 0x10;
-        if ( PIN(LCD_DATA1_PORT) & _BV(LCD_DATA1_PIN) ) data |= 0x20;
-        if ( PIN(LCD_DATA2_PORT) & _BV(LCD_DATA2_PIN) ) data |= 0x40;
-        if ( PIN(LCD_DATA3_PORT) & _BV(LCD_DATA3_PIN) ) data |= 0x80;
-        lcd_e_low();
+	/* configure data pins as input */
+	gpio_set_in(LCD_DB4); //DDR(LCD_DATA0_PORT) &= ~_BV(LCD_DATA0_PIN);
+	gpio_set_in(LCD_DB5); //DDR(LCD_DATA1_PORT) &= ~_BV(LCD_DATA1_PIN);
+	gpio_set_in(LCD_DB6); //DDR(LCD_DATA2_PORT) &= ~_BV(LCD_DATA2_PIN);
+	gpio_set_in(LCD_DB7); //DDR(LCD_DATA3_PORT) &= ~_BV(LCD_DATA3_PIN);
+		
+	/* read high nibble first */
+	lcd_e_high();
+	lcd_e_delay();        
+	data = 0;
+	if (gpio_get_state(LCD_DB4)) data |= 0x10; // if ( PIN(LCD_DATA0_PORT) & _BV(LCD_DATA0_PIN) ) data |= 0x10;
+	if (gpio_get_state(LCD_DB5)) data |= 0x20; //if ( PIN(LCD_DATA1_PORT) & _BV(LCD_DATA1_PIN) ) data |= 0x20;
+	if (gpio_get_state(LCD_DB6)) data |= 0x40; //if ( PIN(LCD_DATA2_PORT) & _BV(LCD_DATA2_PIN) ) data |= 0x40;
+	if (gpio_get_state(LCD_DB7)) data |= 0x80; //if ( PIN(LCD_DATA3_PORT) & _BV(LCD_DATA3_PIN) ) data |= 0x80;
+	lcd_e_low();
 
-        lcd_e_delay();                       /* Enable 500ns low       */
-    
-        /* read low nibble */    
-        lcd_e_high();
-        lcd_e_delay();
-        if ( PIN(LCD_DATA0_PORT) & _BV(LCD_DATA0_PIN) ) data |= 0x01;
-        if ( PIN(LCD_DATA1_PORT) & _BV(LCD_DATA1_PIN) ) data |= 0x02;
-        if ( PIN(LCD_DATA2_PORT) & _BV(LCD_DATA2_PIN) ) data |= 0x04;
-        if ( PIN(LCD_DATA3_PORT) & _BV(LCD_DATA3_PIN) ) data |= 0x08;        
-        lcd_e_low();
-    }
+	lcd_e_delay();                       /* Enable 500ns low       */
+
+	/* read low nibble */    
+	lcd_e_high();
+	lcd_e_delay();
+	if (gpio_get_state(LCD_DB4)) data |= 0x01; // if ( PIN(LCD_DATA0_PORT) & _BV(LCD_DATA0_PIN) ) data |= 0x01;
+	if (gpio_get_state(LCD_DB5)) data |= 0x02; //if ( PIN(LCD_DATA1_PORT) & _BV(LCD_DATA1_PIN) ) data |= 0x02;
+	if (gpio_get_state(LCD_DB6)) data |= 0x04; //if ( PIN(LCD_DATA2_PORT) & _BV(LCD_DATA2_PIN) ) data |= 0x04;
+	if (gpio_get_state(LCD_DB7)) data |= 0x08; //if ( PIN(LCD_DATA3_PORT) & _BV(LCD_DATA3_PIN) ) data |= 0x08;
+	lcd_e_low();
+
     return data;
 }
 #else
@@ -552,40 +506,23 @@ void lcd_init(uint8_t dispAttr)
      */
 //    LED_ON
 
-    if ( ( &LCD_DATA0_PORT == &LCD_DATA1_PORT) && ( &LCD_DATA1_PORT == &LCD_DATA2_PORT ) && ( &LCD_DATA2_PORT == &LCD_DATA3_PORT )
-      && ( &LCD_RS_PORT == &LCD_DATA0_PORT) && ( &LCD_RW_PORT == &LCD_DATA0_PORT) && (&LCD_E_PORT == &LCD_DATA0_PORT)
-      && (LCD_DATA0_PIN == 0 ) && (LCD_DATA1_PIN == 1) && (LCD_DATA2_PIN == 2) && (LCD_DATA3_PIN == 3) 
-      && (LCD_RS_PIN == 4 ) && (LCD_RW_PIN == 5) && (LCD_E_PIN == 6 ) )
-    {
-        /* configure all port bits as output (all LCD lines on same port) */
-        DDR(LCD_DATA0_PORT) |= 0x7F;
-    }
-    else if ( ( &LCD_DATA0_PORT == &LCD_DATA1_PORT) && ( &LCD_DATA1_PORT == &LCD_DATA2_PORT ) && ( &LCD_DATA2_PORT == &LCD_DATA3_PORT )
-           && (LCD_DATA0_PIN == 0 ) && (LCD_DATA1_PIN == 1) && (LCD_DATA2_PIN == 2) && (LCD_DATA3_PIN == 3) )
-    {
-        /* configure all port bits as output (all LCD data lines on same port, but control lines on different ports) */
-        DDR(LCD_DATA0_PORT) |= 0x0F;
-        DDR(LCD_RS_PORT)    |= _BV(LCD_RS_PIN);
-        DDR(LCD_RW_PORT)    |= _BV(LCD_RW_PIN);
-        DDR(LCD_E_PORT)     |= _BV(LCD_E_PIN);
-    }
-    else
-    {
+    
         /* configure all port bits as output (LCD data and control lines on different ports */
-        DDR(LCD_RS_PORT)    |= _BV(LCD_RS_PIN);
-        DDR(LCD_RW_PORT)    |= _BV(LCD_RW_PIN);
-        DDR(LCD_E_PORT)     |= _BV(LCD_E_PIN);
-        DDR(LCD_DATA0_PORT) |= _BV(LCD_DATA0_PIN);
-        DDR(LCD_DATA1_PORT) |= _BV(LCD_DATA1_PIN);
-        DDR(LCD_DATA2_PORT) |= _BV(LCD_DATA2_PIN);
-        DDR(LCD_DATA3_PORT) |= _BV(LCD_DATA3_PIN);
-        LED_ON
-    }
+        gpio_set_out(LCD_RS); //DDR(LCD_RS_PORT)    |= _BV(LCD_RS_PIN);
+        gpio_set_out(LCD_RW); //DDR(LCD_RW_PORT)    |= _BV(LCD_RW_PIN);
+        gpio_set_out(LCD_E); //DDR(LCD_E_PORT)     |= _BV(LCD_E_PIN);
+        gpio_set_out(LCD_DB4); //DDR(LCD_DATA0_PORT) |= _BV(LCD_DATA0_PIN);
+        gpio_set_out(LCD_DB5); //DDR(LCD_DATA1_PORT) |= _BV(LCD_DATA1_PIN);
+        gpio_set_out(LCD_DB6); //DDR(LCD_DATA2_PORT) |= _BV(LCD_DATA2_PIN);
+        gpio_set_out(LCD_DB7); //DDR(LCD_DATA3_PORT) |= _BV(LCD_DATA3_PIN);
+        //LED_ON
+    
+
     delay(16000);        /* wait 16ms or more after power-on       */
     
     /* initial write to lcd is 8bit */
-    LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);  // _BV(LCD_FUNCTION)>>4;
-    LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);  // _BV(LCD_FUNCTION_8BIT)>>4;
+    gpio_set_pin(LCD_DB5); //LCD_DATA1_PORT |= _BV(LCD_DATA1_PIN);  // _BV(LCD_FUNCTION)>>4;
+    gpio_set_pin(LCD_DB4); //LCD_DATA0_PORT |= _BV(LCD_DATA0_PIN);  // _BV(LCD_FUNCTION_8BIT)>>4;
     lcd_e_toggle();
     delay(4992);         /* delay, busy flag can't be checked here */
    
@@ -598,7 +535,7 @@ void lcd_init(uint8_t dispAttr)
     delay(64);           /* delay, busy flag can't be checked here */
 
     /* now configure for 4bit mode */
-    LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);   // LCD_FUNCTION_4BIT_1LINE>>4
+    gpio_clr_pin(LCD_DB4); //LCD_DATA0_PORT &= ~_BV(LCD_DATA0_PIN);   // LCD_FUNCTION_4BIT_1LINE>>4
     lcd_e_toggle();
     delay(64);           /* some displays need this additional delay */
     
@@ -658,7 +595,7 @@ void lcdProgressBar(uint16_t progress, uint16_t maxprogress, uint8_t length){
 	uint8_t c;
 	
 	pixelprogress = 1;
-	pixelprogress = pixelprogress*progress*length*6/maxprogress; //TODO: Typecasta pŒ ett snyggare sŠtt
+	pixelprogress = pixelprogress*progress*length*6/maxprogress; //TODO: Typecasta pï¿½ ett snyggare sï¿½tt
 
 	// print exactly "length" characters
 	for(i=0; i<length; i++){
