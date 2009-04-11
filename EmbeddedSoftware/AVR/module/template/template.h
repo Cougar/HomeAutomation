@@ -13,6 +13,7 @@
 #include <bios.h>
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
+#include <drivers/mcu/gpio.h>
 
 //to use PCINT lib. uncomment the line below
 //#include <drivers/mcu/pcint.h>
