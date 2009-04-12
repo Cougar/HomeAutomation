@@ -2,52 +2,85 @@
 
 require(dirname(__FILE__)."/config.php"); 
 
-
-stream_wrapper_unregister('https'); 
-stream_wrapper_register('https', 'ExchangeNTLMStream') or die("Failed to register protocol"); 
-
-$wsdl = "/var/www/exchangeIntegration/Services.wsdl"; 
-$client = new ExchangeNTLMSoapClient($wsdl); 
-
-//print_array($client->__getFunctions()); 
-//print_array($client->__getTypes()); 
-echo "test<br>";
-
-$FindItem->Traversal = "Shallow"; 
-$FindItem->ItemShape->BaseShape = "AllProperties"; 
-$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
-$FindItem->CalendarView->StartDate = "2009-04-07T00:00:00Z"; 
-$FindItem->CalendarView->EndDate = "2009-04-08T00:00:00Z"; 
-
-try
+if (isset($_GET["function"]))
 {
-  $result = $client->FindItem($FindItem); 
-}
-catch (SoapFault $exception)
-{
-  echo 'EXCEPTION<pre>'.$exception.'</pre>'; 
-  echo "<br>";
+	switch ($_GET["function"])
+	{
+		case "getMeetingsRestOfDay":
+		if (isset($_GET["shortname"]))
+		{
+			echo getMeetingsRestOfDay($_GET["shortname"]);
+		}
+		break;
+		
+		case "bookMeeting":
+		break;
+		
+		//case "":
+		//
+		//break;
 }
 
-if ($result) 
+function getMeetingsRestOfDay($shortname)
 {
-  //echo "<br>result:<br>";
-  print_array($result);
-  $calendaritems = $result->ResponseMessages->FindItemResponseMessage->RootFolder->Items->CalendarItem; 
-  print_array($calendaritems);
-  foreach($calendaritems as $item) 
-  { 
-    echo "Organizer: ".$item->Organizer->Mailbox->Name." Start: ".$item->Start." End: ".$item->End."<br>"; 
-  } 
+	global $Calender;
+	global $wsdl;
+	$founditem = false;	
+	
+	foreach($Calender as $item)
+	{
+		if ($item->Shortname == $shortname)
+		{
+			$founditem = $item;
+			break;
+		}
+	}
+	
+	if ($founditem !== false)
+	{
+		$user = $founditem->UserName;
+		$pass = $founditem->Password;
+		
+		$FindItem->Traversal = "Shallow"; 
+		$FindItem->ItemShape->BaseShape = "AllProperties"; 
+		$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
+		$FindItem->CalendarView->StartDate = "2009-04-07T00:00:00Z"; 
+		$FindItem->CalendarView->EndDate = "2009-04-08T00:00:00Z";
+		
+		stream_wrapper_unregister('https'); 
+		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
+		 
+		try
+		{
+			$client = new NTLMSoapClient($wsdl); 
+			$result = $client->FindItem($FindItem);
+			if ($result)
+			{
+			  //print_array($result);
+			  $calendaritems = $result->ResponseMessages->FindItemResponseMessage->RootFolder->Items->CalendarItem; 
+			  //print_array($calendaritems);
+			  foreach($calendaritems as $item) 
+			  { 
+			    return "Organizer: ".$item->Organizer->Mailbox->Name." Start: ".$item->Start." End: ".$item->End."<br>"; 
+			  } 
+			}
+			
+		}
+		catch (SoapFault $exception)
+		{
+			return "<error>".$exception."</error>"; 
+		}
+
+		stream_wrapper_restore('https'); 
+	}
+	else 
+	{
+		return "<error>Unknown shortname</error>";
+	}
+
+
+//echo "<br>OBS tidszon+sommartid?? nu sommartid, ett möte som ovan gav start 13:00 var egentligen 15:00<br>OBS utf? teckenkodning<br>";
 }
-
-echo "<br>OBS tidszon+sommartid?? nu sommartid, ett möte som ovan gav start 13:00 var egentligen 15:00<br>OBS utf? teckenkodning<br>";
-
-
-echo "<br><br>slut test<br>";
-
-stream_wrapper_restore('https'); 
-
 
 
 function print_array($var)
@@ -60,6 +93,9 @@ function print_array($var)
 class NTLMSoapClient extends SoapClient { 
   function __doRequest($request, $location, $action, $version) 
   { 
+  	global $user;
+  	global $pass;
+  	global $exchangeurl;
     $location=$exchangeurl; //override url to exchange server
 
     $headers = array( 'Method: POST', 
@@ -78,7 +114,7 @@ class NTLMSoapClient extends SoapClient {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request); 
     curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); 
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM); 
-    curl_setopt($ch, CURLOPT_USERPWD, $this->user.':'.$this->password); 
+    curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass); 
     $response = curl_exec($ch); 
 
 //$myfile = "/tmp/debugex.txt";
@@ -96,11 +132,6 @@ class NTLMSoapClient extends SoapClient {
   } 
 }
 
-class ExchangeNTLMSoapClient extends NTLMSoapClient 
-{ 
-  protected $user = 'rum1'; 
-  protected $password = 'rum1'; 
-} 
 
 class NTLMStream 
 { 
@@ -239,6 +270,8 @@ class NTLMStream
   /* Create the buffer by requesting the url through cURL */
   private function createBuffer($path)
   {
+  	global $user;
+  	global $pass;
     if($this->buffer)
     {
       return;
@@ -250,20 +283,12 @@ class NTLMStream
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
     curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
-    curl_setopt($this->ch, CURLOPT_USERPWD, $this->user.':'.$this->password);
+    curl_setopt($this->ch, CURLOPT_USERPWD, $user.':'.$pass);
     echo $this->buffer = curl_exec($this->ch);
     
     echo "[NTLMStream::createBuffer] buffer size : ".strlen($this->buffer)."bytes \n";
     $this->pos = 0;
   }
 }
-
-class ExchangeNTLMStream extends NTLMStream
-{
-  protected $user = 'rum1';
-  protected $password = 'rum1';
-}
-
-
 
 ?>
