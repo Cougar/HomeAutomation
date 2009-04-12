@@ -3,16 +3,14 @@
 require(dirname(__FILE__)."/config.php"); 
 
 
-
-
 stream_wrapper_unregister('https'); 
 stream_wrapper_register('https', 'ExchangeNTLMStream') or die("Failed to register protocol"); 
 
-//$wsdl = "/var/www/exchange/Services.wsdl"; 
-$wsdl = $server.$basedir."/Services.wsdl.php"; 
+$wsdl = "/var/www/exchangeIntegration/Services.wsdl"; 
 $client = new ExchangeNTLMSoapClient($wsdl); 
 
 //print_array($client->__getFunctions()); 
+//print_array($client->__getTypes()); 
 echo "test<br>";
 
 $FindItem->Traversal = "Shallow"; 
@@ -21,11 +19,20 @@ $FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar";
 $FindItem->CalendarView->StartDate = "2009-04-07T00:00:00Z"; 
 $FindItem->CalendarView->EndDate = "2009-04-08T00:00:00Z"; 
 
-$result = $client->FindItem($FindItem); 
+try
+{
+  $result = $client->FindItem($FindItem); 
+}
+catch (SoapFault $exception)
+{
+  echo 'EXCEPTION<pre>'.$exception.'</pre>'; 
+  echo "<br>";
+}
+
 if ($result) 
 {
   //echo "<br>result:<br>";
-  //print_array($result);
+  print_array($result);
   $calendaritems = $result->ResponseMessages->FindItemResponseMessage->RootFolder->Items->CalendarItem; 
   print_array($calendaritems);
   foreach($calendaritems as $item) 
@@ -53,7 +60,14 @@ function print_array($var)
 class NTLMSoapClient extends SoapClient { 
   function __doRequest($request, $location, $action, $version) 
   { 
-    $headers = array( 'Method: POST', 'Connection: Keep-Alive', 'User-Agent: PHP-SOAP-CURL', 'Content-Type: text/xml; charset=utf-8', 'SOAPAction: "'.$action.'"', ); 
+    $location=$exchangeurl; //override url to exchange server
+
+    $headers = array( 'Method: POST', 
+			'Connection: Keep-Alive', 
+			'User-Agent: PHP-SOAP-CURL', 
+			'Content-Type: text/xml; charset=utf-8', 
+			'SOAPAction: "'.$action.'"', 
+			); 
     $this->__last_request_headers = $headers; 
     $ch = curl_init($location); 
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -66,6 +80,13 @@ class NTLMSoapClient extends SoapClient {
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM); 
     curl_setopt($ch, CURLOPT_USERPWD, $this->user.':'.$this->password); 
     $response = curl_exec($ch); 
+
+//$myfile = "/tmp/debugex.txt";
+//$fh = fopen($myfile, 'a+') or die("can't open file");
+//fwrite($fh, "req: ". $request ."loc: ". $location ." act: ". $action ." ver: ". $version."\n");
+//fwrite($fh, "reponse: ". $response."\n\n");
+//fclose($fh);
+    
     return $response; 
   } 
   
@@ -77,8 +98,8 @@ class NTLMSoapClient extends SoapClient {
 
 class ExchangeNTLMSoapClient extends NTLMSoapClient 
 { 
-  protected $user = 'xyz'; 
-  protected $password = 'xyz'; 
+  protected $user = 'rum1'; 
+  protected $password = 'rum1'; 
 } 
 
 class NTLMStream 
@@ -90,113 +111,158 @@ class NTLMStream
   private $buffer; 
   private $pos; 
 
+	/**
+	 * Open the stream 
+	 *
+	 * @param unknown_type $path
+	 * @param unknown_type $mode
+	 * @param unknown_type $options
+	 * @param unknown_type $opened_path
+	 * @return unknown
+	 */
   public function stream_open($path, $mode, $options, $opened_path) 
   { 
-    echo "[NTLMStream::stream_open] $path , mode=$mode <br>"; 
-    $this->path = $path; 
-    $this->mode = $mode; 
-    $this->options = $options; 
-    $this->opened_path = $opened_path; 
-    $this->createBuffer($path); 
-    return true; 
+    echo "[NTLMStream::stream_open] $path , mode=$mode \n";
+    $this->path = $path;
+    $this->mode = $mode;
+    $this->options = $options;
+    $this->opened_path = $opened_path;
+    $this->createBuffer($path);
+    return true;
   } 
 
+	/**
+	 * Close the stream
+	 *
+	 */
   public function stream_close() 
-  { 
-    echo "[NTLMStream::stream_close] <br>"; 
-    curl_close($this->ch); 
-  } 
+  {
+    echo "[NTLMStream::stream_close] \n";
+    curl_close($this->ch);
+  }
 
-  public function stream_read($count) 
-  { 
-    echo "[NTLMStream::stream_read] $count <br>"; 
-    if(strlen($this->buffer) == 0) 
-    { 
-      return false; 
-    } 
-    $read = substr($this->buffer,$this->pos, $count); 
-    $this->pos += $count; return $read; 
-  } 
+	/**
+	 * Read the stream
+	 *
+	 * @param int $count number of bytes to read
+	 * @return content from pos to count
+	 */
+  public function stream_read($count)
+  {
+    echo "[NTLMStream::stream_read] $count \n";
+    if(strlen($this->buffer) == 0)
+    {
+      return false;
+    }
+    $read = substr($this->buffer,$this->pos, $count);
+    $this->pos += $count;
+    return $read;
+  }
 
-  public function stream_write($data) 
-  { 
-    echo "[NTLMStream::stream_write] <br>"; 
-    if(strlen($this->buffer) == 0) 
-    { 
-      return false; 
-    } 
-    return true; 
-  } 
+	/***
+	 * write the stream
+	 *
+	 * @param $data
+	 * @return
+	 */
+  public function stream_write($data)
+  {
+    echo "[NTLMStream::stream_write] \n";
+    if(strlen($this->buffer) == 0)
+    {
+      return false;
+    }
+    return true;
+  }
 
-  public function stream_eof() 
-  { 
-    echo "[NTLMStream::stream_eof] "; 
-    if($this->pos > strlen($this->buffer)) 
-    { 
-      echo "true <br>"; 
-      return true; 
-    } 
-    echo "false <br>"; 
-    return false; 
-  } 
+	/**
+	 *
+	 * @return true if eof else false
+	 */
+  public function stream_eof()
+  {
+    echo "[NTLMStream::stream_eof] ";
+    if($this->pos > strlen($this->buffer))
+    {
+      echo "true \n";
+      return true;
+    }
+    echo "false \n";
+    return false;
+  }
 
-  /* return the position of the current read pointer */ 
-  public function stream_tell() 
-  { 
-    echo "[NTLMStream::stream_tell] <br>"; 
-    return $this->pos; 
-  } 
+	/**
+	 * @return int the position of the current read pointer
+	 */
+  public function stream_tell()
+  {
+    echo "[NTLMStream::stream_tell] \n";
+    return $this->pos;
+  }
 
-  public function stream_flush() 
-  { 
-    echo "[NTLMStream::stream_flush] <br>"; 
-    $this->buffer = null; 
-    $this->pos = null; 
-  } 
+	/**
+	 * Flush stream data
+	 */
+  public function stream_flush()
+  {
+    echo "[NTLMStream::stream_flush] \n";
+    $this->buffer = null;
+    $this->pos = null;
+  }
 
-  public function stream_stat() 
-  { 
-    echo "[NTLMStream::stream_stat] <br>"; 
-    $this->createBuffer($this->path); 
-    $stat = array( 'size' => strlen($this->buffer), ); 
-    return $stat; 
-  } 
+	/**
+	 * Stat the file, return only the size of the buffer
+	 *
+	 * @return array stat information
+	 */
+  public function stream_stat()
+  {
+    echo "[NTLMStream::stream_stat] \n";
+    $this->createBuffer($this->path);
+    $stat = array( 'size' => strlen($this->buffer), );
+    return $stat;
+  }
 
-  public function url_stat($path, $flags) 
-  { 
-    echo "[NTLMStream::url_stat] <br>"; 
-    $this->createBuffer($path); 
-    $stat = array( 'size' => strlen($this->buffer), ); 
-    return $stat; 
-  } 
+	/**
+	 * Stat the url, return only the size of the buffer
+	 *
+	 * @return array stat information
+	 */
+  public function url_stat($path, $flags)
+  {
+    echo "[NTLMStream::url_stat] \n";
+    $this->createBuffer($path);
+    $stat = array( 'size' => strlen($this->buffer), );
+    return $stat;
+  }
 
-  /* Create the buffer by requesting the url through cURL */ 
-  private function createBuffer($path) 
-  { 
-    if($this->buffer) 
-    { 
-      return; 
-    } 
-    echo "[NTLMStream::createBuffer] create buffer from : $path <br>"; 
-    $this->ch = curl_init($path); 
+  /* Create the buffer by requesting the url through cURL */
+  private function createBuffer($path)
+  {
+    if($this->buffer)
+    {
+      return;
+    }
+    echo "[NTLMStream::createBuffer] create buffer from : $path \n";
+    $this->ch = curl_init($path);
     curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); 
-    curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM); 
-    curl_setopt($this->ch, CURLOPT_USERPWD, 
-    $this->user.':'.$this->password); 
-    echo $this->buffer = curl_exec($this->ch); 
-    echo "[NTLMStream::createBuffer] buffer size : ".strlen($this->buffer)."bytes <br>"; 
-    $this->pos = 0; 
-  } 
-} 
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
+    curl_setopt($this->ch, CURLOPT_USERPWD, $this->user.':'.$this->password);
+    echo $this->buffer = curl_exec($this->ch);
+    
+    echo "[NTLMStream::createBuffer] buffer size : ".strlen($this->buffer)."bytes \n";
+    $this->pos = 0;
+  }
+}
 
-class ExchangeNTLMStream extends NTLMStream 
-{ 
-  protected $user = 'xyz'; 
-  protected $password = 'xyz'; 
-} 
+class ExchangeNTLMStream extends NTLMStream
+{
+  protected $user = 'rum1';
+  protected $password = 'rum1';
+}
 
 
 
