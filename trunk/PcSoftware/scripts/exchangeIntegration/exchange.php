@@ -19,6 +19,7 @@ if (isset($_GET["function"]))
 		//case "":
 		//
 		//break;
+	}
 }
 
 function getMeetingsRestOfDay($shortname)
@@ -38,9 +39,6 @@ function getMeetingsRestOfDay($shortname)
 	
 	if ($founditem !== false)
 	{
-		$user = $founditem->UserName;
-		$pass = $founditem->Password;
-		
 		$FindItem->Traversal = "Shallow"; 
 		$FindItem->ItemShape->BaseShape = "AllProperties"; 
 		$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
@@ -50,18 +48,27 @@ function getMeetingsRestOfDay($shortname)
 		stream_wrapper_unregister('https'); 
 		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
 		 
+		  $returndata = "";
 		try
 		{
-			$client = new NTLMSoapClient($wsdl); 
+			$client = new ExchangeNTLMSoapClient($wsdl);
+			$client->user = $founditem->UserName;
+			$client->pass = $founditem->Password;
 			$result = $client->FindItem($FindItem);
 			if ($result)
 			{
 			  //print_array($result);
 			  $calendaritems = $result->ResponseMessages->FindItemResponseMessage->RootFolder->Items->CalendarItem; 
 			  //print_array($calendaritems);
+			  $returndata = "";
 			  foreach($calendaritems as $item) 
-			  { 
-			    return "Organizer: ".$item->Organizer->Mailbox->Name." Start: ".$item->Start." End: ".$item->End."<br>"; 
+			  {
+			    
+			    $returndata .= "<meeting>\n";
+			    $returndata .= "\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
+			    $returndata .= "\t<start>".date("G:s",strtotime($item->Start))." ".$item->Start."</start>\n";
+			    $returndata .= "\t<end>".date("G:s",strtotime($item->End))." ".$item->End."</end>\n";
+			    $returndata .= "</meeting>\n";
 			  } 
 			}
 			
@@ -72,6 +79,7 @@ function getMeetingsRestOfDay($shortname)
 		}
 
 		stream_wrapper_restore('https'); 
+		  return $returndata;
 	}
 	else 
 	{
@@ -93,9 +101,7 @@ function print_array($var)
 class NTLMSoapClient extends SoapClient { 
   function __doRequest($request, $location, $action, $version) 
   { 
-  	global $user;
-  	global $pass;
-  	global $exchangeurl;
+	global $exchangeurl;
     $location=$exchangeurl; //override url to exchange server
 
     $headers = array( 'Method: POST', 
@@ -114,14 +120,16 @@ class NTLMSoapClient extends SoapClient {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request); 
     curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); 
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM); 
-    curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass); 
+    curl_setopt($ch, CURLOPT_USERPWD, $this->user.':'.$this->pass); 
     $response = curl_exec($ch); 
 
-//$myfile = "/tmp/debugex.txt";
-//$fh = fopen($myfile, 'a+') or die("can't open file");
-//fwrite($fh, "req: ". $request ."loc: ". $location ." act: ". $action ." ver: ". $version."\n");
-//fwrite($fh, "reponse: ". $response."\n\n");
-//fclose($fh);
+/*$myfile = "/tmp/debugex.txt";
+$fh = fopen($myfile, 'w+') or die("can't open file");
+fwrite($fh, "user: ". $this->user. " pass: ".$this->pass."\n");
+fwrite($fh, "req: ". $request ."loc: ". $location ." act: ". $action ." ver: ". $version."\n");
+fwrite($fh, "reponse: ". $response."\n\n");
+fclose($fh);
+*/
     
     return $response; 
   } 
@@ -132,6 +140,11 @@ class NTLMSoapClient extends SoapClient {
   } 
 }
 
+class ExchangeNTLMSoapClient extends NTLMSoapClient
+{
+	public $user = '';
+	public $password = '';
+} 
 
 class NTLMStream 
 { 
