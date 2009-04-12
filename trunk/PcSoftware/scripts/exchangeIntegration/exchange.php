@@ -1,9 +1,15 @@
 <?php
 
+require(dirname(__FILE__)."/config.php"); 
+
+
+
+
 stream_wrapper_unregister('https'); 
 stream_wrapper_register('https', 'ExchangeNTLMStream') or die("Failed to register protocol"); 
 
-$wsdl = "/var/www/exchange/Services.wsdl"; 
+//$wsdl = "/var/www/exchange/Services.wsdl"; 
+$wsdl = $server.$basedir."/Services.wsdl.php"; 
 $client = new ExchangeNTLMSoapClient($wsdl); 
 
 //print_array($client->__getFunctions()); 
