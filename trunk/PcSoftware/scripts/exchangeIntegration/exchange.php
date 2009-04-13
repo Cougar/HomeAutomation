@@ -54,7 +54,7 @@ function getMeetingsRestOfDay($shortname)
 		stream_wrapper_unregister('https'); 
 		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
 		 
-		$returndata = "<calendar>\n\t<shortname>".$shortname."</shortname>\n";
+		$returndata = "{ \n\tshortname:'".$shortname."',\n\tmeetings:[\n";
 		try
 		{
 			$client = new ExchangeNTLMSoapClient($wsdl);
@@ -68,35 +68,39 @@ function getMeetingsRestOfDay($shortname)
 				//print_array($calendaritems);
 				for ($i = 0; $i < count($calendaritems); $i++)
 				{
-				if (count($calendaritems) > 1)
-				{
-					$item = $calendaritems[$i];
-				}
-				else
-				{
-					$item = $calendaritems;
-				}
-					$returndata .= "\t<meeting>\n";
-					$returndata .= "\t\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
-					$returndata .= "\t\t<start>".date("G:i", strtotime($item->Start))."</start>\n";
-					$returndata .= "\t\t<end>".date("G:i", strtotime($item->End))."</end>\n";
-					$returndata .= "\t</meeting>\n";
+					if (count($calendaritems) > 1)
+					{
+						$item = $calendaritems[$i];
+					}
+					else
+					{
+						$item = $calendaritems;
+					}
+					$returndata .= "\t\t{\n";
+					$returndata .= "\t\torganizer:'".$item->Organizer->Mailbox->Name."',\n";
+					$returndata .= "\t\tstart:'".date("G:i", strtotime($item->Start))."',\n";
+					$returndata .= "\t\tend:'".date("G:i", strtotime($item->End))."'\n";
+					$returndata .= "\t\t}";
+					if ($i+1 < count($calendaritems))
+					{
+						$returndata .= ",\n";
+					}
 				}
 			}
 			
 		}
 		catch (SoapFault $exception)
 		{
-			return "<error>".$exception."</error>"; 
+			return "{ error:'".$exception."',\nshortname:'".$shortname."'}\n"; 
 		}
 
 		stream_wrapper_restore('https');
-		$returndata .= "</calendar>\n"; 
+		$returndata .= "\n\t]\n}\n";
 		return $returndata;
 	}
 	else 
 	{
-		return "<error>Unknown shortname</error>";
+		return "{ error:'Unknown shortname',\nshortname:'".$shortname."'}\n";
 	}
 }
 
