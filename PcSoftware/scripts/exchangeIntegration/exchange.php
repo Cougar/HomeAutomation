@@ -54,7 +54,7 @@ function getMeetingsRestOfDay($shortname)
 		stream_wrapper_unregister('https'); 
 		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
 		 
-		$returndata = "<calendar>\n<shortname>".$shortname."</shortname>\n";
+		$returndata = "<calendar>\n\t<shortname>".$shortname."</shortname>\n";
 		try
 		{
 			$client = new ExchangeNTLMSoapClient($wsdl);
@@ -76,11 +76,11 @@ function getMeetingsRestOfDay($shortname)
 				{
 					$item = $calendaritems;
 				}
-					$returndata .= "<meeting>\n";
-					$returndata .= "\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
-					$returndata .= "\t<start>".date("G:i", strtotime($item->Start))."</start>\n";
-					$returndata .= "\t<end>".date("G:i", strtotime($item->End))."</end>\n";
-					$returndata .= "</meeting>\n";
+					$returndata .= "\t<meeting>\n";
+					$returndata .= "\t\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
+					$returndata .= "\t\t<start>".date("G:i", strtotime($item->Start))."</start>\n";
+					$returndata .= "\t\t<end>".date("G:i", strtotime($item->End))."</end>\n";
+					$returndata .= "\t</meeting>\n";
 				}
 			}
 			
