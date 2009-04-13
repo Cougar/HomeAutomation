@@ -14,6 +14,10 @@ if (isset($_GET["function"]))
 		break;
 		
 		case "bookMeeting":
+		if (isset($_GET["from"]) && isset($_GET["to"]))
+		{
+			
+		}
 		break;
 		
 		//case "":
@@ -42,13 +46,15 @@ function getMeetingsRestOfDay($shortname)
 		$FindItem->Traversal = "Shallow"; 
 		$FindItem->ItemShape->BaseShape = "AllProperties"; 
 		$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
-		$FindItem->CalendarView->StartDate = "2009-04-07T00:00:00Z"; 
-		$FindItem->CalendarView->EndDate = "2009-04-08T00:00:00Z";
-		
+		/* Dont forget to use the proper timezone and setting for daylight saving time (php handles this fine) */
+		$FindItem->CalendarView->StartDate = date("c");		//"2009-04-07T08:00:00Z";
+		$FindItem->CalendarView->EndDate = date("c", strtotime("+9 hour"));	//"2009-04-08T00:00:00Z";
+		//echo date("c")." ".date("c", strtotime("+8 hour"))." ".date("c", strtotime("18:00"))."\n";
+
 		stream_wrapper_unregister('https'); 
 		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
 		 
-		  $returndata = "";
+		$returndata = "";
 		try
 		{
 			$client = new ExchangeNTLMSoapClient($wsdl);
@@ -61,15 +67,22 @@ function getMeetingsRestOfDay($shortname)
 			  $calendaritems = $result->ResponseMessages->FindItemResponseMessage->RootFolder->Items->CalendarItem; 
 			  //print_array($calendaritems);
 			  $returndata = "";
-			  foreach($calendaritems as $item) 
+			  for ($i = 0; $i < count($calendaritems); $i++)
 			  {
-			    
-			    $returndata .= "<meeting>\n";
-			    $returndata .= "\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
-			    $returndata .= "\t<start>".date("G:s",strtotime($item->Start))." ".$item->Start."</start>\n";
-			    $returndata .= "\t<end>".date("G:s",strtotime($item->End))." ".$item->End."</end>\n";
-			    $returndata .= "</meeting>\n";
-			  } 
+				if (count($calendaritems) > 1)
+				{
+					$item = $calendaritems[$i];
+				}
+				else
+				{
+					$item = $calendaritems;
+				}
+			  	$returndata .= "<meeting>\n";
+			  	$returndata .= "\t<organizer>".$item->Organizer->Mailbox->Name."</organizer>\n";
+			  	$returndata .= "\t<start>".date("G:i", strtotime($item->Start))."</start>\n";
+			  	$returndata .= "\t<end>".date("G:i", strtotime($item->End))."</end>\n";
+			  	$returndata .= "</meeting>\n";
+			  }
 			}
 			
 		}
@@ -85,9 +98,6 @@ function getMeetingsRestOfDay($shortname)
 	{
 		return "<error>Unknown shortname</error>";
 	}
-
-
-//echo "<br>OBS tidszon+sommartid?? nu sommartid, ett möte som ovan gav start 13:00 var egentligen 15:00<br>OBS utf? teckenkodning<br>";
 }
 
 
