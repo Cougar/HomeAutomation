@@ -1,33 +1,22 @@
 
-function SensorPrint(type, name, id)
+loadScript("Logic/Display.js");
+
+function ConferenceRoomSystem(type, name, id)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
 	this.Service(type, name, id);
 }
 
-
-function ExchangeCalendar.MenuItem()
-{
-	ExchangeCalendar.MenuItem.prototype.displayData = new Array();
-	ExchangeCalendar.MenuItem.prototype.doLeft = null;
-	ExchangeCalendar.MenuItem.prototype.doRight = null;
-	ExchangeCalendar.MenuItem.prototype.doPress = null;
-	ExchangeCalendar.MenuItem.prototype.doUpdate = null;
-	ExchangeCalendar.MenuItem.prototype.nextItem = null;
-	ExchangeCalendar.MenuItem.prototype.prevItem = null;
-	ExchangeCalendar.MenuItem.prototype.descItem = null;
-	
-}
-
-ExchangeCalendar.prototype.CurrentMenuItem = null;
-ExchangeCalendar.prototype.BookFromTime = 480;	//format: minutes since 00:00 (480/60 = 8:00)
-ExchangeCalendar.prototype.BookToTime = 510;
+/* argument to constructor is the shortname of the calendaritem */
+var displayEnter = new Display("enter");
+var displaySpace = new Display("space");
+var displayBackspace = new Display("backspace");
 
 
 /* We inherit from Service with this call, it must always be next
    after the constructor */
-extend(SensorPrint, Service);
+extend(Display, Service);
 
 /* Declaration of instance variables, for static variables remove prototype */
 SensorPrint.prototype.myLCDService = null;
