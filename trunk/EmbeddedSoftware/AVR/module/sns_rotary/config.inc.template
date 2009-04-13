@@ -13,6 +13,7 @@ ROTARY_BTN=EXP_P
 ROTARY_BTN_INVERT_OUTPUT=1 
  
 #sns_rotary_DUMMY=1
-#sns_rotary_DUMMY_TIMER=<TIMER>
+sns_rotary_TIMER=<TIMER>
+sns_rotary_SEND_DELAY=100
 
 ## End section sns_rotary -- Do not edit this line
