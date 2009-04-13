@@ -23,6 +23,7 @@ function Rotary(type, name, id)
 	this.myLastDirection = new Array();
 	this.myLastSteps = new Array();
 	this.myLastPosition = new Array();
+	this.myLastButtonStatus = new Array();
 }
 
 extend(Rotary, CanService);
@@ -40,17 +41,17 @@ Rotary.prototype.canMessageHandler = function(canMessage)
 		switch (canMessage.getCommandName())
 		{
 		case "Rotary_Switch":
-		log(this.myName + ":" + this.myId + "> New direction: " + canMessage.getData("Direction") + ", steps: " + canMessage.getData("Steps") + "\n");
+		log(this.myName + ":" + this.myId + "> New direction: " + canMessage.getData("Direction") + ", steps: " + canMessage.getData("Steps") + ", position: " + canMessage.getData("Position") + "\n");
 		this.myLastDirection[canMessage.getData("SwitchId")] = canMessage.getData("Direction");
 		this.myLastSteps[canMessage.getData("SwitchId")] = canMessage.getData("Steps");
 		this.myLastPosition[canMessage.getData("SwitchId")] = canMessage.getData("Position");
-		this.callEvent("newValue", canMessage.getData("SwitchId"));
+		this.callEvent("newPosition", canMessage.getData("SwitchId"));
 		break;
 		
 		case "Button":
 		log(this.myName + ":" + this.myId + "> New button status: " + canMessage.getData("Status") + "\n");
 		this.myLastButtonStatus[canMessage.getData("SwitchId")] = canMessage.getData("Status");
-		this.callEvent("newValue", canMessage.getData("SwitchId"));
+		this.callEvent("newBtnStatus", canMessage.getData("SwitchId"));
 		break;
 		}
 	}
