@@ -4,6 +4,7 @@ uint8_t rotaryEncoder_Position = 0;
 uint8_t rotaryEncoder_Position_old = 0;
 uint8_t rotaryEncoder_Button_Position = 0;
 uint8_t rotaryEncoder_Button_Position_old = 0;
+uint8_t FlagBlockTransmission = 0;
 
 
 void sns_rotary_pcint_callback(uint8_t id, uint8_t status) 
@@ -47,6 +48,12 @@ void sns_rotary_pcint_callback(uint8_t id, uint8_t status)
 
 
 
+
+void BlockTransmission_callback(uint8_t timer)
+{
+	FlagBlockTransmission = 0;
+}
+
 void sns_rotary_Init(void)
 {
 	/*
@@ -70,8 +77,10 @@ void sns_rotary_Init(void)
 
 void sns_rotary_Process(void)
 {
-	if (rotaryEncoder_Position != rotaryEncoder_Position_old)
+	if (rotaryEncoder_Position != rotaryEncoder_Position_old && !FlagBlockTransmission)
 	{
+		FlagBlockTransmission=1;
+		Timer_SetTimeout(sns_rotary_TIMER, sns_rotary_SEND_DELAY, TimerTypeOneShot, &BlockTransmission_callback);
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -80,14 +89,16 @@ void sns_rotary_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_ROTARY_SWITCH;
 		txMsg.Length = 4;
 		txMsg.Data[0] = 0x01;
-		if ((rotaryEncoder_Position > rotaryEncoder_Position_old || (rotaryEncoder_Position_old==0xff && rotaryEncoder_Position==0x00)) && !(rotaryEncoder_Position_old==0x00 && rotaryEncoder_Position==0xff))
+		if ((rotaryEncoder_Position > rotaryEncoder_Position_old || (rotaryEncoder_Position_old==0xff && rotaryEncoder_Position==0x00)) && !(rotaryEncoder_Position_old==0x00 && rotaryEncoder_Position==0xff)) {
 			txMsg.Data[1] = 0x00;	//Clockwice
-		else
+			txMsg.Data[2] = rotaryEncoder_Position-rotaryEncoder_Position_old;
+		} else {
 			txMsg.Data[1] = 0x01;	//Counter Clockwice
-		txMsg.Data[2] = 0x01;
+			txMsg.Data[2] = rotaryEncoder_Position_old-rotaryEncoder_Position;
+		}
 		txMsg.Data[3] = rotaryEncoder_Position;
 
-		StdCan_Put(&txMsg);
+		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		rotaryEncoder_Position_old = rotaryEncoder_Position;
 	}
 	if (rotaryEncoder_Button_Position != rotaryEncoder_Button_Position_old)
@@ -106,13 +117,13 @@ void sns_rotary_Process(void)
 			txMsg.Data[1] = 0x00;
 		else
 			txMsg.Data[1] = 0x01;
-		StdCan_Put(&txMsg);
+		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 #else
 		if (rotaryEncoder_Button_Position_old)
 			txMsg.Data[1] = 0x01;
 		else
 			txMsg.Data[1] = 0x00;
-		StdCan_Put(&txMsg);
+		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 #endif
 	}
 
