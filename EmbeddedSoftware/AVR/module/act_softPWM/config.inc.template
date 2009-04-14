@@ -6,9 +6,9 @@
 act_softPWM_ID=<ID>
 #act_softPWM_DUMMY=1
 act_softPWM_TIMER=<TIMER>
-PIN_RED = EXP_C
-PIN_GREEN = EXP_E
-PIN_BLUE = EXP_H
+PIN_0 = EXP_C
+PIN_1 = EXP_E
+PIN_2 = EXP_H
 
 #Uncomment to use the pcint driver
 #act_softPWM_DUMMY_PCINT=<PCINT>
