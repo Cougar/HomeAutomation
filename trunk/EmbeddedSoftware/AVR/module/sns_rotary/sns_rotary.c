@@ -92,9 +92,17 @@ void sns_rotary_Process(void)
 		if ((rotaryEncoder_Position > rotaryEncoder_Position_old || (rotaryEncoder_Position_old==0xff && rotaryEncoder_Position==0x00)) && !(rotaryEncoder_Position_old==0x00 && rotaryEncoder_Position==0xff)) {
 			txMsg.Data[1] = 0x00;	//Clockwice
 			txMsg.Data[2] = rotaryEncoder_Position-rotaryEncoder_Position_old;
+			if (txMsg.Data[2]>127)
+			{
+				txMsg.Data[2] = 256-txMsg.Data[2];
+			}
 		} else {
 			txMsg.Data[1] = 0x01;	//Counter Clockwice
 			txMsg.Data[2] = rotaryEncoder_Position_old-rotaryEncoder_Position;
+			if (txMsg.Data[2]>127)
+			{
+				txMsg.Data[2] = 256-txMsg.Data[2];
+			}
 		}
 		txMsg.Data[3] = rotaryEncoder_Position;
 
