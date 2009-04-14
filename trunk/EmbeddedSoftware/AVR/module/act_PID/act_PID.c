@@ -70,7 +70,7 @@ void sendPID(void)
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_PID; ///TODO: Change this to the actual module type
 	txMsg.Header.ModuleId = act_PID_ID;
-	txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_SLOWPWM;
+	txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 	txMsg.Length = 3;
 	txMsg.Data[0] = PWM_ID;
 	txMsg.Data[1] = ((int16_t) (pwmValue)>>8)&0xff;

@@ -135,7 +135,7 @@ void act_SlowPWM_Process(void)
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SLOWPWM;
 		txMsg.Header.ModuleId = act_SlowPWM_ID;
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_SLOWPWM;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 		txMsg.Length = 3;
 		txMsg.Data[0] = PWMSENSORID;
 		txMsg.Data[1] = (pwmValue>>8)&0xff;
@@ -153,7 +153,7 @@ void act_SlowPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_MODULE_CMD_PHYSICAL_SLOWPWM:
+		case CAN_MODULE_CMD_PHYSICAL_PWM:
 			if (rxMsg->Data[0] == PWMSENSORID)
 			{
 				if (rxMsg->Length == 3)
