@@ -17,4 +17,6 @@ Display.prototype.bookToTime = 510;
 /* the shortname for this exchangeobject */
 Display.prototype.shortName = "";	
 
+/* The display should regulary update and store the calendar */
+Display.exchangeData = null;
 
