@@ -90,12 +90,6 @@
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
-    <command id="72" name="SlowPWM" type="physical" module="" description="Message for pwm data, 0 to 9999">
-      <variables>
-        <variable name="ChannelId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
-      </variables>
-    </command>
     <command id="73" name="ElectricPower" type="physical" module="" description="Message with data from a power meter">
       <variables>
         <variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
@@ -357,12 +351,11 @@
 		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
       </variables>
     </command>
-    <command id="128" name="RGB_value" type="specific" module="softPWM" description="Set an RGB-value">
+    <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
      <variables>
-        <variable name="RED" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="GREEN" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	<variable name="BLUE" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	</variables>
+        <variable name="Period" type="uint" start_bit="0" bit_length="16" unit="ms" description=""/>
+        <variable name="Resolution" type="uint" start_bit="16" bit_length="8" unit="ms" description=""/>
+     </variables>
     </command>
   </commands>
   <modules>
