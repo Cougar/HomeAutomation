@@ -27,13 +27,13 @@ void sns_rotary_pcint_callback(uint8_t id, uint8_t status)
 	if( rot_data==0 || rot_data==3 ){ // Are both signals high or low?
 		if( rot_data==0 && rot_laststate!=rot_data ){ // Are both signals low? In that case we are finished with one turn and should print out the direction it went.
 			if( rot_lastdir&0x01 ){
-			#ifndef ROTARY_CHx_INVERT_DIRECTION
+			#if ROTARY_CHx_INVERT_DIRECTION==1
 				rotaryEncoder_Position--;	// Moving clockwise
 			#else
 				rotaryEncoder_Position++;	// Moving counter clockwise
 			#endif
 			}else{
-			#ifndef ROTARY_CHx_INVERT_DIRECTION
+			#if ROTARY_CHx_INVERT_DIRECTION==1
 				rotaryEncoder_Position++;	// Moving counter clockwise
 			#else
 				rotaryEncoder_Position--;	// Moving clockwise
@@ -112,7 +112,7 @@ void sns_rotary_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_BUTTON;
 		txMsg.Length = 2;
 		txMsg.Data[0] = 0x01;
-#ifndef ROTARY_BTN_INVERT_OUTPUT
+#if ROTARY_BTN_INVERT_OUTPUT==1
 		if (rotaryEncoder_Button_Position_old)
 			txMsg.Data[1] = 0x00;
 		else
