@@ -90,14 +90,14 @@ void sns_rotary_Process(void)
 		txMsg.Length = 4;
 		txMsg.Data[0] = 0x01;
 		if ((rotaryEncoder_Position > rotaryEncoder_Position_old || (rotaryEncoder_Position_old==0xff && rotaryEncoder_Position==0x00)) && !(rotaryEncoder_Position_old==0x00 && rotaryEncoder_Position==0xff)) {
-			txMsg.Data[1] = 0x00;	//Clockwice
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_ROTARY_SWITCH_DIRECTION_CLOCKWISE;	//Clockwice
 			txMsg.Data[2] = rotaryEncoder_Position-rotaryEncoder_Position_old;
 			if (txMsg.Data[2]>127)
 			{
 				txMsg.Data[2] = 256-txMsg.Data[2];
 			}
 		} else {
-			txMsg.Data[1] = 0x01;	//Counter Clockwice
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_ROTARY_SWITCH_DIRECTION_COUNTERCLOCKWISE;	//Counter Clockwice
 			txMsg.Data[2] = rotaryEncoder_Position_old-rotaryEncoder_Position;
 			if (txMsg.Data[2]>127)
 			{
@@ -122,15 +122,15 @@ void sns_rotary_Process(void)
 		txMsg.Data[0] = 0x01;
 #if ROTARY_BTN_INVERT_OUTPUT==1
 		if (rotaryEncoder_Button_Position_old)
-			txMsg.Data[1] = 0x00;
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_BUTTON_STATUS_RELEASED;
 		else
-			txMsg.Data[1] = 0x01;
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_BUTTON_STATUS_PRESSED;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 #else
 		if (rotaryEncoder_Button_Position_old)
-			txMsg.Data[1] = 0x01;
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_BUTTON_STATUS_PRESSED;
 		else
-			txMsg.Data[1] = 0x00;
+			txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_BUTTON_STATUS_RELEASED;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 #endif
 	}

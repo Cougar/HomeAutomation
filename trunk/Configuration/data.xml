@@ -56,7 +56,10 @@
     <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status">
       <variables>
         <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Direction" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Direction" type="enum" start_bit="8" bit_length="8" unit="" description="">
+          <value id="0" name="Clockwise"/>
+          <value id="1" name="Counterclockwise"/>
+        </variable>
         <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
         <variable name="Position" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
