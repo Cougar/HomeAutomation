@@ -10,7 +10,7 @@ function Display(type, name, id)
 
 /* We inherit from Service with this call, it must always be next
    after the constructor */
-extend(SensorPrint, Service);
+extend(Display, Service);
 
 /* Declaration of instance variables, for static variables remove prototype */
 /* The currently displayed menuitem */
@@ -34,7 +34,6 @@ Display.prototype.myRotaryService = null;
 Display.prototype.mySoftPwmService = null;
 Display.prototype.myInterval = null;
 Display.prototype.exchangeCalendar = null;
-
 
 
 /* This function must always be declared, this is where all the startup code
@@ -141,7 +140,6 @@ Display.prototype.rotaryPosUpdate = function(SwitchId)
 			this.currentMenuItem.doLeft();
 		}
 	}
-	
 }
 
 Display.prototype.rotaryBtnUpdate = function(SwitchId)
@@ -150,6 +148,22 @@ Display.prototype.rotaryBtnUpdate = function(SwitchId)
 	{
 		this.currentMenuItem.doPress();
 	}
+}
+
+Display.prototype.updateDisplay = function()
+{
+	/* see if the current menuitem wants to update itself */
+	if (this.currentMenuItem.doUpdate)
+	{
+		this.currentMenuItem.doUpdate();
+	}
+	
+	/* send the data for the current menuitem to display */
+	for (var i = 0; i < this.currentMenuItem.displayData.length; i++)
+	{
+		this.myLCDService.printText(0, i, currentMenuItem.displayData[i]);
+	}
+	
 }
 
 Display.prototype.lcdOffline = function()
@@ -192,17 +206,8 @@ Display.prototype.timerUpdate = function()
 	{
 		this.exchangeCalendar.lookup(this.shortName);
 		
-		/* see if the current menuitem wants to update itself */
-		if (this.currentMenuItem.doUpdate)
-		{
-			this.currentMenuItem.doUpdate();
-		}
-		
-		/* send the data for the current menuitem to display */
-		for (var i = 0; i < this.currentMenuItem.displayData.length; i++)
-		{
-			this.myLCDService.printText(0, i, currentMenuItem.displayData[i]);
-		}
+		/* update the info on display */
+		this.updateDisplay();
 		
 		//var date = new Date();
 		/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
