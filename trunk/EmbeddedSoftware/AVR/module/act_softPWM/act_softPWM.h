@@ -27,8 +27,10 @@ void act_softPWM_List(uint8_t ModuleSequenceNumber);
 #ifdef act_softPWM_USEEEPROM
 	struct act_softPWM_Data{
 		///TODO: Define EEPROM variables needed by the module
-		uint8_t x;
-		uint16_t y;
+		uint16_t PwmPeriod;
+		uint16_t defaultPwmValue;
+		uint8_t defaultStates;
+		uint8_t ReportInterval;
 	};	
 #endif
 
