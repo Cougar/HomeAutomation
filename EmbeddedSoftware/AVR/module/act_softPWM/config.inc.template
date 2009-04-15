@@ -1,14 +1,22 @@
 ## Section act_softPWM -- Do not edit this line
 
 #Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
-#act_softPWM_USEEEPROM=1
+act_softPWM_USEEEPROM=1
 
 act_softPWM_ID=<ID>
 #act_softPWM_DUMMY=1
 act_softPWM_TIMER=<TIMER>
+act_softPWM_SEND_TIMER=<TIMER>
+
+#use up to 8 channels, but do it in order, otherwice there will be problems setting the correct values over CAN
 PIN_0 = EXP_C
 PIN_1 = EXP_E
 PIN_2 = EXP_H
+#PIN_3 = EXP_xx
+#PIN_4 = EXP_xx
+#PIN_5 = EXP_xx
+#PIN_6 = EXP_xx
+#PIN_7 = EXP_xx
 
 #Uncomment to use the pcint driver
 #act_softPWM_DUMMY_PCINT=<PCINT>
