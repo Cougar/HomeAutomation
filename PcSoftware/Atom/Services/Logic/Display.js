@@ -130,6 +130,18 @@ Display.prototype.rotaryOnline = function()
 
 Display.prototype.rotaryPosUpdate = function(SwitchId)
 {
+	for (var i = 0; i < myRotaryService.getSteps(SwitchId); i++)
+	{
+		if (myRotaryService.getDirection(SwitchId) == "Clockwise")
+		{
+			this.currentMenuItem.doRight();
+		}
+		else
+		{
+			this.currentMenuItem.doLeft();
+		}
+	}
+	
 }
 
 Display.prototype.rotaryBtnUpdate = function(SwitchId)
@@ -140,6 +152,15 @@ Display.prototype.rotaryBtnUpdate = function(SwitchId)
 	}
 }
 
+Display.prototype.lcdOffline = function()
+{
+	/* If we have no interval timer running do nothing */
+	if (this.myInterval != null)
+	{
+		/* Stop the interval */
+		this.myInterval.stop();
+	}
+}
 
 Display.prototype.lcdOnline = function()
 {
