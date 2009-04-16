@@ -1,5 +1,7 @@
 
 #include "act_softPWM.h"
+
+
 uint16_t currentTimer = 0;
 uint16_t maxTimer = 10;
 uint8_t	resolution = 1;
@@ -8,6 +10,11 @@ uint16_t pwmDefaultValue;
 uint16_t pwmPeriod;
 uint8_t pwmStatus;
 uint8_t currentSendChannelId = 0;
+
+#ifdef PIN_2_ID
+#warning Hej2
+#endif
+
 
 #ifdef act_softPWM_USEEEPROM
 #include "act_softPWM_eeprom.h"
@@ -23,47 +30,7 @@ struct eeprom_act_softPWM EEMEM eeprom_act_softPWM =
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 }; 
 #endif
-#define NUMBEROFCHANNELS 0
-#ifdef PIN_0
-	#define PIN_0_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_0_ID + 1
-#endif
-#ifdef PIN_1
-	#define PIN_1_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_1_ID + 1
-#endif
-#ifdef PIN_2
-	#define PIN_2_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_2_ID + 1
-#endif
-#ifdef PIN_3
-	#define PIN_3_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_3_ID + 1
-#endif
-#ifdef PIN_4
-	#define PIN_4_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_4_ID + 1
-#endif
-#ifdef PIN_5
-	#define PIN_5_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_5_ID + 1
-#endif
-#ifdef PIN_6
-	#define PIN_6_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_6_ID + 1
-#endif
-#ifdef PIN_7
-	#define PIN_7_ID NUMBEROFCHANNELS
-	#undefine NUMBEROFCHANNELS
-	#define NUMBEROFCHANNELS PIN_7_ID + 1
-#endif
+
 uint16_t pwmValue[NUMBEROFCHANNELS];
 
 void act_softPWM_Init(void)
@@ -74,8 +41,8 @@ void act_softPWM_Init(void)
 	  ;
 	} else
 	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-		eeprom_write_word_crc(EEDATA16.PwmPeriod, DEFAULT_PWM_PERIOD , WITHOUT_CRC);
-		eeprom_write_word_crc(EEDATA16.defaultPwmValue, DEFAULT_PWM_VALUE , WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.PwmPeriod, 10 , WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.defaultPwmValue, 0 , WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.defaultStates, 0xa0 , WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ReportInterval, 0x14 , WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
@@ -168,13 +135,17 @@ void act_softPWM_Process(void)
 			gpio_clr_pin(PIN_1);
 		}
 		#endif
+#ifdef PIN_2_ID
+#warning Hej3
+#endif
+
 		#ifdef PIN_2
-		if (currentTimer >= pwmValue[PIN_2_ID]) {
+		if (currentTimer >= pwmValue[ PIN_2_ID ]) {
 			gpio_clr_pin(PIN_2);
 		}
 		#endif
 		#ifdef PIN_3
-		if (currentTimer >= pwmValue[PIN_3_ID]) {
+		if (currentTimer >= pwmValue[ PIN_3_ID ]) {
 			gpio_clr_pin(PIN_3);
 		}
 		#endif
