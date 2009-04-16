@@ -11,10 +11,6 @@ uint16_t pwmPeriod;
 uint8_t pwmStatus;
 uint8_t currentSendChannelId = 0;
 
-#ifdef PIN_2_ID
-#warning Hej2
-#endif
-
 
 #ifdef act_softPWM_USEEEPROM
 #include "act_softPWM_eeprom.h"
@@ -126,51 +122,81 @@ void act_softPWM_Process(void)
 			#endif
 		}
 		#ifdef PIN_0
-		if (currentTimer >= pwmValue[PIN_0_ID]) {
+		if (currentTimer >= pwmValue[0]) {
 			gpio_clr_pin(PIN_0);
 		}
 		#endif
 		#ifdef PIN_1
-		if (currentTimer >= pwmValue[PIN_1_ID]) {
+		if (currentTimer >= pwmValue[1]) {
 			gpio_clr_pin(PIN_1);
 		}
 		#endif
-#ifdef PIN_2_ID
-#warning Hej3
-#endif
-
 		#ifdef PIN_2
-		if (currentTimer >= pwmValue[ PIN_2_ID ]) {
+		if (currentTimer >= pwmValue[2]) {
 			gpio_clr_pin(PIN_2);
 		}
 		#endif
 		#ifdef PIN_3
-		if (currentTimer >= pwmValue[ PIN_3_ID ]) {
+		if (currentTimer >= pwmValue[3]) {
 			gpio_clr_pin(PIN_3);
 		}
 		#endif
 		#ifdef PIN_4
-		if (currentTimer >= pwmValue[PIN_4_ID]) {
+		if (currentTimer >= pwmValue[4]) {
 			gpio_clr_pin(PIN_4);
 		}
 		#endif
 		#ifdef PIN_5
-		if (currentTimer >= pwmValue[PIN_5_ID]) {
+		if (currentTimer >= pwmValue[5]) {
 			gpio_clr_pin(PIN_5);
 		}
 		#endif
 		#ifdef PIN_6
-		if (currentTimer >= pwmValue[PIN_6_ID]) {
+		if (currentTimer >= pwmValue[6]) {
 			gpio_clr_pin(PIN_6);
 		}
 		#endif
 		#ifdef PIN_7
-		if (currentTimer >= pwmValue[PIN_7_ID]) {
+		if (currentTimer >= pwmValue[7]) {
 			gpio_clr_pin(PIN_7);
 		}
 		#endif
 	}
 	if (Timer_Expired(act_softPWM_SEND_TIMER)) {
+		while(1)
+		{
+			if (0
+			    #ifdef PIN_0
+			    || currentSendChannelId == 0
+			    #endif
+			    #ifdef PIN_1
+			    || currentSendChannelId == 1
+			    #endif
+			    #ifdef PIN_2
+			    || currentSendChannelId == 2
+			    #endif
+			    #ifdef PIN_3
+			    || currentSendChannelId == 3
+			    #endif
+			    #ifdef PIN_4
+			    || currentSendChannelId == 4
+			    #endif
+			    #ifdef PIN_5
+			    || currentSendChannelId == 5
+			    #endif
+			    #ifdef PIN_6
+			    || currentSendChannelId == 6
+			    #endif
+			    #ifdef PIN_7
+			    || currentSendChannelId == 7
+			    #endif
+			) {
+				break;
+			}
+			currentSendChannelId++;
+			if (currentSendChannelId >= NUMBEROFCHANNELS)
+				currentSendChannelId=0;
+		}
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -200,53 +226,23 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_PWM:
-			if ((((uint16_t)rxMsg->Data[1])<8) + rxMsg->Data[2] > maxTimer)
-			{
-				rxMsg->Data[2] = maxTimer & 0x00ff;
-				rxMsg->Data[1] = (maxTimer>>8) & 0x00ff;
-			}
-			switch (rxMsg->Data[0])
-			{
-			#ifdef PIN_0
-			case 0:
-				pwmValue[PIN_0_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_1
-			case 1:
-				pwmValue[PIN_1_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_2
-			case 2:
-				pwmValue[PIN_2_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_3
-			case 3:
-				pwmValue[PIN_3_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_4
-			case 4:
-				pwmValue[PIN_4_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_5
-			case 5:
-				pwmValue[PIN_5_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_6
-			case 6:
-				pwmValue[PIN_6_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
-			#ifdef PIN_7
-			case 7:
-				pwmValue[PIN_7_ID] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
-				break;
-			#endif
+			if (rxMsg->Length > 3)
+			{ 
+				if ((((uint16_t)rxMsg->Data[1])<8) + rxMsg->Data[2] > maxTimer)
+				{
+					rxMsg->Data[2] = maxTimer & 0x00ff;
+					rxMsg->Data[1] = (maxTimer>>8) & 0x00ff;
+				}
+				pwmValue[rxMsg->Data[0]] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
+				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
+				rxMsg->Length = 3;
+				StdCan_Put(rxMsg);
+			} else if (rxMsg->Length > 1) {
+				rxMsg->Data[2] = pwmValue[rxMsg->Data[0]] & 0x00ff;
+				rxMsg->Data[1] = (pwmValue[rxMsg->Data[0]]>>8) & 0x00ff;
+				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
+				rxMsg->Length = 3;
+				StdCan_Put(rxMsg);
 			}
 			break;
 		case CAN_MODULE_CMD_SOFTPWM_CONFIG:
