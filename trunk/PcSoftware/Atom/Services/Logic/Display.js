@@ -106,8 +106,60 @@ Display.prototype.initialize = function(initialArguments)
 	this.softPwmOnline();
 	
 	this.exchangeCalendar = new ExchangeCalendar(function(shortname, data) { self.exchangeCalendarLookupCallback(shortname, data); });
+	
+	
+	/* create the first menu item */
+	this.currentMenuItem = new MenuItem(this);
+	this.currentMenuItem.displayData[0] = "       " + this.niceName;
+	this.currentMenuItem.doUpdate = this.setTime;
+	
+	/* create a test item */
+	var meny = new MenuItem(this);
+	meny.displayData[0] = "Hej  ";
+	meny.displayData[1] = "   ";
+	
+	/* connect the items as a linked list */
+	this.currentMenuItem.setNextItem(meny);
+	this.currentMenuItem.setPrevItem(meny);
+	/* set the function that shall be executed when knob is turned */
+	this.currentMenuItem.doRight = this.changeToNext;
+	this.currentMenuItem.doLeft = this.changeToPrev;
+	
+	/* connect the items as a linked list */
+	meny.setNextItem(this.currentMenuItem);
+	meny.setPrevItem(this.currentMenuItem);
+	/* set the function that shall be executed when knob is turned */
+	meny.doRight = this.changeToNext;
+	meny.doLeft = this.changeToPrev;
+	
+	
 }
 
+Display.prototype.changeToNext = function()
+{
+	if (this.nextItem)
+	{
+		this.parentDisplay.currentMenuItem = this.nextItem;
+	}
+	
+}
+
+Display.prototype.changeToPrev = function()
+{
+	if (this.prevItem)
+	{
+		this.parentDisplay.currentMenuItem = this.prevItem;
+	}
+}
+
+Display.prototype.setTime = function()
+{
+	var date = new Date();
+	/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
+	var dateAndTime = "" + date.getHours().toString() + "." + date.getMinutes().toString().pad(2, "0", 0);
+	this.displayData[1] = "       " + dateAndTime;
+	//this.currentMenuItem.displayData[1] = "       " + dateAndTime;
+}
 
 
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
@@ -129,25 +181,37 @@ Display.prototype.rotaryOnline = function()
 
 Display.prototype.rotaryPosUpdate = function(SwitchId)
 {
-	for (var i = 0; i < myRotaryService.getSteps(SwitchId); i++)
+	for (var i = 0; i < this.myRotaryService.getSteps(SwitchId); i++)
 	{
-		if (myRotaryService.getDirection(SwitchId) == "Clockwise")
+		if (this.myRotaryService.getDirection(SwitchId) == "Clockwise")
 		{
-			this.currentMenuItem.doRight();
+			if (this.currentMenuItem.doRight)
+			{
+				this.currentMenuItem.doRight();
+			}
 		}
 		else
 		{
-			this.currentMenuItem.doLeft();
+			if (this.currentMenuItem.doLeft)
+			{
+				this.currentMenuItem.doLeft();
+			}
 		}
 	}
+	
+	this.updateDisplay();
 }
 
 Display.prototype.rotaryBtnUpdate = function(SwitchId)
 {
-	if (myRotaryService.getButtonStatus(SwitchId) == "Released")
+	if (this.myRotaryService.getButtonStatus(SwitchId) == "Released")
 	{
-		this.currentMenuItem.doPress();
+		if (this.currentMenuItem.doPress)
+		{
+			this.currentMenuItem.doPress();
+		}
 	}
+	this.updateDisplay();
 }
 
 Display.prototype.updateDisplay = function()
@@ -157,11 +221,14 @@ Display.prototype.updateDisplay = function()
 	{
 		this.currentMenuItem.doUpdate();
 	}
+
+	/* Clear the LCD screen */
+	this.myLCDService.clearScreen();
 	
 	/* send the data for the current menuitem to display */
 	for (var i = 0; i < this.currentMenuItem.displayData.length; i++)
 	{
-		this.myLCDService.printText(0, i, currentMenuItem.displayData[i]);
+		this.myLCDService.printText(0, i, this.currentMenuItem.displayData[i]);
 	}
 	
 }
@@ -196,6 +263,8 @@ Display.prototype.lcdOnline = function()
 		}
 		
 		this.myInterval.start();
+		
+		this.updateDisplay();
 	}
 }
 
@@ -204,7 +273,7 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-		this.exchangeCalendar.lookup(this.shortName);
+		//this.exchangeCalendar.lookup(this.shortName);
 		
 		/* update the info on display */
 		this.updateDisplay();
