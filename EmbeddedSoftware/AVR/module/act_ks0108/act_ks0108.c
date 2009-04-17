@@ -23,8 +23,11 @@ void unsignedtoascii(uint16_t num, uint8_t decimalplace, char *string, uint8_t n
 void act_ks0108_Init(void)
 {
 	///TODO: Initialize hardware etc here
-	DDRC |= (1<<PC0);
-	PORTC |= (1<<PC0);
+	// Backlight
+	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
+	TCCR0B |= (1<<CS00);
+	OCR0A = act_hd44780_INITIAL_BACKLIGHT;
+	DDRD |= (1<<PD6);
 
 	glcdPowerOn();
 
@@ -131,36 +134,18 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 		break;
 
 		case CAN_MODULE_CMD_KS0108_LCD_BACKLIGHT:
-		if (rxMsg->Length > 0) {
-		  if (rxMsg->Data[0] > 127)
-		    PORTC |= (1<<PC0);
-		  else
-		    PORTC &= ~(1<<PC0);
-/*
-#if (act_hd44780_TYPE==0)
-			OCR1AL = rxMsg->Data[0];
-#else
-			OCR0B = rxMsg->Data[0];
-#endif
-*/
-		}
-		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
-		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_KS0108;
-		txMsg.Header.ModuleId = act_ks0108_ID;
-		txMsg.Header.Command = CAN_MODULE_CMD_KS0108_LCD_BACKLIGHT;
-		txMsg.Length = 1;
-		
-		txMsg.Data[0] = PORTC & (1<<PC0);
-/*
-#if (act_hd44780_TYPE==0)
-			txMsg.Data[0] = OCR1AL;
-#else
-			txMsg.Data[0] = OCR0B;
-#endif
-*/
-
-		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+			if (rxMsg->Length > 0) {
+				OCR0A = rxMsg->Data[0];
+			}
+			StdCan_Msg_t txMsg;
+			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
+			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_KS0108;
+			txMsg.Header.ModuleId = act_ks0108_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_KS0108_LCD_BACKLIGHT;
+			txMsg.Length = 1;
+			txMsg.Data[0] = OCR0A;
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		break;
 		
 		case CAN_MODULE_CMD_KS0108_LCD_DRAWRECT:
