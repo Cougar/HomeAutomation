@@ -26,7 +26,7 @@ void act_ks0108_Init(void)
 	// Backlight
 	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
-	OCR0A = act_hd44780_INITIAL_BACKLIGHT;
+	OCR0A = act_ks0108_INITIAL_BACKLIGHT;
 	DDRD |= (1<<PD6);
 
 	glcdPowerOn();
