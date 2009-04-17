@@ -1,10 +1,15 @@
 
-function MenuItem()
+function MenuItem(parentDisplay)
 {
+	this.parentDisplay = parentDisplay;
+	this.displayData = new Array();
 }
 
+/* the display object who created the menu item */
+MenuItem.prototype.parentDisplay = null;
+
 /* the data to display for this item, may be updated before sent to display via the doUpdate function */
-MenuItem.prototype.displayData = new Array();
+MenuItem.prototype.displayData = null;
 /* function to call when this menu item is active and left is choosen */
 MenuItem.prototype.doLeft = null;
 /* function to call when this menu item is active and right is choosen */
@@ -20,11 +25,11 @@ MenuItem.prototype.prevItem = null;
 /* what MenuItem to descend to, if used */
 MenuItem.prototype.descItem = null;
 
-MenuItem.setNextItem = function (nextItem)
+MenuItem.prototype.setNextItem = function (nextItem)
 {
 	this.nextItem = nextItem;
 }
-MenuItem.setPrevItem = function (prevItem)
+MenuItem.prototype.setPrevItem = function (prevItem)
 {
 	this.prevItem = prevItem;
 }
