@@ -7,25 +7,32 @@ function ExchangeCalendar(callback)
 
 ExchangeCalendar.prototype.myHTTP = null;
 ExchangeCalendar.prototype.myCallback = null;
-//ExchangeCalendar.prototype.calendarShortName;
 
 ExchangeCalendar.prototype.lookup = function(calendarShortName)
 {
 	var self = this;
-
-	//this.calendarShortName = calendarShortName;
-
-	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, "dev/exchangeIntegration/exchange.php?function=getMeetingsRestOfDay&shortname=" + calendarShortName);
+log("ExchangeCalendar: calling lookup \n");
+	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, 
+						"dev/exchangeIntegration/exchange.php?function=getMeetingsRestOfDay&shortname=" + calendarShortName);
+log("ExchangeCalendar: calling lookup  part 2 \n");
 }
 
 ExchangeCalendar.prototype.httpCallback = function(result, header, content)
 {
+log("ExchangeCalendar: httpCallback \n");
 	var data = null;
 	var shortname = "";
 	if (result.indexOf("200 OK") != -1)
 	{
-		var data = eval(content);
+		log("ExchangeCalendar: got data : \n" + content + "\n");
+		/*var data = !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
+		content.replace(/"(\\.|[^"\\])*"/g, ''))) &&
+		eval('(' + content + ')');
+		*/
+		var data = eval('(' + content + ')');
+		
 		shortname = data['shortname'];
+		//log("ExchangeCalendar: did eval go right? \n"+data.meetings[0]["organizer"]+"\n");
 	}
 	else
 	{
@@ -34,3 +41,4 @@ ExchangeCalendar.prototype.httpCallback = function(result, header, content)
 	
 	this.myCallback(shortname, data);
 }
+

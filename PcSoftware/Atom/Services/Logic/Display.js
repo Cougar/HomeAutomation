@@ -16,15 +16,18 @@ extend(Display, Service);
 /* The currently displayed menuitem */
 Display.prototype.currentMenuItem = null;
 
+Display.prototype.statusMenuItem = null;
+Display.prototype.bookMenuItem = null;
+
 /* format: minutes since 00:00 (480/60 = 8:00) */
-Display.prototype.bookFromTime = 480;
-Display.prototype.bookToTime = 510;
+Display.prototype.bookFromTime = null;
+Display.prototype.bookToTime = null;
 
 /* the shortname for this exchangeobject */
-Display.prototype.shortName = "";	
+Display.prototype.shortName = null;	
 
 /* the name for this display (shown on first screen) */
-Display.prototype.niceName = "";	
+Display.prototype.niceName = null;
 
 /* The display should regulary update and store the calendar */
 Display.prototype.exchangeData = null;
@@ -33,7 +36,10 @@ Display.prototype.myLCDService = null;
 Display.prototype.myRotaryService = null;
 Display.prototype.mySoftPwmService = null;
 Display.prototype.myInterval = null;
+
 Display.prototype.exchangeCalendar = null;
+Display.prototype.exchangeCalendarFirstMenuItem = null;
+Display.prototype.exchangeCalendarLastMenuItem = null;
 
 
 /* This function must always be declared, this is where all the startup code
@@ -107,32 +113,123 @@ Display.prototype.initialize = function(initialArguments)
 	
 	this.exchangeCalendar = new ExchangeCalendar(function(shortname, data) { self.exchangeCalendarLookupCallback(shortname, data); });
 	
+	this.bookFromTime = new Date();
+	this.bookFromTime.setHours(8);
+	this.bookFromTime.setMinutes(0);
+	this.bookToTime = new Date();
+	this.bookToTime.setHours(8);
+	this.bookToTime.setMinutes(30);
+	
 	
 	/* create the first menu item */
-	this.currentMenuItem = new MenuItem(this);
-	this.currentMenuItem.displayData[0] = "       " + this.niceName;
-	this.currentMenuItem.doUpdate = this.setTime;
+	this.statusMenuItem = new MenuItem(this);
+	this.statusMenuItem.displayData[0] = "       " + this.niceName + "       ";
+	this.statusMenuItem.doUpdate = this.updateStatusMenuItem;
+	this.currentMenuItem = this.statusMenuItem;
 	
-	/* create a test item */
-	var meny = new MenuItem(this);
-	meny.displayData[0] = "Hej  ";
-	meny.displayData[1] = "   ";
+	/* create the menuitem where you can choose to enter the booking sub-menu */
+	this.bookMenuItem = new MenuItem(this);
+	this.bookMenuItem.displayData[0] = "     Book room      ";
+	this.bookMenuItem.displayData[1] = "                    ";
+	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
+
+	/* connect the items as a linked list */
+	this.statusMenuItem.setNextItem(this.bookMenuItem);
+	this.statusMenuItem.setPrevItem(this.bookMenuItem);
+	/* set the function that shall be executed when knob is turned */
+	this.statusMenuItem.doRight = this.changeToNext;
+	this.statusMenuItem.doLeft = this.changeToPrev;
 	
 	/* connect the items as a linked list */
-	this.currentMenuItem.setNextItem(meny);
-	this.currentMenuItem.setPrevItem(meny);
+	this.bookMenuItem.setNextItem(this.statusMenuItem);
+	this.bookMenuItem.setPrevItem(this.statusMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	this.currentMenuItem.doRight = this.changeToNext;
-	this.currentMenuItem.doLeft = this.changeToPrev;
+	this.bookMenuItem.doRight = this.changeToNext;
+	this.bookMenuItem.doLeft = this.changeToPrev;
 	
+	/* create the menuitem where you can choose the to-time */
+	var menuChooseTo = new MenuItem(this);
+	menuChooseTo.displayData[1] = "    Ok     Cancel   ";
+	menuChooseTo.doUpdate = this.chooseBookTimeTo;
+	
+	this.bookMenuItem.doPress = this.changeToDesc;
+	this.bookMenuItem.setDescItem(menuChooseTo);
+	
+	/* create the menuitem where you can choose to book the room with OK */
+	var menuChooseOk = new MenuItem(this);
+	menuChooseOk.displayData[1] = "   <Ok>    Cancel   ";
+	menuChooseOk.doUpdate = this.setBookTime;
+
+	/* create the menuitem where you can choose to cancel the booking */
+	var menuChooseCancel = new MenuItem(this);
+	menuChooseCancel.displayData[1] = "    Ok    <Cancel>  ";
+	menuChooseCancel.doUpdate = this.setBookTime;
+
+	/* create the menuitem where you can choose the from-time */
+	var menuChooseFrom = new MenuItem(this);
+	menuChooseFrom.displayData[1] = "    Ok     Cancel   ";
+	menuChooseFrom.doUpdate = this.chooseBookTimeFrom;
+
 	/* connect the items as a linked list */
-	meny.setNextItem(this.currentMenuItem);
-	meny.setPrevItem(this.currentMenuItem);
+	menuChooseTo.setNextItem(menuChooseOk);
+	menuChooseTo.setPrevItem(menuChooseFrom);
 	/* set the function that shall be executed when knob is turned */
-	meny.doRight = this.changeToNext;
-	meny.doLeft = this.changeToPrev;
-	
-	
+	menuChooseTo.doRight = this.changeToNext;
+	menuChooseTo.doLeft = this.changeToPrev;
+	menuChooseTo.doPress = this.changeToDesc;
+
+	/* connect the items as a linked list */
+	menuChooseOk.setNextItem(menuChooseCancel);
+	menuChooseOk.setPrevItem(menuChooseTo);
+	/* set the function that shall be executed when knob is turned */
+	menuChooseOk.doRight = this.changeToNext;
+	menuChooseOk.doLeft = this.changeToPrev;
+
+	/* connect the items as a linked list */
+	menuChooseCancel.setNextItem(menuChooseFrom);
+	menuChooseCancel.setPrevItem(menuChooseOk);
+	menuChooseCancel.setDescItem(this.bookMenuItem);
+	/* set the function that shall be executed when knob is turned */
+	menuChooseCancel.doRight = this.changeToNext;
+	menuChooseCancel.doLeft = this.changeToPrev;
+	menuChooseCancel.doPress = this.changeToDesc;
+
+	/* connect the items as a linked list */
+	menuChooseFrom.setNextItem(menuChooseTo);
+	menuChooseFrom.setPrevItem(menuChooseCancel);
+	/* set the function that shall be executed when knob is turned */
+	menuChooseFrom.doRight = this.changeToNext;
+	menuChooseFrom.doLeft = this.changeToPrev;
+	menuChooseFrom.doPress = this.changeToDesc;
+
+	/* create the menuitem where you can modify the to-time */
+	var menuSetTo = new MenuItem(this);
+	menuSetTo.doUpdate = this.setBookTimeTo;
+	menuSetTo.displayData[0] = "    Set end time    ";
+	menuSetTo.doRight = this.incBookTimeTo;
+	menuSetTo.doLeft = this.decBookTimeTo;
+	menuSetTo.doPress = this.changeToDesc;
+	menuSetTo.setDescItem(menuChooseTo);
+	menuChooseTo.setDescItem(menuSetTo);
+
+	/* create the menuitem where you can modify the from-time */
+	var menuSetFrom = new MenuItem(this);
+	menuSetFrom.doUpdate = this.setBookTimeFrom;
+	menuSetFrom.displayData[0] = "   Set start time   ";
+	menuSetFrom.doRight = this.incBookTimeFrom;
+	menuSetFrom.doLeft = this.decBookTimeFrom;
+	menuSetFrom.doPress = this.changeToDesc;
+	menuSetFrom.setDescItem(menuChooseFrom);
+	menuChooseFrom.setDescItem(menuSetFrom);
+
+}
+
+Display.prototype.changeToDesc = function()
+{
+	if (this.descItem)
+	{
+		this.parentDisplay.currentMenuItem = this.descItem;
+	}
 }
 
 Display.prototype.changeToNext = function()
@@ -141,7 +238,6 @@ Display.prototype.changeToNext = function()
 	{
 		this.parentDisplay.currentMenuItem = this.nextItem;
 	}
-	
 }
 
 Display.prototype.changeToPrev = function()
@@ -152,22 +248,125 @@ Display.prototype.changeToPrev = function()
 	}
 }
 
-Display.prototype.setTime = function()
+Display.prototype.incBookTimeTo = function()
 {
-	var date = new Date();
-	/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
-	var dateAndTime = "" + date.getHours().toString() + "." + date.getMinutes().toString().pad(2, "0", 0);
-	this.displayData[1] = "       " + dateAndTime;
-	//this.currentMenuItem.displayData[1] = "       " + dateAndTime;
+	//FIXME: constraints?
+	this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + 30);
 }
 
+Display.prototype.decBookTimeTo = function()
+{
+	//FIXME: constraints?
+	this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - 30);
+}
+
+Display.prototype.incBookTimeFrom = function()
+{
+	//FIXME: constraints?
+	this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + 30);
+}
+
+Display.prototype.decBookTimeFrom = function()
+{
+	//FIXME: constraints?
+		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() - 30);
+}
+
+Display.prototype.setBookTimeFrom = function()
+{
+	this.displayData[1] = "      <"+this.parentDisplay.bookFromTime.getTimeShortFormated()+">       ";
+}
+
+Display.prototype.setBookTimeTo = function()
+{
+	this.displayData[1] = "      <"+this.parentDisplay.bookToTime.getTimeShortFormated()+">       ";
+}
+
+Display.prototype.chooseBookTimeTo = function()
+{
+	this.displayData[0] = "  "+this.parentDisplay.bookFromTime.getTimeShortFormated()+"  - <"
+								+this.parentDisplay.bookToTime.getTimeShortFormated()+">  ";
+}
+
+Display.prototype.chooseBookTimeFrom = function()
+{
+	this.displayData[0] = " <"+this.parentDisplay.bookFromTime.getTimeShortFormated()+"> -  "
+								+this.parentDisplay.bookToTime.getTimeShortFormated()+"   ";
+}
+
+Display.prototype.setBookTime = function()
+{
+	this.displayData[0] = "  "+this.parentDisplay.bookFromTime.getTimeShortFormated()+"  -  "
+								+this.parentDisplay.bookToTime.getTimeShortFormated()+"   ";
+}
+
+Display.prototype.updateStatusMenuItem = function()
+{
+	var date = new Date();
+	var dateAndTime = "" + date.getTimeShortFormated();
+	this.displayData[1] = "       " + dateAndTime + "        ";
+	
+	if (this.parentDisplay.exchangeCalendarFirstMenuItem && this.parentDisplay.exchangeCalendarLastMenuItem)
+	{
+		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.exchangeCalendarFirstMenuItem);
+		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.exchangeCalendarLastMenuItem);
+	}
+}
+
+Display.prototype.updateBookMenuItem = function()
+{
+	if (this.parentDisplay.exchangeCalendarFirstMenuItem && this.parentDisplay.exchangeCalendarLastMenuItem)
+	{
+		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.exchangeCalendarFirstMenuItem);
+		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.exchangeCalendarLastMenuItem);
+	}
+}
 
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 {
+log("callback: "+shortname+" \n");
 	if (shortname == this.shortName)
 	{
 		//FIXME check if data contains error tag and error message, print to log and keep previous data?
 		this.exchangeData = data;
+		
+		this.createCalendarMenu();
+	}
+}
+
+Display.prototype.createCalendarMenu = function()
+{
+log("createCalendar \n");
+	if (this.exchangeData)
+	{
+log("have data \n");
+		var lastMenuItem;
+		for (var i = 0; i < this.exchangeData.meetings.length; i++)
+		{
+log("looping \n");
+			/* create the menuitem for a calendar meeting */
+			var menu = new MenuItem(this);
+			menu.displayData[0] = this.exchangeData.meetings[i].organizer;
+			menu.displayData[1] = "   "+this.exchangeData.meetings[i].start.replace(":",".") + " - " 
+										+ this.exchangeData.meetings[i].end.replace(":",".")+"    ";
+			menu.doRight = this.changeToNext;
+			menu.doLeft = this.changeToPrev;
+			
+			if (i == 0)
+			{
+				this.exchangeCalendarFirstMenuItem = menu;
+			}
+			else
+			{
+				menu.setPrevItem(lastMenuItem);
+				lastMenuItem.setNextItem(menu);
+			}
+			
+			lastMenuItem = menu;
+		}
+		this.exchangeCalendarLastMenuItem = lastMenuItem;
+		this.exchangeCalendarLastMenuItem.setNextItem(this.bookMenuItem);
+		this.exchangeCalendarFirstMenuItem.setPrevItem(this.statusMenuItem);
 	}
 }
 
@@ -223,7 +422,7 @@ Display.prototype.updateDisplay = function()
 	}
 
 	/* Clear the LCD screen */
-	this.myLCDService.clearScreen();
+	//this.myLCDService.clearScreen();
 	
 	/* send the data for the current menuitem to display */
 	for (var i = 0; i < this.currentMenuItem.displayData.length; i++)
@@ -259,12 +458,12 @@ Display.prototype.lcdOnline = function()
 			var self = this;
 		
 			/* Start interval timer for our printout. Arguments are the callback function and time in milliseconds */
-			this.myInterval = new Interval(function() { self.timerUpdate() }, 60000);
+			this.myInterval = new Interval(function() { self.timerUpdate() }, 10000);
 		}
 		
 		this.myInterval.start();
 		
-		this.updateDisplay();
+		this.timerUpdate();
 	}
 }
 
@@ -273,7 +472,7 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-		//this.exchangeCalendar.lookup(this.shortName);
+		this.exchangeCalendar.lookup(this.shortName);
 		
 		/* update the info on display */
 		this.updateDisplay();

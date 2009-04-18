@@ -33,3 +33,8 @@ MenuItem.prototype.setPrevItem = function (prevItem)
 {
 	this.prevItem = prevItem;
 }
+MenuItem.prototype.setDescItem = function (descItem)
+{
+	this.descItem = descItem;
+}
+
