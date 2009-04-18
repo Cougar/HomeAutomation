@@ -13,13 +13,8 @@ function Display(type, name, id)
 extend(Display, Service);
 
 /* Declaration of instance variables, for static variables remove prototype */
-/* The currently displayed menuitem */
-Display.prototype.currentMenuItem = null;
 
-Display.prototype.statusMenuItem = null;
-Display.prototype.bookMenuItem = null;
-
-/* format: minutes since 00:00 (480/60 = 8:00) */
+/* format: dat objects, just use the time */
 Display.prototype.bookFromTime = null;
 Display.prototype.bookToTime = null;
 
@@ -37,9 +32,16 @@ Display.prototype.myRotaryService = null;
 Display.prototype.mySoftPwmService = null;
 Display.prototype.myInterval = null;
 
+/*  */
 Display.prototype.exchangeCalendar = null;
+/*  */
 Display.prototype.exchangeCalendarFirstMenuItem = null;
 Display.prototype.exchangeCalendarLastMenuItem = null;
+Display.prototype.statusMenuItem = null;
+Display.prototype.bookMenuItem = null;
+
+/* The currently displayed menuitem */
+Display.prototype.currentMenuItem = null;
 
 
 /* This function must always be declared, this is where all the startup code
@@ -113,24 +115,16 @@ Display.prototype.initialize = function(initialArguments)
 	
 	this.exchangeCalendar = new ExchangeCalendar(function(shortname, data) { self.exchangeCalendarLookupCallback(shortname, data); });
 	
-	this.bookFromTime = new Date();
-	this.bookFromTime.setHours(8);
-	this.bookFromTime.setMinutes(0);
-	this.bookToTime = new Date();
-	this.bookToTime.setHours(8);
-	this.bookToTime.setMinutes(30);
-	
-	
 	/* create the first menu item */
 	this.statusMenuItem = new MenuItem(this);
-	this.statusMenuItem.displayData[0] = "       " + this.niceName + "       ";
+	this.statusMenuItem.displayData[0] = this.lcdCenterText(this.niceName);
 	this.statusMenuItem.doUpdate = this.updateStatusMenuItem;
 	this.currentMenuItem = this.statusMenuItem;
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
-	this.bookMenuItem.displayData[0] = "     Book room      ";
-	this.bookMenuItem.displayData[1] = "                    ";
+	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room";
+	this.bookMenuItem.displayData[1] = this.lcdCenterText("");
 	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
 
 	/* connect the items as a linked list */
@@ -149,25 +143,25 @@ Display.prototype.initialize = function(initialArguments)
 	
 	/* create the menuitem where you can choose the to-time */
 	var menuChooseTo = new MenuItem(this);
-	menuChooseTo.displayData[1] = "    Ok     Cancel   ";
+	menuChooseTo.displayData[1] = this.lcdCenterText("Ok     Cancel");
 	menuChooseTo.doUpdate = this.chooseBookTimeTo;
 	
-	this.bookMenuItem.doPress = this.changeToDesc;
+	this.bookMenuItem.doPress = this.startBooking;
 	this.bookMenuItem.setDescItem(menuChooseTo);
 	
 	/* create the menuitem where you can choose to book the room with OK */
 	var menuChooseOk = new MenuItem(this);
-	menuChooseOk.displayData[1] = "   <Ok>    Cancel   ";
+	menuChooseOk.displayData[1] = this.lcdCenterText("<Ok>    Cancel");
 	menuChooseOk.doUpdate = this.setBookTime;
 
 	/* create the menuitem where you can choose to cancel the booking */
 	var menuChooseCancel = new MenuItem(this);
-	menuChooseCancel.displayData[1] = "    Ok    <Cancel>  ";
+	menuChooseCancel.displayData[1] = this.lcdCenterText("Ok    <Cancel>");
 	menuChooseCancel.doUpdate = this.setBookTime;
 
 	/* create the menuitem where you can choose the from-time */
 	var menuChooseFrom = new MenuItem(this);
-	menuChooseFrom.displayData[1] = "    Ok     Cancel   ";
+	menuChooseFrom.displayData[1] = this.lcdCenterText("Ok     Cancel");
 	menuChooseFrom.doUpdate = this.chooseBookTimeFrom;
 
 	/* connect the items as a linked list */
@@ -205,7 +199,7 @@ Display.prototype.initialize = function(initialArguments)
 	/* create the menuitem where you can modify the to-time */
 	var menuSetTo = new MenuItem(this);
 	menuSetTo.doUpdate = this.setBookTimeTo;
-	menuSetTo.displayData[0] = "    Set end time    ";
+	menuSetTo.displayData[0] = this.lcdCenterText("Set end time");
 	menuSetTo.doRight = this.incBookTimeTo;
 	menuSetTo.doLeft = this.decBookTimeTo;
 	menuSetTo.doPress = this.changeToDesc;
@@ -215,13 +209,34 @@ Display.prototype.initialize = function(initialArguments)
 	/* create the menuitem where you can modify the from-time */
 	var menuSetFrom = new MenuItem(this);
 	menuSetFrom.doUpdate = this.setBookTimeFrom;
-	menuSetFrom.displayData[0] = "   Set start time   ";
+	menuSetFrom.displayData[0] = this.lcdCenterText("Set start time");
 	menuSetFrom.doRight = this.incBookTimeFrom;
 	menuSetFrom.doLeft = this.decBookTimeFrom;
 	menuSetFrom.doPress = this.changeToDesc;
 	menuSetFrom.setDescItem(menuChooseFrom);
 	menuChooseFrom.setDescItem(menuSetFrom);
 
+}
+
+Display.prototype.startBooking = function()
+{
+	this.parentDisplay.bookFromTime = new Date();
+	this.parentDisplay.bookToTime = new Date();
+	//this.bookFromTime.setHours(8);
+	//this.bookToTime.setHours(8);
+	if (this.parentDisplay.bookFromTime.getMinutes() < 30)
+	{
+		this.parentDisplay.bookFromTime.setMinutes(0);
+		this.parentDisplay.bookToTime.setMinutes(30);
+	}
+	else
+	{
+		this.parentDisplay.bookFromTime.setMinutes(30);
+		this.parentDisplay.bookToTime.setHours(this.parentDisplay.bookToTime.getHours()+1);
+		this.parentDisplay.bookToTime.setMinutes(0);
+	}
+
+	this.parentDisplay.currentMenuItem = this.parentDisplay.currentMenuItem.descItem;
 }
 
 Display.prototype.changeToDesc = function()
@@ -346,9 +361,9 @@ log("have data \n");
 log("looping \n");
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
-			menu.displayData[0] = this.exchangeData.meetings[i].organizer;
-			menu.displayData[1] = "   "+this.exchangeData.meetings[i].start.replace(":",".") + " - " 
-										+ this.exchangeData.meetings[i].end.replace(":",".")+"    ";
+			menu.displayData[0] = this.lcdCenterText(this.exchangeData.meetings[i].organizer);
+			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start.replace(":",".") + " - " 
+										+ this.exchangeData.meetings[i].end.replace(":","."));
 			menu.doRight = this.changeToNext;
 			menu.doLeft = this.changeToPrev;
 			
@@ -430,6 +445,23 @@ Display.prototype.updateDisplay = function()
 		this.myLCDService.printText(0, i, this.currentMenuItem.displayData[i]);
 	}
 	
+}
+
+Display.prototype.lcdCenterText = function(text)
+{
+	returnText = text;
+	var displayWidth = this.myLCDService.getWidth();
+	/* pad on both sides with spaces to displayWidth */
+	returnText = text.pad(displayWidth, " ", 2);
+	
+	/*if (displayWidth > text.length)
+	{
+		paddingLen = displayWidth - text.length;
+		paddingLen = Math.round((paddingLen/2-0.5));
+		returnText = text
+	}*/
+	
+	return returnText;
 }
 
 Display.prototype.lcdOffline = function()
