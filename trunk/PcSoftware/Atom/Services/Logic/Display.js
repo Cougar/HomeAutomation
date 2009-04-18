@@ -349,6 +349,7 @@ log("callback: "+shortname+" \n");
 	}
 }
 
+/* this function parses calendar data from exchange-script and creates a menu */
 Display.prototype.createCalendarMenu = function()
 {
 log("createCalendar \n");
@@ -490,7 +491,7 @@ Display.prototype.lcdOnline = function()
 			var self = this;
 		
 			/* Start interval timer for our printout. Arguments are the callback function and time in milliseconds */
-			this.myInterval = new Interval(function() { self.timerUpdate() }, 10000);
+			this.myInterval = new Interval(function() { self.timerUpdate() }, 60000);
 		}
 		
 		this.myInterval.start();
@@ -508,14 +509,6 @@ Display.prototype.timerUpdate = function()
 		
 		/* update the info on display */
 		this.updateDisplay();
-		
-		//var date = new Date();
-		/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
-		//var dateAndTime = date.getDateTimeFormated();
-		/* Print the text to the LCD */
-		//this.myLCDService.printText(0, 1, dateAndTime);
-		/* Print out what we are doing to the console */
-		//log(this.myName + ":" + this.myId + "> Trying to print " + dateAndTime + " to LCD\n");
 	}
 }
 
