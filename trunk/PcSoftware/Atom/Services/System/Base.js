@@ -93,6 +93,11 @@ Date.prototype.getTimeFormated = function()
 	return this.getHours().toString().pad(2, "0", 0) + "." + this.getMinutes().toString().pad(2, "0", 0) + "." + this.getSeconds().toString().pad(2, "0", 0);
 }
 
+Date.prototype.getTimeShortFormated = function()
+{
+	return this.getHours().toString().pad(2, "0", 0) + "." + this.getMinutes().toString().pad(2, "0", 0);
+}
+
 Date.prototype.getDateTimeFormated = function()
 {
 	return this.getDateFormated() + " " + this.getTimeFormated();
