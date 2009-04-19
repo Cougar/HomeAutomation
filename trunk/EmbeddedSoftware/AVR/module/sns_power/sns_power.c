@@ -2,11 +2,12 @@
 #include "sns_power.h"
 
 uint32_t volatile PreviusTimerValue, lastMeasurment;
-uint16_t volatile EnergyCounter;
+
 uint8_t volatile tmpCounter;
 uint8_t sns_power_ReportInterval = (uint8_t)sns_power_SEND_PERIOD;
 uint16_t volatile MeasurmentBuffer[32];
 uint8_t volatile MeasurmentBufferPointer;
+uint16_t volatile EnergyCounter=0;
 
 #ifdef sns_power_USEEEPROM
 #include "sns_power_eeprom.h"
@@ -115,31 +116,41 @@ void sns_power_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_POWER &&
 		rxMsg->Header.ModuleId == sns_power_ID)
 	{
+StdCan_Msg_t txMsg;
 		switch (rxMsg->Header.Command)
 		{
 		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
-		if (rxMsg->Length > 0)
-		{
-			sns_power_ReportInterval = rxMsg->Data[0];
-			Timer_SetTimeout(sns_power_SEND_TIMER, sns_power_ReportInterval*1000 , TimerTypeFreeRunning, 0);
-		}
-		StdCan_Msg_t txMsg;
-		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
-		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
-		txMsg.Header.ModuleId = sns_power_ID;
-		txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
-		txMsg.Length = 1;
-		txMsg.Data[0] = sns_power_ReportInterval;
-		StdCan_Put(&txMsg);
-		break;
+			if (rxMsg->Length > 0)
+			{
+				sns_power_ReportInterval = rxMsg->Data[0];
+				Timer_SetTimeout(sns_power_SEND_TIMER, sns_power_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+			}
+			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
+			txMsg.Header.ModuleId = sns_power_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+			txMsg.Length = 1;
+			txMsg.Data[0] = sns_power_ReportInterval;
+			StdCan_Put(&txMsg);
+			break;
 		case CAN_MODULE_CMD_POWER_SETENERGY:
-		if (rxMsg->Length == 2)
-		{
-			EnergyCounter = rxMsg->Data[1];
-			EnergyCounter += ((uint16_t)rxMsg->Data[0])<<8;
-		}
-		break;
+			if (rxMsg->Length == 2)
+			{
+				//EnergyCounter = rxMsg->Data[1];
+				//EnergyCounter += ((uint16_t)rxMsg->Data[0])<<8;
+			}
+			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
+			txMsg.Header.ModuleId = sns_power_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_POWER_SETENERGY;
+			txMsg.Length = 1;
+			//txMsg.Data[1] = EnergyCounter = 0xff;
+			//txMsg.Data[0] = (EnergyCounter >> 8) & 0xff;
+			StdCan_Put(&txMsg);
+			
+			break;
 		}
 	}
 }
