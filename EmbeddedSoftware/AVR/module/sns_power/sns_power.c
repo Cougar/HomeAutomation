@@ -1,13 +1,13 @@
 
 #include "sns_power.h"
 
-uint32_t volatile PreviusTimerValue, lastMeasurment;
+static uint32_t volatile PreviusTimerValue, lastMeasurment;
 
-uint8_t volatile tmpCounter;
-uint8_t sns_power_ReportInterval = (uint8_t)sns_power_SEND_PERIOD;
-uint16_t volatile MeasurmentBuffer[32];
-uint8_t volatile MeasurmentBufferPointer;
-uint16_t volatile EnergyCounter=0;
+static uint8_t volatile tmpCounter=0, StoreInEEPROM = 0;
+static uint8_t sns_power_ReportInterval = (uint8_t)sns_power_SEND_PERIOD;
+static uint16_t volatile MeasurmentBuffer[32]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+static uint8_t volatile MeasurmentBufferPointer=0;
+static uint32_t volatile EnergyCounter=0;
 
 #ifdef sns_power_USEEEPROM
 #include "sns_power_eeprom.h"
@@ -16,6 +16,8 @@ struct eeprom_sns_power EEMEM eeprom_sns_power =
 	{
 		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
 		(uint8_t)sns_power_SEND_PERIOD,	// reportInterval
+		0,	// EnergyCounterUpper
+		0,	// EnergyCounterLower
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 }; 
@@ -36,6 +38,8 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 			tmpCounter++;
 			if(tmpCounter >= 10) {
 				EnergyCounter++;
+				if (EnergyCounter % 1024 == 0)
+					StoreInEEPROM = 1;
 				tmpCounter = 0;
 			}
 		}
@@ -48,9 +52,13 @@ void sns_power_Init(void)
 	{
 	  ///TODO: Use stored data to set initial values for the module
 	  sns_power_ReportInterval = eeprom_read_byte(EEDATA.reportInterval);
+	  EnergyCounter = eeprom_read_word(EEDATA16.EnergyCounterLower);
+	  EnergyCounter += (((uint32_t)(eeprom_read_word(EEDATA16.EnergyCounterUpper)))<<16);
 	} else
 	{	//The CRC of the EEPROM is not correct, store default values and update CRC
 	  eeprom_write_byte_crc(EEDATA.reportInterval, sns_power_SEND_PERIOD, WITHOUT_CRC);
+	  eeprom_write_word_crc(EEDATA16.EnergyCounterUpper, 0, WITHOUT_CRC);
+	  eeprom_write_word_crc(EEDATA16.EnergyCounterLower, 0, WITHOUT_CRC);
 	  EEDATA_UPDATE_CRC;
 	  sns_power_ReportInterval = eeprom_read_byte(EEDATA.reportInterval);
 	}
@@ -59,9 +67,6 @@ void sns_power_Init(void)
 	gpio_set_in(POWER_SNS_PIN);	// Set to input
 	gpio_set_pin(POWER_SNS_PIN);	// Enable pull-up
 	
-	// Enable IO-pin interrupt
-	//PCICR |= (1<<POWER_SNS_PCIE);
-	//POWER_SNS_PCMSK |= (1<<POWER_SNS_PCINT);
 	Pcint_SetCallbackPin(sns_power_PCINT, POWER_SNS_PIN, &sns_power_pcint_callback);
 
 	MeasurmentBufferPointer = 0;
@@ -70,12 +75,12 @@ void sns_power_Init(void)
 
 void sns_power_Process(void)
 {
-/*
-	if (lastMeasurment != 0) {
-	      MeasurmentBufferPointer++;
-	      MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) lastMeasurment;//(uint16_t) 360000/lastMeasurment;
-	      lastMeasurment=0;
-	}*/
+	if (StoreInEEPROM == 1)
+	{
+		StoreInEEPROM = 0;
+		eeprom_write_word_crc(EEDATA16.EnergyCounterUpper, (uint16_t)((EnergyCounter>>16) & 0xffff), WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.EnergyCounterLower, (uint16_t)(EnergyCounter & 0xffff), WITH_CRC);
+	}
 	StdCan_Msg_t txMsg;
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_power_SEND_TIMER)) {
@@ -99,10 +104,10 @@ void sns_power_Process(void)
 		uint32_t tmp = 360000/MeasurmentBuffer[MeasurmentBufferPointer];
 		txMsg.Data[0] = (uint8_t)((tmp>>8) & 0xff);
 		txMsg.Data[1] = (uint8_t)(tmp & 0xff);
-		txMsg.Data[2] = (uint8_t)((EnergyCounter>>8) & 0xff);
-		txMsg.Data[3] = (uint8_t)(EnergyCounter & 0xff);
-		txMsg.Data[4] = (uint8_t)((Avg4>>8) & 0xff);
-		txMsg.Data[5] = (uint8_t)((Avg4) & 0xff);
+		txMsg.Data[5] = (uint8_t)EnergyCounter & 0xff;
+		txMsg.Data[4] = (uint8_t)(EnergyCounter >> 8) & 0xff;
+		txMsg.Data[3] = (uint8_t)(EnergyCounter >> 16) & 0xff;
+		txMsg.Data[2] = (uint8_t)(EnergyCounter >> 24) & 0xff;
 		txMsg.Data[6] = (uint8_t)((Avg32>>8) & 0xff);
 		txMsg.Data[7] = (uint8_t)(Avg32 & 0xff);
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
@@ -137,8 +142,10 @@ StdCan_Msg_t txMsg;
 		case CAN_MODULE_CMD_POWER_SETENERGY:
 			if (rxMsg->Length == 2)
 			{
-				//EnergyCounter = rxMsg->Data[1];
-				//EnergyCounter += ((uint16_t)rxMsg->Data[0])<<8;
+				EnergyCounter = rxMsg->Data[3];
+				EnergyCounter += ((uint32_t)rxMsg->Data[2])<<8;
+				EnergyCounter += ((uint32_t)rxMsg->Data[1])<<16;
+				EnergyCounter += ((uint32_t)rxMsg->Data[0])<<24;
 			}
 			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -146,8 +153,10 @@ StdCan_Msg_t txMsg;
 			txMsg.Header.ModuleId = sns_power_ID;
 			txMsg.Header.Command = CAN_MODULE_CMD_POWER_SETENERGY;
 			txMsg.Length = 1;
-			//txMsg.Data[1] = EnergyCounter = 0xff;
-			//txMsg.Data[0] = (EnergyCounter >> 8) & 0xff;
+			txMsg.Data[3] = (uint8_t)EnergyCounter & 0xff;
+			txMsg.Data[2] = (uint8_t)(EnergyCounter >> 8) & 0xff;
+			txMsg.Data[1] = (uint8_t)(EnergyCounter >> 16) & 0xff;
+			txMsg.Data[0] = (uint8_t)(EnergyCounter >> 24) & 0xff;
 			StdCan_Put(&txMsg);
 			
 			break;
