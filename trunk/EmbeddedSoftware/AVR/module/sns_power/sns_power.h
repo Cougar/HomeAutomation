@@ -27,6 +27,8 @@ void sns_power_List(uint8_t ModuleSequenceNumber);
 	struct sns_power_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t reportInterval;
+		uint16_t EnergyCounterUpper;
+		uint16_t EnergyCounterLower;
 	};	
 #endif
 
