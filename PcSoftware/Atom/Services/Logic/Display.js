@@ -123,7 +123,7 @@ Display.prototype.initialize = function(initialArguments)
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
-	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room";
+	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room");
 	this.bookMenuItem.displayData[1] = this.lcdCenterText("");
 	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
 
@@ -143,7 +143,7 @@ Display.prototype.initialize = function(initialArguments)
 	
 	/* create the menuitem where you can choose the to-time */
 	var menuChooseTo = new MenuItem(this);
-	menuChooseTo.displayData[1] = this.lcdCenterText("Ok     Cancel");
+	menuChooseTo.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
 	menuChooseTo.doUpdate = this.chooseBookTimeTo;
 	
 	this.bookMenuItem.doPress = this.startBooking;
@@ -151,17 +151,17 @@ Display.prototype.initialize = function(initialArguments)
 	
 	/* create the menuitem where you can choose to book the room with OK */
 	var menuChooseOk = new MenuItem(this);
-	menuChooseOk.displayData[1] = this.lcdCenterText("<Ok>    Cancel");
+	menuChooseOk.displayData[1] = this.lcdCenterText("<Ok>    Cancel ");
 	menuChooseOk.doUpdate = this.setBookTime;
 
 	/* create the menuitem where you can choose to cancel the booking */
 	var menuChooseCancel = new MenuItem(this);
-	menuChooseCancel.displayData[1] = this.lcdCenterText("Ok    <Cancel>");
+	menuChooseCancel.displayData[1] = this.lcdCenterText(" Ok    <Cancel>");
 	menuChooseCancel.doUpdate = this.setBookTime;
 
 	/* create the menuitem where you can choose the from-time */
 	var menuChooseFrom = new MenuItem(this);
-	menuChooseFrom.displayData[1] = this.lcdCenterText("Ok     Cancel");
+	menuChooseFrom.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
 	menuChooseFrom.doUpdate = this.chooseBookTimeFrom;
 
 	/* connect the items as a linked list */
@@ -266,7 +266,7 @@ Display.prototype.changeToPrev = function()
 Display.prototype.incBookTimeTo = function()
 {
 	//FIXME: constraints?
-	if (this.parentDisplay.bookFromTime.getHours() < 23)
+	if (this.parentDisplay.bookToTime.getHours() < 23)
 	{
 		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + 30);
 	}
@@ -353,27 +353,33 @@ Display.prototype.updateBookMenuItem = function()
 
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 {
-log("callback: "+shortname+" \n");
+//log("callback: "+shortname+" \n");
 	if (shortname == this.shortName)
 	{
 		//FIXME check if data contains error tag and error message, print to log and keep previous data?
-		this.exchangeData = data;
-		
-		this.createCalendarMenu();
+		if (data.error)
+		{
+			log("Display: got this error from exchange.php: " + data.error + "\n");
+		}
+		else
+		{
+			this.exchangeData = data;
+			this.createCalendarMenu();
+		}
 	}
 }
 
 /* this function parses calendar data from exchange-script and creates a menu */
 Display.prototype.createCalendarMenu = function()
 {
-log("createCalendar \n");
+//log("createCalendar \n");
 	if (this.exchangeData)
 	{
-log("have data \n");
+//log("have data \n");
 		var lastMenuItem;
 		for (var i = 0; i < this.exchangeData.meetings.length; i++)
 		{
-log("looping \n");
+//log("looping \n");
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
 			menu.displayData[0] = this.lcdCenterText(this.exchangeData.meetings[i].organizer);
@@ -465,16 +471,9 @@ Display.prototype.updateDisplay = function()
 Display.prototype.lcdCenterText = function(text)
 {
 	returnText = text;
-	var displayWidth = this.myLCDService.getWidth();
+	var displayWidth = 20;	//this.myLCDService.getWidth();
 	/* pad on both sides with spaces to displayWidth */
 	returnText = text.pad(displayWidth, " ", 2);
-	
-	/*if (displayWidth > text.length)
-	{
-		paddingLen = displayWidth - text.length;
-		paddingLen = Math.round((paddingLen/2-0.5));
-		returnText = text
-	}*/
 	
 	return returnText;
 }
@@ -514,15 +513,27 @@ Display.prototype.lcdOnline = function()
 	}
 }
 
+Display.prototype.setLED = function(red, green, blue)
+{
+	
+}
+
 Display.prototype.timerUpdate = function()
 {
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-		this.exchangeCalendar.lookup(this.shortName);
+		//this.exchangeCalendar.lookup(this.shortName);
 		
 		/* update the info on display */
 		this.updateDisplay();
 	}
+	
+	/*if (this.mySoftPwmService.isOnline())
+	{
+		this.mySoftPwmService.setPWMValue(0, 0);
+		this.mySoftPwmService.setPWMValue(11, 1);
+		this.mySoftPwmService.setPWMValue(11, 2);
+	}*/
 }
 
