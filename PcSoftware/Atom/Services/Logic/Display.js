@@ -266,25 +266,39 @@ Display.prototype.changeToPrev = function()
 Display.prototype.incBookTimeTo = function()
 {
 	//FIXME: constraints?
-	this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + 30);
+	if (this.parentDisplay.bookFromTime.getHours() < 23)
+	{
+		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + 30);
+	}
 }
 
 Display.prototype.decBookTimeTo = function()
 {
 	//FIXME: constraints?
-	this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - 30);
+	var now = new Date();
+	if (this.parentDisplay.bookToTime.getHours() >= now.getHours())
+	{
+		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - 30);
+	}
 }
 
 Display.prototype.incBookTimeFrom = function()
 {
 	//FIXME: constraints?
-	this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + 30);
+	if (this.parentDisplay.bookFromTime.getHours() < 23)
+	{
+		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + 30);
+	}
 }
 
 Display.prototype.decBookTimeFrom = function()
 {
 	//FIXME: constraints?
+	var now = new Date();
+	if (this.parentDisplay.bookFromTime.getHours() >= now.getHours())
+	{
 		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() - 30);
+	}
 }
 
 Display.prototype.setBookTimeFrom = function()

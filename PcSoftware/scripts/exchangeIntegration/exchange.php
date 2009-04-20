@@ -2,6 +2,12 @@
 
 require(dirname(__FILE__)."/config.php"); 
 
+/*
+  
+  http://www.howtoforge.com/talking-soap-with-exchange
+  
+*/
+
 if (isset($_GET["function"]))
 {
 	switch ($_GET["function"])
@@ -26,6 +32,25 @@ if (isset($_GET["function"]))
 	}
 }
 
+/*
+	$CreateItem->SendMeetingInvitations = "SendToNone";
+	$CreateItem->SavedItemFolderId->DistinguishedFolderId->Id = "calendar";
+	$CreateItem->Items->CalendarItem = array();
+	$CreateItem->Items->CalendarItem[0]->Subject = "Hello from PHP";
+	$CreateItem->Items->CalendarItem[0]->Start = "2010-01-01T16:00:00Z"; # ISO date format. Z denotes UTC time
+	$CreateItem->Items->CalendarItem[0]->End = "2010-01-01T17:00:00Z";
+	$CreateItem->Items->CalendarItem[0]->IsAllDayEvent = false;
+	$CreateItem->Items->CalendarItem[0]->LegacyFreeBusyStatus = "Busy";
+	$CreateItem->Items->CalendarItem[0]->Location = "Bahamas";
+	$CreateItem->Items->CalendarItem[0]->Categories->String = "MyCategory";
+	$result = $client->CreateItem($CreateItem);
+	print_array($result); 
+*/
+
+/*
+  Get all meetings from now and 9 hours later
+  Return a JSON formed string
+*/
 function getMeetingsRestOfDay($shortname)
 {
 	global $Calender;
@@ -47,7 +72,7 @@ function getMeetingsRestOfDay($shortname)
 		$FindItem->ItemShape->BaseShape = "AllProperties"; 
 		$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
 		/* Dont forget to use the proper timezone and setting for daylight saving time (php handles this fine) */
-		$FindItem->CalendarView->StartDate = date("c");		//"2009-04-07T08:00:00Z";
+		$FindItem->CalendarView->StartDate = date("c");						//"2009-04-07T08:00:00Z";
 		$FindItem->CalendarView->EndDate = date("c", strtotime("+9 hour"));	//"2009-04-08T00:00:00Z";
 		//echo date("c")." ".date("c", strtotime("+8 hour"))." ".date("c", strtotime("18:00"))."\n";
 
