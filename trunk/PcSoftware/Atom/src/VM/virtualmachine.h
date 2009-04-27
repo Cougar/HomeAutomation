@@ -28,7 +28,7 @@ using namespace std;
 #include <string>
 #include <queue>
 
-#include "../v8/include/v8.h"
+#include "../v8/include/v8-debug.h"
 #include "../Logger/logger.h"
 #include "../Settings/settings.h"
 #include "../CanNet/cannetmanager.h"

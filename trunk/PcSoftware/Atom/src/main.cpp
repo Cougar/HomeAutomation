@@ -35,6 +35,8 @@ using namespace std;
 #include "VM/virtualmachine.h"
 #include "CanNet/candebug.h"
 
+#include "boost/thread.hpp"
+
 bool cleanUpRunning = false;
 int cleanUp();
 void handler(int status);
@@ -124,7 +126,7 @@ int cleanUp()
 	if (!cleanUpRunning)
 	{
 		cleanUpRunning = true;
-	
+
 		log.add("\n");
 		log.addToSyslog("Thank you for using Atom. Goodbye!\n");
 
@@ -145,29 +147,29 @@ int cleanUp()
 void handler(int status)
 {
 	string signalName = "Unknown";
-	
+
 	switch (status)
 	{
 	case SIGTERM:
 	signalName = "Terminate";
 	break;
-	
+
 	case SIGINT:
 	signalName = "Interupt";
 	break;
-	
+
 	case SIGQUIT:
 	signalName = "Quit";
 	break;
-	
+
 	case SIGABRT:
 	signalName = "Abort";
 	break;
-	
+
 	case SIGIO:
 	signalName = "I/O";
 	break;
-	
+
 	case SIGPIPE:
 	signalName = "Pipe";
 	break;
@@ -175,11 +177,11 @@ void handler(int status)
 
 	Logger &log = Logger::getInstance();
 	log.addToSyslog("Received signal " + signalName + "(" + itos(status) + ")\n");
-	
+
 	if (status == SIGPIPE)
 	{
 		return;
 	}
-	
+
 	exit(cleanUp());
 }
