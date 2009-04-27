@@ -34,42 +34,42 @@ public:
 		myIsCreated = false;
 		myError = 0;
 	};
-	~Thread()
+	virtual ~Thread()
 	{
 		stop();
 	};
 
 	bool stop()
 	{
-		
+
 		if (!myIsCreated)
 		{
 			//cout << "Thread is not running, can not be stopped " << endl;
 			return true;
 		}
-		
+
 		//cout << "Thread cancel to run " << endl;
-		
-		//myError = pthread_cancel(myHandle);
-		myError = pthread_detach(myHandle);
+
+		myError = pthread_cancel(myHandle);
+		//myError = pthread_detach(myHandle);
 		//cout << "Thread cancel returned " << myError << endl;
-		
-		
-		
+
+
+
 		//if (joinThread)
 		{
-			//join();
+			join();
 		}
-		
+
 		myIsCreated = false;
 
 		return myError == 0;
 	};
-	
+
 	bool start()
 	{
 		myError = pthread_create(&myHandle, NULL, T::doThread, (void*)this);
-		
+
 		if (myError != 0)
 		{
 			myIsCreated = false;
