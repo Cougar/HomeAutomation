@@ -35,8 +35,6 @@ using namespace std;
 #include "VM/virtualmachine.h"
 #include "CanNet/candebug.h"
 
-#include "boost/thread.hpp"
-
 bool cleanUpRunning = false;
 int cleanUp();
 void handler(int status);
