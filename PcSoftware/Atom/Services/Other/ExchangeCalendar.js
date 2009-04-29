@@ -11,10 +11,9 @@ ExchangeCalendar.prototype.myCallback = null;
 ExchangeCalendar.prototype.lookup = function(calendarShortName)
 {
 	var self = this;
-log("ExchangeCalendar: calling lookup \n");
 	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, 
-						"dev/exchangeIntegration/exchange.php?function=getMeetingsRestOfDay&shortname=" + calendarShortName);
-log("ExchangeCalendar: calling lookup  part 2 \n");
+						"dev.qrtech.se/exchangeIntegration/exchange.php?function=getMeetingsRestOfDay&shortname=" + calendarShortName);
+log("ExchangeCalendar: calling lookup\n");
 }
 
 ExchangeCalendar.prototype.httpCallback = function(result, header, content)
@@ -24,7 +23,7 @@ log("ExchangeCalendar: httpCallback \n");
 	var shortname = "";
 	if (result.indexOf("200 OK") != -1)
 	{
-		log("ExchangeCalendar: got data : \n" + content + "\n");
+		//log("ExchangeCalendar: got data : \n" + content + "\n");
 		/*var data = !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
 		content.replace(/"(\\.|[^"\\])*"/g, ''))) &&
 		eval('(' + content + ')');

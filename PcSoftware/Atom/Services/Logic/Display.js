@@ -349,6 +349,11 @@ Display.prototype.updateBookMenuItem = function()
 		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.exchangeCalendarFirstMenuItem);
 		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.exchangeCalendarLastMenuItem);
 	}
+	else
+	{
+		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.bookMenuItem);
+		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.statusMenuItem);
+	}
 }
 
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
@@ -372,6 +377,9 @@ Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 /* this function parses calendar data from exchange-script and creates a menu */
 Display.prototype.createCalendarMenu = function()
 {
+	this.exchangeCalendarLastMenuItem = null;
+	this.exchangeCalendarFirstMenuItem = null;
+	
 //log("createCalendar \n");
 	if (this.exchangeData)
 	{
@@ -382,7 +390,7 @@ Display.prototype.createCalendarMenu = function()
 //log("looping \n");
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
-			menu.displayData[0] = this.lcdCenterText(this.exchangeData.meetings[i].organizer);
+			menu.displayData[0] = this.lcdCenterText(this.exchangeData.meetings[i].subject);
 			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start.replace(":",".") + " - " 
 										+ this.exchangeData.meetings[i].end.replace(":","."));
 			menu.doRight = this.changeToNext;
@@ -523,7 +531,7 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-		//this.exchangeCalendar.lookup(this.shortName);
+		this.exchangeCalendar.lookup(this.shortName);
 		
 		/* update the info on display */
 		this.updateDisplay();
