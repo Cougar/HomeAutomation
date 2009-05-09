@@ -39,22 +39,26 @@ void act_ks0108_Init(void)
 			glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128), GLCD_COLOR_CLEAR);
 		}
 	}
-	glcdSetXY(0,0);
-	glcdPutStrTransparent("=_-[]_-=",GLCD_COLOR_SET);
-	glcdSetXY(0,8);
-	glcdPutStrTransparent("--------",GLCD_COLOR_SET);
-	glcdSetXY(0,16);
-	glcdPutStr("-_=[]=-_",GLCD_COLOR_SET);
-	glcdDrawRect(32, 32, 40, 16, GLCD_COLOR_SET);
-	glcdDrawLine(10, 10, 100, 60, GLCD_COLOR_SET);
-	glcdFillRect(90, 10, 20, 20, GLCD_COLOR_SET);
-	glcdInvertRect(28, 10, 20, 20);
-	glcdInvert();
-	glcdDrawRoundRect(85, 5, 30, 30, 5, GLCD_COLOR_SET);
-	glcdDrawCircle(64, 32, 10, 1);
-	glcdSetXY(12,40);
-	glcdPutStrTransparent("Hejsan",GLCD_COLOR_CLEAR);
-	glcdDrawLine(10, 62, 50, 5, GLCD_COLOR_CLEAR);
+	//glcdSetXY(0,0);
+	//glcdPutStrTransparent("=_-[]_-=",GLCD_COLOR_SET);
+	//glcdSetXY(0,8);
+	//glcdPutStrTransparent("--------",GLCD_COLOR_SET);
+	//glcdSetXY(0,16);
+	//glcdPutStr("-_=[]=-_",GLCD_COLOR_SET);
+	//glcdDrawRect(32, 32, 40, 16, GLCD_COLOR_SET);
+	//glcdDrawLine(10, 10, 100, 60, GLCD_COLOR_SET);
+	//glcdFillRect(90, 10, 20, 20, GLCD_COLOR_SET);
+	//glcdInvertRect(28, 10, 20, 20);
+	//glcdInvert();
+	//glcdDrawRoundRect(85, 5, 30, 30, 5, GLCD_COLOR_SET);
+	//glcdDrawCircle(64, 32, 10, 1);
+	glcdSetXY(87,8);
+	glcdPutStrTransparent("Home-",GLCD_COLOR_SET);
+	glcdSetXY(80,16);
+	glcdPutStrTransparent("Automa-",GLCD_COLOR_SET);
+	glcdSetXY(91,24);
+	glcdPutStrTransparent("ion",GLCD_COLOR_SET);
+	//glcdDrawLine(10, 62, 50, 5, GLCD_COLOR_CLEAR);
 	
 }
 
