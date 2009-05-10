@@ -43,6 +43,18 @@ Display.prototype.bookMenuItem = null;
 /* The currently displayed menuitem */
 Display.prototype.currentMenuItem = null;
 
+/* counter for calling exchange update */
+Display.prototype.exchangeUpdateCnt = null;
+
+/* counter for going to screensaver */
+Display.prototype.screenSaverCnt = null;
+
+/* counter for going to main screen */
+Display.prototype.mainScreenCnt = null;
+
+const exchangeUpdateTimeout = 20;
+const mainScreenTimeout = 40;
+const screenSaverTimeout = 120;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
@@ -85,6 +97,10 @@ Display.prototype.initialize = function(initialArguments)
 		return;
 	}
 	this.shortName = this.myInitialArguments["ShortName"];
+	
+	this.screenSaverCnt = 0;
+	this.mainScreenCnt = 0;
+	this.exchangeUpdateCnt = exchangeUpdateTimeout-10;
 	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myLCDService = ServiceManager.getService("Can", "HD44789", this.myInitialArguments["HD44789"]["Id"]);
@@ -334,12 +350,6 @@ Display.prototype.updateStatusMenuItem = function()
 	var date = new Date();
 	var dateAndTime = "" + date.getTimeShortFormated();
 	this.displayData[1] = "       " + dateAndTime + "        ";
-	
-	if (this.parentDisplay.exchangeCalendarFirstMenuItem && this.parentDisplay.exchangeCalendarLastMenuItem)
-	{
-		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.exchangeCalendarFirstMenuItem);
-		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.exchangeCalendarLastMenuItem);
-	}
 }
 
 Display.prototype.updateBookMenuItem = function()
@@ -408,9 +418,21 @@ Display.prototype.createCalendarMenu = function()
 			
 			lastMenuItem = menu;
 		}
-		this.exchangeCalendarLastMenuItem = lastMenuItem;
-		this.exchangeCalendarLastMenuItem.setNextItem(this.bookMenuItem);
-		this.exchangeCalendarFirstMenuItem.setPrevItem(this.statusMenuItem);
+		if (lastMenuItem)
+		{
+			this.exchangeCalendarLastMenuItem = lastMenuItem;
+			this.exchangeCalendarLastMenuItem.setNextItem(this.bookMenuItem);
+			this.exchangeCalendarFirstMenuItem.setPrevItem(this.statusMenuItem);
+		
+		}
+		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem)
+		{
+			if (this.exchangeCalendarFirstMenuItem && this.exchangeCalendarLastMenuItem)
+			{
+				this.statusMenuItem.setNextItem(this.exchangeCalendarFirstMenuItem);
+				this.bookMenuItem.setPrevItem(this.exchangeCalendarLastMenuItem);
+			}
+		}
 	}
 }
 
@@ -424,6 +446,8 @@ Display.prototype.rotaryOnline = function()
 
 Display.prototype.rotaryPosUpdate = function(SwitchId)
 {
+	this.screenSaverCnt = 0;
+	this.mainScreenCnt = 0;
 	for (var i = 0; i < this.myRotaryService.getSteps(SwitchId); i++)
 	{
 		if (this.myRotaryService.getDirection(SwitchId) == "Clockwise")
@@ -447,14 +471,16 @@ Display.prototype.rotaryPosUpdate = function(SwitchId)
 
 Display.prototype.rotaryBtnUpdate = function(SwitchId)
 {
+	this.screenSaverCnt = 0;
+	this.mainScreenCnt = 0;
 	if (this.myRotaryService.getButtonStatus(SwitchId) == "Released")
 	{
 		if (this.currentMenuItem.doPress)
 		{
 			this.currentMenuItem.doPress();
 		}
+		this.updateDisplay();
 	}
-	this.updateDisplay();
 }
 
 Display.prototype.updateDisplay = function()
@@ -512,7 +538,7 @@ Display.prototype.lcdOnline = function()
 			var self = this;
 		
 			/* Start interval timer for our printout. Arguments are the callback function and time in milliseconds */
-			this.myInterval = new Interval(function() { self.timerUpdate() }, 60000);
+			this.myInterval = new Interval(function() { self.timerUpdate() }, 5000);
 		}
 		
 		this.myInterval.start();
@@ -531,10 +557,35 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-		this.exchangeCalendar.lookup(this.shortName);
+		this.screenSaverCnt++;
+		this.mainScreenCnt++;
+		this.exchangeUpdateCnt++;
+
+		if (this.mainScreenCnt > mainScreenTimeout/5)
+		{
+			/* Go to main screen (time) */
+			this.currentMenuItem = this.statusMenuItem;
+
+			/* update the info on display */
+			this.updateDisplay();
+		}
 		
-		/* update the info on display */
-		this.updateDisplay();
+		if (this.screenSaverCnt > screenSaverTimeout/5)
+		{
+			
+		}
+
+		if (this.exchangeUpdateCnt > exchangeUpdateTimeout/5)
+		{
+			/* update the info on display */
+			this.updateDisplay();
+			
+			/* do an exchange lookup */
+			this.exchangeCalendar.lookup(this.shortName);
+			
+			this.exchangeUpdateCnt = 0;
+		}
+		
 	}
 	
 	/*if (this.mySoftPwmService.isOnline())

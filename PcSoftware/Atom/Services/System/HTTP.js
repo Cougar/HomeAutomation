@@ -82,6 +82,7 @@ HTTP.prototype.socketCallback = function(event, data)
 	case "DIED":
 	this.mySocket.stop();
 	this.processBuffer();
+	this.mySocket = null;
 	break;
 	}
 }

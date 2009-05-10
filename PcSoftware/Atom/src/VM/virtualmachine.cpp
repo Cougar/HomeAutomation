@@ -53,7 +53,7 @@ VirtualMachine::~VirtualMachine()
 	myCommandThread.stop();
 
 	///FIXME: Verify that this works and does not cause segfaults
-	for (map<int, SocketThread*>::iterator iter = mySocketThreads.begin(); iter != mySocketThreads.end(); iter++)
+	for (map<unsigned long int, SocketThread*>::iterator iter = mySocketThreads.begin(); iter != mySocketThreads.end(); iter++)
 	{
 		iter->second->stop();
 		delete iter->second;
@@ -323,6 +323,7 @@ unsigned int VirtualMachine::startSocketThread(string address, int port, unsigne
 	SocketThread *socketThread = new SocketThread(address, port, reconnectTimeout);
 	mySocketThreads[socketThread->getId()] = socketThread;
 	mySocketThreads[socketThread->getId()]->start();
+	mySocketThreads[socketThread->getId()]->startSocket();
 
 	return socketThread->getId();
 }
