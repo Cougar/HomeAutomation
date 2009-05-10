@@ -43,6 +43,7 @@ AsyncSocket::~AsyncSocket()
 
 void AsyncSocket::run()
 {
+//cout << "AsyncSocket::run - Thread started\n";
 	// If connection is already up then we should not connect again
 	if (!isConnected())
 	{
@@ -82,6 +83,7 @@ void AsyncSocket::run()
 		eventAdd(SocketEvent::TYPE_CONNECTION_DIED, e->getDescription());
 	}
 
+//cout << "AsyncSocket::run - Thread end?\n";
 	// Clean up socket if we would want to restart
 	silentClose();
 }
@@ -325,6 +327,7 @@ bool AsyncSocket::accept(AsyncSocket* newSocket)
 
 void AsyncSocket::connect()
 {
+//cout << "AsyncSocket::connect - eventAdd connecting\n";
 	eventAdd(SocketEvent::TYPE_CONNECTING);
 
 	create();
@@ -400,11 +403,15 @@ void AsyncSocket::connect()
 		}
 	}
 
+//cout << "AsyncSocket::connect - eventAdd connected\n";
 	eventAdd(SocketEvent::TYPE_CONNECTED);
 }
 
 void AsyncSocket::sendData(string data)
 {
+//cout << "AsyncSocket::sendData - got data to send: ";
+//cout << data;
+//cout << "\n";
 	mySendMutex.lock();
 
 	int status = ::send(mySocket, data.c_str(), data.size(), MSG_NOSIGNAL);

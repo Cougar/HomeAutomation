@@ -115,7 +115,7 @@ private:
 	ThreadSafeQueue<Expression> myExpressions;
 
 	map<int, IntervalThread*> myIntervalThreads;
-	map<int, SocketThread*> mySocketThreads;
+	map<unsigned long int, SocketThread*> mySocketThreads;
 
 	CommandThread myCommandThread;
 };

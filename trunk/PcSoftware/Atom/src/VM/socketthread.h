@@ -31,6 +31,7 @@ using namespace std;
 #include "../Socket/asyncsocket.h"
 #include "../Threads/thread.h"
 #include "../Tools/tools.h"
+#include "../Threads/mutex.h"
 
 class SocketThread : public Thread<SocketThread>
 {
@@ -39,14 +40,20 @@ public:
 	SocketThread(string address, unsigned int port, unsigned int reconnectTimeout);
 	~SocketThread();
 
-	unsigned int getId() { return myId; };
+	unsigned long int getId() { return myId; };
 	void send(string data);
+	
+	void startSocket();
 
 	void run();
 
 private:
-	unsigned int myId;
+	unsigned long int myId;
 	AsyncSocket *mySocket;
+	
+	static unsigned long int myCount;
+	static Mutex myCountMutex;
+
 };
 
 #endif	/* _SOCKETTHREAD_H */
