@@ -52,7 +52,7 @@ Display.prototype.screenSaverCnt = null;
 /* counter for going to main screen */
 Display.prototype.mainScreenCnt = null;
 
-const exchangeUpdateTimeout = 20;
+const exchangeUpdateTimeout = 50;
 const mainScreenTimeout = 40;
 const screenSaverTimeout = 120;
 
@@ -140,7 +140,7 @@ Display.prototype.initialize = function(initialArguments)
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
 	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room");
-	this.bookMenuItem.displayData[1] = this.lcdCenterText("");
+	this.bookMenuItem.displayData[1] = this.lcdCenterText("(Not implemented)");
 	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
 
 	/* connect the items as a linked list */
@@ -400,7 +400,7 @@ Display.prototype.createCalendarMenu = function()
 //log("looping \n");
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
-			menu.displayData[0] = this.lcdCenterText(this.exchangeData.meetings[i].subject);
+			menu.displayData[0] = this.lcdCenterText(this.replaceAumlauts(this.exchangeData.meetings[i].subject));
 			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start.replace(":",".") + " - " 
 										+ this.exchangeData.meetings[i].end.replace(":","."));
 			menu.doRight = this.changeToNext;
@@ -434,6 +434,17 @@ Display.prototype.createCalendarMenu = function()
 			}
 		}
 	}
+}
+
+Display.prototype.replaceAumlauts = function(intext)
+{
+	intext = intext.replace(/Å/, "A");
+	intext = intext.replace(/å/, "a");
+	intext = intext.replace(/Ä/, "A");
+	intext = intext.replace(/ä/, "a");
+	intext = intext.replace(/Ö/, "O");
+	intext = intext.replace(/ö/, "o");
+	return intext;
 }
 
 Display.prototype.softPwmOnline = function()
