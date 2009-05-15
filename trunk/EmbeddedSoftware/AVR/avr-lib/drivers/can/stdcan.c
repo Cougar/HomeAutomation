@@ -7,6 +7,8 @@
 #include <drivers/can/mcp2515/mcp2515.h>
 #endif
 
+#include <avr/interrupt.h>
+
 #if (STDCAN_TX_QUEUE_SIZE > 1)
 #error StdCan: Tx queue size longer than one msg not yet implemented.
 #endif
@@ -148,7 +150,7 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 {
 	unsigned char n;
-
+	cli();
 	/* Check if there's a message waiting. */
 	if (RxQ_Len) {
 
@@ -163,10 +165,12 @@ StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 		/* Increment read index and decrease queue length. */
 		if (++RxQ_Rd_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Rd_idx = 0;
 		RxQ_Len--;
-
+		
+		sei();
 		return StdCan_Ret_OK;
 	} else {
 		/* Queue is empty. */
+		sei();
 		return StdCan_Ret_Empty;
 	}
 }
