@@ -32,6 +32,7 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 		if (Timer_GetTicks() - PreviusTimerValue >= 16)
 		{
 			MeasurmentBufferPointer++;
+			if (MeasurmentBufferPointer >= 32) MeasurmentBufferPointer = 0;
 			lastMeasurment =  Timer_GetTicks() - PreviusTimerValue;
 			MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) (lastMeasurment & 0x0000FFFF);
 			PreviusTimerValue = Timer_GetTicks();
