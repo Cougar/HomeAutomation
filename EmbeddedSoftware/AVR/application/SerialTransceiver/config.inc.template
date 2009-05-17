@@ -14,7 +14,7 @@ TIMER_TICKFREQ=1000
 
 
 // set to 0 when using external can controller from bios
-MCP_CAN_PROCESS_RENAMED=1
+MCP_CAN_PROCESS_RENAMED=0
 
 MCP_USART_SPI_MODE=1
 MCP_CS_PORT_USART=PORTC
