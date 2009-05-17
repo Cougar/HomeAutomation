@@ -87,6 +87,7 @@
 #define CAN_APPTYPES_FANCONTROLLER	0xf040
 #define CAN_APPTYPES_LCD		0xf045
 #define CAN_APPTYPES_CANGW		0xf04a
+#define CAN_APPTYPES_SERIALTRANSCEIVER	0xf050
 
 // CAN ID definitions for SNS messages
 #define SNS_TYPE_STATUS             0x10L
@@ -99,7 +100,7 @@
 #define SNS_TYPE_ROTSPEED			0x1dL
 #define SNS_TYPE_VELOCITY			0x1eL
 #define SNS_TYPE_FUELCONS			0x1fL
-
+#define SNS_TYPE_SERIAL				0x20L
 
 #define SNS_ID_RELAY_STATUS           0x0BL
 #define SNS_ID_SERVO_STATUS           0x0dL
@@ -120,7 +121,7 @@
 #define ACT_TYPE_IR            	0x04L
 #define ACT_TYPE_LCD			0x05L
 #define ACT_TYPE_FAN			0x06L
-
+#define ACT_TYPE_SERIAL			0x07L
 
 
 #endif /*CANID_H_*/
