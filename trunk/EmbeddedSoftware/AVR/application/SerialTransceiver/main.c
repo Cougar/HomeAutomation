@@ -9,6 +9,7 @@
 #include <drivers/timer/timer.h>
 #include <drivers/timer/timebase.h>
 #include <drivers/can/can.h>
+#include <drivers/can/mcp2515/mcp2515.h>
 
 #define APP_TYPE    CAN_APPTYPES_SERIALTRANSCEIVER
 #define APP_VERSION 0x0001
@@ -79,7 +80,7 @@ int main(void)
 
 	//Check if we got some data from the serial port
 	uint8_t got_received_data=0;
-	
+
 	while (1) {
 
 		if (rxMsgFull) {
@@ -97,7 +98,7 @@ int main(void)
 		}
 
 		//Receiver
-		
+
 		//Timer for how long we will wait for for more data before sending our packages
 		time = Timebase_CurrentTime();
 
@@ -127,7 +128,7 @@ int main(void)
 				txMsg.Data.bytes[i]=rxBuffer[i];
 			}
 			txMsg.DataLength = received_size;
-			
+
 			BIOS_CanSend(&txMsg);
 		}
 		//Ensure we are reseting the counter
