@@ -16,6 +16,9 @@ all: $(PRG).exe
 #	$(GMCS) $(CFLAGS) $(SOURCES)
 
 $(PRG).exe: $(SOURCES)
+	@echo ---------------------------------------------------------------------
+	@echo You need mono-gmcs to compile canDude, sudo apt-get install mono-gmcs
+	@echo ---------------------------------------------------------------------
 	$(GMCS) $(CFLAGS) $(SOURCES)
 
 clean:
