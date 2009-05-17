@@ -30,7 +30,7 @@
 #include <drivers/can/mcp2515/mcp2515_defs.h>
 #include <drivers/can/mcp2515/mcp2515_bittime.h>
 
-#include <vectors.h>
+#include <bios/vectors.h>
 
 #ifdef MCP_USART_SPI_MODE
 #define SPI_PORT	PORTD
