@@ -56,6 +56,8 @@ const exchangeUpdateTimeout = 50;
 const mainScreenTimeout = 40;
 const screenSaverTimeout = 120;
 
+const bookingIncrease = 15;
+
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
 Display.prototype.initialize = function(initialArguments)
@@ -284,7 +286,7 @@ Display.prototype.incBookTimeTo = function()
 	//FIXME: constraints?
 	if (this.parentDisplay.bookToTime.getHours() < 23)
 	{
-		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + 30);
+		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + bookingIncrease);
 	}
 }
 
@@ -294,7 +296,7 @@ Display.prototype.decBookTimeTo = function()
 	var now = new Date();
 	if (this.parentDisplay.bookToTime.getHours() >= now.getHours())
 	{
-		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - 30);
+		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - bookingIncrease);
 	}
 }
 
@@ -303,7 +305,7 @@ Display.prototype.incBookTimeFrom = function()
 	//FIXME: constraints?
 	if (this.parentDisplay.bookFromTime.getHours() < 23)
 	{
-		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + 30);
+		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + bookingIncrease);
 	}
 }
 
@@ -313,7 +315,7 @@ Display.prototype.decBookTimeFrom = function()
 	var now = new Date();
 	if (this.parentDisplay.bookFromTime.getHours() >= now.getHours())
 	{
-		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() - 30);
+		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() - bookingIncrease);
 	}
 }
 
@@ -425,12 +427,21 @@ Display.prototype.createCalendarMenu = function()
 			this.exchangeCalendarFirstMenuItem.setPrevItem(this.statusMenuItem);
 		
 		}
+		/* to link in the newly created menuitems with exchangeinformation the display must be showing 
+		   either the statusmenu or the bookingmenu */
 		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem)
 		{
+			/* if there is one or more exchangemenuitems */
 			if (this.exchangeCalendarFirstMenuItem && this.exchangeCalendarLastMenuItem)
 			{
 				this.statusMenuItem.setNextItem(this.exchangeCalendarFirstMenuItem);
 				this.bookMenuItem.setPrevItem(this.exchangeCalendarLastMenuItem);
+			}
+			/* if not then link statusmenu to bookingmenu */
+			else
+			{
+				this.statusMenuItem.setNextItem(this.bookMenuItem);
+				this.bookMenuItem.setPrevItem(this.statusMenuItem);
 			}
 		}
 	}
