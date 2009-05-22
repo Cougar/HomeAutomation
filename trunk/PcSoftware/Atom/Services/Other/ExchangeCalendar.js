@@ -18,6 +18,13 @@ ExchangeCalendar.prototype.lookup = function(calendarShortName)
 //log("ExchangeCalendar: called lookup\n");
 }
 
+ExchangeCalendar.prototype.book = function(calendarShortName, bookFrom, bookTo)
+{
+	var self = this;
+	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, 
+						"dev.qrtech.se/exchangeIntegration/exchange.php?function=bookMeeting&shortname="+calendarShortName+"&from="+bookFrom+"&to="+bookTo);
+}
+
 ExchangeCalendar.prototype.httpCallback = function(result, header, content)
 {
 //log("ExchangeCalendar: httpCallback \n\n");

@@ -39,6 +39,8 @@ Display.prototype.exchangeCalendarFirstMenuItem = null;
 Display.prototype.exchangeCalendarLastMenuItem = null;
 Display.prototype.statusMenuItem = null;
 Display.prototype.bookMenuItem = null;
+Display.prototype.bookResultMenuItem = null;
+
 
 /* The currently displayed menuitem */
 Display.prototype.currentMenuItem = null;
@@ -132,6 +134,7 @@ Display.prototype.initialize = function(initialArguments)
 	this.softPwmOnline();
 	
 	this.exchangeCalendar = new ExchangeCalendar(function(shortname, data) { self.exchangeCalendarLookupCallback(shortname, data); });
+	this.exchangeCalendarBook = new ExchangeCalendar(function(shortname, data) { self.exchangeCalendarBookCallback(shortname, data); });
 	
 	/* create the first menu item */
 	this.statusMenuItem = new MenuItem(this);
@@ -142,7 +145,7 @@ Display.prototype.initialize = function(initialArguments)
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
 	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room");
-	this.bookMenuItem.displayData[1] = this.lcdCenterText("(Not implemented)");
+	this.bookMenuItem.displayData[1] = this.lcdCenterText("(Push button)");
 	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
 
 	/* connect the items as a linked list */
@@ -164,7 +167,7 @@ Display.prototype.initialize = function(initialArguments)
 	menuChooseTo.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
 	menuChooseTo.doUpdate = this.chooseBookTimeTo;
 	
-	this.bookMenuItem.doPress = this.startBooking;
+	this.bookMenuItem.doPress = this.prepareBookingMenu;
 	this.bookMenuItem.setDescItem(menuChooseTo);
 	
 	/* create the menuitem where you can choose to book the room with OK */
@@ -182,6 +185,13 @@ Display.prototype.initialize = function(initialArguments)
 	menuChooseFrom.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
 	menuChooseFrom.doUpdate = this.chooseBookTimeFrom;
 
+	/* create the menuitem where you see the result of a booking */
+	this.bookResultMenuItem = new MenuItem(this);
+	this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking...");
+	this.bookResultMenuItem.displayData[1] = this.lcdCenterText("(Push to return)");
+	this.bookResultMenuItem.setDescItem(this.bookMenuItem);
+	this.bookResultMenuItem.doPress = this.changeToDesc;
+
 	/* connect the items as a linked list */
 	menuChooseTo.setNextItem(menuChooseOk);
 	menuChooseTo.setPrevItem(menuChooseFrom);
@@ -193,9 +203,11 @@ Display.prototype.initialize = function(initialArguments)
 	/* connect the items as a linked list */
 	menuChooseOk.setNextItem(menuChooseCancel);
 	menuChooseOk.setPrevItem(menuChooseTo);
+	menuChooseOk.setDescItem(this.bookResultMenuItem);
 	/* set the function that shall be executed when knob is turned */
 	menuChooseOk.doRight = this.changeToNext;
 	menuChooseOk.doLeft = this.changeToPrev;
+	menuChooseOk.doPress = this.doBooking;
 
 	/* connect the items as a linked list */
 	menuChooseCancel.setNextItem(menuChooseFrom);
@@ -236,7 +248,53 @@ Display.prototype.initialize = function(initialArguments)
 
 }
 
-Display.prototype.startBooking = function()
+Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
+{
+	if (shortname == this.shortName)
+	{
+		//FIXME check if data contains error tag and error message, print to log and keep previous data?
+		if (data.result)
+		{
+			if (data.error)
+			{
+				this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking failed");
+				log("Display: got this error from exchange server: " + data.error + "\n");
+			}
+			else
+			{
+				this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking succeeded");
+				
+				/* do an exchange lookup */
+				this.exchangeCalendar.lookup(this.shortName);
+			}
+			
+		}
+		else if (data.error)
+		{
+			this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking failed");
+			log("Display: got this error from exchange.php: " + data.error + "\n");
+		}
+		this.updateDisplay();
+	}
+}
+
+Display.prototype.doBooking = function()
+{
+	this.parentDisplay.bookResultMenuItem.displayData[0] = this.parentDisplay.lcdCenterText("Booking...");
+	if (this.descItem)
+	{
+		this.parentDisplay.currentMenuItem = this.descItem;
+	}
+	//this.parentDisplay.changeToDesc();
+
+	var bookFrom = this.parentDisplay.bookFromTime.getTimeShortFormated().replace(".",":");
+	var bookTo = this.parentDisplay.bookToTime.getTimeShortFormated().replace(".",":");
+	this.parentDisplay.exchangeCalendarBook.book(this.parentDisplay.shortName, bookFrom, bookTo);
+	
+	//bookFromTime bookToTime
+}
+
+Display.prototype.prepareBookingMenu = function()
 {
 	this.parentDisplay.bookFromTime = new Date();
 	this.parentDisplay.bookToTime = new Date();
@@ -429,7 +487,7 @@ Display.prototype.createCalendarMenu = function()
 		}
 		/* to link in the newly created menuitems with exchangeinformation the display must be showing 
 		   either the statusmenu or the bookingmenu */
-		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem)
+		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem || this.currentMenuItem == this.bookResultMenuItem)
 		{
 			/* if there is one or more exchangemenuitems */
 			if (this.exchangeCalendarFirstMenuItem && this.exchangeCalendarLastMenuItem)
@@ -452,7 +510,7 @@ Display.prototype.replaceAumlauts = function(intext)
 	intext = intext.replace(/Å/, "A");
 	intext = intext.replace(/å/, "a");
 	intext = intext.replace(/Ä/, "A");
-	intext = intext.replace(/ä/, "a");
+	intext = intext.replace(/ä/, "a");		//	String.fromCharCode(97)); //225
 	intext = intext.replace(/Ö/, "O");
 	intext = intext.replace(/ö/, "o");
 	return intext;
@@ -590,11 +648,14 @@ Display.prototype.timerUpdate = function()
 
 			/* update the info on display */
 			this.updateDisplay();
+
+			this.mainScreenCnt = 0;
 		}
 		
 		if (this.screenSaverCnt > screenSaverTimeout/5)
 		{
 			
+			this.screenSaverCnt = 0;
 		}
 
 		if (this.exchangeUpdateCnt > exchangeUpdateTimeout/5)
