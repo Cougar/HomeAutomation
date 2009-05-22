@@ -11,16 +11,16 @@ ExchangeCalendar.prototype.myCallback = null;
 ExchangeCalendar.prototype.lookup = function(calendarShortName)
 {
 	var self = this;
-log("\n");
-log("ExchangeCalendar: before lookup\n");
+//log("\n");
+//log("ExchangeCalendar: before lookup\n");
 	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, 
 						"dev.qrtech.se/exchangeIntegration/exchange.php?function=getMeetingsRestOfDay&shortname=" + calendarShortName);
-log("ExchangeCalendar: called lookup\n");
+//log("ExchangeCalendar: called lookup\n");
 }
 
 ExchangeCalendar.prototype.httpCallback = function(result, header, content)
 {
-log("ExchangeCalendar: httpCallback \n\n");
+//log("ExchangeCalendar: httpCallback \n\n");
 //return;
 	var data = null;
 	var shortname = "";
