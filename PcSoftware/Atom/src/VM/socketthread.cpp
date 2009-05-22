@@ -54,7 +54,7 @@ SocketThread::~SocketThread()
 
 void SocketThread::startSocket()
 {
-cout << "SocketThread::run - starting socket \n";
+//cout << "SocketThread::run - starting socket \n";
 	mySocket->start();
 }
 
@@ -69,7 +69,7 @@ void SocketThread::run()
 //cout << "SocketThread::run - locking mutex \n";
 	mySocket->eventStartListen();
 
-cout << "SocketThread::run - start wait \n";
+//cout << "SocketThread::run - start wait \n";
 	while (true)
 	{
 		mySocket->eventWait();
