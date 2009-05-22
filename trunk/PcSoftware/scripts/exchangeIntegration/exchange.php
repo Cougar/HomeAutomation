@@ -55,7 +55,36 @@ function bookMeeting($shortname, $bookFrom, $bookTo)
 		}
 	}
 	
-	if ($founditem !== false)
+	$bookingsOk = true;
+
+	$bookings = json_decode(getMeetingsRestOfDay($shortname));
+	//print_array($bookings);
+	//echo $bookings;
+	if ($bookings->{'error'})
+	{
+		$bookingsOk = false;
+	}
+	
+	if ($bookings->{'meetings'})
+	{
+		foreach ($bookings->{'meetings'} as $meeting)
+		{
+			$meetStart = strtotime($meeting->{'start'});
+			$meetEnd = strtotime($meeting->{'end'});
+			$start = strtotime($bookFrom);
+			$end = strtotime($bookTo);
+			//echo $meeting->{'start'}." ";
+			if (($start >= $meetStart && $start < $meetEnd)
+				|| ($end > $meetStart && $end <= $meetEnd)
+				|| ($start <= $meetStart && $end >= $meetEnd))
+			{
+				$bookingsOk = false;
+				break;
+			}
+		}
+	}
+
+	if ($founditem !== false && $bookingsOk)
 	{
 		$CreateItem->SendMeetingInvitations = "SendToNone";
 		$CreateItem->SavedItemFolderId->DistinguishedFolderId->Id = "calendar";
@@ -105,9 +134,13 @@ function bookMeeting($shortname, $bookFrom, $bookTo)
 		stream_wrapper_restore('https');
 		return $returndata;
 	}
-	else 
+	else if ($founditem === false)
 	{
 		return "{ error:'Unknown shortname',\nshortname:'".$shortname."'}\n";
+	}
+	else 
+	{
+		return "{ error:'Double booking',\nshortname:'".$shortname."'}\n";
 	}
 }
 
@@ -184,13 +217,13 @@ function getMeetingsRestOfDay($shortname)
 		$FindItem->ParentFolderIds->DistinguishedFolderId->Id = "calendar"; 
 		/* Dont forget to use the proper timezone and setting for daylight saving time (php handles this fine) */
 		$FindItem->CalendarView->StartDate = date("c");						//"2009-04-07T08:00:00Z";
-		$FindItem->CalendarView->EndDate = date("c", strtotime("+9 hour"));	//"2009-04-08T00:00:00Z";
+		$FindItem->CalendarView->EndDate = date("c", strtotime("+12 hour"));	//"2009-04-08T00:00:00Z";
 		//echo date("c")." ".date("c", strtotime("+8 hour"))." ".date("c", strtotime("18:00"))."\n";
 
 		stream_wrapper_unregister('https'); 
 		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
 		 
-		$returndata = "{ \n\tshortname:'".$shortname."',\n\tmeetings:[\n";
+		$returndata = "{ \n\t\"shortname\":\"".$shortname."\",\n\t\"meetings\":[\n";
 		try
 		{
 			$client = new ExchangeNTLMSoapClient($wsdl);
@@ -213,10 +246,10 @@ function getMeetingsRestOfDay($shortname)
 						$item = $calendaritems;
 					}
 					$returndata .= "\t\t{\n";
-					$returndata .= "\t\torganizer:'".$item->Organizer->Mailbox->Name."',\n";
-					$returndata .= "\t\tsubject:'".$item->Subject."',\n";
-					$returndata .= "\t\tstart:'".date("G:i", strtotime($item->Start))."',\n";
-					$returndata .= "\t\tend:'".date("G:i", strtotime($item->End))."'\n";
+					$returndata .= "\t\t\"organizer\":\"".$item->Organizer->Mailbox->Name."\",\n";
+					$returndata .= "\t\t\"subject\":\"".$item->Subject."\",\n";
+					$returndata .= "\t\t\"start\":\"".date("G:i", strtotime($item->Start))."\",\n";
+					$returndata .= "\t\t\"end\":\"".date("G:i", strtotime($item->End))."\"\n";
 					$returndata .= "\t\t}";
 					if ($i+1 < count($calendaritems))
 					{
@@ -226,12 +259,12 @@ function getMeetingsRestOfDay($shortname)
 			}
 			else
 			{
-				return "{ error:'No result',\nshortname:'".$shortname."'}\n";
+				//return "{ \"error\":\"No result\",\n\"shortname\":\"".$shortname."\"}\n";
 			}
 		}
 		catch (SoapFault $exception)
 		{
-			return "{ error:'".$exception."',\nshortname:'".$shortname."'}\n"; 
+			//return "{ \"error\":\"".$exception."\",\n\"shortname\":\"".$shortname."\"}\n"; 
 		}
 
 		stream_wrapper_restore('https');
@@ -240,7 +273,7 @@ function getMeetingsRestOfDay($shortname)
 	}
 	else 
 	{
-		return "{ error:'Unknown shortname',\nshortname:'".$shortname."'}\n";
+		return "{ \"error\":\"Unknown shortname\",\n\"shortname\":\"".$shortname."\"}\n";
 	}
 }
 
