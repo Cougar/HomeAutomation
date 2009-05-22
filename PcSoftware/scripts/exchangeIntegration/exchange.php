@@ -20,9 +20,12 @@ if (isset($_GET["function"]))
 		break;
 		
 		case "bookMeeting":
-		if (isset($_GET["from"]) && isset($_GET["to"]))
+		if (isset($_GET["from"]) && isset($_GET["to"]) && isset($_GET["shortname"]))
 		{
-			
+			if (preg_match("/^\d\d:\d\d$/", $_GET["from"]) && preg_match("/^\d\d:\d\d$/", $_GET["to"]))
+			{
+				echo bookMeeting($_GET["shortname"], $_GET["from"], $_GET["to"]);
+			}
 		}
 		break;
 		
@@ -32,20 +35,128 @@ if (isset($_GET["function"]))
 	}
 }
 
+
 /*
-	$CreateItem->SendMeetingInvitations = "SendToNone";
-	$CreateItem->SavedItemFolderId->DistinguishedFolderId->Id = "calendar";
-	$CreateItem->Items->CalendarItem = array();
-	$CreateItem->Items->CalendarItem[0]->Subject = "Hello from PHP";
-	$CreateItem->Items->CalendarItem[0]->Start = "2010-01-01T16:00:00Z"; # ISO date format. Z denotes UTC time
-	$CreateItem->Items->CalendarItem[0]->End = "2010-01-01T17:00:00Z";
-	$CreateItem->Items->CalendarItem[0]->IsAllDayEvent = false;
-	$CreateItem->Items->CalendarItem[0]->LegacyFreeBusyStatus = "Busy";
-	$CreateItem->Items->CalendarItem[0]->Location = "Bahamas";
-	$CreateItem->Items->CalendarItem[0]->Categories->String = "MyCategory";
-	$result = $client->CreateItem($CreateItem);
-	print_array($result); 
+  Book meeting
+  Return a JSON formed string with the result
 */
+function bookMeeting($shortname, $bookFrom, $bookTo)
+{
+	global $Calender;
+	global $wsdl;
+	$founditem = false;
+	
+	foreach($Calender as $item)
+	{
+		if ($item->Shortname == $shortname)
+		{
+			$founditem = $item;
+			break;
+		}
+	}
+	
+	if ($founditem !== false)
+	{
+		$CreateItem->SendMeetingInvitations = "SendToNone";
+		$CreateItem->SavedItemFolderId->DistinguishedFolderId->Id = "calendar";
+		$CreateItem->Items->CalendarItem = array();
+		$CreateItem->Items->CalendarItem[0]->Subject = "Booking from panel";
+		/* Dont forget to use the proper timezone and setting for daylight saving time (php handles this fine) */
+		$CreateItem->Items->CalendarItem[0]->Start = date("c",strtotime($bookFrom)); // "2009-05-22T17:00:00Z" ISO date format. Z denotes UTC time
+		$CreateItem->Items->CalendarItem[0]->End = date("c",strtotime($bookTo));
+		$CreateItem->Items->CalendarItem[0]->IsAllDayEvent = false;
+		$CreateItem->Items->CalendarItem[0]->LegacyFreeBusyStatus = "Busy";
+		$CreateItem->Items->CalendarItem[0]->Location = $founditem->Shortname;
+		$CreateItem->Items->CalendarItem[0]->Categories->String = "Meeting";
+
+		stream_wrapper_unregister('https'); 
+		stream_wrapper_register('https', 'NTLMStream') or die("Failed to register protocol");
+		 
+		try
+		{
+			$client = new ExchangeNTLMSoapClient($wsdl);
+			$client->user = $founditem->UserName;
+			$client->pass = $founditem->Password;
+			$result = $client->CreateItem($CreateItem);
+			if ($result)
+			{
+				//print_array($result);
+				if ($result->ResponseMessages->CreateItemResponseMessage->ResponseClass == "Success")
+				{
+					$returndata = "{ result:'success',\nshortname:'".$shortname."'}\n";
+				}
+				else
+				{
+					$errorcode=$result->ResponseMessages->CreateItemResponseMessage->MessageText;
+					$returndata = "{ result:'error',\nerror:'".$errorcode."',\nshortname:'".$shortname."'}\n";
+				}
+			}
+			else
+			{
+				$returdata = "{ error:'No result',\nshortname:'".$shortname."'}\n";
+			}
+			
+		}
+		catch (SoapFault $exception)
+		{
+			$returdata = "{ error:'".$exception."',\nshortname:'".$shortname."'}\n"; 
+		}
+
+		stream_wrapper_restore('https');
+		return $returndata;
+	}
+	else 
+	{
+		return "{ error:'Unknown shortname',\nshortname:'".$shortname."'}\n";
+	}
+}
+
+
+/*
+
+stdClass Object
+(
+    [ResponseMessages] => stdClass Object
+        (
+            [CreateItemResponseMessage] => stdClass Object
+                (
+                    [ResponseCode] => NoError
+                    [ResponseClass] => Success
+                    [Items] => stdClass Object
+                        (
+                            [CalendarItem] => stdClass Object
+                                (
+                                    [ItemId] => stdClass Object
+                                        (
+                                            [Id] => 
+AAAcAEVudGVyLktvbmZlcmVuc3J1bUBxcnRlY2guc2UARgAAAAAAWx3xkPMlnUyMluTTqIdb4AcAdM/rfM3YaEeMsdYGn8jOeAAAAClWOAAAK68xOGjBUkCXHxa/+2eMqAAah/ErtAAA
+                                            [ChangeKey] => DwAAABYAAAArrzE4aMFSQJcfFr/7Z4yoABqH8Tu3
+                                        )
+                                )
+                        )
+                )
+        )
+)
+
+stdClass Object
+(
+    [ResponseMessages] => stdClass Object
+        (
+            [CreateItemResponseMessage] => stdClass Object
+                (
+                    [MessageText] => EndDate is earlier than StartDate
+                    [ResponseCode] => ErrorCalendarEndDateIsEarlierThanStartDate
+                    [DescriptiveLinkKey] => 0
+                    [ResponseClass] => Error
+                    [Items] => stdClass Object
+                        (
+                        )
+                )
+        )
+)
+*/
+
+
 
 /*
   Get all meetings from now and 9 hours later
@@ -103,6 +214,7 @@ function getMeetingsRestOfDay($shortname)
 					}
 					$returndata .= "\t\t{\n";
 					$returndata .= "\t\torganizer:'".$item->Organizer->Mailbox->Name."',\n";
+					$returndata .= "\t\tsubject:'".$item->Subject."',\n";
 					$returndata .= "\t\tstart:'".date("G:i", strtotime($item->Start))."',\n";
 					$returndata .= "\t\tend:'".date("G:i", strtotime($item->End))."'\n";
 					$returndata .= "\t\t}";
@@ -112,7 +224,10 @@ function getMeetingsRestOfDay($shortname)
 					}
 				}
 			}
-			
+			else
+			{
+				return "{ error:'No result',\nshortname:'".$shortname."'}\n";
+			}
 		}
 		catch (SoapFault $exception)
 		{
