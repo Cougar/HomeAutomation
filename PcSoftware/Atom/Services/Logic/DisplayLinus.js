@@ -150,14 +150,14 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.dtmfMenuItem.displayData[1] = this.lcdCenterText("");
 	this.dtmfMenuItem.displayData[2] = this.lcdCenterText("");
 	this.dtmfMenuItem.displayData[3] = this.lcdCenterText("");
-	this.dtmfMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
+	//this.dtmfMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
 
 	this.dtmfReturnMenuItem = new MenuItem(this);
 	this.dtmfReturnMenuItem.displayData[0] = this.lcdCenterText("Tryck for att ga");
 	this.dtmfReturnMenuItem.displayData[1] = this.lcdCenterText("till huvudmenyn");
 	this.dtmfReturnMenuItem.displayData[2] = this.lcdCenterText("");
 	this.dtmfReturnMenuItem.displayData[3] = this.lcdCenterText("");
-	this.dtmfReturnMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
+	//this.dtmfReturnMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
 
 	this.phoneItem = new Array();
 	for (n=0; n< numberOfItemsInPhonebook; n++)
