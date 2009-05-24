@@ -141,7 +141,7 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.statusMenuItem.displayData[1] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[2] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[3] = this.lcdCenterText("");
-	this.statusMenuItem.doUpdate = this.updateStatusMenuItem; };
+	this.statusMenuItem.doUpdate = this.updateStatusMenuItem;
 	this.currentMenuItem = this.statusMenuItem;
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
@@ -225,11 +225,11 @@ DisplayLinus.prototype.updateStatusMenuItem = function()
 	var dateAndTime = date.getDateTimeFormated();
 	//var date = new Date();
 	//var dateAndTime = "" + date.getTimeShortFormated();
-	this.displayData[1] = this.lcdCenterText(""+dateAndTime);
+	this.displayData[1] = this.parentDisplay.lcdCenterText(""+dateAndTime);
 
-this.displayData[2] = this.lcdCenterText(""+insideTemperature + " C   " + outsideTemperature + " C");
+this.displayData[2] = this.parentDisplay.lcdCenterText(""+insideTemperature + " C   " + outsideTemperature + " C");
 
-	this.displayData[3] = this.lcdCenterText(""+this.CurrentPower.toString()+" Watt "+(this.CurrentEnergy/1000).toString() + "kWh");
+	this.displayData[3] = this.parentDisplay.lcdCenterText(""+this.parentDisplay.CurrentPower.toString()+" Watt "+(this.parentDisplay.CurrentEnergy/1000).toString() + "kWh");
 }
 
 DisplayLinus.prototype.temperatureUpdate = function(sensorId)
