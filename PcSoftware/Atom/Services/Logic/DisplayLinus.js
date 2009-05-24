@@ -141,7 +141,7 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.statusMenuItem.displayData[1] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[2] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[3] = this.lcdCenterText("");
-	this.statusMenuItem.doUpdate = function(args) { self.updateStatusMenuItem(); };
+	this.statusMenuItem.doUpdate = this.updateStatusMenuItem; };
 	this.currentMenuItem = this.statusMenuItem;
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
