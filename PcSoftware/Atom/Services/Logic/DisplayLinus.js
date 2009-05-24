@@ -253,6 +253,8 @@ DisplayLinus.prototype.phonebookLookupCallback = function(phonenumber, persons)
 	this.dtmfMenuItem.displayData[2] = this.lcdCenterText(""+phonenumber);
 	this.dtmfMenuItem.displayData[3] = this.lcdCenterText(""+persons[0]);
 	
+	/* This is used for function declarations like the callbacks below */
+	var self = this;
 
 	if (this.dtmfReturnMenuItem.nextItem == this.dtmfReturnMenuItem) //the list is empty
 	{
