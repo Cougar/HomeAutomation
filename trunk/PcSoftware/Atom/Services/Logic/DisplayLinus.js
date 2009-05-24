@@ -195,25 +195,25 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 
 DisplayLinus.prototype.changeToDesc = function()
 {
-	if (this.descItem)
+	if (this.currentMenuItem.descItem)
 	{
-		this.currentMenuItem = this.descItem;
+		this.currentMenuItem = this.currentMenuItem.descItem;
 	}
 }
 
 DisplayLinus.prototype.changeToNext = function()
 {
-	if (this.nextItem)
+	if (this.currentMenuItem.nextItem)
 	{
-		this.currentMenuItem = this.nextItem;
+		this.currentMenuItem = this.currentMenuItem.nextItem;
 	}
 }
 
 DisplayLinus.prototype.changeToPrev = function()
 {
-	if (this.prevItem)
+	if (this.currentMenuItem.prevItem)
 	{
-		this.currentMenuItem = this.prevItem;
+		this.currentMenuItem = this.currentMenuItem.prevItem;
 	}
 }
 
