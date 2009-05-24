@@ -141,7 +141,7 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.statusMenuItem.displayData[1] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[2] = this.lcdCenterText("");
 	this.statusMenuItem.displayData[3] = this.lcdCenterText("");
-	this.statusMenuItem.doUpdate = this.updateStatusMenuItem;
+	this.statusMenuItem.doUpdate = function(args) { self.updateStatusMenuItem(); };
 	this.currentMenuItem = this.statusMenuItem;
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
@@ -150,14 +150,14 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.dtmfMenuItem.displayData[1] = this.lcdCenterText("");
 	this.dtmfMenuItem.displayData[2] = this.lcdCenterText("");
 	this.dtmfMenuItem.displayData[3] = this.lcdCenterText("");
-	this.dtmfMenuItem.doUpdate = this.updateDtmfMenuItem;
+	this.dtmfMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
 
 	this.dtmfReturnMenuItem = new MenuItem(this);
 	this.dtmfReturnMenuItem.displayData[0] = this.lcdCenterText("Tryck for att ga");
 	this.dtmfReturnMenuItem.displayData[1] = this.lcdCenterText("till huvudmenyn");
 	this.dtmfReturnMenuItem.displayData[2] = this.lcdCenterText("");
 	this.dtmfReturnMenuItem.displayData[3] = this.lcdCenterText("");
-	this.dtmfReturnMenuItem.doUpdate = this.updateDtmfMenuItem;
+	this.dtmfReturnMenuItem.doUpdate = function(args) { self.updateDtmfMenuItem(); };
 
 	this.phoneItem = new Array();
 	for (n=0; n< numberOfItemsInPhonebook; n++)
@@ -170,17 +170,17 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.statusMenuItem.setNextItem(this.dtmfMenuItem);
 	this.statusMenuItem.setPrevItem(this.dtmfMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	this.statusMenuItem.doRight = this.changeToNext;
-	this.statusMenuItem.doLeft = this.changeToPrev;
+	this.statusMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.statusMenuItem.doLeft = function(args) { self.changeToPrev(); };
 	
 	/* connect the items as a linked list */
 	this.dtmfMenuItem.setNextItem(this.statusMenuItem);
 	this.dtmfMenuItem.setPrevItem(this.statusMenuItem);
 	this.dtmfMenuItem.setDescItem(this.dtmfReturnMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	this.dtmfMenuItem.doRight = this.changeToNext;
-	this.dtmfMenuItem.doLeft = this.changeToPrev;
-	this.dtmfMenuItem.doPress = this.changeToDesc;
+	this.dtmfMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.dtmfMenuItem.doLeft = function(args) { self.changeToPrev(); };
+	this.dtmfMenuItem.doPress = function(args) { self.changeToDesc(); };
 
 	/* connect the items as a linked list */
 	this.dtmfReturnMenuItem.setNextItem(this.dtmfReturnMenuItem);
@@ -188,16 +188,16 @@ DisplayLinus.prototype.initialize = function(initialArguments)
 	this.dtmfReturnMenuItem.setDescItem(this.dtmfMenuItem);
 	this.dtmfReturnMenuItem.id = 255;
 	/* set the function that shall be executed when knob is turned */
-	this.dtmfReturnMenuItem.doRight = this.changeToNext;
-	this.dtmfReturnMenuItem.doLeft = this.changeToPrev;
-	this.dtmfReturnMenuItem.doPress = this.changeToDesc;
+	this.dtmfReturnMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.dtmfReturnMenuItem.doLeft = function(args) { self.changeToPrev(); };
+	this.dtmfReturnMenuItem.doPress = function(args) { self.changeToDesc(); };
 }
 
 DisplayLinus.prototype.changeToDesc = function()
 {
 	if (this.descItem)
 	{
-		this.parentDisplay.currentMenuItem = this.descItem;
+		this.currentMenuItem = this.descItem;
 	}
 }
 
@@ -205,7 +205,7 @@ DisplayLinus.prototype.changeToNext = function()
 {
 	if (this.nextItem)
 	{
-		this.parentDisplay.currentMenuItem = this.nextItem;
+		this.currentMenuItem = this.nextItem;
 	}
 }
 
@@ -213,7 +213,7 @@ DisplayLinus.prototype.changeToPrev = function()
 {
 	if (this.prevItem)
 	{
-		this.parentDisplay.currentMenuItem = this.prevItem;
+		this.currentMenuItem = this.prevItem;
 	}
 }
 
@@ -225,11 +225,11 @@ DisplayLinus.prototype.updateStatusMenuItem = function()
 	var dateAndTime = date.getDateTimeFormated();
 	//var date = new Date();
 	//var dateAndTime = "" + date.getTimeShortFormated();
-	this.displayData[1] = this.parentDisplay.lcdCenterText(""+dateAndTime);
+	this.displayData[1] = this.lcdCenterText(""+dateAndTime);
 
-this.displayData[2] = this.parentDisplay.lcdCenterText(""+insideTemperature + " C   " + outsideTemperature + " C");
+this.displayData[2] = this.lcdCenterText(""+insideTemperature + " C   " + outsideTemperature + " C");
 
-	this.displayData[3] = this.parentDisplay.lcdCenterText(""+this.parentDisplay.CurrentPower.toString()+" Watt "+(this.parentDisplay.CurrentEnergy/1000).toString() + "kWh");
+	this.displayData[3] = this.lcdCenterText(""+this.CurrentPower.toString()+" Watt "+(this.CurrentEnergy/1000).toString() + "kWh");
 }
 
 DisplayLinus.prototype.temperatureUpdate = function(sensorId)
@@ -264,9 +264,9 @@ DisplayLinus.prototype.phonebookLookupCallback = function(phonenumber, persons)
 		this.dtmfReturnMenuItem.setPrevItem(this.phoneItem[0]);
 		this.nextPhoneItem = 1 % numberOfItemsInPhonebook;
 		this.lastPhoneItem = 0;
-		this.phoneItem[0].doRight = this.changeToNext;
-		this.phoneItem[0].doLeft = this.changeToPrev;
-		this.phoneItem[0].doPress = this.changeToDesc;
+		this.phoneItem[0].doRight = function(args) { self.changeToNext(); };
+		this.phoneItem[0].doLeft = function(args) { self.changeToPrev(); };
+		this.phoneItem[0].doPress = function(args) { self.changeToDesc(); };
 		this.phoneItem[0].displayData[0] = this.lcdCenterText(""+dateAndTime);
 		this.phoneItem[0].displayData[1] = this.lcdCenterText(""+phonenumber);
 		if (persons.length >= 1) {
@@ -287,9 +287,9 @@ DisplayLinus.prototype.phonebookLookupCallback = function(phonenumber, persons)
 		this.phoneItem[this.nextPhoneItem].setDescItem(this.statusMenuItem);
 		this.dtmfReturnMenuItem.setNextItem(this.phoneItem[this.nextPhoneItem]);
 		this.phoneItem[(this.nextPhoneItem-1+ numberOfItemsInPhonebook) % numberOfItemsInPhonebook].setPrevItem(this.phoneItem[this.nextPhoneItem]);
-		this.phoneItem[this.nextPhoneItem].doRight = this.changeToNext;
-		this.phoneItem[this.nextPhoneItem].doLeft = this.changeToPrev;
-		this.phoneItem[this.nextPhoneItem].doPress = this.changeToDesc;
+		this.phoneItem[this.nextPhoneItem].doRight = function(args) { self.changeToNext(); };
+		this.phoneItem[this.nextPhoneItem].doLeft = function(args) { self.changeToPrev(); };
+		this.phoneItem[this.nextPhoneItem].doPress = function(args) { self.changeToDesc(); };
 		this.phoneItem[this.nextPhoneItem].displayData[0] = this.lcdCenterText(""+dateAndTime);
 		this.phoneItem[this.nextPhoneItem].displayData[1] = this.lcdCenterText(""+phonenumber);
 		if (persons.length >= 1) {
@@ -310,9 +310,9 @@ DisplayLinus.prototype.phonebookLookupCallback = function(phonenumber, persons)
 		this.phoneItem[this.nextPhoneItem].setDescItem(this.statusMenuItem);
 		this.dtmfReturnMenuItem.setNextItem(this.phoneItem[this.nextPhoneItem]);
 		this.phoneItem[(this.nextPhoneItem-1+ numberOfItemsInPhonebook) % numberOfItemsInPhonebook].setPrevItem(this.phoneItem[this.nextPhoneItem]);
-		this.phoneItem[this.nextPhoneItem].doRight = this.changeToNext;
-		this.phoneItem[this.nextPhoneItem].doLeft = this.changeToPrev;
-		this.phoneItem[this.nextPhoneItem].doPress = this.changeToDesc;
+		this.phoneItem[this.nextPhoneItem].doRight = function(args) { self.changeToNext(); };
+		this.phoneItem[this.nextPhoneItem].doLeft = function(args) { self.changeToPrev(); };
+		this.phoneItem[this.nextPhoneItem].doPress = function(args) { self.changeToDesc(); };
 		this.phoneItem[this.nextPhoneItem].displayData[0] = this.lcdCenterText(""+dateAndTime);
 		this.phoneItem[this.nextPhoneItem].displayData[1] = this.lcdCenterText(""+phonenumber);
 		if (persons.length >= 1) {
