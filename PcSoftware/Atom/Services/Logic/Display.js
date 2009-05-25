@@ -513,6 +513,8 @@ Display.prototype.replaceAumlauts = function(intext)
 	intext = intext.replace(/ä/, "a");		//	String.fromCharCode(97)); //225
 	intext = intext.replace(/Ö/, "O");
 	intext = intext.replace(/ö/, "o");
+	intext = intext.replace(/:/, ";");
+	intext = intext.replace(/,/, ".");
 	return intext;
 }
 
