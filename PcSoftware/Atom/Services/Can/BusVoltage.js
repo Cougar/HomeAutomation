@@ -18,13 +18,13 @@ BusVoltage.prototype.canMessageHandler = function(canMessage)
 		switch (canMessage.getCommandName())
 		{
 		case "Voltage":
-		log(this.myName + ":" + this.myId + "> New value: " + canMessage.getData("Value") + "\n");
+		//log(this.myName + ":" + this.myId + "> New value: " + canMessage.getData("Value") + "\n");
 		this.myLastValue[canMessage.getData("SensorId")] = canMessage.getData("Value");
 		this.callEvent("newValue", canMessage.getData("SensorId"));
 		break;
 		
 		case "Report_Interval":
-		log(this.myName + ":" + this.myId + "> New report interval: " + canMessage.getData("Time") + "\n");
+		//log(this.myName + ":" + this.myId + "> New report interval: " + canMessage.getData("Time") + "\n");
 		this.myReportInterval = canMessage.getData("Time");
 		break;
 		}
