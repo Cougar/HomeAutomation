@@ -203,7 +203,6 @@ string hex2bin(string hex)
 string uint2bin(unsigned int num, int length)
 {
 	string bin;
-
 	while (num)
 	{
 		bin = char((num&1)+'0') + bin;
@@ -212,8 +211,14 @@ string uint2bin(unsigned int num, int length)
 
 	while (bin.size() < length)
 		bin = "0" + bin;
-
-	return bin;
+	
+	string bin2;
+	for (int i = 0; i < length; i++)
+	{
+		bin2 = bin2 + bin[i];
+	}
+	
+	return bin2;
 }
 
 string uint2hex(unsigned int num, int length)
