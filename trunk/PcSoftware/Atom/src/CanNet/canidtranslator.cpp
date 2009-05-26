@@ -478,7 +478,13 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 				if (iter->second.getStartBit()+n*8 + 8 > highestBit)
 					highestBit = iter->second.getStartBit()+n*8 + 8;
 
-				bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin((unsigned int)iter->second.getValue()[n], 8));
+				//bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin((unsigned int)iter->second.getValue()[n], 8));
+				unsigned int temp = iter->second.getValue()[n];
+				if (temp > 0xff)
+				{
+					temp &= 0xff;
+				}
+				bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin(temp, 8));
 			}
 		}
 		else if (iter->second.getType() == "hexstring")
