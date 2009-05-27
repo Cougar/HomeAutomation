@@ -41,7 +41,7 @@ Rotary.prototype.canMessageHandler = function(canMessage)
 		switch (canMessage.getCommandName())
 		{
 		case "Rotary_Switch":
-		log(this.myName + ":" + this.myId + "> New direction: " + canMessage.getData("Direction") + ", steps: " + canMessage.getData("Steps") + ", position: " + canMessage.getData("Position") + "\n");
+		//log(this.myName + ":" + this.myId + "> New direction: " + canMessage.getData("Direction") + ", steps: " + canMessage.getData("Steps") + ", position: " + canMessage.getData("Position") + "\n");
 		this.myLastDirection[canMessage.getData("SwitchId")] = canMessage.getData("Direction");
 		this.myLastSteps[canMessage.getData("SwitchId")] = canMessage.getData("Steps");
 		this.myLastPosition[canMessage.getData("SwitchId")] = canMessage.getData("Position");
@@ -49,7 +49,7 @@ Rotary.prototype.canMessageHandler = function(canMessage)
 		break;
 		
 		case "Button":
-		log(this.myName + ":" + this.myId + "> New button status: " + canMessage.getData("Status") + "\n");
+		//log(this.myName + ":" + this.myId + "> New button status: " + canMessage.getData("Status") + "\n");
 		this.myLastButtonStatus[canMessage.getData("SwitchId")] = canMessage.getData("Status");
 		this.callEvent("newBtnStatus", canMessage.getData("SwitchId"));
 		break;
