@@ -14,6 +14,7 @@ loadScript("System/Console.js");
 loadScript("System/DataStore.js");
 loadScript("System/TextTable.js");
 loadScript("System/IntelHex.js");
+loadScript("System/Base64.js");
 
 loadScript("Other/OnlinePhonebook.js");
 loadScript("Other/ExchangeCalendar.js");

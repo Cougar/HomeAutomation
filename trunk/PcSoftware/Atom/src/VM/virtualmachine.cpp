@@ -475,6 +475,9 @@ Handle<Value> VirtualMachine::_sendCanMessage(const Arguments& args)
 	{
 		vector<string> keyAndValue = explode(":", parts[n]);
 
+		/* decode base64 on the data part */
+		keyAndValue[1] = base64_decode(keyAndValue[1]);
+
 		data[keyAndValue[0]] = CanVariable(keyAndValue[0], keyAndValue[1]);
 	}
 

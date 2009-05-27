@@ -86,6 +86,8 @@ CanMessage.prototype.getDataString = function()
 	
 	for (var key in this.myData)
 	{
+		/* encode base64 on the data part */
+		this.myData[key] = encode64(this.myData[key]+'');
 		str += key + ":" + this.myData[key] + ",";
 	}
 	
