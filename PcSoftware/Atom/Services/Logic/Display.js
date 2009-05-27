@@ -263,6 +263,7 @@ Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 			else
 			{
 				this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking succeeded");
+				log("Display: Successfully booked room\n");
 				
 				/* do an exchange lookup */
 				this.exchangeCalendar.lookup(this.shortName);
@@ -510,9 +511,9 @@ Display.prototype.replaceAumlauts = function(intext)
 	intext = intext.replace(/Å/, "A");
 	intext = intext.replace(/å/, "a");
 	intext = intext.replace(/Ä/, "A");
-	intext = intext.replace(/ä/, "a");		//	String.fromCharCode(97)); //225
+	intext = intext.replace(/ä/, String.fromCharCode(225));
 	intext = intext.replace(/Ö/, "O");
-	intext = intext.replace(/ö/, "o");
+	intext = intext.replace(/ö/, String.fromCharCode(239));
 	intext = intext.replace(/:/, ";");
 	intext = intext.replace(/,/, ".");
 	return intext;
