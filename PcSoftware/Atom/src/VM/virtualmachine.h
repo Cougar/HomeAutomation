@@ -39,6 +39,7 @@ using namespace std;
 #include "socketthread.h"
 #include "commandthread.h"
 #include "expression.h"
+#include "../Tools/base64.h"
 
 using namespace v8;
 
