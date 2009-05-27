@@ -38,6 +38,8 @@
       <itemPath>src/Threads/threadsafequeue.h</itemPath>
     </logicalFolder>
     <logicalFolder name="Tools" displayName="Tools" projectFiles="true">
+      <itemPath>src/Tools/base64.cpp</itemPath>
+      <itemPath>src/Tools/base64.h</itemPath>
       <itemPath>src/Tools/tools.cpp</itemPath>
       <itemPath>src/Tools/tools.h</itemPath>
     </logicalFolder>
@@ -171,6 +173,12 @@
         <itemTool>3</itemTool>
       </item>
       <item path="src/Threads/threadsafequeue.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/Tools/base64.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="src/Tools/base64.h">
         <itemTool>3</itemTool>
       </item>
       <item path="src/Tools/tools.cpp">
@@ -333,6 +341,12 @@
         <itemTool>3</itemTool>
       </item>
       <item path="src/Threads/threadsafequeue.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/Tools/base64.cpp">
+        <itemTool>1</itemTool>
+      </item>
+      <item path="src/Tools/base64.h">
         <itemTool>3</itemTool>
       </item>
       <item path="src/Tools/tools.cpp">

@@ -32,6 +32,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/Logger/logger.o \
 	${OBJECTDIR}/src/CanNet/canmessage.o \
 	${OBJECTDIR}/src/VM/intervalthread.o \
+	${OBJECTDIR}/src/Tools/base64.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/CanNet/cannetmanager.o \
 	${OBJECTDIR}/src/VM/virtualmachine.o \
@@ -86,6 +87,11 @@ ${OBJECTDIR}/src/VM/intervalthread.o: src/VM/intervalthread.cpp
 	${MKDIR} -p ${OBJECTDIR}/src/VM
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/VM/intervalthread.o src/VM/intervalthread.cpp
+
+${OBJECTDIR}/src/Tools/base64.o: src/Tools/base64.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Tools
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Tools/base64.o src/Tools/base64.cpp
 
 ${OBJECTDIR}/src/main.o: src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
