@@ -288,8 +288,8 @@ Display.prototype.doBooking = function()
 	}
 	//this.parentDisplay.changeToDesc();
 
-	var bookFrom = this.parentDisplay.bookFromTime.getTimeShortFormated().replace(".",":");
-	var bookTo = this.parentDisplay.bookToTime.getTimeShortFormated().replace(".",":");
+	var bookFrom = this.parentDisplay.bookFromTime.getTimeShortFormated();
+	var bookTo = this.parentDisplay.bookToTime.getTimeShortFormated();
 	this.parentDisplay.exchangeCalendarBook.book(this.parentDisplay.shortName, bookFrom, bookTo);
 	
 	//bookFromTime bookToTime
