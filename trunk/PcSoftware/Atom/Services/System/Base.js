@@ -95,7 +95,7 @@ Date.prototype.getTimeFormated = function()
 
 Date.prototype.getTimeShortFormated = function()
 {
-	return this.getHours().toString().pad(2, "0", 0) + ".:" + this.getMinutes().toString().pad(2, "0", 0);
+	return this.getHours().toString().pad(2, "0", 0) + ":" + this.getMinutes().toString().pad(2, "0", 0);
 }
 
 Date.prototype.getDateTimeFormated = function()
