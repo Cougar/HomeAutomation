@@ -139,110 +139,110 @@ Display.prototype.initialize = function(initialArguments)
 	/* create the first menu item */
 	this.statusMenuItem = new MenuItem(this);
 	this.statusMenuItem.displayData[0] = this.lcdCenterText(this.niceName);
-	this.statusMenuItem.doUpdate = this.updateStatusMenuItem;
+	this.statusMenuItem.doUpdate = function(args) { self.updateStatusMenuItem(); };
 	this.currentMenuItem = this.statusMenuItem;
 	
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
 	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room");
 	this.bookMenuItem.displayData[1] = this.lcdCenterText("(Push button)");
-	this.bookMenuItem.doUpdate = this.updateBookMenuItem;
+	this.bookMenuItem.doUpdate = function(args) { self.updateBookMenuItem(); };
 
 	/* connect the items as a linked list */
 	this.statusMenuItem.setNextItem(this.bookMenuItem);
 	this.statusMenuItem.setPrevItem(this.bookMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	this.statusMenuItem.doRight = this.changeToNext;
-	this.statusMenuItem.doLeft = this.changeToPrev;
+	this.statusMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.statusMenuItem.doLeft = function(args) { self.changeToPrev(); };
 	
 	/* connect the items as a linked list */
 	this.bookMenuItem.setNextItem(this.statusMenuItem);
 	this.bookMenuItem.setPrevItem(this.statusMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	this.bookMenuItem.doRight = this.changeToNext;
-	this.bookMenuItem.doLeft = this.changeToPrev;
+	this.bookMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.bookMenuItem.doLeft = function(args) { self.changeToPrev(); };
 	
 	/* create the menuitem where you can choose the to-time */
 	var menuChooseTo = new MenuItem(this);
 	menuChooseTo.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
-	menuChooseTo.doUpdate = this.chooseBookTimeTo;
+	menuChooseTo.doUpdate = function(args) { self.chooseBookTimeTo(); };
 	
-	this.bookMenuItem.doPress = this.prepareBookingMenu;
+	this.bookMenuItem.doPress = function(args) { self.prepareBookingMenu(); };
 	this.bookMenuItem.setDescItem(menuChooseTo);
 	
 	/* create the menuitem where you can choose to book the room with OK */
 	var menuChooseOk = new MenuItem(this);
 	menuChooseOk.displayData[1] = this.lcdCenterText("<Ok>    Cancel ");
-	menuChooseOk.doUpdate = this.setBookTime;
+	menuChooseOk.doUpdate = function(args) { self.setBookTime(); };
 
 	/* create the menuitem where you can choose to cancel the booking */
 	var menuChooseCancel = new MenuItem(this);
 	menuChooseCancel.displayData[1] = this.lcdCenterText(" Ok    <Cancel>");
-	menuChooseCancel.doUpdate = this.setBookTime;
+	menuChooseCancel.doUpdate = function(args) { self.setBookTime(); };
 
 	/* create the menuitem where you can choose the from-time */
 	var menuChooseFrom = new MenuItem(this);
 	menuChooseFrom.displayData[1] = this.lcdCenterText(" Ok     Cancel ");
-	menuChooseFrom.doUpdate = this.chooseBookTimeFrom;
+	menuChooseFrom.doUpdate = function(args) { self.chooseBookTimeFrom(); };
 
 	/* create the menuitem where you see the result of a booking */
 	this.bookResultMenuItem = new MenuItem(this);
 	this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking...");
 	this.bookResultMenuItem.displayData[1] = this.lcdCenterText("(Push to return)");
 	this.bookResultMenuItem.setDescItem(this.bookMenuItem);
-	this.bookResultMenuItem.doPress = this.changeToDesc;
+	this.bookResultMenuItem.doPress = function(args) { self.changeToDesc(); };
 
 	/* connect the items as a linked list */
 	menuChooseTo.setNextItem(menuChooseOk);
 	menuChooseTo.setPrevItem(menuChooseFrom);
 	/* set the function that shall be executed when knob is turned */
-	menuChooseTo.doRight = this.changeToNext;
-	menuChooseTo.doLeft = this.changeToPrev;
-	menuChooseTo.doPress = this.changeToDesc;
+	menuChooseTo.doRight = function(args) { self.changeToNext(); };
+	menuChooseTo.doLeft = function(args) { self.changeToPrev(); };
+	menuChooseTo.doPress = function(args) { self.changeToDesc(); };
 
 	/* connect the items as a linked list */
 	menuChooseOk.setNextItem(menuChooseCancel);
 	menuChooseOk.setPrevItem(menuChooseTo);
 	menuChooseOk.setDescItem(this.bookResultMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	menuChooseOk.doRight = this.changeToNext;
-	menuChooseOk.doLeft = this.changeToPrev;
-	menuChooseOk.doPress = this.doBooking;
+	menuChooseOk.doRight = function(args) { self.changeToNext(); };
+	menuChooseOk.doLeft = function(args) { self.changeToPrev(); };
+	menuChooseOk.doPress = function(args) { self.doBooking(); };
 
 	/* connect the items as a linked list */
 	menuChooseCancel.setNextItem(menuChooseFrom);
 	menuChooseCancel.setPrevItem(menuChooseOk);
 	menuChooseCancel.setDescItem(this.bookMenuItem);
 	/* set the function that shall be executed when knob is turned */
-	menuChooseCancel.doRight = this.changeToNext;
-	menuChooseCancel.doLeft = this.changeToPrev;
-	menuChooseCancel.doPress = this.changeToDesc;
+	menuChooseCancel.doRight = function(args) { self.changeToNext(); };
+	menuChooseCancel.doLeft = function(args) { self.changeToPrev(); };
+	menuChooseCancel.doPress = function(args) { self.changeToDesc(); };
 
 	/* connect the items as a linked list */
 	menuChooseFrom.setNextItem(menuChooseTo);
 	menuChooseFrom.setPrevItem(menuChooseCancel);
 	/* set the function that shall be executed when knob is turned */
-	menuChooseFrom.doRight = this.changeToNext;
-	menuChooseFrom.doLeft = this.changeToPrev;
-	menuChooseFrom.doPress = this.changeToDesc;
+	menuChooseFrom.doRight = function(args) { self.changeToNext(); };
+	menuChooseFrom.doLeft = function(args) { self.changeToPrev(); };
+	menuChooseFrom.doPress = function(args) { self.changeToDesc(); };
 
 	/* create the menuitem where you can modify the to-time */
 	var menuSetTo = new MenuItem(this);
-	menuSetTo.doUpdate = this.setBookTimeTo;
+	menuSetTo.doUpdate = function(args) { self.setBookTimeTo(); };
 	menuSetTo.displayData[0] = this.lcdCenterText("Set end time");
-	menuSetTo.doRight = this.incBookTimeTo;
-	menuSetTo.doLeft = this.decBookTimeTo;
-	menuSetTo.doPress = this.changeToDesc;
+	menuSetTo.doRight = function(args) { self.incBookTimeTo(); };
+	menuSetTo.doLeft = function(args) { self.decBookTimeTo(); };
+	menuSetTo.doPress = function(args) { self.changeToDesc(); };
 	menuSetTo.setDescItem(menuChooseTo);
 	menuChooseTo.setDescItem(menuSetTo);
 
 	/* create the menuitem where you can modify the from-time */
 	var menuSetFrom = new MenuItem(this);
-	menuSetFrom.doUpdate = this.setBookTimeFrom;
+	menuSetFrom.doUpdate = function(args) { self.setBookTimeFrom(); };
 	menuSetFrom.displayData[0] = this.lcdCenterText("Set start time");
-	menuSetFrom.doRight = this.incBookTimeFrom;
-	menuSetFrom.doLeft = this.decBookTimeFrom;
-	menuSetFrom.doPress = this.changeToDesc;
+	menuSetFrom.doRight = function(args) { self.incBookTimeFrom(); };
+	menuSetFrom.doLeft = function(args) { self.decBookTimeFrom(); };
+	menuSetFrom.doPress = function(args) { self.changeToDesc(); };
 	menuSetFrom.setDescItem(menuChooseFrom);
 	menuChooseFrom.setDescItem(menuSetFrom);
 
@@ -281,71 +281,71 @@ Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 
 Display.prototype.doBooking = function()
 {
-	this.parentDisplay.bookResultMenuItem.displayData[0] = this.parentDisplay.lcdCenterText("Booking...");
-	if (this.descItem)
+	this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking...");
+	if (this.currentMenuItem.descItem)
 	{
-		this.parentDisplay.currentMenuItem = this.descItem;
+		this.currentMenuItem = this.currentMenuItem.descItem;
 	}
-	//this.parentDisplay.changeToDesc();
+	//this.changeToDesc();
 
-	var bookFrom = this.parentDisplay.bookFromTime.getTimeShortFormated();
-	var bookTo = this.parentDisplay.bookToTime.getTimeShortFormated();
-	this.parentDisplay.exchangeCalendarBook.book(this.parentDisplay.shortName, bookFrom, bookTo);
+	var bookFrom = this.bookFromTime.getTimeShortFormated();
+	var bookTo = this.bookToTime.getTimeShortFormated();
+	this.exchangeCalendarBook.book(this.shortName, bookFrom, bookTo);
 	
 	//bookFromTime bookToTime
 }
 
 Display.prototype.prepareBookingMenu = function()
 {
-	this.parentDisplay.bookFromTime = new Date();
-	this.parentDisplay.bookToTime = new Date();
+	this.bookFromTime = new Date();
+	this.bookToTime = new Date();
 	//this.bookFromTime.setHours(8);
 	//this.bookToTime.setHours(8);
-	if (this.parentDisplay.bookFromTime.getMinutes() < 30)
+	if (this.bookFromTime.getMinutes() < 30)
 	{
-		this.parentDisplay.bookFromTime.setMinutes(0);
-		this.parentDisplay.bookToTime.setMinutes(30);
+		this.bookFromTime.setMinutes(0);
+		this.bookToTime.setMinutes(30);
 	}
 	else
 	{
-		this.parentDisplay.bookFromTime.setMinutes(30);
-		this.parentDisplay.bookToTime.setHours(this.parentDisplay.bookToTime.getHours()+1);
-		this.parentDisplay.bookToTime.setMinutes(0);
+		this.bookFromTime.setMinutes(30);
+		this.bookToTime.setHours(this.bookToTime.getHours()+1);
+		this.bookToTime.setMinutes(0);
 	}
 
-	this.parentDisplay.currentMenuItem = this.parentDisplay.currentMenuItem.descItem;
+	this.currentMenuItem = this.currentMenuItem.descItem;
 }
 
 Display.prototype.changeToDesc = function()
 {
-	if (this.descItem)
+	if (this.currentMenuItem.descItem)
 	{
-		this.parentDisplay.currentMenuItem = this.descItem;
+		this.currentMenuItem = this.currentMenuItem.descItem;
 	}
 }
 
 Display.prototype.changeToNext = function()
 {
-	if (this.nextItem)
+	if (this.currentMenuItem.nextItem)
 	{
-		this.parentDisplay.currentMenuItem = this.nextItem;
+		this.currentMenuItem = this.currentMenuItem.nextItem;
 	}
 }
 
 Display.prototype.changeToPrev = function()
 {
-	if (this.prevItem)
+	if (this.currentMenuItem.prevItem)
 	{
-		this.parentDisplay.currentMenuItem = this.prevItem;
+		this.currentMenuItem = this.currentMenuItem.prevItem;
 	}
 }
 
 Display.prototype.incBookTimeTo = function()
 {
 	//FIXME: constraints?
-	if (this.parentDisplay.bookToTime.getHours() < 23)
+	if (this.bookToTime.getHours() < 23)
 	{
-		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() + bookingIncrease);
+		this.bookToTime.setMinutes(this.bookToTime.getMinutes() + bookingIncrease);
 	}
 }
 
@@ -353,18 +353,18 @@ Display.prototype.decBookTimeTo = function()
 {
 	//FIXME: constraints?
 	var now = new Date();
-	if (this.parentDisplay.bookToTime.getHours() >= now.getHours())
+	if (this.bookToTime.getHours() >= now.getHours())
 	{
-		this.parentDisplay.bookToTime.setMinutes(this.parentDisplay.bookToTime.getMinutes() - bookingIncrease);
+		this.bookToTime.setMinutes(this.bookToTime.getMinutes() - bookingIncrease);
 	}
 }
 
 Display.prototype.incBookTimeFrom = function()
 {
 	//FIXME: constraints?
-	if (this.parentDisplay.bookFromTime.getHours() < 23)
+	if (this.bookFromTime.getHours() < 23)
 	{
-		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() + bookingIncrease);
+		this.bookFromTime.setMinutes(this.bookFromTime.getMinutes() + bookingIncrease);
 	}
 }
 
@@ -372,58 +372,58 @@ Display.prototype.decBookTimeFrom = function()
 {
 	//FIXME: constraints?
 	var now = new Date();
-	if (this.parentDisplay.bookFromTime.getHours() >= now.getHours())
+	if (this.bookFromTime.getHours() >= now.getHours())
 	{
-		this.parentDisplay.bookFromTime.setMinutes(this.parentDisplay.bookFromTime.getMinutes() - bookingIncrease);
+		this.bookFromTime.setMinutes(this.bookFromTime.getMinutes() - bookingIncrease);
 	}
 }
 
 Display.prototype.setBookTimeFrom = function()
 {
-	this.displayData[1] = "      <"+this.parentDisplay.bookFromTime.getTimeShortFormated()+">       ";
+	this.currentMenuItem.displayData[1] = "      <"+this.bookFromTime.getTimeShortFormated()+">       ";
 }
 
 Display.prototype.setBookTimeTo = function()
 {
-	this.displayData[1] = "      <"+this.parentDisplay.bookToTime.getTimeShortFormated()+">       ";
+	this.currentMenuItem.displayData[1] = "      <"+this.bookToTime.getTimeShortFormated()+">       ";
 }
 
 Display.prototype.chooseBookTimeTo = function()
 {
-	this.displayData[0] = "  "+this.parentDisplay.bookFromTime.getTimeShortFormated()+"  - <"
-								+this.parentDisplay.bookToTime.getTimeShortFormated()+">  ";
+	this.currentMenuItem.displayData[0] = "  "+this.bookFromTime.getTimeShortFormated()+"  - <"
+								+this.bookToTime.getTimeShortFormated()+">  ";
 }
 
 Display.prototype.chooseBookTimeFrom = function()
 {
-	this.displayData[0] = " <"+this.parentDisplay.bookFromTime.getTimeShortFormated()+"> -  "
-								+this.parentDisplay.bookToTime.getTimeShortFormated()+"   ";
+	this.currentMenuItem.displayData[0] = " <"+this.bookFromTime.getTimeShortFormated()+"> -  "
+								+this.bookToTime.getTimeShortFormated()+"   ";
 }
 
 Display.prototype.setBookTime = function()
 {
-	this.displayData[0] = "  "+this.parentDisplay.bookFromTime.getTimeShortFormated()+"  -  "
-								+this.parentDisplay.bookToTime.getTimeShortFormated()+"   ";
+	this.currentMenuItem.displayData[0] = "  "+this.bookFromTime.getTimeShortFormated()+"  -  "
+								+this.bookToTime.getTimeShortFormated()+"   ";
 }
 
 Display.prototype.updateStatusMenuItem = function()
 {
 	var date = new Date();
 	var dateAndTime = "" + date.getTimeShortFormated();
-	this.displayData[1] = "       " + dateAndTime + "        ";
+	this.statusMenuItem.displayData[1] = this.lcdCenterText(dateAndTime);
 }
 
 Display.prototype.updateBookMenuItem = function()
 {
-	if (this.parentDisplay.exchangeCalendarFirstMenuItem && this.parentDisplay.exchangeCalendarLastMenuItem)
+	if (this.exchangeCalendarFirstMenuItem && this.exchangeCalendarLastMenuItem)
 	{
-		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.exchangeCalendarFirstMenuItem);
-		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.exchangeCalendarLastMenuItem);
+		this.statusMenuItem.setNextItem(this.exchangeCalendarFirstMenuItem);
+		this.bookMenuItem.setPrevItem(this.exchangeCalendarLastMenuItem);
 	}
 	else
 	{
-		this.parentDisplay.statusMenuItem.setNextItem(this.parentDisplay.bookMenuItem);
-		this.parentDisplay.bookMenuItem.setPrevItem(this.parentDisplay.statusMenuItem);
+		this.statusMenuItem.setNextItem(this.bookMenuItem);
+		this.bookMenuItem.setPrevItem(this.statusMenuItem);
 	}
 }
 
@@ -464,8 +464,8 @@ Display.prototype.createCalendarMenu = function()
 			menu.displayData[0] = this.lcdCenterText(this.replaceAumlauts(this.exchangeData.meetings[i].subject));
 			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start.replace(":",".") + " - " 
 										+ this.exchangeData.meetings[i].end.replace(":","."));
-			menu.doRight = this.changeToNext;
-			menu.doLeft = this.changeToPrev;
+			menu.doRight = function(args) { self.changeToNext(); };
+			menu.doLeft = function(args) { self.changeToPrev(); };
 			
 			if (i == 0)
 			{
