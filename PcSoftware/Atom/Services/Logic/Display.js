@@ -448,6 +448,9 @@ Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 /* this function parses calendar data from exchange-script and creates a menu */
 Display.prototype.createCalendarMenu = function()
 {
+	/* This is used for function declarations like the callbacks below */
+	var self = this;
+
 	this.exchangeCalendarLastMenuItem = null;
 	this.exchangeCalendarFirstMenuItem = null;
 	
