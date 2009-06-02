@@ -511,14 +511,14 @@ Display.prototype.createCalendarMenu = function()
 
 Display.prototype.replaceAumlauts = function(intext)
 {
-	intext = intext.replace(/Å/, "A");
-	intext = intext.replace(/å/, "a");
-	intext = intext.replace(/Ä/, "A");
+	intext = intext.replace(/Å/, String.fromCharCode(1));
+	intext = intext.replace(/å/, String.fromCharCode(0));
+	intext = intext.replace(/Ä/, String.fromCharCode(2));
 	intext = intext.replace(/ä/, String.fromCharCode(225));
-	intext = intext.replace(/Ö/, "O");
+	intext = intext.replace(/Ö/, String.fromCharCode(3));
 	intext = intext.replace(/ö/, String.fromCharCode(239));
-	intext = intext.replace(/:/, ";");
-	intext = intext.replace(/,/, ".");
+	//intext = intext.replace(/:/, ";");
+	//intext = intext.replace(/,/, ".");
 	return intext;
 }
 
