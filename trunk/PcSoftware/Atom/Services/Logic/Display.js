@@ -101,6 +101,10 @@ Display.prototype.initialize = function(initialArguments)
 		return;
 	}
 	this.shortName = this.myInitialArguments["ShortName"];
+
+	/* Start interval timer for sending timestamp to network. Arguments are the callback function and time in milliseconds 
+	used to make sure an eth-node gets its init packet */
+	this.myInterval = new Interval(function() { self.sendTimeStamp() }, 10000);
 	
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
@@ -636,6 +640,13 @@ Display.prototype.lcdOnline = function()
 Display.prototype.setLED = function(red, green, blue)
 {
 	
+}
+
+Display.prototype.sendTimeStamp = function()
+{
+	var canMessage = new CanNMTMessage("nmt", "Time");
+	canMessage.send();
+
 }
 
 Display.prototype.timerUpdate = function()
