@@ -31,6 +31,7 @@ Display.prototype.myLCDService = null;
 Display.prototype.myRotaryService = null;
 Display.prototype.mySoftPwmService = null;
 Display.prototype.myInterval = null;
+Display.prototype.myIntervalAlways = null;
 
 /*  */
 Display.prototype.exchangeCalendar = null;
@@ -104,7 +105,8 @@ Display.prototype.initialize = function(initialArguments)
 
 	/* Start interval timer for sending timestamp to network. Arguments are the callback function and time in milliseconds 
 	used to make sure an eth-node gets its init packet */
-	this.myInterval = new Interval(function() { self.sendTimeStamp() }, 10000);
+	this.myIntervalAlways = new Interval(function() { self.sendTimeStamp() }, 10000);
+	this.myIntervalAlways.start();
 	
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
@@ -646,7 +648,6 @@ Display.prototype.sendTimeStamp = function()
 {
 	var canMessage = new CanNMTMessage("nmt", "Time");
 	canMessage.send();
-
 }
 
 Display.prototype.timerUpdate = function()
