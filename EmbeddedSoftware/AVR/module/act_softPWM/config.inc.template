@@ -21,7 +21,4 @@ PIN_2 = EXP_H
 #the maximum of supported channels, must be set to x+1 when the highest PIN is PIN_x
 NUMBEROFCHANNELS = 8
 
-#Uncomment to use the pcint driver
-#act_softPWM_DUMMY_PCINT=<PCINT>
-
 ## End section act_softPWM -- Do not edit this line

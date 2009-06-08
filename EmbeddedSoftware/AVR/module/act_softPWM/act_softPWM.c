@@ -254,7 +254,9 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (rxMsg->Length > 0)
 			{
 				act_softPWM_ReportInterval = rxMsg->Data[0];
+#ifdef act_softPWM_USEEEPROM
 				eeprom_write_byte_crc(EEDATA.ReportInterval, act_softPWM_ReportInterval , WITH_CRC);
+#endif
 				Timer_SetTimeout(act_softPWM_SEND_TIMER, act_softPWM_ReportInterval*1000 , TimerTypeFreeRunning, 0);
 			}
 
