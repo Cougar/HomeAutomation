@@ -48,7 +48,7 @@ softPWM.prototype.setPWMValue = function(pwmvalue, sensorId)
 	canMessage.setData("Value", pwmvalue);
 	sendMessage(canMessage);
 }
-softPWM.prototype.configure = function(pwmPeriod, pwmDefaultValue, DefaultState, StartUpState)
+softPWM.prototype.configure = function(pwmPeriod, pwmResolution)
 {
 	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "CONFIG");
 	canMessage.setData("Period", pwmPeriod);
