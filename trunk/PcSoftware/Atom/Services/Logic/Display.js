@@ -639,9 +639,24 @@ Display.prototype.lcdOnline = function()
 	}
 }
 
+Display.prototype.setLEDred = function()
+{
+	this.setLED(255, 0, 0);
+}
+
+Display.prototype.setLEDgreen = function()
+{
+	this.setLED(0, 255, 0);
+}
+
 Display.prototype.setLED = function(red, green, blue)
 {
-	
+	if (this.mySoftPwmService.isOnline())
+	{
+		this.mySoftPwmService.setPWMValue(255-(red&0xff), 1);
+		this.mySoftPwmService.setPWMValue(255-(green&0xff), 2);
+		this.mySoftPwmService.setPWMValue(255-(blue&0xff), 0);
+	}
 }
 
 Display.prototype.sendTimeStamp = function()
@@ -655,12 +670,14 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
+//this.setLEDgreen();
 		this.screenSaverCnt++;
 		this.mainScreenCnt++;
 		this.exchangeUpdateCnt++;
 
 		if (this.mainScreenCnt > mainScreenTimeout/5)
 		{
+//this.setLEDred();
 			/* Go to main screen (time) */
 			this.currentMenuItem = this.statusMenuItem;
 
@@ -682,7 +699,7 @@ Display.prototype.timerUpdate = function()
 			this.updateDisplay();
 			
 			/* do an exchange lookup */
-			this.exchangeCalendar.lookup(this.shortName);
+		//	this.exchangeCalendar.lookup(this.shortName);
 			
 			this.exchangeUpdateCnt = 0;
 		}
