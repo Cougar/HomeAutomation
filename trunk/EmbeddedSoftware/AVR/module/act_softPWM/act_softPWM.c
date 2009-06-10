@@ -226,22 +226,16 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_PWM:
-			if (rxMsg->Length >= 3)
+			if (rxMsg->Length == 2)
 			{ 
-				if ((((uint16_t)rxMsg->Data[1])<8) + rxMsg->Data[2] > maxTimer)
-				{
-					rxMsg->Data[2] = maxTimer & 0x00ff;
-					rxMsg->Data[1] = (maxTimer>>8) & 0x00ff;
-				}
-				pwmValue[rxMsg->Data[0]] = (((uint16_t)rxMsg->Data[1])<<8) + rxMsg->Data[2];
+				pwmValue[rxMsg->Data[0]] = ((uint32_t)rxMsg->Data[1]*maxTimer)/255;
 				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
-				rxMsg->Length = 3;
+				rxMsg->Length = 2;
 				StdCan_Put(rxMsg);
-			} else if (rxMsg->Length >= 1) {
-				rxMsg->Data[2] = pwmValue[rxMsg->Data[0]] & 0x00ff;
-				rxMsg->Data[1] = (pwmValue[rxMsg->Data[0]]>>8) & 0x00ff;
+			} else if (rxMsg->Length == 1) {
+				rxMsg->Data[1] = (pwmValue[rxMsg->Data[0]]*255/maxTimer);
 				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
-				rxMsg->Length = 3;
+				rxMsg->Length = 2;
 				StdCan_Put(rxMsg);
 			}
 			break;
