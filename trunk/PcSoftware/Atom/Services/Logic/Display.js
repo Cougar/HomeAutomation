@@ -447,6 +447,8 @@ Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 		{
 			this.exchangeData = data;
 			this.createCalendarMenu();
+			
+			this.setLEDtoCalendar();
 		}
 	}
 }
@@ -460,14 +462,11 @@ Display.prototype.createCalendarMenu = function()
 	this.exchangeCalendarLastMenuItem = null;
 	this.exchangeCalendarFirstMenuItem = null;
 	
-//log("createCalendar \n");
 	if (this.exchangeData)
 	{
-//log("have data \n");
 		var lastMenuItem;
 		for (var i = 0; i < this.exchangeData.meetings.length; i++)
 		{
-//log("looping \n");
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
 			menu.displayData[0] = this.lcdCenterText(this.replaceAumlauts(this.exchangeData.meetings[i].subject));
@@ -637,6 +636,35 @@ Display.prototype.lcdOnline = function()
 		
 		this.timerUpdate();
 	}
+}
+
+Display.prototype.setLEDtoCalendar = function()
+{
+	if (this.exchangeData)
+	{
+		var now = new Date();
+		//for (var i = 0; i < this.exchangeData.meetings.length; i++)
+		if (this.exchangeData.meetings.length > 0)
+		{
+			/* check if current time is before start of first meeting 
+			first meeting is always the next meeting or current meeting */
+			var startDate = new Date(this.exchangeData.meetings[0].start);
+			if (now < startDate)
+			{
+				this.setLEDgreen();
+			}
+			else
+			{
+				this.setLEDred();
+			}
+
+			//var endDate = new Date(this.exchangeData.meetings[i].end);
+			//now.getHours()
+			//this.exchangeData.meetings[i].start
+			//this.exchangeData.meetings[i].end
+			//var startTimeSplit = this.exchangeData.meetings[i].start.split(":");
+			//var endTimeSplit = this.exchangeData.meetings[i].end.split(":");
+		}
 }
 
 Display.prototype.setLEDred = function()
