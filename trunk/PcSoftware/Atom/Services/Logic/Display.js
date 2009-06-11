@@ -55,6 +55,9 @@ Display.prototype.screenSaverCnt = null;
 /* counter for going to main screen */
 Display.prototype.mainScreenCnt = null;
 
+/* LED status */
+Display.prototype.LEDstatus = null;
+
 const exchangeUpdateTimeout = 50;
 const mainScreenTimeout = 40;
 const screenSaverTimeout = 120;
@@ -111,6 +114,8 @@ Display.prototype.initialize = function(initialArguments)
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
 	this.exchangeUpdateCnt = exchangeUpdateTimeout-10;
+	
+	LEDstatus = "none";
 	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myLCDService = ServiceManager.getService("Can", "HD44789", this.myInitialArguments["HD44789"]["Id"]);
@@ -446,8 +451,6 @@ Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 		{
 			this.exchangeData = data;
 			this.createCalendarMenu();
-			
-			this.setLEDtoCalendar();
 		}
 	}
 }
@@ -469,8 +472,8 @@ Display.prototype.createCalendarMenu = function()
 			/* create the menuitem for a calendar meeting */
 			var menu = new MenuItem(this);
 			menu.displayData[0] = this.lcdCenterText(this.replaceAumlauts(this.exchangeData.meetings[i].subject));
-			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start.replace(":",".") + " - " 
-										+ this.exchangeData.meetings[i].end.replace(":","."));
+			menu.displayData[1] = this.lcdCenterText(this.exchangeData.meetings[i].start + " - " 
+										+ this.exchangeData.meetings[i].end);
 			menu.doRight = function(args) { self.changeToNext(); };
 			menu.doLeft = function(args) { self.changeToPrev(); };
 			
@@ -650,16 +653,28 @@ Display.prototype.setLEDtoCalendar = function()
 			var startTimeSplit = this.exchangeData.meetings[0].start.split(":");
 			if (now.getHours() < startTimeSplit[0] || now.getHours() == startTimeSplit[0] && now.getMinutes() < startTimeSplit[1])
 			{
-				this.setLEDgreen();
+				if (LEDstatus != "green")
+				{
+					LEDstatus = "green";
+					this.setLEDgreen();
+				}
 			}
 			else
 			{
-				this.setLEDred();
+				if (LEDstatus != "red")
+				{
+					LEDstatus = "red";
+					this.setLEDred();
+				}
 			}
 		}
 		else
 		{
-			this.setLEDgreen();
+			if (LEDstatus != "green")
+			{
+				LEDstatus = "green";
+				this.setLEDgreen();
+			}
 		}
 	}
 }
@@ -727,6 +742,8 @@ Display.prototype.timerUpdate = function()
 			
 			this.exchangeUpdateCnt = 0;
 		}
+
+		this.setLEDtoCalendar();
 	}
 }
 
