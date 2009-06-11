@@ -435,7 +435,6 @@ Display.prototype.updateBookMenuItem = function()
 
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 {
-//log("callback: "+shortname+" \n");
 	if (shortname == this.shortName)
 	{
 		//FIXME check if data contains error tag and error message, print to log and keep previous data?
@@ -637,7 +636,6 @@ Display.prototype.lcdOnline = function()
 		this.timerUpdate();
 	}
 }
-
 Display.prototype.setLEDtoCalendar = function()
 {
 	if (this.exchangeData)
@@ -648,8 +646,9 @@ Display.prototype.setLEDtoCalendar = function()
 		{
 			/* check if current time is before start of first meeting 
 			first meeting is always the next meeting or current meeting */
-			var startDate = new Date(this.exchangeData.meetings[0].start);
-			if (now < startDate)
+			//var startDate = new Date.parse(this.exchangeData.meetings[0].start);
+			var startTimeSplit = this.exchangeData.meetings[0].start.split(":");
+			if (now.getHours() < startTimeSplit[0] || now.getHours() == startTimeSplit[0] && now.getMinutes() < startTimeSplit[1])
 			{
 				this.setLEDgreen();
 			}
@@ -657,18 +656,12 @@ Display.prototype.setLEDtoCalendar = function()
 			{
 				this.setLEDred();
 			}
-
-			//var endDate = new Date(this.exchangeData.meetings[i].end);
-			//now.getHours()
-			//this.exchangeData.meetings[i].start
-			//this.exchangeData.meetings[i].end
-			//var startTimeSplit = this.exchangeData.meetings[i].start.split(":");
-			//var endTimeSplit = this.exchangeData.meetings[i].end.split(":");
 		}
 		else
 		{
 			this.setLEDgreen();
 		}
+	}
 }
 
 Display.prototype.setLEDred = function()
@@ -683,6 +676,7 @@ Display.prototype.setLEDgreen = function()
 
 Display.prototype.setLED = function(red, green, blue)
 {
+log("trying to set leds to red " +red+" green "+green+" blue "+blue+"\n");
 	if (this.mySoftPwmService.isOnline())
 	{
 		this.mySoftPwmService.setPWMValue(255-(red&0xff), 1);
@@ -702,14 +696,12 @@ Display.prototype.timerUpdate = function()
 	/* If LCD service is not online do nothing */
 	if (this.myLCDService.isOnline())
 	{
-//this.setLEDgreen();
 		this.screenSaverCnt++;
 		this.mainScreenCnt++;
 		this.exchangeUpdateCnt++;
 
 		if (this.mainScreenCnt > mainScreenTimeout/5)
 		{
-//this.setLEDred();
 			/* Go to main screen (time) */
 			this.currentMenuItem = this.statusMenuItem;
 
@@ -731,18 +723,10 @@ Display.prototype.timerUpdate = function()
 			this.updateDisplay();
 			
 			/* do an exchange lookup */
-		//	this.exchangeCalendar.lookup(this.shortName);
+			this.exchangeCalendar.lookup(this.shortName);
 			
 			this.exchangeUpdateCnt = 0;
 		}
-		
 	}
-	
-	/*if (this.mySoftPwmService.isOnline())
-	{
-		this.mySoftPwmService.setPWMValue(0, 0);
-		this.mySoftPwmService.setPWMValue(11, 1);
-		this.mySoftPwmService.setPWMValue(11, 2);
-	}*/
 }
 
