@@ -665,6 +665,10 @@ Display.prototype.setLEDtoCalendar = function()
 			//var startTimeSplit = this.exchangeData.meetings[i].start.split(":");
 			//var endTimeSplit = this.exchangeData.meetings[i].end.split(":");
 		}
+		else
+		{
+			this.setLEDgreen();
+		}
 }
 
 Display.prototype.setLEDred = function()
