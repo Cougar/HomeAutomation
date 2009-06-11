@@ -115,7 +115,7 @@ Display.prototype.initialize = function(initialArguments)
 	this.mainScreenCnt = 0;
 	this.exchangeUpdateCnt = exchangeUpdateTimeout-10;
 	
-	LEDstatus = "none";
+	this.LEDstatus = "none";
 	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myLCDService = ServiceManager.getService("Can", "HD44789", this.myInitialArguments["HD44789"]["Id"]);
@@ -653,26 +653,26 @@ Display.prototype.setLEDtoCalendar = function()
 			var startTimeSplit = this.exchangeData.meetings[0].start.split(":");
 			if (now.getHours() < startTimeSplit[0] || now.getHours() == startTimeSplit[0] && now.getMinutes() < startTimeSplit[1])
 			{
-				if (LEDstatus != "green")
+				if (this.LEDstatus != "green")
 				{
-					LEDstatus = "green";
+					this.LEDstatus = "green";
 					this.setLEDgreen();
 				}
 			}
 			else
 			{
-				if (LEDstatus != "red")
+				if (this.LEDstatus != "red")
 				{
-					LEDstatus = "red";
+					this.LEDstatus = "red";
 					this.setLEDred();
 				}
 			}
 		}
 		else
 		{
-			if (LEDstatus != "green")
+			if (this.LEDstatus != "green")
 			{
-				LEDstatus = "green";
+				this.LEDstatus = "green";
 				this.setLEDgreen();
 			}
 		}
