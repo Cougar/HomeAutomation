@@ -298,6 +298,96 @@
       </variables>
     </command>
     
+    <command id="138" name="LCD_New_Image" type="specific" module="KS0108" description="Store a new image in eeprom">
+      <variables>
+	<variable name="image_id" type="uint" start_bit="0" bit_length="8" unit="" description="the new image id"/>
+        <variable name="size_X" type="uint" start_bit="8" bit_length="8" unit="" description="Size in x direction"/>
+        <variable name="size_Y" type="uint" start_bit="16" bit_length="8" unit="" description="Size in y direction"/>
+      </variables>
+    </command>
+        <command id="139" name="LCD_Ack" type="specific" module="KS0108" description="Data correctly received">
+      <variables>
+	<variable name="packet_id" type="uint" start_bit="0" bit_length="8" unit="" description="Id of the packet that is acknoleged"/>
+      </variables>
+    </command>
+     
+        <command id="140" name="LCD_Error" type="specific" module="KS0108" description="Data error"/>
+    
+        <command id="141" name="LCD_Image_Data" type="specific" module="KS0108" description="Data"/>
+        <command id="141" name="LCD_Image_Data_7" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Data6" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_6" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_5" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_4" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_3" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_2" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_1" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="142" name="LCD_Data_id_Error" type="specific" module="KS0108" description="Wrong data id received">
+      <variables>
+	<variable name="id" type="uint" start_bit="0" bit_length="8" unit="" description="The expected id"/>
+      </variables>
+    </command>
+    
+        <command id="143" name="LCD_Data_Done" type="specific" module="KS0108" description="All data sent">
+      <variables>
+      </variables>
+    </command>
+    
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
      <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
