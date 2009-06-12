@@ -107,8 +107,8 @@ Display.prototype.initialize = function(initialArguments)
 	this.shortName = this.myInitialArguments["ShortName"];
 
 	/* Start interval timer for sending timestamp to network. Arguments are the callback function and time in milliseconds 
-	used to make sure an eth-node gets its init packet */
-	this.myIntervalAlways = new Interval(function() { self.sendTimeStamp() }, 10000);
+	used to make sure an eth-node gets its init packet (600s) */
+	this.myIntervalAlways = new Interval(function() { self.sendTimeStamp() }, 600000);
 	this.myIntervalAlways.start();
 	
 	this.screenSaverCnt = 0;
@@ -269,12 +269,12 @@ Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 			if (data.error)
 			{
 				this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking failed");
-				log("Display: got this error from exchange server: " + data.error + "\n");
+				log("Display:"+this.myId+"> Got this error from exchange server: " + data.error + "\n");
 			}
 			else
 			{
 				this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking succeeded");
-				log("Display: Successfully booked room\n");
+				log("Display:"+this.myId+"> Successfully booked room\n");
 				
 				/* do an exchange lookup */
 				this.exchangeCalendar.lookup(this.shortName);
@@ -284,7 +284,7 @@ Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 		else if (data.error)
 		{
 			this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking failed");
-			log("Display: got this error from exchange.php: " + data.error + "\n");
+			log("Display:"+this.myId+"> Got this error from exchange.php: " + data.error + "\n");
 		}
 		this.updateDisplay();
 	}
@@ -445,7 +445,7 @@ Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 		//FIXME check if data contains error tag and error message, print to log and keep previous data?
 		if (data.error)
 		{
-			log("Display: got this error from exchange.php: " + data.error + "\n");
+			log("Display:"+this.myId+"> got this error from exchange.php: " + data.error + "\n");
 		}
 		else
 		{
@@ -691,7 +691,7 @@ Display.prototype.setLEDgreen = function()
 
 Display.prototype.setLED = function(red, green, blue)
 {
-log("trying to set leds to red " +red+" green "+green+" blue "+blue+"\n");
+log("Display:"+this.myId+"> Trying to set leds to red " +red+" green "+green+" blue "+blue+"\n");
 	if (this.mySoftPwmService.isOnline())
 	{
 		this.mySoftPwmService.setPWMValue(255-(red&0xff), 1);
