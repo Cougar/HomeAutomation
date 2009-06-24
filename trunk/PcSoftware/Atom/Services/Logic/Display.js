@@ -651,7 +651,10 @@ Display.prototype.setLEDtoCalendar = function()
 			first meeting is always the next meeting or current meeting */
 			//var startDate = new Date.parse(this.exchangeData.meetings[0].start);
 			var startTimeSplit = this.exchangeData.meetings[0].start.split(":");
-			if (now.getHours() < startTimeSplit[0] || now.getHours() == startTimeSplit[0] && now.getMinutes() < startTimeSplit[1])
+			var endTimeSplit = this.exchangeData.meetings[0].end.split(":");
+			if (now.getHours() < startTimeSplit[0] || 
+			now.getHours() > endTimeSplit[0] ||
+			now.getHours() == startTimeSplit[0] && now.getMinutes() < startTimeSplit[1])
 			{
 				if (this.LEDstatus != "green")
 				{
