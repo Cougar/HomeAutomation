@@ -306,6 +306,8 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t steps = rxMsg->Data[2];
 				
+				fadeSpeedCnt = 0;
+				fadeSpeed = 0;
 				if (speed == 0) {
 					/* do nothing */
 				} else {
@@ -468,7 +470,7 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 			}
 		break;
-}
+		}
 	}
 }
 
