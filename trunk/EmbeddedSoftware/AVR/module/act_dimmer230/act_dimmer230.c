@@ -324,28 +324,26 @@ void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg)
 					else if (diffToMin >= steps)
 					{
 						/* close to max */
-						fadeTarget = dimmerValue - steps - diffToMax;
+						fadeTarget = dimmerValue - steps - steps + diffToMax;
 						demoHighValue = ACT_DIMMMER230_MAX_DIM;
 					}
 					else if (diffToMax >= steps)
 					{
 						/* close to min */
 						fadeTarget = ACT_DIMMMER230_MIN_DIM;
-						demoHighValue = dimmerValue + steps + diffToMin;
+						demoHighValue = dimmerValue + steps + steps - diffToMin;
 					}
 					demoState = ACT_DIMMMER230_DEMO_STATE_DECREASE;
 				
-					if (fadeTarget != dimmerValue) {
-						if ((speed&0x80) == 0x80) {
-							fadeSpeed = (speed&0x7f)+1;
-							fadeSpeedFrac = 1;
-						} else {
-							fadeSpeed = 1;
-							fadeSpeedFrac = 0x80-(speed&0x7f);
-						}
-						if (fadeTarget < dimmerValue) {
-							fadeSpeed = -fadeSpeed;
-						}
+					if ((speed&0x80) == 0x80) {
+						fadeSpeed = (speed&0x7f)+1;
+						fadeSpeedFrac = 1;
+					} else {
+						fadeSpeed = 1;
+						fadeSpeedFrac = 0x80-(speed&0x7f);
+					}
+					if (fadeTarget <= dimmerValue) {
+						fadeSpeed = -fadeSpeed;
 					}
 				}
 			}
