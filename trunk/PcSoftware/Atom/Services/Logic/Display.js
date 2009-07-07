@@ -41,6 +41,7 @@ Display.prototype.exchangeCalendarLastMenuItem = null;
 Display.prototype.statusMenuItem = null;
 Display.prototype.bookMenuItem = null;
 Display.prototype.bookResultMenuItem = null;
+Display.prototype.screenSaverMenuItem = null;
 
 
 /* The currently displayed menuitem */
@@ -152,7 +153,16 @@ Display.prototype.initialize = function(initialArguments)
 	this.statusMenuItem.displayData[0] = this.lcdCenterText(this.niceName);
 	this.statusMenuItem.doUpdate = function(args) { self.updateStatusMenuItem(); };
 	this.currentMenuItem = this.statusMenuItem;
-	
+
+	/* create the screensaver menu item */
+	this.screenSaverMenuItem = new MenuItem(this);
+	this.screenSaverMenuItem.displayData[0] = this.lcdCenterText("");
+	this.screenSaverMenuItem.displayData[1] = this.lcdCenterText("");
+	this.screenSaverMenuItem.doRight = function(args) { self.changeToNext(); };
+	this.screenSaverMenuItem.doLeft = function(args) { self.changeToPrev(); };
+	this.screenSaverMenuItem.setNextItem(this.statusMenuItem);
+	this.screenSaverMenuItem.setPrevItem(this.statusMenuItem);
+
 	/* create the menuitem where you can choose to enter the booking sub-menu */
 	this.bookMenuItem = new MenuItem(this);
 	this.bookMenuItem.displayData[0] = this.lcdCenterText("Book room");
@@ -531,6 +541,7 @@ Display.prototype.replaceAumlauts = function(intext)
 
 Display.prototype.softPwmOnline = function()
 {
+	this.LEDstatus = "none";
 }
 
 Display.prototype.rotaryOnline = function()
@@ -718,7 +729,7 @@ Display.prototype.timerUpdate = function()
 		this.mainScreenCnt++;
 		this.exchangeUpdateCnt++;
 
-		if (this.mainScreenCnt > mainScreenTimeout/5)
+		if (this.mainScreenCnt > mainScreenTimeout/5 && this.currentMenuItem != this.screenSaverMenuItem)
 		{
 			/* Go to main screen (time) */
 			this.currentMenuItem = this.statusMenuItem;
@@ -731,6 +742,11 @@ Display.prototype.timerUpdate = function()
 		
 		if (this.screenSaverCnt > screenSaverTimeout/5)
 		{
+			/* Go to screensaver menu */
+			this.currentMenuItem = this.screenSaverMenuItem;
+
+			/* update the info on display */
+			this.updateDisplay();
 			
 			this.screenSaverCnt = 0;
 		}
