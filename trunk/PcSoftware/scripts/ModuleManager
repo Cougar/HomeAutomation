@@ -158,32 +158,34 @@ def updateConfigFile():
 	for moduleName, moduleSection in moduleSections.iteritems():
 		c = 0
 		for line in moduleSection:
-			if line.find("<ID>") != -1:
-				line = line.replace("<ID>", getFreeModuleId(moduleName))
-			elif line.find("<TIMER>") != -1:
-				line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
-				timers += 1
-			elif line.find("<PCINT>") != -1:
-				line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
-				pcints += 1
+			if line[0] != '#':
+				if line.find("<ID>") != -1:
+					line = line.replace("<ID>", getFreeModuleId(moduleName))
+				elif line.find("<TIMER>") != -1:
+					line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
+					timers += 1
+				elif line.find("<PCINT>") != -1:
+					line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
+					pcints += 1
 	
 			moduleSection[c] = line;
 			c += 1
 	
 	c = 0
 	for line in applicationSection:
-		if line.find("<TIMER>") != -1:
-			line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
-			timers += 1
-		elif line.find("TIMER_NUM_TIMERS=") != -1:
-			line = "TIMER_NUM_TIMERS=" + hex(timers)
-		elif line.find("NUMBER_OF_MODULES=") != -1:
-			line = "NUMBER_OF_MODULES=" + hex(len(modules))
-		elif line.find("<PCINT>") != -1:
-			line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
-			pcints += 1
-		elif line.find("PCINT_NUM_PCINTS=") != -1:
-			line = "PCINT_NUM_PCINTS=" + hex(pcints)
+		if line[0] != '#':
+			if line.find("<TIMER>") != -1:
+				line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
+				timers += 1
+			elif line.find("TIMER_NUM_TIMERS=") != -1:
+				line = "TIMER_NUM_TIMERS=" + hex(timers)
+			elif line.find("NUMBER_OF_MODULES=") != -1:
+				line = "NUMBER_OF_MODULES=" + hex(len(modules))
+			elif line.find("<PCINT>") != -1:
+				line = line[:line.find("=")+1] + hex(pcints) + " /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */"
+				pcints += 1
+			elif line.find("PCINT_NUM_PCINTS=") != -1:
+				line = "PCINT_NUM_PCINTS=" + hex(pcints)
 		applicationSection[c] = line;
 		c += 1
 		
