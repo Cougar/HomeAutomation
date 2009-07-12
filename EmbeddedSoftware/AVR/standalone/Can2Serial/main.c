@@ -251,7 +251,7 @@ int main(void) {
 	timeMsg.DataLength = 8;
 #else
 	/* Jag orkar inte fixa in datan i paketen, sätter längd till 0 sålänge */
-	timeMsg.Length = 0;
+	timeMsg.Length = 4;
 #endif
 	timeMsg.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_TIME << CAN_SHIFT_NMT_TYPE);
 	//timeMsg.Id = 0; //Same thing, and lib's can.h is not updated.
@@ -319,6 +319,11 @@ int main(void) {
 			Can_Send(&timeMsg);
 #else
 			/* Jag orkar inte fixa in datan i paketen, sätter längd till 0 sålänge */
+            unixtime++;
+            timeMsg.Data[0] =  unixtime     & 0xFF;
+            timeMsg.Data[1] = (unixtime>> 8)& 0xFF;
+            timeMsg.Data[2] = (unixtime>>16)& 0xFF;
+            timeMsg.Data[3] = (unixtime>>24)& 0xFF;
 			StdCan_Put(&timeMsg);
 #endif
 		}

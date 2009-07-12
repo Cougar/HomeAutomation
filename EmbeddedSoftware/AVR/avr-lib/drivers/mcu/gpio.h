@@ -306,7 +306,7 @@
 #define DDR_Essential_4		DDRD
 #define NR_Essential_4		PD5
 
-#define Essential_5		&PORTD,&PINd,&DDRD,PD6,22
+#define Essential_5		&PORTD,&PIND,&DDRD,PD6,22
 #define Essential_5_PCINT_vect	PCINT2_vect
 #define PORT_Essential_5	PORTD
 #define PIN_Essential_5		PIND

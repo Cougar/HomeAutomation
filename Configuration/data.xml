@@ -7,6 +7,7 @@
     <class id="13" name="sns" description="Sensor nmt_messages"/>
     <class id="14" name="def" description="Default, not to be used"/>
     <class id="15" name="tst" description="Testing stuff"/>
+    <class id="10" name="chn" description="Control channel based"/>
   </classes>
   <commands>
     <command id="0" name="List" type="global" module="" description="Message that module send to tell the world what it is">
@@ -477,6 +478,7 @@
     <module id="19" name="SlowPWM" class="act"/>
     <module id="20" name="power" class="sns"/>
     <module id="21" name="softPWM" class="act"/>
+    <module id="30" name="ChnMaster" class="chn"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

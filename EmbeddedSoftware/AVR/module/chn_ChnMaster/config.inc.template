@@ -1,0 +1,13 @@
+## Section chn_ChnMaster -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#chn_ChnMaster_USEEEPROM=1
+
+CHN_LOADED=1
+
+chn_ChnMaster_ID=<ID>
+
+#Maximum number of listeners in this module.
+chn_ChnMaster_MAX_LISTENERS=4
+
+## End section chn_ChnMaster -- Do not edit this line
