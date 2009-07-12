@@ -1,5 +1,8 @@
-
 #include "sns_ds18x20.h"
+
+#ifdef CHN_LOADED
+#include "../chn_ChnMaster/chn_ChnMaster.h"
+#endif
 
 void ConvertTemperature(void);
 void ConvertTemperature_callback(uint8_t timer);
@@ -47,6 +50,10 @@ void ReadTemperature(void)
 
 		txMsg.Data[1] = (uint8_t)(temp >> 8);
 		txMsg.Data[2] = (uint8_t)(temp & 0xff);
+
+#ifdef CHN_LOADED
+        chn_ChnMaster_UpdateChannel( sns_ds18x20_CHN_CHANNEL, (temp<<2)+25600 );
+#endif
 	}
 	
 	StdCan_Put(&txMsg);
