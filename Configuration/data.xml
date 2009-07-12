@@ -136,24 +136,6 @@
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
-    <command id="129" name="Testerdata" type="specific" module="Debug" description="All data from tester rig">
-     <variables>
-        <variable name="Voltage" type="float" start_bit="0" bit_length="16" unit="Volt" description=""/>
-        <variable name="Current" type="float" start_bit="16" bit_length="16" unit="Ampere" description=""/>
-        <variable name="ConnStatus" type="enum" start_bit="32" bit_length="8" unit="" description="">
-          <value id="1" name="Connected"/>
-          <value id="0" name="Disconnected"/>
-        </variable>
-        <variable name="TestStatus" type="enum" start_bit="40" bit_length="8" unit="" description="">
-          <value id="255" name="Voltage failed"/>
-          <value id="254" name="Current failed"/>
-          <value id="3" name="Enabled"/>
-          <value id="2" name="Qual2"/>
-          <value id="1" name="Qual1"/>
-          <value id="0" name="Idle"/>
-        </variable>
-     </variables>
-    </command>
     <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
     <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
       <variables>
