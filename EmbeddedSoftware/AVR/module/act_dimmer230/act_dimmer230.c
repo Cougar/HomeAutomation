@@ -2,6 +2,13 @@
 #include "act_dimmer230.h"
 #include "act_dimmer230_eeprom.h"
 
+#ifdef CHN_LOADED
+#include "../chn_ChnMaster/chn_ChnMaster.h"
+#endif
+
+#ifdef CHN_LOADED
+void act_dimmer230_chn_update( uint16_t channel_id, uint16_t value );
+#endif
 
 int8_t fadeSpeed = 0;
 uint8_t fadeSpeedFrac = 0;
@@ -69,6 +76,12 @@ ISR (TIMER1_COMPA_vect)
 	TIMSK1=0;							//disable timer interrupt
 	state = ACT_DIMMMER230_STATE_IDLE;
 }
+
+#ifdef CHN_LOADED
+void act_dimmer230_chn_update( uint16_t channel_id, uint16_t value ) {
+    fadeTarget = dimmerValue = value>>8;
+}
+#endif
 
 /*	Interrupted at a pin change on zero-cross pin 
 	The zero-cross pin will go high just before the real zero-cross and
@@ -238,7 +251,7 @@ void act_dimmer230_Init(void)
 	  eeprom_write_byte_crc(EEDATA.eeDimmerValue, 0x00, WITHOUT_CRC);
 	  EEDATA_UPDATE_CRC;
 	}
-#endif  
+#endif
 
 	/* set dimmer port to output 0 */
 	gpio_clr_pin(act_dimmer230_CHAN1_IO);
@@ -251,6 +264,10 @@ void act_dimmer230_Init(void)
 	TCCR1A=0;
 	
 	TCCR1B=(1<<CS11);					/* enable timer, set to prescaler 8, must be changed if cpu freq is changed */
+
+#ifdef CHN_LOADED
+    chn_ChnMaster_RegisterListener( act_dimmer230_CHN_CHANNEL, act_dimmer230_chn_update );
+#endif
 
 	/* setup interrupt on zerocross, pcint */
 	//act_dimmer230_ZC_PCMSK=(1<<(act_dimmer230_ZC_PCINT_BIT));
@@ -494,3 +511,4 @@ void act_dimmer230_List(uint8_t ModuleSequenceNumber)
 	
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 }
+
