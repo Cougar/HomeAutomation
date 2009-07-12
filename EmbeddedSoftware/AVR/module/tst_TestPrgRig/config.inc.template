@@ -1,0 +1,25 @@
+## Section tst_TestPrgRig -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#tst_TestPrgRig_USEEEPROM=1
+
+tst_TestPrgRig_ID=<ID>
+#tst_TestPrgRig_DUMMY=1
+tst_TestPrgRig_REPORT_TIMER=<TIMER>
+
+tst_TestPrgRig_ReportInterval=500
+
+#Uncomment to use the pcint driver
+#tst_TestPrgRig_DUMMY_PCINT=<PCINT>
+
+tst_TestPrgRig_5VFEEDBACKAD=4
+tst_TestPrgRig_CURRFEEDBACKAD=5
+ADCHAN6=1
+ADCHAN5=1
+
+tst_TestPrgRig_CONNPIN=EXP_N
+tst_TestPrgRig_ENABLEPIN=EXP_E
+
+CAN_PRINTF=1
+
+## End section tst_TestPrgRig -- Do not edit this line
