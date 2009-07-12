@@ -28,7 +28,12 @@ void chn_lcd_control_drawChannel( uint8_t channel );
 void chn_lcd_control_chn_update( uint16_t channel_id, uint16_t value );
 void chn_lcd_control_timeout( uint8_t timer );
 
+
+#if chn_lcd_control_DRIVER_LOADED == 0
+uint8_t lcd_framebuffer[256]; /* FIXME: a lib or something here... */
+#else
 extern uint8_t lcd_framebuffer[256]; /* FIXME: a lib or something here... */
+#endif
 
 
 
@@ -61,7 +66,7 @@ void chn_lcd_control_timeout( uint8_t timer ) {
 void chn_lcd_control_enable( void ) {
     channel_border_visible = 1;
     channels[ channel_sel ].flags |= CHANNEL_FLAG_REDRAW;
-    Timer_SetTimeout(chn_contr_rot_TIMER, 3000, TimerTypeOneShot, &chn_lcd_control_timeout);
+    Timer_SetTimeout(chn_lcd_control_rot_TIMER, 3000, TimerTypeOneShot, &chn_lcd_control_timeout);
 }
 
 
@@ -247,9 +252,9 @@ void chn_lcd_control_Init(void)
     gpio_set_pullup(ROTARY_BTN);    // Enable pull-up
 
     // Enable IO-pin interrupt
-    Pcint_SetCallbackPin(chn_contr_rot_PCINT_CH1, ROTARY_CH1, &rotary_pcint_callback);
-    Pcint_SetCallbackPin(chn_contr_rot_PCINT_CH2, ROTARY_CH2, &rotary_pcint_callback);
-//    Pcint_SetCallbackPin(chn_contr_rot_PCINT_BTN, ROTARY_BTN, &rotary_pcint_callback);
+    Pcint_SetCallbackPin(chn_lcd_control_rot_PCINT_CH1, ROTARY_CH1, &rotary_pcint_callback);
+    Pcint_SetCallbackPin(chn_lcd_control_rot_PCINT_CH2, ROTARY_CH2, &rotary_pcint_callback);
+//    Pcint_SetCallbackPin(chn_lcd_control_rot_PCINT_BTN, ROTARY_BTN, &rotary_pcint_callback);
 
 }
 
