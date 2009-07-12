@@ -22,4 +22,7 @@ act_dimmer230_ZC_IO=EXP_E
 #io defines for dimmer channel 1
 act_dimmer230_CHAN1_IO=EXP_H
 
+#Only used if chn_ChnMaster is loaded to.
+act_dimmer230_CHN_CHANNEL=0
+
 ## End section act_dimmer230 -- Do not edit this line
