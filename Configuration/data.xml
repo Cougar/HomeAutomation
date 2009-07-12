@@ -93,11 +93,17 @@
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
+    <command id="72" name="Current" type="physical" module="" description="Current data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Ampere" description=""/>
+      </variables>
+    </command>
     <command id="73" name="ElectricPower" type="physical" module="" description="Message with data from a power meter">
       <variables>
         <variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
         <variable name="EnergySum" type="uint" start_bit="16" bit_length="32" unit="W/h" description=""/>
-	<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
+		<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
       </variables>
     </command>
     <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
