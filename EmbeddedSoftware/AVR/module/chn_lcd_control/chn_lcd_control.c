@@ -1,8 +1,9 @@
 
 #include "chn_lcd_control.h"
 
-
+#ifdef CHN_LOADED
 #include "../chn_ChnMaster/chn_ChnMaster.h"
+#endif
 
 #define CHANNEL_FLAG_WRITABLE  0x01
 #define CHANNEL_FLAG_ENABLED   0x02
@@ -238,7 +239,9 @@ void chn_lcd_control_Init(void)
 
     for( i = 0; i < channels_count; i++ ) {
         chn_lcd_control_drawChannel( i );
+#ifdef CHN_LOADED
         chn_ChnMaster_RegisterListener( channels[i].id, chn_lcd_control_chn_update );
+#endif
     }
 
     /*
@@ -278,7 +281,9 @@ void chn_lcd_control_Process(void)
             if( value > 65535 ) value = 65535;
             channels[ channel_sel ].value = value;
 
+#ifdef CHN_LOADAED
             chn_ChnMaster_UpdateChannel( channels[ channel_sel ].id, value );
+#endif
 
             channels[ channel_sel ].flags &= ~CHANNEL_FLAG_UNKNOWN;
             channels[ channel_sel ].flags |= CHANNEL_FLAG_REDRAW;
