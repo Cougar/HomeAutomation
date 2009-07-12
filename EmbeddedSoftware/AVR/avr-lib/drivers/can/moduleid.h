@@ -1,4 +1,4 @@
-// Built on Sun Jul 12 17:52:17 2009 by makeCanId.pl
+// Built on Sun Jul 12 17:59:58 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -156,6 +156,7 @@
 #define CAN_MODULE_TYPE_SNS_POWER 20
 #define CAN_MODULE_TYPE_ACT_SOFTPWM 21
 #define CAN_MODULE_TYPE_CHN_CHNMASTER 30
+#define CAN_MODULE_TYPE_CHN_CHNCONTROLLER 31
 
 //----------------- //
 // Misc definitions //
