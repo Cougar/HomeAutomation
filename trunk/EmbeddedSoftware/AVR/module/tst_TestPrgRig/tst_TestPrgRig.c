@@ -6,8 +6,13 @@ uint8_t DUTconnectState=DUTCONNSTATE_IDLE;
 
 /*
 This module will generate a lot of warnings when compiling due to CAN_PRINTF-define in configs, this is ok
+To display the output of the rig use Atom's main window or the prinf-script in PcSoftware/scripts/canPrintf/
 
+first go to personal folder
+cd EmbeddedSoftware/AVR/personal/
 
+then for each new DUT run these commands
+svn export template_module modDUT; cd modDUT; make bios; make installbios; sleep 2; ./ModuleManager --add=sns_BusVoltage; make; make install; cd ..; rm -r modDUT
 
 */
 
