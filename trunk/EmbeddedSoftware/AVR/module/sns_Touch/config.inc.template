@@ -5,7 +5,7 @@
 
 sns_Touch_ID=<ID>
 sns_Touch_POLL_TIMER=<TIMER>
-sns_Touch_SEND_PERIOD=500
+sns_Touch_POLL_PERIOD=20
 
 #Uncomment to use the pcint driver
 #sns_Touch_DUMMY_PCINT=<PCINT>
@@ -19,5 +19,7 @@ sns_Touch_XPLUS=EXP_I
 sns_Touch_XMINUS=EXP_N
 sns_Touch_YPLUS=EXP_L
 sns_Touch_YMINUS=EXP_M
+
+sns_Touch_BUFFERSIZE=128
 
 ## End section sns_Touch -- Do not edit this line
