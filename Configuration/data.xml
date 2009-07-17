@@ -460,31 +460,31 @@
      <variables>
         <variable name="f1" type="uint" start_bit="0" bit_length="8" unit="#" description="function 1"/>
         <variable name="f7" type="uint" start_bit="8" bit_length="8" unit="#" description="function 7"/>
-        <variable name="f3" type="uint" start_bit="16" bit_length="1" unit="#" description="function 3">
+        <variable name="f3" type="enum" start_bit="16" bit_length="1" unit="#" description="function 3">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f4" type="uint" start_bit="17" bit_length="1" unit="#" description="function 4">
+        <variable name="f4" type="enum" start_bit="17" bit_length="1" unit="#" description="function 4">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f5" type="uint" start_bit="18" bit_length="1" unit="#" description="function 5">
+        <variable name="f5" type="enum" start_bit="18" bit_length="1" unit="#" description="function 5">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f6" type="uint" start_bit="19" bit_length="1" unit="#" description="function 6">
+        <variable name="f6" type="enum" start_bit="19" bit_length="1" unit="#" description="function 6">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f8" type="uint" start_bit="20" bit_length="1" unit="#" description="function 8">
+        <variable name="f8" type="enum" start_bit="20" bit_length="1" unit="#" description="function 8">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f9" type="uint" start_bit="21" bit_length="1" unit="#" description="function 9">
+        <variable name="f9" type="enum" start_bit="21" bit_length="1" unit="#" description="function 9">
    	       <value id="0" name="minus"/>
    	       <value id="1" name="plus"/>
         </variable>
-        <variable name="f2" type="uint" start_bit="22" bit_length="2" unit="#" description="function 2">
+        <variable name="f2" type="enum" start_bit="22" bit_length="2" unit="#" description="function 2">
 	       <value id="0" name="minus"/>
 	       <value id="1" name="plus"/>
 	       <value id="2" name="undefined"/>
