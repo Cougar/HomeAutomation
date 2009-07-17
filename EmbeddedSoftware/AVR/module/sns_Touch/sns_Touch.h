@@ -24,6 +24,27 @@ void sns_Touch_Process(void);
 void sns_Touch_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_Touch_List(uint8_t ModuleSequenceNumber);
 
+typedef struct
+{
+	uint8_t x;
+	uint8_t y;
+} point;
+
+static __inline__ uint8_t min(uint8_t val1, uint8_t val2) {
+  if (val1 > val2)
+  {
+  	return val2;
+  }
+  return val1;
+}
+
+static __inline__ uint8_t max(uint8_t val1, uint8_t val2) {
+  if (val1 > val2)
+  {
+  	return val1;
+  }
+  return val2;
+}
 
 #ifdef sns_Touch_USEEEPROM
 	struct sns_Touch_Data{
