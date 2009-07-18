@@ -2,7 +2,7 @@
 #include "sns_Touch.h"
 point touchBuffer[sns_Touch_BUFFERSIZE];
 uint8_t rxbufidx;
-
+uint8_t pushStatus;
 
 #ifdef sns_Touch_USEEEPROM
 #include "sns_Touch_eeprom.h"
@@ -41,6 +41,7 @@ void sns_Touch_Init(void)
 	Timer_SetTimeout(sns_Touch_POLL_TIMER, sns_Touch_POLL_PERIOD , TimerTypeFreeRunning, 0);
 	
 	rxbufidx = 0;
+	pushStatus = 0;
 }
 
 
@@ -272,6 +273,7 @@ void sns_Touch_Process(void)
 		
 		if (adyval < 0xf0 && adxval < 0xf0 ) 
 		{
+			pushStatus = 1;
 			uint8_t xdiff=0;
 			uint8_t ydiff=0;
 			if (rxbufidx > 0)
@@ -296,11 +298,25 @@ void sns_Touch_Process(void)
 				{
 					rxbufidx=0;
 				}
+
+				StdCan_Msg_t txMsg;
+				StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+				StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+				txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_TOUCH;
+				txMsg.Header.ModuleId = sns_Touch_ID;
+				txMsg.Header.Command = CAN_MODULE_CMD_TOUCH_RAW;
+				txMsg.Length = 3;
+				txMsg.Data[0] = CAN_MODULE_ENUM_TOUCH_RAW_STATUS_PRESSED;
+				txMsg.Data[1] = adxval;
+				txMsg.Data[2] = adyval;
+	
+				StdCan_Put(&txMsg);
 			}
 			//printf("Y: %d X: %d\n", adyval, adxval);
 		}
 		else if (rxbufidx > 3)
 		{
+			pushStatus = 2;
 			//printf("Released %d\n", rxbufidx);
 			parseBuffer(0, rxbufidx-1);
 			/*for (uint8_t i = 0; i < rxbufidx; i++)
@@ -316,6 +332,28 @@ void sns_Touch_Process(void)
 			*/
 			
 			rxbufidx = 0;
+		}
+		else
+		{
+			pushStatus = 2;
+		}
+		
+		if (pushStatus == 2)
+		{
+			pushStatus = 0;
+			
+			StdCan_Msg_t txMsg;
+			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_TOUCH;
+			txMsg.Header.ModuleId = sns_Touch_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_TOUCH_RAW;
+			txMsg.Length = 3;
+			txMsg.Data[0] = CAN_MODULE_ENUM_TOUCH_RAW_STATUS_RELEASED;
+			txMsg.Data[1] = adxval;
+			txMsg.Data[2] = adyval;
+
+			StdCan_Put(&txMsg);
 		}
 	}
 }

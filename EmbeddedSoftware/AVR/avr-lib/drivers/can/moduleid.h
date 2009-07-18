@@ -1,4 +1,4 @@
-// Built on Sat Jul 18 09:11:40 2009 by makeCanId.pl
+// Built on Sat Jul 18 16:06:10 2009 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -77,6 +77,7 @@
 #define CAN_MODULE_CMD_DIMMER230_NETINFO 133
 #define CAN_MODULE_CMD_SOFTPWM_CONFIG 128
 #define CAN_MODULE_CMD_TOUCH_GESTURE 128
+#define CAN_MODULE_CMD_TOUCH_RAW 129
 
 //------------------------------- //
 // Command enum value definitions //
@@ -146,6 +147,8 @@
 #define CAN_MODULE_ENUM_TOUCH_GESTURE_F2_M 0
 #define CAN_MODULE_ENUM_TOUCH_GESTURE_F2_P 1
 #define CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U 2
+#define CAN_MODULE_ENUM_TOUCH_RAW_STATUS_PRESSED 1
+#define CAN_MODULE_ENUM_TOUCH_RAW_STATUS_RELEASED 0
 
 //------------------- //
 // Module definitions //
