@@ -58,6 +58,15 @@ F9:
 */
 
 /*
+Touch gesture parser
+Implementation of 'A new gesture recognition algorithm and segmentation 
+method of Korean scripts for gesture-allowed ink editor' by Mi Gyung Cho
+
+Call function parseBuffer with a buffer containing x/y coordinates, the buffer start and end.
+Returns function results that describe the gesture in 24bits
+
+Written by Linus Lundin, Jonas Andersson and Anders Runeson, 2009
+
 To fix:
 Break out to a driver file
 */
