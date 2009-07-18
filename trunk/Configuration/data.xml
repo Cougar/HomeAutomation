@@ -456,7 +456,7 @@
         <variable name="Resolution" type="uint" start_bit="16" bit_length="8" unit="ms" description=""/>
      </variables>
     </command>
-    <command id="128" name="Gesture" type="specific" module="Touch" description="data from a gesture">
+    <command id="128" name="Gesture" type="specific" module="Touch" description="Parsed touch data as a gesture">
      <variables>
         <variable name="f1" type="uint" start_bit="0" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and the straight line f(x) which connects the first and last point of the gesture"/>
         <variable name="f7" type="uint" start_bit="8" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and all horizontal lines yi, where i is between 0 and n, that constitute a gesture"/>
@@ -489,6 +489,16 @@
 	       <value id="1" name="P"/>
 	       <value id="2" name="U"/>
         </variable>
+     </variables>
+    </command>
+    <command id="129" name="Raw" type="specific" module="Touch" description="Raw touch data">
+     <variables>
+        <variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="Gives the current push status">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
+        <variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
      </variables>
     </command>
   </commands>
