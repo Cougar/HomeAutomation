@@ -61,42 +61,40 @@ F9:
 
 /*
 To fix:
-Input parameter for buffer
-Output returnvalues
 Break out to a driver file
 */
-uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
+gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 {
 	int16_t f1_k = 0, f3_tmp = 0, f4_tmp = 0, f5_tmp = 0, f9_tmp = 0;
-	uint8_t f7_tmp = 0, f7_sign = 0, f1_sign = 0, f3_yref = 0, f1 = 0, f2 = 0, f3 = 0, f4 = 0, f5 = 0, f6 = 0, f7 = 0, f8 = 0, f9 = 0, xMin, xMax, yMin, yMax;
+	uint8_t f7_tmp = 0, f7_sign = 0, f1_sign = 0, f3_yref = 0, xMin, xMax, yMin, yMax;
+	gesture functionData;
+	functionData.f1=0;
+	functionData.f7=0;
 	
 	/* Function 6 indicates the sign value of the y coordinates of the last point minus y coordinates of the first point */
-	if ((int16_t)touchBuffer[endIndex].y - (int16_t)touchBuffer[startIndex].y > 0)
+	functionData.f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_M;
+	if ((int16_t)buffer[endIndex].y - (int16_t)buffer[startIndex].y > 0)
 	{
-		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_P;
-	}
-	else
-	{
-		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_M;
+		functionData.f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_P;
 	}
 	
-	xMin = touchBuffer[startIndex].x;
-	xMax = touchBuffer[startIndex].x;
-	yMin = touchBuffer[startIndex].y;
-	yMax = touchBuffer[startIndex].y;
-	f3_yref = (touchBuffer[startIndex].y + touchBuffer[endIndex].y)/2;
-	f1_k = ((touchBuffer[endIndex].y-touchBuffer[startIndex].y)<<4)/(touchBuffer[endIndex].x-touchBuffer[startIndex].x);
+	xMin = buffer[startIndex].x;
+	xMax = buffer[startIndex].x;
+	yMin = buffer[startIndex].y;
+	yMax = buffer[startIndex].y;
+	f3_yref = (buffer[startIndex].y + buffer[endIndex].y)/2;
+	f1_k = ((buffer[endIndex].y-buffer[startIndex].y)<<4)/(buffer[endIndex].x-buffer[startIndex].x);
 	f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U;
 
 	for (uint8_t i = startIndex+1; i < endIndex-1; i++)
 	{
 		/* Function 1 indicates the number of intersection points between an input gesture g(x) and the straight line f(x) 
 		which connects the first and last point of the gesture */
-		if (((f1_k*(touchBuffer[i].x-touchBuffer[0].x))>>4) + touchBuffer[0].y < touchBuffer[i].y) 
+		if (((f1_k*(buffer[i].x-buffer[0].x))>>4) + buffer[0].y < buffer[i].y) 
 		{
 			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_P)
 			{
-				f1++;
+				functionData.f1++;
 			}
 			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_P;
 		}
@@ -104,42 +102,42 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 		{
 			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_M)
 			{
-				f1++;
+				functionData.f1++;
 			}
 			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_M;
 		}
 		
 		/* Function 3 indicates the sign value of area gap between g(x) and f(x) */
-		if (touchBuffer[i].x > min(touchBuffer[startIndex].x, touchBuffer[endIndex].x) && touchBuffer[i].x < max(touchBuffer[startIndex].x, touchBuffer[endIndex].x)) 
+		if (buffer[i].x > min(buffer[startIndex].x, buffer[endIndex].x) && buffer[i].x < max(buffer[startIndex].x, buffer[endIndex].x)) 
 		{
-		    f3_tmp += f3_yref - (touchBuffer[i].y + touchBuffer[i-1].y)/2;
+		    f3_tmp += f3_yref - (buffer[i].y + buffer[i-1].y)/2;
 		}
 		
 		/* find min an max of x and y */
-		if (xMin > touchBuffer[i].x)
+		if (xMin > buffer[i].x)
 		{
-			xMin = touchBuffer[i].x;
+			xMin = buffer[i].x;
 		}
-		if (xMax < touchBuffer[i].x)
+		if (xMax < buffer[i].x)
 		{
-			xMax = touchBuffer[i].x;
+			xMax = buffer[i].x;
 		}
-		if (yMin > touchBuffer[i].y)
+		if (yMin > buffer[i].y)
 		{
-			yMin = touchBuffer[i].y;
+			yMin = buffer[i].y;
 		}
-		if (yMax < touchBuffer[i].y)
+		if (yMax < buffer[i].y)
 		{
-			yMax = touchBuffer[i].y;
+			yMax = buffer[i].y;
 		}
 		
 		/* Function 4 represents the sign value of the sum of the x coordinates of all the points that constitute strokes 
 		minus the x coordinates of the last point */
-		f4_tmp += (int16_t)touchBuffer[i].x - (int16_t)touchBuffer[endIndex].x;
+		f4_tmp += (int16_t)buffer[i].x - (int16_t)buffer[endIndex].x;
 		
 		/* Function 5 checks the sign value of the sum of the x coordinates of all the points that constitute strokes 
 		minus x coordinates of the first point */
-		f5_tmp += (int16_t)touchBuffer[i].x - (int16_t)touchBuffer[startIndex].x;
+		f5_tmp += (int16_t)buffer[i].x - (int16_t)buffer[startIndex].x;
 	}
 	
 	/* Function 7 indicates the number of intersection points between an input gesture g(x) and all horizontal lines yi, 
@@ -150,7 +148,7 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 		f7_sign = 0;
 		for (uint8_t i = startIndex+1; i < endIndex-1; i++)
 		{
-			if (j > touchBuffer[i].y) 
+			if (j > buffer[i].y) 
 			{
 				if (f7_sign != '+')
 				{
@@ -166,75 +164,63 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 				f7_sign = '-';
 			}
 		}
-		if (f7_tmp > f7)
+		if (f7_tmp > functionData.f7)
 		{
-			f7 = f7_tmp;
+			functionData.f7 = f7_tmp;
 		}
 	}
 	
-	f1--;
+	functionData.f1--;
 	/* Function 2 checks if the y coordinates of the points which exist between the intersection point and the last point are 
 	greater than the y coordinates of the intersection point */
-	f2 = f1_sign;
-	if (f1 == 0)
+	functionData.f2 = f1_sign;
+	if (functionData.f1 == 0)
 	{
-		f2 = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U;
+		functionData.f2 = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U;
 	}
 	
 	/* Function 3 indicates the sign value of area gap between g(x) and f(x) */
-	f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_P;
+	functionData.f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_P;
 	if (f3_tmp > 0)
 	{
-		f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_M;
+		functionData.f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_M;
 	}
 		
 	/* Function 9 represents the sign value of the multiplication of x coordinates of the first point and the last point 
 	minus the mediate value of x coordinates of all the points */
-	f9_tmp = ((touchBuffer[startIndex].x - (xMax+xMin)/2)*(touchBuffer[endIndex].x - (xMax+xMin)/2));
-	f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_M;
+	f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2)*(buffer[endIndex].x - (xMax+xMin)/2));
+	functionData.f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_M;
 	if (f9_tmp > 0)
 	{
-		f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_P;
+		functionData.f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_P;
 	}
 	
 	/* Function 5 checks the sign value of the sum of the x coordinates of all the points that constitute strokes 
 	minus x coordinates of the first point */
-	f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_M;
+	functionData.f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_M;
 	if (f5_tmp > 0)
 	{
-		f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_P;
+		functionData.f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_P;
 	}
 	
 	/* Function 4 represents the sign value of the sum of the x coordinates of all the points that constitute strokes 
 	minus the x coordinates of the last point */
-	f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_M;
+	functionData.f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_M;
 	if (f4_tmp > 0)
 	{
-		f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_P;
+		functionData.f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_P;
 	}
 	
 	/* Function 8 checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn */
-	f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
-	if (xMin < min(touchBuffer[startIndex].x,touchBuffer[endIndex].x) || xMax > max(touchBuffer[startIndex].x,touchBuffer[endIndex].x))
+	functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
+	if (xMin < min(buffer[startIndex].x,buffer[endIndex].x) || xMax > max(buffer[startIndex].x,buffer[endIndex].x))
 	{
-		f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
+		functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
 	}
 		
 	//printf("1%u2%c3%c4%c5%c6%c7%u8%c9%c\n", f1, f2, f3, f4, f5, f6, f7, f8, f9);
 
-	StdCan_Msg_t txMsg;
-	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
-	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_TOUCH;
-	txMsg.Header.ModuleId = sns_Touch_ID;
-	txMsg.Header.Command = CAN_MODULE_CMD_TOUCH_GESTURE;
-	txMsg.Length = 3;
-	txMsg.Data[0] = f1;
-	txMsg.Data[1] = f7;
-	txMsg.Data[2] = f3<<7|f4<<6|f5<<5|f6<<4|f8<<3|f9<<2|f2;
-	
-	StdCan_Put(&txMsg);
-	return 0;
+	return functionData;
 }
 
 
@@ -321,7 +307,20 @@ void sns_Touch_Process(void)
 				pushStatus = 2;
 			}
 			//printf("Released %d\n", rxbufidx);
-			parseBuffer(0, rxbufidx-1);
+			gesture functionData = parseBuffer(touchBuffer, 0, rxbufidx-1);
+			
+			StdCan_Msg_t txMsg;
+			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_TOUCH;
+			txMsg.Header.ModuleId = sns_Touch_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_TOUCH_GESTURE;
+			txMsg.Length = 3;
+			txMsg.Data[0] = functionData.f1;
+			txMsg.Data[1] = functionData.f7;
+			txMsg.Data[2] = functionData.f3<<7|functionData.f4<<6|functionData.f5<<5|functionData.f6<<4|functionData.f8<<3|functionData.f9<<2|functionData.f2;
+	
+			StdCan_Put(&txMsg);
 			/*for (uint8_t i = 0; i < rxbufidx; i++)
 			{
 				printf("%3d ", touchBuffer[i].x);
