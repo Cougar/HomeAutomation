@@ -352,6 +352,7 @@ void sns_Touch_Process(void)
 		}
 		else if (pushStatus==1)
 		{
+			rxbufidx = 0;
 			pushStatus = 2;
 		}
 		
