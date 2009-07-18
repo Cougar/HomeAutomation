@@ -15,10 +15,16 @@ ADCHAN2=1
 sns_Touch_TOUCHYAD=4
 ADCHAN4=1
 
+
+
 sns_Touch_XPLUS=EXP_I
 sns_Touch_XMINUS=EXP_N
 sns_Touch_YPLUS=EXP_L
 sns_Touch_YMINUS=EXP_M
+
+#sns_Touch_INVERT_Y=1
+sns_Touch_INVERT_X=1
+sns_Touch_SWITCH_XY=1
 
 sns_Touch_BUFFERSIZE=128
 
