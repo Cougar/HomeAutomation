@@ -316,7 +316,10 @@ void sns_Touch_Process(void)
 		}
 		else if (rxbufidx > 3)
 		{
-			pushStatus = 2;
+			if (pushStatus==1)
+			{
+				pushStatus = 2;
+			}
 			//printf("Released %d\n", rxbufidx);
 			parseBuffer(0, rxbufidx-1);
 			/*for (uint8_t i = 0; i < rxbufidx; i++)
@@ -333,7 +336,7 @@ void sns_Touch_Process(void)
 			
 			rxbufidx = 0;
 		}
-		else
+		else if (pushStatus==1)
 		{
 			pushStatus = 2;
 		}
