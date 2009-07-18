@@ -30,6 +30,19 @@ typedef struct
 	uint8_t y;
 } point;
 
+typedef struct
+{
+	uint8_t f1;
+	uint8_t f2;
+	uint8_t f3;
+	uint8_t f4;
+	uint8_t f5;
+	uint8_t f6;
+	uint8_t f7;
+	uint8_t f8;
+	uint8_t f9;
+} gesture;
+
 static __inline__ uint8_t min(uint8_t val1, uint8_t val2) {
   if (val1 > val2)
   {
