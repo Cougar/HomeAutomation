@@ -46,18 +46,16 @@ void sns_Touch_Init(void)
 
 
 /*
-F1: Klar
-F2: Klar
-F3: Klar
+F1:	Klar
+F2:	Klar
+F3:	Klar
 F4:	Klar
 F5:	Klar
 F6:	Klar
-F7: Klar
-F8:	Klar
+F7:	Klar
+F8:	Klar? (kontrollera funktion)
 F9:	
-
 */
-
 
 /*
 To fix:
@@ -235,7 +233,12 @@ void sns_Touch_Process(void)
 		gpio_set_pin(sns_Touch_YPLUS);		//turn on 1 on y+
 		gpio_set_out(sns_Touch_YMINUS);
 		gpio_clr_pin(sns_Touch_YMINUS);		//turn on 0 on y-
-		uint8_t adxval = ADC_Get(sns_Touch_TOUCHXAD)>>2;	//read x-
+		#ifdef sns_Touch_SWITCH_XY
+			uint8_t adyval = ADC_Get(sns_Touch_TOUCHXAD)>>2;	//read x-
+		#else
+			uint8_t adxval = ADC_Get(sns_Touch_TOUCHXAD)>>2;	//read x-
+		#endif
+		
 		gpio_set_in(sns_Touch_YPLUS);
 		gpio_clr_pullup(sns_Touch_YPLUS);	//turn off pullup for y+
 		gpio_set_in(sns_Touch_YMINUS);
@@ -249,7 +252,11 @@ void sns_Touch_Process(void)
 		gpio_set_pin(sns_Touch_XPLUS);		//turn on 1 on x+
 		gpio_set_out(sns_Touch_XMINUS);
 		gpio_clr_pin(sns_Touch_XMINUS);		//turn on 0 on x-
-		uint8_t adyval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
+		#ifdef sns_Touch_SWITCH_XY
+			uint8_t adxval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
+		#else
+			uint8_t adyval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
+		#endif
 		gpio_set_in(sns_Touch_XPLUS);
 		gpio_clr_pullup(sns_Touch_XPLUS);	//turn off pullup for x+
 		gpio_set_in(sns_Touch_XMINUS);
@@ -257,8 +264,16 @@ void sns_Touch_Process(void)
 		gpio_set_in(sns_Touch_YPLUS);
 		gpio_clr_pullup(sns_Touch_YPLUS);	//turn off pullup for y+
 		
+		
+
 		if (adyval < 0xf0 && adxval < 0xf0 ) 
 		{
+#ifdef sns_Touch_INVERT_Y
+			adyval = 255-adyval;
+		#endif
+		#ifdef sns_Touch_INVERT_X
+			adxval = 255-adxval;
+		#endif
 			pushStatus = 1;
 			uint8_t xdiff=0;
 			uint8_t ydiff=0;
