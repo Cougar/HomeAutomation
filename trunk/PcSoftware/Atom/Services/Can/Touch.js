@@ -43,60 +43,60 @@ Touch.prototype.lookupGesture = function(f1, f2, f3, f4, f5, f6, f7, f8, f9)
 	{
 		for (var n = 0; n < gestureStore['gestures'].length; n++)
 		{
-			log(this.myName + ":" + this.myId + "> Checking : " + gestureStore['gestures'][n]['name'] + "\n");
+			//log(this.myName + ":" + this.myId + "> Checking : " + gestureStore['gestures'][n]['name'] + "\n");
 			this.myLastGesture = null;
 			var result = 1;
 			if (gestureStore['gestures'][n]['masks']['f1_lower'] > f1 || gestureStore['gestures'][n]['masks']['f1_upper'] < f1) 
 			{
-				log("1");
+			//	log("1");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f2'] == 1 && gestureStore['gestures'][n]['functions']['f2'] != f2)
 			{
-				log("2");
+			//	log("2");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f3'] == 1 && gestureStore['gestures'][n]['functions']['f3'] != f3)
 			{
-				log("3");
+			//	log("3");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f4'] == 1 && gestureStore['gestures'][n]['functions']['f4'] != f4)
 			{
-				log("4");
+			//	log("4");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f5'] == 1 && gestureStore['gestures'][n]['functions']['f5'] != f5)
 			{
-				log("5");
+			//	log("5");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f6'] == 1 && gestureStore['gestures'][n]['functions']['f6'] != f6)
 			{
-				log("6");
+			//	log("6");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f7_lower'] > f7 || gestureStore['gestures'][n]['masks']['f7_upper'] < f7) 
 			{
-				log("7");
+			//	log("7");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f8'] == 1 && gestureStore['gestures'][n]['functions']['f8'] != f8)
 			{
-				log("8");
+			//	log("8");
 				result = 0;
 				continue;
 			}
 			if (gestureStore['gestures'][n]['masks']['f9'] == 1 && gestureStore['gestures'][n]['functions']['f9'] != f9)
 			{
-				log("9");
+			//	log("9");
 				result = 0;
 				continue;
 			}
@@ -112,5 +112,5 @@ Touch.prototype.lookupGesture = function(f1, f2, f3, f4, f5, f6, f7, f8, f9)
 
 Touch.prototype.getLastGesture = function()
 {
-	return this.myLastgesture;
+	return this.myLastGesture;
 }
