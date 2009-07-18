@@ -72,11 +72,11 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 	/* Function 6 indicates the sign value of the y coordinates of the last point minus y coordinates of the first point */
 	if ((int16_t)touchBuffer[endIndex].y - (int16_t)touchBuffer[startIndex].y > 0)
 	{
-		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_PLUS;
+		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_P;
 	}
 	else
 	{
-		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_MINUS;
+		f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_M;
 	}
 	
 	xMin = touchBuffer[startIndex].x;
@@ -85,7 +85,7 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 	yMax = touchBuffer[startIndex].y;
 	f3_yref = (touchBuffer[startIndex].y + touchBuffer[endIndex].y)/2;
 	f1_k = ((touchBuffer[endIndex].y-touchBuffer[startIndex].y)<<4)/(touchBuffer[endIndex].x-touchBuffer[startIndex].x);
-	f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_UNDEFINED;
+	f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U;
 
 	for (uint8_t i = startIndex+1; i < endIndex-1; i++)
 	{
@@ -93,19 +93,19 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 		which connects the first and last point of the gesture */
 		if (((f1_k*(touchBuffer[i].x-touchBuffer[0].x))>>4) + touchBuffer[0].y < touchBuffer[i].y) 
 		{
-			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_PLUS)
+			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_P)
 			{
 				f1++;
 			}
-			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_PLUS;
+			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_P;
 		}
 		else 
 		{
-			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_MINUS)
+			if (f1_sign != CAN_MODULE_ENUM_TOUCH_GESTURE_F2_M)
 			{
 				f1++;
 			}
-			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_MINUS;
+			f1_sign = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_M;
 		}
 		
 		/* Function 3 indicates the sign value of area gap between g(x) and f(x) */
@@ -177,46 +177,46 @@ uint8_t parseBuffer(uint8_t startIndex, uint8_t endIndex)
 	f2 = f1_sign;
 	if (f1 == 0)
 	{
-		f2 = 2;
+		f2 = CAN_MODULE_ENUM_TOUCH_GESTURE_F2_U;
 	}
 	
 	/* Function 3 indicates the sign value of area gap between g(x) and f(x) */
-	f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_PLUS;
+	f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_P;
 	if (f3_tmp > 0)
 	{
-		f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_MINUS;
+		f3 = CAN_MODULE_ENUM_TOUCH_GESTURE_F3_M;
 	}
 		
 	/* Function 9 represents the sign value of the multiplication of x coordinates of the first point and the last point 
 	minus the mediate value of x coordinates of all the points */
 	f9_tmp = ((touchBuffer[startIndex].x - (xMax+xMin)/2)*(touchBuffer[endIndex].x - (xMax+xMin)/2));
-	f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_MINUS;
+	f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_M;
 	if (f9_tmp > 0)
 	{
-		f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_PLUS;
+		f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_P;
 	}
 	
 	/* Function 5 checks the sign value of the sum of the x coordinates of all the points that constitute strokes 
 	minus x coordinates of the first point */
-	f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_MINUS;
+	f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_M;
 	if (f5_tmp > 0)
 	{
-		f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_PLUS;
+		f5 = CAN_MODULE_ENUM_TOUCH_GESTURE_F5_P;
 	}
 	
 	/* Function 4 represents the sign value of the sum of the x coordinates of all the points that constitute strokes 
 	minus the x coordinates of the last point */
-	f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_MINUS;
+	f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_M;
 	if (f4_tmp > 0)
 	{
-		f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_PLUS;
+		f4 = CAN_MODULE_ENUM_TOUCH_GESTURE_F4_P;
 	}
 	
 	/* Function 8 checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn */
-	f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_MINUS;
+	f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
 	if (xMin < min(touchBuffer[startIndex].x,touchBuffer[endIndex].x) || xMax > max(touchBuffer[startIndex].x,touchBuffer[endIndex].x))
 	{
-		f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_PLUS;
+		f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
 	}
 		
 	//printf("1%u2%c3%c4%c5%c6%c7%u8%c9%c\n", f1, f2, f3, f4, f5, f6, f7, f8, f9);
