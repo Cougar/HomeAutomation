@@ -5,4 +5,5 @@ sns_Touch/sns_Touch.c
 #Uncomment the line below if you want to use the PCINT lib in this module
 #drivers/mcu/pcint.c
 drivers/adc/adc.c
+drivers/touch/gesture/gesture.c
 
