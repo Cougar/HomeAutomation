@@ -56,13 +56,13 @@ Touch.prototype.canMessageHandler = function(canMessage)
 				this.myLastState = "Released";
 				this.callEvent("rawStatus", null);
 			}
-			else if (this.myLastState == "Released" && canMessage.getData("Status") == "Pressed")
+			this.callEvent("rawTouch", null);
+			if (this.myLastState == "Released" && canMessage.getData("Status") == "Pressed")
 			{
 				this.myLastState = "Pressed";
 				this.callEvent("rawStatus", null);
 			}
 			
-			this.callEvent("rawTouch", null);
 			break;
 		}
 	}
