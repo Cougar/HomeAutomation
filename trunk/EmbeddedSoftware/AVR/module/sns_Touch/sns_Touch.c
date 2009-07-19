@@ -200,9 +200,7 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 	/* Function 9 represents the sign value of the multiplication of x coordinates of the first point and the last point 
 	minus the mediate value of x coordinates of all the points */
 	//f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2)*(buffer[endIndex].x - (xMax+xMin)/2));
-	
 	f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2 > 0) ^ (buffer[endIndex].x - (xMax+xMin)/2 > 0));
-	
 	functionData.f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_M;
 	if (!f9_tmp)
 	{
@@ -226,10 +224,10 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 	}
 	
 	/* Function 8 checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn */
-	functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
+	functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
 	if (xMin < min(buffer[startIndex].x,buffer[endIndex].x) || xMax > max(buffer[startIndex].x,buffer[endIndex].x))
 	{
-		functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
+		functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
 	}
 		
 	//printf("1%u2%c3%c4%c5%c6%c7%u8%c9%c\n", f1, f2, f3, f4, f5, f6, f7, f8, f9);
