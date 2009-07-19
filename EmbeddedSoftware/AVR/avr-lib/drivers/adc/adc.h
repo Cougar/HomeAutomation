@@ -22,6 +22,12 @@
 #error only tested on ATmega88/168
 #endif
 
+#define ADC_NUM_CHANNELS 8
+
+#ifndef ADC_INTERRUPTED  	 
+#define ADC_INTERRUPTED 0
+#endif
+
 /*-----------------------------------------------
  * Includes
  * ---------------------------------------------*/
