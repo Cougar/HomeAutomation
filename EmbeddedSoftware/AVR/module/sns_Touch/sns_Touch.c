@@ -4,6 +4,8 @@ point touchBuffer[sns_Touch_BUFFERSIZE];
 uint8_t rxbufidx;
 uint8_t pushStatus;
 
+point lastValidPoint;
+
 #ifdef sns_Touch_USEEEPROM
 #include "sns_Touch_eeprom.h"
 struct eeprom_sns_Touch EEMEM eeprom_sns_Touch = 
@@ -42,6 +44,8 @@ void sns_Touch_Init(void)
 	
 	rxbufidx = 0;
 	pushStatus = 0;
+	lastValidPoint.x=0;
+	lastValidPoint.y=0;
 }
 
 
@@ -242,11 +246,11 @@ void sns_Touch_Process(void)
 		gpio_set_pin(sns_Touch_YPLUS);		//turn on 1 on y+
 		gpio_set_out(sns_Touch_YMINUS);
 		gpio_clr_pin(sns_Touch_YMINUS);		//turn on 0 on y-
-		#ifdef sns_Touch_SWITCH_XY
+#ifdef sns_Touch_SWITCH_XY
 			uint8_t adyval = ADC_Get(sns_Touch_TOUCHXAD)>>2;	//read x-
-		#else
+#else
 			uint8_t adxval = ADC_Get(sns_Touch_TOUCHXAD)>>2;	//read x-
-		#endif
+#endif
 		
 		gpio_set_in(sns_Touch_YPLUS);
 		gpio_clr_pullup(sns_Touch_YPLUS);	//turn off pullup for y+
@@ -261,11 +265,11 @@ void sns_Touch_Process(void)
 		gpio_set_pin(sns_Touch_XPLUS);		//turn on 1 on x+
 		gpio_set_out(sns_Touch_XMINUS);
 		gpio_clr_pin(sns_Touch_XMINUS);		//turn on 0 on x-
-		#ifdef sns_Touch_SWITCH_XY
-			uint8_t adxval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
-		#else
-			uint8_t adyval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
-		#endif
+#ifdef sns_Touch_SWITCH_XY
+		uint8_t adxval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
+#else
+		uint8_t adyval = ADC_Get(sns_Touch_TOUCHYAD)>>2;	//read y-
+#endif
 		gpio_set_in(sns_Touch_XPLUS);
 		gpio_clr_pullup(sns_Touch_XPLUS);	//turn off pullup for x+
 		gpio_set_in(sns_Touch_XMINUS);
@@ -279,10 +283,12 @@ void sns_Touch_Process(void)
 		{
 #ifdef sns_Touch_INVERT_Y
 			adyval = 255-adyval;
-		#endif
-		#ifdef sns_Touch_INVERT_X
+#endif
+#ifdef sns_Touch_INVERT_X
 			adxval = 255-adxval;
-		#endif
+#endif
+			lastValidPoint.x=adxval;
+			lastValidPoint.y=adyval;
 			pushStatus = 1;
 			uint8_t xdiff=0;
 			uint8_t ydiff=0;
@@ -377,8 +383,8 @@ void sns_Touch_Process(void)
 			txMsg.Header.Command = CAN_MODULE_CMD_TOUCH_RAW;
 			txMsg.Length = 3;
 			txMsg.Data[0] = CAN_MODULE_ENUM_TOUCH_RAW_STATUS_RELEASED;
-			txMsg.Data[1] = adxval;
-			txMsg.Data[2] = adyval;
+			txMsg.Data[1] = lastValidPoint.x;
+			txMsg.Data[2] = lastValidPoint.y;
 
 			StdCan_Put(&txMsg);
 		}
