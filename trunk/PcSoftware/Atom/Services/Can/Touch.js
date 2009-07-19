@@ -7,6 +7,26 @@ function Touch(type, name, id)
 extend(Touch, CanService);
 
 Touch.prototype.myLastGesture = null;
+Touch.prototype.myLastX = null;
+Touch.prototype.myLastY = null;
+Touch.prototype.myLastState = "Released";
+
+Touch.prototype.getLastGesture = function()
+{
+	return this.myLastGesture;
+}
+Touch.prototype.getLastState = function()
+{
+	return this.myLastState;
+}
+Touch.prototype.getLastX = function()
+{
+	return this.myLastX;
+}
+Touch.prototype.getLastY = function()
+{
+	return this.myLastY;
+}
 
 Touch.prototype.canMessageHandler = function(canMessage)
 {
@@ -15,19 +35,35 @@ Touch.prototype.canMessageHandler = function(canMessage)
 		switch (canMessage.getCommandName())
 		{
 		case "Gesture":
-		this.lookupGesture(canMessage.getData("f1"),canMessage.getData("f2"),canMessage.getData("f3"),canMessage.getData("f4"),canMessage.getData("f5"),canMessage.getData("f6"),canMessage.getData("f7"),canMessage.getData("f8"),canMessage.getData("f9"));
+			this.lookupGesture(canMessage.getData("f1"),canMessage.getData("f2"),canMessage.getData("f3"),canMessage.getData("f4"),canMessage.getData("f5"),canMessage.getData("f6"),canMessage.getData("f7"),canMessage.getData("f8"),canMessage.getData("f9"));
 		
-		if (this.myLastGesture == null)
-		{
-			log(this.myName + ":" + this.myId + "> New Gesture, f1: " + canMessage.getData("f1") + ", f2: " + canMessage.getData("f2")+ ", f3: " + canMessage.getData("f3")+ ", f4: " + canMessage.getData("f4")+ ", f5: " + canMessage.getData("f5")+ ", f6: " + canMessage.getData("f6")+ ", f7: " + canMessage.getData("f7")+ ", f8: " + canMessage.getData("f8")+ ", f9: " + canMessage.getData("f9") +"\n");
-		}
-		else
-		{
-			log(this.myName + ":" + this.myId + "> New Gesture: " + this.myLastGesture + "\n");
-		}
+			if (this.myLastGesture == null)
+			{
+				log(this.myName + ":" + this.myId + "> New Gesture, f1: " + canMessage.getData("f1") + ", f2: " + canMessage.getData("f2")+ ", f3: " + canMessage.getData("f3")+ ", f4: " + canMessage.getData("f4")+ ", f5: " + canMessage.getData("f5")+ ", f6: " + canMessage.getData("f6")+ ", f7: " + canMessage.getData("f7")+ ", f8: " + canMessage.getData("f8")+ ", f9: " + canMessage.getData("f9") +"\n");
+			}
+			else
+			{
+				log(this.myName + ":" + this.myId + "> New Gesture: " + this.myLastGesture + "\n");
+			}
 		
-		this.callEvent("newGesture", null);
-		break;
+			this.callEvent("newGesture", null);
+			break;
+		case "Raw":
+			if (this.myLastState == "Pressed" && canMessage.getData("Status") == "Released")
+			{
+				this.callEvent("rawStatus", null);
+				this.myLastState = "Released"
+			}
+			else if (this.myLastState == "Released" && canMessage.getData("Status") == "Pressed")
+			{
+				this.callEvent("rawStatus", null);
+				this.myLastState = "Pressed"
+			}
+			this.myLastX = canMessage.getData("X");
+			this.myLastY = canMessage.getData("Y");
+			
+			this.callEvent("rawTouch", null);
+			break;
 		}
 	}
 	
@@ -109,8 +145,3 @@ Touch.prototype.lookupGesture = function(f1, f2, f3, f4, f5, f6, f7, f8, f9)
 	
 }
 
-
-Touch.prototype.getLastGesture = function()
-{
-	return this.myLastGesture;
-}
