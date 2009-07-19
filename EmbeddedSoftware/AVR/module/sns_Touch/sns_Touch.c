@@ -81,6 +81,7 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 	gesture functionData;
 	functionData.f1=0;
 	functionData.f7=0;
+#define F8_OFFSET	15
 	
 	/* Function 6 indicates the sign value of the y coordinates of the last point minus y coordinates of the first point */
 	functionData.f6 = CAN_MODULE_ENUM_TOUCH_GESTURE_F6_M;
@@ -225,7 +226,7 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 	
 	/* Function 8 checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn */
 	functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_P;
-	if (xMin < min(buffer[startIndex].x,buffer[endIndex].x) || xMax > max(buffer[startIndex].x,buffer[endIndex].x))
+	if (xMin+F8_OFFSET < min(buffer[startIndex].x,buffer[endIndex].x) || xMax > max(buffer[startIndex].x,buffer[endIndex].x)+F8_OFFSET)
 	{
 		functionData.f8 = CAN_MODULE_ENUM_TOUCH_GESTURE_F8_M;
 	}
