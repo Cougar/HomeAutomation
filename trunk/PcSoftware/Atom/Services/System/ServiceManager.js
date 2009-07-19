@@ -2,6 +2,12 @@
 function ServiceManager() {}
 
 ServiceManager.Services = new Array();
+ServiceManager.Callbacks = new Array();
+
+ServiceManager.addCallback = function(callback)
+{
+	ServiceManager.Callbacks[ServiceManager.Callbacks.length] = callback;
+}
 
 ServiceManager.getService = function(type, name, id)
 {
@@ -19,6 +25,11 @@ ServiceManager.getService = function(type, name, id)
 		}
 		
 		ServiceManager.Services[fullId] = eval("(new " + name + "('" + type + "', '" + name + "', " + id + "))");///FIXME: Can we do this without eval??
+		
+		for (var n in ServiceManager.Callbacks)
+		{
+			ServiceManager.Callbacks[n](ServiceManager.Services[fullId]);
+		}
 	}
 	
 	return ServiceManager.Services[fullId];
