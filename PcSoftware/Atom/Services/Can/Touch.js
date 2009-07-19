@@ -49,6 +49,8 @@ Touch.prototype.canMessageHandler = function(canMessage)
 			this.callEvent("newGesture", null);
 			break;
 		case "Raw":
+			this.myLastX = canMessage.getData("X");
+			this.myLastY = canMessage.getData("Y");
 			if (this.myLastState == "Pressed" && canMessage.getData("Status") == "Released")
 			{
 				this.myLastState = "Released";
@@ -59,8 +61,6 @@ Touch.prototype.canMessageHandler = function(canMessage)
 				this.myLastState = "Pressed";
 				this.callEvent("rawStatus", null);
 			}
-			this.myLastX = canMessage.getData("X");
-			this.myLastY = canMessage.getData("Y");
 			
 			this.callEvent("rawTouch", null);
 			break;
