@@ -58,7 +58,7 @@ F5:	Klar
 F6:	Klar
 F7:	Klar
 F8:	Klar? (kontrollera funktion)
-F9:	
+F9:	Klar
 */
 
 /*
@@ -76,8 +76,8 @@ Break out to a driver file
 */
 gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 {
-	int16_t f1_k = 0, f3_tmp = 0, f4_tmp = 0, f5_tmp = 0, f9_tmp = 0;
-	uint8_t f7_tmp = 0, f7_sign = 0, f1_sign = 0, f3_yref = 0, xMin, xMax, yMin, yMax;
+	int16_t f1_k = 0, f3_tmp = 0, f4_tmp = 0, f5_tmp = 0;
+	uint8_t f7_tmp = 0, f7_sign = 0, f1_sign = 0, f3_yref = 0, xMin, xMax, yMin, yMax, f9_tmp;
 	gesture functionData;
 	functionData.f1=0;
 	functionData.f7=0;
@@ -124,7 +124,7 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 		    f3_tmp += f3_yref - (buffer[i].y + buffer[i-1].y)/2;
 		}
 		
-		/* find min an max of x and y */
+		/* find min and max of x and y */
 		if (xMin > buffer[i].x)
 		{
 			xMin = buffer[i].x;
@@ -199,9 +199,12 @@ gesture parseBuffer(point *buffer, uint8_t startIndex, uint8_t endIndex)
 		
 	/* Function 9 represents the sign value of the multiplication of x coordinates of the first point and the last point 
 	minus the mediate value of x coordinates of all the points */
-	f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2)*(buffer[endIndex].x - (xMax+xMin)/2));
+	//f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2)*(buffer[endIndex].x - (xMax+xMin)/2));
+	
+	f9_tmp = ((buffer[startIndex].x - (xMax+xMin)/2 > 0) ^ (buffer[endIndex].x - (xMax+xMin)/2 > 0));
+	
 	functionData.f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_M;
-	if (f9_tmp > 0)
+	if (!f9_tmp)
 	{
 		functionData.f9 = CAN_MODULE_ENUM_TOUCH_GESTURE_F9_P;
 	}
