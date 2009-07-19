@@ -51,13 +51,13 @@ Touch.prototype.canMessageHandler = function(canMessage)
 		case "Raw":
 			if (this.myLastState == "Pressed" && canMessage.getData("Status") == "Released")
 			{
+				this.myLastState = "Released";
 				this.callEvent("rawStatus", null);
-				this.myLastState = "Released"
 			}
 			else if (this.myLastState == "Released" && canMessage.getData("Status") == "Pressed")
 			{
+				this.myLastState = "Pressed";
 				this.callEvent("rawStatus", null);
-				this.myLastState = "Pressed"
 			}
 			this.myLastX = canMessage.getData("X");
 			this.myLastY = canMessage.getData("Y");
