@@ -60,6 +60,7 @@ static uint8_t buffpoint;
  
 #define C2S_START_BYTE 253
 #define C2S_END_BYTE 250
+#define C2S_PING_BYTE 251
 
 #if USE_STDCAN == 0
 volatile Can_Message_t rxMsg; // Message storage
@@ -301,14 +302,16 @@ int main(void) {
 					        }
 					        gotcan2serserver = 1;
 
-							if ((buf[UDP_DATA_P]==C2S_START_BYTE) && (buf[UDP_DATA_P+16]==C2S_END_BYTE) && (payloadlen==17)) {
+							if ((buf[UDP_DATA_P]==C2S_START_BYTE) && (buf[UDP_DATA_P+16]==C2S_END_BYTE) && (payloadlen==17)) 
+							{
 #if USE_STDCAN == 0
 								Can_Message_t cm;
 								//cm.Id = 0;
 								cm.DataLength = buf[UDP_DATA_P+7];
 								cm.RemoteFlag = buf[UDP_DATA_P+6];
 								cm.ExtendedFlag = buf[UDP_DATA_P+5];
-								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
+								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + 
+										((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
 								uint8_t i;
 								for (i = 0; i < cm.DataLength; i++) {
 									cm.Data.bytes[i] = buf[UDP_DATA_P+8+i];
@@ -318,7 +321,8 @@ int main(void) {
 								static StdCan_Msg_t cm;
 								//cm.Id = 0;
 								cm.Length = buf[UDP_DATA_P+7];
-								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + ((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
+								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + 
+										((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
 								uint8_t i;
 								for (i = 0; i < cm.Length; i++) {
 									cm.Data[i] = buf[UDP_DATA_P+8+i];
@@ -333,6 +337,19 @@ int main(void) {
 									}
 	   								printf("}\n");
 								}*/
+							}
+							else if ((buf[UDP_DATA_P]==C2S_PING_BYTE) && (payloadlen==1))
+							{
+								char sendbuf3[1];
+								sendbuf3[0] = C2S_PING_BYTE;
+				
+#ifndef ENC28J60_USART_SPI_MODE 
+								cli();
+#endif
+								send_udp(buf, sendbuf3, 1, rmCan2SerPrt, prgremotemac, prgremoteip);
+#ifndef ENC28J60_USART_SPI_MODE 
+								sei();
+#endif
 							}
 						//om port 1200 (dumparporten) 
                         } /*else if ((buf[UDP_DST_PORT_H_P]==((locDumperPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locDumperPrt & 0xff))) {
