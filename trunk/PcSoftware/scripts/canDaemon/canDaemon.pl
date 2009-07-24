@@ -253,11 +253,19 @@ sub udpServerThread {
 		### check ipaddr to ip in commandlinearg ###
 		if ($udpip == $peer_addr) {
 			#check len of incomming data
-			if (length($newmsg) > 16 && length($newmsg) < 20) {
+			if (length($newmsg) > 16 && length($newmsg) < 20) 
+			{
 				$retstring = "";
 				&c2sToString($newmsg, $retstring);
 				if (length($retstring) > 0 && $hwCremote) {
 					print $hwCremote $retstring . "\n";
+				}
+			}
+			elsif (length($newmsg) == 1) 
+			{
+				if (ord(substr($newmsg, 0, 1)) == $C2PINGSTR) 
+				{
+					print "Got pong from hardware\n";
 				}
 			}
 		}
@@ -272,17 +280,22 @@ sub udpServerInit {
 
 	$udpCsocket = IO::Socket::INET->new(PeerPort => $udpport, Proto => 'udp', PeerAddr => $udpip) 
     	or die "socket: $@";
-	
+
 	#här ska keep-alive/start-paket skickas till ipt enligt commandline-arg
 	#just nu skickas bara ett initialiseringspaket
-	my $retstring;
-	&stringToc2s("PKT 00000000 1 0", $retstring);
-        if ($retstring) {
+#	my $retstring;
+#	&stringToc2s("PKT 00000000 1 0", $retstring);
+#	if ($retstring) 
+#	{
 		### Send data ###
-		if (length($hardwareSendFunction) > 0) {
-			&{$hardwareSendFunction}($retstring);
-		}
-	}
+#		udpServerSend($retstring);
+#	}
+#	else
+#	{
+#		print "Could not create initpacket\n";
+#	}
+	print "Testing connection to hardware: ping (hardware should answer with a pong)\n";
+	udpServerSend(chr($C2PINGSTR));
 
 	### create a connection between the hardware and the tcp-server ###
 	&hardwareConnInit;
