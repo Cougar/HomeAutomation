@@ -4,7 +4,7 @@ SOURCES			= ../csharp-lib/Arguments.cs ../csharp-lib/CanPacket.cs ../csharp-lib/
 PRG				= canDude
 # You should not have to change anything below here.
 
-GMCS			= gmcs
+GMCS			= gmcs2
 CFLAGS			= -out:$(PRG).exe
 
 default: $(PRG).exe
