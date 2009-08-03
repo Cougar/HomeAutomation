@@ -7,6 +7,9 @@ sns_Touch_ID=<ID>
 sns_Touch_POLL_TIMER=<TIMER>
 sns_Touch_POLL_PERIOD=20
 
+# Number of timer overflows before force sending, 5=>100ms if POLL_PERIOD=20
+sns_Touch_POLL_SEND_RESOLUTION=5
+
 #Uncomment to use the pcint driver
 #sns_Touch_DUMMY_PCINT=<PCINT>
 
