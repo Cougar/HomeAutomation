@@ -1,0 +1,67 @@
+<?xml version="1.0" standalone="yes"?>
+<protocol>
+	<information biosversion="1339" version="1" updated="2009-08-03 16:43:40"/>
+	<datatypes>
+		<!-- Always a total of 29 bits in length -->
+		<datatype type="unsigned integer" name="moduleType" lenght="13"/>
+		<datatype type="unsigned integer" name="moduleId" lenght="8"/>
+		<datatype type="unsigned integer" name="messageId" length="8"/>
+
+		<!-- Used to send responses, depends on the number of codes -->
+		<datatype type="response" name="responseCode">
+			<code name="ok"/>
+			<code name="error"/>
+			<code name="warning"/>
+		</datatype>
+
+		<!-- Always 1 bit in length -->
+		<datatype type="boolean" name="boolean"/>
+
+		<!-- Dynamic string, no length specified, uses all the bits that are left -->
+		<datatype type="string" name="string"/>
+
+		<!-- Example standard datatypes -->
+		<datatype type="unsigned integer" name="uint10" length="10"/>
+		<datatype type="integer" name="int10" length="10"/>
+		<datatype type="string" name="string16" lenght="16"/>
+
+		<!-- Example decimal, scaling is multiplied on sending and cast to int, and divided by on reception  -->
+		<datatype type="decimal" name="decimal10" length="10" scaling="1024"/>
+
+		<!-- Example enum, length depends on the number of labels -->
+		<datatype type="enum" name="enumTest">
+			<label name="label1"/>
+			<label name="label2"/>
+			<label name="label3"/>
+		</datatype>
+	</datatypes>
+	<header>
+		<variable datatype="moduleType" name="moduleType" required="true"/>
+		<variable datatype="moduleId" name="moduleId" required="true"/>
+		<variable datatype="messageId" name="messageId" required="true"/>
+	</header>
+	<messagetypes>
+		<messagetype name="response">
+			<variable datatype="messageId" name="messageId" required="true"/>
+			<variable datatype="responseCode" name="code" required="true"/>
+		</messagetype>
+		<messagetype name="temperature">
+			<variable datatype="decimal10" name="temperature" required="true" unit="celcius"/>
+			<variable datatype="int10" name="id" required="true"/>
+			
+<!-- 		// Kanske flytta dessa ner till in-messages under modulerna -->
+			<response code="ok"/>
+			<response code="error"/>
+		</messagetype>
+	</messagetypes>
+	<modules>
+		<module name="irTranceiver">
+			<in>
+				<message name="getTemperature"/>
+			</in>
+			<out>
+				<message name="setTemperature"/>
+			</out>
+		</module>
+	</modules>
+</protocol>

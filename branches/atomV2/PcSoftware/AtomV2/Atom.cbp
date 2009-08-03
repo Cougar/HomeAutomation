@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Atom" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Atom" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="src" />
+					<Add directory="src/include" />
+				</Compiler>
+				<Linker>
+					<Add library="src/lib/libboost_date_time-gcc41-mt.a" />
+					<Add library="src/lib/libboost_program_options-gcc41-mt.a" />
+					<Add library="src/lib/libboost_signals-gcc41-mt.a" />
+					<Add library="src/lib/libboost_system-gcc41-mt.a" />
+					<Add library="src/lib/libboost_thread-gcc41-mt.a" />
+					<Add library="src/lib/libboost_filesystem-gcc41-mt.a" />
+					<Add library="pthread" />
+					<Add directory="src/lib" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Atom" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="/home/migan/projects/Atom/src" />
+			<Add directory="src/include" />
+		</Compiler>
+		<Linker>
+			<Add library="src/lib/libboost_date_time-gcc41-mt.a" />
+			<Add library="src/lib/libboost_program_options-gcc41-mt.a" />
+			<Add library="src/lib/libboost_signals-gcc41-mt.a" />
+			<Add library="src/lib/libboost_system-gcc41-mt.a" />
+			<Add library="src/lib/libboost_thread-gcc41-mt.a" />
+			<Add library="src/lib/libboost_filesystem-gcc41-mt.a" />
+			<Add directory="/home/migan/projects/Atom/src/lib" />
+		</Linker>
+		<Unit filename="src/Atom.cpp" />
+		<Unit filename="src/Exception.hpp" />
+		<Unit filename="src/HttpClient.cpp" />
+		<Unit filename="src/broker/Broker.cpp" />
+		<Unit filename="src/broker/Broker.h" />
+		<Unit filename="src/broker/Subscriber.cpp" />
+		<Unit filename="src/broker/Subscriber.h" />
+		<Unit filename="src/db/Database.cpp" />
+		<Unit filename="src/db/Database.h" />
+		<Unit filename="src/message/Datatype.cpp" />
+		<Unit filename="src/message/Datatype.h" />
+		<Unit filename="src/message/Header.cpp" />
+		<Unit filename="src/message/Header.h" />
+		<Unit filename="src/message/Message.cpp" />
+		<Unit filename="src/message/Message.h" />
+		<Unit filename="src/message/Variable.cpp" />
+		<Unit filename="src/message/Variable.h" />
+		<Unit filename="src/message/types/Selection.cpp" />
+		<Unit filename="src/message/types/Selection.h" />
+		<Unit filename="src/module/Module.cpp" />
+		<Unit filename="src/module/Module.h" />
+		<Unit filename="src/subscribers/cannet/CanNet.cpp" />
+		<Unit filename="src/subscribers/cannet/CanNet.h" />
+		<Unit filename="src/subscribers/monitor/Monitor.cpp" />
+		<Unit filename="src/subscribers/monitor/Monitor.h" />
+		<Unit filename="src/types.h" />
+		<Unit filename="src/utils/BitBuffer.cpp" />
+		<Unit filename="src/utils/BitBuffer.h" />
+		<Unit filename="src/utils/Logger.cpp" />
+		<Unit filename="src/utils/Logger.h" />
+		<Unit filename="src/utils/TSQueue.hpp" />
+		<Unit filename="src/utils/Thread.cpp" />
+		<Unit filename="src/utils/Thread.h" />
+		<Unit filename="src/utils/UdpServer.cpp" />
+		<Unit filename="src/utils/UdpServer.h" />
+		<Unit filename="src/utils/Utils.cpp" />
+		<Unit filename="src/utils/Utils.h" />
+		<Unit filename="src/xml/Node.cpp" />
+		<Unit filename="src/xml/Node.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
