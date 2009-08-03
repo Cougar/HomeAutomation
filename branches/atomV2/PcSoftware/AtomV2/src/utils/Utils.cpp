@@ -323,6 +323,11 @@ string trim(const string s, char c)
 	return result;
 }
 
+bool stob(const string s)
+{
+	return (s == "true" || s == "1" || s == "yes");
+}
+
 int stoi(const string s)
 {
 	istringstream in(s);

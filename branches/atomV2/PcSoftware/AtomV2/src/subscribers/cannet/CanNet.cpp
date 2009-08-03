@@ -78,13 +78,6 @@ void CanNet::processBuffer()
 
 	byte_list data;
 
-	/*unsigned long id = 0;
-
-	id = id | this->myBuffer[0];
-	id = id | this->myBuffer[1] << 8;
-	id = id | this->myBuffer[2] << 16;
-	id = id | this->myBuffer[3] << 24;*/
-
 	data.push_back(this->myBuffer[0]);
 	data.push_back(this->myBuffer[1]);
 	data.push_back(this->myBuffer[2]);
@@ -104,25 +97,17 @@ void CanNet::processBuffer()
 
 	header.readBits(buffer);
 
+	// TODO how do we convert from moduleType and messageId to their string names... where are these ids stored?
 
+	/*string moduleType = header.getVariable("moduleType").getValue().
+	unsigned int moduleId = header.getVariable("moduleId").getValue().
+	string messageType = header.getVariable("messageId").getValue().
 
+	Message::pointer message = boost::make_shared<Message>(moduletype, moduleId, messageType);
 
-	Message::pointer message = boost::make_shared<Message>("", 0, "");
-	// TODO Get moduletype-bits, lookup moduletype-name
+	message.readBits(buffer);
 
-	// TODO Get moduleid-bits
-
-	// TODO Get messagetype-bits, lookup messagetype-name
-
-	// TODO Get variables for message
-
-	// TODO Read in variable values
-
-	// TODO Convert bitbuffer to message
-
-
-
-	this->put(message);
+	this->put(message);*/
 
 	this->myBuffer.clear();
 }

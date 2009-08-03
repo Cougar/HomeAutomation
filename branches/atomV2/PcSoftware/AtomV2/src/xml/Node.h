@@ -34,6 +34,9 @@ public:
 	Node(string filename);
 	Node(string filename, string xmlData);
 
+	void load(string filename);
+	void parse(string filename, string xmlData);
+
 	string tagName();
 	attributeList & attributes();
 
@@ -67,7 +70,6 @@ private:
 	attributeList myAttributes;
 	nodeList myChildren;
 
-	void parse(string filename, string xmlData);
 	int parseTag(string filename, string xmlData, unsigned int position);
 };
 

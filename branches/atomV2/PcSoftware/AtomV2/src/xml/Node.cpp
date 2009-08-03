@@ -22,7 +22,7 @@ Node::Node(string filename)
 {
 	this->myIsEmpty = true;
 	LOG.setName("XML::Node");
-	this->parse(filename, file_get_contents(filename));
+	this->load(filename);
 }
 
 Node::Node(string filename, string xmlData)
@@ -30,6 +30,11 @@ Node::Node(string filename, string xmlData)
 	this->myIsEmpty = true;
 	LOG.setName("XML::Node");
 	this->parse(filename, xmlData);
+}
+
+void Node::load(string filename)
+{
+	this->parse(filename, file_get_contents(filename));
 }
 
 void Node::parse(string filename, string xmlData)
@@ -66,10 +71,10 @@ string Node::operator [](string attributeName)
 {
 	attributeList::iterator iter = this->myAttributes.find(attributeName);
 
-    if (iter == this->myAttributes.end())
-    {
+	if (iter == this->myAttributes.end())
+	{
 		return "";
-    }
+	}
 
 	return iter->second;
 }

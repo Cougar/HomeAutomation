@@ -8,25 +8,25 @@
 #ifndef CANNET_H_
 #define CANNET_H_
 
-#include "../../broker/Subscriber.h"
-#include "../../broker/Broker.h"
-#include "../../message/Message.h"
-#include "../../message/Header.h"
-#include "../../utils/BitBuffer.h"
-#include "../../utils/UdpServer.h"
-#include "../../utils/Logger.h"
+#include "broker/Subscriber.h"
+#include "broker/Broker.h"
+#include "message/Message.h"
+#include "message/Header.h"
+#include "utils/BitBuffer.h"
+#include "utils/UdpServer.h"
+#include "utils/Logger.h"
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
 #include <boost/signal.hpp>
 #include <string>
-#include "../../types.h"
+#include "types.h"
 
 namespace atom {
 namespace subscribers {
 
-using namespace atom::broker;
-using namespace atom::utils;
-using namespace atom::message;
+using namespace broker;
+using namespace utils;
+using namespace message;
 using namespace std;
 
 // public boost::signals::trackable,
@@ -51,7 +51,7 @@ protected:
 		PACKET_START = 253, PACKET_END = 250, PACKET_PING = 251
 	};
 
-	boost::shared_ptr<UdpServer> myUdpServer;
+	UdpServer::pointer myUdpServer;
 	udp::endpoint myEndpoint;
 	// TODO Add mutex lock for access to the buffer or are we safe?
 	byte_list myBuffer;

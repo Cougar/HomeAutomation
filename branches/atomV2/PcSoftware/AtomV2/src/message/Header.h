@@ -9,13 +9,15 @@
 #define HEADER_H_
 
 #include <map>
-#include "Variable.h"
-#include "../utils/BitBuffer.h"
+#include "message/Variable.h"
+#include "utils/BitBuffer.h"
+#include "db/Database.h"
 
 namespace atom {
 namespace message {
 
-using namespace atom::utils;
+using namespace utils;
+using namespace std;
 
 class Header
 {

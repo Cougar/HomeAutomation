@@ -10,6 +10,8 @@
 namespace atom {
 namespace db {
 
+Database::pointer Database::Instance(new Database());
+
 Database::Database()
 {
 	// TODO Auto-generated constructor stub
@@ -19,6 +21,21 @@ Database::Database()
 Database::~Database()
 {
 	// TODO Auto-generated destructor stub
+}
+
+Database::pointer Database::getInstance()
+{
+	return Database::Instance;
+}
+
+void Database::load(string filename)
+{
+	this->myXmlNode.load(filename);
+}
+
+xml::Node & Database::getRootNode()
+{
+	return this->myXmlNode;
 }
 
 }

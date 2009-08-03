@@ -39,6 +39,7 @@ string strtoupper(string s);
 string strtolower(string s);
 string trim(string s);
 string trim(const string s, char c);
+bool stob(const string s);
 int stoi(const string s);
 string itos(int i);
 string utos(unsigned int i);

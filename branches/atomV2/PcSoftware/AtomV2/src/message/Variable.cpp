@@ -10,14 +10,16 @@
 namespace atom {
 namespace message {
 
-Variable::Variable(string datatype, bool required, string unit)
+Variable::Variable(string name, string datatype, bool required, string unit)
 {
+	this->myName = name;
 	this->myRequired = required;
 	this->myUnit = unit;
 
-	// TODO convert datatype-string into datatype and length
-	// this->myLength;
-	// this->myDatatype = Datatype_create(type);
+	xml::Node datatypeNode = db::Database::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", datatype));
+
+	this->myLength = stoi(datatypeNode["length"]);
+	this->myDatatype = boost::make_shared<Datatype>(Datatype::getTypeFromString(datatypeNode["type"]));
 }
 
 Variable::Variable()
@@ -26,12 +28,21 @@ Variable::Variable()
 
 Variable::~Variable()
 {
-	// TODO Auto-generated destructor stub
+}
+
+boost::any Variable::getValue()
+{
+	return this->myDatatype->getValue();
+}
+
+void Variable::setValue(boost::any value)
+{
+	this->myDatatype->setValue(value);
 }
 
 void Variable::readBits(BitBuffer & buffer)
 {
-	(*this->myDatatype).readBits(buffer, this->myLength);
+	this->myDatatype->readBits(buffer, this->myLength);
 }
 
 }

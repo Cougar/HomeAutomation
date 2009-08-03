@@ -10,9 +10,10 @@
 
 #include <string>
 #include <vector>
-#include "../utils/Logger.h"
 #include <map>
-#include "Variable.h"
+#include "utils/Logger.h"
+#include "message/Variable.h"
+#include "db/Database.h"
 
 using namespace std;
 using namespace atom::utils;

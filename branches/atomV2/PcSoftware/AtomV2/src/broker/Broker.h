@@ -9,6 +9,7 @@
 #define BROKER_H_
 
 #include <boost/signal.hpp>
+#include <boost/make_shared.hpp>
 #include "../message/Message.h"
 #include "../utils/Logger.h"
 
@@ -38,8 +39,9 @@ private:
 
 	static pointer Instance;
 
-	OnMessageSignal onNewMessage;
 	Logger LOG;
+
+	OnMessageSignal onNewMessage;
 };
 
 }

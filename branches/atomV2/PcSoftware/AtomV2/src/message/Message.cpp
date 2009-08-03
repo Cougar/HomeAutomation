@@ -18,12 +18,38 @@ Message::Message(string moduletype, unsigned int moduleId, string type)
 	this->myModuleId = moduleId;
 	this->myType = type;
 
-	// TODO Check if this message is supported for the module
+	xml::Node moduleNode = db::Database::getInstance()->getRootNode().selectFirst("modules").selectFirst("module", xml::Node::attributePair("name", moduletype));
+	xml::Node messageNode = db::Database::getInstance()->getRootNode().selectFirst("messagetypes").selectFirst("messagetype", xml::Node::attributePair("name", type));
 
-	// TODO Find if this is in our out on module, if out then set myFromModule = true
+	xml::Node::nodeList variableNodes = messageNode.select("variable");
 
-	// TODO Convert type into variables
-	// TODO Convert type into responses
+	for (unsigned int n = 0; n < variableNodes.size(); n++)
+	{
+		Variable variable(variableNodes[n]["name"], variableNodes[n]["datatype"], stob(variableNodes[n]["required"]), variableNodes[n]["unit"]);
+		this->myVariables[variableNodes[n]["name"]] = variable;
+	}
+
+	if (moduleNode.selectFirst("in").select("message", xml::Node::attributePair("name", type)).size() > 0)
+	{
+		this->myFromModule = false;
+	}
+	else if (moduleNode.selectFirst("out").select("message", xml::Node::attributePair("name", type)).size() > 0)
+	{
+		this->myFromModule = true;
+	}
+	else
+	{
+		LOG.error("This message is not supported by this module type, something is wrong; protocol.xml is old, module code is old or a Atom is trying to send and illegal message.");
+		// TODO throw exception
+	}
+
+	xml::Node::nodeList responseNodes = messageNode.select("response");
+
+	for (unsigned int n = 0; n < responseNodes.size(); n++)
+	{
+		this->myResponses.push_back(responseNodes[n]["code"]); // TODO Validate the code
+	}
+
 }
 
 Message::Message()

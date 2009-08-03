@@ -28,12 +28,15 @@ enum datatypes {
 	DATATYPE_BOOLEAN,
 	DATATYPE_STRING,
 	DATATYPE_ENUM,
-	DATATYPE_RESPONSE
+	DATATYPE_RESPONSE,
+	DATATYPE_UNKNOWN
 };
 
 class Datatype
 {
 public:
+	typedef boost::shared_ptr<Datatype> pointer;
+
 	Datatype(datatypes type);
 	virtual ~Datatype();
 
@@ -43,6 +46,8 @@ public:
 	void readBits(BitBuffer & buffer, unsigned int length);
 
 	datatypes getType();
+
+	static datatypes getTypeFromString(string name);
 
 private:
 	Logger LOG;

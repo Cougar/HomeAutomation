@@ -40,10 +40,9 @@ UdpServer::pointer UdpServer::getInstance(unsigned int port)
 
 	UdpServer::pointer udpServer(new UdpServer(port));
 
-	servers.insert(make_pair(port, udpServer));
+	servers[port] = udpServer;
 
 	return udpServer;
-
 }
 
 udp::endpoint UdpServer::getEndpoint(string address)

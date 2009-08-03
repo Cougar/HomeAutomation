@@ -26,7 +26,7 @@ void Broker::put(Message::pointer message)
 
 Broker::pointer Broker::getInstance()
 {
-	return Instance;
+	return Broker::Instance;
 }
 
 Broker::Broker()

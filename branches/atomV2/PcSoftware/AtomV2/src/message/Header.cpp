@@ -12,7 +12,13 @@ namespace message {
 
 Header::Header()
 {
-	// TODO Load variables from headerfile
+	xml::Node::nodeList nodes = db::Database::getInstance()->getRootNode().selectFirst("header").select("variable");
+
+	for (unsigned int n = 0; n < nodes.size(); n++)
+	{
+		Variable variable(nodes[n]["name"], nodes[n]["datatype"], stob(nodes[n]["required"]), nodes[n]["unit"]);
+		this->myVariables[nodes[n]["name"]] = variable;
+	}
 }
 
 Header::~Header()
