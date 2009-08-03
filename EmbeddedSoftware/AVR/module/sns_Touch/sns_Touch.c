@@ -4,6 +4,7 @@ point touchBuffer[sns_Touch_BUFFERSIZE];
 uint8_t rxbufidx;
 uint8_t pushStatus;
 point lastValidPoint;
+uint8_t timeCnt;
 
 
 #ifdef sns_Touch_USEEEPROM
@@ -46,12 +47,14 @@ void sns_Touch_Init(void)
 	pushStatus = 0;
 	lastValidPoint.x=0;
 	lastValidPoint.y=0;
+	timeCnt=0;
 }
 
 void sns_Touch_Process(void)
 {
 	
 	if (Timer_Expired(sns_Touch_POLL_TIMER)) {
+		timeCnt++;
 		//StdCan_Msg_t txMsg;
 		gpio_set_in(sns_Touch_XPLUS);
 		gpio_set_pullup(sns_Touch_XPLUS);	//turn on pullup for x+
@@ -127,7 +130,9 @@ void sns_Touch_Process(void)
 				{
 					rxbufidx=0;
 				}
-
+			}
+			if (rxbufidx == 0 || (rxbufidx > 0 && xdiff+ydiff > 10) || timeCnt%sns_Touch_POLL_SEND_RESOLUTION == 0)
+			{
 				StdCan_Msg_t txMsg;
 				StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 				StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
