@@ -1,0 +1,34 @@
+## Section sns_Touch -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_Touch_USEEEPROM=1
+
+sns_Touch_ID=<ID>
+sns_Touch_POLL_TIMER=<TIMER>
+sns_Touch_POLL_PERIOD=20
+
+# Number of timer overflows before force sending, 5=>100ms if POLL_PERIOD=20
+sns_Touch_POLL_SEND_RESOLUTION=5
+
+#Uncomment to use the pcint driver
+#sns_Touch_DUMMY_PCINT=<PCINT>
+
+sns_Touch_TOUCHXAD=2
+ADCHAN2=1
+sns_Touch_TOUCHYAD=4
+ADCHAN4=1
+
+
+
+sns_Touch_XPLUS=EXP_I
+sns_Touch_XMINUS=EXP_N
+sns_Touch_YPLUS=EXP_L
+sns_Touch_YMINUS=EXP_M
+
+#sns_Touch_INVERT_Y=1
+sns_Touch_INVERT_X=1
+sns_Touch_SWITCH_XY=1
+
+sns_Touch_BUFFERSIZE=128
+
+## End section sns_Touch -- Do not edit this line

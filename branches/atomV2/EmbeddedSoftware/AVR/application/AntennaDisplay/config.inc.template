@@ -1,0 +1,6 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
+
+TIMER_NUM_TIMERS=3
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000

@@ -1,0 +1,36 @@
+# Application specific configuration file
+# All parameters required by library code should be defined here
+SERIAL_BAUDRATE=9600
+SERIAL_RX_BUFFER_SIZE=32
+SERIAL_TX_BUFFER_SIZE=64
+
+TIMER_NUM_TIMERS=1
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000
+
+
+MT_DIAL_TIMEOUT	=1800
+MT_MAX_TONES	=16
+MT8870			=1
+
+# Signals connected from MT8870 is
+# StD, Q1, Q2, Q3 och Q4
+MT_StD_PIN     	=PIND
+MT_StD_DDR      =DDRD
+MT_StD_BIT      =PD2
+
+MT_Q1_PIN       =PINC
+MT_Q1_DDR       =DDRC
+MT_Q1_BIT       =PC0
+
+MT_Q2_PIN       =PINC
+MT_Q2_DDR       =DDRC
+MT_Q2_BIT       =PC1
+
+MT_Q3_PIN       =PINC
+MT_Q3_DDR       =DDRC
+MT_Q3_BIT       =PC2
+
+MT_Q4_PIN       =PINC
+MT_Q4_DDR       =DDRC
+MT_Q4_BIT       =PC3

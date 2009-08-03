@@ -1,0 +1,13 @@
+## Section <template> -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#<template>_USEEEPROM=1
+
+<template>_ID=<ID>
+#<template>_DUMMY=1
+#<template>_DUMMY_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#<template>_DUMMY_PCINT=<PCINT>
+
+## End section <template> -- Do not edit this line

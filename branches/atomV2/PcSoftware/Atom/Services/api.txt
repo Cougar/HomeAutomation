@@ -1,0 +1,13 @@
+
+This file is intended to document what functions and objects are available to our javascript environment.
+
+THIS IS NOT COMPLETE
+
+string uint2hex(number uintValue, number numberOfBits)
+string hex2bin(string hexString)
+string bin2hex(string binString)
+number bin2float(string binString)
+string float2bin(number floatValue, number numberOfBits)
+number bin2uint(string binString)
+string uint2bin(number uintValue, number numberOfBits)
+number hex2uint(string hexString)

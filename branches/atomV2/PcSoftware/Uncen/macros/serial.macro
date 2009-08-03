@@ -1,0 +1,10 @@
+-h hostname localhost Hostname
+-p port 1200 Port number
+-b brname br Bridge name
+-sp serial_port /dev/serial_can Serial Port
+-sb serial_baud 38400 Serial Baudrate
+>run .{brname} bridge
+>run .sock_tcp socket_texttcp {hostname} {port}
+>.{brname} add sock_tcp
+>run .sock_serial socket_serial {serial_port} {serial_baud}
+>.{brname} add sock_serial

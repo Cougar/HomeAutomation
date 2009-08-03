@@ -1,0 +1,15 @@
+#File is included from TimeMacroLog.pl, should be used as user settings
+#rename to settings.pl
+
+# Host and port where the canDaemon exist
+$host 		= "sulfa.csbnet.se";
+$port 		= 1200;
+
+# DokuWiki server
+$wiki 		= "http://projekt.auml.se";
+# Namespace for CANstats
+$namespace 	= "homeautomation:livestats";
+# Pagename for your stats (the name of the CAN network)
+$pagename	= "arune";
+
+

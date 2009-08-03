@@ -1,0 +1,56 @@
+# System specific configuration file
+# Rename this file to system.inc and then modify the params below
+
+# Define the command used to upload BIOS to the node
+# It will be executed as $(UPLOAD) $(ULFLAGS).
+# $(MCU) is the AVR device to use and the file to upload is $(BIOSDIR)/$(BIOSTARGET).hex
+#You may need to change 'avrisp2' below if you have another type of programmer device
+
+UPLOAD         = avrdude
+ULFLAGS        = -p $(MCU) -P usb -c avrisp2 -U flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
+
+AVRDUDE_WRITE_FUSEBITS = -u
+ifdef EXTFUSE
+AVRDUDE_WRITE_FUSEBITS += -U efuse:w:$(EXTFUSE):m
+endif
+ifdef HIGHFUSE
+AVRDUDE_WRITE_FUSEBITS += -U hfuse:w:$(HIGHFUSE):m
+endif
+ifdef LOWFUSE
+AVRDUDE_WRITE_FUSEBITS += -U lfuse:w:$(LOWFUSE):m
+endif
+
+#when this line is uncommented the avr will be programmed with fuses automatically (fuses is defined in bios.inc)
+ULFLAGS      += $(AVRDUDE_WRITE_FUSEBITS)
+
+#Commands used to upload a new version of bios over can, see makefile for more details
+CANUPLOAD         = mono ../../../../PcSoftware/canDude/canDude.exe
+CANULFLAGS        = -h localhost -p 1200
+#CANUPLOAD          = ../../../../PcSoftware/Atom/atomDude.pl
+#CANULFLAGS         = -h localhost -p 1202
+
+##### BUILD BINARIES #####
+#Define the binaries to use on your system, if not in path then add path (example: AWK=/usr/bin/awk)
+
+# on BSD/MAC this should be MD5SUM = md5
+MD5SUM = md5sum
+
+# on cygwin (windows) and perhaps other platforms this should be AWK = gawk
+AWK = awk
+
+SHELL = sh
+CC = avr-gcc
+OBJCOPY = avr-objcopy
+OBJDUMP = avr-objdump
+SIZE = avr-size
+NM = avr-nm
+COPY = cp
+RM = rm -f
+MKDIR = mkdir
+AR = avr-ar
+UUIDGEN = uuidgen
+CUT = cut
+GREP = grep
+CAT = cat
+ECHO = echo
+PERL = perl

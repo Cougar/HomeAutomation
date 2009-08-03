@@ -1,0 +1,19 @@
+## Section sns_rotary -- Do not edit this line
+
+sns_rotary_ID=<ID>
+sns_rotary_PCINT_BTN=<PCINT>
+sns_rotary_PCINT_CH1=<PCINT>
+sns_rotary_PCINT_CH2=<PCINT>
+
+ROTARY_CH1=EXP_O
+ROTARY_CH2=EXP_N
+ROTARY_CHx_INVERT_DIRECTION=1
+
+ROTARY_BTN=EXP_P
+ROTARY_BTN_INVERT_OUTPUT=1 
+ 
+#sns_rotary_DUMMY=1
+sns_rotary_TIMER=<TIMER>
+sns_rotary_SEND_DELAY=100
+
+## End section sns_rotary -- Do not edit this line

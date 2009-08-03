@@ -1,0 +1,36 @@
+TODO
+====
+Bugs
+----
+* CanTranslator and CanMessage should use unsigned int maybe
+* When doing flashing with command console and aborting with ctrl+c, atom segfaults
+* For some reason the logfile can not be opened
+* atom start services when it sees the bios_start shall be appl_start....
+* Send only variables that we want, optional
+
+Features
+--------
+* Commandline options override settings
+* Implement more useful functions for the command console
+* Implement internal canDaemon functionality
+* Mysql-interface
+* Build javascript for programming a node
+* Optional variables to commands?
+* Command interface with tabbing
+
+Other
+-----
+* When a node comes online, atom shall reset what it remembers from when it was online before, if you now add a module and install this application atom will not recognice it
+* Atom does not complain if you try to set a command that do not exist
+* Error checking...
+* FIXMEs
+* Implement more module-services...
+* CanTranslator needs more structure... it is hard to know what is what now
+* Change XML-file, make command-names unique. Remove type, remove module attributes on commands and specify which commands a module supports in the module list
+* Local xml-file
+* Use RemoteFlag as direction, extend moduletype to the first 13 bits of the can header instead of class, dirFlag and modtype
+
+Documentation
+-------------
+* Commented javascript examples for modules and logic scripts
+* Wiki-text to describe all aspects of Atom

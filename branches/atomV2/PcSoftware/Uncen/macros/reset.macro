@@ -1,0 +1,6 @@
+-h hostname localhost Hostname to daemon
+-p port 1200 Port to daemon
+-n nodeid - Node id
+>run .sock socket_texttcp {hostname} {port}
+>run .dude dude sock {nodeid} reset
+>lastjob dude

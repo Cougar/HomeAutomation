@@ -1,0 +1,14 @@
+## Section sns_ds18x20 -- Do not edit this line
+
+sns_ds18x20_ID=<ID>
+sns_ds18x20_TIMER=<TIMER>
+sns_ds18x20_SEND_PERIOD=20
+sns_ds18x20_SEND_DELAY=500
+sns_ds18x20_SEARCH_TIMEOUT=5
+
+#Only used if chn_ChnMaster is loaded to
+sns_ds18x20_CHN_CHANNEL=0
+
+OW_PIN=EXP_F
+
+## End section sns_ds18x20 -- Do not edit this line

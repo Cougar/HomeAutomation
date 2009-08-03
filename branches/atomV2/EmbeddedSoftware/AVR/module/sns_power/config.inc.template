@@ -1,0 +1,17 @@
+## Section sns_power -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+sns_power_USEEEPROM=1
+
+sns_power_ID=<ID>
+
+sns_power_SEND_TIMER=<TIMER>
+
+sns_power_PCINT=<PCINT>
+
+#Default report interval in seconds, not greater then 64.
+sns_power_SEND_PERIOD=10
+
+POWER_SNS_PIN=EXP_C
+
+## End section sns_power -- Do not edit this line

@@ -1,0 +1,658 @@
+<?xml version="1.0" standalone="yes"?>
+<root>
+  <classes>
+    <class id="0" name="nmt" description="Networkmanagement used only for packets with the nmt-protcol header"/>
+    <class id="11" name="mnmt" description="Module networkmanagement, right now only used for requesting module listing from a node"/>
+    <class id="12" name="act" description="Actuator nmt_messages"/>
+    <class id="13" name="sns" description="Sensor nmt_messages"/>
+    <class id="14" name="def" description="Default, not to be used"/>
+    <class id="15" name="tst" description="Testing stuff"/>
+    <class id="10" name="chn" description="Control channel based"/>
+  </classes>
+  <commands>
+    <command id="0" name="List" type="global" module="" description="Message that module send to tell the world what it is">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+        <variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="SequenceNumber" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    
+    <command id="2" name="Debug" type="global" module="" description="Used for debugging, should not be used for anything real"/>
+    <command id="3" name="Report_Interval" type="global" module="" description="Get/Set interval of reporting">
+      <variables>
+        <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
+      </variables>
+    </command>
+    
+    <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="65" name="Temperature_Celsius" type="physical" module="" description="Temperature data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Celsius" description=""/>
+      </variables>
+    </command>
+    <command id="66" name="Humidity_Percent" type="physical" module="" description="Humidity data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="67" name="Voltage" type="physical" module="" description="Voltage data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Volt" description=""/>
+      </variables>
+    </command>
+    <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data">
+      <variables>
+        <variable name="Number" type="hexstring" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status">
+      <variables>
+        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Direction" type="enum" start_bit="8" bit_length="8" unit="" description="">
+          <value id="0" name="Clockwise"/>
+          <value id="1" name="Counterclockwise"/>
+        </variable>
+        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Position" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="70" name="Button" type="physical" module="" description="">
+      <variables>
+        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
+      </variables>
+    </command>
+    <command id="71" name="IR" type="physical" module="" description="IR data protocol encoding">
+      <variables>
+        <variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="State of remote button">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
+        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Button protocol">
+          <value id="0" name="RC5"/>
+          <value id="1" name="RC6"/>
+          <value id="2" name="RCMM"/>
+          <value id="3" name="SIRC"/>
+          <value id="4" name="Sharp"/>
+          <value id="5" name="NEC"/>
+          <value id="6" name="Samsung"/>
+          <value id="7" name="Marantz"/>
+          <value id="255" name="Unknown"/>
+        </variable>
+        <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
+      </variables>
+    </command>
+    <command id="72" name="Current" type="physical" module="" description="Current data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Ampere" description=""/>
+      </variables>
+    </command>
+    <command id="73" name="ElectricPower" type="physical" module="" description="Message with data from a power meter">
+      <variables>
+        <variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
+        <variable name="EnergySum" type="uint" start_bit="16" bit_length="32" unit="W/h" description=""/>
+		<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
+      </variables>
+    </command>
+    <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
+      <variables>
+        <variable name="Energy" type="uint" start_bit="0" bit_length="32" unit="W/h" description=""/>
+      </variables>
+    </command>
+    <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Millisecond" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Millisecond" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
+	<variables>
+		<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+		<variable name="Lat_min" type="uint" start_bit="8" bit_length="8" unit="'" description="Minutes lat"/>
+		<variable name="Lat_sec" type="uint" start_bit="16" bit_length="15" unit="''" description="Seconds Lat"/>
+		<variable name="Lat_CD" type="uint" start_bit="31" bit_length="1" unit="" description="N/S"/>
+		<variable name="Lon_deg" type="uint" start_bit="32" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+		<variable name="Lon_min" type="uint" start_bit="40" bit_length="8" unit="'" description="Minutes lat"/>
+		<variable name="Lon_sec" type="uint" start_bit="48" bit_length="15" unit="''" description="Seconds Lat"/>
+		<variable name="Lon_CD" type="uint" start_bit="63" bit_length="1" unit="" description="E/W"/>		
+	</variables>
+    </command>
+    <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
+     <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
+    <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
+      <variables>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="LCD_Text" type="specific" module="HD44789" description="Print text on LCD">
+      <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+     <command id="131" name="LCD_Size" type="specific" module="HD44789" description="Size of LCD">
+      <variables>
+        <variable name="Width" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Height" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="132" name="LCD_Backlight" type="specific" module="HD44789" description="Set LCD backlight brightness">
+      <variables>
+        <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+      <command id="133" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
+      <variables>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </command>
+    
+    <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
+	<variables>
+	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="I_term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="D_term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+	</variables>
+      </command>
+    <command id="129" name="CONFIG" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="sensorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	  <variable name="sensorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
+      <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="pwmPeriod" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="pwmDefaultValue" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="DefaultState" type="enum" start_bit="32" bit_length="2" unit="" description="">
+	    <value id="0" name="LOW"/>
+	    <value id="1" name="HIGH"/>
+	    <value id="2" name="TRISTATE"/>
+	  </variable>
+	   <variable name="StartUpState" type="enum" start_bit="34" bit_length="1" unit="" description="">
+	    <value id="0" name="ON"/>
+	    <value id="1" name="OFF"/>
+	  </variable>
+	</variables>
+      </command>
+      <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
+      <variables>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+      </variables>
+    </command>
+    <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
+      <variables>
+        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description="Char position in x direction"/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description="Char position in y direction"/>
+	<variable name="Inverted" type="enum" start_bit="16" bit_length="1" unit="" description="Set to 1 of you want an inverted output">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Transparent" type="enum" start_bit="17" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Transparent"/>
+	</variable>
+      </variables>
+    </command>
+    <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD on current postion, according to the latest LCD_Cursor command">
+      <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="LCD_Invert" type="specific" module="KS0108" description="Invert LCD">
+      <variables>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+      </variables>
+    </command>
+    <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
+      <variables>
+        <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
+      <variables>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Transparent" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Transparent"/>
+	</variable>  
+	<variable name="X" type="uint" start_bit="2" bit_length="6" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="134" name="LCD_DrawRect" type="specific" module="KS0108" description="Draw a rectangle on LCD">
+      <variables>
+        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+          <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Fill" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want the rectangle filled">
+	  <value id="0" name="NoFill"/>
+	  <value id="1" name="Fill"/>
+	</variable>  
+	<variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Width" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Height" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Radius" type="uint" start_bit="40" bit_length="8" unit="" description="Only valid for non-fill rectangles"/>
+      </variables>
+      </command>
+      
+      <command id="135" name="LCD_DrawLine" type="specific" module="KS0108" description="Draw a line on LCD">
+	<variables>
+	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	    <value id="0" name="Standard"/>
+	    <value id="1" name="Inverted"/>
+	  </variable>
+	  <variable name="X1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="Y1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	  <variable name="X2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	  <variable name="Y2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
+    
+      <command id="136" name="LCD_DrawCircle" type="specific" module="KS0108" description="Draw a circle on LCD">
+	<variables>
+	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	    <value id="0" name="Standard"/>
+	    <value id="1" name="Inverted"/>
+	  </variable>
+	  <variable name="Xcentre" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="Ycentre" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	  <variable name="Radius" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>    
+
+    <command id="137" name="LCD_InvertRect" type="specific" module="KS0108" description="Invert pixels in an rectangle on the LCD">
+      <variables>
+	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Width" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Height" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    
+    <command id="138" name="LCD_New_Image" type="specific" module="KS0108" description="Store a new image in eeprom">
+      <variables>
+	<variable name="image_id" type="uint" start_bit="0" bit_length="8" unit="" description="the new image id"/>
+        <variable name="size_X" type="uint" start_bit="8" bit_length="8" unit="" description="Size in x direction"/>
+        <variable name="size_Y" type="uint" start_bit="16" bit_length="8" unit="" description="Size in y direction"/>
+      </variables>
+    </command>
+        <command id="139" name="LCD_Ack" type="specific" module="KS0108" description="Data correctly received">
+      <variables>
+	<variable name="packet_id" type="uint" start_bit="0" bit_length="8" unit="" description="Id of the packet that is acknoleged"/>
+      </variables>
+    </command>
+     
+        <command id="140" name="LCD_Error" type="specific" module="KS0108" description="Data error"/>
+    
+        <command id="141" name="LCD_Image_Data" type="specific" module="KS0108" description="Data"/>
+        <command id="141" name="LCD_Image_Data_7" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Data6" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_6" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_5" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_4" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_3" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_2" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="141" name="LCD_Image_Data_1" type="specific" module="KS0108" description="Data">
+      <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="142" name="LCD_Data_id_Error" type="specific" module="KS0108" description="Wrong data id received">
+      <variables>
+	<variable name="id" type="uint" start_bit="0" bit_length="8" unit="" description="The expected id"/>
+      </variables>
+    </command>
+    
+        <command id="143" name="LCD_Data_Done" type="specific" module="KS0108" description="All data sent">
+      <variables>
+      </variables>
+    </command>
+    
+    <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
+        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    
+    <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+		    <value id="0" name="Decrease"/>
+		    <value id="1" name="Increase"/>
+	    </variable>
+      </variables>
+    </command>
+    <command id="130" name="Stop_Fade" type="specific" module="Dimmer230" description="If a fade is in progress, then stop">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+      </variables>
+    </command>
+    <command id="131" name="Abs_Fade" type="specific" module="Dimmer230" description="Fade to a defined value, stops when another command is received">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+        <variable name="EndValue" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="132" name="Rel_Fade" type="specific" module="Dimmer230" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
+     <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+		    <value id="0" name="Decrease"/>
+		    <value id="1" name="Increase"/>
+	    </variable>
+        <variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description="Number of steps to fade"/>
+      </variables>
+    </command>
+    <command id="133" name="Netinfo" type="specific" module="Dimmer230" description="Information about the connected net power">
+     <variables>
+        <variable name="Connection" type="enum" start_bit="0" bit_length="1" unit="" description="If the dimmer is connected to net power">
+		    <value id="0" name="Disconnected"/>
+		    <value id="1" name="Connected"/>
+		</variable>
+        <variable name="Frequency" type="enum" start_bit="1" bit_length="2" unit="" description="Frequency of the net power">
+		    <value id="0" name="Error_Unknown"/>
+		    <value id="1" name="50Hz"/>
+		    <value id="2" name="60Hz"/>
+		</variable>
+		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
+      </variables>
+    </command>
+    <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
+     <variables>
+        <variable name="Period" type="uint" start_bit="0" bit_length="16" unit="ms" description=""/>
+        <variable name="Resolution" type="uint" start_bit="16" bit_length="8" unit="ms" description=""/>
+     </variables>
+    </command>
+    <command id="128" name="Gesture" type="specific" module="Touch" description="Parsed touch data as a gesture">
+     <variables>
+        <variable name="f1" type="uint" start_bit="0" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and the straight line f(x) which connects the first and last point of the gesture"/>
+        <variable name="f7" type="uint" start_bit="8" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and all horizontal lines yi, where i is between 0 and n, that constitute a gesture"/>
+        <variable name="f3" type="enum" start_bit="16" bit_length="1" unit="" description="Indicates the sign value of area gap between g(x) and f(x)">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f4" type="enum" start_bit="17" bit_length="1" unit="" description="Represents the sign value of the sum of the x coordinates of all the points that constitute strokes minus the x coordinates of the last point">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f5" type="enum" start_bit="18" bit_length="1" unit="" description="Checks the sign value of the sum of the x coordinates of all the points that constitute strokes minus x coordinates of the first point">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f6" type="enum" start_bit="19" bit_length="1" unit="" description="Indicates the sign value of the y coordinates of the last point minus y coordinates of the first point">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f8" type="enum" start_bit="20" bit_length="1" unit="" description="Checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f9" type="enum" start_bit="21" bit_length="1" unit="" description="Represents the sign value of the multiplication of x coordinates of the first point and the last point minus the mediate value of x coordinates of all the points">
+   	       <value id="0" name="M"/>
+   	       <value id="1" name="P"/>
+        </variable>
+        <variable name="f2" type="enum" start_bit="22" bit_length="2" unit="" description="Checks if the y coordinates of the points which exist between the intersection point and the last point are greater than the y coordinates of the intersection point">
+	       <value id="0" name="M"/>
+	       <value id="1" name="P"/>
+	       <value id="2" name="U"/>
+        </variable>
+     </variables>
+    </command>
+    <command id="129" name="Raw" type="specific" module="Touch" description="Raw touch data">
+     <variables>
+        <variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="Gives the current push status">
+          <value id="1" name="Pressed"/>
+          <value id="0" name="Released"/>
+        </variable>
+        <variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+     </variables>
+    </command>
+  </commands>
+  <modules>
+    <module id="0" name="Debug" class="tst"/>
+    <module id="1" name="Default" class="def"/>
+    <module id="3" name="DS18x20" class="sns"/>
+    <module id="5" name="FOST02" class="sns"/>
+    <module id="6" name="BusVoltage" class="sns"/>
+    <module id="7" name="SimpleDTMF" class="sns"/>
+    <module id="8" name="Rotary" class="sns"/>
+    <module id="9" name="HD44789" class="act"/>
+    <module id="10" name="Dimmer230" class="act"/>
+    <module id="11" name="KS0108" class="act"/>
+    <module id="12" name="RGBdriver" class="act"/>
+    <module id="13" name="LEDPWM" class="act"/>
+    <module id="14" name="irReceive" class="sns"/>
+    <module id="15" name="nmea" class="sns"/>
+    <module id="16" name="irTransmit" class="sns"/>
+    <module id="17" name="TC1047A" class="sns"/>
+    <module id="18" name="PID" class="act"/>
+    <module id="19" name="SlowPWM" class="act"/>
+    <module id="20" name="power" class="sns"/>
+    <module id="21" name="softPWM" class="act"/>
+    <module id="22" name="Touch" class="sns"/>
+    <module id="30" name="ChnMaster" class="chn"/>
+    <module id="31" name="ChnController" class="chn"/>
+  </modules>
+  <defines>
+    <define id="1" group="DirectionFlag" name="From_Owner"/>
+    <define id="0" group="DirectionFlag" name="To_Owner"/>
+  </defines>
+  <nmt_messages>
+    <nmt_message id="0" name="Time"/>
+    <nmt_message id="4" name="Reset">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="8" name="Bios_Start">
+      <variables>
+        <variable name="BiosVersion" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="HasApplication" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="12" name="Pgm_Start">
+      <variables>
+        <variable name="Address0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Address1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Address2" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Address3" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_48">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Data5" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_8">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_16">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_24">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_32">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="16" name="Pgm_Data_40">
+      <variables>
+        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="20" name="Pgm_End"/>
+    <nmt_message id="24" name="Pgm_Copy">
+      <variables>
+        <variable name="Source0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Source1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Destination0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Destination1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Length0" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Length1" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="28" name="Pgm_Ack">
+      <variables>
+        <variable name="Data" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="32" name="Pgm_Nack">
+      <variables>
+        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="36" name="Start_App" description="Send to node to start the application in the node">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="40" name="App_Start" description="Sent by the application in a node when it starts">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
+    </nmt_message>
+    <nmt_message id="44" name="Heartbeat">
+      <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+        <variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </nmt_message>
+  </nmt_messages>
+</root>

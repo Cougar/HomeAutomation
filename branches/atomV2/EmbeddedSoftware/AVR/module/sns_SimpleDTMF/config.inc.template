@@ -1,0 +1,37 @@
+## Section sns_SimpleDTMF -- Do not edit this line
+
+sns_SimpleDTMF_ID=<ID>
+sns_SimpleDTMF_MT_TIMER=<TIMER>
+
+# Pin config and values for DTMF driver
+
+MT_TIMER=sns_SimpleDTMF_MT_TIMER
+MT_MAX_TONES=16
+MT_DIAL_TIMEOUT=1800
+MT8870=1
+
+# Signals connected from MT8870 is
+# StD, Q1, Q2, Q3 och Q4
+MT_StD_PIN=PIND
+MT_StD_DDR=DDRD
+MT_StD_BIT=PD2
+
+MT_Q1_PIN=PINC
+MT_Q1_DDR=DDRC
+MT_Q1_BIT=PC0
+
+MT_Q2_PIN=PINC
+MT_Q2_DDR=DDRC
+MT_Q2_BIT=PC1
+
+MT_Q3_PIN=PINC
+MT_Q3_DDR=DDRC
+MT_Q3_BIT=PC2
+
+MT_Q4_PIN=PINC
+MT_Q4_DDR=DDRC
+
+## Should be PC4 on corecard expansion and PC3 on NodeCallerID
+MT_Q4_BIT=PC4
+
+## End section sns_SimpleDTMF -- Do not edit this line

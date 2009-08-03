@@ -1,0 +1,24 @@
+i konfig skall man ange paths, dessa ska läsas in av java och kontrolleras?
+
+läs in dessa paths, sök igenom dess underkataloger
+
+
+[10:00:15] <ceda> annars är det ju typ 
+new TreeSet(new MinFilsorterare()).addAll(new File("/tmp").listFiles())
+
+
+i konfig anger man en "mediatyp" så som film/music osv, dessa ska sen motsvara var sitt
+objekt i modmediahandler (t.ex. movieHandlerObject)
+
+en lista från t.ex. movieHandlerObject ska vara de katalognamn som innehåller filer med filtyper
+som är kvar vid applicerat filter.
+Trycker man höger i menyn så ska info om denna film hämtas om nfo-fil med imdb-nummer finns
+info kunna ges om hur många filer som tillhör den här filmen, filtyper?, imdb-info ska hämtas
+
+movieHandlerObject
+
+börja med:
+ange en path
+rota igenom alla kataloger och underkataloger
+	om katalog innhåller filer som inte filtrerats bort med filtypsfilter 
+	så ska en ny instans av filmobjektet skapas med pathen satt, på något sätt filnamnen också?

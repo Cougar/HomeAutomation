@@ -1,0 +1,22 @@
+## Section application -- Do not edit this line
+
+# Application specific configuration file
+# All parameters required by library code should be defined here
+
+# Support for printf-over-can, read more at http://projekt.auml.se/homeautomation:software:embedded:avr:module#printf_over_can
+CAN_PRINTF=0
+
+MODULE_APPLICATION=1
+TIMER_USE_TIMER=2
+TIMER_TICKFREQ=1000
+STDCAN_HEARTBEAT_PERIOD=10000
+APP_HEARTBEAT_TIMER=<TIMER>
+
+# This must be last in this section
+
+TIMER_NUM_TIMERS=<NUMBER_OF_TIMERS>
+NUMBER_OF_MODULES=<NUMBER_OF_MODULES>
+PCINT_NUM_PCINTS=<NUMBER_OF_PCINTS>
+
+
+## End section application -- Do not edit this line

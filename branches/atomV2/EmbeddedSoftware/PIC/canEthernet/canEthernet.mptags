@@ -1,0 +1,1753 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+!_TAG_REVISION_NAME	MCHPTags	//
+!_TAG_REVISION_VERSION	6.0.1	//
+ACK::(0x10)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	87;"	d	line:87	file:
+ACTIVE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	156;"	v	line:156
+ADDRESS_FILL::0b0100	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1873;"	d	line:1873	file:
+ANDOR	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	304;"	m	line:304	struct:_REG::<anonymous>
+APP_CONFIG	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	474;"	t	line:474
+APP_VERSION::0x0002	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	42;"	d	line:42
+ARPGet	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	68;"	p	line:68	signature:(NODE_INFO *remote, BYTE *opCode)
+ARPGet	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	93;"	f	line:93	signature:(NODE_INFO *remote, BYTE *opCode)
+ARPInit	F:\MCP\projects\CAN\canEthernet\Include\ARPTsk.h	60;"	p	line:60	signature:(void)
+ARPInit	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	81;"	f	line:81	signature:(void)
+ARPIsResolved	F:\MCP\projects\CAN\canEthernet\Include\ARPTsk.h	119;"	p	line:119	signature:(IP_ADDR *IPAddr, MAC_ADDR *MACAddr)
+ARPIsResolved	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	199;"	f	line:199	signature:(IP_ADDR *IPAddr, MAC_ADDR *MACAddr)
+ARPIsTxReady::MACIsTxReady(TRUE)	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	87;"	d	line:87
+ARPProcess	F:\MCP\projects\CAN\canEthernet\Include\ARPTsk.h	78;"	p	line:78	signature:(void)
+ARPProcess	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	114;"	f	line:114	signature:(void)
+ARPPut	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	107;"	p	line:107	signature:(NODE_INFO *remote, BYTE opCode)
+ARPPut	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	150;"	f	line:150	signature:(NODE_INFO *remote, BYTE opCode)
+ARPResolve	F:\MCP\projects\CAN\canEthernet\Include\ARPTsk.h	96;"	p	line:96	signature:(IP_ADDR *IPAddr)
+ARPResolve	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	166;"	f	line:166	signature:(IP_ADDR *IPAddr)
+ARP_H	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	38;"	d	line:38
+ARP_IP::(0x0800u)	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	53;"	d	line:53	file:
+ARP_OPERATION_REQ::0x01u	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	48;"	d	line:48	file:
+ARP_OPERATION_RESP::0x02u	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	49;"	d	line:49	file:
+ARP_PACKET	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	69;"	t	line:69	file:
+ARP_REPLY::(0x00)	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	46;"	d	line:46
+ARP_REQUEST::(0x01)	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	47;"	d	line:47
+ARP_STATE	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	53;"	t	line:53	file:
+ARP_TSK_H	F:\MCP\projects\CAN\canEthernet\Include\ARPTsk.h	39;"	d	line:39
+ARP_UNKNOWN::(0x02)	F:\MCP\projects\CAN\canEthernet\Include\ARP.h	48;"	d	line:48
+AUTOINC	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	281;"	m	line:281	struct:_REG::<anonymous>
+AVAILABLE_SOCKETS2::(AVAILABLE_SOCKETS-MAX_HTTP_CO	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	392;"	d	line:392
+AVAILABLE_SOCKETS2::(MAX_SOCKETS)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	394;"	d	line:394
+AVAILABLE_SOCKETS3::(AVAILABLE_SOCKETS2)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	403;"	d	line:403
+AVAILABLE_SOCKETS3::(AVAILABLE_SOCKETS2-2)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	401;"	d	line:401
+AVAILABLE_SOCKETS::(MAX_SOCKETS)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	390;"	d	line:390
+AVAILABLE_UDP_SOCKETS2::(AVAILABLE_UDP_SOCKETS-1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	414;"	d	line:414
+AVAILABLE_UDP_SOCKETS2::AVAILABLE_UDP_SOCKETS	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	416;"	d	line:416
+AVAILABLE_UDP_SOCKETS3::(AVAILABLE_UDP_SOCKETS2-1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	420;"	d	line:420
+AVAILABLE_UDP_SOCKETS3::AVAILABLE_UDP_SOCKETS2	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	422;"	d	line:422
+AVAILABLE_UDP_SOCKETS4::(AVAILABLE_UDP_SOCKETS2)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	426;"	d	line:426
+AVAILABLE_UDP_SOCKETS4::AVAILABLE_UDP_SOCKETS3	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	428;"	d	line:428
+AVAILABLE_UDP_SOCKETS::(MAX_UDP_SOCKETS)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	412;"	d	line:412
+AckNumber	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	96;"	m	line:96	struct:_TCP_HEADER	file:
+AdditionalRecords	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	69;"	m	line:69	struct:_DNS_HEADER	file:
+Address	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	76;"	m	line:76	struct:_MPFS_ENTRY	file:
+Address	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	83;"	m	line:83	struct:_MPFS_ENTRY	file:
+Answers	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	67;"	m	line:67	struct:_DNS_HEADER	file:
+AppConfig	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	102;"	v	line:102
+AuthoritativeRecords	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	68;"	m	line:68	struct:_DNS_HEADER	file:
+BCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	298;"	m	line:298	struct:_REG::<anonymous>
+BFC::(0b101<<5)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	92;"	d	line:92	file:
+BFCReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	141;"	p	line:141	file:	signature:(BYTE Address, BYTE Data)
+BFCReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1729;"	f	line:1729	file:	signature:(BYTE Address, BYTE Data)
+BFS::(0b100<<5)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	91;"	d	line:91	file:
+BFSReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	142;"	p	line:142	file:	signature:(BYTE Address, BYTE Data)
+BFSReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1769;"	f	line:1769	file:	signature:(BYTE Address, BYTE Data)
+BISTChecksum	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1876;"	l	line:1876
+BISTST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	356;"	m	line:356	struct:_REG::<anonymous>
+BISTST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	366;"	m	line:366	struct:_REG::<anonymous>
+BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	t	line:15
+BOOL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	47;"	t	line:47
+BPEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	342;"	m	line:342	struct:_REG::<anonymous>
+BROADCAST_ADDRESS::(0xffffffffL)	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	570;"	d	line:570	file:
+BSEL0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	286;"	m	line:286	struct:_REG::<anonymous>
+BSEL1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	287;"	m	line:287	struct:_REG::<anonymous>
+BUFER	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	270;"	m	line:270	struct:_REG::<anonymous>
+BUFFER	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	438;"	t	line:438
+BUSY	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	375;"	m	line:375	struct:_REG::<anonymous>
+BUTTON0_IO::(PORTBbits.RB1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	60;"	d	line:60
+BUTTON0_TRIS::(TRISBbits.TRISB1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	59;"	d	line:59
+BYTE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	16;"	t	line:16
+BYTE	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	48;"	t	line:48
+BYTE_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	66;"	t	line:66
+BackpressureApplied	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	63;"	m	line:63
+BankSel	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	137;"	p	line:137	file:	signature:(WORD Register)
+BankSel	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1838;"	f	line:1838	file:	signature:(WORD Register)
+Broadcast	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	53;"	m	line:53
+Broadcast	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	82;"	m	line:82
+BusyUART::BusyUSART	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	101;"	d	line:101
+BusyUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	38;"	p	line:38	signature:(void)
+ByteCount	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	46;"	m	line:46
+ByteCount	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	72;"	m	line:72
+BytesToWrite	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	382;"	l	line:382
+BytesTransmittedOnWire	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	60;"	m	line:60
+CANDEFS_H	F:\MCP\projects\CAN\canBase\Include\CANdefs.h	14;"	d	line:14
+CAN_H	F:\MCP\projects\CAN\canBase\Include\CAN.h	13;"	d	line:13
+CAN_PRIORITY	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	t	line:20
+CLKRDY	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	264;"	m	line:264	struct:_REG::<anonymous>
+CLK_CONFIG	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	70;"	t	line:70
+CLOCK_FREQ::(40000000)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	45;"	d	line:45
+COCON	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	389;"	m	line:389	struct:_REG::<anonymous>
+COCON0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	383;"	m	line:383	struct:_REG::<anonymous>
+COCON1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	384;"	m	line:384	struct:_REG::<anonymous>
+COCON2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	385;"	m	line:385	struct:_REG::<anonymous>
+COLSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	495;"	m	line:495
+COMPILER_H	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	40;"	d	line:40
+CR::'\r'	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	18;"	d	line:18
+CRCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	303;"	m	line:303	struct:_REG::<anonymous>
+CRCError	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	48;"	m	line:48
+CRCError	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	77;"	m	line:77
+CSUMEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	290;"	m	line:290	struct:_REG::<anonymous>
+CURRENT	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	43;"	e	line:43	enum:_timeClock
+CURRENTIME	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	149;"	v	line:149
+Cache	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	62;"	v	line:62	file:
+CalcChecksum	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	100;"	l	line:100
+CalcChecksum	F:\MCP\projects\CAN\canEthernet\Source\IP.c	121;"	l	line:121
+CalcIPBufferChecksum	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	52;"	p	line:52	signature:(WORD len)
+CalcIPBufferChecksum	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	72;"	p	line:72	signature:(WORD len)
+CalcIPBufferChecksum	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1076;"	f	line:1076	signature:(WORD len)
+CalcIPBufferChecksum	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	278;"	f	line:278	signature:(WORD len)
+CalcIPChecksum	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	51;"	p	line:51	signature:(BYTE *buffer, WORD len)
+CalcIPChecksum	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	220;"	f	line:220	signature:(BYTE* buffer, WORD count)
+CarrierPreviouslySeen	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	75;"	m	line:75
+Checkbyte	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	282;"	l	line:282
+Checksum	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	84;"	m	line:84	struct:_UDP_HEADER
+Checksum	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	59;"	m	line:59	struct:_ICMP_PACKET	file:
+Checksum	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	120;"	m	line:120	struct:_TCP_HEADER	file:
+CloseSocket	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1331;"	f	line:1331	file:	signature:(SOCKET_INFO* ps)
+CloseSocket	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	190;"	p	line:190	file:	signature:(SOCKET_INFO* ps)
+CloseUART::CloseUSART	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	102;"	d	line:102
+CloseUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	39;"	p	line:39	signature:(void)
+Code	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	58;"	m	line:58	struct:_ICMP_PACKET	file:
+CodeViolation	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	76;"	m	line:76
+CollisionCount	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	47;"	m	line:47
+ConfigIntUART::(a)ConfigIntUSART(a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	103;"	d	line:103
+ControlFrame	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	61;"	m	line:61
+ControlFrame	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	84;"	m	line:84
+CurrentPacketLocation	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	158;"	v	line:158
+CurrentTxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	153;"	v	line:153
+DATA_BUFFER	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	133;"	t	line:133	file:
+DEFER	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	343;"	m	line:343	struct:_REG::<anonymous>
+DELAY_H	F:\MCP\projects\CAN\canEthernet\Include\Delay.h	37;"	d	line:37
+DMAChecksum	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1876;"	l	line:1876
+DMAIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	245;"	m	line:245	struct:_REG::<anonymous>
+DMAIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	257;"	m	line:257	struct:_REG::<anonymous>
+DMAST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	291;"	m	line:291	struct:_REG::<anonymous>
+DNSAnswerHeader	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	143;"	l	line:143
+DNSGetString	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	321;"	f	line:321	file:	signature:(BYTE *String)
+DNSGetString	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	82;"	p	line:82	file:	signature:(BYTE *String)
+DNSHeader	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	142;"	l	line:142
+DNSHostName	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	51;"	v	line:51	file:
+DNSIsResolved	F:\MCP\projects\CAN\canEthernet\Include\DNS.h	41;"	p	line:41	signature:(IP_ADDR *HostIP)
+DNSIsResolved	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	135;"	f	line:135	signature:(IP_ADDR *HostIP)
+DNSPutString	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	288;"	f	line:288	file:	signature:(BYTE *String)
+DNSPutString	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	81;"	p	line:81	file:	signature:(BYTE *String)
+DNSResolve	F:\MCP\projects\CAN\canEthernet\Include\DNS.h	40;"	p	line:40	signature:(BYTE *HostName)
+DNSResolve	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	107;"	f	line:107	signature:(BYTE *Hostname)
+DNS_ANSWER_HEADER	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	79;"	t	line:79	file:
+DNS_DONE	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	59;"	e	line:59	file:
+DNS_GET_RESULT	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	58;"	e	line:58	file:
+DNS_H	F:\MCP\projects\CAN\canEthernet\Include\DNS.h	35;"	d	line:35
+DNS_HEADER	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	70;"	t	line:70	file:
+DNS_HOME	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	54;"	e	line:54	file:
+DNS_OPEN_SOCKET	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	56;"	e	line:56	file:
+DNS_PORT::53	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	47;"	d	line:47	file:
+DNS_QUERY	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	57;"	e	line:57	file:
+DNS_RESOLVE_ARP	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	55;"	e	line:55	file:
+DNS_TIMEOUT::(TICK_1S*2)	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	48;"	d	line:48	file:
+DPXSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	493;"	m	line:493
+DUPLEX	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	62;"	t	line:62
+DWORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	18;"	t	line:18
+DWORD	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	50;"	t	line:50
+DWORD_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	150;"	t	line:150
+Data	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	62;"	m	line:62	struct:_ICMP_PACKET	file:
+DataOffset	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	102;"	m	line:102	struct:_TCP_HEADER	file:
+DataRdyUART::DataRdyUSART	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	104;"	d	line:104
+DataRdyUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	40;"	p	line:40	signature:(void)
+Delay10us::(us)Delay10TCYx(((INSTR_FREQ/1	F:\MCP\projects\CAN\canEthernet\Include\Delay.h	46;"	d	line:46
+DelayMs::(ms)Delay1KTCYx((((INSTR_FREQ/	F:\MCP\projects\CAN\canEthernet\Include\Delay.h	47;"	d	line:47
+DestAddress	F:\MCP\projects\CAN\canEthernet\Include\IP.h	64;"	m	line:64	struct:_IP_HEADER
+DestAddress	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	140;"	m	line:140	struct:_PSEUDO_HEADER	file:
+DestAddress	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	471;"	m	line:471	struct:_PSEUDO_HEADER	file:
+DestMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	108;"	m	line:108	struct:_ETHER_HEADER	file:
+DestMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	119;"	m	line:119	struct:_ENC_PREAMBLE	file:
+DestPort	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	94;"	m	line:94	struct:_TCP_HEADER	file:
+DestinationPort	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	82;"	m	line:82	struct:_UDP_HEADER
+Digit	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	68;"	l	line:68
+Divide1	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	65;"	e	line:65	enum:_CLK_CONFIG
+Divide2	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	66;"	e	line:66	enum:_CLK_CONFIG
+Divide3	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	67;"	e	line:67	enum:_CLK_CONFIG
+Divide4	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	68;"	e	line:68	enum:_CLK_CONFIG
+Divide8	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	69;"	e	line:69	enum:_CLK_CONFIG
+Divisor	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	69;"	l	line:69
+DoWrite	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	379;"	f	line:379	signature:(void)
+DoWrite	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	65;"	p	line:65	file:	signature:(void)
+Done	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	51;"	m	line:51
+DribbleNibble	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	83;"	m	line:83
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1383;"	l	line:1383
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1433;"	l	line:1433
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1470;"	l	line:1470
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1516;"	l	line:1516
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1691;"	l	line:1691
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1731;"	l	line:1731
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1771;"	l	line:1771
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	240;"	l	line:240
+Dummy	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	381;"	l	line:381
+EBSTCON::0x307	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	205;"	d	line:205
+EBSTCON_BISTST::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	637;"	d	line:637
+EBSTCON_PSEL::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	633;"	d	line:633
+EBSTCON_PSV0::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	632;"	d	line:632
+EBSTCON_PSV1::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	631;"	d	line:631
+EBSTCON_PSV2::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	630;"	d	line:630
+EBSTCON_TME::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	636;"	d	line:636
+EBSTCON_TMSEL0::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	635;"	d	line:635
+EBSTCON_TMSEL1::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	634;"	d	line:634
+EBSTCONbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	364;"	m	line:364	union:_REG
+EBSTCONbits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	371;"	m	line:371	union:_REG
+EBSTCSH::0x309	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	207;"	d	line:207
+EBSTCSL::0x308	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	206;"	d	line:206
+EBSTSD::0x306	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	204;"	d	line:204
+ECOCON::0x315	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	219;"	d	line:219
+ECOCON_COCON0::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	647;"	d	line:647
+ECOCON_COCON1::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	646;"	d	line:646
+ECOCON_COCON2::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	645;"	d	line:645
+ECOCONbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	387;"	m	line:387	union:_REG
+ECOCONbits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	391;"	m	line:391	union:_REG
+ECON1::0x1F	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	127;"	d	line:127
+ECON1_BSEL0::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	592;"	d	line:592
+ECON1_BSEL1::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	591;"	d	line:591
+ECON1_CSUMEN::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	588;"	d	line:588
+ECON1_DMAST::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	587;"	d	line:587
+ECON1_RXEN::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	590;"	d	line:590
+ECON1_RXRST::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	586;"	d	line:586
+ECON1_TXRST::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	585;"	d	line:585
+ECON1_TXRTS::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	589;"	d	line:589
+ECON1bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	294;"	m	line:294	union:_REG
+ECON2::0x1E	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	126;"	d	line:126
+ECON2_AUTOINC::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	579;"	d	line:579
+ECON2_PKTDEC::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	580;"	d	line:580
+ECON2_PWRSV::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	581;"	d	line:581
+ECON2_VRPS::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	582;"	d	line:582
+ECON2bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	282;"	m	line:282	union:_REG
+EDMACSH::0x17	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	119;"	d	line:119
+EDMACSL::0x16	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	118;"	d	line:118
+EDMADSTH::0x15	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	117;"	d	line:117
+EDMADSTL::0x14	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	116;"	d	line:116
+EDMANDH::0x13	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	115;"	d	line:115
+EDMANDL::0x12	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	114;"	d	line:114
+EDMASTH::0x11	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	113;"	d	line:113
+EDMASTL::0x10	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	112;"	d	line:112
+EEPROMAddress	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	67;"	v	line:67
+EEPROMBuffer	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	68;"	v	line:68
+EEPROMBufferPtr	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	69;"	v	line:69
+EEPROM_BUFFER_SIZE::(12)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	114;"	d	line:114
+EEPROM_CONTROL::(0xa0)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	120;"	d	line:120
+EEPROM_CS_IO::(LATBbits.LATB4)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	80;"	d	line:80
+EEPROM_CS_TRIS::(TRISBbits.TRISB4)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	79;"	d	line:79
+EEPROM_SCK_TRIS::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	81;"	d	line:81
+EEPROM_SDI_TRIS::(TRISCbits.TRISC4)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	82;"	d	line:82
+EEPROM_SDO_TRIS::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	83;"	d	line:83
+EEPROM_SPICON1::(SSPCON1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	86;"	d	line:86
+EEPROM_SPICON1bits::(SSPCON1bits)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	87;"	d	line:87
+EEPROM_SPICON2::(SSPCON2)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	88;"	d	line:88
+EEPROM_SPISTAT::(SSPSTAT)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	89;"	d	line:89
+EEPROM_SPISTATbits::(SSPSTATbits)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	90;"	d	line:90
+EEPROM_SPI_IF::(PIR1bits.SSPIF)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	84;"	d	line:84
+EEPROM_SSPBUF::(SSPBUF)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	85;"	d	line:85
+EERead	F:\MCP\projects\CAN\Include\EEAccess.c	23;"	f	line:23	signature:(WORD addr)
+EEWrite	F:\MCP\projects\CAN\Include\EEAccess.c	43;"	f	line:43	signature:(WORD addr,BYTE data)
+EE_BAUD::(CLOCK,BAUD)(((CLOCK/BAUD)/4)-	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	37;"	d	line:37
+EFLOCON::0x317	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	221;"	d	line:221
+EFLOCON_FCEN0::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	652;"	d	line:652
+EFLOCON_FCEN1::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	651;"	d	line:651
+EFLOCON_FULDPXS::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	650;"	d	line:650
+EFLOCONbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	399;"	m	line:399	union:_REG
+EFLOCONbits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	404;"	m	line:404	union:_REG
+EHT0::0x100	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	130;"	d	line:130
+EHT1::0x101	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	131;"	d	line:131
+EHT2::0x102	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	132;"	d	line:132
+EHT3::0x103	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	133;"	d	line:133
+EHT4::0x104	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	134;"	d	line:134
+EHT5::0x105	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	135;"	d	line:135
+EHT6::0x106	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	136;"	d	line:136
+EHT7::0x107	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	137;"	d	line:137
+EIE::0x1B	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	123;"	d	line:123
+EIE_DMAIE::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	556;"	d	line:556
+EIE_INTIE::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	554;"	d	line:554
+EIE_LINKIE::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	557;"	d	line:557
+EIE_PKTIE::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	555;"	d	line:555
+EIE_RXERIE::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	560;"	d	line:560
+EIE_TXERIE::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	559;"	d	line:559
+EIE_TXIE::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	558;"	d	line:558
+EIEbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	248;"	m	line:248	union:_REG
+EIR::0x1C	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	124;"	d	line:124
+EIR_DMAIF::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	564;"	d	line:564
+EIR_LINKIF::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	565;"	d	line:565
+EIR_PKTIF::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	563;"	d	line:563
+EIR_RXERIF::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	568;"	d	line:568
+EIR_TXERIF::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	567;"	d	line:567
+EIR_TXIF::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	566;"	d	line:566
+EIRbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	260;"	m	line:260	union:_REG
+ENC28J60_H	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	41;"	d	line:41
+ENCRevID	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	160;"	v	line:160
+ENC_CS_IO::(LATBbits.LATB3)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	66;"	d	line:66
+ENC_CS_TRIS::(TRISBbits.TRISB3)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	65;"	d	line:65
+ENC_PREAMBLE	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	122;"	t	line:122	file:
+ENC_RST_IO::(LATBbits.LATB5)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	64;"	d	line:64
+ENC_RST_TRIS::(TRISBbits.TRISB5)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	63;"	d	line:63
+ENC_SCK_TRIS::(TRISCbits.TRISC3)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	67;"	d	line:67
+ENC_SDI_TRIS::(TRISCbits.TRISC4)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	68;"	d	line:68
+ENC_SDO_TRIS::(TRISCbits.TRISC5)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	69;"	d	line:69
+ENC_SPICON1::(SSPCON1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	74;"	d	line:74
+ENC_SPICON1bits::(SSPCON1bits)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	75;"	d	line:75
+ENC_SPICON2::(SSPCON2)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	76;"	d	line:76
+ENC_SPISTAT::(SSPSTAT)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	72;"	d	line:72
+ENC_SPISTATbits::(SSPSTATbits)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	73;"	d	line:73
+ENC_SPI_IF::(PIR1bits.SSPIF)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	70;"	d	line:70
+ENC_SSPBUF::(SSPBUF)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	71;"	d	line:71
+EPAUSH::0x319	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	223;"	d	line:223
+EPAUSL::0x318	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	222;"	d	line:222
+EPKTCNT::0x119	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	155;"	d	line:155
+EPMCSH::0x111	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	147;"	d	line:147
+EPMCSL::0x110	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	146;"	d	line:146
+EPMM0::0x108	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	138;"	d	line:138
+EPMM1::0x109	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	139;"	d	line:139
+EPMM2::0x10A	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	140;"	d	line:140
+EPMM3::0x10B	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	141;"	d	line:141
+EPMM4::0x10C	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	142;"	d	line:142
+EPMM5::0x10D	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	143;"	d	line:143
+EPMM6::0x10E	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	144;"	d	line:144
+EPMM7::0x10F	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	145;"	d	line:145
+EPMOH::0x115	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	151;"	d	line:151
+EPMOL::0x114	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	150;"	d	line:150
+ERDPTH::0x01	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	97;"	d	line:97
+ERDPTL::0x00	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	96;"	d	line:96
+EREVID::0x312	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	216;"	d	line:216
+ERXFCON::0x118	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	154;"	d	line:154
+ERXFCON_ANDOR::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	596;"	d	line:596
+ERXFCON_BCEN::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	602;"	d	line:602
+ERXFCON_CRCEN::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	597;"	d	line:597
+ERXFCON_HTEN::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	600;"	d	line:600
+ERXFCON_MCEN::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	601;"	d	line:601
+ERXFCON_MPEN::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	599;"	d	line:599
+ERXFCON_PMEN::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	598;"	d	line:598
+ERXFCON_UCEN::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	595;"	d	line:595
+ERXFCONbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	306;"	m	line:306	union:_REG
+ERXNDH::0x0B	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	107;"	d	line:107
+ERXNDL::0x0A	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	106;"	d	line:106
+ERXRDPTH::0x0D	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	109;"	d	line:109
+ERXRDPTL::0x0C	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	108;"	d	line:108
+ERXSTH::0x09	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	105;"	d	line:105
+ERXSTL::0x08	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	104;"	d	line:104
+ERXWRPTH::0x0F	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	111;"	d	line:111
+ERXWRPTL::0x0E	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	110;"	d	line:110
+ESTAT::0x1D	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	125;"	d	line:125
+ESTAT_BUFER::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	572;"	d	line:572
+ESTAT_CLKRDY::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	576;"	d	line:576
+ESTAT_INT::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	571;"	d	line:571
+ESTAT_LATECOL::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	573;"	d	line:573
+ESTAT_RXBUSY::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	574;"	d	line:574
+ESTAT_TXABRT::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	575;"	d	line:575
+ESTATbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	272;"	m	line:272	union:_REG
+ETHER_ARP::(0x06u)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	100;"	d	line:100	file:
+ETHER_HEADER	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	111;"	t	line:111	file:
+ETHER_IP::(0x00u)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	99;"	d	line:99	file:
+ETXNDH::0x07	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	103;"	d	line:103
+ETXNDL::0x06	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	102;"	d	line:102
+ETXSTH::0x05	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	101;"	d	line:101
+ETXSTL::0x04	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	100;"	d	line:100
+EWRPTH::0x03	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	99;"	d	line:99
+EWRPTL::0x02	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	98;"	d	line:98
+EndAddress	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	127;"	m	line:127	struct:_DATA_BUFFER	file:
+ExcessiveDefer	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	55;"	m	line:55
+FALSE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
+FALSE	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	47;"	e	line:47	enum:_BOOL
+FALSE	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	70;"	e	line:70	file:
+FAT	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	170;"	l	line:170
+FCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	401;"	m	line:401	struct:_REG::<anonymous>
+FCEN0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	395;"	m	line:395	struct:_REG::<anonymous>
+FCEN1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	396;"	m	line:396	struct:_REG::<anonymous>
+FIN::(0x01)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	83;"	d	line:83	file:
+FRCLNK	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	483;"	m	line:483
+FRMLNEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	321;"	m	line:321	struct:_REG::<anonymous>
+FRMLNEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	331;"	m	line:331	struct:_REG::<anonymous>
+FULDPX	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	320;"	m	line:320	struct:_REG::<anonymous>
+FULDPX	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	330;"	m	line:330	struct:_REG::<anonymous>
+FULDPXS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	397;"	m	line:397	struct:_REG::<anonymous>
+FULDPXS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	402;"	m	line:402	struct:_REG::<anonymous>
+FULL	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	60;"	e	line:60	enum:_DUPLEX
+FindMatchingSocket	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1233;"	f	line:1233	file:	signature:(TCP_HEADER *h, NODE_INFO *remote)
+FindMatchingSocket	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	187;"	p	line:187	file:	signature:(TCP_HEADER *h, NODE_INFO *remote)
+FindMatchingSocket	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	571;"	f	line:571	file:	signature:(UDP_HEADER *h, NODE_INFO *remoteNode, IP_ADDR *localIP)
+FindMatchingSocket	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	83;"	p	line:83	file:	signature:(UDP_HEADER *h, NODE_INFO *remoteNode, IP_ADDR *localIP)
+Flag	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	75;"	m	line:75	struct:_MPFS_ENTRY	file:
+Flag	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	82;"	m	line:82	struct:_MPFS_ENTRY	file:
+Flags	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	469;"	m	line:469	struct:_APP_CONFIG
+Flags	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	109;"	m	line:109	struct:_SOCKET_INFO
+Flags	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	61;"	m	line:61	struct:_UDP_SOCKET_INFO
+Flags	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	65;"	m	line:65	struct:_DNS_HEADER	file:
+Flags	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	132;"	m	line:132	struct:_DATA_BUFFER	file:
+Flags	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	117;"	m	line:117	struct:_TCP_HEADER	file:
+FragmentInfo	F:\MCP\projects\CAN\canEthernet\Include\IP.h	59;"	m	line:59	struct:_IP_HEADER
+GOOD_BEG	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	140;"	v	line:140
+GOOD_END	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	141;"	v	line:141
+GetCLKOUT	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	2142;"	f	line:2142	signature:(void)
+GetLEDConfig::ReadPHYReg(PHLCON).Val	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	180;"	d	line:180
+Giant	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	58;"	m	line:58
+HALF	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	59;"	e	line:59	enum:_DUPLEX
+HALF_DUPLEX	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	74;"	d	line:74	file:
+HB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	111;"	m	line:111	struct:_DWORD_VAL::<anonymous>
+HB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	75;"	m	line:75	struct:_WORD_VAL::<anonymous>
+HCB	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	131;"	v	line:131	file:
+HCB	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	43;"	v	line:43	file:
+HDLDIS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	478;"	m	line:478
+HELPERS_H	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	37;"	d	line:37
+HFRMEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	322;"	m	line:322	struct:_REG::<anonymous>
+HFRMEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	332;"	m	line:332	struct:_REG::<anonymous>
+HIGH::(a)((a>>8)&0xFF)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	80;"	d	line:80	file:
+HTEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	300;"	m	line:300	struct:_REG::<anonymous>
+HTTPExecCmd	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	97;"	p	line:97	signature:(BYTE** argv, BYTE argc)
+HTTPExecCmd	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	237;"	f	line:237	signature:(BYTE** argv, BYTE argc)
+HTTPInit	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	63;"	p	line:63	signature:(void)
+HTTPInit	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	182;"	f	line:182	signature:(void)
+HTTPParse	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	134;"	p	line:134	file:	signature:(BYTE *string, BYTE** arg, BYTE* argc)
+HTTPParse	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	420;"	f	line:420	file:	signature:(BYTE *string, BYTE** arg, BYTE* argc)
+HTTPProcess	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	133;"	p	line:133	file:	signature:(HTTP_HANDLE h)
+HTTPProcess	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	244;"	f	line:244	file:	signature:(HTTP_HANDLE h)
+HTTPServer	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	90;"	p	line:90	signature:(void)
+HTTPServer	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	219;"	f	line:219	signature:(void)
+HTTP_COMMAND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	94;"	t	line:94	file:
+HTTP_END_OF_VAR::(0xFFFF)	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	43;"	d	line:43
+HTTP_GET	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	90;"	e	line:90	enum:_HTTP_COMMAND	file:
+HTTP_GET_STRING	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	119;"	v	line:119
+HTTP_GET_STRING_LEN::\	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	121;"	d	line:121	file:
+HTTP_H	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	38;"	d	line:38
+HTTP_HANDLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	107;"	t	line:107	file:
+HTTP_INFO	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	106;"	t	line:106	file:
+HTTP_INVALID_COMMAND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	93;"	e	line:93	enum:_HTTP_COMMAND	file:
+HTTP_MESSAGES	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	114;"	t	line:114	file:
+HTTP_NOT_AVAILABLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	113;"	e	line:113	file:
+HTTP_NOT_FOUND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	112;"	e	line:112	file:
+HTTP_NOT_SUPPORTED	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	92;"	e	line:92	enum:_HTTP_COMMAND	file:
+HTTP_PORT::(80)	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	40;"	d	line:40
+HTTP_POST	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	91;"	e	line:91	enum:_HTTP_COMMAND	file:
+HTTP_START_OF_VAR::(0x0000)	F:\MCP\projects\CAN\canEthernet\Include\HTTP.h	42;"	d	line:42
+HW	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	106;"	m	line:106	struct:_DWORD_VAL::<anonymous>
+HW_ETHERNET::(0x0001u)	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	52;"	d	line:52	file:
+HandleTCPSeg	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1390;"	f	line:1390	file:	signature:(TCP_SOCKET s, NODE_INFO *remote, TCP_HEADER *h, WORD len)
+HandleTCPSeg	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	173;"	p	line:173	file:	signature:(TCP_SOCKET s, NODE_INFO *remote, TCP_HEADER *h, WORD len)
+HardwareType	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	60;"	m	line:60	struct:_ARP_PACKET	file:
+HeaderChecksum	F:\MCP\projects\CAN\canEthernet\Include\IP.h	62;"	m	line:62	struct:_IP_HEADER
+ICMPCode	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	181;"	m	line:181	file:
+ICMPGet	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	132;"	p	line:132	signature:(ICMP_CODE *code, BYTE *data, BYTE *len, WORD *id, WORD *seq)
+ICMPGet	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	93;"	f	line:93	signature:(ICMP_CODE *code, BYTE *data, BYTE *len, WORD *id, WORD *seq)
+ICMPId	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	171;"	l	line:171	file:
+ICMPIsTxReady::MACIsTxReady(TRUE)	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	73;"	d	line:73
+ICMPLen	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	176;"	l	line:176
+ICMPPut	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	100;"	p	line:100	signature:(NODE_INFO *remote, ICMP_CODE code, BYTE *data, BYTE len, WORD id, WORD seq)
+ICMPPut	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	168;"	f	line:168	signature:(NODE_INFO *remote, ICMP_CODE code, BYTE *data, BYTE len, WORD id, WORD seq)
+ICMPSeq	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	172;"	l	line:172	file:
+ICMP_CODE	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	55;"	t	line:55
+ICMP_ECHO_REPLY	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	53;"	e	line:53	enum:_ICMP_CODE
+ICMP_ECHO_REQUEST	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	54;"	e	line:54	enum:_ICMP_CODE
+ICMP_H	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	39;"	d	line:39
+ICMP_HEADER_SIZE::(sizeof(ICMP_PACKET)-MAX_ICMP_	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	64;"	d	line:64	file:
+ICMP_PACKET	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	63;"	t	line:63	file:
+ICMP_REQUESTS	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	55;"	t	line:55
+INSTR_FREQ::(CLOCK_FREQ/4)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	46;"	d	line:46
+INT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	271;"	m	line:271	struct:_REG::<anonymous>
+INTIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	247;"	m	line:247	struct:_REG::<anonymous>
+INVALID_BUFFER::(0xffu)	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	51;"	d	line:51
+INVALID_SOCKET::(0xfe)	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	54;"	d	line:54
+INVALID_UDP_PORT::(0L)	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	67;"	d	line:67
+INVALID_UDP_SOCKET::(0xff)	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	66;"	d	line:66
+IPAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	455;"	m	line:455	struct:_NODE_INFO
+IPDiscard::MACDiscard	F:\MCP\projects\CAN\canEthernet\Include\IP.h	203;"	d	line:203
+IPFrameType	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	180;"	m	line:180	file:
+IPGetArray::(a,b)MACGetArray(a,b)	F:\MCP\projects\CAN\canEthernet\Include\IP.h	222;"	d	line:222
+IPGetHeader	F:\MCP\projects\CAN\canEthernet\Include\IP.h	182;"	p	line:182	signature:(IP_ADDR *localIP, NODE_INFO *remote, BYTE *protocol, WORD *len)
+IPGetHeader	F:\MCP\projects\CAN\canEthernet\Source\IP.c	116;"	f	line:116	signature:(IP_ADDR *localIP, NODE_INFO *remote, BYTE *protocol, WORD *len)
+IPHeaderLen	F:\MCP\projects\CAN\canEthernet\Source\IP.c	82;"	v	line:82	file:
+IPIsTxReady::(HighPriority)MACIsTxReady(Hig	F:\MCP\projects\CAN\canEthernet\Include\IP.h	84;"	d	line:84
+IPPutArray::(a,b)MACPutArray(a,b)	F:\MCP\projects\CAN\canEthernet\Include\IP.h	151;"	d	line:151
+IPPutHeader	F:\MCP\projects\CAN\canEthernet\Include\IP.h	131;"	p	line:131	signature:(NODE_INFO *remote, BYTE protocol, WORD len)
+IPPutHeader	F:\MCP\projects\CAN\canEthernet\Source\IP.c	233;"	f	line:233	signature:(NODE_INFO *remote, BYTE protocol, WORD len)
+IPSetRxBuffer	F:\MCP\projects\CAN\canEthernet\Include\IP.h	243;"	p	line:243	signature:(WORD Offset)
+IPSetRxBuffer	F:\MCP\projects\CAN\canEthernet\Source\IP.c	290;"	f	line:290	signature:(WORD Offset)
+IPSetTxBuffer::(a,b)MACSetTxBuffer(a,b+sizeof	F:\MCP\projects\CAN\canEthernet\Include\IP.h	103;"	d	line:103
+IP_ADDR	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	449;"	t	line:449
+IP_H	F:\MCP\projects\CAN\canEthernet\Include\IP.h	39;"	d	line:39
+IP_HEADER	F:\MCP\projects\CAN\canEthernet\Include\IP.h	66;"	t	line:66
+IP_IHL::(0x05)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	56;"	d	line:56	file:
+IP_PROT_ICMP::(1)	F:\MCP\projects\CAN\canEthernet\Include\IP.h	45;"	d	line:45
+IP_PROT_TCP::(6)	F:\MCP\projects\CAN\canEthernet\Include\IP.h	46;"	d	line:46
+IP_PROT_UDP::(17)	F:\MCP\projects\CAN\canEthernet\Include\IP.h	47;"	d	line:47
+IP_SERCICE_L_DELAY::(0x08)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	68;"	d	line:68	file:
+IP_SERVICE::(IP_SERVICE_ROUTINE|IP_SERVICE	F:\MCP\projects\CAN\canEthernet\Source\IP.c	74;"	d	line:74	file:
+IP_SERVICE_ECP::(0x05)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	60;"	d	line:60	file:
+IP_SERVICE_FLASH::(0x03)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	62;"	d	line:62	file:
+IP_SERVICE_H_RELIB::(0x20)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	72;"	d	line:72	file:
+IP_SERVICE_H_THRPT::(0x10)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	70;"	d	line:70	file:
+IP_SERVICE_IMM::(0x02)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	63;"	d	line:63	file:
+IP_SERVICE_IN_CTRL::(0x06)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	59;"	d	line:59	file:
+IP_SERVICE_NW_CTRL::(0x07)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	58;"	d	line:58	file:
+IP_SERVICE_N_DELAY::(0x00)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	67;"	d	line:67	file:
+IP_SERVICE_N_RELIB::(0x00)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	71;"	d	line:71	file:
+IP_SERVICE_N_THRPT::(0x00)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	69;"	d	line:69	file:
+IP_SERVICE_OVR::(0x04)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	61;"	d	line:61	file:
+IP_SERVICE_PRIOR::(0x01)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	64;"	d	line:64	file:
+IP_SERVICE_ROUTINE::(0x00)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	65;"	d	line:65	file:
+IP_VERSION::IPv4	F:\MCP\projects\CAN\canEthernet\Source\IP.c	51;"	d	line:51	file:
+IPv4::(0x40u)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	50;"	d	line:50	file:
+Identification	F:\MCP\projects\CAN\canEthernet\Include\IP.h	58;"	m	line:58	struct:_IP_HEADER
+Identifier	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	60;"	m	line:60	struct:_ICMP_PACKET	file:
+InitAppConfig	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	106;"	p	line:106	file:	signature:(void)
+InitAppConfig	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	335;"	f	line:335	file:	signature:(void)
+InitializeBoard	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	107;"	p	line:107	file:	signature:(void)
+InitializeBoard	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	299;"	f	line:299	file:	signature:(void)
+JA	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	154;"	v	line:154
+JABBER	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	480;"	m	line:480
+JBSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	440;"	m	line:440
+Kind	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	130;"	m	line:130	struct:_TCP_OPTIONS	file:
+LACFG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	542;"	m	line:542
+LACFG0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	531;"	m	line:531
+LACFG1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	532;"	m	line:532
+LACFG2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	533;"	m	line:533
+LACFG3	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	534;"	m	line:534
+LAST	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	44;"	e	line:44	enum:_timeClock
+LASTTIME	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	150;"	v	line:150
+LATECOL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	268;"	m	line:268	struct:_REG::<anonymous>
+LB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	110;"	m	line:110	struct:_DWORD_VAL::<anonymous>
+LB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	74;"	m	line:74	struct:_WORD_VAL::<anonymous>
+LBCFG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	541;"	m	line:541
+LBCFG0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	527;"	m	line:527
+LBCFG1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	528;"	m	line:528
+LBCFG2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	529;"	m	line:529
+LBCFG3	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	530;"	m	line:530
+LED0_IO::(PORTCbits.RC0)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	50;"	d	line:50
+LED0_TRIS::(TRISCbits.TRISC0)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	49;"	d	line:49
+LED1_IO::(PORTCbits.RC1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	52;"	d	line:52
+LED1_TRIS::(TRISCbits.TRISC1)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	51;"	d	line:51
+LED_OFF	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	147;"	v	line:147
+LED_ON	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	146;"	v	line:146
+LED_TEXT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	145;"	v	line:145
+LF::'\n'	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	19;"	d	line:19
+LFRQ	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	540;"	m	line:540
+LFRQ0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	525;"	m	line:525
+LFRQ1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	526;"	m	line:526
+LINKIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	244;"	m	line:244	struct:_REG::<anonymous>
+LINKIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	256;"	m	line:256	struct:_REG::<anonymous>
+LLSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	441;"	m	line:441
+LOCAL_PORT_END_NUMBER::(5000)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	147;"	d	line:147	file:
+LOCAL_PORT_START_NUMBER::(1024)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	146;"	d	line:146	file:
+LOW::(a)(a&0xFF)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	79;"	d	line:79	file:
+LSB	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	230;"	m	line:230	file:
+LSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	494;"	m	line:494
+LW	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	105;"	m	line:105	struct:_DWORD_VAL::<anonymous>
+LastTXedBuffer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	154;"	v	line:154
+LateCollision	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	57;"	m	line:57
+Len	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	292;"	l	line:292
+Length	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	83;"	m	line:83	struct:_UDP_HEADER
+Length	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	131;"	m	line:131	struct:_TCP_OPTIONS	file:
+Length	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	474;"	m	line:474	struct:_PSEUDO_HEADER	file:
+LengthCheckError	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	49;"	m	line:49
+LengthCheckError	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	78;"	m	line:78
+LengthOutOfRange	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	50;"	m	line:50
+LengthOutOfRange	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	79;"	m	line:79
+MAADR1::0x304	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	202;"	d	line:202
+MAADR2::0x305	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	203;"	d	line:203
+MAADR3::0x302	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	200;"	d	line:200
+MAADR4::0x303	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	201;"	d	line:201
+MAADR5::0x300	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	198;"	d	line:198
+MAADR6::0x301	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	199;"	d	line:199
+MABBIPG::0x204	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	168;"	d	line:168
+MACAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	454;"	m	line:454	struct:_NODE_INFO
+MACAddrLen	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	62;"	m	line:62	struct:_ARP_PACKET	file:
+MACCalcRxChecksum	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	76;"	p	line:76	signature:(WORD offset, WORD len)
+MACCalcRxChecksum	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	962;"	f	line:962	signature:(WORD offset, WORD len)
+MACCalcTxChecksum	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	77;"	p	line:77	signature:(WORD offset, WORD len)
+MACCalcTxChecksum	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1018;"	f	line:1018	signature:(WORD offset, WORD len)
+MACCopyRxToTx	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	78;"	p	line:78	signature:(WORD RxOffset, WORD TxOffset, WORD len)
+MACDisablePMFilter	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1311;"	f	line:1311	signature:(void)
+MACDiscardRx	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	190;"	p	line:190	signature:(void)
+MACDiscardRx	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	485;"	f	line:485	signature:(void)
+MACDiscardTx	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	200;"	p	line:200	signature:(BUFFER buffer)
+MACDiscardTx	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	456;"	f	line:456	signature:(BUFFER buffer)
+MACFlush	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	201;"	p	line:201	signature:(void)
+MACFlush	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	756;"	f	line:756	signature:(void)
+MACFrameType	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	179;"	m	line:179	file:
+MACGet	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	188;"	p	line:188	signature:(void)
+MACGet	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1338;"	f	line:1338
+MACGetArray	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	189;"	p	line:189	signature:(BYTE *val, WORD len)
+MACGetArray	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1380;"	f	line:1380	signature:(BYTE *val, WORD len)
+MACGetFreeRxSize	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	191;"	p	line:191	signature:(void)
+MACGetFreeRxSize	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	536;"	f	line:536	signature:(void)
+MACGetHeader	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	186;"	p	line:186	signature:(MAC_ADDR *remote, BYTE* type)
+MACGetHeader	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	600;"	f	line:600	signature:(MAC_ADDR *remote, BYTE* type)
+MACGetTxBuffer	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	202;"	p	line:202	signature:(BOOL HighPriority)
+MACGetTxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	424;"	f	line:424	signature:(BOOL HighPriority)
+MACInit	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	183;"	p	line:183	signature:(void)
+MACInit	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	180;"	f	line:180	signature:(void)
+MACIsLinked	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	184;"	p	line:184	signature:(void)
+MACIsLinked	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	359;"	f	line:359	signature:(void)
+MACIsTxReady	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	196;"	p	line:196	signature:(BOOL HighPriority)
+MACIsTxReady	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	390;"	f	line:390	signature:(BOOL HighPriority)
+MACLCON1::0x208	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	172;"	d	line:172
+MACLCON2::0x209	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	173;"	d	line:173
+MACON1::0x200	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	164;"	d	line:164
+MACON1_MARXEN::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	608;"	d	line:608
+MACON1_PASSALL::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	607;"	d	line:607
+MACON1_RXPAUS::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	606;"	d	line:606
+MACON1_TXPAUS::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	605;"	d	line:605
+MACON1bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	315;"	m	line:315	union:_REG
+MACON3::0x202	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	166;"	d	line:166
+MACON3_FRMLNEN::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	617;"	d	line:617
+MACON3_FULDPX::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	618;"	d	line:618
+MACON3_HFRMEN::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	616;"	d	line:616
+MACON3_PADCFG0::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	613;"	d	line:613
+MACON3_PADCFG1::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	612;"	d	line:612
+MACON3_PADCFG2::(1<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	611;"	d	line:611
+MACON3_PHDREN::(1<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	615;"	d	line:615
+MACON3_TXCRCEN::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	614;"	d	line:614
+MACON3bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	328;"	m	line:328	union:_REG
+MACON3bits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	336;"	m	line:336	union:_REG
+MACON4::0x203	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	167;"	d	line:167
+MACON4_BPEN::(1<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	622;"	d	line:622
+MACON4_DEFER::(1<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	621;"	d	line:621
+MACON4_NOBKOFF::(1<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	623;"	d	line:623
+MACON4bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	345;"	m	line:345	union:_REG
+MACPowerDown	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	74;"	p	line:74	signature:(void)
+MACPowerDown	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	2039;"	f	line:2039	signature:(void)
+MACPowerUp	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	75;"	p	line:75	signature:(void)
+MACPowerUp	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	2077;"	f	line:2077	signature:(void)
+MACPut	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	198;"	p	line:198	signature:(BYTE val)
+MACPut	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1431;"	f	line:1431	signature:(BYTE val)
+MACPutArray	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	199;"	p	line:199	signature:(BYTE *val, WORD len)
+MACPutArray	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1468;"	f	line:1468	signature:(BYTE *val, WORD len)
+MACPutHeader	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	193;"	p	line:193	signature:(MAC_ADDR *remote, BYTE type, WORD dataLen)
+MACPutHeader	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	691;"	f	line:691	signature:(MAC_ADDR *remote, BYTE type, WORD dataLen)
+MACSetDuplex	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	71;"	p	line:71	signature:(DUPLEX DuplexState)
+MACSetDuplex	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1983;"	f	line:1983	signature:(DUPLEX DuplexState)
+MACSetPMFilter	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1222;"	f	line:1222	signature:(BYTE *Pattern, BYTE *PatternMask, WORD PatternOffset)
+MACSetRxBuffer	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	187;"	p	line:187	signature:(WORD offset)
+MACSetRxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	875;"	f	line:875	signature:(WORD offset)
+MACSetTxBuffer	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	197;"	p	line:197	signature:(BUFFER buffer, WORD offset)
+MACSetTxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	918;"	f	line:918	signature:(BUFFER buffer, WORD offset)
+MAC_ADDR	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	443;"	t	line:443
+MAC_ARP::(0x6u)	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	48;"	d	line:48
+MAC_H	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	41;"	d	line:41
+MAC_IP::(0u)	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	47;"	d	line:47
+MAC_RX_BUFFER_SIZE::(MAC_TX_BUFFER_SIZE)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	370;"	d	line:370
+MAC_TX_BUFFER_COUNT::(1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	352;"	d	line:352
+MAC_TX_BUFFER_COUNT::(1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	366;"	d	line:366
+MAC_TX_BUFFER_COUNT::(MAX_SOCKETS+1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	355;"	d	line:355
+MAC_TX_BUFFER_SIZE::(1024)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	351;"	d	line:351
+MAC_TX_BUFFER_SIZE::(250)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	365;"	d	line:365
+MAC_TX_BUFFER_SIZE::(576)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	354;"	d	line:354
+MAC_UNKNOWN::(0x0ffu)	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	49;"	d	line:49
+MAIPGH::0x207	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	171;"	d	line:171
+MAIPGL::0x206	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	170;"	d	line:170
+MAMXFLH::0x20B	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	175;"	d	line:175
+MAMXFLL::0x20A	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	174;"	d	line:174
+MARXEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	310;"	m	line:310	struct:_REG::<anonymous>
+MAXFRAMEC::(1500u+sizeof(ETHER_HEADER)+4u	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	102;"	d	line:102	file:
+MAX_ARP_TRIES::10	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	11;"	d	line:11
+MAX_FILE_NAME_LEN::(12u)	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	50;"	d	line:50	file:
+MAX_HTML_CMD_LEN::(100)	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	129;"	d	line:129	file:
+MAX_HTTP_ARGS::(11)	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	126;"	d	line:126	file:
+MAX_HTTP_CONNECTIONS::(3u)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	384;"	d	line:384
+MAX_ICMP_DATA::(32)	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	46;"	d	line:46
+MAX_ICMP_DATA_LEN::(MAX_ICMP_DATA)	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	48;"	d	line:48
+MAX_OPTIONS_LEN::(40)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	128;"	d	line:128	file:
+MAX_RETRY_COUNTS::(3)	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	52;"	d	line:52
+MAX_SGP_CMD_LEN::100	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	13;"	d	line:13	file:
+MAX_SGP_CONNECTIONS::2	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	12;"	d	line:12	file:
+MAX_SOCKETS::(6u)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	328;"	d	line:328
+MAX_TCP_DATA_LEN::(MAC_TX_BUFFER_SIZE-54)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	77;"	d	line:77	file:
+MAX_TCP_TRIES::10	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	12;"	d	line:12
+MAX_UDP_DATA	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	277;"	d	line:277	file:
+MAX_UDP_DATA::(MAC_TX_BUFFER_SIZE-SIZEOF_MAC	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	267;"	d	line:267	file:
+MAX_UDP_DATA::(MAC_TX_BUFFER_SIZE-sizeof(IP_	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	269;"	d	line:269	file:
+MAX_UDP_SOCKETS::(4u)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	331;"	d	line:331
+MB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	113;"	m	line:113	struct:_DWORD_VAL::<anonymous>
+MCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	299;"	m	line:299	struct:_REG::<anonymous>
+MICMD::0x212	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	182;"	d	line:182
+MICMD_MIIRD::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	627;"	d	line:627
+MICMD_MIISCAN::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	626;"	d	line:626
+MICMDbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	352;"	m	line:352	union:_REG
+MIIRD	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	349;"	m	line:349	struct:_REG::<anonymous>
+MIISCAN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	350;"	m	line:350	struct:_REG::<anonymous>
+MIRDH::0x219	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	189;"	d	line:189
+MIRDL::0x218	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	188;"	d	line:188
+MIREGADR::0x214	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	184;"	d	line:184
+MISTAT::0x30A	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	208;"	d	line:208
+MISTAT_BUSY::(1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	642;"	d	line:642
+MISTAT_NVALID::(1<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	640;"	d	line:640
+MISTAT_SCAN::(1<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	641;"	d	line:641
+MISTATbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	379;"	m	line:379	union:_REG
+MIWRH::0x217	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	187;"	d	line:187
+MIWRL::0x216	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	186;"	d	line:186
+MPEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	301;"	m	line:301	struct:_REG::<anonymous>
+MPFS	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	45;"	t	line:45
+MPFS	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	51;"	t	line:51
+MPFSClose	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	121;"	p	line:121	signature:(void)
+MPFSClose	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	244;"	f	line:244	signature:(void)
+MPFSFormat	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	228;"	p	line:228	signature:(void)
+MPFSFormat	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	368;"	f	line:368	signature:(void)
+MPFSGet	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	164;"	p	line:164	signature:(void)
+MPFSGet	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	294;"	f	line:294	signature:(void)
+MPFSGetBegin	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	141;"	p	line:141	signature:(MPFS handle)
+MPFSGetBegin	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	270;"	f	line:270	signature:(MPFS handle)
+MPFSGetBegin::(handle)(_currentHandle=handle	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	143;"	d	line:143
+MPFSGetEnd	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	186;"	p	line:186	signature:(void)
+MPFSGetEnd	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	343;"	f	line:343	signature:(void)
+MPFSGetEnd::_currentHandle	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	188;"	d	line:188
+MPFSInit	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	83;"	p	line:83	signature:(void)
+MPFSInit	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	132;"	f	line:132	signature:(void)
+MPFSIsEOF::(_currentHandle==MPFS_INVALID)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	208;"	d	line:208
+MPFSIsInUse::(mpfsOpenCount)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	356;"	d	line:356
+MPFSOpen	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	102;"	p	line:102	signature:(BYTE* name)
+MPFSOpen	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	167;"	f	line:167	signature:(BYTE* file)
+MPFSPut	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	274;"	p	line:274	signature:(BYTE b)
+MPFSPut	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	426;"	f	line:426	signature:(BYTE b)
+MPFSPutBegin	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	250;"	p	line:250	signature:(MPFS handle)
+MPFSPutBegin	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	393;"	f	line:393	signature:(MPFS handle)
+MPFSPutBegin::(handle)(_currentHandle=handle	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	252;"	d	line:252
+MPFSPutEnd	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	297;"	p	line:297	signature:(void)
+MPFSPutEnd	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	463;"	f	line:463	signature:(void)
+MPFSSeek	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	335;"	p	line:335	signature:(MPFS_OFFSET offset)
+MPFSSeek	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	489;"	f	line:489	signature:(MPFS_OFFSET offset)
+MPFSTell::(_currentHandle)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	353;"	d	line:353
+MPFS_DATA::(0x00u)	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	52;"	d	line:52	file:
+MPFS_DELETED::(0x01u)	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	53;"	d	line:53	file:
+MPFS_DLE::(0x03u)	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	54;"	d	line:54	file:
+MPFS_ENTRY	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	78;"	t	line:78	file:
+MPFS_ENTRY	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	85;"	t	line:85	file:
+MPFS_ETX::(0x04u)	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	55;"	d	line:55	file:
+MPFS_H	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	40;"	d	line:40
+MPFS_INVALID::(0xffff)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	52;"	d	line:52
+MPFS_INVALID::(MPFS)(0xffffff)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	46;"	d	line:46
+MPFS_NOT_AVAILABLE::(0x0)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	56;"	d	line:56
+MPFS_OFFSET	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	47;"	t	line:47
+MPFS_OFFSET	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	53;"	t	line:53
+MPFS_RESERVE_BLOCK::(64)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	133;"	d	line:133
+MPFS_Start::MPFS_RESERVE_BLOCK	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	106;"	d	line:106	file:
+MPFS_WRITE_PAGE_SIZE::(64)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	59;"	d	line:59
+MPFS_WRITE_PAGE_SIZE::(8)	F:\MCP\projects\CAN\canEthernet\Include\MPFS.h	61;"	d	line:61
+MSB	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	231;"	m	line:231	file:
+MY_DEFAULT_DNS_BYTE1::MY_DEFAULT_GATE_BYTE1	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	308;"	d	line:308
+MY_DEFAULT_DNS_BYTE2::MY_DEFAULT_GATE_BYTE2	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	309;"	d	line:309
+MY_DEFAULT_DNS_BYTE3::MY_DEFAULT_GATE_BYTE3	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	310;"	d	line:310
+MY_DEFAULT_DNS_BYTE4::MY_DEFAULT_GATE_BYTE4	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	311;"	d	line:311
+MY_DEFAULT_GATE_BYTE1::MY_DEFAULT_IP_ADDR_BYTE1	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	303;"	d	line:303
+MY_DEFAULT_GATE_BYTE2::MY_DEFAULT_IP_ADDR_BYTE2	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	304;"	d	line:304
+MY_DEFAULT_GATE_BYTE3::MY_DEFAULT_IP_ADDR_BYTE3	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	305;"	d	line:305
+MY_DEFAULT_GATE_BYTE4::(1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	306;"	d	line:306
+MY_DEFAULT_HOST_NAME::"ETEMP"	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	284;"	d	line:284
+MY_DEFAULT_IP_ADDR_BYTE1::(193)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	293;"	d	line:293
+MY_DEFAULT_IP_ADDR_BYTE2::(11)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	294;"	d	line:294
+MY_DEFAULT_IP_ADDR_BYTE3::(249)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	295;"	d	line:295
+MY_DEFAULT_IP_ADDR_BYTE4::(228)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	296;"	d	line:296
+MY_DEFAULT_MAC_BYTE1::(0x00)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	286;"	d	line:286
+MY_DEFAULT_MAC_BYTE2::(0x10)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	287;"	d	line:287
+MY_DEFAULT_MAC_BYTE3::(0xA7)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	288;"	d	line:288
+MY_DEFAULT_MAC_BYTE4::(0x02)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	289;"	d	line:289
+MY_DEFAULT_MAC_BYTE5::(0xF2)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	290;"	d	line:290
+MY_DEFAULT_MAC_BYTE6::(0xBF)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	291;"	d	line:291
+MY_DEFAULT_MASK_BYTE1::(255)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	298;"	d	line:298
+MY_DEFAULT_MASK_BYTE2::(255)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	299;"	d	line:299
+MY_DEFAULT_MASK_BYTE3::(255)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	300;"	d	line:300
+MY_DEFAULT_MASK_BYTE4::(0)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	301;"	d	line:301
+MY_ID	F:\MCP\projects\CAN\canBase\Source\CAN.c	20;"	v	line:20	file:
+MY_IP_TTL::(100)	F:\MCP\projects\CAN\canEthernet\Source\IP.c	76;"	d	line:76	file:
+MaskPtr	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1227;"	l	line:1227
+MaxSegSize	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	132;"	m	line:132	struct:_TCP_OPTIONS	file:
+MaximumCollisions	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	56;"	m	line:56
+Multicast	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	52;"	m	line:52
+Multicast	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	81;"	m	line:81
+MyGateway	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	463;"	m	line:463	struct:_APP_CONFIG
+MyIPAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	460;"	m	line:460	struct:_APP_CONFIG
+MyMACAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	461;"	m	line:461	struct:_APP_CONFIG
+MyMask	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	462;"	m	line:462	struct:_APP_CONFIG
+MySocket	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	137;"	l	line:137	file:
+MySocket	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	43;"	l	line:43	file:
+MyTxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	153;"	l	line:153
+MyTxBuffer	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	177;"	l	line:177
+NEJ	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	155;"	v	line:155
+NICCurrentTxBuffer::(0)	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	208;"	d	line:208
+NOBKOFF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	341;"	m	line:341	struct:_REG::<anonymous>
+NODE_INFO	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	456;"	t	line:456
+NO_SYNC	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	151;"	v	line:151
+NVALID	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	377;"	m	line:377	struct:_REG::<anonymous>
+Name	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	77;"	m	line:77	struct:_MPFS_ENTRY	file:
+Name	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	84;"	m	line:84	struct:_MPFS_ENTRY	file:
+NetBIOSName	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	473;"	m	line:473	struct:_APP_CONFIG
+NewRXRDLocation	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	487;"	l	line:487
+NextPacketLocation	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	157;"	v	line:157
+NextPacketPointer	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	116;"	m	line:116	struct:_ENC_PREAMBLE	file:
+OpenUART::(a,b,c)OpenUSART(a,b,c)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	105;"	d	line:105
+Operation	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	64;"	m	line:64	struct:_ARP_PACKET	file:
+PADCFG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	335;"	m	line:335	struct:_REG::<anonymous>
+PADCFG0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	325;"	m	line:325	struct:_REG::<anonymous>
+PADCFG1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	326;"	m	line:326	struct:_REG::<anonymous>
+PADCFG2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	327;"	m	line:327	struct:_REG::<anonymous>
+PASSALL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	311;"	m	line:311	struct:_REG::<anonymous>
+PATTERN_SHIFT::0b1000	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1874;"	d	line:1874	file:
+PAUSEControlFrame	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	62;"	m	line:62
+PDPXMD	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	429;"	m	line:429
+PFDPX	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	445;"	m	line:445
+PGEIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	504;"	m	line:504
+PGIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	514;"	m	line:514
+PHCON1::0x00	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	411;"	d	line:411
+PHCON1_PDPXMD::(1ul<<8)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	662;"	d	line:662
+PHCON1_PLOOPBK::(1ul<<14)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	660;"	d	line:660
+PHCON1_PPWRSV::(1ul<<11)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	661;"	d	line:661
+PHCON1_PRST::(1ul<<15)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	659;"	d	line:659
+PHCON1bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	435;"	m	line:435
+PHCON2::0x10	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	415;"	d	line:415
+PHCON2_FRCLNK::(1ul<<14)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	689;"	d	line:689
+PHCON2_HDLDIS::(1ul<<8)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	692;"	d	line:692
+PHCON2_JABBER::(1ul<<10)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	691;"	d	line:691
+PHCON2_TXDIS::(1ul<<13)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	690;"	d	line:690
+PHCON2bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	485;"	m	line:485
+PHDPX	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	444;"	m	line:444
+PHDREN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	323;"	m	line:323	struct:_REG::<anonymous>
+PHDREN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	333;"	m	line:333	struct:_REG::<anonymous>
+PHID1::0x02	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	413;"	d	line:413
+PHID2::0x03	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	414;"	d	line:414
+PHID2_PID19::(1ul<<10)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	676;"	d	line:676
+PHID2_PID20::(1ul<<11)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	675;"	d	line:675
+PHID2_PID21::(1ul<<12)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	674;"	d	line:674
+PHID2_PID22::(1ul<<13)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	673;"	d	line:673
+PHID2_PID23::(1ul<<14)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	672;"	d	line:672
+PHID2_PID24::(1ul<<15)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	671;"	d	line:671
+PHID2_PPN0::(1ul<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	682;"	d	line:682
+PHID2_PPN1::(1ul<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	681;"	d	line:681
+PHID2_PPN2::(1ul<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	680;"	d	line:680
+PHID2_PPN3::(1ul<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	679;"	d	line:679
+PHID2_PPN4::(1ul<<8)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	678;"	d	line:678
+PHID2_PPN5::(1ul<<9)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	677;"	d	line:677
+PHID2_PREV0::(1ul)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	686;"	d	line:686
+PHID2_PREV1::(1ul<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	685;"	d	line:685
+PHID2_PREV2::(1ul<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	684;"	d	line:684
+PHID2_PREV3::(1ul<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	683;"	d	line:683
+PHID2bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	467;"	m	line:467
+PHID2bits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	473;"	m	line:473
+PHIE::0x12	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	417;"	d	line:417
+PHIE_PGEIE::(1ul<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	704;"	d	line:704
+PHIE_PLNKIE::(1ul<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	703;"	d	line:703
+PHIEbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	509;"	m	line:509
+PHIR::0x13	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	418;"	d	line:418
+PHIR_PGIF::(1ul<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	708;"	d	line:708
+PHIR_PLNKIF::(1ul<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	707;"	d	line:707
+PHIRbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	519;"	m	line:519
+PHLCON::0x14	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	419;"	d	line:419
+PHLCON_LACFG0::(1ul<<8)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	714;"	d	line:714
+PHLCON_LACFG1::(1ul<<9)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	713;"	d	line:713
+PHLCON_LACFG2::(1ul<<10)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	712;"	d	line:712
+PHLCON_LACFG3::(1ul<<11)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	711;"	d	line:711
+PHLCON_LBCFG0::(1ul<<4)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	718;"	d	line:718
+PHLCON_LBCFG1::(1ul<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	717;"	d	line:717
+PHLCON_LBCFG2::(1ul<<6)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	716;"	d	line:716
+PHLCON_LBCFG3::(1ul<<7)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	715;"	d	line:715
+PHLCON_LFRQ0::(1ul<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	720;"	d	line:720
+PHLCON_LFRQ1::(1ul<<3)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	719;"	d	line:719
+PHLCON_STRCH::(1ul<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	721;"	d	line:721
+PHLCONbits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	536;"	m	line:536
+PHLCONbits2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	544;"	m	line:544
+PHSTAT1::0x01	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	412;"	d	line:412
+PHSTAT1_JBSTAT::(1ul<<1)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	668;"	d	line:668
+PHSTAT1_LLSTAT::(1ul<<2)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	667;"	d	line:667
+PHSTAT1_PFDPX::(1ul<<12)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	665;"	d	line:665
+PHSTAT1_PHDPX::(1ul<<11)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	666;"	d	line:666
+PHSTAT1bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	447;"	m	line:447
+PHSTAT2::0x11	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	416;"	d	line:416
+PHSTAT2_COLSTAT::(1ul<<11)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	697;"	d	line:697
+PHSTAT2_DPXSTAT::(1ul<<9)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	699;"	d	line:699
+PHSTAT2_LSTAT::(1ul<<10)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	698;"	d	line:698
+PHSTAT2_PLRITY::(1ul<<5)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	700;"	d	line:700
+PHSTAT2_RXSTAT::(1ul<<12)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	696;"	d	line:696
+PHSTAT2_TXSTAT::(1ul<<13)	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	695;"	d	line:695
+PHSTAT2bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	499;"	m	line:499
+PHYREG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	545;"	t	line:545
+PID	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	472;"	m	line:472
+PID19	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	461;"	m	line:461
+PID20	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	462;"	m	line:462
+PID21	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	463;"	m	line:463
+PID22	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	464;"	m	line:464
+PID23	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	465;"	m	line:465
+PID24	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	466;"	m	line:466
+PKTDEC	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	280;"	m	line:280	struct:_REG::<anonymous>
+PKTIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	246;"	m	line:246	struct:_REG::<anonymous>
+PKTIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	258;"	m	line:258	struct:_REG::<anonymous>
+PLNKIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	506;"	m	line:506
+PLNKIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	516;"	m	line:516
+PLOOPBK	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	433;"	m	line:433
+PLRITY	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	490;"	m	line:490
+PMEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	302;"	m	line:302	struct:_REG::<anonymous>
+PPN0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	455;"	m	line:455
+PPN1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	456;"	m	line:456
+PPN2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	457;"	m	line:457
+PPN3	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	458;"	m	line:458
+PPN4	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	459;"	m	line:459
+PPN5	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	460;"	m	line:460
+PPNH	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	471;"	m	line:471
+PPNL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	470;"	m	line:470
+PPWRSV	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	431;"	m	line:431
+PREV	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	469;"	m	line:469
+PREV0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	451;"	m	line:451
+PREV1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	452;"	m	line:452
+PREV2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	453;"	m	line:453
+PREV3	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	454;"	m	line:454
+PRIO_HIGEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_HIGH	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_LOW	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PRIO_LOWEST	F:\MCP\projects\CAN\canBase\Include\CAN.h	20;"	e	line:20
+PROPER_SPICON1::(0x0003|0x0120)	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	94;"	d	line:94	file:
+PROPER_SPICON1::(0x0013|0x0120)	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	90;"	d	line:90	file:
+PROPER_SPICON1::(0x0017|0x0120)	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	92;"	d	line:92	file:
+PROPER_SPICON1::(0x20)	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	88;"	d	line:88	file:
+PROPER_SPICON1::(0x22)	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	97;"	d	line:97	file:
+PRST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	434;"	m	line:434
+PSEL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	360;"	m	line:360	struct:_REG::<anonymous>
+PSEL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	369;"	m	line:369	struct:_REG::<anonymous>
+PSEUDO_HEADER	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	144;"	t	line:144	file:
+PSEUDO_HEADER	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	475;"	t	line:475	file:
+PSH::(0x08)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	86;"	d	line:86	file:
+PSV	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	370;"	m	line:370	struct:_REG::<anonymous>
+PSV0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	361;"	m	line:361	struct:_REG::<anonymous>
+PSV1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	362;"	m	line:362	struct:_REG::<anonymous>
+PSV2	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	363;"	m	line:363	struct:_REG::<anonymous>
+PWRSV	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	279;"	m	line:279	struct:_REG::<anonymous>
+PacketDefer	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	54;"	m	line:54
+PauseControlFrame	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	85;"	m	line:85
+PhyReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1986;"	l	line:1986
+PreviouslyIgnored	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	73;"	m	line:73
+PrimaryDNSServer	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	464;"	m	line:464	struct:_APP_CONFIG
+Printed	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	70;"	l	line:70
+ProcessIO	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	108;"	p	line:108	file:	signature:(void)
+ProcessIO	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	197;"	f	line:197	file:	signature:(void)
+Protocol	F:\MCP\projects\CAN\canEthernet\Include\IP.h	61;"	m	line:61	struct:_IP_HEADER
+Protocol	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	61;"	m	line:61	struct:_ARP_PACKET	file:
+Protocol	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	142;"	m	line:142	struct:_PSEUDO_HEADER	file:
+Protocol	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	473;"	m	line:473	struct:_PSEUDO_HEADER	file:
+ProtocolLen	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	63;"	m	line:63	struct:_ARP_PACKET	file:
+Questions	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	66;"	m	line:66	struct:_DNS_HEADER	file:
+RAMSIZE::8192ul	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	83;"	d	line:83	file:
+RANDOM_FILL::0b0000	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1872;"	d	line:1872	file:
+RBM::((0b001<<5)|0x1A)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	94;"	d	line:94	file:
+RCR::(0b000<<5)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	93;"	d	line:93	file:
+RDSR::0b00000101	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	62;"	d	line:62	file:
+READ::0b00000011	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	58;"	d	line:58	file:
+REG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	405;"	t	line:405
+REMOTE_HOST::(s)(TCB[s].remote)	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	57;"	d	line:57
+REPEAT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	158;"	v	line:158
+ROM::rom	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	97;"	d	line:97
+RST::(0x04)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	85;"	d	line:85	file:
+RXBUSY	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	266;"	m	line:266	struct:_REG::<anonymous>
+RXDCPreviouslySeen	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	74;"	m	line:74
+RXEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	288;"	m	line:288	struct:_REG::<anonymous>
+RXERIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	240;"	m	line:240	struct:_REG::<anonymous>
+RXERIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	252;"	m	line:252	struct:_REG::<anonymous>
+RXPAUS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	312;"	m	line:312	struct:_REG::<anonymous>
+RXRST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	292;"	m	line:292	struct:_REG::<anonymous>
+RXSIZE::(RXSTOP-RXSTART+1ul)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	87;"	d	line:87	file:
+RXSTART::(0ul)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	85;"	d	line:85	file:
+RXSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	496;"	m	line:496
+RXSTATUS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	90;"	t	line:90
+RXSTOP::((TXSTART-2ul)|0x0001ul)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	86;"	d	line:86	file:
+ReadETHReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1275;"	p	line:1275	file:
+ReadETHReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1276;"	p	line:1276	file:
+ReadETHReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	138;"	p	line:138	file:	signature:(BYTE Address)
+ReadETHReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1550;"	f	line:1550	file:	signature:(BYTE Address)
+ReadMACReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	139;"	p	line:139	file:	signature:(BYTE Address)
+ReadMACReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1595;"	f	line:1595	file:	signature:(BYTE Address)
+ReadPHYReg	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	80;"	p	line:80	signature:(BYTE Register)
+ReadPHYReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1638;"	f	line:1638	signature:(BYTE Register)
+ReadPT	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	538;"	l	line:538
+ReadPT	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	877;"	l	line:877
+ReadPtrSave	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	791;"	l	line:791
+ReadStringUART	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	43;"	p	line:43	signature:(BYTE *Dest, BYTE BufferLen)
+ReadUART::ReadUSART	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	106;"	d	line:106
+ReadUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	41;"	p	line:41	signature:(void)
+ReceiveOk	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	80;"	m	line:80
+ReceivedChecksum	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	101;"	l	line:101
+ReceivedChecksum	F:\MCP\projects\CAN\canEthernet\Source\IP.c	125;"	l	line:125
+Register	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1985;"	l	line:1985
+Remote	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	138;"	l	line:138	file:
+RemoteWindow	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	92;"	m	line:92	struct:_SOCKET_INFO
+Reserved2	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	114;"	m	line:114	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+Reserved3	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	100;"	m	line:100	struct:_TCP_HEADER::<anonymous>	file:
+ResponseClass	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	76;"	m	line:76	struct:_DNS_ANSWER_HEADER	file:
+ResponseLen	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	78;"	m	line:78	struct:_DNS_ANSWER_HEADER	file:
+ResponseName	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	74;"	m	line:74	struct:_DNS_ANSWER_HEADER	file:
+ResponseTTL	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	77;"	m	line:77	struct:_DNS_ANSWER_HEADER	file:
+ResponseType	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	75;"	m	line:75	struct:_DNS_ANSWER_HEADER	file:
+Result	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1340;"	l	line:1340
+Result	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1640;"	l	line:1640
+RetryCount	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	97;"	m	line:97	struct:_SOCKET_INFO
+RightPtr	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	290;"	l	line:290
+RxCount	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	91;"	m	line:91	struct:_SOCKET_INFO
+RxCount	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	54;"	m	line:54	struct:_UDP_SOCKET_INFO
+SCAN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	376;"	m	line:376	struct:_REG::<anonymous>
+SCHED	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	153;"	v	line:153
+SGPInit	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	48;"	f	line:48	signature:(void)
+SGPProcess	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	45;"	p	line:45	file:	signature:(SGP_HANDLE h)
+SGPProcess	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	86;"	f	line:86	file:	signature:(SGP_HANDLE h)
+SGPServer	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	61;"	f	line:61	signature:(void)
+SGP_HANDLE	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	40;"	t	line:40	file:
+SGP_INFO	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	39;"	t	line:39	file:
+SHEDEND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	161;"	v	line:161
+SIZEOF_MAC_HEADER::(14)	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	262;"	d	line:262	file:
+SMTPServerAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	471;"	m	line:471	struct:_APP_CONFIG
+SM_ABORT	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	24;"	e	line:24	enum:_timeState	file:
+SM_ARP_IDLE	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	51;"	e	line:51	enum:_ARP_STATE	file:
+SM_ARP_REPLY	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	52;"	e	line:52	enum:_ARP_STATE	file:
+SM_ARP_RESOLVE	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	17;"	e	line:17	enum:_timeState	file:
+SM_ARP_RESOLVED	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	18;"	e	line:18	enum:_timeState	file:
+SM_CONNECT	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	19;"	e	line:19	enum:_timeState	file:
+SM_CONNECTED	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	21;"	e	line:21	enum:_timeState	file:
+SM_CONNECT_WAIT	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	20;"	e	line:20	enum:_timeState	file:
+SM_DISCONNECT	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	23;"	e	line:23	enum:_timeState	file:
+SM_DONE	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	25;"	e	line:25	enum:_timeState	file:
+SM_HTTP	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	85;"	t	line:85	file:
+SM_HTTP_DISCARD	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	84;"	e	line:84	enum:_SM_HTTP	file:
+SM_HTTP_DISCONNECT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	79;"	e	line:79	enum:_SM_HTTP	file:
+SM_HTTP_DISCONNECT_WAIT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	80;"	e	line:80	enum:_SM_HTTP	file:
+SM_HTTP_GET	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	71;"	e	line:71	enum:_SM_HTTP	file:
+SM_HTTP_GET_DLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	75;"	e	line:75	enum:_SM_HTTP	file:
+SM_HTTP_GET_HANDLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	76;"	e	line:76	enum:_SM_HTTP	file:
+SM_HTTP_GET_HANDLE_NEXT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	77;"	e	line:77	enum:_SM_HTTP	file:
+SM_HTTP_GET_PASS	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	74;"	e	line:74	enum:_SM_HTTP	file:
+SM_HTTP_GET_READ	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	73;"	e	line:73	enum:_SM_HTTP	file:
+SM_HTTP_GET_VAR	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	78;"	e	line:78	enum:_SM_HTTP	file:
+SM_HTTP_HEADER	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	81;"	e	line:81	enum:_SM_HTTP	file:
+SM_HTTP_HEADER2	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	82;"	e	line:82	enum:_SM_HTTP	file:
+SM_HTTP_HEADER3	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	83;"	e	line:83	enum:_SM_HTTP	file:
+SM_HTTP_IDLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	70;"	e	line:70	enum:_SM_HTTP	file:
+SM_HTTP_NOT_FOUND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	72;"	e	line:72	enum:_SM_HTTP	file:
+SM_PARSE_ARG	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	433;"	e	line:433	file:
+SM_PARSE_ARG_FORMAT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	434;"	e	line:434	file:
+SM_PARSE_IDLE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	432;"	e	line:432	file:
+SM_RECEIVE	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	22;"	e	line:22	enum:_timeState	file:
+SM_SGP	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	28;"	t	line:28	file:
+SM_SGP_DISCARD	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	27;"	e	line:27	enum:_SM_SGP	file:
+SM_SGP_DISCONNECT	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	25;"	e	line:25	enum:_SM_SGP	file:
+SM_SGP_DISCONNECT_WAIT	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	26;"	e	line:26	enum:_SM_SGP	file:
+SM_SGP_GET	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	24;"	e	line:24	enum:_SM_SGP	file:
+SM_SGP_IDLE	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	23;"	e	line:23	enum:_SM_SGP	file:
+SM_STACK	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	96;"	t	line:96	file:
+SM_STACK_ARP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	93;"	e	line:93	enum:_SM_STACK	file:
+SM_STACK_ICMP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	91;"	e	line:91	enum:_SM_STACK	file:
+SM_STACK_ICMP_REPLY	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	92;"	e	line:92	enum:_SM_STACK	file:
+SM_STACK_IDLE	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	88;"	e	line:88	enum:_SM_STACK	file:
+SM_STACK_IP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	90;"	e	line:90	enum:_SM_STACK	file:
+SM_STACK_MAC	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	89;"	e	line:89	enum:_SM_STACK	file:
+SM_STACK_TCP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	94;"	e	line:94	enum:_SM_STACK	file:
+SM_STACK_UDP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	95;"	e	line:95	enum:_SM_STACK	file:
+SM_START	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	16;"	e	line:16	enum:_timeState	file:
+SND_ACK	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	95;"	m	line:95	struct:_SOCKET_INFO
+SND_SEQ	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	94;"	m	line:94	struct:_SOCKET_INFO
+SOCKET_INFO	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	111;"	t	line:111
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	242;"	l	line:242
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	244;"	l	line:244
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	384;"	l	line:384
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	386;"	l	line:386
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	466;"	l	line:466
+SPICON1Save	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	468;"	l	line:468
+SR::((0b111<<5)|0x1F)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	96;"	d	line:96	file:
+STACK_CLIENT_MODE	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	235;"	d	line:235
+STACK_INCLUDE	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	51;"	d	line:51	file:
+STACK_TSK_H	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	42;"	d	line:42
+STACK_USE_DHCP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	171;"	d	line:171
+STACK_USE_DNS::	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	153;"	d	line:153
+STACK_USE_HTTP_SERVER	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	145;"	d	line:145
+STACK_USE_ICMP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	144;"	d	line:144
+STACK_USE_ICMP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	258;"	d	line:258
+STACK_USE_SGP_SERVER	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	146;"	d	line:146
+STACK_USE_TCP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	215;"	d	line:215
+STACK_USE_TCP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	224;"	d	line:224
+STACK_USE_TIMESYNC	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	147;"	d	line:147
+STACK_USE_UDP	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	249;"	d	line:249
+STRCH	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	524;"	m	line:524
+STRCH	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	539;"	m	line:539
+SYN::(0x02)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	84;"	d	line:84	file:
+SYNC_INTERVAL::300	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	16;"	d	line:16
+SaveAppConfig::	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	110;"	d	line:110	file:
+SendSystemReset	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	143;"	p	line:143	file:	signature:(void)
+SendSystemReset	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1514;"	f	line:1514	file:	signature:(void)
+SendTCP::(remote,localPort,remotePort,s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	192;"	d	line:192	file:
+SenderIPAddr	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	66;"	m	line:66	struct:_ARP_PACKET	file:
+SenderMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	65;"	m	line:65	struct:_ARP_PACKET	file:
+SeqNumber	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	95;"	m	line:95	struct:_TCP_HEADER	file:
+SequenceNumber	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	61;"	m	line:61	struct:_ICMP_PACKET	file:
+SerialNumber	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	470;"	m	line:470	struct:_APP_CONFIG
+Server	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	44;"	l	line:44	file:
+ServerPort::80	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	14;"	d	line:14
+SetCLKOUT	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	2113;"	f	line:2113	signature:(BYTE NewConfig)
+SetLEDConfig::(NewConfig)WritePHYReg(PHLCON,	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	131;"	d	line:131
+SetRXHashTableEntry	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	81;"	p	line:81	signature:(MAC_ADDR DestMACAddr)
+SourceAddress	F:\MCP\projects\CAN\canEthernet\Include\IP.h	63;"	m	line:63	struct:_IP_HEADER
+SourceAddress	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	139;"	m	line:139	struct:_PSEUDO_HEADER	file:
+SourceAddress	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	470;"	m	line:470	struct:_PSEUDO_HEADER	file:
+SourceMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	109;"	m	line:109	struct:_ETHER_HEADER	file:
+SourceMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	120;"	m	line:120	struct:_ENC_PREAMBLE	file:
+SourcePort	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	81;"	m	line:81	struct:_UDP_HEADER
+SourcePort	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	93;"	m	line:93	struct:_TCP_HEADER	file:
+StackInit	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	503;"	p	line:503	signature:(void)
+StackInit	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	118;"	f	line:118	signature:(void)
+StackIsInConfigMode::(AppConfig.Flags.bInConfigMode	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	482;"	d	line:482
+StackIsInConfigMode::(FALSE)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	484;"	d	line:484
+StackTask	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	525;"	p	line:525	signature:(void)
+StackTask	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	165;"	f	line:165	signature:(void)
+StartAddress	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	126;"	m	line:126	struct:_DATA_BUFFER	file:
+StartTime	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	139;"	l	line:139	file:
+StatusVector	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	117;"	m	line:117	struct:_ENC_PREAMBLE	file:
+SwapARPPacket	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	220;"	f	line:220	file:	signature:(ARP_PACKET *p)
+SwapARPPacket	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	72;"	p	line:72	file:	signature:(ARP_PACKET *p)
+SwapICMPPacket	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	236;"	f	line:236	file:	signature:(ICMP_PACKET* p)
+SwapICMPPacket	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	66;"	p	line:66	file:	signature:(ICMP_PACKET* p)
+SwapIPHeader	F:\MCP\projects\CAN\canEthernet\Source\IP.c	297;"	f	line:297	file:	signature:(IP_HEADER* h)
+SwapIPHeader	F:\MCP\projects\CAN\canEthernet\Source\IP.c	85;"	p	line:85	file:	signature:(IP_HEADER* h)
+SwapPseudoHeader::(h)(h.Length=swaps(h.Length))	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	477;"	d	line:477	file:
+SwapPseudoTCPHeader::(h)(h.TCPLength=swaps(h.TCPLen	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	135;"	d	line:135	file:
+SwapTCPHeader	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1301;"	f	line:1301	file:	signature:(TCP_HEADER* header)
+SwapTCPHeader	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	189;"	p	line:189	file:	signature:(TCP_HEADER* header)
+TCB	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	170;"	v	line:170
+TCPConnect	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	183;"	p	line:183	signature:(NODE_INFO *remote, TCP_PORT port)
+TCPConnect	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	317;"	f	line:317	signature:(NODE_INFO *remote, TCP_PORT remotePort)
+TCPDiscard	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	369;"	p	line:369	signature:(TCP_SOCKET socket)
+TCPDiscard	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	615;"	f	line:615	signature:(TCP_SOCKET s)
+TCPDisconnect	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	224;"	p	line:224	signature:(TCP_SOCKET s)
+TCPDisconnect	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	422;"	f	line:422	signature:(TCP_SOCKET s)
+TCPFlush	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	288;"	p	line:288	signature:(TCP_SOCKET socket)
+TCPFlush	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	472;"	f	line:472	signature:(TCP_SOCKET s)
+TCPGet	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	327;"	p	line:327	signature:(TCP_SOCKET socket, BYTE *byte)
+TCPGet	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	697;"	f	line:697	signature:(TCP_SOCKET s, BYTE *byte)
+TCPGetArray	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	349;"	p	line:349	signature:(TCP_SOCKET s, BYTE *buffer, WORD count)
+TCPGetArray	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	653;"	f	line:653	signature:(TCP_SOCKET s, BYTE *buffer, WORD count)
+TCPHeader	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	977;"	l	line:977
+TCPInit	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	139;"	p	line:139	signature:(void)
+TCPInit	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	213;"	f	line:213	signature:(void)
+TCPIsConnected	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	205;"	p	line:205	signature:(TCP_SOCKET s)
+TCPIsConnected	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	399;"	f	line:399	signature:(TCP_SOCKET s)
+TCPIsGetReady	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	306;"	p	line:306	signature:(TCP_SOCKET s)
+TCPIsGetReady	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	747;"	f	line:747	signature:(TCP_SOCKET s)
+TCPIsPutReady	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	249;"	p	line:249	signature:(TCP_SOCKET s)
+TCPIsPutReady	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	533;"	f	line:533	signature:(TCP_SOCKET s)
+TCPLength	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	143;"	m	line:143	struct:_PSEUDO_HEADER	file:
+TCPListen	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	159;"	p	line:159	signature:(TCP_PORT port)
+TCPListen	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	257;"	f	line:257	signature:(TCP_PORT port)
+TCPProcess	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	391;"	p	line:391	signature:(NODE_INFO *remote, IP_ADDR *localIP, WORD len)
+TCPProcess	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	975;"	f	line:975	signature:(NODE_INFO *remote, IP_ADDR *localIP, WORD len)
+TCPPut	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	269;"	p	line:269	signature:(TCP_SOCKET socket, BYTE byte)
+TCPPut	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	564;"	f	line:564	signature:(TCP_SOCKET s, BYTE byte)
+TCPTick	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	412;"	p	line:412	signature:(void)
+TCPTick	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	777;"	f	line:777	signature:(void)
+TCP_CLOSED	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	74;"	e	line:74	enum:_TCP_STATE
+TCP_CLOSE_WAIT	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	72;"	e	line:72	enum:_TCP_STATE
+TCP_CLOSING	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	70;"	e	line:70	enum:_TCP_STATE
+TCP_ESTABLISHED	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	67;"	e	line:67	enum:_TCP_STATE
+TCP_FIN_WAIT_1	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	68;"	e	line:68	enum:_TCP_STATE
+TCP_FIN_WAIT_2	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	69;"	e	line:69	enum:_TCP_STATE
+TCP_H	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	39;"	d	line:39
+TCP_HEADER	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	122;"	t	line:122	file:
+TCP_LAST_ACK	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	73;"	e	line:73	enum:_TCP_STATE
+TCP_LISTEN	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	64;"	e	line:64	enum:_TCP_STATE
+TCP_OPTIONS	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	133;"	t	line:133	file:
+TCP_OPTIONS_END_OF_LIST::(0x00)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	125;"	d	line:125	file:
+TCP_OPTIONS_MAX_SEG_SIZE::(0x02)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	127;"	d	line:127	file:
+TCP_OPTIONS_NO_OP::(0x01)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	126;"	d	line:126	file:
+TCP_PORT	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	45;"	t	line:45
+TCP_SOCKET	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	44;"	t	line:44
+TCP_START_TIMEOUT_VAL::((TICK)TICK_1S*(TICK)3)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	80;"	d	line:80	file:
+TCP_STATE	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	75;"	t	line:75
+TCP_SYN_RECEIVED	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	66;"	e	line:66	enum:_TCP_STATE
+TCP_SYN_SENT	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	65;"	e	line:65	enum:_TCP_STATE
+TCP_TIME_WAIT	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	71;"	e	line:71	enum:_TCP_STATE
+TFTPServerAddr	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	472;"	m	line:472	struct:_APP_CONFIG
+THIS_IS_DNS	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	35;"	d	line:35	file:
+THIS_IS_HTTP_SERVER	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	44;"	d	line:44	file:
+THIS_IS_MAC_LAYER	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	48;"	d	line:48	file:
+THIS_IS_MPFS	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	38;"	d	line:38	file:
+THIS_IS_STACK_APPLICATION	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	61;"	d	line:61	file:
+THIS_IS_TCP	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	62;"	d	line:62	file:
+THIS_IS_TIMESYNC	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	1;"	d	line:1	file:
+THIS_IS_UDP_MODULE	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	68;"	d	line:68	file:
+TICK	F:\MCP\projects\CAN\canBase\Include\Tick.h	19;"	t	line:19
+TICKS_PER_SECOND	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	77;"	d	line:77
+TICKS_PER_SECOND::(1)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	78;"	d	line:78
+TICKS_PER_SECOND::(100)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	53;"	d	line:53
+TICK_100MS::(TICK)10	F:\MCP\projects\CAN\canBase\Include\Tick.h	22;"	d	line:22
+TICK_1S::(TICK)100	F:\MCP\projects\CAN\canBase\Include\Tick.h	21;"	d	line:21
+TICK_COUNTER::62411	F:\MCP\projects\CAN\canBase\Include\Tick.h	24;"	d	line:24
+TICK_H	F:\MCP\projects\CAN\canBase\Include\Tick.h	13;"	d	line:13
+TICK_INCLUDE	F:\MCP\projects\CAN\canBase\Source\Tick.c	12;"	d	line:12	file:
+TICK_PRESCALE::0b100	F:\MCP\projects\CAN\canBase\Include\Tick.h	25;"	d	line:25
+TICK_PRESCALE_VALUE::(256)	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	63;"	d	line:63
+TIMEND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	152;"	v	line:152
+TIMESYNC_H	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	4;"	d	line:4
+TME	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	357;"	m	line:357	struct:_REG::<anonymous>
+TME	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	367;"	m	line:367	struct:_REG::<anonymous>
+TMSEL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	368;"	m	line:368	struct:_REG::<anonymous>
+TMSEL0	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	358;"	m	line:358	struct:_REG::<anonymous>
+TMSEL1	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	359;"	m	line:359	struct:_REG::<anonymous>
+TOGG	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	148;"	v	line:148
+TRUE	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	e	line:15	enum:_BOOL
+TRUE	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	47;"	e	line:47	enum:_BOOL
+TRUE	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	70;"	e	line:70	file:
+TXABRT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	265;"	m	line:265	struct:_REG::<anonymous>
+TXCRCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	324;"	m	line:324	struct:_REG::<anonymous>
+TXCRCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	334;"	m	line:334	struct:_REG::<anonymous>
+TXDIS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	482;"	m	line:482
+TXERIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	241;"	m	line:241	struct:_REG::<anonymous>
+TXERIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	253;"	m	line:253	struct:_REG::<anonymous>
+TXEnd	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	792;"	l	line:792
+TXIE	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	243;"	m	line:243	struct:_REG::<anonymous>
+TXIF	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	255;"	m	line:255	struct:_REG::<anonymous>
+TXPAUS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	313;"	m	line:313	struct:_REG::<anonymous>
+TXRST	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	293;"	m	line:293	struct:_REG::<anonymous>
+TXRTS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	289;"	m	line:289	struct:_REG::<anonymous>
+TXSTART::(RAMSIZE-(MAC_TX_BUFFER_COUNT*	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	84;"	d	line:84	file:
+TXSTAT	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	497;"	m	line:497
+TXSTATUS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	67;"	t	line:67
+TXStatus	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	793;"	l	line:793
+TYPEDEFS_H	F:\MCP\projects\CAN\canBase\Include\typedefs.h	13;"	d	line:13
+TargetIPAddr	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	68;"	m	line:68	struct:_ARP_PACKET	file:
+TargetMACAddr	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	67;"	m	line:67	struct:_ARP_PACKET	file:
+TestMemory	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	146;"	p	line:146	file:	signature:(void)
+TestMemory	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1870;"	f	line:1870	file:	signature:(void)
+TickCount	F:\MCP\projects\CAN\canBase\Source\Tick.c	17;"	v	line:17	file:
+TimeOut	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	99;"	m	line:99	struct:_SOCKET_INFO
+TimeToLive	F:\MCP\projects\CAN\canEthernet\Include\IP.h	60;"	m	line:60	struct:_IP_HEADER
+Timer	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	40;"	l	line:40	file:
+TotalLength	F:\MCP\projects\CAN\canEthernet\Include\IP.h	57;"	m	line:57	struct:_IP_HEADER
+TransactionID	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	64;"	m	line:64	struct:_DNS_HEADER	file:
+TransmitTCP	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1085;"	f	line:1085	file:	signature:(NODE_INFO *remote, TCP_PORT localPort, TCP_PORT remotePort, DWORD tseq, DWORD tack, BYTE flags, BUFFER buffer, WORD len)
+TransmitTCP	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	178;"	p	line:178	file:	signature:(NODE_INFO *remote, TCP_PORT localPort, TCP_PORT remotePort, DWORD seq, DWORD ack, BYTE flags, BUFFER buffer, WORD len)
+TxBuffer	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	89;"	m	line:89	struct:_SOCKET_INFO
+TxBuffer	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	55;"	m	line:55	struct:_UDP_SOCKET_INFO
+TxBuffers	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	151;"	v	line:151	file:
+TxCount	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	90;"	m	line:90	struct:_SOCKET_INFO
+TxCount	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	53;"	m	line:53	struct:_UDP_SOCKET_INFO
+TxOffset	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	56;"	m	line:56	struct:_UDP_SOCKET_INFO
+Type	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	110;"	m	line:110	struct:_ETHER_HEADER	file:
+Type	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	121;"	m	line:121	struct:_ENC_PREAMBLE	file:
+Type	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	57;"	m	line:57	struct:_ICMP_PACKET	file:
+TypeOfService	F:\MCP\projects\CAN\canEthernet\Include\IP.h	56;"	m	line:56	struct:_IP_HEADER
+UB	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	112;"	m	line:112	struct:_DWORD_VAL::<anonymous>
+UCEN	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	305;"	m	line:305	struct:_REG::<anonymous>
+UDPClose	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	158;"	p	line:158	signature:(UDP_SOCKET s)
+UDPClose	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	198;"	f	line:198	signature:(UDP_SOCKET s)
+UDPDiscard	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	294;"	p	line:294	signature:(void)
+UDPDiscard	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	437;"	f	line:437	signature:(void)
+UDPFlush	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	228;"	p	line:228	signature:(void)
+UDPFlush	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	302;"	f	line:302	signature:(void)
+UDPGet	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	275;"	p	line:275	signature:(BYTE *v)
+UDPGet	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	392;"	f	line:392	signature:(BYTE *v)
+UDPInit	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	103;"	p	line:103	signature:(void)
+UDPInit	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	101;"	f	line:101	signature:(void)
+UDPIsGetReady	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	253;"	p	line:253	signature:(UDP_SOCKET s)
+UDPIsGetReady	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	368;"	f	line:368	signature:(UDP_SOCKET s)
+UDPIsPutReady::(s)(activeUDPSocket=s,MACIsTxR	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	178;"	d	line:178
+UDPOpen	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	136;"	p	line:136	signature:(UDP_PORT localPort, NODE_INFO *remoteNode, UDP_PORT remotePort)
+UDPOpen	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	137;"	f	line:137	signature:(UDP_PORT localPort, NODE_INFO *remoteNode, UDP_PORT remotePort)
+UDPProcess	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	318;"	p	line:318	signature:(NODE_INFO *remoteNode, IP_ADDR *localIP, WORD len)
+UDPProcess	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	479;"	f	line:479	signature:(NODE_INFO *remoteNode, IP_ADDR *localIP, WORD len)
+UDPPut	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	206;"	p	line:206	signature:(BYTE v)
+UDPPut	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	231;"	f	line:231	signature:(BYTE v)
+UDPSetRxBuffer::(a)IPSetRxBuffer(a+sizeof(UDP_	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	357;"	d	line:357
+UDPSetTxBuffer::(a,b)(UDPSocketInfo[activeUDPS	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	339;"	d	line:339
+UDPSocketInfo	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	80;"	v	line:80
+UDP_H	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	37;"	d	line:37
+UDP_HEADER	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	85;"	t	line:85
+UDP_PORT	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	45;"	t	line:45
+UDP_SOCKET	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	46;"	t	line:46
+UDP_SOCKET_INFO	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	63;"	t	line:63
+UNKNOWN_SOCKET::(0xff)	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	55;"	d	line:55
+URG::(0x20)	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	88;"	d	line:88	file:
+USE_PHY	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	61;"	e	line:61	enum:_DUPLEX
+Underrun	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	59;"	m	line:59
+UnmaskedPatternLen	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1228;"	l	line:1228
+UnsupportedOpcode	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	86;"	m	line:86
+UrgentPointer	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	121;"	m	line:121	struct:_TCP_HEADER	file:
+VAL	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	424;"	m	line:424
+VALUE	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	160;"	v	line:160
+VAR_LED1::VAR_LED1_STR[0]	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	57;"	d	line:57
+VAR_LED1_HUMAN::"LED1"	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	55;"	d	line:55
+VAR_LED1_STR::"l"	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	56;"	d	line:56
+VERSION::"v3.75"	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	63;"	d	line:63	file:
+VLANTaggedFrame	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	64;"	m	line:64
+VLANType	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	87;"	m	line:87
+VRPS	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	277;"	m	line:277	struct:_REG::<anonymous>
+Val	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	236;"	m	line:236	union:_REG
+Val	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	423;"	m	line:423
+Val	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	100;"	m	line:100	union:_DWORD_VAL
+Val	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	54;"	m	line:54	union:_BYTE_VAL
+Val	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	70;"	m	line:70	union:_WORD_VAL
+Val	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	448;"	m	line:448	union:_IP_ADDR
+Val	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	227;"	m	line:227	file:
+Val	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	94;"	m	line:94	file:
+Val	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	101;"	m	line:101	struct:_TCP_HEADER::<anonymous>	file:
+VarRef	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	103;"	m	line:103	struct:_HTTP_INFO	file:
+Variable	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	105;"	m	line:105	struct:_HTTP_INFO	file:
+VersionIHL	F:\MCP\projects\CAN\canEthernet\Include\IP.h	55;"	m	line:55	struct:_IP_HEADER
+WBM::((0b011<<5)|0x1A)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	95;"	d	line:95	file:
+WCR::(0b010<<5)	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	90;"	d	line:90	file:
+WELCOME	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	144;"	v	line:144
+WHAT	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	159;"	v	line:159
+WHEN	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	157;"	v	line:157
+WORD	F:\MCP\projects\CAN\canBase\Include\typedefs.h	17;"	t	line:17
+WORD	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	49;"	t	line:49
+WORD_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	96;"	t	line:96
+WRDI::0b00000100	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	60;"	d	line:60	file:
+WREN::0b00000110	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	61;"	d	line:61	file:
+WRITE::0b00000010	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	59;"	d	line:59	file:
+WRSR::0b00000001	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	63;"	d	line:63	file:
+WasDiscarded	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	159;"	v	line:159
+Window	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	119;"	m	line:119	struct:_TCP_HEADER	file:
+WritePHYReg	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	79;"	p	line:79	signature:(BYTE Register, WORD Data)
+WritePHYReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1804;"	f	line:1804	signature:(BYTE Register, WORD Data)
+WritePT	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	538;"	l	line:538
+WriteReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	140;"	p	line:140	file:	signature:(BYTE Address, BYTE Data)
+WriteReg	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1689;"	f	line:1689	file:	signature:(BYTE Address, BYTE Data)
+WriteUART::(a)WriteUSART(a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	107;"	d	line:107
+WriteUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	42;"	p	line:42	signature:(char data)
+XEEBeginRead	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	193;"	p	line:193	signature:(unsigned char control, XEE_ADDR address)
+XEEBeginRead	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	144;"	f	line:144	signature:(unsigned char control, XEE_ADDR address )
+XEEBeginWrite::(control,address)XEESetAddr(co	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	117;"	d	line:117
+XEEEndRead	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	237;"	p	line:237	signature:(void)
+XEEEndRead	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	205;"	f	line:205	signature:(void)
+XEEEndWrite	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	168;"	p	line:168	signature:(void)
+XEEEndWrite	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	369;"	f	line:369	signature:(void)
+XEEInit	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	69;"	p	line:69	signature:(unsigned char baud)
+XEEInit	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	100;"	f	line:100	signature:(unsigned char speed)
+XEEIsBusy	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	288;"	p	line:288	signature:(unsigned char control)
+XEEIsBusy	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	462;"	f	line:462	signature:(unsigned char control)
+XEEPROM_H	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	35;"	d	line:35
+XEERead	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	217;"	p	line:217	signature:(void)
+XEERead	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	173;"	f	line:173	signature:(void)
+XEEReadArray	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	264;"	p	line:264	signature:(unsigned char control, XEE_ADDR address, unsigned char *buffer, unsigned char length)
+XEEReadArray	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	235;"	f	line:235	signature:(unsigned char control, XEE_ADDR address, unsigned char *buffer, unsigned char length)
+XEESetAddr	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	93;"	p	line:93	signature:(unsigned char control, XEE_ADDR address)
+XEESetAddr	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	310;"	f	line:310	signature:(unsigned char control, XEE_ADDR address)
+XEEWrite	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	143;"	p	line:143	signature:(unsigned char val)
+XEEWrite	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	336;"	f	line:336	signature:(unsigned char val)
+XEE_ADDR	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	50;"	t	line:50
+XEE_BUSY	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	47;"	e	line:47	enum:_XEE_RESULT
+XEE_BUS_COLLISION	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	44;"	e	line:44	enum:_XEE_RESULT
+XEE_NAK	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	45;"	e	line:45	enum:_XEE_RESULT
+XEE_READY	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	43;"	e	line:43	enum:_XEE_RESULT
+XEE_RESULT	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	48;"	t	line:48
+XEE_SUCCESS	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	42;"	e	line:42	enum:_XEE_RESULT
+XEE_VERIFY_ERR	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	46;"	e	line:46	enum:_XEE_RESULT
+Zero	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	88;"	m	line:88
+Zero	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	141;"	m	line:141	struct:_PSEUDO_HEADER	file:
+Zero	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	472;"	m	line:472	struct:_PSEUDO_HEADER	file:
+Zeros	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	65;"	m	line:65
+_APP_CONFIG	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	458;"	s	line:458
+_ARP_PACKET	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	58;"	s	line:58	file:
+_ARP_STATE	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	49;"	g	line:49	file:
+_BOOL	F:\MCP\projects\CAN\canBase\Include\typedefs.h	15;"	g	line:15
+_BOOL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	47;"	g	line:47
+_BYTE_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	52;"	u	line:52
+_CLK_CONFIG	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	64;"	g	line:64
+_DATA_BUFFER	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	124;"	s	line:124	file:
+_DNS_ANSWER_HEADER	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	72;"	s	line:72	file:
+_DNS_HEADER	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	62;"	s	line:62	file:
+_DUPLEX	F:\MCP\projects\CAN\canEthernet\Include\MAC.h	58;"	g	line:58
+_DWORD_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	98;"	u	line:98
+_ENC_PREAMBLE	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	114;"	s	line:114	file:
+_ETHER_HEADER	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	106;"	s	line:106	file:
+_HTTP_COMMAND	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	88;"	g	line:88	file:
+_HTTP_INFO	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	97;"	s	line:97	file:
+_ICMP_CODE	F:\MCP\projects\CAN\canEthernet\Include\ICMP.h	51;"	g	line:51
+_ICMP_PACKET	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	55;"	s	line:55	file:
+_IP_ADDR	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	445;"	u	line:445
+_IP_HEADER	F:\MCP\projects\CAN\canEthernet\Include\IP.h	53;"	s	line:53
+_Identifier	F:\MCP\projects\CAN\canEthernet\Source\IP.c	81;"	v	line:81	file:
+_MAC_ADDR	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	440;"	s	line:440
+_MPFS_ENTRY	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	73;"	s	line:73	file:
+_MPFS_ENTRY	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	80;"	s	line:80	file:
+_NODE_INFO	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	452;"	s	line:452
+_NextPort	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	152;"	v	line:152	file:
+_PSEUDO_HEADER	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	137;"	s	line:137	file:
+_PSEUDO_HEADER	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	468;"	s	line:468	file:
+_REG	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	234;"	u	line:234
+_SGP_INFO	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	32;"	s	line:32	file:
+_SM_HTTP	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	68;"	g	line:68	file:
+_SM_SGP	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	21;"	g	line:21	file:
+_SM_STACK	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	86;"	g	line:86	file:
+_SOCKET_INFO	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	81;"	s	line:81
+_TCP_HEADER	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	91;"	s	line:91	file:
+_TCP_OPTIONS	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	128;"	s	line:128	file:
+_TCP_STATE	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	62;"	g	line:62
+_UDP_HEADER	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	79;"	s	line:79
+_UDP_SOCKET_INFO	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	48;"	s	line:48
+_WORD_VAL	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	68;"	u	line:68
+_XEE_RESULT	F:\MCP\projects\CAN\canEthernet\Include\XEEPROM.h	40;"	g	line:40
+__GENERIC_TYPE_DEFS_H_	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	39;"	d	line:39
+__UART_H	F:\MCP\projects\CAN\canEthernet\Include\UART.h	34;"	d	line:34
+__attribute__::(a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	100;"	d	line:100
+_currentCount	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	112;"	v	line:112
+_currentFile	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	111;"	v	line:111
+_currentHandle	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	110;"	v	line:110
+_high_ISR	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	401;"	f	line:401	signature:(void)
+_reset	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	393;"	f	line:393	signature:(void)
+_startup	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	391;"	p	line:391	file:	signature:(void)
+_timeClock	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	41;"	g	line:41
+_timeState	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	14;"	g	line:14	file:
+ack	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1395;"	l	line:1395
+activeUDPSocket	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	81;"	v	line:81
+arg	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	250;"	l	line:250
+argc	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	251;"	l	line:251
+arp_tries	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	45;"	l	line:45	file:
+b	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	187;"	l	line:187
+b	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	200;"	l	line:200
+b	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	358;"	l	line:358
+b0	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	117;"	m	line:117	struct:_DWORD_VAL::<anonymous>
+b0	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	57;"	m	line:57	struct:_BYTE_VAL::<anonymous>
+b0	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	79;"	m	line:79	struct:_WORD_VAL::<anonymous>
+b1	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	118;"	m	line:118	struct:_DWORD_VAL::<anonymous>
+b1	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	58;"	m	line:58	struct:_BYTE_VAL::<anonymous>
+b1	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	80;"	m	line:80	struct:_WORD_VAL::<anonymous>
+b10	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	127;"	m	line:127	struct:_DWORD_VAL::<anonymous>
+b10	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	89;"	m	line:89	struct:_WORD_VAL::<anonymous>
+b11	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	128;"	m	line:128	struct:_DWORD_VAL::<anonymous>
+b11	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	90;"	m	line:90	struct:_WORD_VAL::<anonymous>
+b12	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	129;"	m	line:129	struct:_DWORD_VAL::<anonymous>
+b12	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	91;"	m	line:91	struct:_WORD_VAL::<anonymous>
+b13	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	130;"	m	line:130	struct:_DWORD_VAL::<anonymous>
+b13	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	92;"	m	line:92	struct:_WORD_VAL::<anonymous>
+b14	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	131;"	m	line:131	struct:_DWORD_VAL::<anonymous>
+b14	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	93;"	m	line:93	struct:_WORD_VAL::<anonymous>
+b15	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	132;"	m	line:132	struct:_DWORD_VAL::<anonymous>
+b15	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	94;"	m	line:94	struct:_WORD_VAL::<anonymous>
+b16	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	133;"	m	line:133	struct:_DWORD_VAL::<anonymous>
+b17	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	134;"	m	line:134	struct:_DWORD_VAL::<anonymous>
+b18	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	135;"	m	line:135	struct:_DWORD_VAL::<anonymous>
+b19	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	136;"	m	line:136	struct:_DWORD_VAL::<anonymous>
+b2	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	119;"	m	line:119	struct:_DWORD_VAL::<anonymous>
+b2	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	59;"	m	line:59	struct:_BYTE_VAL::<anonymous>
+b2	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	81;"	m	line:81	struct:_WORD_VAL::<anonymous>
+b20	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	137;"	m	line:137	struct:_DWORD_VAL::<anonymous>
+b21	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	138;"	m	line:138	struct:_DWORD_VAL::<anonymous>
+b22	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	139;"	m	line:139	struct:_DWORD_VAL::<anonymous>
+b23	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	140;"	m	line:140	struct:_DWORD_VAL::<anonymous>
+b24	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	141;"	m	line:141	struct:_DWORD_VAL::<anonymous>
+b25	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	142;"	m	line:142	struct:_DWORD_VAL::<anonymous>
+b26	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	143;"	m	line:143	struct:_DWORD_VAL::<anonymous>
+b27	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	144;"	m	line:144	struct:_DWORD_VAL::<anonymous>
+b28	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	145;"	m	line:145	struct:_DWORD_VAL::<anonymous>
+b29	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	146;"	m	line:146	struct:_DWORD_VAL::<anonymous>
+b3	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	120;"	m	line:120	struct:_DWORD_VAL::<anonymous>
+b3	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	60;"	m	line:60	struct:_BYTE_VAL::<anonymous>
+b3	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	82;"	m	line:82	struct:_WORD_VAL::<anonymous>
+b30	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	147;"	m	line:147	struct:_DWORD_VAL::<anonymous>
+b31	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	148;"	m	line:148	struct:_DWORD_VAL::<anonymous>
+b4	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	121;"	m	line:121	struct:_DWORD_VAL::<anonymous>
+b4	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	61;"	m	line:61	struct:_BYTE_VAL::<anonymous>
+b4	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	83;"	m	line:83	struct:_WORD_VAL::<anonymous>
+b5	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	122;"	m	line:122	struct:_DWORD_VAL::<anonymous>
+b5	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	62;"	m	line:62	struct:_BYTE_VAL::<anonymous>
+b5	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	84;"	m	line:84	struct:_WORD_VAL::<anonymous>
+b6	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	123;"	m	line:123	struct:_DWORD_VAL::<anonymous>
+b6	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	63;"	m	line:63	struct:_BYTE_VAL::<anonymous>
+b6	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	85;"	m	line:85	struct:_WORD_VAL::<anonymous>
+b7	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	124;"	m	line:124	struct:_DWORD_VAL::<anonymous>
+b7	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	64;"	m	line:64	struct:_BYTE_VAL::<anonymous>
+b7	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	86;"	m	line:86	struct:_WORD_VAL::<anonymous>
+b8	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	125;"	m	line:125	struct:_DWORD_VAL::<anonymous>
+b8	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	87;"	m	line:87	struct:_WORD_VAL::<anonymous>
+b9	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	126;"	m	line:126	struct:_DWORD_VAL::<anonymous>
+b9	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	88;"	m	line:88	struct:_WORD_VAL::<anonymous>
+bACKValid	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	108;"	m	line:108	struct:_SOCKET_INFO::<anonymous>
+bFirstRead	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	105;"	m	line:105	struct:_SOCKET_INFO::<anonymous>
+bFirstRead	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	60;"	m	line:60	struct:_UDP_SOCKET_INFO::<anonymous>
+bFree	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	130;"	m	line:130	struct:_DATA_BUFFER::<anonymous>	file:
+bInConfigMode	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	468;"	m	line:468	struct:_APP_CONFIG::<anonymous>
+bIsDHCPEnabled	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	467;"	m	line:467	struct:_APP_CONFIG::<anonymous>
+bIsGetReady	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	106;"	m	line:106	struct:_SOCKET_INFO::<anonymous>
+bIsPutReady	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	104;"	m	line:104	struct:_SOCKET_INFO::<anonymous>
+bIsTxInProgress	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	107;"	m	line:107	struct:_SOCKET_INFO::<anonymous>
+bNotAvailable	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	92;"	m	line:92	file:
+bProcess	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	104;"	m	line:104	struct:_HTTP_INFO	file:
+bProcess	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	37;"	m	line:37	struct:_SGP_INFO	file:
+bServer	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	103;"	m	line:103	struct:_SOCKET_INFO::<anonymous>
+bTransmitted	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	131;"	m	line:131	struct:_DATA_BUFFER::<anonymous>	file:
+bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	66;"	m	line:66
+bits	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	89;"	m	line:89
+bits	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	149;"	m	line:149	union:_DWORD_VAL
+bits	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	65;"	m	line:65	union:_BYTE_VAL
+bits	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	95;"	m	line:95	union:_WORD_VAL
+bits	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	93;"	m	line:93	file:
+bits	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	115;"	m	line:115	union:_TCP_HEADER::<anonymous>	file:
+btohexa_high	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	45;"	p	line:45	signature:(BYTE b)
+btohexa_high	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	153;"	f	line:153	signature:(BYTE b)
+btohexa_low	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	46;"	p	line:46	signature:(BYTE b)
+btohexa_low	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	177;"	f	line:177	signature:(BYTE b)
+byte	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	114;"	m	line:114	union:_DWORD_VAL
+byte	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	76;"	m	line:76	union:_WORD_VAL
+byte	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	116;"	m	line:116	union:_TCP_HEADER::<anonymous>	file:
+c	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	428;"	l	line:428
+c	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	339;"	l	line:339
+c	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	288;"	l	line:288
+c	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	301;"	l	line:301
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	191;"	f	line:191
+canGetPacket	F:\MCP\projects\CAN\canBase\Source\CAN.c	23;"	p	line:23	file:	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Include\CAN.h	24;"	p	line:24	signature:(void)
+canISR	F:\MCP\projects\CAN\canBase\Source\CAN.c	148;"	f	line:148
+canInit	F:\MCP\projects\CAN\canBase\Include\CAN.h	23;"	p	line:23	signature:(void)
+canInit	F:\MCP\projects\CAN\canBase\Source\CAN.c	37;"	f	line:37
+canParse	F:\MCP\projects\CAN\canBase\Include\CAN.h	25;"	p	line:25	signature:(CAN_PACKET cp)
+canParse	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	275;"	f	line:275	signature:(CAN_PACKET cp)
+canSendMessage	F:\MCP\projects\CAN\canBase\Include\CAN.h	26;"	p	line:26	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+canSendMessage	F:\MCP\projects\CAN\canBase\Source\CAN.c	269;"	f	line:269	signature:(CAN_PACKET cp, CAN_PRIORITY prio)
+checkSum	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	281;"	l	line:281
+checkSum	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1094;"	l	line:1094
+checksum	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	484;"	l	line:484
+checksum1	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	980;"	l	line:980
+checksum2	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	981;"	l	line:981
+checksums	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	103;"	l	line:103
+checksums	F:\MCP\projects\CAN\canEthernet\Source\IP.c	126;"	l	line:126
+cmd	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	426;"	l	line:426
+conn	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	221;"	l	line:221
+conn	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	63;"	l	line:63
+cp	F:\MCP\projects\CAN\canBase\Source\CAN.c	193;"	l	line:193
+data	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	170;"	l	line:170	file:
+dataCount	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	167;"	l	line:167	file:
+day	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	390;"	l	line:390
+day_sec	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	384;"	l	line:384
+days	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	383;"	l	line:383
+daysOfMonth	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	393;"	l	line:393
+diffTicks	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	780;"	l	line:780
+dwordToHex	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	54;"	p	line:54	signature:(DWORD c,char *str)
+dwordToHex	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	356;"	f	line:356	signature:(DWORD c,char *str)
+dy	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	388;"	l	line:388
+entry	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	169;"	l	line:169
+event	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	257;"	l	line:257
+ext	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	427;"	l	line:427
+file	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	100;"	m	line:100	struct:_HTTP_INFO	file:
+fileNameLen	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	171;"	l	line:171
+flagACK	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	112;"	m	line:112	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flagFIN	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	108;"	m	line:108	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flagPSH	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	111;"	m	line:111	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flagRST	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	110;"	m	line:110	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flagSYN	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	109;"	m	line:109	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flagURG	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	113;"	m	line:113	struct:_TCP_HEADER::<anonymous>::<anonymous>	file:
+flags	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1399;"	l	line:1399
+flags	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	784;"	l	line:784
+foundData	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	50;"	l	line:50
+getTime	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	8;"	p	line:8	signature:(timeClock tc)
+getTime	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	286;"	f	line:286	signature:(timeClock tc)
+getTimeStr	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	9;"	p	line:9	signature:(timeClock tc,char *str)
+getTimeStr	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	299;"	f	line:299	signature:(timeClock tc,char *str)
+getVariable	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	57;"	p	line:57	signature:(BYTE var)
+getVariable	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	247;"	f	line:247	signature:(BYTE var)
+getVariableName	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	58;"	p	line:58	signature:(BYTE var,char *str)
+getVariableName	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	252;"	f	line:252	signature:(BYTE var,char *str)
+getcUART::ReadUSART	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	110;"	d	line:110
+getsUART::(a,b,c)getsUSART(b,a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	108;"	d	line:108
+getsUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	43;"	p	line:43	signature:(char *buffer, unsigned char len)
+h	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	304;"	l	line:304
+h	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	481;"	l	line:481
+header	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	602;"	l	line:602
+header	F:\MCP\projects\CAN\canEthernet\Source\IP.c	122;"	l	line:122
+header	F:\MCP\projects\CAN\canEthernet\Source\IP.c	237;"	l	line:237
+header	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1095;"	l	line:1095
+heartbeat	F:\MCP\projects\CAN\canBase\Source\CAN.c	19;"	v	line:19	file:
+hexatob	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	44;"	p	line:44	signature:(WORD_VAL AsciiChars)
+hexatob	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	112;"	f	line:112	signature:(WORD_VAL AsciiChars)
+hh	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	396;"	l	line:396
+high_isr	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	113;"	f	line:113	signature:(void)
+httpCommand	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	247;"	l	line:247
+httpData	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	246;"	l	line:246
+httpLength	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	248;"	l	line:248
+i	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	140;"	l	line:140
+i	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	291;"	l	line:291
+i	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	323;"	l	line:323
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1226;"	l	line:1226
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1382;"	l	line:1382
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	182;"	l	line:182
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	393;"	l	line:393
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	427;"	l	line:427
+i	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	794;"	l	line:794
+i	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	184;"	l	line:184
+i	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	252;"	l	line:252
+i	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	424;"	l	line:424
+i	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	222;"	l	line:222
+i	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	394;"	l	line:394
+i	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	67;"	l	line:67
+i	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	491;"	l	line:491
+i	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	254;"	l	line:254
+i	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	50;"	l	line:50
+i	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	93;"	l	line:93
+i	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	302;"	l	line:302
+i	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	38;"	l	line:38
+itoa	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	65;"	f	line:65	signature:(unsigned int Value, char *Buffer)
+j	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	324;"	l	line:324
+j	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	256;"	l	line:256
+j	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	39;"	l	line:39
+lastSync	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	31;"	v	line:31
+lbContinue	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	249;"	l	line:249
+lbContinue	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	90;"	l	line:90
+lbContinue	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	185;"	l	line:185
+lbFound	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	321;"	l	line:321
+lbMSB	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	280;"	l	line:280
+localPort	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	86;"	m	line:86	struct:_SOCKET_INFO
+localPort	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	52;"	m	line:52	struct:_UDP_SOCKET_INFO
+low_isr	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	120;"	f	line:120	signature:(void)
+main	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	125;"	f	line:125	signature:(void)
+mm	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	397;"	l	line:397
+month	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	389;"	l	line:389
+mpfsFlags	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	95;"	v	line:95	file:
+mpfsOpenCount	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	97;"	v	line:97
+myId	F:\MCP\projects\CAN\canBase\Include\CAN.h	27;"	p	line:27	signature:(void)
+myId	F:\MCP\projects\CAN\canBase\Source\CAN.c	25;"	f	line:25
+myP	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	202;"	l	line:202
+myV	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	201;"	l	line:201
+ncnt	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	49;"	l	line:49
+opCode	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	117;"	l	line:117
+options	F:\MCP\projects\CAN\canEthernet\Source\IP.c	129;"	l	line:129
+options	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1096;"	l	line:1096
+optionsLen	F:\MCP\projects\CAN\canEthernet\Source\IP.c	127;"	l	line:127
+optionsSize	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	982;"	l	line:982
+outCp	F:\MCP\projects\CAN\canBase\Source\CAN.c	21;"	v	line:21	file:
+p	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	142;"	l	line:142
+p	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	233;"	l	line:233
+p	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	305;"	l	line:305
+p	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	577;"	l	line:577
+packet	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	152;"	l	line:152
+packet	F:\MCP\projects\CAN\canEthernet\Source\ARP.c	95;"	l	line:95
+packet	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	175;"	l	line:175
+packet	F:\MCP\projects\CAN\canEthernet\Source\ICMP.c	99;"	l	line:99
+partialMatch	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1237;"	l	line:1237
+partialMatch	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	576;"	l	line:576
+perodicTick	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	41;"	l	line:41	file:
+ph	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	253;"	l	line:253
+ph	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	91;"	l	line:91
+prevAck	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1397;"	l	line:1397
+prevSeq	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1397;"	l	line:1397
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1235;"	l	line:1235
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1398;"	l	line:1398
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	216;"	l	line:216
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	260;"	l	line:260
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	320;"	l	line:320
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	424;"	l	line:424
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	474;"	l	line:474
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	566;"	l	line:566
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	617;"	l	line:617
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	655;"	l	line:655
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	699;"	l	line:699
+ps	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	782;"	l	line:782
+pseudoHeader	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1097;"	l	line:1097
+pseudoHeader	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	978;"	l	line:978
+pseudoHeader	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	483;"	l	line:483
+putcUART::(a)WriteUSART(a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	111;"	d	line:111
+putrsUART::(a)putrsUSART((farromchar*)a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	112;"	d	line:112
+putrsUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	45;"	p	line:45	signature:(const rom char *data)
+putsUART::(a)putsUSART(a)	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	109;"	d	line:109
+putsUSART	F:\MCP\projects\CAN\canEthernet\Include\UART.h	44;"	p	line:44	signature:(char *data)
+r	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1552;"	l	line:1552
+r	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1597;"	l	line:1597
+rcnt	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	48;"	l	line:48
+remote	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	85;"	m	line:85	struct:_SOCKET_INFO
+remoteNode	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	50;"	m	line:50	struct:_UDP_SOCKET_INFO
+remoteNode	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	116;"	l	line:116
+remoteNode	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	168;"	l	line:168
+remoteNode	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	99;"	v	line:99
+remotePort	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	87;"	m	line:87	struct:_SOCKET_INFO
+remotePort	F:\MCP\projects\CAN\canEthernet\Include\UDP.h	51;"	m	line:51	struct:_UDP_SOCKET_INFO
+result	F:\MCP\projects\CAN\canEthernet\Source\SPIEEPROM.c	464;"	l	line:464
+romString	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	254;"	l	line:254
+romString	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	92;"	l	line:92
+s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1236;"	l	line:1236
+s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	215;"	l	line:215
+s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	259;"	l	line:259
+s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	319;"	l	line:319
+s	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	779;"	l	line:779
+s	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	103;"	l	line:103
+s	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	141;"	l	line:141
+s	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	482;"	l	line:482
+s	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	575;"	l	line:575
+seq	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	1396;"	l	line:1396
+seq	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	783;"	l	line:783
+setVariable	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	56;"	p	line:56	signature:(BYTE var, DWORD val)
+setVariable	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	242;"	f	line:242	signature:(BYTE var, DWORD val)
+sgpData	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	88;"	l	line:88
+sgpLength	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	89;"	l	line:89
+sizeof	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	664;"	p	line:664	file:
+sizeof	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	709;"	p	line:709	file:
+skottar	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	400;"	l	line:400
+smARP	F:\MCP\projects\CAN\canEthernet\Source\ARPTsk.c	59;"	v	line:59	file:
+smDNS	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	60;"	v	line:60	file:
+smHTTP	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	101;"	m	line:101	struct:_HTTP_INFO	file:
+smHTTPGet	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	102;"	m	line:102	struct:_HTTP_INFO	file:
+smParse	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	425;"	l	line:425
+smSGP	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	35;"	m	line:35	struct:_SGP_INFO	file:
+smStack	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	97;"	v	line:97	file:
+smState	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	83;"	m	line:83	struct:_SOCKET_INFO
+smTS	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	29;"	v	line:29
+socket	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	99;"	m	line:99	struct:_HTTP_INFO	file:
+socket	F:\MCP\projects\CAN\canEthernet\Source\SGP.C	34;"	m	line:34	struct:_SGP_INFO	file:
+socket	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	979;"	l	line:979
+ss	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	398;"	l	line:398
+stackTasks_H	F:\MCP\projects\CAN\canEthernet\Include\stackTasks.h	13;"	d	line:13
+startTick	F:\MCP\projects\CAN\canEthernet\Include\TCP.h	98;"	m	line:98	struct:_SOCKET_INFO
+strcpypgm2ram::(a,b)strcpypgm2ram(a,(farromch	F:\MCP\projects\CAN\canEthernet\Include\Compiler.h	98;"	d	line:98
+strupr	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	337;"	f	line:337	signature:(char *s)
+sum	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	233;"	l	line:233
+swapl	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	49;"	p	line:49	signature:(DWORD v)
+swapl	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	198;"	f	line:198	signature:(DWORD v)
+swaps	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	48;"	p	line:48	signature:(WORD v)
+swaps	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	184;"	f	line:184	signature:(WORD v)
+t	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	258;"	l	line:258
+t	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	186;"	l	line:186
+t	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	340;"	l	line:340
+t	F:\MCP\projects\CAN\canEthernet\Source\MPFS.c	296;"	l	line:296
+t	F:\MCP\projects\CAN\canEthernet\Source\MainDemo.c	127;"	l	line:127	file:
+t	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	42;"	l	line:42	file:
+tcp_tries	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	46;"	l	line:46	file:
+temp	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1020;"	l	line:1020
+temp	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	1078;"	l	line:1078
+temp	F:\MCP\projects\CAN\canEthernet\Source\ENC28J60.c	964;"	l	line:964
+temp	F:\MCP\projects\CAN\canEthernet\Source\UDP.c	234;"	l	line:234
+tempLocalIP	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	174;"	l	line:174
+tempSum	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	233;"	l	line:233
+tick	F:\MCP\projects\CAN\canEthernet\Source\TCP.c	781;"	l	line:781
+tickGet	F:\MCP\projects\CAN\canBase\Include\Tick.h	28;"	p	line:28	signature:(void)
+tickGet	F:\MCP\projects\CAN\canBase\Source\Tick.c	52;"	f	line:52	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Include\Tick.h	27;"	p	line:27	signature:(void)
+tickInit	F:\MCP\projects\CAN\canBase\Source\Tick.c	30;"	f	line:30	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Include\Tick.h	29;"	p	line:29	signature:(void)
+tickUpdate	F:\MCP\projects\CAN\canBase\Source\Tick.c	67;"	f	line:67	signature:(void)
+timeClock	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	45;"	t	line:45
+timeNow	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	32;"	v	line:32
+timeState	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	27;"	t	line:27	file:
+timeSync	F:\MCP\projects\CAN\canEthernet\Include\TimeSync.h	6;"	p	line:6	signature:(void)
+timeSync	F:\MCP\projects\CAN\canEthernet\Source\TimeSync.c	36;"	f	line:36	signature:(void)
+timestampToString	F:\MCP\projects\CAN\canEthernet\Include\Helpers.h	60;"	p	line:60	signature:(DWORD t, char *str)
+timestampToString	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	381;"	f	line:381	signature:(DWORD t, char *str)
+tmp	F:\MCP\projects\CAN\canEthernet\Source\HTTP.c	163;"	v	line:163
+type	F:\MCP\projects\CAN\canEthernet\Source\StackTsk.c	182;"	l	line:182
+v	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	44;"	m	line:44
+v	F:\MCP\projects\CAN\canEthernet\Include\ENC28J60.h	70;"	m	line:70
+v	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	102;"	m	line:102	union:_DWORD_VAL
+v	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	71;"	m	line:71	union:_WORD_VAL
+v	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	442;"	m	line:442	struct:_MAC_ADDR
+v	F:\MCP\projects\CAN\canEthernet\Include\StackTsk.h	447;"	m	line:447	union:_IP_ADDR
+val	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	223;"	l	line:223
+w	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	101;"	m	line:101	union:_DWORD_VAL
+w	F:\MCP\projects\CAN\canEthernet\Source\DNS.c	141;"	l	line:141
+word	F:\MCP\projects\CAN\canEthernet\Include\GenericTypeDefs.h	107;"	m	line:107	union:_DWORD_VAL
+words	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	232;"	m	line:232	file:
+year	F:\MCP\projects\CAN\canEthernet\Source\Helpers.c	386;"	l	line:386

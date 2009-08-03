@@ -1,0 +1,3 @@
+# List all files that needs to be compiled here
+drivers/adc/adc.c
+sns_TC1047A/sns_TC1047A.c

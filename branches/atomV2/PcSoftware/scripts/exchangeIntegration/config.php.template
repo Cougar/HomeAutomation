@@ -1,0 +1,20 @@
+<?php
+$exchangeurl = "https://server.com/EWS/Exchange.asmx";
+$server = "http://localhost";
+$basedir = "/exchangeIntegration";
+$wsdl = "/var/www/exchangeIntegration/Services.wsdl"; 
+
+$Calender[0]->Shortname="room14b";
+$Calender[0]->UserName="usernameforroom14b";
+$Calender[0]->Password="xyz";
+
+$Calender[1]->Shortname="room11";
+$Calender[1]->UserName="usernameforroom11";
+$Calender[1]->Password="xyz";
+
+$Calender[2]->Shortname="room14a";
+$Calender[2]->UserName="usernameforroom14a";
+$Calender[2]->Password="xyz";
+
+?>
+

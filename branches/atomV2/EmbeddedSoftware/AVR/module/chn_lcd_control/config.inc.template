@@ -1,0 +1,24 @@
+## Section chn_lcd_control -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#chn_lcd_control_USEEEPROM=1
+
+
+chn_lcd_control_ID=<ID>
+
+#Change to 1 when lcd driver module is loaded. Needs lcd_framebuffer to be defined... FIXME
+chn_lcd_control_DRIVER_LOADED=0
+
+chn_lcd_control_rot_PCINT_CH1=<PCINT>
+chn_lcd_control_rot_PCINT_CH2=<PCINT>
+
+chn_lcd_control_rot_TIMER=<TIMER>
+
+ROTARY_CH1=EXP_M
+ROTARY_CH2=EXP_P
+ROTARY_CHx_INVERT_DIRECTION=0
+
+ROTARY_BTN=EXP_D
+
+
+## End section chn_lcd_control -- Do not edit this line

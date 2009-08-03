@@ -1,0 +1,13 @@
+## Section tst_CoreLED -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#tst_CoreLED_USEEEPROM=1
+
+tst_CoreLED_ID=<ID>
+tst_CoreLED_Blink_TIMER=<TIMER>
+tst_CoreLED_Blink_Interval=500
+
+tst_CoreLED_PIN=EXP_A
+
+
+## End section tst_CoreLED -- Do not edit this line

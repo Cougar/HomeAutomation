@@ -1,0 +1,15 @@
+## Section sns_FOST02 -- Do not edit this line
+
+sns_FOST02_ID=<ID>
+FOST02_ID=1
+sns_FOST02_HYDRO_TIMER=<TIMER>
+sns_FOST02_TEMP_TIMER=<TIMER>
+sns_FOST02_TEMP_SEND_PERIOD=20000
+sns_FOST02_HYDRO_SEND_PERIOD=20000
+
+
+FOST02_DATA=EXP_M
+
+FOST02_CLK=EXP_L
+
+## End section sns_FOST02 -- Do not edit this line
