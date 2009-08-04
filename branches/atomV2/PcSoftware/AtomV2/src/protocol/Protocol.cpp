@@ -13,13 +13,10 @@ Protocol::pointer Protocol::Instance(new Protocol());
 
 Protocol::Protocol()
 {
-	// TODO Auto-generated constructor stub
-
 }
 
 Protocol::~Protocol()
 {
-	// TODO Auto-generated destructor stub
 }
 
 Protocol::pointer Protocol::getInstance()

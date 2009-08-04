@@ -5,8 +5,8 @@
  *      Author: Mattias Runge
  */
 
-#ifndef SUBSCRIBER_HPP_
-#define SUBSCRIBER_HPP_
+#ifndef SUBSCRIBER_H_
+#define SUBSCRIBER_H_
 
 #include <iostream>
 
@@ -20,7 +20,7 @@
 #include "message/Message.h"
 #include "log/Logger.h"
 #include "thread/Thread.h"
-#include "thread/Queue.h"
+#include "thread/Queue.hpp"
 #include <boost/make_shared.hpp>
 
 namespace atom {
@@ -59,4 +59,4 @@ private:
 }
 }
 
-#endif /* SUBSCRIBER_HPP_ */
+#endif /* SUBSCRIBER_H_ */

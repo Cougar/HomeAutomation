@@ -87,8 +87,7 @@
 		<Unit filename="src/subscribers/cannet/CanNet.h" />
 		<Unit filename="src/subscribers/monitor/Monitor.cpp" />
 		<Unit filename="src/subscribers/monitor/Monitor.h" />
-		<Unit filename="src/thread/Queue.cpp" />
-		<Unit filename="src/thread/Queue.h" />
+		<Unit filename="src/thread/Queue.hpp" />
 		<Unit filename="src/thread/Thread.cpp" />
 		<Unit filename="src/thread/Thread.h" />
 		<Unit filename="src/types.h" />

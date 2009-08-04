@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
 	LOG.info("Written by Mattias Runge 2009");
 
 
+
 	Protocol::pointer protocol = Protocol::getInstance();
 	protocol->load("../../Configuration/protocol.xml");
 	cout << protocol->getRootNode().toString() << endl;
