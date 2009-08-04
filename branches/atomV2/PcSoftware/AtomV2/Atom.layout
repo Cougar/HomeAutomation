@@ -14,10 +14,10 @@
 		<Cursor position="456" topLine="0" />
 	</File>
 	<File name="src/broker/Broker.h" open="1" top="0" tabpos="2">
-		<Cursor position="222" topLine="5" />
+		<Cursor position="222" topLine="0" />
 	</File>
 	<File name="src/broker/Subscriber.h" open="1" top="0" tabpos="3">
-		<Cursor position="406" topLine="12" />
+		<Cursor position="406" topLine="0" />
 	</File>
 	<File name="src/message/Datatype.h" open="0" top="0" tabpos="0">
 		<Cursor position="313" topLine="10" />
@@ -59,25 +59,19 @@
 		<Cursor position="1509" topLine="56" />
 	</File>
 	<File name="src/subscribers/cannet/CanNet.h" open="1" top="0" tabpos="6">
-		<Cursor position="410" topLine="17" />
+		<Cursor position="410" topLine="5" />
 	</File>
 	<File name="src/subscribers/monitor/Monitor.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="341" topLine="0" />
 	</File>
 	<File name="src/subscribers/monitor/Monitor.h" open="1" top="0" tabpos="4">
-		<Cursor position="306" topLine="5" />
+		<Cursor position="306" topLine="0" />
 	</File>
 	<File name="src/types.h" open="0" top="0" tabpos="2">
 		<Cursor position="242" topLine="0" />
 	</File>
 	<File name="src/utils/BitBuffer.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="590" topLine="18" />
-	</File>
-	<File name="src/utils/Logger.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="577" topLine="19" />
-	</File>
-	<File name="src/utils/Logger.h" open="0" top="0" tabpos="3">
-		<Cursor position="420" topLine="0" />
 	</File>
 	<File name="src/utils/TSQueue.hpp" open="0" top="0" tabpos="0">
 		<Cursor position="276" topLine="0" />
@@ -86,7 +80,7 @@
 		<Cursor position="1675" topLine="51" />
 	</File>
 	<File name="src/utils/UdpServer.h" open="1" top="0" tabpos="5">
-		<Cursor position="254" topLine="10" />
+		<Cursor position="254" topLine="4" />
 	</File>
 	<File name="src/utils/string.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="567" topLine="19" />
@@ -95,9 +89,9 @@
 		<Cursor position="343" topLine="0" />
 	</File>
 	<File name="src/xml/Node.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="628" topLine="0" />
+		<Cursor position="259" topLine="0" />
 	</File>
 	<File name="src/xml/Node.h" open="1" top="0" tabpos="1">
-		<Cursor position="199" topLine="45" />
+		<Cursor position="199" topLine="18" />
 	</File>
 </CodeBlocks_layout_file>

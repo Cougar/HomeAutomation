@@ -88,8 +88,6 @@
 		<Unit filename="src/types.h" />
 		<Unit filename="src/utils/BitBuffer.cpp" />
 		<Unit filename="src/utils/BitBuffer.h" />
-		<Unit filename="src/utils/Logger.cpp" />
-		<Unit filename="src/utils/Logger.h" />
 		<Unit filename="src/utils/TSQueue.hpp" />
 		<Unit filename="src/utils/Thread.cpp" />
 		<Unit filename="src/utils/Thread.h" />
