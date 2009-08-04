@@ -18,7 +18,7 @@
 #include "message/Header.h"
 #include "utils/BitBuffer.h"
 #include "utils/UdpServer.h"
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "utils/convert.h"
 #include "types.h"
 
@@ -58,7 +58,7 @@ protected:
 	byte_list myBuffer;
 
 private:
-	Logger LOG;
+	log::Logger LOG;
 };
 
 }

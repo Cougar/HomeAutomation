@@ -11,12 +11,11 @@
 #include <string>
 #include <boost/make_shared.hpp>
 #include "xml/Node.h"
-#include "utils/Logger.h"
+#include "log/Logger.h"
 
 namespace atom {
 
 using namespace std;
-using namespace utils;
 
 class Protocol
 {
@@ -36,7 +35,7 @@ private:
 
 	static pointer Instance;
 
-	Logger LOG;
+	log::Logger LOG;
 
 	xml::Node myXmlNode;
 };

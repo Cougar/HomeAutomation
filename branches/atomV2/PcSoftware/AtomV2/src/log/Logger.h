@@ -14,7 +14,7 @@
 #include "utils/string.h"
 
 namespace atom {
-namespace utils {
+namespace log {
 
 using namespace std;
 

@@ -16,11 +16,11 @@
 					<Add directory="src" />
 				</Compiler>
 				<Linker>
-					<Add library="libboost_program_options" />
-					<Add library="libboost_signals" />
-					<Add library="libboost_system" />
-					<Add library="libboost_thread" />
-					<Add library="libboost_filesystem" />
+					<Add library="libboost_program_options-mt" />
+					<Add library="libboost_signals-mt" />
+					<Add library="libboost_system-mt" />
+					<Add library="libboost_thread-mt" />
+					<Add library="libboost_filesystem-mt" />
 					<Add library="pthread" />
 					<Add directory="src/lib" />
 				</Linker>
@@ -36,11 +36,11 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="libboost_program_options" />
-					<Add library="libboost_signals" />
-					<Add library="libboost_system" />
-					<Add library="libboost_thread" />
-					<Add library="libboost_filesystem" />
+					<Add library="libboost_program_options-mt" />
+					<Add library="libboost_signals-mt" />
+					<Add library="libboost_system-mt" />
+					<Add library="libboost_thread-mt" />
+					<Add library="libboost_filesystem-mt" />
 					<Add library="pthread" />
 				</Linker>
 			</Target>
@@ -50,11 +50,11 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
-			<Add library="libboost_program_options" />
-			<Add library="libboost_signals" />
-			<Add library="libboost_system" />
-			<Add library="libboost_thread" />
-			<Add library="libboost_filesystem" />
+			<Add library="libboost_program_options-mt" />
+			<Add library="libboost_signals-mt" />
+			<Add library="libboost_system-mt" />
+			<Add library="libboost_thread-mt" />
+			<Add library="libboost_filesystem-mt" />
 			<Add library="pthread" />
 			<Add directory="/home/migan/projects/Atom/src/lib" />
 		</Linker>
@@ -65,6 +65,8 @@
 		<Unit filename="src/broker/Broker.h" />
 		<Unit filename="src/broker/Subscriber.cpp" />
 		<Unit filename="src/broker/Subscriber.h" />
+		<Unit filename="src/log/Logger.cpp" />
+		<Unit filename="src/log/Logger.h" />
 		<Unit filename="src/message/Datatype.cpp" />
 		<Unit filename="src/message/Datatype.h" />
 		<Unit filename="src/message/Header.cpp" />

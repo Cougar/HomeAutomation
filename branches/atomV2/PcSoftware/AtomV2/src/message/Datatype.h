@@ -11,7 +11,7 @@
 #include <exception>
 #include <boost/make_shared.hpp>
 #include <boost/any.hpp>
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "message/types/Selection.h"
 #include "utils/BitBuffer.h"
 
@@ -50,7 +50,7 @@ public:
 	static datatypes getTypeFromString(string name);
 
 private:
-	Logger LOG;
+	log::Logger LOG;
 
 	datatypes myType;
 	boost::any myValue;

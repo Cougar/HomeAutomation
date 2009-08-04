@@ -10,8 +10,6 @@
 namespace atom {
 namespace xml {
 
-using namespace utils;
-
 Node::Node()
 {
 	this->myIsEmpty = true;

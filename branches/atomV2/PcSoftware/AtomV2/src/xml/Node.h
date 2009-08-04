@@ -12,7 +12,7 @@
 #include <map>
 #include <stdexcept>
 #include <utility>
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "utils/file.h"
 #include "utils/convert.h"
 #include "Exception.hpp"
@@ -64,7 +64,7 @@ public:
 	string toString();
 
 private:
-	utils::Logger LOG;
+	log::Logger LOG;
 
 	bool myIsEmpty;
 	string myTagName;

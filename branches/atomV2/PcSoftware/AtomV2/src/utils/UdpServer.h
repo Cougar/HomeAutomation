@@ -12,7 +12,7 @@
 #include <boost/asio.hpp>
 #include <boost/signal.hpp>
 #include <boost/make_shared.hpp>
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "utils/BitBuffer.h"
 #include "utils/Thread.h"
 #include "utils/convert.h"
@@ -48,7 +48,7 @@ private:
 	void receiveFrom();
 	void handleReceiveFrom(const boost::system::error_code& error, size_t bytes_received);
 
-	Logger LOG;
+	log::Logger LOG;
 	OnDataSignal onNewData;
 
 	enum { MAX_LENGTH = 64 };

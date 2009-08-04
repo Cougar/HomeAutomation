@@ -29,6 +29,7 @@
 #include "utils/UdpServer.h"
 #include "xml/Node.h"
 #include "protocol/Protocol.h"
+#include "log/Logger.h"
 
 namespace po = boost::program_options;
 
@@ -41,7 +42,7 @@ using namespace atom;
 
 int main(int argc, char* argv[])
 {
-	Logger LOG;
+	log::Logger LOG;
 	LOG.setName("Main");
 
 	LOG.info("Atom (" + string(AutoVersion::FULLVERSION_STRING) + " " + string(AutoVersion::STATUS) + ")");

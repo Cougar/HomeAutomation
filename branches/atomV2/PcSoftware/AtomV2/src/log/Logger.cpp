@@ -8,7 +8,7 @@
 #include "Logger.h"
 
 namespace atom {
-namespace utils {
+namespace log {
 
 Logger::Logger()
 {

@@ -18,7 +18,7 @@
 #include <boost/thread/locks.hpp>
 #include "Broker.h"
 #include "message/Message.h"
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "utils/Thread.h"
 #include "utils/TSQueue.hpp"
 #include <boost/make_shared.hpp>
@@ -46,8 +46,8 @@ protected:
 	virtual void onNewMessage(Message::pointer message);
 
 private:
-	Logger LOG;
-	atom::utils::TSQueue<Message::pointer> myQueue;
+	log::Logger LOG;
+	utils::TSQueue<Message::pointer> myQueue;
 	bool myReceiveFromMyself;
 	boost::condition myCondition;
 	boost::mutex myMutex;

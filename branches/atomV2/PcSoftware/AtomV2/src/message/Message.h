@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "utils/Logger.h"
+#include "log/Logger.h"
 #include "message/Variable.h"
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
@@ -46,7 +46,7 @@ public:
 	void readBits(BitBuffer & buffer);
 
 private:
-	Logger LOG;
+	log::Logger LOG;
 
 	const void *myOrigin;
 

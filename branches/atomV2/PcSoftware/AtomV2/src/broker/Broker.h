@@ -11,7 +11,7 @@
 #include <boost/signal.hpp>
 #include <boost/make_shared.hpp>
 #include "message/Message.h"
-#include "utils/Logger.h"
+#include "log/Logger.h"
 
 namespace atom {
 namespace broker {
@@ -39,7 +39,7 @@ private:
 
 	static pointer Instance;
 
-	Logger LOG;
+	log::Logger LOG;
 
 	OnMessageSignal onNewMessage;
 };

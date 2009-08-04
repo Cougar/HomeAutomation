@@ -11,13 +11,12 @@
 #include <boost/make_shared.hpp>
 #include "broker/Subscriber.h"
 #include "message/Message.h"
-#include "utils/Logger.h"
+#include "log/Logger.h"
 
 namespace atom {
 namespace subscribers {
 
 using namespace broker;
-using namespace utils;
 using namespace message;
 
 class Monitor : public Subscriber
@@ -32,7 +31,7 @@ protected:
 	void onNewMessage(Message::pointer message);
 
 private:
-	Logger LOG;
+	log::Logger LOG;
 };
 
 }
