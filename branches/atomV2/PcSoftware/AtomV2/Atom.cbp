@@ -14,15 +14,14 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="src" />
-					<Add directory="src/include" />
 				</Compiler>
 				<Linker>
-					<Add library="src/lib/libboost_date_time-gcc41-mt.a" />
-					<Add library="src/lib/libboost_program_options-gcc41-mt.a" />
-					<Add library="src/lib/libboost_signals-gcc41-mt.a" />
-					<Add library="src/lib/libboost_system-gcc41-mt.a" />
-					<Add library="src/lib/libboost_thread-gcc41-mt.a" />
-					<Add library="src/lib/libboost_filesystem-gcc41-mt.a" />
+					<Add library="libboost_date_time" />
+					<Add library="libboost_program_options" />
+					<Add library="libboost_signals" />
+					<Add library="libboost_system" />
+					<Add library="libboost_thread" />
+					<Add library="libboost_filesystem" />
 					<Add library="pthread" />
 					<Add directory="src/lib" />
 				</Linker>
@@ -34,36 +33,41 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="libboost_date_time" />
+					<Add library="libboost_program_options" />
+					<Add library="libboost_signals" />
+					<Add library="libboost_system" />
+					<Add library="libboost_thread" />
+					<Add library="libboost_filesystem" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="/home/migan/projects/Atom/src" />
-			<Add directory="src/include" />
 		</Compiler>
 		<Linker>
-			<Add library="src/lib/libboost_date_time-gcc41-mt.a" />
-			<Add library="src/lib/libboost_program_options-gcc41-mt.a" />
-			<Add library="src/lib/libboost_signals-gcc41-mt.a" />
-			<Add library="src/lib/libboost_system-gcc41-mt.a" />
-			<Add library="src/lib/libboost_thread-gcc41-mt.a" />
-			<Add library="src/lib/libboost_filesystem-gcc41-mt.a" />
+			<Add library="libboost_date_time" />
+			<Add library="libboost_program_options" />
+			<Add library="libboost_signals" />
+			<Add library="libboost_system" />
+			<Add library="libboost_thread" />
+			<Add library="libboost_filesystem" />
+			<Add library="pthread" />
 			<Add directory="/home/migan/projects/Atom/src/lib" />
 		</Linker>
+		<Unit filename="notes.txt" />
 		<Unit filename="src/Atom.cpp" />
 		<Unit filename="src/Exception.hpp" />
-		<Unit filename="src/HttpClient.cpp" />
 		<Unit filename="src/broker/Broker.cpp" />
 		<Unit filename="src/broker/Broker.h" />
 		<Unit filename="src/broker/Subscriber.cpp" />
 		<Unit filename="src/broker/Subscriber.h" />
-		<Unit filename="src/db/Database.cpp" />
-		<Unit filename="src/db/Database.h" />
 		<Unit filename="src/message/Datatype.cpp" />
 		<Unit filename="src/message/Datatype.h" />
 		<Unit filename="src/message/Header.cpp" />
@@ -76,6 +80,8 @@
 		<Unit filename="src/message/types/Selection.h" />
 		<Unit filename="src/module/Module.cpp" />
 		<Unit filename="src/module/Module.h" />
+		<Unit filename="src/protocol/Protocol.cpp" />
+		<Unit filename="src/protocol/Protocol.h" />
 		<Unit filename="src/subscribers/cannet/CanNet.cpp" />
 		<Unit filename="src/subscribers/cannet/CanNet.h" />
 		<Unit filename="src/subscribers/monitor/Monitor.cpp" />
