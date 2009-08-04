@@ -19,6 +19,7 @@
 #include "utils/BitBuffer.h"
 #include "utils/UdpServer.h"
 #include "utils/Logger.h"
+#include "utils/convert.h"
 #include "types.h"
 
 namespace atom {

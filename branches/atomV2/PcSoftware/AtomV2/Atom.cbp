@@ -16,7 +16,6 @@
 					<Add directory="src" />
 				</Compiler>
 				<Linker>
-					<Add library="libboost_date_time" />
 					<Add library="libboost_program_options" />
 					<Add library="libboost_signals" />
 					<Add library="libboost_system" />
@@ -37,7 +36,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="libboost_date_time" />
 					<Add library="libboost_program_options" />
 					<Add library="libboost_signals" />
 					<Add library="libboost_system" />
@@ -52,7 +50,6 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
-			<Add library="libboost_date_time" />
 			<Add library="libboost_program_options" />
 			<Add library="libboost_signals" />
 			<Add library="libboost_system" />
@@ -96,8 +93,12 @@
 		<Unit filename="src/utils/Thread.h" />
 		<Unit filename="src/utils/UdpServer.cpp" />
 		<Unit filename="src/utils/UdpServer.h" />
-		<Unit filename="src/utils/Utils.cpp" />
-		<Unit filename="src/utils/Utils.h" />
+		<Unit filename="src/utils/convert.cpp" />
+		<Unit filename="src/utils/convert.h" />
+		<Unit filename="src/utils/file.cpp" />
+		<Unit filename="src/utils/file.h" />
+		<Unit filename="src/utils/string.cpp" />
+		<Unit filename="src/utils/string.h" />
 		<Unit filename="src/xml/Node.cpp" />
 		<Unit filename="src/xml/Node.h" />
 		<Extensions>

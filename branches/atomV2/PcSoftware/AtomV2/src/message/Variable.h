@@ -13,12 +13,12 @@
 #include "message/Datatype.h"
 #include "utils/BitBuffer.h"
 #include "protocol/Protocol.h"
+#include "utils/convert.h"
 
 namespace atom {
 namespace message {
 
 using namespace std;
-using namespace utils;
 
 class Variable
 {

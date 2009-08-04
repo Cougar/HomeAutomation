@@ -14,9 +14,9 @@
 #include "utils/Logger.h"
 #include "message/Variable.h"
 #include "protocol/Protocol.h"
+#include "utils/convert.h"
 
 using namespace std;
-using namespace atom::utils;
 
 namespace atom {
 namespace message {

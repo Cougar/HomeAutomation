@@ -1,55 +1,103 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="src/Atom.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="945" topLine="19" />
+	<File name="notes.txt" open="0" top="0" tabpos="0">
+		<Cursor position="2530" topLine="0" />
 	</File>
-	<File name="src/broker/Broker.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="456" topLine="0" />
+	<File name="src/Atom.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="1348" topLine="32" />
 	</File>
-	<File name="src/broker/Broker.h" open="1" top="0" tabpos="8">
-		<Cursor position="467" topLine="3" />
-	</File>
-	<File name="src/broker/Subscriber.h" open="1" top="0" tabpos="10">
-		<Cursor position="751" topLine="0" />
-	</File>
-	<File name="src/message/Message.h" open="1" top="0" tabpos="7">
-		<Cursor position="442" topLine="0" />
-	</File>
-	<File name="src/message/Variable.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="485" topLine="1" />
-	</File>
-	<File name="src/message/Variable.h" open="1" top="0" tabpos="6">
-		<Cursor position="211" topLine="1" />
-	</File>
-	<File name="src/module/Module.h" open="1" top="0" tabpos="5">
+	<File name="src/Exception.hpp" open="0" top="0" tabpos="1">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="src/subscribers/cannet/CanNet.cpp" open="1" top="0" tabpos="12">
-		<Cursor position="322" topLine="54" />
+	<File name="src/broker/Broker.cpp" open="0" top="0" tabpos="9">
+		<Cursor position="456" topLine="0" />
 	</File>
-	<File name="src/subscribers/cannet/CanNet.h" open="1" top="0" tabpos="4">
-		<Cursor position="1315" topLine="26" />
+	<File name="src/broker/Broker.h" open="0" top="0" tabpos="4">
+		<Cursor position="180" topLine="0" />
 	</File>
-	<File name="src/subscribers/monitor/Monitor.cpp" open="1" top="0" tabpos="13">
+	<File name="src/broker/Subscriber.h" open="0" top="0" tabpos="10">
+		<Cursor position="584" topLine="15" />
+	</File>
+	<File name="src/message/Datatype.h" open="0" top="0" tabpos="0">
+		<Cursor position="313" topLine="10" />
+	</File>
+	<File name="src/message/Header.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="405" topLine="1" />
+	</File>
+	<File name="src/message/Header.h" open="0" top="0" tabpos="0">
+		<Cursor position="290" topLine="0" />
+	</File>
+	<File name="src/message/Message.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="874" topLine="10" />
+	</File>
+	<File name="src/message/Message.h" open="0" top="0" tabpos="7">
+		<Cursor position="286" topLine="0" />
+	</File>
+	<File name="src/message/Variable.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="474" topLine="3" />
+	</File>
+	<File name="src/message/Variable.h" open="0" top="0" tabpos="6">
+		<Cursor position="604" topLine="11" />
+	</File>
+	<File name="src/message/types/Selection.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="302" topLine="0" />
+	</File>
+	<File name="src/message/types/Selection.h" open="0" top="0" tabpos="0">
+		<Cursor position="248" topLine="0" />
+	</File>
+	<File name="src/module/Module.h" open="0" top="0" tabpos="5">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src/protocol/Protocol.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="135" topLine="0" />
+	</File>
+	<File name="src/protocol/Protocol.h" open="0" top="0" tabpos="0">
+		<Cursor position="588" topLine="6" />
+	</File>
+	<File name="src/subscribers/cannet/CanNet.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="1509" topLine="56" />
+	</File>
+	<File name="src/subscribers/cannet/CanNet.h" open="0" top="0" tabpos="4">
+		<Cursor position="558" topLine="17" />
+	</File>
+	<File name="src/subscribers/monitor/Monitor.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="341" topLine="0" />
 	</File>
-	<File name="src/subscribers/monitor/Monitor.h" open="1" top="0" tabpos="11">
-		<Cursor position="458" topLine="0" />
+	<File name="src/subscribers/monitor/Monitor.h" open="0" top="0" tabpos="11">
+		<Cursor position="122" topLine="1" />
+	</File>
+	<File name="src/types.h" open="0" top="0" tabpos="2">
+		<Cursor position="242" topLine="0" />
 	</File>
 	<File name="src/utils/BitBuffer.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="590" topLine="18" />
 	</File>
-	<File name="src/utils/UdpServer.cpp" open="1" top="0" tabpos="15">
-		<Cursor position="719" topLine="60" />
+	<File name="src/utils/Logger.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="577" topLine="19" />
 	</File>
-	<File name="src/utils/UdpServer.h" open="1" top="0" tabpos="14">
-		<Cursor position="664" topLine="21" />
+	<File name="src/utils/Logger.h" open="1" top="0" tabpos="3">
+		<Cursor position="209" topLine="0" />
 	</File>
-	<File name="src/xml/Node.cpp" open="1" top="1" tabpos="3">
-		<Cursor position="8194" topLine="336" />
+	<File name="src/utils/TSQueue.hpp" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="24" />
+	</File>
+	<File name="src/utils/UdpServer.cpp" open="0" top="0" tabpos="15">
+		<Cursor position="1675" topLine="51" />
+	</File>
+	<File name="src/utils/UdpServer.h" open="0" top="0" tabpos="14">
+		<Cursor position="348" topLine="6" />
+	</File>
+	<File name="src/utils/string.cpp" open="1" top="1" tabpos="6">
+		<Cursor position="759" topLine="19" />
+	</File>
+	<File name="src/utils/string.h" open="1" top="0" tabpos="4">
+		<Cursor position="343" topLine="0" />
+	</File>
+	<File name="src/xml/Node.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="470" topLine="19" />
 	</File>
 	<File name="src/xml/Node.h" open="1" top="0" tabpos="2">
-		<Cursor position="2026" topLine="37" />
+		<Cursor position="232" topLine="4" />
 	</File>
 </CodeBlocks_layout_file>

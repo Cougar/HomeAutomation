@@ -18,7 +18,7 @@ Variable::Variable(string name, string datatype, bool required, string unit)
 
 	xml::Node datatypeNode = Protocol::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", datatype));
 
-	this->myLength = stoi(datatypeNode["length"]);
+	this->myLength = convert::string2uint(datatypeNode["length"]);
 	this->myDatatype = boost::make_shared<Datatype>(Datatype::getTypeFromString(datatypeNode["type"]));
 }
 

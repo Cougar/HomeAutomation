@@ -12,9 +12,10 @@
 #include <map>
 #include <stdexcept>
 #include <utility>
-#include "../utils/Logger.h"
-#include "../utils/Utils.h"
-#include "../Exception.hpp"
+#include "utils/Logger.h"
+#include "utils/file.h"
+#include "utils/convert.h"
+#include "Exception.hpp"
 #include <boost/algorithm/string/trim.hpp>
 
 namespace atom {

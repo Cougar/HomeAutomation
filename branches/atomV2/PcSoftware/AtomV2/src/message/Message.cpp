@@ -25,7 +25,7 @@ Message::Message(string moduletype, unsigned int moduleId, string type)
 
 	for (unsigned int n = 0; n < variableNodes.size(); n++)
 	{
-		Variable variable(variableNodes[n]["name"], variableNodes[n]["datatype"], stob(variableNodes[n]["required"]), variableNodes[n]["unit"]);
+		Variable variable(variableNodes[n]["name"], variableNodes[n]["datatype"], convert::string2bool(variableNodes[n]["required"]), variableNodes[n]["unit"]);
 		this->myVariables[variableNodes[n]["name"]] = variable;
 	}
 

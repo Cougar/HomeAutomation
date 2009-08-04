@@ -10,7 +10,8 @@
 
 #include <string>
 #include <iostream>
-#include "utils/Utils.h"
+#include "utils/convert.h"
+#include "utils/string.h"
 
 namespace atom {
 namespace utils {
@@ -24,6 +25,8 @@ public:
 	virtual ~Logger();
 
 	void setName(string className);
+
+	static string getFormatedTime();
 
 	void info(string message);
 	void debug(string message);

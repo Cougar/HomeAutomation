@@ -71,7 +71,7 @@ void CanNet::processBuffer()
 {
 	if (this->myBuffer.size() != 15)
 	{
-		LOG.warn("Received packet of length " + itos(this->myBuffer.size() + 2) + ", should be 17.");
+		LOG.warn("Received packet of length " + convert::int2string(this->myBuffer.size() + 2) + ", should be 17.");
 		this->myBuffer.clear();
 		return;
 	}

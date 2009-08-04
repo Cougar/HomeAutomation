@@ -34,7 +34,7 @@ Node::Node(string filename, string xmlData)
 
 void Node::load(string filename)
 {
-	this->parse(filename, file_get_contents(filename));
+	this->parse(filename, file::get_contents(filename));
 }
 
 void Node::parse(string filename, string xmlData)
@@ -166,7 +166,7 @@ Node::nodeList Node::select(string tagName, attributeList attributes)
 
 			for (attributeList::iterator iter = attributes.begin(); iter != attributes.end(); iter++)
 			{
-				//LOG.debug("#attributes = " + itos(this->myChildren[n].attributes().size()));
+				//LOG.debug("#attributes = " + convert::int2string(this->myChildren[n].attributes().size()));
 				//LOG.debug("iter->first = " + iter->first);
 				//LOG.debug("iter->second = " + iter->second);
 				//LOG.debug("this->myChildren[n][iter->first] = " + this->myChildren[n][iter->first]);
@@ -237,7 +237,7 @@ int Node::parseTag(string filename, string xmlData, unsigned int position)
 {
 	if (xmlData.at(position) != '<')
 	{
-		throw new Exception("Did not find < as expected. Character " + itos(position));
+		throw new Exception("Did not find < as expected. Character " + convert::int2string(position));
 	}
 
 	position++;
@@ -260,7 +260,7 @@ int Node::parseTag(string filename, string xmlData, unsigned int position)
 	catch (std::out_of_range & e)
 	{
 		LOG.debug("parseTag exception: " + string(e.what()));
-		LOG.debug("A xmlData=" + xmlData + " :: position=" + itos(position) + " :: endPosition=" + itos(endPosition));
+		LOG.debug("A xmlData=" + xmlData + " :: position=" + convert::int2string(position) + " :: endPosition=" + convert::int2string(endPosition));
 		throw e;
 	}
 
@@ -308,7 +308,7 @@ int Node::parseTag(string filename, string xmlData, unsigned int position)
 			catch (std::out_of_range & ex)
 			{
 				LOG.debug("parseTag exception: " + string(ex.what()));
-				LOG.debug("A xmlData=" + xmlData + " :: position=" + itos(position) + " :: endPosition=" + itos(endPosition));
+				LOG.debug("A xmlData=" + xmlData + " :: position=" + convert::int2string(position) + " :: endPosition=" + convert::int2string(endPosition));
 				throw ex;
 			}
 
@@ -356,7 +356,7 @@ int Node::parseTag(string filename, string xmlData, unsigned int position)
 					catch (std::out_of_range & ex)
 					{
 						LOG.debug("parseTag exception: " + string(ex.what()));
-						LOG.debug("A xmlData=" + xmlData + " :: position=" + itos(position) + " :: endPosition=" + itos(endPosition));
+						LOG.debug("A xmlData=" + xmlData + " :: position=" + convert::int2string(position) + " :: endPosition=" + convert::int2string(endPosition));
 						throw ex;
 					}
 

@@ -15,6 +15,7 @@
 #include "utils/Logger.h"
 #include "utils/BitBuffer.h"
 #include "utils/Thread.h"
+#include "utils/convert.h"
 #include "types.h"
 
 namespace atom {

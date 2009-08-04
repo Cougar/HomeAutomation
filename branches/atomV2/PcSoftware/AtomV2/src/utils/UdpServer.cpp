@@ -47,9 +47,9 @@ UdpServer::pointer UdpServer::getInstance(unsigned int port)
 
 udp::endpoint UdpServer::getEndpoint(string address)
 {
-	LOG.info("Resolving " + address + ":" + itos(this->getPort()) + "...");
+	LOG.info("Resolving " + address + ":" + convert::int2string(this->getPort()) + "...");
 	udp::resolver resolver(this->myIoService);
-	udp::resolver::query query(udp::v4(), address, itos(this->getPort()));
+	udp::resolver::query query(udp::v4(), address, convert::int2string(this->getPort()));
 	return *resolver.resolve(query);
 }
 
@@ -62,7 +62,7 @@ void UdpServer::sendTo(udp::endpoint receiver, byte_list bytes)
 {
 	try
 	{
-		LOG.info("Sending packet, length " + itos(bytes.size()) + ", to " + receiver.address().to_string() + ":" + itos(this->getPort()) + "...");
+		LOG.info("Sending packet, length " + convert::int2string(bytes.size()) + ", to " + receiver.address().to_string() + ":" + convert::int2string(this->getPort()) + "...");
 		this->mySocket.send_to(boost::asio::buffer(bytes), receiver);
 	}
 	catch (std::exception& e)
@@ -73,7 +73,7 @@ void UdpServer::sendTo(udp::endpoint receiver, byte_list bytes)
 
 void UdpServer::receiveFrom()
 {
-	LOG.info("Listening for incoming data on port " + itos(this->getPort()) + "...");
+	LOG.info("Listening for incoming data on port " + convert::int2string(this->getPort()) + "...");
 	this->mySocket.async_receive_from(boost::asio::buffer(this->myDataBuffer, MAX_LENGTH), this->mySender, boost::bind(&UdpServer::handleReceiveFrom, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
 }
 
@@ -81,7 +81,7 @@ void UdpServer::handleReceiveFrom(const boost::system::error_code& error, size_t
 {
 	if (error)
 	{
-		LOG.error("handleReceiveFrom got the error code " + itos(error.value()) + " and the message " + error.message());
+		LOG.error("handleReceiveFrom got the error code " + convert::int2string(error.value()) + " and the message " + error.message());
 	}
 	else if (bytesReceived == 0)
 	{
@@ -89,7 +89,7 @@ void UdpServer::handleReceiveFrom(const boost::system::error_code& error, size_t
 	}
 	else
 	{
-		LOG.info("Got " + itos(bytesReceived) + " bytes from " + this->mySender.address().to_string());
+		LOG.info("Got " + convert::int2string(bytesReceived) + " bytes from " + this->mySender.address().to_string());
 
 		byte_list bytes(this->myDataBuffer, this->myDataBuffer + bytesReceived);
 

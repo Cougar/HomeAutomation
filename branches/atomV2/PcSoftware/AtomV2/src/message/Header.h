@@ -12,11 +12,11 @@
 #include "message/Variable.h"
 #include "utils/BitBuffer.h"
 #include "protocol/Protocol.h"
+#include "utils/convert.h"
 
 namespace atom {
 namespace message {
 
-using namespace utils;
 using namespace std;
 
 class Header

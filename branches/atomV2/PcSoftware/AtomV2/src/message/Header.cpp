@@ -16,7 +16,7 @@ Header::Header()
 
 	for (unsigned int n = 0; n < nodes.size(); n++)
 	{
-		Variable variable(nodes[n]["name"], nodes[n]["datatype"], stob(nodes[n]["required"]), nodes[n]["unit"]);
+		Variable variable(nodes[n]["name"], nodes[n]["datatype"], convert::string2bool(nodes[n]["required"]), nodes[n]["unit"]);
 		this->myVariables[nodes[n]["name"]] = variable;
 	}
 }
