@@ -26,7 +26,6 @@
 namespace atom {
 namespace broker {
 
-using namespace utils;
 using namespace message;
 
 class Subscriber : public boost::signals::trackable, public thread::Thread

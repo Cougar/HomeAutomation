@@ -10,7 +10,7 @@
 
 #include <map>
 #include "message/Variable.h"
-#include "utils/BitBuffer.h"
+#include "message/BitBuffer.h"
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
 

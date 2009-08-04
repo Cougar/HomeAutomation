@@ -8,7 +8,7 @@
 #include "BitBuffer.h"
 
 namespace atom {
-namespace utils {
+namespace message {
 
 BitBuffer::BitBuffer(unsigned char bytes[], unsigned int length)
 {

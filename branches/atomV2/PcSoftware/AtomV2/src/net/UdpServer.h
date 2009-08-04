@@ -13,7 +13,6 @@
 #include <boost/signal.hpp>
 #include <boost/make_shared.hpp>
 #include "log/Logger.h"
-#include "utils/BitBuffer.h"
 #include "thread/Thread.h"
 #include "utils/convert.h"
 #include "types.h"
@@ -22,7 +21,7 @@ namespace atom {
 namespace net {
 
 using boost::asio::ip::udp;
-using namespace utils;
+using namespace std;
 
 class UdpServer : protected thread::Thread
 {

@@ -67,6 +67,8 @@
 		<Unit filename="src/broker/Subscriber.h" />
 		<Unit filename="src/log/Logger.cpp" />
 		<Unit filename="src/log/Logger.h" />
+		<Unit filename="src/message/BitBuffer.cpp" />
+		<Unit filename="src/message/BitBuffer.h" />
 		<Unit filename="src/message/Datatype.cpp" />
 		<Unit filename="src/message/Datatype.h" />
 		<Unit filename="src/message/Header.cpp" />
@@ -91,20 +93,27 @@
 		<Unit filename="src/thread/Thread.cpp" />
 		<Unit filename="src/thread/Thread.h" />
 		<Unit filename="src/types.h" />
-		<Unit filename="src/utils/BitBuffer.cpp" />
-		<Unit filename="src/utils/BitBuffer.h" />
 		<Unit filename="src/utils/convert.cpp" />
 		<Unit filename="src/utils/convert.h" />
 		<Unit filename="src/utils/file.cpp" />
 		<Unit filename="src/utils/file.h" />
 		<Unit filename="src/utils/string.cpp" />
 		<Unit filename="src/utils/string.h" />
+		<Unit filename="src/version.h" />
 		<Unit filename="src/xml/Node.cpp" />
 		<Unit filename="src/xml/Node.h" />
+		<Unit filename="version.h">
+			<Option target="Release" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="1" svn_directory="/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/.svn" header_path="src/version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="changelog" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

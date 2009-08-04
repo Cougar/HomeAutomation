@@ -11,7 +11,7 @@
 #include <string>
 #include <boost/make_shared.hpp>
 #include "message/Datatype.h"
-#include "utils/BitBuffer.h"
+#include "message/BitBuffer.h"
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
 

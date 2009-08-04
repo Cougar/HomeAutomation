@@ -19,10 +19,7 @@ TODO
 * Kunna i ett webinterface se alla noder och styra dom mm
 * Även kanske ställa in failsafe-logik som kan programmeras som moduler där det baserat på vissa indata kan skickas specifika utdata. Så man tex kan ha så av och på på en touch styr en dimmer även om atom inte är närvarande, kanske en prioriteringsordning på dessa så om man inte får ett heartbeat från nån med högre prioritet så börjar man agera
 * Bygg ett program som atom kan prata med som sköter källkoden för att bygga för nya noder, denna skall sköta det som modulmanagern gör idag men kanske synka med atom om idn eller så... skall även gå att komma åt som en webservice om man vill det. och på gamla vanliga sättet med make
-* Boost-string functions
-* Remove own trim-functions
 * Boost::Tr1::hashmap
-* Rename db/Database to protocol and remove db-namespace
 * Look att Locale and where we want UTF8 and where it is ascii
 * Restart js-vm when atom is running to load new versions of js, maybe a persistant store of variables in c++ that lives between js-vm restarts
 

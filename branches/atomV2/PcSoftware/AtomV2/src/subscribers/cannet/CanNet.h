@@ -17,7 +17,7 @@
 #include "broker/Broker.h"
 #include "message/Message.h"
 #include "message/Header.h"
-#include "utils/BitBuffer.h"
+#include "message/BitBuffer.h"
 #include "net/UdpServer.h"
 #include "log/Logger.h"
 #include "utils/convert.h"
@@ -27,7 +27,6 @@ namespace atom {
 namespace subscribers {
 
 using namespace broker;
-using namespace utils;
 using namespace message;
 using namespace std;
 using boost::asio::ip::udp;

@@ -13,13 +13,10 @@
 #include <boost/any.hpp>
 #include "log/Logger.h"
 #include "message/types/Selection.h"
-#include "utils/BitBuffer.h"
+#include "message/BitBuffer.h"
 
 namespace atom {
 namespace message {
-
-using namespace utils;
-using namespace message;
 
 enum datatypes {
 	DATATYPE_UNSIGNED_INTEGER,

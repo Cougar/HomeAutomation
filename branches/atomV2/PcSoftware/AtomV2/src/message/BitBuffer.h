@@ -12,7 +12,7 @@
 #include <string>
 
 namespace atom {
-namespace utils {
+namespace message {
 
 using namespace std;
 

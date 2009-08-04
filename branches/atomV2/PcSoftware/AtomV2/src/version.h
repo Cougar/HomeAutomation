@@ -25,8 +25,12 @@ namespace AutoVersion{
 	#define RC_FILEVERSION_STRING "2, 0, 26, 168\0"
 	static const char FULLVERSION_STRING[] = "2.0.26.168";
 	
+	//SVN Version
+	static const char SVN_REVISION[] = "1310";
+	static const char SVN_DATE[] = "2009-08-03T22:18:47.169739Z";
+	
 	//These values are to keep track of your versioning state, don't modify them.
-	static const long BUILD_HISTORY = 26;
+	static const long BUILD_HISTORY = 0;
 	
 
 }

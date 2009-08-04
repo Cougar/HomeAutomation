@@ -25,7 +25,6 @@
 #include "subscribers/cannet/CanNet.h"
 #include "xml/Node.h"
 #include "thread/Thread.h"
-#include "utils/BitBuffer.h"
 #include "net/UdpServer.h"
 #include "xml/Node.h"
 #include "protocol/Protocol.h"
