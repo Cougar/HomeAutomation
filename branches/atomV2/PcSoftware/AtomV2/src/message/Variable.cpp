@@ -16,7 +16,7 @@ Variable::Variable(string name, string datatype, bool required, string unit)
 	this->myRequired = required;
 	this->myUnit = unit;
 
-	xml::Node datatypeNode = db::Database::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", datatype));
+	xml::Node datatypeNode = Protocol::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", datatype));
 
 	this->myLength = stoi(datatypeNode["length"]);
 	this->myDatatype = boost::make_shared<Datatype>(Datatype::getTypeFromString(datatypeNode["type"]));

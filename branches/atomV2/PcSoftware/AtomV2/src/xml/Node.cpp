@@ -264,9 +264,9 @@ int Node::parseTag(string filename, string xmlData, unsigned int position)
 		throw e;
 	}
 
-	tagString = trim(tagString);
-	tagString = trim(tagString, '\n');
-	tagString = trim(tagString);
+	trim(tagString);
+	trim_if(tagString, is_any_of("\n"));
+	trim(tagString);
 	tagString += " ";
 
 	bool foundEnd = false;

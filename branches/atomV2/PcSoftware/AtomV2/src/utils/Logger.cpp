@@ -12,7 +12,7 @@ namespace utils {
 
 Logger::Logger()
 {
-	this->_className = "UnknownClass";
+	this->myClassName = "UnknownClass";
 }
 
 Logger::~Logger()
@@ -21,32 +21,32 @@ Logger::~Logger()
 
 void Logger::setName(string className)
 {
-	this->_className = className;
+	this->myClassName = className;
 }
 
 void Logger::info(string message)
 {
-	cout << niceTime() << " INFO  " << rpad(this->_className, 20, ' ') << message << endl;
+	cout << niceTime() << " INFO  " << rpad(this->myClassName, 20, ' ') << message << endl;
 }
 
 void Logger::debug(string message)
 {
-	cout << niceTime() << " DEBUG " << rpad(this->_className, 20, ' ') << message << endl;
+	cout << niceTime() << " DEBUG " << rpad(this->myClassName, 20, ' ') << message << endl;
 }
 
 void Logger::warn(string message)
 {
-	cout << niceTime() << " WARN  " << rpad(this->_className, 20, ' ') << message << endl;
+	cout << niceTime() << " WARN  " << rpad(this->myClassName, 20, ' ') << message << endl;
 }
 
 void Logger::error(string message)
 {
-	cout << niceTime() << " ERROR " << rpad(this->_className, 20, ' ') << message << endl;
+	cout << niceTime() << " ERROR " << rpad(this->myClassName, 20, ' ') << message << endl;
 }
 
 void Logger::fatal(string message)
 {
-	cout << niceTime() << " FATAL " << rpad(this->_className, 20, ' ') << message << endl;
+	cout << niceTime() << " FATAL " << rpad(this->myClassName, 20, ' ') << message << endl;
 }
 
 

@@ -13,7 +13,7 @@
 #include <map>
 #include "utils/Logger.h"
 #include "message/Variable.h"
-#include "db/Database.h"
+#include "protocol/Protocol.h"
 
 using namespace std;
 using namespace atom::utils;

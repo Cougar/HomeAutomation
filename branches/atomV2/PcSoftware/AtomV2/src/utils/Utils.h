@@ -17,7 +17,7 @@
 #include <cmath>
 #include <sys/types.h>
 #include <dirent.h>
-#include "../types.h"
+#include "types.h"
 
 using namespace std;
 
@@ -34,11 +34,13 @@ string float2bin(float num, unsigned int length);
 unsigned int bin2uint(string bin);
 string uint2bin(unsigned int num, unsigned int length);
 string uint2hex(unsigned int num, unsigned int length);
-vector<string> explode(string delimiter, string str);
+string_list explode(string delimiter, string str);
 string strtoupper(string s);
 string strtolower(string s);
-string trim(string s);
-string trim(const string s, char c);
+
+//string trim(string s);
+//string trim(const string s, char c);
+
 bool stob(const string s);
 int stoi(const string s);
 string itos(int i);

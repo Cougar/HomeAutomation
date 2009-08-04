@@ -10,18 +10,18 @@
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "Logger.h"
-#include "BitBuffer.h"
-#include "Thread.h"
 #include <boost/signal.hpp>
 #include <boost/make_shared.hpp>
-#include "../types.h"
+#include "utils/Logger.h"
+#include "utils/BitBuffer.h"
+#include "utils/Thread.h"
+#include "types.h"
 
 namespace atom {
 namespace utils {
 
 using boost::asio::ip::udp;
-using namespace atom::utils;
+using namespace utils;
 
 class UdpServer : protected Thread
 {

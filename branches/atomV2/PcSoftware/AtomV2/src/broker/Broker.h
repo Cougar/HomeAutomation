@@ -10,15 +10,15 @@
 
 #include <boost/signal.hpp>
 #include <boost/make_shared.hpp>
-#include "../message/Message.h"
-#include "../utils/Logger.h"
+#include "message/Message.h"
+#include "utils/Logger.h"
 
 namespace atom {
 namespace broker {
 
 using namespace std;
-using namespace atom::utils;
-using namespace atom::message;
+using namespace utils;
+using namespace message;
 
 class Broker
 {

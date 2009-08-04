@@ -9,10 +9,12 @@
 #define TYPES_H_
 
 #include <vector>
+#include <string>
 
 namespace atom {
 
 typedef std::vector<unsigned char> byte_list;
+typedef std::vector<std::string> string_list;
 
 }
 

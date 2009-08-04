@@ -8,18 +8,17 @@
 #ifndef MONITOR_H_
 #define MONITOR_H_
 
-#include <iostream>
-#include "../../broker/Subscriber.h"
-#include "../../message/Message.h"
-#include "../../utils/Logger.h"
 #include <boost/make_shared.hpp>
+#include "broker/Subscriber.h"
+#include "message/Message.h"
+#include "utils/Logger.h"
 
 namespace atom {
 namespace subscribers {
 
-using namespace atom::broker;
-using namespace atom::utils;
-using namespace atom::message;
+using namespace broker;
+using namespace utils;
+using namespace message;
 
 class Monitor : public Subscriber
 {

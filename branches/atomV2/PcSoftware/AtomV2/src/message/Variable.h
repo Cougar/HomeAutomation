@@ -12,7 +12,7 @@
 #include <boost/make_shared.hpp>
 #include "message/Datatype.h"
 #include "utils/BitBuffer.h"
-#include "db/Database.h"
+#include "protocol/Protocol.h"
 
 namespace atom {
 namespace message {

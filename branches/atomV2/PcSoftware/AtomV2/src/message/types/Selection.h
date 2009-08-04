@@ -9,9 +9,7 @@
 #define SELECTION_H_
 
 namespace atom {
-
 namespace message {
-
 namespace types {
 
 class Selection
@@ -23,9 +21,7 @@ public:
 };
 
 }
-
 }
-
 }
 
 #endif /* SELECTION_H_ */

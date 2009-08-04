@@ -1,0 +1,39 @@
+
+Build boost
+===========
+mkdir boost_build
+./configure --with-libraries=system,thread,signals,filesystem,serialization,program_options,date_time --prefix=./boost_build
+make install
+
+
+
+TODO
+====
+* titta mer på xml-en, med responses och in/out
+* idn för allt är inte med i xml:en, detta gör att en ändring kan göra att man måste kompilera om nån modul och programmera, hade man nån fil där man har idna innan så kan man ta reda på om det skett någon ändring i ett id mellan en uppdatering och isåfall kanske automatisk programmera om den noden
+* En idé är att tilldela moduler id:n dynamiskt, antingen frågar dom efter ett och ser om nån vägrar eller om man har nån central hantering, detta kunde innebära bättre utnyttjande av id:na (kanske) men framförallt öka portabiliteten på noderna så man kan flytta dom mellan nätverk
+* Moduler som inte finns js till skall kunna generera en stubbe med metoder för alla in och ut som man sedan kan bygga till på, rena can-meddelanden skall inte skickas från js alls utan allt skall gå via modulernas funktioner upp till sina instanser i c++, datatyperna behöver ha js-motsvarigheter och nån generell variabelklass också, detta behövs i c++ också
+* Försök köra signal/slot tänket i js också lite mer organiserat än events
+* Ladda ner xml-filen från nån webserver
+* Bygga på en remote-location, webservice kanske, så man får tillbaka nått paketformat som man kan programmera noden med
+* Kunna i ett webinterface se alla noder och styra dom mm
+* Även kanske ställa in failsafe-logik som kan programmeras som moduler där det baserat på vissa indata kan skickas specifika utdata. Så man tex kan ha så av och på på en touch styr en dimmer även om atom inte är närvarande, kanske en prioriteringsordning på dessa så om man inte får ett heartbeat från nån med högre prioritet så börjar man agera
+* Bygg ett program som atom kan prata med som sköter källkoden för att bygga för nya noder, denna skall sköta det som modulmanagern gör idag men kanske synka med atom om idn eller så... skall även gå att komma åt som en webservice om man vill det. och på gamla vanliga sättet med make
+* Boost-string functions
+* Remove own trim-functions
+* Boost::Tr1::hashmap
+* Rename db/Database to protocol and remove db-namespace
+
+TODO - Stage 1
+==============
+Status: In progress
+Goal: Get data from an ethnode printed in a nice format on the monitorsubcribers socket
+* Complete BitBuffer
+* Build a protocol.cache, that stores ids
+* Make MonitorSubscriber do something
+* Complete CanNet-code
+
+
+Bugs
+====
+* Ethnoden ändra 18 till 17 i bytesen som skickas

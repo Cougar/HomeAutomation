@@ -9,8 +9,8 @@
 #define LOGGER_H_
 
 #include <string>
-#include "Utils.h"
 #include <iostream>
+#include "utils/Utils.h"
 
 namespace atom {
 namespace utils {
@@ -32,7 +32,7 @@ public:
 	void fatal(string message);
 
 private:
-	string _className;
+	string myClassName;
 };
 
 }

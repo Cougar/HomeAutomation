@@ -11,15 +11,15 @@
 #include <exception>
 #include <boost/make_shared.hpp>
 #include <boost/any.hpp>
-#include "../utils/Logger.h"
-#include "types/Selection.h"
-#include "../utils/BitBuffer.h"
+#include "utils/Logger.h"
+#include "message/types/Selection.h"
+#include "utils/BitBuffer.h"
 
 namespace atom {
 namespace message {
 
-using namespace atom::utils;
-using namespace atom::message;
+using namespace utils;
+using namespace message;
 
 enum datatypes {
 	DATATYPE_UNSIGNED_INTEGER,

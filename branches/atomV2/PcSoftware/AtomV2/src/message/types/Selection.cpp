@@ -8,9 +8,7 @@
 #include "Selection.h"
 
 namespace atom {
-
 namespace message {
-
 namespace types {
 
 Selection::Selection()
@@ -25,7 +23,5 @@ Selection::~Selection()
 }
 
 }
-
 }
-
 }

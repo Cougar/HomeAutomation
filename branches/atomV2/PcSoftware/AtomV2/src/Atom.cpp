@@ -28,7 +28,7 @@
 #include "utils/BitBuffer.h"
 #include "utils/UdpServer.h"
 #include "xml/Node.h"
-#include "db/Database.h"
+#include "protocol/Protocol.h"
 
 namespace po = boost::program_options;
 
@@ -48,14 +48,9 @@ int main(int argc, char* argv[])
 	LOG.info("Written by Mattias Runge 2009");
 
 
-	db::Database::pointer db = db::Database::getInstance();
-	db->load("../../Configuration/protocol.xml");
-
-
-	xml::Node xmlNode("../../Configuration/protocol.xml");
-	cout << xmlNode.toString() << endl;
-
-	cout << "::" << xmlNode.selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", "moduleId"))["lenght"] << endl;
+	Protocol::pointer protocol = Protocol::getInstance();
+	protocol->load("../../Configuration/protocol.xml");
+	cout << protocol->getRootNode().toString() << endl;
 
 
 	broker::Broker::pointer broker = broker::Broker::getInstance();

@@ -17,17 +17,17 @@
 #include <boost/thread/condition.hpp>
 #include <boost/thread/locks.hpp>
 #include "Broker.h"
-#include "../message/Message.h"
-#include "../utils/Logger.h"
-#include "../utils/Thread.h"
-#include "../utils/TSQueue.hpp"
+#include "message/Message.h"
+#include "utils/Logger.h"
+#include "utils/Thread.h"
+#include "utils/TSQueue.hpp"
 #include <boost/make_shared.hpp>
 
 namespace atom {
 namespace broker {
 
-using namespace atom::utils;
-using namespace atom::message;
+using namespace utils;
+using namespace message;
 
 class Subscriber : public boost::signals::trackable, public atom::utils::Thread
 {

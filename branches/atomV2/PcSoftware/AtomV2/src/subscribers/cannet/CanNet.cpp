@@ -21,9 +21,9 @@ CanNet::CanNet(Broker::pointer broker, string address, unsigned int port) : Subs
 	LOG.setName("CanNetSubscriber");
 
 	this->myUdpServer = UdpServer::getInstance(port);
-	(*this->myUdpServer).connect(boost::bind(&CanNet::onNewData, this, _1, _2));
+	this->myUdpServer->connect(boost::bind(&CanNet::onNewData, this, _1, _2));
 
-	this->myEndpoint = (*this->myUdpServer).getEndpoint(address);
+	this->myEndpoint = this->myUdpServer->getEndpoint(address);
 
 	this->sendPing();
 
@@ -117,7 +117,7 @@ void CanNet::sendPing()
 	byte_list data(1, (unsigned char) PACKET_PING);
 
 	LOG.info("Sending ping packet...");
-	(*this->myUdpServer).sendTo(this->myEndpoint, data);
+	this->myUdpServer->sendTo(this->myEndpoint, data);
 }
 
 void CanNet::onNewMessage(Message::pointer message)
@@ -131,7 +131,7 @@ void CanNet::onNewMessage(Message::pointer message)
 	// TODO Convert message-id to long
 	unsigned long id;
 
-	(*this->myUdpServer).sendTo(this->myEndpoint, buildPacket(id, data));
+	this->myUdpServer->sendTo(this->myEndpoint, buildPacket(id, data));
 }
 
 void CanNet::onNewData(const udp::endpoint & sender, const byte_list & bytes)

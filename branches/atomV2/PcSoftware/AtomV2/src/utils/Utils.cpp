@@ -250,9 +250,9 @@ string uint2hex(unsigned int num, unsigned int length)
 	return bin2hex(uint2bin(num, length));
 }
 
-vector<string> explode(string delimiter, string str)
+string_list explode(string delimiter, string str)
 {
-	vector<string> parts;
+	string_list parts;
 	string::size_type startPos = 0;
 	string::size_type endPos = 0;
 
@@ -305,7 +305,7 @@ string strtolower(string s)
 
 	return s;
 }
-
+/*
 string trim(string s)
 {
 	return trim(s, ' ');
@@ -322,7 +322,7 @@ string trim(const string s, char c)
 
 	return result;
 }
-
+*/
 bool stob(const string s)
 {
 	return (s == "true" || s == "1" || s == "yes");

@@ -8,6 +8,10 @@
 #ifndef CANNET_H_
 #define CANNET_H_
 
+#include <boost/make_shared.hpp>
+#include <boost/bind.hpp>
+#include <boost/signal.hpp>
+#include <string>
 #include "broker/Subscriber.h"
 #include "broker/Broker.h"
 #include "message/Message.h"
@@ -15,10 +19,6 @@
 #include "utils/BitBuffer.h"
 #include "utils/UdpServer.h"
 #include "utils/Logger.h"
-#include <boost/make_shared.hpp>
-#include <boost/bind.hpp>
-#include <boost/signal.hpp>
-#include <string>
 #include "types.h"
 
 namespace atom {

@@ -18,8 +18,8 @@ Message::Message(string moduletype, unsigned int moduleId, string type)
 	this->myModuleId = moduleId;
 	this->myType = type;
 
-	xml::Node moduleNode = db::Database::getInstance()->getRootNode().selectFirst("modules").selectFirst("module", xml::Node::attributePair("name", moduletype));
-	xml::Node messageNode = db::Database::getInstance()->getRootNode().selectFirst("messagetypes").selectFirst("messagetype", xml::Node::attributePair("name", type));
+	xml::Node moduleNode = Protocol::getInstance()->getRootNode().selectFirst("modules").selectFirst("module", xml::Node::attributePair("name", moduletype));
+	xml::Node messageNode = Protocol::getInstance()->getRootNode().selectFirst("messagetypes").selectFirst("messagetype", xml::Node::attributePair("name", type));
 
 	xml::Node::nodeList variableNodes = messageNode.select("variable");
 

@@ -12,7 +12,7 @@ namespace message {
 
 Header::Header()
 {
-	xml::Node::nodeList nodes = db::Database::getInstance()->getRootNode().selectFirst("header").select("variable");
+	xml::Node::nodeList nodes = Protocol::getInstance()->getRootNode().selectFirst("header").select("variable");
 
 	for (unsigned int n = 0; n < nodes.size(); n++)
 	{

@@ -11,7 +11,7 @@
 #include <map>
 #include "message/Variable.h"
 #include "utils/BitBuffer.h"
-#include "db/Database.h"
+#include "protocol/Protocol.h"
 
 namespace atom {
 namespace message {
