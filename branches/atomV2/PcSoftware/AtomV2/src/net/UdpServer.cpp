@@ -8,7 +8,7 @@
 #include "UdpServer.h"
 
 namespace atom {
-namespace utils {
+namespace net {
 
 UdpServer::UdpServer(unsigned int port) :
 	mySocket(this->myIoService, udp::endpoint(udp::v4(), port))

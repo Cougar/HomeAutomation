@@ -11,13 +11,14 @@
 #include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
 #include <boost/signal.hpp>
+#include <boost/asio.hpp>
 #include <string>
 #include "broker/Subscriber.h"
 #include "broker/Broker.h"
 #include "message/Message.h"
 #include "message/Header.h"
 #include "utils/BitBuffer.h"
-#include "utils/UdpServer.h"
+#include "net/UdpServer.h"
 #include "log/Logger.h"
 #include "utils/convert.h"
 #include "types.h"
@@ -29,6 +30,7 @@ using namespace broker;
 using namespace utils;
 using namespace message;
 using namespace std;
+using boost::asio::ip::udp;
 
 // public boost::signals::trackable,
 class CanNet : public Subscriber
@@ -52,7 +54,7 @@ protected:
 		PACKET_START = 253, PACKET_END = 250, PACKET_PING = 251
 	};
 
-	UdpServer::pointer myUdpServer;
+	net::UdpServer::pointer myUdpServer;
 	udp::endpoint myEndpoint;
 	// TODO Add mutex lock for access to the buffer or are we safe?
 	byte_list myBuffer;

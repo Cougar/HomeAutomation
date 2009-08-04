@@ -24,9 +24,9 @@
 #include "subscribers/monitor/Monitor.h"
 #include "subscribers/cannet/CanNet.h"
 #include "xml/Node.h"
-#include "utils/Thread.h"
+#include "thread/Thread.h"
 #include "utils/BitBuffer.h"
-#include "utils/UdpServer.h"
+#include "net/UdpServer.h"
 #include "xml/Node.h"
 #include "protocol/Protocol.h"
 #include "log/Logger.h"
@@ -55,8 +55,6 @@ int main(int argc, char* argv[])
 
 
 	broker::Broker::pointer broker = broker::Broker::getInstance();
-
-	utils::UdpServer::pointer udpServer = utils::UdpServer::getInstance(1100);
 
 	subscribers::Monitor::pointer monitorSubscriber(new subscribers::Monitor(broker));
 	subscribers::CanNet::pointer canNetSubscriber(new subscribers::CanNet(broker, "192.168.1.250", 1100));

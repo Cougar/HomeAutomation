@@ -20,7 +20,7 @@ CanNet::CanNet(Broker::pointer broker, string address, unsigned int port) : Subs
 {
 	LOG.setName("CanNetSubscriber");
 
-	this->myUdpServer = UdpServer::getInstance(port);
+	this->myUdpServer = net::UdpServer::getInstance(port);
 	this->myUdpServer->connect(boost::bind(&CanNet::onNewData, this, _1, _2));
 
 	this->myEndpoint = this->myUdpServer->getEndpoint(address);

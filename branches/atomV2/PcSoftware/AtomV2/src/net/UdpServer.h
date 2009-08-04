@@ -14,17 +14,17 @@
 #include <boost/make_shared.hpp>
 #include "log/Logger.h"
 #include "utils/BitBuffer.h"
-#include "utils/Thread.h"
+#include "thread/Thread.h"
 #include "utils/convert.h"
 #include "types.h"
 
 namespace atom {
-namespace utils {
+namespace net {
 
 using boost::asio::ip::udp;
 using namespace utils;
 
-class UdpServer : protected Thread
+class UdpServer : protected thread::Thread
 {
 	typedef boost::signal<void(udp::endpoint & sender, byte_list & bytes)> OnDataSignal;
 

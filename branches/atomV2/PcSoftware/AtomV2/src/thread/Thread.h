@@ -11,7 +11,7 @@
 #include <boost/thread.hpp>
 
 namespace atom {
-namespace utils {
+namespace thread {
 
 class Thread
 {
@@ -29,8 +29,8 @@ protected:
 	virtual void run();
 
 private:
-	boost::thread _thread;
-	bool _running;
+	boost::thread myThread;
+	bool myIsRunning;
 
 	void runBase();
 };

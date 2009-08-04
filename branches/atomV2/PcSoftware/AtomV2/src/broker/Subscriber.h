@@ -19,8 +19,8 @@
 #include "Broker.h"
 #include "message/Message.h"
 #include "log/Logger.h"
-#include "utils/Thread.h"
-#include "utils/TSQueue.hpp"
+#include "thread/Thread.h"
+#include "thread/Queue.h"
 #include <boost/make_shared.hpp>
 
 namespace atom {
@@ -29,7 +29,7 @@ namespace broker {
 using namespace utils;
 using namespace message;
 
-class Subscriber : public boost::signals::trackable, public atom::utils::Thread
+class Subscriber : public boost::signals::trackable, public thread::Thread
 {
 	typedef boost::mutex::scoped_lock lock;
 
@@ -47,7 +47,7 @@ protected:
 
 private:
 	log::Logger LOG;
-	utils::TSQueue<Message::pointer> myQueue;
+	thread::Queue<Message::pointer> myQueue;
 	bool myReceiveFromMyself;
 	boost::condition myCondition;
 	boost::mutex myMutex;

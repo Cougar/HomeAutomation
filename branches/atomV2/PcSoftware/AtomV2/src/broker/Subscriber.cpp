@@ -15,7 +15,7 @@ Subscriber::Subscriber(boost::shared_ptr<Broker> broker, bool receiveFromMyself)
 	LOG.setName("Subscriber");
 	this->myBroker = broker;
 	this->myReceiveFromMyself = receiveFromMyself;
-	(*this->myBroker).connect(boost::bind(&Subscriber::newMessageHandler, this, _1));
+	this->myBroker->connect(boost::bind(&Subscriber::newMessageHandler, this, _1));
 }
 
 Subscriber::~Subscriber()
@@ -25,8 +25,8 @@ Subscriber::~Subscriber()
 
 void Subscriber::put(Message::pointer message)
 {
-	(*message).setOrigin(this);
-	(*this->myBroker).put(message);
+	message->setOrigin(this);
+	this->myBroker->put(message);
 }
 
 void Subscriber::onNewMessage(Message::pointer message)
@@ -35,7 +35,7 @@ void Subscriber::onNewMessage(Message::pointer message)
 
 void Subscriber::newMessageHandler(Message::pointer message)
 {
-	if (this->myReceiveFromMyself || !(*message).isOrigin(this))
+	if (this->myReceiveFromMyself || !message->isOrigin(this))
 	{
 		this->myQueue.push(message);
 
