@@ -40,6 +40,16 @@ void BitBuffer::setFromBytes(byte_list bytes)
 	this->myBuffer = bytes;
 }
 
+void BitBuffer::incrementPointer(unsigned int steps)
+{
+
+}
+
+void BitBuffer::clear()
+{
+	this->myBuffer.clear();
+	// TÒDO resent pointers
+}
 
 void BitBuffer::readDecimal(unsigned int length, unsigned int scaling, double & value)
 {

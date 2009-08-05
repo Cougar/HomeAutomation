@@ -90,24 +90,11 @@ void CanNet::processBuffer()
 		data.push_back(this->myBuffer[5 + n]);
 	}
 
-
 	BitBuffer buffer(data);
 
-	Header header;
+	Header header(buffer);
 
-	header.readBits(buffer);
-
-	// TODO how do we convert from moduleType and messageId to their string names... where are these ids stored?
-
-	/*string moduleType = header.getVariable("moduleType").getValue().
-	unsigned int moduleId = header.getVariable("moduleId").getValue().
-	string messageType = header.getVariable("messageId").getValue().
-
-	Message::pointer message = boost::make_shared<Message>(moduletype, moduleId, messageType);
-
-	message.readBits(buffer);
-
-	this->put(message);*/
+	this->put(boost::make_shared<Message>(header));
 
 	this->myBuffer.clear();
 }
@@ -125,11 +112,17 @@ void CanNet::onNewMessage(Message::pointer message)
 	LOG.debug("update called");
 
 	BitBuffer buffer;
-	// TODO Convert message-variables to bitbuffer then to byte_list
-	byte_list data;
 
-	// TODO Convert message-id to long
+	message->getHeader().writeBits(buffer);
+
 	unsigned long id;
+	buffer.readBasicType(32, id);
+
+	buffer.clear();
+
+	message->writeBits(buffer);
+
+	byte_list data = buffer.getAsBytes();
 
 	this->myUdpServer->sendTo(this->myEndpoint, buildPacket(id, data));
 }

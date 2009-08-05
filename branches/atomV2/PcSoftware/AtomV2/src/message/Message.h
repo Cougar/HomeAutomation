@@ -13,6 +13,7 @@
 #include <map>
 #include "log/Logger.h"
 #include "message/Variable.h"
+#include "message/Header.h"
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
 
@@ -29,31 +30,26 @@ class Message
 public:
 	typedef boost::shared_ptr<Message> pointer;
 
-	Message(string moduletype, unsigned int moduleId, string type);
+	Message(Header header);
 	Message();
 	virtual ~Message();
 
 	void setOrigin(const void *origin);
 	bool isOrigin(const void *origin);
 
-	bool isFromModule();
-	string getModuletype();
-	unsigned int getModuleId();
-	string getType();
+	Header & getHeader();
 	Variable & getVariable(string name);
 	responseList getResponses();
 
 	void readBits(BitBuffer & buffer);
+	void writeBits(BitBuffer & buffeer);
 
 private:
 	log::Logger LOG;
 
 	const void *myOrigin;
 
-	bool myFromModule;
-	string myModuletype;
-	unsigned int myModuleId;
-	string myType;
+	Header myHeader;
 	variableMap myVariables;
 	responseList myResponses;
 };

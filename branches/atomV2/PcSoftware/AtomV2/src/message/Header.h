@@ -25,14 +25,21 @@ class Header
 
 public:
 	Header();
+	Header(BitBuffer & buffer);
+	Header(unsigned long moduleId, string moduleType, string messageType);
 	virtual ~Header();
 
-	Variable & getVariable(string name);
+	unsigned long getModuleId();
+	string getModuleType();
+	string getMessageType();
 
 	void readBits(BitBuffer & buffer);
+	void writeBits(BitBuffer & buffer);
 
 private:
 	variableMap myVariables;
+
+	void loadVariables();
 };
 
 }

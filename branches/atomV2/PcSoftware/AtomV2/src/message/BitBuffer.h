@@ -27,6 +27,9 @@ public:
 	byte_list getAsBytes();
 	void setFromBytes(vector<unsigned char> bytes);
 
+	void incrementPointer(unsigned int steps);
+	void clear();
+
 	void readBasicType(unsigned int length, long & value);
 	void writeBasicType(unsigned int length, long value);
 

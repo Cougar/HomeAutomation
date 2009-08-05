@@ -14,6 +14,7 @@
 #include "message/BitBuffer.h"
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
+#include "xml/Node.h"
 
 namespace atom {
 namespace message {
@@ -24,7 +25,7 @@ class Variable
 {
 public:
 	Variable();
-	Variable(string name, string datatype, bool required, string unit);
+	Variable(xml::Node xmlNode);
 	virtual ~Variable();
 
 	string getName();

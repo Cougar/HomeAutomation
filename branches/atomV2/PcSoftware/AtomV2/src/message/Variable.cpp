@@ -10,13 +10,13 @@
 namespace atom {
 namespace message {
 
-Variable::Variable(string name, string datatype, bool required, string unit)
+Variable::Variable(xml::Node xmlNode)
 {
-	this->myName = name;
-	this->myRequired = required;
-	this->myUnit = unit;
+	this->myName = xmlNode["name"];
+	this->myRequired = convert::string2bool(xmlNode["required"]);
+	this->myUnit = xmlNode["unit"];
 
-	this->myDatatype = Datatype::create(datatype);
+	this->myDatatype = Datatype::create(xmlNode["datatype"]);
 }
 
 Variable::Variable()

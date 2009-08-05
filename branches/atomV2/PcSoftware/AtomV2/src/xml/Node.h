@@ -27,7 +27,7 @@ using namespace boost::algorithm;
 class Node
 {
 public:
-	typedef std::map<std::string, std::string> attributeList;
+	typedef std::map<std::string, std::string> attributeList; // TODO Move these typedef:s out of the class
 	typedef std::pair<std::string, std::string> attributePair;
 	typedef std::vector<Node> nodeList;
 
