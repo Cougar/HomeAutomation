@@ -89,6 +89,7 @@
           <value id="5" name="NEC"/>
           <value id="6" name="Samsung"/>
           <value id="7" name="Marantz"/>
+          <value id="8" name="Panasonic"/>
           <value id="255" name="Unknown"/>
         </variable>
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
