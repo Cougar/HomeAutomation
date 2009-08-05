@@ -57,5 +57,17 @@ void Variable::writeBits(BitBuffer & buffer)
 	this->myDatatype->writeBits(buffer);
 }
 
+string Variable::toString()
+{
+	string buffer = this->myName + "=" + this->myDatatype->toString();
+
+	if (this->myUnit != "")
+	{
+		buffer += " " + this->myUnit;
+	}
+
+	return buffer;
+}
+
 }
 }

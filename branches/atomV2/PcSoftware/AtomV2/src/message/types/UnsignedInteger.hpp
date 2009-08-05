@@ -18,6 +18,12 @@ class UnsignedInteger : public BasicType<unsigned long>
 {
 public:
 	UnsignedInteger(xml::Node xmlNode) : BasicType<unsigned long>(xmlNode) { };
+
+
+	string toString()
+	{
+		return convert::uint2string(this->myValue);
+	}
 };
 
 }

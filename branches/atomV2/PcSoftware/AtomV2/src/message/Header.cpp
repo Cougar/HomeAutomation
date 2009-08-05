@@ -14,49 +14,63 @@ namespace message {
 
 Header::Header()
 {
+	LOG.setName("Header");
+	this->loadVariables();
 }
 
 Header::Header(BitBuffer & buffer)
 {
+	LOG.setName("Header");
+	this->loadVariables();
 	this->readBits(buffer);
 }
 
 Header::Header(unsigned long moduleId, string moduleType, string messageType)
 {
+	LOG.setName("Header");
+
+	LOG.debug("Start of constructor...");
+
+	this->loadVariables();
+
+	LOG.debug("Done loading variables...");
+
 	if (types::UnsignedInteger *moduleIdDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["moduleId"].getDatatype().get()))
 	{
 		moduleIdDatatype->setValue(moduleId);
 	}
 	else
 	{
-		// TODO throw exception
+		throw new Exception("moduleId is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
+
+	LOG.debug("checkpoint 1...");
 
 	if (types::UnsignedInteger *moduleTypeDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["moduleType"].getDatatype().get()))
 	{
-		unsigned long moduleTypeId;
-
-		// TODO convert moduleType to moduleTypeId
+		unsigned long moduleTypeId = convert::string2uint(Protocol::getInstance()->getRootCacheNode().selectFirst("module", xml::Node::attributePair("name", moduleType))["id"]);
 
 		moduleTypeDatatype->setValue(moduleTypeId);
 	}
 	else
 	{
-		// TODO throw exception
+		throw new Exception("moduletype is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
+
+	LOG.debug("checkpoint 2...");
 
 	if (types::UnsignedInteger *messageTypeDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["messageType"].getDatatype().get()))
 	{
-		unsigned long messageTypeId;
-
-		// TODO convert messageType to messageTypeId
+		unsigned long messageTypeId = convert::string2uint(Protocol::getInstance()->getRootCacheNode().selectFirst("messagetype", xml::Node::attributePair("name", messageType))["id"]);
 
 		messageTypeDatatype->setValue(messageTypeId);
 	}
 	else
 	{
-		// TODO throw exception
+		throw new Exception("messageType is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
+
+	LOG.debug("End of contructor...");
 }
 
 Header::~Header()
@@ -82,10 +96,8 @@ unsigned long Header::getModuleId()
 	{
 		return moduleIdDatatype->getValue();
 	}
-	else
-	{
-		// TODO throw exception
-	}
+
+	throw new Exception("moduleIdDatatype is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 }
 
 string Header::getModuleType()
@@ -94,16 +106,12 @@ string Header::getModuleType()
 	{
 		unsigned long moduleTypeId = moduleTypeDatatype->getValue();
 
-		string moduleType;
-
-		// TODO convert moduleTypeId to moduleType
+		string moduleType = Protocol::getInstance()->getRootCacheNode().selectFirst("module", xml::Node::attributePair("id", convert::uint2string(moduleTypeId)))["name"];
 
 		return moduleType;
 	}
-	else
-	{
-		// TODO throw exception
-	}
+
+	throw new Exception("moduleType is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 }
 
 string Header::getMessageType()
@@ -112,16 +120,12 @@ string Header::getMessageType()
 	{
 		unsigned long messageTypeId = messageTypeDatatype->getValue();
 
-		string messageType;
-
-		// TODO convert messageTypeId to messageType
+		string messageType = Protocol::getInstance()->getRootCacheNode().selectFirst("messagetype", xml::Node::attributePair("id", convert::uint2string(messageTypeId)))["name"];
 
 		return messageType;
 	}
-	else
-	{
-		// TODO throw exception
-	}
+
+	throw new Exception("messageType is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 }
 
 void Header::readBits(BitBuffer & buffer)
@@ -138,12 +142,28 @@ void Header::readBits(BitBuffer & buffer)
 void Header::writeBits(BitBuffer & buffer)
 {
 	// Header is only 29 bits but our buffer is whole bytes, padded in front
-	buffer.writeBasicType(3, (long) 0); // Write 3 bits
+	buffer.write(3, (long) 0); // Write 3 bits
 
 	for (variableMap::iterator iter = this->myVariables.begin(); iter != this->myVariables.end(); iter++)
 	{
 		iter->second.writeBits(buffer);
 	}
+}
+
+string Header::toString()
+{
+	string buffer = "Header(";
+
+	for (variableMap::iterator iter = this->myVariables.begin(); iter != this->myVariables.end(); iter++)
+	{
+		buffer += iter->second.toString() + ",";
+	}
+
+	trim_if(buffer, is_any_of(","));
+
+	buffer += ")";
+
+	return buffer;
 }
 
 }

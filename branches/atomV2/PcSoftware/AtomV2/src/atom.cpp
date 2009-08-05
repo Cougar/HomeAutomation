@@ -20,6 +20,7 @@
 #include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 #include "broker/Broker.h"
+#include "message/Header.h"
 #include "message/Message.h"
 #include "subscribers/monitor/Monitor.h"
 #include "subscribers/cannet/CanNet.h"
@@ -29,6 +30,7 @@
 #include "xml/Node.h"
 #include "protocol/Protocol.h"
 #include "log/Logger.h"
+#include "Exception.hpp"
 
 namespace po = boost::program_options;
 
@@ -41,36 +43,41 @@ using namespace atom;
 
 int main(int argc, char* argv[])
 {
-	log::Logger LOG;
-	LOG.setName("Main");
+	try
+	{
+		log::Logger LOG;
+		LOG.setName("Main");
 
-	LOG.info("Atom (" + string(AutoVersion::FULLVERSION_STRING) + " " + string(AutoVersion::STATUS) + ")");
-	LOG.info("Written by Mattias Runge 2009");
+		LOG.info("Atom (" + string(AutoVersion::FULLVERSION_STRING) + " " + string(AutoVersion::STATUS) + ")");
+		LOG.info("Written by Mattias Runge 2009");
 
-	float log2_2 = log2f(2);
+		Protocol::getInstance()->load("../../Configuration/protocol.xml", "../../Configuration/protocol-cache.xml");
 
-	LOG.info("bitcount: 0 :: " + convert::int2string(ceil(log2f(0+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(0)));
-	LOG.info("bitcount: 1 :: " + convert::int2string(ceil(log2f(1+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(1)));
-	LOG.info("bitcount: 2 :: " + convert::int2string(ceil(log2f(2+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(2)));
-	LOG.info("bitcount: 3 :: " + convert::int2string(ceil(log2f(3+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(3)));
-	LOG.info("bitcount: 4 :: " + convert::int2string(ceil(log2f(4+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(4)));
-	LOG.info("bitcount: 5 :: " + convert::int2string(ceil(log2f(5+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(5)));
-	LOG.info("bitcount: 6 :: " + convert::int2string(ceil(log2f(6+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(6)));
-	LOG.info("bitcount: 7 :: " + convert::int2string(ceil(log2f(7+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(7)));
-	LOG.info("bitcount: 8 :: " + convert::int2string(ceil(log2f(8+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(8)));
+		broker::Broker::pointer broker = broker::Broker::getInstance();
 
-	Protocol::pointer protocol = Protocol::getInstance();
-	protocol->load("../../Configuration/protocol.xml");
-	cout << protocol->getRootNode().toString() << endl;
+		subscribers::Monitor::pointer monitorSubscriber(new subscribers::Monitor(broker));
+		//subscribers::CanNet::pointer canNetSubscriber(new subscribers::CanNet(broker, "192.168.1.250", 1100));
+
+		LOG.info("Will now try to send a message...");
+
+		message::Header header(0, "irTranceiver", "temperature");
+
+		LOG.info("Header constructed...");
+
+		message::Message::pointer message(new message::Message(header));
+
+		LOG.info("Message constructed...");
+
+		broker->put(message);
+
+		sleep(10000000);
+	}
+	catch (Exception * e)
+	{
+		cout << "Exception: " << e->getDescription() << endl;
+	}
 
 
-	broker::Broker::pointer broker = broker::Broker::getInstance();
-
-	subscribers::Monitor::pointer monitorSubscriber(new subscribers::Monitor(broker));
-	subscribers::CanNet::pointer canNetSubscriber(new subscribers::CanNet(broker, "192.168.1.250", 1100));
-
-
-	sleep(10000000);
 
 
 	return 0;

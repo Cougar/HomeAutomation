@@ -1,24 +1,26 @@
 <?xml version="1.0" standalone="yes"?>
 <protocol>
-	<information biosversion="1339" version="1" updated="2009-08-03 16:43:40"/>
+	<version compat_version="1339" real_version="1449" updated="2009-08-03 16:43:40"/>
 	<datatypes>
+		<!-- Start required -->
+		
 		<!-- Always a total of 29 bits in length -->
 		<datatype type="unsigned integer" name="moduleType" lenght="13"/>
 		<datatype type="unsigned integer" name="moduleId" lenght="8"/>
-		<datatype type="unsigned integer" name="messageId" length="8"/>
+		<datatype type="unsigned integer" name="messageType" length="8"/>
 
-		<!-- Used to send responses, depends on the number of codes -->
-		<datatype type="response" name="responseCode">
-			<code name="ok"/>
-			<code name="error"/>
-			<code name="warning"/>
+		<!-- Used to send responses, length depends on the number of codes -->
+		<datatype type="enum" name="response">
+			<label name="ok"/>
+			<label name="error"/>
+			<label name="warning"/>
 		</datatype>
+		
+		<!-- End required -->
+		
 
 		<!-- Always 1 bit in length -->
 		<datatype type="boolean" name="boolean"/>
-
-		<!-- Dynamic string, no length specified, uses all the bits that are left -->
-		<datatype type="string" name="string"/>
 
 		<!-- Example standard datatypes -->
 		<datatype type="unsigned integer" name="uint10" length="10"/>
@@ -38,7 +40,7 @@
 	<header>
 		<variable datatype="moduleType" name="moduleType" required="true"/>
 		<variable datatype="moduleId" name="moduleId" required="true"/>
-		<variable datatype="messageId" name="messageId" required="true"/>
+		<variable datatype="messageType" name="messageType" required="true"/>
 	</header>
 	<messagetypes>
 		<messagetype name="response">

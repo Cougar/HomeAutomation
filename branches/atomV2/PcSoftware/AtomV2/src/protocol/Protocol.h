@@ -26,9 +26,10 @@ public:
 
 	static pointer getInstance();
 
-	void load(string filename);
+	void load(string filename, string cachefilename);
 
 	xml::Node & getRootNode();
+	xml::Node & getRootCacheNode();
 
 private:
 	Protocol();
@@ -38,6 +39,7 @@ private:
 	log::Logger LOG;
 
 	xml::Node myXmlNode;
+	xml::Node myXmlCacheNode;
 };
 
 }

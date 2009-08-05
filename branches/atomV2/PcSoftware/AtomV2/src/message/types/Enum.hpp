@@ -64,7 +64,7 @@ public:
 	void readBits(BitBuffer & buffer)
 	{
 		unsigned long index = 0;
-		buffer.readBasicType(this->myLength, index);
+		buffer.read(this->myLength, index);
 
 		// TODO Check index for validity
 
@@ -84,7 +84,13 @@ public:
 			}
 		}
 
-		buffer.writeBasicType(this->myLength, index);
+		buffer.write(this->myLength, index);
+	}
+
+
+	string toString()
+	{
+		return "\"" + this->myValue + "\"";
 	}
 
 

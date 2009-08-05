@@ -18,6 +18,12 @@ class Integer : public BasicType<long>
 {
 public:
 	Integer(xml::Node xmlNode) : BasicType<long>(xmlNode) { };
+
+
+	string toString()
+	{
+		return convert::int2string(this->myValue);
+	}
 };
 
 }

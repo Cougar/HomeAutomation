@@ -38,8 +38,8 @@ Message::Message(Header header)
 	// Check if valid for this module
 	xml::Node moduleNode = Protocol::getInstance()->getRootNode().selectFirst("modules").selectFirst("module", xml::Node::attributePair("name", this->myHeader.getModuleType()));
 
-	if (moduleNode.selectFirst("in").select("message", xml::Node::attributePair("name", this->myHeader.getModuleType())).size() == 0 &&
-		moduleNode.selectFirst("out").select("message", xml::Node::attributePair("name", this->myHeader.getModuleType())).size() == 0)
+	if (moduleNode.selectFirst("in").select("message", xml::Node::attributePair("name", this->myHeader.getMessageType())).size() == 0 &&
+		moduleNode.selectFirst("out").select("message", xml::Node::attributePair("name", this->myHeader.getMessageType())).size() == 0)
 	{
 		LOG.error("This message is not supported by this module type, something is wrong; protocol.xml is old, module code is old or a Atom is trying to send and illegal message.");
 		// TODO throw exception
@@ -80,6 +80,11 @@ Variable & Message::getVariable(string name)
 	// TODO Check if it does not exist, throw exception?
 }
 
+Message::variableMap & Message::getVariables()
+{
+	return this->myVariables;
+}
+
 Message::responseList Message::getResponses()
 {
 	return this->myResponses;
@@ -102,6 +107,21 @@ void Message::writeBits(BitBuffer & buffer)
 	}
 }
 
+string Message::toString()
+{
+	string buffer = this->myHeader.toString() + "::Message(";
+
+	for (variableMap::iterator iter = this->myVariables.begin(); iter != this->myVariables.end(); iter++)
+	{
+		buffer += iter->second.toString() + ",";
+	}
+
+	trim_if(buffer, is_any_of(","));
+
+	buffer += ")";
+
+	return buffer;
+}
 
 }
 }

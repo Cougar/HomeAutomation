@@ -10,6 +10,11 @@
 namespace atom {
 namespace convert {
 
+string bool2string(const bool b)
+{
+	return b ? "true" : "false";
+}
+
 bool string2bool(const string s)
 {
 	return (s == "true" || s == "1" || s == "yes");

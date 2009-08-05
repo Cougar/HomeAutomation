@@ -229,10 +229,11 @@
 	"message/Message.h"
 	"log/Logger.h"
 
-1249484130 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.h
+1249489743 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.h
 	<string>
 	<vector>
 	<map>
+	<boost/algorithm/string/trim.hpp>
 	"log/Logger.h"
 	"message/Variable.h"
 	"message/Header.h"
@@ -261,7 +262,7 @@
 	<vector>
 	<string>
 
-1249481971 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Variable.h
+1249487732 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Variable.h
 	<string>
 	<boost/make_shared.hpp>
 	"message/Datatype.h"
@@ -270,7 +271,7 @@
 	"utils/convert.h"
 	"xml/Node.h"
 
-1249472135 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Datatype.h
+1249487835 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Datatype.h
 	<exception>
 	<boost/make_shared.hpp>
 	<boost/any.hpp>
@@ -320,7 +321,7 @@
 	"xml/Node.h"
 	"utils/Logger.h"
 
-1249473615 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Datatype.cpp
+1249487919 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Datatype.cpp
 	"Datatype.h"
 	"message/types/UnsignedInteger.hpp"
 	"message/types/Integer.hpp"
@@ -328,21 +329,24 @@
 	"message/types/Decimal.hpp"
 	"message/types/Enum.hpp"
 
-1249484457 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.cpp
+1249494058 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.cpp
 	"Header.h"
 	"message/types/UnsignedInteger.hpp"
 
-1249481577 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.h
+1249492073 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.h
 	<map>
+	<boost/algorithm/string/trim.hpp>
 	"message/Variable.h"
 	"message/BitBuffer.h"
 	"protocol/Protocol.h"
 	"utils/convert.h"
+	"Exception.hpp"
+	"log/Logger.h"
 
-1249484453 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.cpp
+1249488540 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.cpp
 	"Message.h"
 
-1249481936 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Variable.cpp
+1249490850 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Variable.cpp
 	"Variable.h"
 
 1249405541 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Selection.cpp
@@ -354,7 +358,7 @@
 1248460665 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/module/Module.h
 	<string>
 
-1249415711 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/cannet/CanNet.cpp
+1249486002 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/cannet/CanNet.cpp
 	"CanNet.h"
 	<iostream>
 
@@ -385,7 +389,7 @@
 	"utils/convert.h"
 	"types.h"
 
-1249308684 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.cpp
+1249492497 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.cpp
 	"Monitor.h"
 
 1249414666 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.h
@@ -451,22 +455,22 @@
 	"protocol/Protocol.h"
 	"log/Logger.h"
 
-1249484538 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/version.h
+1249494185 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/version.h
 
 1248460665 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/HttpClient.cpp
 	<boost/asio.hpp>
 	<boost/bind.hpp>
 
-1249421082 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/protocol/Protocol.h
+1249492258 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/protocol/Protocol.h
 	<string>
 	<boost/make_shared.hpp>
 	"xml/Node.h"
 	"log/Logger.h"
 
-1249421114 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/protocol/Protocol.cpp
+1249492307 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/protocol/Protocol.cpp
 	"Protocol.h"
 
-1249475188 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/utils/convert.h
+1249488283 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/utils/convert.h
 	<string>
 	<boost/algorithm/string/case_conv.hpp>
 	"types.h"
@@ -474,7 +478,7 @@
 	<sstream>
 	<cmath>
 
-1249475321 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/utils/convert.cpp
+1249488309 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/utils/convert.cpp
 	"convert.h"
 
 1249412657 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/utils/file.h
@@ -536,15 +540,15 @@
 	<boost/thread/mutex.hpp>
 	<boost/thread/locks.hpp>
 
-1249484293 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/BitBuffer.h
+1249486086 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/BitBuffer.h
 	<vector>
 	<string>
 	"types.h"
 
-1249484329 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/BitBuffer.cpp
+1249486114 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/BitBuffer.cpp
 	"BitBuffer.h"
 
-1249475481 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/atom.cpp
+1249493982 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/atom.cpp
 	<iostream>
 	<istream>
 	<ostream>
@@ -558,6 +562,7 @@
 	<boost/foreach.hpp>
 	<boost/program_options.hpp>
 	"broker/Broker.h"
+	"message/Header.h"
 	"message/Message.h"
 	"subscribers/monitor/Monitor.h"
 	"subscribers/cannet/CanNet.h"
@@ -567,24 +572,25 @@
 	"xml/Node.h"
 	"protocol/Protocol.h"
 	"log/Logger.h"
+	"Exception.hpp"
 
-1249471880 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/UnsignedInteger.hpp
+1249488031 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/UnsignedInteger.hpp
 	"message/types/BasicType.hpp"
 
-1249471863 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Integer.hpp
+1249488245 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Integer.hpp
 	"message/types/BasicType.hpp"
 
-1249471761 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/BasicType.hpp
+1249488171 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/BasicType.hpp
 	"message/Datatype.h"
 
-1249472585 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Boolean.hpp
+1249487965 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Boolean.hpp
 	"message/types/BasicType.hpp"
 
-1249473440 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Decimal.hpp
+1249488258 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Decimal.hpp
 	"message/Datatype.h"
 	"utils/convert.h"
 
-1249476601 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Enum.hpp
+1249488009 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/types/Enum.hpp
 	"message/Datatype.h"
 	"utils/convert.h"
 

@@ -47,14 +47,20 @@ public:
 	void readBits(BitBuffer & buffer)
 	{
 		long value = 0;
-		buffer.readBasicType(this->myLength, value);
+		buffer.read(this->myLength, value);
 		this->myValue = (double)value / this->myScaling; // TODO check this for correctness
 	}
 
 	void writeBits(BitBuffer & buffer)
 	{
 		long value = (long) (this->myValue * this->myScaling); // TODO check this for correctness
-		buffer.writeBasicType(this->myLength, value);
+		buffer.write(this->myLength, value);
+	}
+
+
+	string toString()
+	{
+		return convert::float2string(this->myValue);
 	}
 
 

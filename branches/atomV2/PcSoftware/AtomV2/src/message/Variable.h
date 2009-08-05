@@ -36,6 +36,8 @@ public:
 	void readBits(BitBuffer & buffer);
 	void writeBits(BitBuffer & buffer);
 
+	string toString();
+
 private:
 	string myName;
 	Datatype::pointer myDatatype;

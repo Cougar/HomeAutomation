@@ -79,5 +79,10 @@ Datatype::pointer Datatype::create(string name)
 	return boost::make_shared<Datatype>(xmlNode);
 }
 
+string Datatype::toString()
+{
+	return "<empty>";
+}
+
 }
 }

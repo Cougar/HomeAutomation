@@ -51,36 +51,30 @@ void BitBuffer::clear()
 	// TÒDO resent pointers
 }
 
-void BitBuffer::readDecimal(unsigned int length, unsigned int scaling, double & value)
+
+void BitBuffer::read(unsigned int length, unsigned long & value)
 {
 }
 
-void BitBuffer::writeDecimal(unsigned int length, unsigned int scaling, double value)
+void BitBuffer::read(unsigned int length, long & value)
+{
+}
+
+void BitBuffer::read(unsigned int length, bool & value)
 {
 }
 
 
-void BitBuffer::readBasicType(unsigned int length, unsigned long & value)
+
+void BitBuffer::write(unsigned int length, unsigned long value)
 {
 }
 
-void BitBuffer::writeBasicType(unsigned int length, unsigned long value)
+void BitBuffer::write(unsigned int length, long  value)
 {
 }
 
-void BitBuffer::readBasicType(unsigned int length, long & value)
-{
-}
-
-void BitBuffer::writeBasicType(unsigned int length, long  value)
-{
-}
-
-void BitBuffer::readBasicType(unsigned int length, bool & value)
-{
-}
-
-void BitBuffer::writeBasicType(unsigned int length, bool value)
+void BitBuffer::write(unsigned int length, bool value)
 {
 }
 

@@ -39,16 +39,21 @@ public:
 
 	void readBits(BitBuffer & buffer)
 	{
-		buffer.readBasicType(this->myLength, this->myValue);
+		buffer.read(this->myLength, this->myValue);
 	}
 
 	void writeBits(BitBuffer & buffer)
 	{
-		buffer.writeBasicType(this->myLength, this->myValue);
+		buffer.write(this->myLength, this->myValue);
+	}
+
+	virtual string toString()
+	{
+		return "<unknown>";
 	}
 
 
-private:
+protected:
 	T myValue;
 };
 

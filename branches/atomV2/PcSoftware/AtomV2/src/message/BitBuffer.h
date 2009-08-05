@@ -30,17 +30,13 @@ public:
 	void incrementPointer(unsigned int steps);
 	void clear();
 
-	void readBasicType(unsigned int length, long & value);
-	void writeBasicType(unsigned int length, long value);
+	void read(unsigned int length, long & value);
+	void read(unsigned int length, unsigned long & value);
+	void read(unsigned int length, bool & value);
 
-	void readBasicType(unsigned int length, unsigned long & value);
-	void writeBasicType(unsigned int length, unsigned long value);
-
-	void readBasicType(unsigned int length, bool & value);
-	void writeBasicType(unsigned int length, bool value);
-
-	void readDecimal(unsigned int length, unsigned int scaling, double & value);
-	void writeDecimal(unsigned int length, unsigned int scaling, double value);
+	void write(unsigned int length, long value);
+	void write(unsigned int length, unsigned long value);
+	void write(unsigned int length, bool value);
 
 private:
 	byte_list myBuffer;

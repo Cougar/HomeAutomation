@@ -116,7 +116,7 @@ void CanNet::onNewMessage(Message::pointer message)
 	message->getHeader().writeBits(buffer);
 
 	unsigned long id;
-	buffer.readBasicType(32, id);
+	buffer.read(32, id);
 
 	buffer.clear();
 

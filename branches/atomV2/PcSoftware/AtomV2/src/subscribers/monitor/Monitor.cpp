@@ -22,8 +22,9 @@ Monitor::~Monitor()
 
 void Monitor::onNewMessage(Message::pointer message)
 {
-	LOG.info("Got message");
-	// TODO Convert message to readable data with the help of the definitions in the xml-file
+	LOG.info(message->toString());
+
+	// TODO print origin of message also
 }
 
 }

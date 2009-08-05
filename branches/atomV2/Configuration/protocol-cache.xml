@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="yes"?>
+<cache>
+	<protocol real_version="1449" updated="2009-08-03 16:43:40"/>
+	
+	<messagetype name="response" id="0"/>
+	<messagetype name="temperature" id="1"/>
+	
+	<module name="irTranceiver" id="0"/>
+</cache>
+

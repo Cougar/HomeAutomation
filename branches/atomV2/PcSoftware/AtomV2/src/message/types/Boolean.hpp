@@ -21,6 +21,11 @@ public:
 	{
 		this->myLength = 1;
 	};
+
+	string toString()
+	{
+		return convert::bool2string(this->myValue);
+	}
 };
 
 }

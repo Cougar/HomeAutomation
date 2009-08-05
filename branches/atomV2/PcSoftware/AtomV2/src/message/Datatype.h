@@ -30,6 +30,8 @@ public:
 	virtual void readBits(BitBuffer & buffer);
 	virtual void writeBits(BitBuffer & buffer);
 
+	virtual string toString();
+
 	static pointer create(string name);
 
 protected:

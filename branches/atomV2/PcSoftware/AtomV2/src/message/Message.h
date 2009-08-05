@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <boost/algorithm/string/trim.hpp>
 #include "log/Logger.h"
 #include "message/Variable.h"
 #include "message/Header.h"
@@ -21,6 +22,8 @@ using namespace std;
 
 namespace atom {
 namespace message {
+
+using namespace boost::algorithm;
 
 class Message
 {
@@ -39,10 +42,13 @@ public:
 
 	Header & getHeader();
 	Variable & getVariable(string name);
+	variableMap & getVariables();
 	responseList getResponses();
 
 	void readBits(BitBuffer & buffer);
 	void writeBits(BitBuffer & buffeer);
+
+	string toString();
 
 private:
 	log::Logger LOG;
