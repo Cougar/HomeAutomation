@@ -33,6 +33,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 				
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
 		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
 	}
 	
 	uint8_t lastpacketcnt = len&0x03;
@@ -44,6 +45,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 		}
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
 		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
 	}
 
 }

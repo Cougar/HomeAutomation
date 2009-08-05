@@ -14,6 +14,9 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
+/* delay.h must be declared after F_CPU */
+#include <util/delay.h>
+
 #include <drivers/ir/transceiver/irtransceiver.h>
 #include <drivers/ir/protocols.h>
 

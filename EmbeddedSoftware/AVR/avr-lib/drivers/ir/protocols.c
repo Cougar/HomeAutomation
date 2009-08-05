@@ -3,7 +3,7 @@
  * 
  * @date	2006-12-10
  * 
- * @author	Anders Runeson, Andreas Fritiofson, Martin Nordn
+ * @author	Anders Runeson, Andreas Fritiofson, Martin Nordin
  *   
  */
 
@@ -32,6 +32,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto
 #endif
 #if (IR_PROTOCOLS_USE_MARANTZ)
 	if (parseMarantz(buf, len, proto)==IR_OK) return IR_OK;
+#endif
+#if (IR_PROTOCOLS_USE_PANASONIC)
+	if (parsePanasonic(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
@@ -62,6 +65,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		return expandSamsung(buf, len, proto);
 	case IR_PROTO_MARANTZ:
 		return expandMarantz(buf, len, proto);
+	case IR_PROTO_PANASONIC:
+		return expandPanasonic(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
 	return IR_NOT_CORRECT_DATA;
@@ -605,9 +610,10 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 	
 	return IR_OK;
 }
+#endif
 
 /**
- * Expand data from Marantz. Written by Martin Nordn
+ * Expand data from Marantz. Written by Martin Nordin
  * 
  * @param buf
  * 		Pointer to buffer to store the expanded data
@@ -677,5 +683,113 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	return IR_OK;
 }
 
+#if (IR_PROTOCOLS_USE_PANASONIC)
+/**
+ * Test data on Panasonic protocol
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	/* parse buf[], max is len */
 
+	/* check if we have correct amount of data */ 
+	if (len != 99) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	/* check startbit */
+	if (buf[0] > IR_PANA_ST_BIT + IR_PANA_ST_BIT/IR_PANA_TOL_DIV || buf[0] < IR_PANA_ST_BIT - IR_PANA_ST_BIT/IR_PANA_TOL_DIV) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	/* check pause after startbit */
+	if (buf[1] > IR_PANA_ST_PAUSE + IR_PANA_ST_PAUSE/IR_PANA_TOL_DIV || buf[1] < IR_PANA_ST_PAUSE - IR_PANA_ST_PAUSE/IR_PANA_TOL_DIV) {
+		return IR_NOT_CORRECT_DATA;
+	}
+
+	uint32_t rawbits = 0;
+	
+	/* skip start bit, start bit pause and first 16 bits (32 values) */
+	for (uint8_t i = (3+16*2); i < len; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			/* check length of pause between bits */
+			if (buf[i] > IR_PANA_LOW_ONE - IR_PANA_LOW_ONE/IR_PANA_TOL_DIV && buf[i] < IR_PANA_LOW_ONE + IR_PANA_LOW_ONE/IR_PANA_TOL_DIV) {
+				/* write a one */
+				rawbits |= 1UL<<((i-(3+16*2))>>1);
+			} else if (buf[i] > IR_PANA_LOW_ZERO - IR_PANA_LOW_ZERO/IR_PANA_TOL_DIV && buf[i] < IR_PANA_LOW_ZERO + IR_PANA_LOW_ZERO/IR_PANA_TOL_DIV) {
+				/* do nothing, a zero is already in rawbits */
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+		} else {			/* if even, ir-bit */
+			if (buf[i] > IR_PANA_HIGH + IR_PANA_HIGH/IR_PANA_TOL_DIV || buf[i] < IR_PANA_HIGH - IR_PANA_HIGH/IR_PANA_TOL_DIV) {
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	proto->protocol=IR_PROTO_PANASONIC;
+	proto->timeout=IR_PANA_TIMEOUT;
+	proto->data=rawbits;	
+	return IR_OK;
+}
 #endif
+
+/**
+ * Expand data from Panasonic protocol
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	/* Set up startbit */
+	buf[0] = IR_PANA_ST_BIT;
+	buf[1] = IR_PANA_ST_PAUSE;
+	
+	/* add the first 16 static bits */
+	uint16_t staticBits = 0x2002;
+	for (uint8_t i = 0; i < 32; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			if ((staticBits>>(i>>1))&1) {
+				buf[i+2] = IR_PANA_LOW_ONE;
+			} else {
+				buf[i+2] = IR_PANA_LOW_ZERO;
+			}
+		} else {				/* if even, ir-bit */
+			buf[i+2] = IR_PANA_HIGH;
+		}
+	}
+	
+	/* then add the value bits */
+	for (uint8_t i = 0; i < 65; i++) {
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			if ((proto->data>>(i>>1))&1) {
+				buf[i+2+32] = IR_PANA_LOW_ONE;
+			} else {
+				buf[i+2+32] = IR_PANA_LOW_ZERO;
+			}
+		} else {				/* if even, ir-bit */
+			buf[i+2+32] = IR_PANA_HIGH;
+		}
+	}
+	
+	*len = 99;
+	
+	proto->modfreq=(((F_CPU/2000)/IR_PANA_F_MOD) -1);
+	proto->timeout=IR_PANA_TIMEOUT;
+	proto->repeats=IR_PANA_REPS;
+	return IR_OK;
+}
