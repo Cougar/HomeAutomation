@@ -7,72 +7,76 @@
 
 #include "Datatype.h"
 
+#include "message/types/UnsignedInteger.hpp"
+#include "message/types/Integer.hpp"
+#include "message/types/Boolean.hpp"
+#include "message/types/Decimal.hpp"
+#include "message/types/Enum.hpp"
+
 namespace atom {
 namespace message {
 
-Datatype::Datatype(datatypes type)
+Datatype::Datatype(xml::Node xmlNode)
 {
 	LOG.setName("Datatype");
-	this->myType = type;
+
+	this->myType = xmlNode["type"];
+	this->myName = xmlNode["name"];
+	this->myLength = convert::string2uint(xmlNode["length"]); // Not all types have length specified, like enum where it is calculated... it is then 0 here and set in the subclass
 }
 
 Datatype::~Datatype()
 {
 }
 
-boost::any Datatype::getValue()
+void Datatype::readBits(BitBuffer & buffer)
 {
-	return this->myValue;
+	LOG.warn("Datatype::readBits should be overridden by subclass!");
 }
 
-void Datatype::setValue(boost::any value)
+void Datatype::writeBits(BitBuffer & buffer)
 {
-	this->myValue = value;
+	LOG.warn("Datatype::writeBits should be overridden by subclass!");
 }
 
-void Datatype::readBits(BitBuffer & buffer, unsigned int length)
+Datatype::pointer Datatype::create(string name)
 {
+	xml::Node xmlNode = Protocol::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", name));
 
+	string type = xmlNode["type"];
 
-}
+	if (type == "unsigned integer")
+	{
+		return boost::make_shared<types::UnsignedInteger>(xmlNode);
+	}
+	else if (type == "integer")
+	{
+		return boost::make_shared<types::Integer>(xmlNode);
+	}
+	else if (type == "boolean")
+	{
+		return boost::make_shared<types::Boolean>(xmlNode);
+	}
+	else if (type == "decimal")
+	{
+		return boost::make_shared<types::Decimal>(xmlNode);
+	}
+	else if (type == "enum")
+	{
+		return boost::make_shared<types::Enum>(xmlNode);
+	}
+	/*else if (type == "string")
+	{
+		return boost::make_shared<Datatype>(new types::UnsignedInteger(xmlNode));
+	}
+	else if (type == "response")
+	{
+		return boost::make_shared<Datatype>(new types::UnsignedInteger(xmlNode));
+	}*/
 
-datatypes Datatype::getType()
-{
-	return this->myType;
-}
+	// TODO throw exception here!
 
-datatypes Datatype::getTypeFromString(string name)
-{
-	if (name == "unsigned integer")
-	{
-		return DATATYPE_UNSIGNED_INTEGER;
-	}
-	else if (name == "integer")
-	{
-		return DATATYPE_INTEGER;
-	}
-	else if (name == "decimal")
-	{
-		return DATATYPE_DECIMAL;
-	}
-	else if (name == "boolean")
-	{
-		return DATATYPE_BOOLEAN;
-	}
-	else if (name == "string")
-	{
-		return DATATYPE_STRING;
-	}
-	else if (name == "enum")
-	{
-		return DATATYPE_ENUM;
-	}
-	else if (name == "response")
-	{
-		return DATATYPE_RESPONSE;
-	}
-
-	return DATATYPE_UNKNOWN;
+	return boost::make_shared<Datatype>(xmlNode);
 }
 
 }

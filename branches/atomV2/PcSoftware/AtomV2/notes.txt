@@ -22,6 +22,8 @@ TODO
 * Boost::Tr1::hashmap
 * Look att Locale and where we want UTF8 and where it is ascii
 * Restart js-vm when atom is running to load new versions of js, maybe a persistant store of variables in c++ that lives between js-vm restarts
+* Ta bort throw new, use references instead?
+* Implement datatype string
 
 TODO - Stage 1
 ==============

@@ -83,8 +83,7 @@ unsigned int bin2uint(string bin)
 
 	for (int n = bin.length() - 1; n >= 0; n--)
 	{
-		if (bin[n] == '1') num += (unsigned int)pow(2.0f, (int)(bin.length()
-				- 1 - n));
+		if (bin[n] == '1') num += (unsigned int)pow(2.0f, (int)(bin.length() - 1 - n));
 	}
 
 	return num;
@@ -285,6 +284,20 @@ string bin_invert(string bin)
 
 	return inverted;
 }
+
+float LOG2of2 = log2f(2);
+
+unsigned int stateCount2bitCount(unsigned int stateCount)
+{
+	// Special case for zero states
+	if (stateCount == 0)
+	{
+		return 1;
+	}
+
+	return ceil(log2f(stateCount + 1) / LOG2of2);
+}
+
 
 }
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="notes.txt" open="1" top="1" tabpos="2">
-		<Cursor position="2629" topLine="0" />
-	</File>
-	<File name="src/Atom.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="690" topLine="5" />
+	<File name="notes.txt" open="1" top="1" tabpos="9">
+		<Cursor position="2820" topLine="0" />
 	</File>
 	<File name="src/Exception.hpp" open="0" top="0" tabpos="1">
 		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src/atom.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="1381" topLine="26" />
 	</File>
 	<File name="src/broker/Broker.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="456" topLine="0" />
@@ -23,13 +23,16 @@
 		<Cursor position="539" topLine="11" />
 	</File>
 	<File name="src/message/BitBuffer.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="145" topLine="0" />
+		<Cursor position="1195" topLine="31" />
 	</File>
 	<File name="src/message/BitBuffer.h" open="0" top="0" tabpos="0">
-		<Cursor position="199" topLine="0" />
+		<Cursor position="808" topLine="13" />
 	</File>
-	<File name="src/message/Datatype.h" open="0" top="0" tabpos="0">
-		<Cursor position="774" topLine="25" />
+	<File name="src/message/Datatype.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="293" topLine="32" />
+	</File>
+	<File name="src/message/Datatype.h" open="1" top="0" tabpos="1">
+		<Cursor position="594" topLine="11" />
 	</File>
 	<File name="src/message/Header.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="405" topLine="1" />
@@ -38,22 +41,34 @@
 		<Cursor position="181" topLine="0" />
 	</File>
 	<File name="src/message/Message.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="874" topLine="10" />
+		<Cursor position="487" topLine="10" />
 	</File>
 	<File name="src/message/Message.h" open="0" top="0" tabpos="7">
-		<Cursor position="286" topLine="0" />
+		<Cursor position="891" topLine="15" />
 	</File>
 	<File name="src/message/Variable.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="474" topLine="3" />
+		<Cursor position="632" topLine="25" />
 	</File>
 	<File name="src/message/Variable.h" open="0" top="0" tabpos="6">
-		<Cursor position="223" topLine="0" />
+		<Cursor position="486" topLine="6" />
 	</File>
-	<File name="src/message/types/Selection.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="302" topLine="0" />
+	<File name="src/message/types/BasicType.hpp" open="1" top="0" tabpos="3">
+		<Cursor position="546" topLine="12" />
 	</File>
-	<File name="src/message/types/Selection.h" open="0" top="0" tabpos="0">
-		<Cursor position="248" topLine="0" />
+	<File name="src/message/types/Boolean.hpp" open="0" top="0" tabpos="0">
+		<Cursor position="346" topLine="0" />
+	</File>
+	<File name="src/message/types/Decimal.hpp" open="1" top="0" tabpos="4">
+		<Cursor position="701" topLine="14" />
+	</File>
+	<File name="src/message/types/Enum.hpp" open="1" top="0" tabpos="5">
+		<Cursor position="772" topLine="0" />
+	</File>
+	<File name="src/message/types/Integer.hpp" open="0" top="0" tabpos="0">
+		<Cursor position="312" topLine="0" />
+	</File>
+	<File name="src/message/types/UnsignedInteger.hpp" open="0" top="0" tabpos="0">
+		<Cursor position="370" topLine="0" />
 	</File>
 	<File name="src/module/Module.h" open="0" top="0" tabpos="5">
 		<Cursor position="0" topLine="0" />
@@ -71,7 +86,7 @@
 		<Cursor position="240" topLine="11" />
 	</File>
 	<File name="src/subscribers/cannet/CanNet.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="2870" topLine="109" />
+		<Cursor position="2870" topLine="0" />
 	</File>
 	<File name="src/subscribers/cannet/CanNet.h" open="0" top="0" tabpos="6">
 		<Cursor position="382" topLine="12" />
@@ -91,8 +106,11 @@
 	<File name="src/types.h" open="0" top="0" tabpos="2">
 		<Cursor position="242" topLine="0" />
 	</File>
-	<File name="src/utils/convert.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="2693" topLine="0" />
+	<File name="src/utils/convert.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="4094" topLine="252" />
+	</File>
+	<File name="src/utils/convert.h" open="1" top="0" tabpos="8">
+		<Cursor position="983" topLine="0" />
 	</File>
 	<File name="src/utils/string.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="0" topLine="0" />

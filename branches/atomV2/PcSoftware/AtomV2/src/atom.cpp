@@ -47,7 +47,17 @@ int main(int argc, char* argv[])
 	LOG.info("Atom (" + string(AutoVersion::FULLVERSION_STRING) + " " + string(AutoVersion::STATUS) + ")");
 	LOG.info("Written by Mattias Runge 2009");
 
+	float log2_2 = log2f(2);
 
+	LOG.info("bitcount: 0 :: " + convert::int2string(ceil(log2f(0+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(0)));
+	LOG.info("bitcount: 1 :: " + convert::int2string(ceil(log2f(1+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(1)));
+	LOG.info("bitcount: 2 :: " + convert::int2string(ceil(log2f(2+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(2)));
+	LOG.info("bitcount: 3 :: " + convert::int2string(ceil(log2f(3+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(3)));
+	LOG.info("bitcount: 4 :: " + convert::int2string(ceil(log2f(4+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(4)));
+	LOG.info("bitcount: 5 :: " + convert::int2string(ceil(log2f(5+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(5)));
+	LOG.info("bitcount: 6 :: " + convert::int2string(ceil(log2f(6+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(6)));
+	LOG.info("bitcount: 7 :: " + convert::int2string(ceil(log2f(7+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(7)));
+	LOG.info("bitcount: 8 :: " + convert::int2string(ceil(log2f(8+1)/log2_2)) + " == " + convert::uint2string(convert::stateCount2bitCount(8)));
 
 	Protocol::pointer protocol = Protocol::getInstance();
 	protocol->load("../../Configuration/protocol.xml");

@@ -39,6 +39,8 @@ string uint2bin(unsigned int num, unsigned int length);
 string uint2hex(unsigned int num, unsigned int length);
 string bin_invert(string bin);
 
+unsigned int stateCount2bitCount(unsigned int stateCount);
+
 }
 }
 

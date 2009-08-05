@@ -16,10 +16,7 @@ Variable::Variable(string name, string datatype, bool required, string unit)
 	this->myRequired = required;
 	this->myUnit = unit;
 
-	xml::Node datatypeNode = Protocol::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", datatype));
-
-	this->myLength = convert::string2uint(datatypeNode["length"]);
-	this->myDatatype = boost::make_shared<Datatype>(Datatype::getTypeFromString(datatypeNode["type"]));
+	this->myDatatype = Datatype::create(datatype);
 }
 
 Variable::Variable()
@@ -30,19 +27,34 @@ Variable::~Variable()
 {
 }
 
-boost::any Variable::getValue()
+string Variable::getName()
 {
-	return this->myDatatype->getValue();
+	return this->myName;
 }
 
-void Variable::setValue(boost::any value)
+Datatype::pointer Variable::getDatatype()
 {
-	this->myDatatype->setValue(value);
+	return this->myDatatype;
+}
+
+string Variable::getUnit()
+{
+	return this->myUnit;
+}
+
+bool Variable::isRequired()
+{
+	return this->myRequired;
 }
 
 void Variable::readBits(BitBuffer & buffer)
 {
-	this->myDatatype->readBits(buffer, this->myLength);
+	this->myDatatype->readBits(buffer);
+}
+
+void Variable::writeBits(BitBuffer & buffer)
+{
+	this->myDatatype->writeBits(buffer);
 }
 
 }

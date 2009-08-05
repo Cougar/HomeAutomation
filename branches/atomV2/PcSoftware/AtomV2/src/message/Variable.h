@@ -27,17 +27,19 @@ public:
 	Variable(string name, string datatype, bool required, string unit);
 	virtual ~Variable();
 
-	boost::any getValue();
-	void setValue(boost::any value);
+	string getName();
+	Datatype::pointer getDatatype();
+	string getUnit();
+	bool isRequired();
 
 	void readBits(BitBuffer & buffer);
+	void writeBits(BitBuffer & buffer);
 
 private:
 	string myName;
 	Datatype::pointer myDatatype;
 	bool myRequired;
 	string myUnit;
-	unsigned int myLength;
 };
 
 }

@@ -12,45 +12,33 @@
 #include <boost/make_shared.hpp>
 #include <boost/any.hpp>
 #include "log/Logger.h"
-#include "message/types/Selection.h"
 #include "message/BitBuffer.h"
+#include "protocol/Protocol.h"
+
 
 namespace atom {
 namespace message {
-
-enum datatypes {
-	DATATYPE_UNSIGNED_INTEGER,
-	DATATYPE_INTEGER,
-	DATATYPE_DECIMAL,
-	DATATYPE_BOOLEAN,
-	DATATYPE_STRING,
-	DATATYPE_ENUM,
-	DATATYPE_RESPONSE,
-	DATATYPE_UNKNOWN
-};
 
 class Datatype
 {
 public:
 	typedef boost::shared_ptr<Datatype> pointer;
 
-	Datatype(datatypes type);
+	Datatype(xml::Node xmlNode);
 	virtual ~Datatype();
 
-	boost::any getValue();
-	void setValue(boost::any value);
+	virtual void readBits(BitBuffer & buffer);
+	virtual void writeBits(BitBuffer & buffer);
 
-	void readBits(BitBuffer & buffer, unsigned int length);
+	static pointer create(string name);
 
-	datatypes getType();
-
-	static datatypes getTypeFromString(string name);
+protected:
+	string myType;
+	string myName;
+	unsigned int myLength;
 
 private:
 	log::Logger LOG;
-
-	datatypes myType;
-	boost::any myValue;
 };
 
 }

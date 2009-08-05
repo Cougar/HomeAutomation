@@ -18,12 +18,8 @@ BitBuffer::BitBuffer(unsigned char bytes[], unsigned int length)
 	}
 }
 
-BitBuffer::BitBuffer(vector<unsigned char> bytes) {
+BitBuffer::BitBuffer(byte_list bytes) {
 	this->setFromBytes(bytes);
-}
-
-BitBuffer::BitBuffer(string value) {
-	this->setFromString(value);
 }
 
 
@@ -34,19 +30,18 @@ BitBuffer::~BitBuffer() {
 }
 
 
-double BitBuffer::readDecimal(unsigned int length, unsigned int scaling)
+byte_list BitBuffer::getAsBytes()
 {
+	return this->myBuffer;
 }
 
-unsigned long BitBuffer::readUnsignedInteger(unsigned int length)
+void BitBuffer::setFromBytes(byte_list bytes)
 {
+	this->myBuffer = bytes;
 }
 
-bool BitBuffer::readBoolean()
-{
-}
 
-long BitBuffer::readInteger(unsigned int length)
+void BitBuffer::readDecimal(unsigned int length, unsigned int scaling, double & value)
 {
 }
 
@@ -54,49 +49,31 @@ void BitBuffer::writeDecimal(unsigned int length, unsigned int scaling, double v
 {
 }
 
-void BitBuffer::writeUnsignedInteger(unsigned int length, unsigned long  value)
+
+void BitBuffer::readBasicType(unsigned int length, unsigned long & value)
 {
 }
 
-void BitBuffer::writeInteger(unsigned int length, long  value)
+void BitBuffer::writeBasicType(unsigned int length, unsigned long value)
 {
 }
 
-void BitBuffer::writeBoolean(bool value)
+void BitBuffer::readBasicType(unsigned int length, long & value)
 {
 }
 
-vector<unsigned char> BitBuffer::getAsBytes()
+void BitBuffer::writeBasicType(unsigned int length, long  value)
 {
-	return this->myBuffer;
 }
 
-void BitBuffer::setFromBytes(vector<unsigned char> bytes)
+void BitBuffer::readBasicType(unsigned int length, bool & value)
 {
-	this->myBuffer = bytes;
 }
 
-string BitBuffer::getAsString()
+void BitBuffer::writeBasicType(unsigned int length, bool value)
 {
-	string str = "";
-
-	for (unsigned int n = 0; n < this->myBuffer.size(); n++)
-	{
-		str += this->myBuffer[n];
-	}
-
-	return str;
 }
 
-void BitBuffer::setFromString(string value)
-{
-	this->myBuffer.clear();
-
-	for (unsigned int n = 0; n < value.length(); n++)
-	{
-		this->myBuffer.push_back((unsigned char) value[n]);
-	}
-}
 
 }
 }

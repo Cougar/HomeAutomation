@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include "types.h"
 
 namespace atom {
 namespace message {
@@ -19,31 +20,27 @@ using namespace std;
 class BitBuffer {
 public:
 	BitBuffer(unsigned char bytes[], unsigned int length);
-	BitBuffer(vector<unsigned char> bytes);
-	BitBuffer(string value);
+	BitBuffer(byte_list bytes);
 	BitBuffer();
 	virtual ~BitBuffer();
 
-	long readInteger(unsigned int length);
-	void writeInteger(unsigned int length, long value);
-
-	unsigned long readUnsignedInteger(unsigned int length);
-	void writeUnsignedInteger(unsigned int length, unsigned long value);
-
-	double readDecimal(unsigned int length, unsigned int scaling);
-	void writeDecimal(unsigned int length, unsigned int scaling, double value);
-
-	bool readBoolean();
-	void writeBoolean(bool value);
-
-	vector<unsigned char> getAsBytes();
+	byte_list getAsBytes();
 	void setFromBytes(vector<unsigned char> bytes);
 
-	string getAsString();
-	void setFromString(string value);
+	void readBasicType(unsigned int length, long & value);
+	void writeBasicType(unsigned int length, long value);
+
+	void readBasicType(unsigned int length, unsigned long & value);
+	void writeBasicType(unsigned int length, unsigned long value);
+
+	void readBasicType(unsigned int length, bool & value);
+	void writeBasicType(unsigned int length, bool value);
+
+	void readDecimal(unsigned int length, unsigned int scaling, double & value);
+	void writeDecimal(unsigned int length, unsigned int scaling, double value);
 
 private:
-	vector<unsigned char> myBuffer;
+	byte_list myBuffer;
 };
 
 }
