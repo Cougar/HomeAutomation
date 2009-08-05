@@ -250,6 +250,58 @@
 		}
 	},
 	{
+		name : 'Testing', 
+		protocol : 'RC5', 
+		brand : 'Remotec', 
+		model : 'xyz', 
+		codes : 
+		{
+			12640 : 'P+', 
+			12641 : 'P-',
+			12643 : 'I-II',
+			12345678 : 'xyz'
+			 
+		}
+	},
+	{
+		name : 'TestingPart', 
+		protocol : 'SIRC', 
+		brand : 'Remotec', 
+		model : 'xyz', 
+		codes : 
+		{
+			146 : 'V+', 
+			147 : 'V-',
+			12345678 : 'xyz'
+			 
+		}
+	},
+	{
+		name : 'Panasonic TV', 
+		protocol : 'Panasonic', 
+		brand : 'Panasonic', 
+		model : 'N2QAYB000239', 
+		codes : 
+		{
+			3174891648 : 'POWER', 
+			3023306880 : 'CHANNEL_UP', 
+			3040149632 : 'CHANNEL_DOWN', 
+			2686451840 : 'VOLUME_UP', 
+			2703294592 : 'VOLUME_DOWN', 
+			2568552576 : '0', 
+			2416967808 : '1', 
+			2433810560 : '2', 
+			2450653312 : '3', 
+			2467496064 : '4', 
+			2484338816 : '5', 
+			2501181568 : '6', 
+			2518024320 : '7', 
+			2534867072 : '8', 
+			2551709824 : '9', 
+			3377004672 : 'OK'
+		}
+	},
+	{
 		name : 'Logitech_Z5500_Remote', 
 		protocol : 'NEC', 
 		brand : 'Logitech', 
