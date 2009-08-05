@@ -15,6 +15,7 @@
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
 #include "xml/Node.h"
+#include "log/Logger.h"
 
 namespace atom {
 namespace message {
@@ -39,6 +40,8 @@ public:
 	string toString();
 
 private:
+	log::Logger LOG;
+
 	string myName;
 	Datatype::pointer myDatatype;
 	bool myRequired;

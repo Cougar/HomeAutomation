@@ -13,6 +13,7 @@ Protocol::pointer Protocol::Instance(new Protocol());
 
 Protocol::Protocol()
 {
+	this->myIsLoaded = false;
 	LOG.setName("Protocol");
 }
 
@@ -43,6 +44,8 @@ void Protocol::load(string filename, string cachefilename)
 	// TODO If not found generate one
 
 	// TODO Check if versions match, if not update cache
+
+	this->myIsLoaded = true;
 }
 
 xml::Node & Protocol::getRootNode()
@@ -53,6 +56,11 @@ xml::Node & Protocol::getRootNode()
 xml::Node & Protocol::getRootCacheNode()
 {
 	return this->myXmlCacheNode;
+}
+
+bool Protocol::isLoaded()
+{
+	return this->myIsLoaded;
 }
 
 }

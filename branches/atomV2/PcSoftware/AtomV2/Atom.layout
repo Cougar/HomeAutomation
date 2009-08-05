@@ -7,8 +7,8 @@
 	<File name="src/Exception.hpp" open="0" top="0" tabpos="1">
 		<Cursor position="310" topLine="0" />
 	</File>
-	<File name="src/atom.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="1585" topLine="50" />
+	<File name="src/atom.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="1448" topLine="69" />
 	</File>
 	<File name="src/broker/Broker.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="456" topLine="5" />
@@ -22,35 +22,35 @@
 	<File name="src/broker/Subscriber.h" open="0" top="0" tabpos="1">
 		<Cursor position="976" topLine="23" />
 	</File>
-	<File name="src/message/BitBuffer.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="907" topLine="39" />
+	<File name="src/message/BitBuffer.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="297" topLine="18" />
 	</File>
-	<File name="src/message/BitBuffer.h" open="0" top="0" tabpos="0">
-		<Cursor position="780" topLine="0" />
+	<File name="src/message/BitBuffer.h" open="1" top="0" tabpos="7">
+		<Cursor position="416" topLine="13" />
 	</File>
-	<File name="src/message/Datatype.cpp" open="0" top="0" tabpos="2">
-		<Cursor position="1954" topLine="40" />
+	<File name="src/message/Datatype.cpp" open="1" top="0" tabpos="14">
+		<Cursor position="377" topLine="0" />
 	</File>
-	<File name="src/message/Datatype.h" open="0" top="0" tabpos="1">
-		<Cursor position="572" topLine="0" />
+	<File name="src/message/Datatype.h" open="1" top="0" tabpos="15">
+		<Cursor position="690" topLine="9" />
 	</File>
-	<File name="src/message/Header.cpp" open="1" top="0" tabpos="0">
-		<Cursor position="3695" topLine="18" />
+	<File name="src/message/Header.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="4255" topLine="105" />
 	</File>
-	<File name="src/message/Header.h" open="1" top="0" tabpos="0">
-		<Cursor position="181" topLine="0" />
+	<File name="src/message/Header.h" open="1" top="0" tabpos="1">
+		<Cursor position="566" topLine="0" />
 	</File>
-	<File name="src/message/Message.cpp" open="1" top="1" tabpos="0">
-		<Cursor position="3020" topLine="91" />
+	<File name="src/message/Message.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="2761" topLine="87" />
 	</File>
-	<File name="src/message/Message.h" open="1" top="0" tabpos="7">
+	<File name="src/message/Message.h" open="1" top="0" tabpos="3">
 		<Cursor position="417" topLine="10" />
 	</File>
-	<File name="src/message/Variable.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="1007" topLine="30" />
+	<File name="src/message/Variable.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="868" topLine="34" />
 	</File>
-	<File name="src/message/Variable.h" open="0" top="0" tabpos="6">
-		<Cursor position="655" topLine="5" />
+	<File name="src/message/Variable.h" open="1" top="0" tabpos="13">
+		<Cursor position="707" topLine="12" />
 	</File>
 	<File name="src/message/types/BasicType.hpp" open="0" top="0" tabpos="3">
 		<Cursor position="752" topLine="3" />
@@ -79,14 +79,14 @@
 	<File name="src/net/UdpServer.h" open="0" top="0" tabpos="6">
 		<Cursor position="626" topLine="21" />
 	</File>
-	<File name="src/protocol/Protocol.cpp" open="0" top="0" tabpos="8">
-		<Cursor position="488" topLine="0" />
+	<File name="src/protocol/Protocol.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="903" topLine="18" />
 	</File>
-	<File name="src/protocol/Protocol.h" open="0" top="0" tabpos="7">
-		<Cursor position="438" topLine="9" />
+	<File name="src/protocol/Protocol.h" open="1" top="0" tabpos="10">
+		<Cursor position="521" topLine="7" />
 	</File>
-	<File name="src/subscribers/cannet/CanNet.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="3054" topLine="101" />
+	<File name="src/subscribers/cannet/CanNet.cpp" open="1" top="1" tabpos="9">
+		<Cursor position="3009" topLine="116" />
 	</File>
 	<File name="src/subscribers/cannet/CanNet.h" open="0" top="0" tabpos="6">
 		<Cursor position="382" topLine="17" />
@@ -103,8 +103,8 @@
 	<File name="src/thread/Thread.h" open="0" top="0" tabpos="3">
 		<Cursor position="402" topLine="7" />
 	</File>
-	<File name="src/types.h" open="0" top="0" tabpos="2">
-		<Cursor position="242" topLine="0" />
+	<File name="src/types.h" open="1" top="0" tabpos="8">
+		<Cursor position="298" topLine="0" />
 	</File>
 	<File name="src/utils/convert.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="209" topLine="0" />

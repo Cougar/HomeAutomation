@@ -19,14 +19,15 @@ using namespace std;
 
 class BitBuffer {
 public:
-	BitBuffer(unsigned char bytes[], unsigned int length);
 	BitBuffer(byte_list bytes);
 	BitBuffer();
 	virtual ~BitBuffer();
 
 	byte_list getAsBytes();
-	void setFromBytes(vector<unsigned char> bytes);
+	void setFromBytes(byte_list bytes);
 
+	unsigned int getSize();
+	unsigned int getPointer();
 	void incrementPointer(unsigned int steps);
 	void clear();
 
@@ -39,7 +40,11 @@ public:
 	void write(unsigned int length, bool value);
 
 private:
-	byte_list myBuffer;
+	bit_list myBits;
+	unsigned int myPointer;
+
+	bool readBit();
+	void writeBit(bool value);
 };
 
 }

@@ -94,7 +94,11 @@ void CanNet::processBuffer()
 
 	Header header(buffer);
 
-	this->put(boost::make_shared<Message>(header));
+	Message::pointer message = boost::make_shared<Message>(header);
+
+	message->readBits(buffer);
+
+	this->put(message);
 
 	this->myBuffer.clear();
 }

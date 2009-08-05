@@ -41,6 +41,9 @@ void Datatype::writeBits(BitBuffer & buffer)
 
 Datatype::pointer Datatype::create(string name)
 {
+	//log::Logger LOG;
+	//LOG.setName("Datatype-static");
+
 	xml::Node xmlNode = Protocol::getInstance()->getRootNode().selectFirst("datatypes").selectFirst("datatype", xml::Node::attributePair("name", name));
 
 	string type = xmlNode["type"];

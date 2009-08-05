@@ -10,7 +10,7 @@
 		<datatype type="unsigned integer" name="messageType" length="8"/>
 
 		<!-- Used to send responses, length depends on the number of codes -->
-		<datatype type="enum" name="response">
+		<datatype type="enum" name="responseCode">
 			<label name="ok"/>
 			<label name="error"/>
 			<label name="warning"/>
@@ -44,7 +44,7 @@
 	</header>
 	<messagetypes>
 		<messagetype name="response">
-			<variable datatype="messageId" name="messageId" required="true"/>
+			<variable datatype="messageType" name="messageType" required="true"/>
 			<variable datatype="responseCode" name="code" required="true"/>
 		</messagetype>
 		<messagetype name="temperature">

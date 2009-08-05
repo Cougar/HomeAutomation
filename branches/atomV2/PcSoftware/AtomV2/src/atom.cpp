@@ -40,7 +40,63 @@ using namespace std;
 
 
 using namespace atom;
+/*
+#
+#include <unistd.h>
 
+#
+#include <stdlib.h>// for MAX_PATH
+#
+#include <iostream> // for cout and cin
+#
+
+#
+using namespace std;
+#
+// function to return the current working directory
+#
+// this is generally the application path
+#
+void GetCurrentPath(char* buffer)
+#
+{
+#
+getcwd(buffer, 1024);
+#
+}
+#
+
+#
+int main()
+#
+{
+#
+
+#
+// _MAX_PATH is the maximum length allowed for a path
+#
+char CurrentPath[1024];
+#
+// use the function to get the path
+#
+GetCurrentPath(CurrentPath);
+#
+
+#
+// display the path for demo purposes only
+#
+char temp[1024];
+#
+cout << CurrentPath << endl;
+#
+cout << "Press Enter to continue";
+#
+cin.getline(temp,1024);
+#
+return 0;
+#
+}
+*/
 int main(int argc, char* argv[])
 {
 	try
@@ -56,9 +112,9 @@ int main(int argc, char* argv[])
 		broker::Broker::pointer broker = broker::Broker::getInstance();
 
 		subscribers::Monitor::pointer monitorSubscriber(new subscribers::Monitor(broker));
-		//subscribers::CanNet::pointer canNetSubscriber(new subscribers::CanNet(broker, "192.168.1.250", 1100));
+		subscribers::CanNet::pointer canNetSubscriber(new subscribers::CanNet(broker, "192.168.1.250", 1100));
 
-		LOG.info("Will now try to send a message...");
+		/*LOG.info("Will now try to send a message...");
 
 		message::Header header(0, "irTranceiver", "temperature");
 
@@ -68,7 +124,7 @@ int main(int argc, char* argv[])
 
 		LOG.info("Message constructed...");
 
-		broker->put(message);
+		broker->put(message);*/
 
 		sleep(10000000);
 	}

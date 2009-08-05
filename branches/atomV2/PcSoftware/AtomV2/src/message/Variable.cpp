@@ -21,6 +21,7 @@ Variable::Variable(xml::Node xmlNode)
 
 Variable::Variable()
 {
+	LOG.setName("Variable");
 }
 
 Variable::~Variable()

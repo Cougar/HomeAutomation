@@ -29,11 +29,7 @@ Header::Header(unsigned long moduleId, string moduleType, string messageType)
 {
 	LOG.setName("Header");
 
-	LOG.debug("Start of constructor...");
-
 	this->loadVariables();
-
-	LOG.debug("Done loading variables...");
 
 	if (types::UnsignedInteger *moduleIdDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["moduleId"].getDatatype().get()))
 	{
@@ -43,8 +39,6 @@ Header::Header(unsigned long moduleId, string moduleType, string messageType)
 	{
 		throw new Exception("moduleId is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
-
-	LOG.debug("checkpoint 1...");
 
 	if (types::UnsignedInteger *moduleTypeDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["moduleType"].getDatatype().get()))
 	{
@@ -57,8 +51,6 @@ Header::Header(unsigned long moduleId, string moduleType, string messageType)
 		throw new Exception("moduletype is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
 
-	LOG.debug("checkpoint 2...");
-
 	if (types::UnsignedInteger *messageTypeDatatype = dynamic_cast<types::UnsignedInteger *>(this->myVariables["messageType"].getDatatype().get()))
 	{
 		unsigned long messageTypeId = convert::string2uint(Protocol::getInstance()->getRootCacheNode().selectFirst("messagetype", xml::Node::attributePair("name", messageType))["id"]);
@@ -69,8 +61,6 @@ Header::Header(unsigned long moduleId, string moduleType, string messageType)
 	{
 		throw new Exception("messageType is not of the type \"unsigned integer\", this is a fatal error, correct the protocol specification");
 	}
-
-	LOG.debug("End of contructor...");
 }
 
 Header::~Header()

@@ -15,6 +15,7 @@ namespace atom {
 
 typedef std::vector<unsigned char> byte_list;
 typedef std::vector<std::string> string_list;
+typedef std::vector<bool> bit_list;
 
 }
 

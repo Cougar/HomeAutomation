@@ -31,6 +31,8 @@ public:
 	xml::Node & getRootNode();
 	xml::Node & getRootCacheNode();
 
+	bool isLoaded();
+
 private:
 	Protocol();
 
@@ -38,6 +40,7 @@ private:
 
 	log::Logger LOG;
 
+	bool myIsLoaded;
 	xml::Node myXmlNode;
 	xml::Node myXmlCacheNode;
 };
