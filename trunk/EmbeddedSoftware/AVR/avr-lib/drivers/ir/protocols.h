@@ -212,7 +212,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 /* Panasonic Implementation
  * Receiver: DONE
- * Transmitter: DONE (untested)
+ * Transmitter: DONE
  */
 #define IR_PROTO_PANASONIC	8
 #define IR_PANA_ST_BIT		3570*CYCLES_PER_US/TIMER_PRESC		//us
