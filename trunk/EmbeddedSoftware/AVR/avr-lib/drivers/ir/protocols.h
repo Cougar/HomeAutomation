@@ -218,7 +218,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_PANA_ST_BIT		3570*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_ST_PAUSE	1630*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_LOW_ONE		1240*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_LOW_ZERO	360*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_PANA_LOW_ZERO	400*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_HIGH		495*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_TIMEOUT		80									//ms	(time between ir frames)
 #define IR_PANA_REPS		1									//		(minimum number of times to repeat code)
