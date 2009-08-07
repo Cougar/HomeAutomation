@@ -13,25 +13,31 @@
 
 /******************************************************************************
 * Port output functions
-* void gpio_set_out() makes GPIOX pin as output
 * void gpio_set_pin() sets GPIOX pin to logical 1 level (when output)
 * void gpio_clr_pin() clears GPIOX pin to logical 0 level (when output)
 * void gpio_toggle_pin() toggles level of output (when output)
 *
 * Port input functions
-* void gpio_set_in() makes GPIOX pin as input
 * void gpio_set_pullup() makes GPIOX pulled high (when input)
 * void gpio_clr_pullup() removes pullup on GPIOX (when input)
 * uint8_t gpio_get_state() returns logical level GPIOX pin
+* 
+* Direction functions
+* void gpio_set_in() makes GPIOX pin as input
+* void gpio_set_out() makes GPIOX pin as output
+* uint8_t gpio_get_direction() returns the choosen direction
+* 
 *******************************************************************************/
   static inline __attribute__ ((always_inline)) void gpio_set_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_clr_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port &= ~(1 << nr);}
-  static inline __attribute__ ((always_inline)) void gpio_set_out(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr |= (1 << nr);}
-  static inline __attribute__ ((always_inline)) void gpio_set_in(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr &= ~(1 << nr);}
+  static inline __attribute__ ((always_inline)) void gpio_toggle_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port ^= (1 << nr);}
+
   static inline __attribute__ ((always_inline)) void gpio_set_pullup(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_clr_pullup(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port &= ~(1 << nr);}
-  static inline __attribute__ ((always_inline)) void gpio_toggle_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port ^= (1 << nr);}
   static inline __attribute__ ((always_inline)) uint8_t gpio_get_state(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*pin & (1 << nr)) != 0;}
+
+  static inline __attribute__ ((always_inline)) void gpio_set_out(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr |= (1 << nr);}
+  static inline __attribute__ ((always_inline)) void gpio_set_in(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr &= ~(1 << nr);}
   static inline __attribute__ ((always_inline)) uint8_t gpio_get_direction(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*port & (1 << nr)) != 0;}
 
 #define GPIO_PIN_HIGH		1
