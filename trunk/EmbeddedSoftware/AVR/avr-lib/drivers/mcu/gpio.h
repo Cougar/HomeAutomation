@@ -31,6 +31,7 @@
   static inline __attribute__ ((always_inline)) void gpio_set_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_clr_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port &= ~(1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_toggle_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port ^= (1 << nr);}
+  static inline __attribute__ ((always_inline)) uint8_t gpio_get_output_state(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*port & (1 << nr)) != 0;}
 
   static inline __attribute__ ((always_inline)) void gpio_set_pullup(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_clr_pullup(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port &= ~(1 << nr);}
@@ -38,12 +39,14 @@
 
   static inline __attribute__ ((always_inline)) void gpio_set_out(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_set_in(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*ddr &= ~(1 << nr);}
-  static inline __attribute__ ((always_inline)) uint8_t gpio_get_direction(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*port & (1 << nr)) != 0;}
+  static inline __attribute__ ((always_inline)) uint8_t gpio_get_direction(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*ddr & (1 << nr)) != 0;}
 
 #define GPIO_PIN_HIGH		1
 #define GPIO_PIN_LOW		0
 #define GPIO_PORT_INPUT		0
 #define GPIO_PORT_OUTPUT	1
+#define GPIO_PORT_HIGH		1
+#define GPIO_PORT_LOW		0
 
 // generic ports:
 #define GPIO_D0			&PORTD,&PIND,&DDRD,PD0,16
