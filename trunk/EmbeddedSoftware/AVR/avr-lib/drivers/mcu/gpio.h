@@ -16,6 +16,7 @@
 * void gpio_set_pin() sets GPIOX pin to logical 1 level (when output)
 * void gpio_clr_pin() clears GPIOX pin to logical 0 level (when output)
 * void gpio_toggle_pin() toggles level of output (when output)
+* uint8_t gpio_get_output_state() returns the output_state
 *
 * Port input functions
 * void gpio_set_pullup() makes GPIOX pulled high (when input)
