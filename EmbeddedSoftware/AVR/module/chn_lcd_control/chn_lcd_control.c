@@ -281,7 +281,7 @@ void chn_lcd_control_Process(void)
             if( value > 65535 ) value = 65535;
             channels[ channel_sel ].value = value;
 
-#ifdef CHN_LOADAED
+#ifdef CHN_LOADED
             chn_ChnMaster_UpdateChannel( channels[ channel_sel ].id, value );
 #endif
 
