@@ -111,7 +111,10 @@ Display.prototype.initialize = function(initialArguments)
 	used to make sure an eth-node gets its init packet (600s) */
 	this.myIntervalAlways = new Interval(function() { self.sendTimeStamp() }, 600000);
 	this.myIntervalAlways.start();
-	
+
+	this.myInterval = new Interval(function() { self.timerUpdate() }, 5000);
+	this.myInterval.start();
+
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
 	this.exchangeUpdateCnt = exchangeUpdateTimeout-10;
@@ -618,12 +621,6 @@ Display.prototype.lcdCenterText = function(text)
 
 Display.prototype.lcdOffline = function()
 {
-	/* If we have no interval timer running do nothing */
-	if (this.myInterval != null)
-	{
-		/* Stop the interval */
-		this.myInterval.stop();
-	}
 }
 
 Display.prototype.lcdOnline = function()
@@ -636,17 +633,6 @@ Display.prototype.lcdOnline = function()
 		/* Set backlight to max */
 		this.myLCDService.setBacklight(255);
 
-		/* If we have no interval timer running start it */
-		if (this.myInterval == null)
-		{
-			var self = this;
-		
-			/* Start interval timer for our printout. Arguments are the callback function and time in milliseconds */
-			this.myInterval = new Interval(function() { self.timerUpdate() }, 5000);
-		}
-		
-		this.myInterval.start();
-		
 		this.timerUpdate();
 	}
 }
