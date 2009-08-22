@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head id="head">
+		<meta name="robots" content="nofollow"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+		<title>Interactive remote control interface</title>
+		
+		<style type="text/css">
+			body
+			{
+				font-family: arial;
+			}
+		
+			.clear
+			{
+				clear: both;
+			}
+		
+			#remoteList
+			{
+				width: 300px;
+				border-right: 2px solid #DDDDDD;
+				background-color: #EEEEEE;
+				text-align: center;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				bottom: 382px;
+			}
+			
+			#remoteList #remoteListMain
+			{
+				position: absolute;
+				top: 30px;
+				left: 0px;
+				bottom: 0px;
+				right: 0px;
+				overflow: auto;
+			}
+			
+			#remoteList .remoteListTitle, #remoteInformation .remoteInformationTitle, #remoteButtons .remoteButtonsTitle, #remoteLog .remoteLogTitle
+			{
+				padding: 5px;
+				color: black;
+				background-color: gray;
+				font-weight: bold;
+				height: 20px;
+				text-align: center;
+			}
+		
+			#remoteList .remote
+			{
+				cursor: pointer;
+				border: 2px solid gray;
+				padding: 5px;
+				margin: 10px;
+				color: black;
+				background-color: #FFF8BD;
+			}
+			
+			#remoteList .remote:hover, #remoteList .remoteSelected
+			{
+				color: white;
+				background-color: gray;
+			}
+			
+			#remoteList .remote:active
+			{
+				color: white;
+				background-color: black;
+			}
+			
+			#remoteInformation
+			{
+				width: 300px;
+				height: 380px;
+				border-right: 2px solid #DDDDDD;
+				border-top: 2px solid #DDDDDD;
+				background-color: #EEEEEE;
+				text-align: center;
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+			}
+			
+			#remoteInformation .remoteInformationSubTitle
+			{
+				font-weight: bold;
+				border-bottom: 2px solid #DDDDDD;
+				border-top: 2px solid #DDDDDD;
+				padding: 5px;
+				
+			}
+			
+			#remoteInformation .remoteInformationData
+			{
+				padding: 10px 10px 15px 10px;
+				background-color: white;
+			}
+			
+			#remoteButtons
+			{
+				text-align: center;
+				position: absolute;
+				top: 0px;
+				left: 302px;
+				bottom: 202px;
+				right: 0px;
+			}
+			
+			#remoteButtons #remoteButtonsMain
+			{
+				position: absolute;
+				top: 30px;
+				left: 0px;
+				bottom: 0px;
+				right: 0px;
+				overflow: auto;
+				padding-top: 10px;
+			}
+			
+			#remoteButtons .button
+			{
+				cursor: pointer;
+				border: 2px solid gray;
+				padding: 5px;
+				margin: 0px 0px 10px 10px;
+				color: black;
+				background-color: #FFF8BD;
+				width: 300px;
+				float: left;
+			}
+			
+			#remoteButtons .button:hover
+			{
+				color: white;
+				background-color: gray;
+			}
+			
+			#remoteButtons .button:active
+			{
+				color: white;
+				background-color: black;
+			}
+			
+			#remoteLog
+			{
+				border-top: 2px solid gray;
+				position: absolute;
+				bottom: 0px;
+				right: 0px;
+				left: 302px;
+				height: 200px;
+			}
+			
+			#remoteLog #remoteLogMain
+			{
+				padding: 5px;
+				position: absolute;
+				top: 30px;
+				left: 0px;
+				bottom: 0px;
+				right: 0px;
+				overflow: auto;
+			}
+			
+			#remoteLog .remoteLogLine
+			{
+				font-family: monospace;
+			}
+		</style>
+		
+		<script src="prototype.js" type="text/javascript"></script>
+		<script src="IRRemotes.js.php" type="text/javascript"></script>
+		
+		<script type="text/javascript">
+			function onLoadHandler()
+			{
+				log("Welcome to the interactive remote control interface");
+			
+				var remoteListElement = $('remoteListMain');
+			
+				remotes.each(function(remote)
+				{
+					var element = document.createElement("div");
+					element.innerHTML = remote['name'];
+					element.addClassName("remote");
+					element.onclick = function(event) { selectRemote(remote); };
+					remoteListElement.appendChild(element);
+				});
+				
+				selectRemote(remotes[0]);
+			}
+
+			function log(text)
+			{
+				var date = new Date();
+				var line = new Element('div', { 'class': 'remoteLogLine' }).update(date.toString() + ": " + text);
+				$('remoteLogMain').appendChild(line);
+				$('remoteLogMain').scrollTop = $('remoteLogMain').scrollHeight;
+			}
+
+			function selectRemote(remote)
+			{
+				$('remoteInformationName').innerHTML = remote['name'];
+				$('remoteInformationProtocol').innerHTML = remote['protocol'];
+				$('remoteInformationBrand').innerHTML = remote['brand'];
+				$('remoteInformationModel').innerHTML = remote['model'];
+			
+				$('remoteListMain').childElements().each(function(element)
+				{
+					if (element.innerHTML == remote['name'])
+					{
+						element.addClassName("remoteSelected");
+					}
+					else
+					{
+						element.removeClassName("remoteSelected");
+					}
+				});
+			
+			
+				var remoteButtonsElement = $('remoteButtonsMain');
+			
+				remoteButtonsElement.childElements().each(function(element)
+				{
+					element.remove();
+				});
+				
+				var count = 0;
+				
+				for (var code in remote['codes'])
+				{
+					var element = document.createElement("div");
+					element.innerHTML = remote['codes'][code];
+					element.addClassName("button");
+					element.id = code;
+					element.onmousedown = function(event) { buttonPressed(remote, this.id); };
+					element.onmouseup = function(event) { buttonReleased(remote, this.id); };
+					remoteButtonsElement.appendChild(element);
+					count++;
+				}
+				
+				var element = document.createElement("div");
+				element.addClassName("clear");
+				remoteButtonsElement.appendChild(element);
+				
+				log(remote['name'] + " selected, it has " + count + " buttons");
+			}
+			
+			function buttonPressed(remote, code)
+			{
+				log(remote['codes'][code] + ", code = " + code + ", pressed on " + remote['name']);
+				ajaxFunction('?remote=' + remote['name'] + '&button=' + remote['codes'][code] + '&code=' + code + '&state=Pressed');
+			}
+			
+			function buttonReleased(remote, code)
+			{
+				log(remote['codes'][code] + ", code = " + code + ", released on " + remote['name']);
+				ajaxFunction('?remote=' + remote['name'] + '&button=' + remote['codes'][code] + '&code=' + code + '&state=Released');
+			}
+			
+			function ajaxFunction(dataToSend)
+			{
+				var xmlhttp;
+				
+				if (window.XMLHttpRequest)
+				{
+					// code for IE7+, Firefox, Chrome, Opera, Safari
+					xmlhttp = new XMLHttpRequest();
+				}
+				else if (window.ActiveXObject)
+				{
+					// code for IE6, IE5
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				else
+				{
+					log("Your browser does not support XMLHTTP!");
+				}
+
+				xmlhttp.open("GET", "remote.php" + dataToSend, true);
+				xmlhttp.send(null);
+
+				xmlhttp.onreadystatechange = function()
+				{
+					if (xmlhttp.readyState == 4)
+					{
+						log("Server responded with \"" + xmlhttp.responseText + "\"");
+						//alert('I was executed');
+						// Get data from the server's response
+					}
+				}
+			}
+		
+		</script>
+	</head>
+	<body onload="onLoadHandler()">
+		<div id="remoteInformation">
+			<div class="remoteInformationTitle">
+				Remote Information
+			</div>
+			
+			<div class="remoteInformationSubTitle">
+				Name
+			</div>
+			<div id="remoteInformationName" class="remoteInformationData"></div>
+			
+			<div class="remoteInformationSubTitle">
+				Protocol
+			</div>
+			<div id="remoteInformationProtocol" class="remoteInformationData"></div>
+			
+			<div class="remoteInformationSubTitle">
+				Brand
+			</div>
+			<div id="remoteInformationBrand" class="remoteInformationData"></div>
+			
+			<div class="remoteInformationSubTitle">
+				Model
+			</div>
+			<div id="remoteInformationModel" class="remoteInformationData"></div>
+		</div>
+		
+		<div id="remoteList">
+			<div class="remoteListTitle">
+				Available IR Remotes
+			</div>
+			<div id="remoteListMain"></div>
+		</div>
+		
+		<div id="remoteButtons">
+			<div class="remoteButtonsTitle">
+				Buttons
+			</div>
+			<div id="remoteButtonsMain"></div>
+		</div>
+		
+		<div id="remoteLog">
+			<div class="remoteLogTitle">
+				Log
+			</div>
+			<div id="remoteLogMain"></div>
+		</div>
+		
+	</body>
+</html>
