@@ -1,0 +1,13 @@
+<?php
+
+/* Set the atom server name or IP */
+$host="localhost";
+/* Set the atom port number */
+$port=1202;
+
+/* Set the ir transmitter module id number */
+$irTransmitterID=1;
+/* If you want to use another IRRemotes.js it can be changed here */
+$IRRemotes="http://svn.arune.se/svn/HomeAutomation/trunk/PcSoftware/Atom/Services/DataStores/IRRemotes.js";
+
+?>
