@@ -28,6 +28,9 @@
 //		which can be found at http://www.gnu.org/licenses/gpl.txt
 //
 //*****************************************************************************
+#ifndef KS0108_WIDTH
+#error KS0108_WIDTH, KS0108_HIGHT must be defined
+#endif
 
 #define OUTPUT	0
 #define INPUT	1
@@ -67,7 +70,7 @@ void Disable(){
 }
 
 void Delay(){
-	delay_us(1);
+	delay_us(2);
 }
 
 void Enable(){
@@ -116,10 +119,15 @@ void glcdWriteData(uint8_t data, uint8_t color){
 	Enable();
 	GrLcdState.lcdXAddr++;
 
-	if (GrLcdState.lcdXAddr > 63){
+	if (GrLcdState.lcdXAddr == 64 ){
+		glcdSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
+	} 
+#if KS0108_WIDTH > 128
+else if (GrLcdState.lcdXAddr == 128 ){
 		glcdSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	}
-	if (GrLcdState.lcdXAddr > 128){
+#endif
+	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
 		glcdSetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
@@ -152,10 +160,16 @@ void glcdWriteDataTransparent(uint8_t inputdata, uint8_t color){
 	Enable();
 	GrLcdState.lcdXAddr++;
 
-	if (GrLcdState.lcdXAddr > 63){
+
+	if (GrLcdState.lcdXAddr == 64 ){
+		glcdSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
+	} 
+#if KS0108_WIDTH > 128
+	else if (GrLcdState.lcdXAddr == 128 ){
 		glcdSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	}
-	if (GrLcdState.lcdXAddr > 128){
+#endif
+	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
 		glcdSetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
@@ -189,9 +203,13 @@ void glcdPowerOn(){
 
 	SetDirection(OUTPUT);
 	GrLcdState.color = GLCD_COLOR_WHITE;
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
-
+#if KS0108_INVERT_CS == 1
+	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#else
+	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#endif
 	Disable();
 	Delay();
 	//set display on
@@ -203,14 +221,17 @@ void glcdPowerOn(){
 	SetControls(0,0);
 	SetData(0xc0);
 	Enable();
-
 	glcdClear();
 }
 
 void glcdClear(){
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
-
+#if KS0108_INVERT_CS == 1
+	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#else
+	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#endif
 	Enable();
 	Delay();
 	Disable();
@@ -244,12 +265,30 @@ void glcdSetXY(uint8_t x, uint8_t y){
 	GrLcdState.lcdYpage = y/8;
 
 	//Vi b�rjar med X. Steg 1: V�lj r�tt chip:
-	if (x > 63){
-		gpio_set_pin(LCD_CONTROL_CS2);
-		gpio_clr_pin(LCD_CONTROL_CS1);
+	if (x > 63 && x <= 127){
+#if KS0108_INVERT_CS == 1
+	gpio_set_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#else
+	gpio_set_pin(LCD_CONTROL_CS2);
+	gpio_clr_pin(LCD_CONTROL_CS1);
+#endif
+	} else if (x > 127){
+#if KS0108_INVERT_CS == 1
+	gpio_set_pin(LCD_CONTROL_CS1);
+	gpio_set_pin(LCD_CONTROL_CS2);
+#else
+	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_clr_pin(LCD_CONTROL_CS1);
+#endif
 	} else {
-		gpio_set_pin(LCD_CONTROL_CS1);
-		gpio_clr_pin(LCD_CONTROL_CS2);
+#if KS0108_INVERT_CS == 1
+	gpio_set_pin(LCD_CONTROL_CS2);
+	gpio_clr_pin(LCD_CONTROL_CS1);
+#else
+	gpio_set_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(LCD_CONTROL_CS2);
+#endif
 	}
 
 	//Steg 2: S�tt r�tt x-adress p� det aktiva chippet
@@ -272,7 +311,7 @@ uint8_t glcdGetY(void){
 void glcdWriteChar(char c, uint8_t color)
 {
 	uint8_t i = 0;
-	if (GrLcdState.lcdXAddr > (128-5))
+	if (GrLcdState.lcdXAddr > (KS0108_WIDTH-5))
 	{
 		glcdSetXY(0,GrLcdState.lcdYAddr + 8);
 	}
@@ -293,7 +332,7 @@ void glcdPutStr(char *data, uint8_t color){
 void glcdWriteCharTransparent(char c, uint8_t color)
 {
 	uint8_t i = 0;
-	if (GrLcdState.lcdXAddr > (128-5))
+	if (GrLcdState.lcdXAddr > (KS0108_WIDTH-5))
 	{
 		glcdSetXY(0,GrLcdState.lcdYAddr + 8);
 	}
@@ -514,7 +553,7 @@ void glcdInvert(void) {
 		GrLcdState.color = GLCD_COLOR_WHITE;
 	else
 		GrLcdState.color = GLCD_COLOR_BLACK;
-	glcdInvertRect(0,0,127,63);
+	glcdInvertRect(0,0,KS0108_WIDTH-1,KS0108_HIGHT-1);
 }
 void glcdSetDot(uint8_t x, uint8_t y, uint8_t color) {
 	glcdSetXY(x, y-y%8);					// read data from display memory
