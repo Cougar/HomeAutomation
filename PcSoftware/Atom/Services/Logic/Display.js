@@ -163,6 +163,7 @@ Display.prototype.initialize = function(initialArguments)
 	this.screenSaverMenuItem.displayData[1] = this.lcdCenterText("");
 	this.screenSaverMenuItem.doRight = function(args) { self.changeToNext(); };
 	this.screenSaverMenuItem.doLeft = function(args) { self.changeToPrev(); };
+	this.screenSaverMenuItem.doUpdate = function(args) { self.updateBookMenuItem(); };
 	this.screenSaverMenuItem.setNextItem(this.statusMenuItem);
 	this.screenSaverMenuItem.setPrevItem(this.statusMenuItem);
 
@@ -272,6 +273,7 @@ Display.prototype.initialize = function(initialArguments)
 
 }
 
+/* Callback for a booking call to exchange */
 Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 {
 	if (shortname == this.shortName)
@@ -303,6 +305,7 @@ Display.prototype.exchangeCalendarBookCallback = function(shortname, data)
 	}
 }
 
+/* When pressing <OK> in booking menu */
 Display.prototype.doBooking = function()
 {
 	this.bookResultMenuItem.displayData[0] = this.lcdCenterText("Booking...");
@@ -319,6 +322,7 @@ Display.prototype.doBooking = function()
 	//bookFromTime bookToTime
 }
 
+/* When entering the booking menu, set up some parameters */
 Display.prototype.prepareBookingMenu = function()
 {
 	this.bookFromTime = new Date();
@@ -451,6 +455,7 @@ Display.prototype.updateBookMenuItem = function()
 	}
 }
 
+/* Callback for an exchange calendar lookup*/
 Display.prototype.exchangeCalendarLookupCallback = function(shortname, data)
 {
 	if (shortname == this.shortName)
@@ -507,11 +512,10 @@ Display.prototype.createCalendarMenu = function()
 			this.exchangeCalendarLastMenuItem = lastMenuItem;
 			this.exchangeCalendarLastMenuItem.setNextItem(this.bookMenuItem);
 			this.exchangeCalendarFirstMenuItem.setPrevItem(this.statusMenuItem);
-		
 		}
 		/* to link in the newly created menuitems with exchangeinformation the display must be showing 
 		   either the statusmenu or the bookingmenu */
-		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem || this.currentMenuItem == this.bookResultMenuItem)
+		if (this.currentMenuItem == this.statusMenuItem || this.currentMenuItem == this.bookMenuItem || this.currentMenuItem == this.bookResultMenuItem || this.currentMenuItem == this.screenSaverMenuItem)
 		{
 			/* if there is one or more exchangemenuitems */
 			if (this.exchangeCalendarFirstMenuItem && this.exchangeCalendarLastMenuItem)
