@@ -20,7 +20,14 @@ TC1047A.prototype.canMessageHandler = function(canMessage)
 		case "Temperature_Celsius":
 		log(this.myName + ":" + this.myId + "> New value: " + canMessage.getData("Value") + "\n");
 		this.myLastValue[canMessage.getData("SensorId")] = canMessage.getData("Value");
-		this.callEvent("newValue", canMessage.getData("SensorId"));
+		//this.callEvent("newValue", canMessage.getData("SensorId"));
+		var dataArray = new Array();
+		dataArray["service"] = self;
+		dataArray["sensor"] = canMessage.getData("SensorId");
+		dataArray["value"] = canMessage.getData("Value");
+		dataArray["moduleName"] = canMessage.getModuleName();
+		dataArray["moduleId"] = canMessage.getModuleId();
+		this.callEvent("newValue", dataArray);
 		break;
 		
 		case "Sensor_Report_Interval":

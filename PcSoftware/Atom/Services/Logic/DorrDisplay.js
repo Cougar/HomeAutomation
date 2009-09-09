@@ -1,6 +1,7 @@
 
 loadScript("Logic/gLCD_MenuItems/MainMenuItem.js");
 loadScript("Logic/gLCD_MenuItems/SettingsMenuItem.js");
+loadScript("Logic/gLCD_MenuItems/DimmerGlcdMenuItem.js");
 
 function DorrDisplay(type, name, id)
 {
@@ -22,7 +23,8 @@ DorrDisplay.prototype.myInterval = null;
 DorrDisplay.prototype.myIntervalAlways = null;
 
 DorrDisplay.prototype.MainMenuItem = null;
-DorrDisplay.prototype.SettingsMenuItem = null;
+DorrDisplay.prototype.SettingMenuItem = null;
+DorrDisplay.prototype.DimmerGlcdMenuItem = null;
 
 /* The currently displayed menuitem */
 DorrDisplay.prototype.currentMenuItem = null;
@@ -36,6 +38,7 @@ DorrDisplay.prototype.mainScreenCnt = null;
 const DorrDisplay_mainScreenTimeout = 20;
 const DorrDisplay_screenSaverTimeout = 25;
 
+DorrDisplay.prototype.defaultBacklight = 60;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
@@ -60,10 +63,6 @@ DorrDisplay.prototype.initialize = function(initialArguments)
 		log(this.myName + ":" + this.myId + "> Failed to initialize, Rotary-config missing from config.\n");
 		return;
 	}
-/* create the first menu item */
-	this.MainMenuItem = new MainMenuItem(this, this.myGLCDService);
-this.SettingMenuItem = new SettingsMenuItem(this, this.myGLCDService);
-	
 
 	/* Start interval timer for sending timestamp to network. Arguments are the callback function and time in milliseconds 
 	used to make sure an eth-node gets its init packet (600s) */
@@ -75,7 +74,7 @@ this.SettingMenuItem = new SettingsMenuItem(this, this.myGLCDService);
 
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
-	
+
 	
 	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myGLCDService = ServiceManager.getService("Can", "KS0108", this.myInitialArguments["KS0108"]["Id"]);
@@ -97,21 +96,25 @@ this.SettingMenuItem = new SettingsMenuItem(this, this.myGLCDService);
 	/* If the service is already online we should call the handler here */
 	this.rotaryOnline();
 
-	/* create the first menu item */
+		/* create the first menu item */
 	this.MainMenuItem = new MainMenuItem(this, this.myGLCDService);
 this.SettingMenuItem = new SettingsMenuItem(this, this.myGLCDService);
+this.DimmerGlcdMenuItem = new DimmerGlcdMenuItem(this, this.myGLCDService);
 	
 	this.currentMenuItem = this.MainMenuItem;
 
 	
 	/* create the screensaver menu item */
 	this.SettingMenuItem.LeftItem=this.MainMenuItem;
-	this.SettingMenuItem.RightItem=this.MainMenuItem;
+	this.SettingMenuItem.RightItem=this.DimmerGlcdMenuItem;
 
 	/* set the function that shall be executed when knob is turned */
 	/* create the screensaver menu item */
-	this.MainMenuItem.LeftItem=this.SettingMenuItem;
+	this.MainMenuItem.LeftItem=this.DimmerGlcdMenuItem;
 	this.MainMenuItem.RightItem=this.SettingMenuItem;
+	this.DimmerGlcdMenuItem.RightItem=this.MainMenuItem;
+	this.DimmerGlcdMenuItem.LeftItem=this.SettingMenuItem;
+
 
 }
 // 
@@ -231,6 +234,9 @@ if (this.myRotaryService1.getButtonStatus(SwitchId) == "Released")
 
 DorrDisplay.prototype.updateDisplay = function()
 {
+if (this.myGLCDService.getBacklight() == 0) {
+this.myGLCDService.setBacklight(this.defaultBacklight);
+}
 	this.currentMenuItem.update();
 }
 
@@ -256,7 +262,7 @@ DorrDisplay.prototype.lcdOnline = function()
 		/* Clear the LCD screen */
 		this.myGLCDService.clearScreen("Standard");
 		/* Set backlight to max */
-		this.myGLCDService.setBacklight(60);
+		this.myGLCDService.setBacklight(this.defaultBacklight);
 		this.timerUpdate();
 	}
 }
@@ -288,15 +294,10 @@ this.currentMenuItem.onEnter();
 
 		}
 		
-		if (this.screenSaverCnt > DorrDisplay_screenSaverTimeout/5 && this.currentMenuItem != this.SettingMenuItem)
+		if (this.screenSaverCnt > DorrDisplay_screenSaverTimeout/5)
 		{
 			/* Go to screensaver menu */
-this.currentMenuItem.onExit();
-			this.currentMenuItem = this.SettingMenuItem;
-this.currentMenuItem.onEnter();
-//this.myGLCDService.setBacklight(0);
-			/* update the info on display */
-			this.updateDisplay();
+this.myGLCDService.setBacklight(0);
 			
 			this.screenSaverCnt = 0;
 		}

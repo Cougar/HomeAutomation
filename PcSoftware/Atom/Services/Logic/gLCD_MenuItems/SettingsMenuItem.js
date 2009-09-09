@@ -40,12 +40,18 @@ SettingsMenuItem.prototype.processEvent = function (event)
 		break;
 	
 	case "up":
-this.display.printText(3,3,"up  ","Standard","Standard");
+this.parentDisplay.defaultBacklight += 10;
+if (this.parentDisplay.defaultBacklight > 255)
+this.parentDisplay.defaultBacklight = 255;
+this.display.setBacklight(this.parentDisplay.defaultBacklight);
 		//parentDisplay.changeToUp();
 		break;
 	
 	case "down":
-this.display.printText(3,3,"down ","Standard","Standard");
+this.parentDisplay.defaultBacklight -= 10;
+if (this.parentDisplay.defaultBacklight < 0)
+this.parentDisplay.defaultBacklight = 0;
+this.display.setBacklight(this.parentDisplay.defaultBacklight);
 		//parentDisplay.changeToDown();
 		break;
 	
@@ -64,10 +70,17 @@ this.display.printText(3,3,"back ","Standard","Standard");
 SettingsMenuItem.prototype.onEnter = function ()
 {
 	this.display.clearScreen("Standard");
+this.display.printText(0,0,"settingsMenu","Standard","Standard");
 }
 SettingsMenuItem.prototype.update = function ()
 {
-	this.display.printText(2,2,"settingsMenu","Standard","Standard");
+	
+
+this.display.printText(2,2,"Backlight: "+this.parentDisplay.defaultBacklight + "  " ,"Standard","Standard");
+this.display.DrawRect(120,17,25,5,"Inverted","Fill",0);
+this.display.DrawRect(120,17,this.parentDisplay.defaultBacklight/10,5,"Standard","Fill",0);
+this.display.DrawRect(120,17,25,5,"Standard","NoFill",0);
+
 }
 SettingsMenuItem.prototype.onExit = function ()
 {
