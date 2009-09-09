@@ -1,26 +1,22 @@
-
-
 var sensorServices = new Array();
 var sensorValues = new Array();
 
+ServiceManager.addCallback(this._TempSensors_SensorSeviceOnline);
 
-
-ServiceManager.addCallback(this.SensorSeviceOnline);
-
-function SensorSeviceOnline(service) {
+function _TempSensors_SensorSeviceOnline(service) {
   if (service.getName() == "DS18x20" || service.getName() == "TC1047A" || service.getName() == "FOST02") {
-    updateSensorList();
+    _TempSensors_updateSensorList();
   }
 }
 
-function updateSensorList() {
+function _TempSensors_updateSensorList() {
   this.sensorServices = new Array();
   for (var id in ServiceManager.Services)
   {
     if (ServiceManager.Services[id].getName() == "DS18x20" || ServiceManager.Services[id].getName() == "TC1047A" || ServiceManager.Services[id].getName() == "FOST02")
   {
-    ServiceManager.Services[id].registerEventCallback("newValue", function(args) { NewTemperature(args); });
-    ServiceManager.Services[id].registerEventCallback("offline", function(args) { SensorOffline(args); });
+    ServiceManager.Services[id].registerEventCallback("newValue", function(args) { _TempSensors_NewTemperature(args); });
+    ServiceManager.Services[id].registerEventCallback("offline", function(args) { _TempSensors_SensorOffline(args); });
     ServiceManager.Services[id].setReportInterval(2);
     this.sensorServices[sensorServices.length] = ServiceManager.Services[id];
   }
@@ -32,11 +28,11 @@ function updateSensorList() {
 //dataArray["value"] = canMessage.getData("Value");
 //dataArray["moduleName"] = canMessage.getModuleName();
 //dataArray["moduleId"] = canMessage.getModuleId();
-function NewTemperature(array){
+function _TempSensors_NewTemperature(array){
   sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]] = array["value"];
 }
 
-function SensorOffline(data) {
+function _TempSensors_SensorOffline(data) {
   var sensorValues = new Array();
 }
 		
