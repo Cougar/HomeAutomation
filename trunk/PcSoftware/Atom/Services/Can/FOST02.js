@@ -22,12 +22,19 @@ FOST02.prototype.canMessageHandler = function(canMessage)
 		log(this.myName + ":" + this.myId + "> New temperature value: " + canMessage.getData("Value") + "\n");
 		this.myLastValueTemp[canMessage.getData("SensorId")] = canMessage.getData("Value");
 		this.callEvent("newValue", canMessage.getData("SensorId"));
+		var dataArray = new Array();
+		dataArray["service"] = self;
+		dataArray["sensor"] = canMessage.getData("SensorId");
+		dataArray["value"] = canMessage.getData("Value");
+		dataArray["moduleName"] = canMessage.getModuleName();
+		dataArray["moduleId"] = canMessage.getModuleId();
+		this.callEvent("newValue", dataArray);
 		break;
 		
 		case "Humidity_Percent":
 		log(this.myName + ":" + this.myId + "> New humidity value: " + canMessage.getData("Value") + "\n");
 		this.myLastValueHumi[canMessage.getData("SensorId")] = canMessage.getData("Value");
-		this.callEvent("newValue", canMessage.getData("SensorId"));
+		this.callEvent("newHumidityValue", canMessage.getData("SensorId"));
 		break;
 
 		case "Sensor_Report_Interval":
