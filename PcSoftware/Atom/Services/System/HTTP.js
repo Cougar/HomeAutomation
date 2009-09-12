@@ -32,6 +32,7 @@ HTTP.prototype.request = function(callback, url)
 	
 	this.myRequest = "GET " + urlData['path'] + " HTTP/1.1\r\n";
 	this.myRequest += "Host: " + urlData['hostname'] + ":" + urlData['port'] + "\r\n";
+	this.myRequest += "User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.2) Gecko/20090730 SUSE/3.5.2-1.1 Firefox/3.5.2\r\n";
 	this.myRequest += "Connection: close\r\n";
 	this.myRequest += "\r\n";
 }
