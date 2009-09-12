@@ -14,14 +14,15 @@ FOST02.prototype.myLastValue = null;
 
 FOST02.prototype.canMessageHandler = function(canMessage)
 {
+var self = this;
 	if (canMessage.getDirectionFlag() == "From_Owner")
 	{
 		switch (canMessage.getCommandName())
 		{
 		case "Temperature_Celsius":
-		log(this.myName + ":" + this.myId + "> New temperature value: " + canMessage.getData("Value") + "\n");
+//		log(this.myName + ":" + this.myId + "> New temperature value: " + canMessage.getData("Value") + "\n");
 		this.myLastValueTemp[canMessage.getData("SensorId")] = canMessage.getData("Value");
-		this.callEvent("newValue", canMessage.getData("SensorId"));
+		this.callEvent("newTempValue", canMessage.getData("SensorId"));
 		var dataArray = new Array();
 		dataArray["service"] = self;
 		dataArray["sensor"] = canMessage.getData("SensorId");
@@ -32,9 +33,11 @@ FOST02.prototype.canMessageHandler = function(canMessage)
 		break;
 		
 		case "Humidity_Percent":
-		log(this.myName + ":" + this.myId + "> New humidity value: " + canMessage.getData("Value") + "\n");
+//		log(this.myName + ":" + this.myId + "> New humidity value: " + canMessage.getData("Value") + "\n");
 		this.myLastValueHumi[canMessage.getData("SensorId")] = canMessage.getData("Value");
+
 		this.callEvent("newHumidityValue", canMessage.getData("SensorId"));
+
 		break;
 
 		case "Sensor_Report_Interval":
