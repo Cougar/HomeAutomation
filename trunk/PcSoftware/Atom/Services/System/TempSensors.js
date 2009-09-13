@@ -70,12 +70,12 @@ function getSensorInfo(SensorName)
 			if (sensorStore['SensorNames'][n]['name'] == SensorName) 
 			{
 				var returnvalue = new Array();
-				returnvalue['name' = sensorStore['SensorNames'][n]['name'];
-				returnvalue['description' = sensorStore['SensorNames'][n]['description'];
-				returnvalue['shortName' = sensorStore['SensorNames'][n]['shortName'];
-				returnvalue['moduleType' = sensorStore['SensorNames'][n]['moduleType'];
-				returnvalue['moduleId' = sensorStore['SensorNames'][n]['moduleId'];
-				returnvalue['sensorId' = sensorStore['SensorNames'][n]['sensorId'];
+				returnvalue['name'] = sensorStore['SensorNames'][n]['name'];
+				returnvalue['description'] = sensorStore['SensorNames'][n]['description'];
+				returnvalue['shortName'] = sensorStore['SensorNames'][n]['shortName'];
+				returnvalue['moduleType'] = sensorStore['SensorNames'][n]['moduleType'];
+				returnvalue['moduleId'] = sensorStore['SensorNames'][n]['moduleId'];
+				returnvalue['sensorId'] = sensorStore['SensorNames'][n]['sensorId'];
 				return returnvalue;	
 			}
 			
