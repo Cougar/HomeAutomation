@@ -7,6 +7,7 @@ function _TempSensors_SensorSeviceOnline(service) {
   if (service.getName() == "DS18x20" || service.getName() == "TC1047A" || service.getName() == "FOST02") {
     _TempSensors_updateSensorList();
   }
+//log("Sensor online\n");
 }
 
 function _TempSensors_updateSensorList() {
@@ -19,6 +20,7 @@ function _TempSensors_updateSensorList() {
     ServiceManager.Services[id].registerEventCallback("offline", function(args) { _TempSensors_SensorOffline(args); });
     ServiceManager.Services[id].setReportInterval(2);
     this.sensorServices[sensorServices.length] = ServiceManager.Services[id];
+//log("found sensors\n");
   }
   }
 }
@@ -29,7 +31,11 @@ function _TempSensors_updateSensorList() {
 //dataArray["moduleName"] = canMessage.getModuleName();
 //dataArray["moduleId"] = canMessage.getModuleId();
 function _TempSensors_NewTemperature(array){
-  sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]] = array["value"];
+sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]] = new Array();
+sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['value'] = array["value"];
+sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['service'] = array["service"];
+//log("new value: from: "+""+array["moduleName"]+array["moduleId"]+array["sensor"] +"with value: "+ sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]["value"]+"\n");
+//log("length is now: "+sensorValues.+" \n");
 }
 
 function _TempSensors_SensorOffline(data) {
@@ -45,18 +51,19 @@ function getSensorValue(SensorName)
 		{
 			if (sensorStore['SensorNames'][n]['name'] == SensorName) 
 			{
-			
-				var returnvalue = sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']];
-				if (returnvalue != null) {
-					return returnvalue;
-				} else {
-					return -50;
+				if (sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']] != null) {
+					var returnvalue = sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']]['value'];
+					if (returnvalue != null) {
+						return returnvalue;
+					} else {
+						return -50;
+					}
 				}
 			}
 			
 		}
 	}
-	return null;
+	return -50;
 	
 }
 
@@ -84,4 +91,47 @@ function getSensorInfo(SensorName)
 	return null;
 }
 
+function getSensorService(SensorName)
+{
+	var sensorStore = DataStore.getStore("SensorNames");
+	if (sensorStore)
+	{
+		for (var n = 0; n < sensorStore['SensorNames'].length; n++)
+		{
+			if (sensorStore['SensorNames'][n]['name'] == sensorName) 
+			{
+				return this.sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']]['service'];
+			}
+			
+		}
+	}
+	return null;
+}
+
+function getSensorList()
+{
+	var sensorStore = DataStore.getStore("SensorNames");
+	var sensorList = new Array();
+	var sensorIndex = 0;
+	if (sensorStore)
+	{
+		for (var n = 0; n < sensorStore['SensorNames'].length; n++)
+		{
+			if (this.sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']] != null) 
+			{
+				if (this.sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']]['service'].isOnline()) {
+					sensorList[sensorIndex] = new Array();
+					sensorList[sensorIndex]['name'] = sensorStore['SensorNames'][n]['name'];
+					sensorList[sensorIndex]['shortName'] = sensorStore['SensorNames'][n]['shortName'];
+					sensorList[sensorIndex]['sensorId'] = sensorStore['SensorNames'][n]['sensorId'];
+					sensorList[sensorIndex]['description'] = sensorStore['SensorNames'][n]['description'];
+					sensorList[sensorIndex]['service'] = this.sensorValues[sensorStore['SensorNames'][n]['moduleType']+sensorStore['SensorNames'][n]['moduleId']+sensorStore['SensorNames'][n]['sensorId']]['service'];
+//log("SensorList"+sensorIndex+" "+sensorList[sensorIndex]['name']+" \n");
+					sensorIndex++;
+				}
+			}
+		}
+	}
+	return sensorList;
+}
 

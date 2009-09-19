@@ -2,7 +2,7 @@
 	{
 		name : 'Västersensor', 
 		description : 'Utesensor vid balkongen', 
-		shortName : 'Ute',
+		shortName : 'Ute Väster',
 		moduleType : 'DS18x20', 
 		moduleId : 3,
 		sensorId : 236
@@ -14,6 +14,22 @@
 		moduleType : 'DS18x20', 
 		moduleId : 3,
 		sensorId : 204
+	},
+	{
+		name : 'Östersensor', 
+		description : 'Utesensor utanför sovrummet', 
+		shortName : 'Ute Öster',
+		moduleType : 'DS18x20', 
+		moduleId : 5,
+		sensorId : 15
+	},
+	{
+		name : 'Sovrumssensor', 
+		description : 'Sensor i sovrummet', 
+		shortName : 'Sovrum',
+		moduleType : 'DS18x20', 
+		moduleId : 4,
+		sensorId : 222
 	},
 	{
 		name : 'Veranda', 

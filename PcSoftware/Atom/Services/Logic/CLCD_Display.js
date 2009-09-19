@@ -1,7 +1,7 @@
 
 loadScript("Personal/cLCD_MenuItems/MainMenuItem.js");
-loadScript("Personal/cLCD_MenuItems/DtmfMenuItem.js");
-//loadScript("Personal/cLCD_MenuItems/DimmerClcdMenuItem.js");
+loadScript("Personal/cLCD_MenuItems/DimmerMenuItem.js");
+loadScript("Personal/cLCD_MenuItems/SensorMenuItem.js");
 
 function CLCD_Display(type, name, id)
 {
@@ -24,8 +24,8 @@ CLCD_Display.prototype.myIntervalAlways = null;
 CLCD_Display.prototype.myIntervalScreenSaver = null;
 
 CLCD_Display.prototype.MainMenuItem = null;
-CLCD_Display.prototype.SettingMenuItem = null;
-CLCD_Display.prototype.DtmfMenuItem = null;
+CLCD_Display.prototype.SensorMenuItem = null;
+CLCD_Display.prototype.DimmerMenuItem = null;
 
 /* The currently displayed menuitem */
 CLCD_Display.prototype.currentMenuItem = null;
@@ -39,7 +39,7 @@ CLCD_Display.prototype.mainScreenCnt = null;
 const Display_mainScreenTimeout = 20;
 const Display_screenSaverTimeout = 25;
 
-CLCD_Display.prototype.defaultBacklight = 60;
+CLCD_Display.prototype.defaultBacklight = 10;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
@@ -102,22 +102,22 @@ CLCD_Display.prototype.initialize = function(initialArguments)
 
 		/* create the first menu item */
 	this.MainMenuItem = new MainMenuItem(this, this.myCLCDService);
-//this.SettingMenuItem = new SettingsMenuItem(this, this.myCLCDService);
-this.DtmfMenuItem = new DtmfMenuItem(this, this.myCLCDService);
+this.SensorMenuItem = new SensorMenuItem(this, this.myCLCDService);
+this.DimmerMenuItem = new DimmerMenuItem(this, this.myCLCDService);
 	
 	this.currentMenuItem = this.MainMenuItem;
 
 	
 	/* create the screensaver menu item */
-//	this.SettingMenuItem.LeftItem=this.MainMenuItem;
-//	this.SettingMenuItem.RightItem=this.DimmerGlcdMenuItem;
+	this.SensorMenuItem.LeftItem=this.DimmerMenuItem;
+	this.SensorMenuItem.RightItem=this.MainMenuItem;
 
 	/* set the function that shall be executed when knob is turned */
 	/* create the screensaver menu item */
-	this.MainMenuItem.LeftItem=this.DtmfMenuItem;
-	this.MainMenuItem.RightItem=this.DtmfMenuItem;
-	this.DtmfMenuItem.RightItem=this.MainMenuItem;
-	this.DtmfMenuItem.LeftItem=this.MainMenuItem;
+	this.MainMenuItem.LeftItem=this.SensorMenuItem;
+	this.MainMenuItem.RightItem=this.DimmerMenuItem;
+	this.DimmerMenuItem.RightItem=this.SensorMenuItem;
+	this.DimmerMenuItem.LeftItem=this.MainMenuItem;
 }
 
 // 

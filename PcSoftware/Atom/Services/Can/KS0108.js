@@ -28,7 +28,7 @@ KS0108.prototype.canMessageHandler = function(canMessage)
 		
 		case "LCD_Backlight":
 		this.myBacklight = canMessage.getData("Strength");
-		log(this.myName + ":" + this.myId + "> Reported backlight strength: " + this.myBacklight + "\n");
+		//log(this.myName + ":" + this.myId + "> Reported backlight strength: " + this.myBacklight + "\n");
 		break;
 		}
 	}
