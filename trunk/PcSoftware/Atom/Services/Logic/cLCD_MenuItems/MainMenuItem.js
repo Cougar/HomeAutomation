@@ -1,8 +1,5 @@
-
-MainMenuItem.prototype.humidity = 0;
 MainMenuItem.prototype.CurrentPower = 0;
 MainMenuItem.prototype.CurrentEnergy = 0;
-const humiditySensorId = 1;
 
 function MainMenuItem(parentDisplay, hd44789Object)
 {
@@ -14,11 +11,7 @@ function MainMenuItem(parentDisplay, hd44789Object)
 		log(this.myName + ":" + this.myId + "> Failed to initialize, power-config missing from config.\n");
 		return;
 	}
-	if (!this.parentDisplay.myInitialArguments["FOST02"])
-	{
-		log(this.myName + ":" + this.myId + "> Failed to initialize, FOST02-config missing from config.\n");
-		return;
-	}
+	
 	/* Get the PWM service that we want from the ServiceManager, it takes type, service name, service id */
 	this.myPowerService = ServiceManager.getService("Can", "power", this.parentDisplay.myInitialArguments["power"]["Id"]);
 	/* Add a callback for when the service goes online */
@@ -28,19 +21,9 @@ function MainMenuItem(parentDisplay, hd44789Object)
 	/* If the service is already online we should call the handler here */
 	this.PowerOnline();
 
-	/* Get the LCD service that we want from the ServiceManager, it takes type, service name, service id */
-	this.myHumiService = ServiceManager.getService("Can", "FOST02", this.parentDisplay.myInitialArguments["FOST02"]["Id"]);
-	/* Add a callback for when the sensor reports a new value */
-	this.myHumiService.registerEventCallback("newHumidityValue", function(args) { self.humidityUpdate(args); });
 
 }
 
-MainMenuItem.prototype.humidityUpdate = function(sensorId)
-{
-	if (sensorId == humiditySensorId) {
-		this.humidity = this.myHumiService.getValueHumi(sensorId).toFixed(2).toString();
-	}
-}
 
 MainMenuItem.prototype.PowerOnline = function()
 {
@@ -123,10 +106,10 @@ MainMenuItem.prototype.update = function ()
 	var date = new Date();
 	/* Get the current date time on the format YYYY-mm-dd HH.ii.ss */
 	var dateAndTime = date.getDateFormated()+" "+date.getTimeShortFormated();
-	this.display.printText(0, 1, this.parentDisplay.lcdCenterText(""+ getSensorValue('Veranda').toFixed(1).toString() + " C   " + getSensorValue('Matrum').toFixed(1).toString() + "C"));
+	this.display.printText(0, 1, this.parentDisplay.lcdCenterText(""+ getSensorValue('Vardagsrumssensor').toFixed(1).toString() + " C   " + getSensorValue('Västersensor').toFixed(1).toString() + "C"));
 	this.display.printText(0, 0, this.parentDisplay.lcdCenterText(""+dateAndTime));
 
-this.display.printText(0, 2, this.parentDisplay.lcdCenterText(""+getSensorValue('Utetemperatur').toFixed(1).toString() + " C   " + this.humidity + "%"));
+	this.display.printText(0, 2, this.parentDisplay.lcdCenterText(""+ getSensorValue('Sovrumssensor').toFixed(1).toString() + " C   " + getSensorValue('Östersensor').toFixed(1).toString() + "C"));
 
 	this.display.printText(0, 3, this.parentDisplay.lcdCenterText(""+this.CurrentPower.toString()+" W  "+(this.CurrentEnergy/1000).toString() + "kWh"));
 }

@@ -60,14 +60,14 @@ DimmerGlcdMenuItem.prototype.NewDimmerValue = function()
 	if (this.parentDisplay.currentMenuItem == this.myself)
 	{// If service is not online do nothing
 	if (this.display.isOnline()) {
-	this.display.printText(2,2,"Dimmer value: "+this.myDimmer230Service.currentValue + "  " ,"Standard","Standard");
+	this.display.printText(2,2,"Dimmer value: "+getDimmerService('TakSovrum').currentValue + "  " ,"Standard","Standard");
 this.display.DrawRect(120,17,25,5,"Inverted","Fill",0);
-this.display.DrawRect(120,17,this.myDimmer230Service.currentValue/10,5,"Standard","Fill",0);
+this.display.DrawRect(120,17,getDimmerService('TakSovrum').currentValue/10,5,"Standard","Fill",0);
 this.display.DrawRect(120,17,25,5,"Standard","NoFill",0);
 
 
 }} else {
-this.DimmerValue = this.myDimmer230Service.currentValue
+this.DimmerValue = getDimmerService('TakSovrum').currentValue
 }
 }
 
@@ -109,7 +109,7 @@ DimmerGlcdMenuItem.prototype.processEvent = function (event)
 this.DimmerValue += 25;
 if (this.DimmerValue > 255)
 this.DimmerValue = 255;
-this.myDimmer230Service.absFade(1, 132, this.DimmerValue);
+getDimmerService('TakSovrum').absFade(1, 132, this.DimmerValue);
 		//parentDisplay.changeToUp();
 		break;
 	
@@ -117,7 +117,7 @@ this.myDimmer230Service.absFade(1, 132, this.DimmerValue);
 this.DimmerValue -= 25;
 if (this.DimmerValue < 0)
 this.DimmerValue = 0;
-this.myDimmer230Service.absFade(1, 132, this.DimmerValue);
+getDimmerService('TakSovrum').absFade(1, 132, this.DimmerValue);
 		//parentDisplay.changeToDown();
 		break;
 	
@@ -131,7 +131,7 @@ if (this.DimmerValue != 0)
 this.DimmerValue = 0;
 else
 this.DimmerValue = 255;
-this.myDimmer230Service.absFade(1, 129, this.DimmerValue);
+getDimmerService('TakSovrum').absFade(1, 129, this.DimmerValue);
 
 		//parentDisplay.changeToBack();
 		break;
@@ -142,7 +142,7 @@ DimmerGlcdMenuItem.prototype.onEnter = function ()
 {
 	this.display.clearScreen("Standard");
 	this.display.printText(0,0,"Dimmer menu:","Standard","Standard");
-	this.myDimmer230Service.absFade(1, 132, this.DimmerValue);
+	getDimmerService('TakSovrum').absFade(1, 132, this.DimmerValue);
 for (var n in this.dimmerServices)
 {
 log("Dimmer: " + this.dimmerServices[n].getName() + " id: " + this.dimmerServices[n].getId() + "\n");
@@ -153,7 +153,7 @@ log("Dimmer: " + this.dimmerServices[n].getName() + " id: " + this.dimmerService
 DimmerGlcdMenuItem.prototype.update = function ()
 {
 
-if (this.myDimmer230Service.isOnline()) {
+if (getDimmerService('TakSovrum').isOnline()) {
 this.display.printText(2,2,"Dimmer value: "+this.DimmerValue + "  " ,"Standard","Standard");
 this.display.DrawRect(120,17,25,5,"Inverted","Fill",0);
 this.display.DrawRect(120,17,this.DimmerValue/10,5,"Standard","Fill",0);

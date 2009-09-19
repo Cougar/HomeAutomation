@@ -14,6 +14,7 @@ extend(Dimmer230, CanService);
 
 Dimmer230.prototype.canMessageHandler = function(canMessage)
 {
+var self = this;
 	if (canMessage.getDirectionFlag() == "From_Owner")
 	{
 		switch (canMessage.getCommandName())
@@ -29,6 +30,15 @@ Dimmer230.prototype.canMessageHandler = function(canMessage)
 			connectString = "connected";
 			frequencyString = " with frequency "+this.frequency;
 		}
+
+var dataArray = new Array();
+dataArray["service"] = self;
+dataArray["channel"] = canMessage.getData("Channel");
+dataArray["connection"] = canMessage.getData("Connection");
+dataArray["currentValue"] = canMessage.getData("DimmerValue");
+dataArray["moduleName"] = canMessage.getModuleName();
+dataArray["moduleId"] = canMessage.getModuleId();
+this.callEvent("newValue", dataArray);
 		//log(this.myName + ":" + this.myId + "> Netstatus, " + connectString + frequencyString + "\n");
 		break;
 		}

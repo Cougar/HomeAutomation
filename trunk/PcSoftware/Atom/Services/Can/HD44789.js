@@ -59,6 +59,13 @@ HD44789.prototype.onlineHandler = function()
 
 HD44789.prototype.printText = function(x, y, text)
 {
+	text = text.replace(/Å/, String.fromCharCode(1));
+	text = text.replace(/å/, String.fromCharCode(0));
+	text = text.replace(/Ä/, String.fromCharCode(2));
+	text = text.replace(/ä/, String.fromCharCode(225));
+	text = text.replace(/Ö/, String.fromCharCode(3));
+	text = text.replace(/ö/, String.fromCharCode(239));
+
 	while (text.length > 0)
 	{
 		var text6 = text.substr(0, 6);
