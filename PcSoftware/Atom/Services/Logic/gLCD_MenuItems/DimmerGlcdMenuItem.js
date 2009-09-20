@@ -1,5 +1,200 @@
 
 
+/* the display object who created the menu item */
+DimmerGlcdMenuItem.prototype.parentDisplay = null;
+
+DimmerGlcdMenuItem.prototype.dimmers = null;
+DimmerGlcdMenuItem.prototype.mode = 0;
+DimmerGlcdMenuItem.prototype.currentDimmerItem = 0;
+DimmerGlcdMenuItem.prototype.window_low = 0;
+DimmerGlcdMenuItem.prototype.window_high = 3;
+
+function DimmerGlcdMenuItem(parentDisplay, ks0108Object)
+{
+	var self = this;
+	this.parentDisplay = parentDisplay;
+	this.display = ks0108Object;	
+}
+
+/* the display object who created the menu item */
+DimmerGlcdMenuItem.prototype.parentDisplay = null;
+/* the display that we are writing to */
+DimmerGlcdMenuItem.prototype.display = null;
+
+/* How often the display shall update [ms]*/
+DimmerGlcdMenuItem.prototype.UpdateTime = 5000;
+
+/* what DimmerGlcdMenuItem is left of this item, if used */
+DimmerGlcdMenuItem.prototype.LeftItem = null;
+/* what DimmerGlcdMenuItem is right of this item, if used */
+DimmerGlcdMenuItem.prototype.RightItem = null;
+/* what DimmerGlcdMenuItem is after of this item, if used */
+DimmerGlcdMenuItem.prototype.PressEnterItem = null;
+/* what DimmerGlcdMenuItem is left of this item, if used */
+DimmerGlcdMenuItem.prototype.UpItem = null;
+/* what DimmerGlcdMenuItem is right of this item, if used */
+DimmerGlcdMenuItem.prototype.DownItem = null;
+/* what DimmerGlcdMenuItem is after of this item, if used */
+DimmerGlcdMenuItem.prototype.PressBackItem = null;
+/*
+Standard events can be:
+left, right, enter, back, up, down....
+*/
+DimmerGlcdMenuItem.prototype.processEvent = function (event)
+{
+	switch (event)
+	{
+	case "right":
+		if (this.mode == 0) {
+			this.parentDisplay.changeToRight();
+		} else if (this.mode == 1){
+			this.currentDimmerItem--;
+			if (this.currentDimmerItem < 0) {
+				this.currentDimmerItem= this.dimmers.length-1;
+if (this.dimmers.length-1 - (this.window_high-this.window_low) >= 0) {
+				this.window_low = this.dimmers.length-1 - (this.window_high-this.window_low);
+				this.window_high = this.dimmers.length-1;
+				//this.display.clearScreen();
+this.display.DrawRect(4,17,150,8*(this.window_high-this.window_low+1),"Inverted","Fill",1);
+}
+			} 
+		} 
+if (this.currentDimmerItem < this.window_low ) {
+				this.window_low--;
+				this.window_high--;
+				//this.display.clearScreen();
+this.display.DrawRect(4,17,150,8*(this.window_high-this.window_low+1),"Inverted","Fill",1);
+			}
+		break;
+
+	case "left":
+		if (this.mode == 0) {
+			this.parentDisplay.changeToLeft();
+		} else if (this.mode == 1){
+			this.currentDimmerItem++;
+			if (this.currentDimmerItem >= this.dimmers.length) {
+this.currentDimmerItem=0;
+				this.window_high = this.window_high-this.window_low;
+				this.window_low = 0;
+				//this.display.clearScreen();
+this.display.DrawRect(4,17,150,8*(this.window_high-this.window_low+1),"Inverted","Fill",1);
+			} 
+		} 
+if (this.currentDimmerItem > this.window_high ) {
+				this.window_low++;
+				this.window_high++;
+				//this.display.clearScreen();
+this.display.DrawRect(4,17,150,8*(this.window_high-this.window_low+1),"Inverted","Fill",1);
+			} 
+		break;
+	case "enter":
+if (this.mode == 0) {
+			if (this.dimmers.length > 0) {
+				//this.currentDimmerItem = 0;
+				this.mode = 1;
+this.display.DrawRect(1,17,3,8*(this.window_high-this.window_low+1),"Standard","Fill",0);
+//.DrawRect = function(x, y , width, height, inverted, fill, radius)
+
+			}
+		} else {
+			this.mode = 0;
+this.display.DrawRect(1,17,3,8*(this.window_high-this.window_low+1),"Inverted","Fill",0);
+		}
+		break;
+	case "up":
+this.dimmers[this.currentDimmerItem]['service'].relFade(this.dimmers[this.currentDimmerItem]['channel'],132, "Increase", 25);
+		//parentDisplay.changeToUp();
+		break;
+	
+	case "down":
+this.dimmers[this.currentDimmerItem]['service'].relFade(this.dimmers[this.currentDimmerItem]['channel'],132, "Decrease", 25);
+		//parentDisplay.changeToDown();
+		break;
+	
+	case "back":
+if (this.dimmers[this.currentDimmerItem]['service'].currentValue != 0)
+this.dimmers[this.currentDimmerItem]['service'].absFade(1, 129, 0);
+else
+this.dimmers[this.currentDimmerItem]['service'].absFade(1, 129, 255);
+		//parentDisplay.changeToBack();
+		break;
+	}
+}
+
+DimmerGlcdMenuItem.prototype.onEnter = function ()
+{
+	this.display.clearScreen("Standard");
+	this.display.printText(0,0,"Dimmer menu:","Standard","Standard");
+this.dimmers = getDimmerList();
+this.mode = 0;
+}
+DimmerGlcdMenuItem.prototype.update = function ()
+{
+	//this.display.clearScreen();
+row = 0;
+
+	for (var i = this.window_low; i < this.dimmers.length && i <= this.window_high; i++) {
+if (this.currentDimmerItem == i) {
+this.display.printText(1, row+2, " >"+ this.dimmers[i]['shortName'],"Standard","Standard");
+
+
+} else {
+this.display.printText(1, row+2, "  "+ this.dimmers[i]['shortName'],"Standard","Standard");
+
+}
+this.display.printText(16,row+2,""+(getDimmerValue(this.dimmers[i]['name'])/2.55).toFixed(0).toString() + "  " ,"Standard","Standard");
+this.display.DrawRect(120,17+row*8,25,5,"Inverted","Fill",0);
+this.display.DrawRect(120,17+row*8,getDimmerValue(this.dimmers[i]['name'])/10,5,"Standard","Fill",0);
+this.display.DrawRect(120,17+row*8,25,5,"Standard","NoFill",0);
+
+
+row++;
+}
+}
+
+DimmerGlcdMenuItem.prototype.onExit = function ()
+{
+	this.mode = 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*-----------------------------------------------------------------*/
+/*
 DimmerGlcdMenuItem.prototype.myDimmer230Service = null;
 DimmerGlcdMenuItem.prototype.myself;
 DimmerGlcdMenuItem.prototype.dimmerServices = new Array();
@@ -8,7 +203,7 @@ function DimmerGlcdMenuItem(parentDisplay, ks0108Object)
 {
 	this.parentDisplay = parentDisplay;
 	this.display = ks0108Object;
-	/* This is used for function declarations like the callbacks below */
+	// This is used for function declarations like the callbacks below 
 	myself = this;
 var self = this;
 	if (!this.parentDisplay.myInitialArguments["Dimmer230"])
@@ -70,29 +265,30 @@ this.display.DrawRect(120,17,25,5,"Standard","NoFill",0);
 this.DimmerValue = getDimmerService('TakSovrum').currentValue
 }
 }
-
+*/
 /* the display object who created the menu item */
-DimmerGlcdMenuItem.prototype.parentDisplay = null;
+//DimmerGlcdMenuItem.prototype.parentDisplay = null;
 /* the display that we are writing to */
-DimmerGlcdMenuItem.prototype.display = null;
+//DimmerGlcdMenuItem.prototype.display = null;
 
 /* what DimmerGlcdMenuItem is left of this item, if used */
-DimmerGlcdMenuItem.prototype.LeftItem = null;
+//DimmerGlcdMenuItem.prototype.LeftItem = null;
 /* what DimmerGlcdMenuItem is right of this item, if used */
-DimmerGlcdMenuItem.prototype.RightItem = null;
+//DimmerGlcdMenuItem.prototype.RightItem = null;
 /* what DimmerGlcdMenuItem is after of this item, if used */
-DimmerGlcdMenuItem.prototype.PressEnterItem = null;
+//DimmerGlcdMenuItem.prototype.PressEnterItem = null;
 /* what DimmerGlcdMenuItem is before of this item, if used */
-DimmerGlcdMenuItem.prototype.PressBackItem = null;
+//DimmerGlcdMenuItem.prototype.PressBackItem = null;
 /* what DimmerGlcdMenuItem is below of this item, if used */
-DimmerGlcdMenuItem.prototype.DownItem = null;
+//DimmerGlcdMenuItem.prototype.DownItem = null;
 /* what DimmerGlcdMenuItem is abowe of this item, if used */
-DimmerGlcdMenuItem.prototype.UpItem = null;
+//DimmerGlcdMenuItem.prototype.UpItem = null;
 
 /*
 Standard events can be:
 left, right, enter, back, up, down....
 */
+/*
 DimmerGlcdMenuItem.prototype.processEvent = function (event)
 {
 	switch (event)
@@ -165,4 +361,4 @@ DimmerGlcdMenuItem.prototype.onExit = function ()
 {
 	
 }
-
+*/

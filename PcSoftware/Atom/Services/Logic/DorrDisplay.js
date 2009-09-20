@@ -2,6 +2,7 @@
 loadScript("Logic/gLCD_MenuItems/MainMenuItem.js");
 loadScript("Logic/gLCD_MenuItems/SettingsMenuItem.js");
 loadScript("Logic/gLCD_MenuItems/DimmerGlcdMenuItem.js");
+loadScript("Logic/gLCD_MenuItems/SensorGlcdMenuItem.js");
 
 function DorrDisplay(type, name, id)
 {
@@ -25,6 +26,7 @@ DorrDisplay.prototype.myIntervalAlways = null;
 DorrDisplay.prototype.MainMenuItem = null;
 DorrDisplay.prototype.SettingMenuItem = null;
 DorrDisplay.prototype.DimmerGlcdMenuItem = null;
+DorrDisplay.prototype.SensorGlcdMenuItem = null;
 
 /* The currently displayed menuitem */
 DorrDisplay.prototype.currentMenuItem = null;
@@ -100,21 +102,27 @@ DorrDisplay.prototype.initialize = function(initialArguments)
 	this.MainMenuItem = new MainMenuItem(this, this.myGLCDService);
 this.SettingMenuItem = new SettingsMenuItem(this, this.myGLCDService);
 this.DimmerGlcdMenuItem = new DimmerGlcdMenuItem(this, this.myGLCDService);
+this.SensorGlcdMenuItem = new SensorGlcdMenuItem(this, this.myGLCDService);
 	
 	this.currentMenuItem = this.MainMenuItem;
 
 	
 	/* create the screensaver menu item */
-	this.SettingMenuItem.LeftItem=this.MainMenuItem;
-	this.SettingMenuItem.RightItem=this.DimmerGlcdMenuItem;
+	
 
 	/* set the function that shall be executed when knob is turned */
 	/* create the screensaver menu item */
-	this.MainMenuItem.LeftItem=this.DimmerGlcdMenuItem;
+	this.MainMenuItem.LeftItem=this.SensorGlcdMenuItem;
 	this.MainMenuItem.RightItem=this.SettingMenuItem;
-	this.DimmerGlcdMenuItem.RightItem=this.MainMenuItem;
-	this.DimmerGlcdMenuItem.LeftItem=this.SettingMenuItem;
 
+	this.SettingMenuItem.LeftItem=this.MainMenuItem;
+	this.SettingMenuItem.RightItem=this.DimmerGlcdMenuItem;
+
+	this.DimmerGlcdMenuItem.LeftItem=this.SettingMenuItem;
+	this.DimmerGlcdMenuItem.RightItem=this.SensorGlcdMenuItem;
+
+	this.SensorGlcdMenuItem.LeftItem=this.DimmerGlcdMenuItem;
+	this.SensorGlcdMenuItem.RightItem=this.MainMenuItem;
 
 }
 // 

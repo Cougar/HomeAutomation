@@ -4,6 +4,8 @@ DimmerMenuItem.prototype.parentDisplay = null;
 DimmerMenuItem.prototype.dimmers = null;
 DimmerMenuItem.prototype.mode = 0;
 DimmerMenuItem.prototype.currentDimmerItem = 0;
+DimmerMenuItem.prototype.window_low = 0;
+DimmerMenuItem.prototype.window_high = 3;
 
 function DimmerMenuItem(parentDisplay, hd44789Object)
 {
@@ -40,15 +42,26 @@ DimmerMenuItem.prototype.processEvent = function (event)
 			this.parentDisplay.changeToRight();
 		} else if (this.mode == 1){
 			this.currentDimmerItem--;
-			if (this.currentDimmerItem == -1) {
+			if (this.currentDimmerItem < 0) {
 				this.mode = 2;
+this.currentDimmerItem= this.dimmers.length-1;
 			} 
 		} else if (this.mode == 3){
 this.dimmers[this.currentDimmerItem]['service'].relFade(this.dimmers[this.currentDimmerItem]['channel'],132, "Decrease", 25);
 		} else {
 this.mode = 1;
 this.currentDimmerItem= this.dimmers.length-1;
+if (this.dimmers.length-1 - (this.window_high-this.window_low) >= 0) {
+				this.window_low = this.dimmers.length-1 - (this.window_high-this.window_low);
+				this.window_high = this.dimmers.length-1;
+				this.display.clearScreen();
 }
+}
+if (this.currentDimmerItem < this.window_low ) {
+				this.window_low--;
+				this.window_high--;
+				this.display.clearScreen();
+			}
 		break;
 
 	case "left":
@@ -56,20 +69,30 @@ this.currentDimmerItem= this.dimmers.length-1;
 			this.parentDisplay.changeToLeft();
 		} else if (this.mode == 1){
 			this.currentDimmerItem++;
-			if (this.currentDimmerItem == this.dimmers.length) {
+			if (this.currentDimmerItem >= this.dimmers.length) {
 				this.mode = 2;
+this.currentDimmerItem=0;
 			} 
 		} else if (this.mode == 3){
 this.dimmers[this.currentDimmerItem]['service'].relFade(this.dimmers[this.currentDimmerItem]['channel'],132, "Increase", 25);
 		} else {
 this.mode = 1;
 this.currentDimmerItem=0;
+				this.window_high = this.window_high-this.window_low;
+				this.window_low = 0;
+				this.display.clearScreen();
+
 }
+if (this.currentDimmerItem > this.window_high ) {
+				this.window_low++;
+				this.window_high++;
+				this.display.clearScreen();
+			} 
 		break;
 	case "enter":
 if (this.mode == 0) {
 			if (this.dimmers.length > 0) {
-				this.currentDimmerItem = 0;
+				//this.currentDimmerItem = 0;
 				this.mode = 1;
 			}
 		} else if (this.mode == 1){
@@ -91,20 +114,24 @@ this.mode = 0;
 }
 DimmerMenuItem.prototype.update = function ()
 {
-	this.display.clearScreen();
+	//this.display.clearScreen();
 if (this.mode != 2) {
-	for (var i = 0; i < this.dimmers.length && i < 4; i++) {
+row = 0;
+
+	for (var i = this.window_low; i < this.dimmers.length && i <= this.window_high; i++) {
 if (this.mode == 1 && this.currentDimmerItem == i) {
-this.display.printText(0, i, this.parentDisplay.lcdCenterText("-"+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"."));
+this.display.printText(0, row, this.parentDisplay.lcdCenterText("-"+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"   "));
 } else if (this.mode == 3 && this.currentDimmerItem == i) {
-this.display.printText(0, i, this.parentDisplay.lcdCenterText("<>"+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"."));
+this.display.printText(0, row, this.parentDisplay.lcdCenterText("<>"+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"   "));
 } else {
-this.display.printText(0, i, this.parentDisplay.lcdCenterText(""+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"."));
-}
+this.display.printText(0, row, this.parentDisplay.lcdCenterText(""+ this.dimmers[i]['name'] + " " +getDimmerValue(this.dimmers[i]['name'])+"   "));
 
 }
+row++;
+}
 } else {
-this.display.printText(0, i, this.parentDisplay.lcdCenterText("Tillbaka"));
+this.display.clearScreen();
+this.display.printText(0, 0, this.parentDisplay.lcdCenterText("Tillbaka"));
 }
 }
 
