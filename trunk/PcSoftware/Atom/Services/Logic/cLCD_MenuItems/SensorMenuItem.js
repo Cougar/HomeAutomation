@@ -4,7 +4,7 @@ SensorMenuItem.prototype.sensors = null;
 SensorMenuItem.prototype.mode = 0;
 SensorMenuItem.prototype.currentSensorItem = 0;
 SensorMenuItem.prototype.window_low = 0;
-SensorMenuItem.prototype.window_high = 3;
+SensorMenuItem.prototype.window_high = 3; //set to nummber of rows you want to display minus 1
 
 
 function SensorMenuItem(parentDisplay, hd44789Object)
@@ -44,10 +44,16 @@ SensorMenuItem.prototype.processEvent = function (event)
 			this.currentSensorItem--;
 			if (this.currentSensorItem == -1) {
 				this.currentSensorItem= this.sensors.length-1;
+if (this.sensors.length-1 - (this.window_high-this.window_low) >= 0) {
+				this.window_low = this.sensors.length-1 - (this.window_high-this.window_low);
+				this.window_high = this.sensors.length-1;
+				this.display.clearScreen();
+}
 			}
 			if (this.currentSensorItem < this.window_low ) {
 				this.window_low--;
 				this.window_high--;
+				this.display.clearScreen();
 			}
 		}
 		break;
@@ -58,10 +64,14 @@ SensorMenuItem.prototype.processEvent = function (event)
 			this.currentSensorItem++;
 			if (this.currentSensorItem == this.sensors.length) {
 				this.currentSensorItem=0;
+				this.window_high = this.window_high-this.window_low;
+				this.window_low = 0;
+				this.display.clearScreen();
 			}
 			if (this.currentSensorItem > this.window_high ) {
 				this.window_low++;
 				this.window_high++;
+				this.display.clearScreen();
 			} 
 		} 
 		break;
@@ -87,14 +97,17 @@ SensorMenuItem.prototype.onEnter = function ()
 SensorMenuItem.prototype.update = function ()
 {
 	//this.display.clearScreen();
-row = 0;
+	row = 0;
 	for (var i = this.window_low; i < this.sensors.length && i <= this.window_high; i++) {
 		if (this.mode == 1 && this.currentSensorItem == i) {
-			this.display.printText(0, row, ">"+ this.sensors[i]['shortName'] + " " +getSensorValue(this.sensors[i]['name']).toFixed(1).toString()+" C");
+			this.display.printText(0, row, ">"+ this.sensors[i]['shortName']);
+			this.display.printText(14, row,getSensorValue(this.sensors[i]['name']).toFixed(1).toString()+"¤C");
+
 		} else {
-			this.display.printText(0, row, " "+ this.sensors[i]['shortName'] + " " +getSensorValue(this.sensors[i]['name']).toFixed(1).toString()+" C");
+			this.display.printText(0, row, " "+ this.sensors[i]['shortName']);
+			this.display.printText(14, row,getSensorValue(this.sensors[i]['name']).toFixed(1).toString()+"¤C");
 		}
-row++;
+		row++;
 	}
 }
 

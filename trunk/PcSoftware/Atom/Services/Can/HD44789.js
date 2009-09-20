@@ -65,6 +65,7 @@ HD44789.prototype.printText = function(x, y, text)
 	text = text.replace(/ä/, String.fromCharCode(225));
 	text = text.replace(/Ö/, String.fromCharCode(3));
 	text = text.replace(/ö/, String.fromCharCode(239));
+	text = text.replace(/¤/, String.fromCharCode(223));
 
 	while (text.length > 0)
 	{
