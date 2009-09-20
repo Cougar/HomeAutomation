@@ -13,13 +13,13 @@ void act_hd44780_Init(void)
 	OCR0B = act_hd44780_INITIAL_CONTRAST;
 	DDRD |= (1<<PD5);
 
-
+#if (act_hd44780_TYPE==0)
 	// Backlight
 	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
 	OCR0A = act_hd44780_INITIAL_BACKLIGHT;
 	DDRD |= (1<<PD6);
-
+#endif
 
 	lcd_init(LCD_DISP_ON);
 	lcd_clrscr();

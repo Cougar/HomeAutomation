@@ -4,8 +4,9 @@ act_hd44780_ID=<ID>
 act_hd44780_WIDTH=20
 act_hd44780_HEIGHT=4
 #TYPE=0 for lcd, TYPE=1 for oled, changes brightness behaivure
-act_hd44780_TYPE=1
+act_hd44780_TYPE=0
 
+#only used on an lcd
 act_hd44780_INITIAL_BACKLIGHT=0x7F
 
 #this is contrast on an lcd and brightness on oled (default value of 0xf0 should be good on oled)
