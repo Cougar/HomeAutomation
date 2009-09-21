@@ -47,13 +47,13 @@ KS0108.prototype.onlineHandler = function()
 
 KS0108.prototype.printText = function(x, y, text, inverted, transparent)
 {
-	text = text.replace(/å/, String.fromCharCode('z'+6));
-	text = text.replace(/Å/, String.fromCharCode('z'+7));
-	text = text.replace(/ä/, String.fromCharCode('z'+8));
-	text = text.replace(/Ä/, String.fromCharCode('z'+9));
-	text = text.replace(/ö/, String.fromCharCode('z'+10));
-	text = text.replace(/Ö/, String.fromCharCode('z'+11));
-	text = text.replace(/¤/, String.fromCharCode('z'+12));
+	text = text.replace(/å/, String.fromCharCode(128));
+	text = text.replace(/Å/, String.fromCharCode(129));
+	text = text.replace(/ä/, String.fromCharCode(130));
+	text = text.replace(/Ä/, String.fromCharCode(131));
+	text = text.replace(/ö/, String.fromCharCode(132));
+	text = text.replace(/Ö/, String.fromCharCode(133));
+	text = text.replace(/¤/, String.fromCharCode(134));
 	while (text.length > 0)
 	{
 		var text6 = text.substr(0, 6);
