@@ -23,7 +23,6 @@ power.prototype.canMessageHandler = function(canMessage)
 		case "ElectricPower":
 		//log(this.myName + ":" + this.myId + "> New value: " + canMessage.getData("Value") + "\n");
 		this.myLastValuePower = canMessage.getData("Power");
-		this.myLastValuePower4 = canMessage.getData("Power4");
 		this.myLastValuePower32 = canMessage.getData("Power32");
 		this.myLastValueEnergy = canMessage.getData("EnergySum");
 		this.callEvent("newValue");
@@ -32,6 +31,10 @@ power.prototype.canMessageHandler = function(canMessage)
 		case "Report_Interval":
 		log(this.myName + ":" + this.myId + "> New report interval: " + canMessage.getData("Time") + "\n");
 		this.myReportInterval = canMessage.getData("Time");
+		break;
+		
+		case "setEnergy":
+		log(this.myName + ":" + this.myId + "> New energy stored: " + canMessage.getData("Energy") + "\n");
 		break;
 		}
 	}
@@ -43,10 +46,7 @@ power.prototype.getPower = function()
 {
 	return this.myLastValuePower;
 }
-power.prototype.getPower4 = function()
-{
-	return this.myLastValuePower4;
-}
+
 power.prototype.getPower32 = function()
 {
 	return this.myLastValuePower32;
