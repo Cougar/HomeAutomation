@@ -506,8 +506,9 @@ CanNode.prototype.checkOffline = function()
 	if (this.myIsOnline)
 	{
 		var date = new Date();
-		if (this.myHeartbeatTime + 10 < date.getTimestamp())
+		if (this.myHeartbeatTime + 11 < date.getTimestamp())
 		{
+			//log(uint2hex(this.myHardwareId, 32) + "> Offline time: "+(date.getTimestamp()-this.myHeartbeatTime)+"\n");
 			this.setOffline();
 		}
 	}
