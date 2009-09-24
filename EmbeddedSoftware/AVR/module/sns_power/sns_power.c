@@ -141,7 +141,7 @@ StdCan_Msg_t txMsg;
 			StdCan_Put(&txMsg);
 			break;
 		case CAN_MODULE_CMD_POWER_SETENERGY:
-			if (rxMsg->Length == 2)
+			if (rxMsg->Length == 4)
 			{
 				EnergyCounter = rxMsg->Data[3];
 				EnergyCounter += ((uint32_t)rxMsg->Data[2])<<8;
