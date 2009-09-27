@@ -25,7 +25,9 @@ struct eeprom_act_softPWM EEMEM eeprom_act_softPWM =
 
 uint16_t pwmValue[NUMBEROFCHANNELS];
 float pwmValueFloat[NUMBEROFCHANNELS];
-
+#if act_softPWM_ACTIVATE_AUTOOFF != 0
+uint8_t offCounter[NUMBEROFCHANNELS];
+#endif
 void act_softPWM_Init(void)
 {
 #ifdef act_softPWM_USEEEPROM
@@ -91,29 +93,37 @@ void act_softPWM_Process(void)
 		currentTimer++;
 		if (currentTimer == maxTimer) {
 			currentTimer=0;
-			#ifdef PIN_0 
-				gpio_set_pin(PIN_0);
+			#ifdef PIN_0
+				if (pwmValue[0]!=0)
+					gpio_set_pin(PIN_0);
 			#endif
 			#ifdef PIN_1 
-				gpio_set_pin(PIN_1);
+				if (pwmValue[1]!=0)
+					gpio_set_pin(PIN_1);
 			#endif
 			#ifdef PIN_2 
-				gpio_set_pin(PIN_2);
+				if (pwmValue[2]!=0)
+					gpio_set_pin(PIN_2);
 			#endif
 			#ifdef PIN_3 
-				gpio_set_pin(PIN_3);
+				if (pwmValue[3]!=0)
+					gpio_set_pin(PIN_3);
 			#endif
 			#ifdef PIN_4 
-				gpio_set_pin(PIN_4);
+				if (pwmValue[4]!=0)
+					gpio_set_pin(PIN_4);
 			#endif
 			#ifdef PIN_5 
-				gpio_set_pin(PIN_5);
+				if (pwmValue[5]!=0)
+					gpio_set_pin(PIN_5);
 			#endif
 			#ifdef PIN_6 
-				gpio_set_pin(PIN_6);
+				if (pwmValue[6]!=0)
+					gpio_set_pin(PIN_6);
 			#endif
 			#ifdef PIN_7 
-				gpio_set_pin(PIN_7);
+				if (pwmValue[7]!=0)
+					gpio_set_pin(PIN_7);
 			#endif
 		}
 		#ifdef PIN_0
@@ -203,6 +213,14 @@ void act_softPWM_Process(void)
 		txMsg.Data[1] = (pwmValue[currentSendChannelId]>>8)&0xff;
 		txMsg.Data[2] = (pwmValue[currentSendChannelId])&0xff;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+#if act_softPWM_ACTIVATE_AUTOOFF != 0
+		offCounter[currentSendChannelId]--;
+		if (offCounter[currentSendChannelId] == 0) {
+			pwmValue[currentSendChannelId] = 0;
+			pwmValueFloat[currentSendChannelId] = 0;
+			offCounter[currentSendChannelId] = 1;
+		}
+#endif
 		currentSendChannelId++;
 		if (currentSendChannelId >= NUMBEROFCHANNELS)
 			currentSendChannelId=0;
@@ -231,6 +249,9 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 					rxMsg->Length = 3;
 					while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
+					#if act_softPWM_ACTIVATE_AUTOOFF != 0
+					offCounter[rxMsg->Data[0]] = act_softPWM_ACTIVATE_AUTOOFF;
+					#endif
 				}
 			} else if (rxMsg->Length == 1) {
 				rxMsg->Data[1] = (uint8_t)0x00ff & (((uint32_t)(pwmValueFloat[rxMsg->Data[0]]*64))>>8);
