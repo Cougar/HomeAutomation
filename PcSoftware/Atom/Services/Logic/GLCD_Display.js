@@ -4,7 +4,7 @@ loadScript("Logic/gLCD_MenuItems/SettingsMenuItem.js");
 loadScript("Logic/gLCD_MenuItems/DimmerGlcdMenuItem.js");
 loadScript("Logic/gLCD_MenuItems/SensorGlcdMenuItem.js");
 
-function DorrDisplay(type, name, id)
+function GLCD_Display(type, name, id)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
@@ -13,38 +13,38 @@ function DorrDisplay(type, name, id)
 
 /* We inherit from Service with this call, it must always be next
    after the constructor */
-extend(DorrDisplay, Service);
+extend(GLCD_Display, Service);
 
 /* Declaration of instance variables, for static variables remove prototype */
 
-DorrDisplay.prototype.myGLCDService = null;
-DorrDisplay.prototype.myRotaryService1 = null;
+GLCD_Display.prototype.myGLCDService = null;
+GLCD_Display.prototype.myRotaryService1 = null;
 
-DorrDisplay.prototype.myInterval = null;
-DorrDisplay.prototype.myIntervalAlways = null;
+GLCD_Display.prototype.myInterval = null;
+GLCD_Display.prototype.myIntervalAlways = null;
 
-DorrDisplay.prototype.MainMenuItem = null;
-DorrDisplay.prototype.SettingMenuItem = null;
-DorrDisplay.prototype.DimmerGlcdMenuItem = null;
-DorrDisplay.prototype.SensorGlcdMenuItem = null;
+GLCD_Display.prototype.MainMenuItem = null;
+GLCD_Display.prototype.SettingMenuItem = null;
+GLCD_Display.prototype.DimmerGlcdMenuItem = null;
+GLCD_Display.prototype.SensorGlcdMenuItem = null;
 
 /* The currently displayed menuitem */
-DorrDisplay.prototype.currentMenuItem = null;
+GLCD_Display.prototype.currentMenuItem = null;
 
 /* counter for going to screensaver */
-DorrDisplay.prototype.screenSaverCnt = null;
+GLCD_Display.prototype.screenSaverCnt = null;
 
 /* counter for going to main screen */
-DorrDisplay.prototype.mainScreenCnt = null;
+GLCD_Display.prototype.mainScreenCnt = null;
 
-const DorrDisplay_mainScreenTimeout = 20;
-const DorrDisplay_screenSaverTimeout = 25;
+const GLCD_Display_mainScreenTimeout = 20;
+const GLCD_Display_screenSaverTimeout = 25;
 
-DorrDisplay.prototype.defaultBacklight = 60;
+GLCD_Display.prototype.defaultBacklight = 60;
 
 /* This function must always be declared, this is where all the startup code
    should be placed. Gets called with arguments like what ids to use etc. */
-DorrDisplay.prototype.initialize = function(initialArguments)
+GLCD_Display.prototype.initialize = function(initialArguments)
 {
 	/* We must always call the parent initialize */
 	this.Service.prototype.initialize.call(this, initialArguments);
@@ -126,7 +126,7 @@ this.SensorGlcdMenuItem = new SensorGlcdMenuItem(this, this.myGLCDService);
 
 }
 // 
-DorrDisplay.prototype.changeToLeft = function()
+GLCD_Display.prototype.changeToLeft = function()
 {
 	if (this.currentMenuItem.LeftItem)
 	{
@@ -136,7 +136,7 @@ DorrDisplay.prototype.changeToLeft = function()
 	}
 }
 
-DorrDisplay.prototype.changeToRight = function()
+GLCD_Display.prototype.changeToRight = function()
 {
 	if (this.currentMenuItem.RightItem)
 	{
@@ -146,7 +146,7 @@ DorrDisplay.prototype.changeToRight = function()
 	}
 }
 
-DorrDisplay.prototype.changeToUp = function()
+GLCD_Display.prototype.changeToUp = function()
 {
 	if (this.currentMenuItem.UpItem)
 	{
@@ -155,7 +155,7 @@ DorrDisplay.prototype.changeToUp = function()
 		this.currentMenuItem.onEnter();
 	}
 }
-DorrDisplay.prototype.changeToDown = function()
+GLCD_Display.prototype.changeToDown = function()
 {
 	if (this.currentMenuItem.DownItem)
 	{
@@ -165,7 +165,7 @@ DorrDisplay.prototype.changeToDown = function()
 	}
 }
 
-DorrDisplay.prototype.changeToEnter = function()
+GLCD_Display.prototype.changeToEnter = function()
 {
 	if (this.currentMenuItem.PressEnterItem)
 	{
@@ -175,7 +175,7 @@ DorrDisplay.prototype.changeToEnter = function()
 	}
 }
 
-DorrDisplay.prototype.changeToBack = function()
+GLCD_Display.prototype.changeToBack = function()
 {
 	if (this.currentMenuItem.PressBackItem)
 	{
@@ -185,11 +185,11 @@ DorrDisplay.prototype.changeToBack = function()
 	}
 }
 
-DorrDisplay.prototype.rotaryOnline = function()
+GLCD_Display.prototype.rotaryOnline = function()
 {
 }
 
-DorrDisplay.prototype.rotaryPosUpdate1 = function(SwitchId)
+GLCD_Display.prototype.rotaryPosUpdate1 = function(SwitchId)
 {
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
@@ -221,7 +221,7 @@ for (var i = 0; i < this.myRotaryService1.getSteps(SwitchId); i++)
 	this.updateDisplay();
 }
 
-DorrDisplay.prototype.rotaryBtnUpdate1 = function(SwitchId)
+GLCD_Display.prototype.rotaryBtnUpdate1 = function(SwitchId)
 {
 	this.screenSaverCnt = 0;
 	this.mainScreenCnt = 0;
@@ -240,7 +240,7 @@ if (this.myRotaryService1.getButtonStatus(SwitchId) == "Released")
 }
 }
 
-DorrDisplay.prototype.updateDisplay = function()
+GLCD_Display.prototype.updateDisplay = function()
 {
 if (this.myGLCDService.getBacklight() == 0) {
 this.myGLCDService.setBacklight(this.defaultBacklight);
@@ -248,7 +248,7 @@ this.myGLCDService.setBacklight(this.defaultBacklight);
 	this.currentMenuItem.update();
 }
 
-DorrDisplay.prototype.lcdCenterText = function(text)
+GLCD_Display.prototype.lcdCenterText = function(text)
 {
 	returnText = text;
 	var displayWidth = 20;	//this.myLCDService.getWidth();
@@ -258,11 +258,11 @@ DorrDisplay.prototype.lcdCenterText = function(text)
 	return returnText;
 }
 
-DorrDisplay.prototype.lcdOffline = function()
+GLCD_Display.prototype.lcdOffline = function()
 {
 }
 
-DorrDisplay.prototype.lcdOnline = function()
+GLCD_Display.prototype.lcdOnline = function()
 {
 	/* If service is not online do nothing */
 	if (this.myGLCDService.isOnline())
@@ -276,20 +276,20 @@ DorrDisplay.prototype.lcdOnline = function()
 }
 
 
-DorrDisplay.prototype.sendTimeStamp = function()
+GLCD_Display.prototype.sendTimeStamp = function()
 {
 	var canMessage = new CanNMTMessage("nmt", "Time");
 	canMessage.send();
 }
 
-DorrDisplay.prototype.timerUpdate = function()
+GLCD_Display.prototype.timerUpdate = function()
 {
 	/* If LCD service is not online do nothing */
 	if (this.myGLCDService.isOnline())
 	{
 		this.screenSaverCnt++;
 		this.mainScreenCnt++;
-		if (this.mainScreenCnt > DorrDisplay_mainScreenTimeout/5  && this.currentMenuItem != this.MainMenuItem)
+		if (this.mainScreenCnt > GLCD_Display_mainScreenTimeout/5  && this.currentMenuItem != this.MainMenuItem)
 		{
 			/* Go to main screen (time) */
 this.currentMenuItem.onExit();
@@ -302,7 +302,7 @@ this.currentMenuItem.onEnter();
 
 		}
 		
-		if (this.screenSaverCnt > DorrDisplay_screenSaverTimeout/5)
+		if (this.screenSaverCnt > GLCD_Display_screenSaverTimeout/5)
 		{
 			/* Go to screensaver menu */
 this.myGLCDService.setBacklight(0);
