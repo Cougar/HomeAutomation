@@ -25,6 +25,15 @@ void act_PID_List(uint8_t ModuleSequenceNumber);
 		uint8_t sensorModuleType;
 		uint8_t sensorModuleId;
 		uint8_t sensorId;
+		uint16_t K_P;
+		uint16_t K_I;
+		uint16_t K_D;
+		uint8_t TimeMsOrS;
+		uint16_t Time;
+		uint8_t actuatorModuleType;
+		uint8_t actuatorModuleId;
+		uint8_t actuatorId;
+		uint8_t sendPeriod;
 	};
 #endif
 
