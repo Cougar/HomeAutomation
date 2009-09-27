@@ -12,7 +12,7 @@ act_softPWM_SEND_TIMER=<TIMER>
 # that must be sent without any update to the pwm value
 # before the output shall turn off.
 # set it to 0 to deactivate this feature
-act_softPWM_ACTIVATE_AUTOOFF=20;
+act_softPWM_ACTIVATE_AUTOOFF=0
 
 
 #use up to 8 channels, but do it in order, otherwice there will be problems setting the correct values over CAN
