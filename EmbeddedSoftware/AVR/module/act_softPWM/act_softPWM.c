@@ -47,7 +47,7 @@ void act_softPWM_Init(void)
 #endif  
 	///TODO: Initialize hardware etc here
 uint8_t i;
-for (i=0, i < NUMBEROFCHANNELS; i++) {
+for (i=0; i < NUMBEROFCHANNELS; i++) {
 	pwmValue[i] = 0;
 	pwmValueFloat[i] = 0;
 }
