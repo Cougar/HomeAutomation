@@ -13,6 +13,7 @@ TC1047A.prototype.myLastValue = null;
 
 TC1047A.prototype.canMessageHandler = function(canMessage)
 {
+	var self = this;
 	if (canMessage.getDirectionFlag() == "From_Owner")
 	{
 		switch (canMessage.getCommandName())
