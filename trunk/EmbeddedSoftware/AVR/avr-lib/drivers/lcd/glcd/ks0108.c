@@ -207,8 +207,8 @@ void glcdPowerOn(){
 	gpio_clr_pin(LCD_CONTROL_CS1);
 	gpio_clr_pin(LCD_CONTROL_CS2);
 #else
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(LCD_CONTROL_CS1);
+	gpio_set_pin(LCD_CONTROL_CS2);
 #endif
 	Disable();
 	Delay();
@@ -229,8 +229,8 @@ void glcdClear(){
 	gpio_clr_pin(LCD_CONTROL_CS1);
 	gpio_clr_pin(LCD_CONTROL_CS2);
 #else
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(LCD_CONTROL_CS1);
+	gpio_set_pin(LCD_CONTROL_CS2);
 #endif
 	Enable();
 	Delay();
