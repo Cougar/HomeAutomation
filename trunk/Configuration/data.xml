@@ -177,11 +177,38 @@
 	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
 	</variables>
       </command>
-    <command id="129" name="CONFIG" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+      <command id="129" name="CONFIG_SENSOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
 	<variables>
 	  <variable name="sensorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
 	  <variable name="sensorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
 	  <variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
+      <command id="130" name="CONFIG_ACTUATOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="actuatorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	  <variable name="actuatorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	  <variable name="actuatorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	</variables>
+      </command>
+      <command id="131" name="CONFIG_PARAMETER" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
+	<variables>
+	  <variable name="K_P" type="float" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="K_I" type="float" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="K_D" type="float" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="TimeUnit" type="uint" start_bit="48" bit_length="1" unit="" description="">
+	    <value id="0" name="Seconds"/>
+	    <value id="1" name="Milliseconds"/>
+	  </variable>
+	  <variable name="RegulatorTime" type="uint" start_bit="49" bit_length="16" unit="" description=""/>
+	</variables>
+      </command>
+      <command id="132" name="PID_STATUS" type="specific" module="PID" description="information about the pid controller">
+	<variables>
+	  <variable name="Measurment" type="float" start_bit="0" bit_length="16" unit="" description=""/>
+	  <variable name="Reference" type="float" start_bit="16" bit_length="16" unit="" description=""/>
+	  <variable name="PWM" type="float" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
 	</variables>
       </command>
       <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
