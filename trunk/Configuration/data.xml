@@ -28,7 +28,7 @@
     <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data">
       <variables>
         <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="65" name="Temperature_Celsius" type="physical" module="" description="Temperature data">
@@ -196,7 +196,7 @@
 	  <variable name="K_P" type="float" start_bit="0" bit_length="16" unit="" description=""/>
 	  <variable name="K_I" type="float" start_bit="16" bit_length="16" unit="" description=""/>
 	  <variable name="K_D" type="float" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
+	  <variable name="TimeUnit" type="uint" start_bit="48" bit_length="1" unit="" description="">
 	    <value id="0" name="Seconds"/>
 	    <value id="1" name="Milliseconds"/>
 	  </variable>
@@ -476,7 +476,6 @@
 		    <value id="2" name="60Hz"/>
 		</variable>
 		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
-		<variable name="Channel" type="uint" start_bit="16" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
