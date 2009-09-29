@@ -196,7 +196,7 @@
 	  <variable name="K_P" type="float" start_bit="0" bit_length="16" unit="" description=""/>
 	  <variable name="K_I" type="float" start_bit="16" bit_length="16" unit="" description=""/>
 	  <variable name="K_D" type="float" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="TimeUnit" type="uint" start_bit="48" bit_length="1" unit="" description="">
+	  <variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
 	    <value id="0" name="Seconds"/>
 	    <value id="1" name="Milliseconds"/>
 	  </variable>
