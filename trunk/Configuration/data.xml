@@ -476,6 +476,7 @@
 		    <value id="2" name="60Hz"/>
 		</variable>
 		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
+		<variable name="Channel" type="uint" start_bit="16" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
