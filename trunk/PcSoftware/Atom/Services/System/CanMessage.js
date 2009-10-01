@@ -83,12 +83,15 @@ CanMessage.prototype.getData = function(name)
 CanMessage.prototype.getDataString = function()
 {
 	var str = "";
+	var tmp = "";
 	
 	for (var key in this.myData)
 	{
 		/* encode base64 on the data part */
-		this.myData[key] = encode64(this.myData[key]+'');
-		str += key + ":" + this.myData[key] + ",";
+		//this.myData[key] = encode64(this.myData[key]+'');
+		//str += key + ":" + this.myData[key] + ",";
+		tmp = encode64(this.myData[key]+'');
+		str += key + ":" + tmp + ",";
 	}
 	
 	return str.rtrim(",");
