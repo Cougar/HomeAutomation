@@ -254,7 +254,7 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 //printf("3\n");
 				if (rxMsg->Data[0] < NUMBEROFCHANNELS) {
 					pwmValueCAN[rxMsg->Data[0]] = ((uint16_t)((rxMsg->Data[1]<<8) + rxMsg->Data[2]));
-if (softPWM_INVERT_PWM == 1) {
+if (act_softPWM_INVERT_PWM == 1) {
 					pwmValue[rxMsg->Data[0]] = maxTimer - ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
 }else {
 pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
