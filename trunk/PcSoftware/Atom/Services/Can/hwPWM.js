@@ -44,10 +44,14 @@ hwPWM.prototype.getValue = function(sensorId)
 	canMessage.setData("Time", time);
 	sendMessage(canMessage);
 }*/
+
+/**
+pwmValue in % with 0.01 resolution (Example: 55.25%)
+*/
 hwPWM.prototype.setPWMValue = function(pwmvalue, sensorId)
 {
-	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "hwPWM");
-	canMessage.setData("ChannelId", sensorId);
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "Pwm");
+	canMessage.setData("Id", sensorId);
 	canMessage.setData("Value", pwmvalue*100);
 	sendMessage(canMessage);
 	
