@@ -254,7 +254,11 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 //printf("3\n");
 				if (rxMsg->Data[0] < NUMBEROFCHANNELS) {
 					pwmValueCAN[rxMsg->Data[0]] = ((uint16_t)((rxMsg->Data[1]<<8) + rxMsg->Data[2]));
-					pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
+if (softPWM_INVERT_PWM == 1) {
+					pwmValue[rxMsg->Data[0]] = maxTimer - ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
+}else {
+pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
+}
 					rxMsg->Data[1] = (uint8_t)(0x00ff & (pwmValueCAN[rxMsg->Data[0]]>>8));
 					rxMsg->Data[2] = (uint8_t)(0x00ff & pwmValueCAN[rxMsg->Data[0]]);
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
