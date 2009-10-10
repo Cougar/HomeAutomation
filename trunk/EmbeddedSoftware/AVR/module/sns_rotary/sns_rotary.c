@@ -51,7 +51,7 @@ void BlockTransmission_callback(uint8_t timer)
 	FlagBlockTransmission = 0;
 }
 
-#if ROTARY_CH1_SECOND != 0
+#if ROTARY_SECOND_ENABLE != 0
 uint8_t rotaryEncoder_second_Position = 0;
 uint8_t rotaryEncoder_second_Position_old = 0;
 uint8_t rotaryEncoder_second_Button_Position = 0;
@@ -122,7 +122,7 @@ void sns_rotary_Init(void)
 	Pcint_SetCallbackPin(sns_rotary_PCINT_CH2, ROTARY_CH2, &sns_rotary_pcint_callback);
 	Pcint_SetCallbackPin(sns_rotary_PCINT_BTN, ROTARY_BTN, &sns_rotary_pcint_callback);
 
-#if ROTARY_CH1_SECOND != 0
+#if ROTARY_SECOND_ENABLE != 0
 	rotaryEncoder_second_Position = 0;	// Set initial value to 0
 	rotaryEncoder_second_Position_old = 0;	// Set initial value to 0
 
@@ -200,7 +200,7 @@ void sns_rotary_Process(void)
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 #endif
 	}
-#if ROTARY_CH1_SECOND != 0
+#if ROTARY_SECOND_ENABLE != 0
 	if (rotaryEncoder_second_Position != rotaryEncoder_second_Position_old && !FlagBlockTransmission_second)
 	{
 		FlagBlockTransmission_second=1;
