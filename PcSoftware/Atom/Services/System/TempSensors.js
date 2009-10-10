@@ -135,3 +135,19 @@ function getSensorList()
 	return sensorList;
 }
 
+function getSensorName(moduleType, moduleId, sensorId)
+{
+	var sensorStore = DataStore.getStore("SensorNames");
+	var sensorIndex = 0;
+	if (sensorStore)
+	{
+		for (var n = 0; n < sensorStore['SensorNames'].length; n++)
+		{
+			if (this.sensorValues[moduleType +""+moduleId+""+sensorId] != null) 
+			{
+				return sensorStore['SensorNames'][n]['name'];
+			}
+		}
+	}
+	return null;
+}

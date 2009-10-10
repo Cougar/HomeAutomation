@@ -260,6 +260,10 @@ string CanMessage::getJSONData()
 		{
 			json += iter->second.getValue();
 		}
+		else if (iter->second.getType() == "int")
+		{
+			json += iter->second.getValue();
+		}
 		else if (iter->second.getType() == "float")
 		{
 			json += iter->second.getValue();

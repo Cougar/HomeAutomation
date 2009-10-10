@@ -14,5 +14,13 @@
 		moduleType : 'Dimmer230', 
 		moduleId : 1,
 		channel : 0
+	},
+	{
+		name : 'TakHall', 
+		description : 'bla bla', 
+		shortName : 'Hall tak',
+		moduleType : 'Dimmer230', 
+		moduleId : 5,
+		channel : 0
 	}
 ]}

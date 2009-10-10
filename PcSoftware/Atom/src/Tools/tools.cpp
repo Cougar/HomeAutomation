@@ -56,6 +56,26 @@ unsigned int bin2uint(string bin)
 	return num;
 }
 
+int bin2int(string bin)
+{
+	int num = 0;
+	if (bin[0] == '1') {
+		for (int n = bin.length()-1; n >= 0; n--)
+		{
+			if (bin[n] == '0')
+				num += (unsigned int)pow(2.0f, (int)(bin.length()-1-n));
+		}
+	num = (num*(-1)) -1;
+	} else {
+		for (int n = bin.length()-1; n >= 0; n--)
+		{
+			if (bin[n] == '1')
+				num += (unsigned int)pow(2.0f, (int)(bin.length()-1-n));
+		}
+	}
+	return num;
+}
+
 string invert(string bin)
 {
 	string inverted;
@@ -158,14 +178,11 @@ string bin2hex(string bin)
 
 string float2bin(float num, int length)
 {
+	// This is 16 bits, 6 bits is the decimal
 	string bin;
-
-	///FIXME
-
-	while (bin.size() < length)
-		bin = "0" + bin;
-
-	return bin;
+	num = num*64;
+	int16_t temp = (int16_t)num;
+	return int2bin(temp, length);
 }
 
 string hex2bin(string hex)
@@ -219,6 +236,52 @@ string uint2bin(unsigned int num, int length)
 	}
 	
 	return bin2;
+}
+
+string int2bin(int num, int length)
+{
+	string bin;
+	if (num < 0) {
+	num *= -1;
+	num -= 1;
+	while (num)
+	{
+		bin = char((num&1)+'0') + bin;
+		num >>= 1;
+	}
+
+	while (bin.size() < length)
+		bin = "0" + bin;
+	for (int i = 0; i < length; i++)
+	{
+		if (bin[i] == '0')
+			bin[i] = '1';
+		else
+			bin[i] = '0';
+	}
+} else {
+	while (num)
+	{
+		bin = char((num&1)+'0') + bin;
+		num >>= 1;
+	}
+
+	while (bin.size() < length)
+		bin = "0" + bin;
+
+}
+	string bin2;
+	for (int i = 0; i < length; i++)
+	{
+		bin2 = bin2 + bin[i];
+	}
+	
+	return bin2;
+}
+
+string int2hex(int num, int length)
+{
+	return bin2hex(int2bin(num, length));
 }
 
 string uint2hex(unsigned int num, int length)

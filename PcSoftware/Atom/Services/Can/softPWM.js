@@ -19,6 +19,7 @@ softPWM.prototype.canMessageHandler = function(canMessage)
 		case "Pwm":
 		this.myLastValue[canMessage.getData("Id")] = canMessage.getData("Value");
 		this.callEvent("newValue", canMessage.getData("Id"));
+//log("PWM settings "+canMessage.getData("Id") + " : "+this.myLastValue[canMessage.getData("Id")] + "\n");
 		break;
 		
 		case "Report_Interval":
