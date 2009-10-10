@@ -70,7 +70,7 @@ uint16_t tempPwm = pwmValue;
 void calculatePID_callback(uint8_t timer)
 {
 
-	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_SECONDS) {
+	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
 		static uint8_t seconds = 0;
 		seconds++;
 		if (seconds >= eeprom_read_word(EEDATA16.Time))
@@ -172,7 +172,7 @@ void act_PID_Init(void)
 	sensorId = eeprom_read_byte(EEDATA.sensorId);
 
 
-	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_SECONDS) {
+	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
 		Timer_SetTimeout(act_PID_TIMER, 1000, TimerTypeFreeRunning, &calculatePID_callback);
 	} else {
 		Timer_SetTimeout(act_PID_TIMER, eeprom_read_word(EEDATA16.Time), TimerTypeFreeRunning, &calculatePID_callback);
