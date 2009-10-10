@@ -12,11 +12,10 @@ ROTARY_CHx_INVERT_DIRECTION=1
 ROTARY_BTN=EXP_P
 ROTARY_BTN_INVERT_OUTPUT=1 
  
-# set ROTARY_CH1_SECOND=EXP_? to enable second channel
-# set ROTARY_CH1_SECOND=0 to disable second channel
-# if disabled don't forget to comment out the 
-# sns_rotary_PCINT_???_SECOND and sns_rotary_TIMER_second=<TIMER>
-# rows below
+# if disabled don't forget to comment out the PCINTs and TIMER rows below
+# if enabled don't forget to remove comment on the PCINTs and TIMER rows below 
+# then run ./ModuleManager --regenerate
+ROTARY_SECOND_ENABLE=0
 ROTARY_CH1_SECOND=0
 ROTARY_CH2_SECOND=EXP_M
 ROTARY_CHx_INVERT_DIRECTION_SECOND=1
