@@ -44,18 +44,26 @@ void calculatePID(void) {
 	if (PID_Status == PID_OFF){
 		;// use current PWMvalue
 	} else {
-		pwmValue += (int16_t) pid_Controller(referenceValue, measurementValue, &pidData, &pidDebugData);
-		printf("InOut: ref: %d, meas: %d\n",(int16_t) (referenceValue*10), (int16_t) (measurementValue*10));
-		if (pwmValue < MIN_PWM_VALUE) {
-			pwmValue = MIN_PWM_VALUE;
+//printf("PWM: %d\n",pwmValue);
+uint16_t tempPwm = pwmValue;
+		tempPwm += (int16_t) pid_Controller(referenceValue, measurementValue, &pidData, &pidDebugData);
+//printf("InOut: ref: %d, meas: %d\n",(int16_t) (referenceValue*10), (int16_t) (measurementValue*10));
+//printf("PWM: %d\n",pwmValue);
+
+		if (tempPwm < MIN_PWM_VALUE) {
+			tempPwm = MIN_PWM_VALUE;
 		}
-		else if (pwmValue > MAX_PWM_VALUE) {
-			pwmValue = MAX_PWM_VALUE-1;
+		else if (tempPwm > MAX_PWM_VALUE) {
+			tempPwm = MAX_PWM_VALUE-1;
 		}
+		cli();
+		pwmValue = tempPwm;
+		sei();
+//printf("PWM: %d\n",pwmValue);
 		//send current PWM value as soon as possible
 		sendPID_flag=1;
 	}
-printf("PWM: %d\n",pwmValue);
+
 }
 
 
@@ -86,9 +94,9 @@ void sendPID(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 		txMsg.Length = 3;
 		txMsg.Data[0] = eeprom_read_byte(EEDATA.actuatorId);
-		int16_t tempPWM =(int16_t) (((int32_t)pwmValue)*64/100);
-		txMsg.Data[1] = ( (tempPWM)>>8)&0xff;
-		txMsg.Data[2] = ( (tempPWM))&0xff;
+		//uint16_t tempPWM =(uint16_t) (pwmValue*10000);
+		txMsg.Data[1] = ( (pwmValue)>>8)&0xff;
+		txMsg.Data[2] = ( (pwmValue))&0xff;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 	}
 	StdCan_Msg_t txMsg;
@@ -102,9 +110,9 @@ void sendPID(void)
 	txMsg.Data[1] = (uint8_t)0x00ff & ((uint32_t)measurementValue*64);
 	txMsg.Data[2] = (uint8_t)0x00ff & (((uint32_t)(referenceValue*64))>>8);
 	txMsg.Data[3] = (uint8_t)0x00ff & ((uint32_t)referenceValue*64);
-	int16_t tempPWM =(int16_t) (((int32_t)pwmValue)*64/100);
-	txMsg.Data[4] = ( (tempPWM)>>8)&0xff;
-	txMsg.Data[5] = ( (tempPWM))&0xff;
+	//uint16_t tempPWM =(uint16_t) (pwmValue*10000);
+		txMsg.Data[4] = ( (pwmValue)>>8)&0xff;
+		txMsg.Data[5] = ( (pwmValue))&0xff;
 	txMsg.Data[6] = ((int16_t) (pidDebugData.Sum)>>8)&0xff;
 	txMsg.Data[7] = ((int16_t) (pidDebugData.Sum))&0xff;
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
@@ -134,7 +142,7 @@ void sendPID_debug_callback(uint8_t timer)
 	txMsg.Data[6] = ((int16_t) (pidDebugData.Sum)>>8)&0xff;
 	txMsg.Data[7] = ((int16_t) (pidDebugData.Sum))&0xff;
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
-	printf("PID: P:%d, I:%d, D:%d, S:%d\n",(int16_t)pidDebugData.P_term,(int16_t)pidDebugData.I_term,(int16_t)pidDebugData.D_term,(int16_t)pidDebugData.Sum);
+//printf("PID: P:%d, I:%d, D:%d, S:%d\n",(int16_t)pidDebugData.P_term,(int16_t)pidDebugData.I_term,(int16_t)pidDebugData.D_term,(int16_t)pidDebugData.Sum);
 }
 #endif
 
@@ -276,11 +284,11 @@ void act_PID_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_PID_CONFIG_PARAMETER:
 			if (rxMsg->Length == 8)
 			{
-				eeprom_write_word_crc(EEDATA16.K_P, rxMsg->Data[1]+(rxMsg->Data[0]<<8), WITHOUT_CRC);
-				eeprom_write_word_crc(EEDATA16.K_I, rxMsg->Data[3]+(rxMsg->Data[2]<<8), WITHOUT_CRC);
-				eeprom_write_word_crc(EEDATA16.K_D, rxMsg->Data[5]+(rxMsg->Data[4]<<8), WITHOUT_CRC);
+				eeprom_write_word_crc(EEDATA16.K_P, (uint16_t)rxMsg->Data[1]+(rxMsg->Data[0]<<8), WITHOUT_CRC);
+				eeprom_write_word_crc(EEDATA16.K_I, (uint16_t)rxMsg->Data[3]+(rxMsg->Data[2]<<8), WITHOUT_CRC);
+				eeprom_write_word_crc(EEDATA16.K_D, (uint16_t)rxMsg->Data[5]+(rxMsg->Data[4]<<8), WITHOUT_CRC);
 				eeprom_write_byte_crc(EEDATA.TimeMsOrS, ((rxMsg->Data[6]&0x80)>>7), WITHOUT_CRC);
-				eeprom_write_word_crc(EEDATA16.Time, rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
+				eeprom_write_word_crc(EEDATA16.Time, (uint16_t)rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
 				if (eeprom_read_byte(EEDATA.TimeMsOrS) == 0) {
 					Timer_SetTimeout(act_PID_TIMER, 1000, TimerTypeFreeRunning, &calculatePID_callback);
 				} else {
@@ -291,16 +299,29 @@ void act_PID_HandleMessage(StdCan_Msg_t *rxMsg)
 				pwmValue += (int16_t) pid_Controller(referenceValue, measurementValue, &pidData, &pidDebugData);
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
+
+				rxMsg->Data[0] = (0xff&(eeprom_read_word(EEDATA16.K_P)>>8));
+				rxMsg->Data[1] = (0xff&(eeprom_read_word(EEDATA16.K_P)));
+				rxMsg->Data[2] = (0xff&(eeprom_read_word(EEDATA16.K_I)>>8));
+				rxMsg->Data[3] = (0xff&(eeprom_read_word(EEDATA16.K_I)));
+				rxMsg->Data[4] = (0xff&(eeprom_read_word(EEDATA16.K_D)>>8));
+				rxMsg->Data[5] = (0xff&(eeprom_read_word(EEDATA16.K_D)));
+				rxMsg->Data[6] = (0xff&(eeprom_read_word(EEDATA16.Time)>>8));
+				rxMsg->Data[7] = (0xff&(eeprom_read_word(EEDATA16.Time)));
+				rxMsg->Data[6] |= (0x80&(eeprom_read_byte(EEDATA.TimeMsOrS))<<7);
+				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
+				rxMsg->Length = 8;
+				while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
 			} else
 			{
-				rxMsg->Data[0] = (0xff00&(eeprom_read_word(EEDATA16.K_P))>>8);
-				rxMsg->Data[1] = (0x00ff&(eeprom_read_word(EEDATA16.K_P)));
-				rxMsg->Data[2] = (0xff00&(eeprom_read_word(EEDATA16.K_I))>>8);
-				rxMsg->Data[3] = (0x00ff&(eeprom_read_word(EEDATA16.K_I)));
-				rxMsg->Data[4] = (0xff00&(eeprom_read_word(EEDATA16.K_D))>>8);
-				rxMsg->Data[5] = (0x00ff&(eeprom_read_word(EEDATA16.K_D)));
-				rxMsg->Data[6] = (0xff00&(eeprom_read_word(EEDATA16.Time))>>8);
-				rxMsg->Data[7] = (0x00ff&(eeprom_read_word(EEDATA16.Time)));
+				rxMsg->Data[0] = (0xff&(eeprom_read_word(EEDATA16.K_P)>>8));
+				rxMsg->Data[1] = (0xff&(eeprom_read_word(EEDATA16.K_P)));
+				rxMsg->Data[2] = (0xff&(eeprom_read_word(EEDATA16.K_I)>>8));
+				rxMsg->Data[3] = (0xff&(eeprom_read_word(EEDATA16.K_I)));
+				rxMsg->Data[4] = (0xff&(eeprom_read_word(EEDATA16.K_D)>>8));
+				rxMsg->Data[5] = (0xff&(eeprom_read_word(EEDATA16.K_D)));
+				rxMsg->Data[6] = (0xff&(eeprom_read_word(EEDATA16.Time)>>8));
+				rxMsg->Data[7] = (0xff&(eeprom_read_word(EEDATA16.Time)));
 				rxMsg->Data[6] |= (0x80&(eeprom_read_byte(EEDATA.TimeMsOrS))<<7);
 				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 				rxMsg->Length = 8;

@@ -24,23 +24,24 @@ struct eeprom_act_softPWM EEMEM eeprom_act_softPWM =
 #endif
 
 uint16_t pwmValue[NUMBEROFCHANNELS];
-float pwmValueFloat[NUMBEROFCHANNELS];
+uint16_t pwmValueCAN[NUMBEROFCHANNELS];
 #if act_softPWM_ACTIVATE_AUTOOFF != 0
 uint8_t offCounter[NUMBEROFCHANNELS];
 #endif
 void act_softPWM_Init(void)
 {
 #ifdef act_softPWM_USEEEPROM
-	if (EEDATA_OK)
-	{
-	  ;
-	} else
-	{	//The CRC of the EEPROM is not correct, store default values and update CRC
+	//if (EEDATA_OK)
+	//{
+	 // ;
+	//} else
+	//{	//The CRC of the EEPROM is not correct, store default values and update CRC
 		eeprom_write_word_crc(EEDATA16.maxTimer, 10000 , WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.resolution, 0x10 , WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ReportInterval, 0x14 , WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.resolution, 1 , WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ReportInterval, 0x05 , WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
-	}
+	//}
+	act_softPWM_ReportInterval = eeprom_read_byte(EEDATA.ReportInterval);
 	maxTimer = eeprom_read_word(EEDATA16.maxTimer);
 	resolution = eeprom_read_byte(EEDATA.resolution);
 	Timer_SetTimeout(act_softPWM_SEND_TIMER, act_softPWM_ReportInterval*1000 , TimerTypeFreeRunning, 0);
@@ -49,7 +50,7 @@ void act_softPWM_Init(void)
 uint8_t i;
 for (i=0; i < NUMBEROFCHANNELS; i++) {
 	pwmValue[i] = 0;
-	pwmValueFloat[i] = 0;
+	pwmValueCAN[i] = 0;
 }
 #ifdef PIN_0
 	gpio_set_out(PIN_0);
@@ -91,11 +92,14 @@ void act_softPWM_Process(void)
 {
 	if (Timer_Expired(act_softPWM_TIMER)) {
 		currentTimer++;
-		if (currentTimer == maxTimer) {
+		if (currentTimer >= maxTimer) {
+//printf("cleard Timer %d\n",pwmValue[0]);
 			currentTimer=0;
 			#ifdef PIN_0
-				if (pwmValue[0]!=0)
+				if (pwmValue[0]!=0) {
 					gpio_set_pin(PIN_0);
+//printf("pwm_0 On %d %d %d\n", pwmValue[0], currentTimer, maxTimer); 
+}
 			#endif
 			#ifdef PIN_1 
 				if (pwmValue[1]!=0)
@@ -127,47 +131,49 @@ void act_softPWM_Process(void)
 			#endif
 		}
 		#ifdef PIN_0
-		if (currentTimer >= pwmValue[0]) {
+		if (currentTimer >= pwmValue[0] && gpio_get_state(PIN_0) != 0) {
 			gpio_clr_pin(PIN_0);
+//printf("pwm_0 Off %d %d %d\n", pwmValue[0], currentTimer, maxTimer);
 		}
 		#endif
 		#ifdef PIN_1
-		if (currentTimer >= pwmValue[1]) {
+		if (currentTimer >= pwmValue[1] && gpio_get_state(PIN_1) != 0) {
 			gpio_clr_pin(PIN_1);
 		}
 		#endif
 		#ifdef PIN_2
-		if (currentTimer >= pwmValue[2]) {
+		if (currentTimer >= pwmValue[2] && gpio_get_state(PIN_2) != 0) {
 			gpio_clr_pin(PIN_2);
 		}
 		#endif
 		#ifdef PIN_3
-		if (currentTimer >= pwmValue[3]) {
+		if (currentTimer >= pwmValue[3] && gpio_get_state(PIN_3) != 0) {
 			gpio_clr_pin(PIN_3);
 		}
 		#endif
 		#ifdef PIN_4
-		if (currentTimer >= pwmValue[4]) {
+		if (currentTimer >= pwmValue[4] && gpio_get_state(PIN_4) != 0) {
 			gpio_clr_pin(PIN_4);
 		}
 		#endif
 		#ifdef PIN_5
-		if (currentTimer >= pwmValue[5]) {
+		if (currentTimer >= pwmValue[5] && gpio_get_state(PIN_5) != 0) {
 			gpio_clr_pin(PIN_5);
 		}
 		#endif
 		#ifdef PIN_6
-		if (currentTimer >= pwmValue[6]) {
+		if (currentTimer >= pwmValue[6] && gpio_get_state(PIN_6) != 0) {
 			gpio_clr_pin(PIN_6);
 		}
 		#endif
 		#ifdef PIN_7
-		if (currentTimer >= pwmValue[7]) {
+		if (currentTimer >= pwmValue[7] && gpio_get_state(PIN_7) != 0) {
 			gpio_clr_pin(PIN_7);
 		}
 		#endif
 	}
 	if (Timer_Expired(act_softPWM_SEND_TIMER)) {
+//printf("sending...\n");
 		while(1)
 		{
 			if (0
@@ -202,6 +208,7 @@ void act_softPWM_Process(void)
 			if (currentSendChannelId >= NUMBEROFCHANNELS)
 				currentSendChannelId=0;
 		}
+//printf(" %d\n",currentSendChannelId);
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -210,14 +217,15 @@ void act_softPWM_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 		txMsg.Length = 3;
 		txMsg.Data[0] = currentSendChannelId;
-		txMsg.Data[1] = (pwmValue[currentSendChannelId]>>8)&0xff;
-		txMsg.Data[2] = (pwmValue[currentSendChannelId])&0xff;
+		txMsg.Data[1] = (pwmValueCAN[currentSendChannelId]>>8)&0xff;
+		txMsg.Data[2] = (pwmValueCAN[currentSendChannelId])&0xff;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+//printf("sent pwm2: %d %d\n",pwmValueCAN[currentSendChannelId],currentSendChannelId); 
 #if act_softPWM_ACTIVATE_AUTOOFF != 0
 		offCounter[currentSendChannelId]--;
 		if (offCounter[currentSendChannelId] == 0) {
 			pwmValue[currentSendChannelId] = 0;
-			pwmValueFloat[currentSendChannelId] = 0;
+			pwmValueCAN[currentSendChannelId] = 0;
 			offCounter[currentSendChannelId] = 1;
 		}
 #endif
@@ -238,24 +246,35 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		switch (rxMsg->Header.Command)
 		{
+//printf("Got can\n");
 		case CAN_MODULE_CMD_PHYSICAL_PWM:
+//printf("Got pwm value\n");
 			if (rxMsg->Length == 3)
 			{ 
+//printf("3\n");
 				if (rxMsg->Data[0] < NUMBEROFCHANNELS) {
-					pwmValueFloat[rxMsg->Data[0]] = ((rxMsg->Data[1]<<8) + rxMsg->Data[2])/64;
-					pwmValue[rxMsg->Data[0]] = (uint16_t)(pwmValueFloat[rxMsg->Data[0]]*maxTimer/(resolution*100));
-					rxMsg->Data[1] = (uint8_t)0x00ff & (((uint32_t)(pwmValueFloat[rxMsg->Data[0]]*64))>>8);
-					rxMsg->Data[2] = (uint8_t)0x00ff & ((uint32_t)pwmValueFloat[rxMsg->Data[0]]*64);
+					pwmValueCAN[rxMsg->Data[0]] = ((uint16_t)((rxMsg->Data[1]<<8) + rxMsg->Data[2]));
+					pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
+					rxMsg->Data[1] = (uint8_t)(0x00ff & (pwmValueCAN[rxMsg->Data[0]]>>8));
+					rxMsg->Data[2] = (uint8_t)(0x00ff & pwmValueCAN[rxMsg->Data[0]]);
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 					rxMsg->Length = 3;
 					while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
+//printf("sent pwm3: %d %d %d\n",pwmValue[rxMsg->Data[0]],maxTimer,resolution); 
 					#if act_softPWM_ACTIVATE_AUTOOFF != 0
 					offCounter[rxMsg->Data[0]] = act_softPWM_ACTIVATE_AUTOOFF;
 					#endif
 				}
 			} else if (rxMsg->Length == 1) {
-				rxMsg->Data[1] = (uint8_t)0x00ff & (((uint32_t)(pwmValueFloat[rxMsg->Data[0]]*64))>>8);
-				rxMsg->Data[2] = (uint8_t)0x00ff & ((uint32_t)pwmValueFloat[rxMsg->Data[0]]*64);
+				rxMsg->Data[1] = (uint8_t)(0x00ff & (pwmValueCAN[rxMsg->Data[0]]>>8));
+				rxMsg->Data[2] = (uint8_t)(0x00ff & pwmValueCAN[rxMsg->Data[0]]);
+				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
+				rxMsg->Length = 3;
+				while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
+			} else {
+				rxMsg->Data[0] = (8);
+				rxMsg->Data[1] = (uint8_t)(0x00ff & (pwmValueCAN[0]>>8));
+				rxMsg->Data[2] = (uint8_t)(0x00ff & pwmValueCAN[0]);
 				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 				rxMsg->Length = 3;
 				while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
