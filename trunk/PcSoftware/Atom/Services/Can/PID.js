@@ -58,6 +58,7 @@ PID.prototype.canMessageHandler = function(canMessage)
 			this.sensorModuleType= canMessage.getData("sensorModuleType");
 			this.sensorModuleId= canMessage.getData("sensorModuleId");
 			this.sensorId= canMessage.getData("sensorId");
+			  log("conf_sensor: " + this.sensorModuleType + " " + this.sensorModuleId + " " + this.sensorId + "\n");
 			//this.callEvent("newValue", canMessage.getData("Id"));
 		break;
 		case "CONFIG_ACTUATOR":
@@ -65,6 +66,7 @@ PID.prototype.canMessageHandler = function(canMessage)
 			this.actuatorModuleId= canMessage.getData("actuatorModuleId");
 			this.actuatorId= canMessage.getData("actuatorId");
 			//this.callEvent("newValue", canMessage.getData("Id"));
+log("conf_act: " + this.actuatorModuleType + " " + this.actuatorModuleId + " " + this.actuatorId + "\n");
 
 		break;
 		case "CONFIG_PARAMETER":
@@ -73,6 +75,7 @@ PID.prototype.canMessageHandler = function(canMessage)
 			this.K_D= canMessage.getData("K_D");
 			this.TimeUnit= canMessage.getData("TimeUnit");
 			this.RegulatorTime= canMessage.getData("RegulatorTime");
+log("conf_param: " + this.K_P + " " + this.K_I + " " + this.K_D + " " + this.RegulatorTime +  " " + this.TimeUnit + "\n");
 			//this.callEvent("newValue", canMessage.getData("Id"));
 		break;
 		case "PID_STATUS":
@@ -80,10 +83,12 @@ PID.prototype.canMessageHandler = function(canMessage)
 			this.Reference= canMessage.getData("Reference");
 			this.PWM= canMessage.getData("PWM");
 			this.Sum= canMessage.getData("Sum");
+log("PID status: mea:" + this.Measurment + " ref:" + this.Reference + " pwm:" + this.PWM/100 + " sum:" + this.Sum + "\n");
 			//this.callEvent("newValue", canMessage.getData("Id"));
 		break;
 		case "Temperature_Celsius":
 			this.Reference= canMessage.getData("Value");
+log("PID status: ref:" + this.Reference + "\n");
 			//this.callEvent("newValue", canMessage.getData("Id"));
 		break;
 		case "Report_Interval":
@@ -96,9 +101,37 @@ PID.prototype.canMessageHandler = function(canMessage)
 
 PID.prototype.setValue = function(temperature)
 {
+log ("Called SetValue: "+temperature+"\n");
 	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "Temperature_Celsius");
-	canMessage.setData("Value", temperature);
+	canMessage.setData("Value", ""+temperature);
 	canMessage.setData("SensorId", 0);
+log ("> "+canMessage.toString()+"\n");
+	sendMessage(canMessage);
+
+
+}
+
+PID.prototype.getConfiguration = function()
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "CONFIG_SENSOR");
+	sendMessage(canMessage);
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "CONFIG_ACTUATOR");
+	sendMessage(canMessage);
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "CONFIG_PARAMETER");
+	sendMessage(canMessage);
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "Report_Interval");
+	sendMessage(canMessage);
+}
+
+PID.prototype.setParameters = function(KP,KI,KD,Time,Unit)
+{
+	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "CONFIG_PARAMETER");
+	canMessage.setData("K_P", ""+KP);
+	canMessage.setData("K_I", ""+KI);
+	canMessage.setData("K_D", ""+KD);
+	canMessage.setData("RegulatorTime", ""+Time);
+	canMessage.setData("TimeUnit", ""+Unit);
+//log ("> "+canMessage.toString()+"\n");
 	sendMessage(canMessage);
 }
 

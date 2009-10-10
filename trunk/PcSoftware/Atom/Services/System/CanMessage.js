@@ -97,7 +97,6 @@ CanMessage.prototype.getDataString = function()
 	return str.rtrim(",");
 }
 
-
 CanMessage.prototype.send = function()
 {
 	sendCanMessage(	this.getClassName(), 

@@ -432,6 +432,17 @@ string CanIdTranslator::translateNMTDataToHex(string commandName, map<string, Ca
 	return translateValidDataToHex(data);
 }
 
+
+template <class T>
+bool from_string(T& t, 
+                 const std::string& s, 
+                 std::ios_base& (*f)(std::ios_base&))
+{
+  std::istringstream iss(s);
+  return !(iss >> f >> t).fail();
+}
+
+
 string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 {
 	string bin = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -445,17 +456,31 @@ string CanIdTranslator::translateValidDataToHex(map<string, CanVariable> &data)
 				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
 
 			unsigned int a = stou(iter->second.getValue());
-
 			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
+		}
+		else if (iter->second.getType() == "int")
+		{
+if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
+				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
+
+			unsigned int a = stou(iter->second.getValue());
+			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
+			/*if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
+				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
+cout << iter->second.getValue() << endl;
+
+			int a = stoi(iter->second.getValue());
+cout << a << endl;
+			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));*/
 		}
 		else if (iter->second.getType() == "float")
 		{
 			if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
 				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
-
 			bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), float2bin(stof(iter->second.getValue()), iter->second.getBitLength()));
+			
 		}
-		else if (iter->second.getType() == "enum")
+	else if (iter->second.getType() == "enum")
 		{
 			if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
 				highestBit = iter->second.getStartBit() + iter->second.getBitLength();
@@ -553,6 +578,10 @@ map<string, CanVariable> CanIdTranslator::translateData(vector<XmlNode> variable
 		if (attributes["type"] == "uint")
 		{
 			variable.setValue(utos(bin2uint(bits)));
+		}
+		else if (attributes["type"] == "int")
+		{
+			variable.setValue(itos(bin2int(bits)));
 		}
 		else if (attributes["type"] == "float")
 		{

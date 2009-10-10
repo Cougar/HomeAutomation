@@ -62,6 +62,22 @@
 		moduleType : 'FOST02', 
 		moduleId : 1,
 		sensorId : 1
+	},
+	{
+		name : 'TillVatten', 
+		description : 'Temperatur på inkommande vatten', 
+		shortName : 'Inkommande',
+		moduleType : 'DS18x20', 
+		moduleId : 3,
+		sensorId : 102
+	},
+	{
+		name : 'ReturVatten', 
+		description : 'Temperatur för returnerande vatten', 
+		shortName : 'Retur',
+		moduleType : 'DS18x20', 
+		moduleId : 3,
+		sensorId : 249
 	}
 
 ]}

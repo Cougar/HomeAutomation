@@ -28,7 +28,7 @@
     <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data">
       <variables>
         <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
+        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="65" name="Temperature_Celsius" type="physical" module="" description="Temperature data">
@@ -174,7 +174,7 @@
 	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
 	  <variable name="I_term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
 	  <variable name="D_term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+	  <variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
 	</variables>
       </command>
       <command id="129" name="CONFIG_SENSOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
@@ -197,18 +197,18 @@
 	  <variable name="K_I" type="float" start_bit="16" bit_length="16" unit="" description=""/>
 	  <variable name="K_D" type="float" start_bit="32" bit_length="16" unit="" description=""/>
 	  <variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
-	    <value id="0" name="Seconds"/>
-	    <value id="1" name="Milliseconds"/>
+	    <value id="0" name="s"/>
+	    <value id="1" name="ms"/>
 	  </variable>
-	  <variable name="RegulatorTime" type="uint" start_bit="49" bit_length="16" unit="" description=""/>
+	  <variable name="RegulatorTime" type="uint" start_bit="49" bit_length="15" unit="" description=""/>
 	</variables>
       </command>
       <command id="132" name="PID_STATUS" type="specific" module="PID" description="information about the pid controller">
 	<variables>
 	  <variable name="Measurment" type="float" start_bit="0" bit_length="16" unit="" description=""/>
 	  <variable name="Reference" type="float" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="PWM" type="float" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="Sum" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+	  <variable name="PWM" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	  <variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
 	</variables>
       </command>
       <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
