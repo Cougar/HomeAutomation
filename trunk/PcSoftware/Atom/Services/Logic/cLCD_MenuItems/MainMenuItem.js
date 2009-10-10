@@ -24,7 +24,6 @@ function MainMenuItem(parentDisplay, hd44789Object)
 
 }
 
-
 MainMenuItem.prototype.PowerOnline = function()
 {
 	/* If service is not online do nothing */
@@ -32,7 +31,8 @@ MainMenuItem.prototype.PowerOnline = function()
 	{
 		log("Power is online!\n");
 		/* Set report interval to 2 seconds */
-		this.myPowerService.setReportInterval(4);
+	//	this.myPowerService.setReportInterval(4);
+//this.myPowerService.setEnergy(1649500);
 	}
 }
 
