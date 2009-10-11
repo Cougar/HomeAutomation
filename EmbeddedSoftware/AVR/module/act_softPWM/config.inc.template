@@ -14,20 +14,29 @@ act_softPWM_SEND_TIMER=<TIMER>
 # set it to 0 to deactivate this feature
 act_softPWM_ACTIVATE_AUTOOFF=0
 
-act_softPWM_INVERT_PWM=0
-
 #use up to 8 channels, but do it in order, otherwice there will be problems setting the correct values over CAN
-PIN_0 = EXP_C
-PIN_1 = EXP_E
-PIN_2 = EXP_H
-#PIN_3 = EXP_xx
-#PIN_4 = EXP_xx
-#PIN_5 = EXP_xx
-#PIN_6 = EXP_xx
-#PIN_7 = EXP_xx
+# set INVERT to 1 to invert pwm output
+act_softPWM_PIN_0 = EXP_C
+act_softPWM_PIN_0_INVERT = 0
+act_softPWM_PIN_1 = EXP_E
+act_softPWM_PIN_1_INVERT = 0
+act_softPWM_PIN_2 = EXP_H
+act_softPWM_PIN_2_INVERT = 0
+#act_softPWM_PIN_3 = EXP_xx
+act_softPWM_PIN_3_INVERT = 0
+#act_softPWM_PIN_4 = EXP_xx
+act_softPWM_PIN_4_INVERT = 0
+#act_softPWM_PIN_5 = EXP_xx
+act_softPWM_PIN_5_INVERT = 0
+#act_softPWM_PIN_6 = EXP_xx
+act_softPWM_PIN_6_INVERT = 0
+#act_softPWM_PIN_7 = EXP_xx
+act_softPWM_PIN_7_INVERT = 0
+
+
 
 #the maximum of supported channels, must be set to x+1 when the highest PIN is PIN_x
-NUMBEROFCHANNELS = 8
+NUMBEROFCHANNELS = 3
 
 #Uncomment to use the pcint driver
 #act_softPWM_DUMMY_PCINT=<PCINT>

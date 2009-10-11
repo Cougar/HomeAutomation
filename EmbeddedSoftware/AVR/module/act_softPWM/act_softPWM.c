@@ -1,12 +1,75 @@
 
 #include "act_softPWM.h"
 
+#if (act_softPWM_PIN_0_INVERT == 0)
+	#define set_pin_0_below_trigger	gpio_set_pin(act_softPWM_PIN_0)
+	#define set_pin_0_above_trigger	gpio_clr_pin(act_softPWM_PIN_0)
+#else
+	#define set_pin_0_below_trigger	gpio_set_pin(act_softPWM_PIN_0)
+	#define set_pin_0_above_trigger	gpio_clr_pin(act_softPWM_PIN_0)
+#endif
 
-uint16_t currentTimer = 0;
-uint16_t maxTimer = 10;
-uint8_t	resolution = 1;
-uint8_t act_softPWM_ReportInterval;
-uint8_t currentSendChannelId = 0;
+#if (act_softPWM_PIN_1_INVERT == 0)
+	#define set_pin_1_below_trigger	gpio_set_pin(act_softPWM_PIN_1)
+	#define set_pin_1_above_trigger	gpio_clr_pin(act_softPWM_PIN_1)
+#else
+	#define set_pin_1_below_trigger	gpio_set_pin(act_softPWM_PIN_1)
+	#define set_pin_1_above_trigger	gpio_clr_pin(act_softPWM_PIN_1)
+#endif
+
+#if (act_softPWM_PIN_2_INVERT == 0)
+	#define set_pin_2_below_trigger	gpio_set_pin(act_softPWM_PIN_2)
+	#define set_pin_2_above_trigger	gpio_clr_pin(act_softPWM_PIN_2)
+#else
+	#define set_pin_2_below_trigger	gpio_set_pin(act_softPWM_PIN_2)
+	#define set_pin_2_above_trigger	gpio_clr_pin(act_softPWM_PIN_2)
+#endif
+
+#if (act_softPWM_PIN_3_INVERT == 0)
+	#define set_pin_3_below_trigger	gpio_set_pin(act_softPWM_PIN_3)
+	#define set_pin_3_above_trigger	gpio_clr_pin(act_softPWM_PIN_3)
+#else
+	#define set_pin_3_below_trigger	gpio_set_pin(act_softPWM_PIN_3)
+	#define set_pin_3_above_trigger	gpio_clr_pin(act_softPWM_PIN_3)
+#endif
+
+#if (act_softPWM_PIN_4_INVERT == 0)
+	#define set_pin_4_below_trigger	gpio_set_pin(act_softPWM_PIN_4)
+	#define set_pin_4_above_trigger	gpio_clr_pin(act_softPWM_PIN_4)
+#else
+	#define set_pin_4_below_trigger	gpio_set_pin(act_softPWM_PIN_4)
+	#define set_pin_4_above_trigger	gpio_clr_pin(act_softPWM_PIN_4)
+#endif
+
+#if (act_softPWM_PIN_5_INVERT == 0)
+	#define set_pin_5_below_trigger	gpio_set_pin(act_softPWM_PIN_5)
+	#define set_pin_5_above_trigger	gpio_clr_pin(act_softPWM_PIN_5)
+#else
+	#define set_pin_5_below_trigger	gpio_set_pin(act_softPWM_PIN_5)
+	#define set_pin_5_above_trigger	gpio_clr_pin(act_softPWM_PIN_5)
+#endif
+
+#if (act_softPWM_PIN_6_INVERT == 0)
+	#define set_pin_6_below_trigger	gpio_set_pin(act_softPWM_PIN_6)
+	#define set_pin_6_above_trigger	gpio_clr_pin(act_softPWM_PIN_6)
+#else
+	#define set_pin_6_below_trigger	gpio_set_pin(act_softPWM_PIN_6)
+	#define set_pin_6_above_trigger	gpio_clr_pin(act_softPWM_PIN_6)
+#endif
+
+#if (act_softPWM_PIN_7_INVERT == 0)
+	#define set_pin_7_below_trigger	gpio_set_pin(act_softPWM_PIN_7)
+	#define set_pin_7_above_trigger	gpio_clr_pin(act_softPWM_PIN_7)
+#else
+	#define set_pin_7_below_trigger	gpio_set_pin(act_softPWM_PIN_7)
+	#define set_pin_7_above_trigger	gpio_clr_pin(act_softPWM_PIN_7)
+#endif
+
+static uint16_t currentTimer = 0;
+static uint16_t maxTimer = 10;
+static uint8_t	resolution = 1;
+static uint8_t act_softPWM_ReportInterval =0;
+static uint8_t currentSendChannelId = 0;
 
 
 #ifdef act_softPWM_USEEEPROM
@@ -23,11 +86,13 @@ struct eeprom_act_softPWM EEMEM eeprom_act_softPWM =
 }; 
 #endif
 
-uint16_t pwmValue[NUMBEROFCHANNELS];
-uint16_t pwmValueCAN[NUMBEROFCHANNELS];
+static uint16_t pwmValue[NUMBEROFCHANNELS];
+static uint16_t pwmValueCAN[NUMBEROFCHANNELS];
+
 #if act_softPWM_ACTIVATE_AUTOOFF != 0
-uint8_t offCounter[NUMBEROFCHANNELS];
+static uint8_t offCounter[NUMBEROFCHANNELS];
 #endif
+
 void act_softPWM_Init(void)
 {
 #ifdef act_softPWM_USEEEPROM
@@ -52,37 +117,37 @@ for (i=0; i < NUMBEROFCHANNELS; i++) {
 	pwmValue[i] = 0;
 	pwmValueCAN[i] = 0;
 }
-#ifdef PIN_0
-	gpio_set_out(PIN_0);
-	gpio_clr_pin(PIN_0);
+#ifdef act_softPWM_PIN_0
+	gpio_set_out(act_softPWM_PIN_0);
+	set_pin_0_below_trigger;
 #endif
-#ifdef PIN_1
-	gpio_set_out(PIN_1);
-	gpio_clr_pin(PIN_1);
+#ifdef act_softPWM_PIN_1
+	gpio_set_out(act_softPWM_PIN_1);
+	set_pin_1_below_trigger;
 #endif
-#ifdef PIN_2
-	gpio_set_out(PIN_2);
-	gpio_clr_pin(PIN_2);
+#ifdef act_softPWM_PIN_2
+	gpio_set_out(act_softPWM_PIN_2);
+	set_pin_2_below_trigger;
 #endif
-#ifdef PIN_3
-	gpio_set_out(PIN_3);
-	gpio_clr_pin(PIN_3);
+#ifdef act_softPWM_PIN_3
+	gpio_set_out(act_softPWM_PIN_3);
+	set_pin_3_below_trigger;
 #endif
-#ifdef PIN_4
-	gpio_set_out(PIN_4);
-	gpio_clr_pin(PIN_4);
+#ifdef act_softPWM_PIN_4
+	gpio_set_out(act_softPWM_PIN_4);
+	set_pin_4_below_trigger;
 #endif
-#ifdef PIN_5
-	gpio_set_out(PIN_5);
-	gpio_clr_pin(PIN_5);
+#ifdef act_softPWM_PIN_5
+	gpio_set_out(act_softPWM_PIN_5);
+	set_pin_5_below_trigger;
 #endif
-#ifdef PIN_6
-	gpio_set_out(PIN_6);
-	gpio_clr_pin(PIN_6);
+#ifdef act_softPWM_PIN_6
+	gpio_set_out(act_softPWM_PIN_6);
+	set_pin_6_below_trigger;
 #endif
-#ifdef PIN_7
-	gpio_set_out(PIN_7);
-	gpio_clr_pin(PIN_7);
+#ifdef act_softPWM_PIN_7
+	gpio_set_out(act_softPWM_PIN_7);
+	set_pin_7_below_trigger;
 #endif
 	
 	Timer_SetTimeout(act_softPWM_TIMER, resolution, TimerTypeFreeRunning, NULL);
@@ -95,80 +160,85 @@ void act_softPWM_Process(void)
 		if (currentTimer >= maxTimer) {
 //printf("cleard Timer %d\n",pwmValue[0]);
 			currentTimer=0;
-			#ifdef PIN_0
+			#ifdef act_softPWM_PIN_0
 				if (pwmValue[0]!=0) {
-					gpio_set_pin(PIN_0);
-//printf("pwm_0 On %d %d %d\n", pwmValue[0], currentTimer, maxTimer); 
-}
+					set_pin_0_below_trigger;
+				}
 			#endif
-			#ifdef PIN_1 
-				if (pwmValue[1]!=0)
-					gpio_set_pin(PIN_1);
+			#ifdef act_softPWM_PIN_1 
+				if (pwmValue[1]!=0) {
+					set_pin_1_below_trigger;
+				}
 			#endif
-			#ifdef PIN_2 
-				if (pwmValue[2]!=0)
-					gpio_set_pin(PIN_2);
+			#ifdef act_softPWM_PIN_2 
+				if (pwmValue[2]!=0) {
+					set_pin_2_below_trigger;
+				}
 			#endif
-			#ifdef PIN_3 
-				if (pwmValue[3]!=0)
-					gpio_set_pin(PIN_3);
+			#ifdef act_softPWM_PIN_3 
+				if (pwmValue[3]!=0) {
+					set_pin_3_below_trigger;
+				}
 			#endif
-			#ifdef PIN_4 
-				if (pwmValue[4]!=0)
-					gpio_set_pin(PIN_4);
+			#ifdef act_softPWM_PIN_4 
+				if (pwmValue[4]!=0) {
+					set_pin_4_below_trigger;
+				}
 			#endif
-			#ifdef PIN_5 
-				if (pwmValue[5]!=0)
-					gpio_set_pin(PIN_5);
+			#ifdef act_softPWM_PIN_5 
+				if (pwmValue[5]!=0) {
+					set_pin_5_below_trigger;
+				}
 			#endif
-			#ifdef PIN_6 
-				if (pwmValue[6]!=0)
-					gpio_set_pin(PIN_6);
+			#ifdef act_softPWM_PIN_6 
+				if (pwmValue[6]!=0) {
+					set_pin_6_below_trigger;
+				}
 			#endif
-			#ifdef PIN_7 
-				if (pwmValue[7]!=0)
-					gpio_set_pin(PIN_7);
+			#ifdef act_softPWM_PIN_7 
+				if (pwmValue[7]!=0) {
+					set_pin_7_below_trigger;
+				}
 			#endif
 		}
-		#ifdef PIN_0
-		if (currentTimer >= pwmValue[0] && gpio_get_state(PIN_0) != 0) {
-			gpio_clr_pin(PIN_0);
-//printf("pwm_0 Off %d %d %d\n", pwmValue[0], currentTimer, maxTimer);
-		}
-		#endif
-		#ifdef PIN_1
-		if (currentTimer >= pwmValue[1] && gpio_get_state(PIN_1) != 0) {
-			gpio_clr_pin(PIN_1);
-		}
-		#endif
-		#ifdef PIN_2
-		if (currentTimer >= pwmValue[2] && gpio_get_state(PIN_2) != 0) {
-			gpio_clr_pin(PIN_2);
+		#ifdef act_softPWM_PIN_0
+		if (currentTimer >= pwmValue[0] && gpio_get_state(act_softPWM_PIN_0) != 0) {
+			set_pin_0_above_trigger;
 		}
 		#endif
-		#ifdef PIN_3
-		if (currentTimer >= pwmValue[3] && gpio_get_state(PIN_3) != 0) {
-			gpio_clr_pin(PIN_3);
+		#ifdef act_softPWM_PIN_1
+		if (currentTimer >= pwmValue[1] && gpio_get_state(act_softPWM_PIN_1) != 0) {
+			set_pin_1_above_trigger;
 		}
 		#endif
-		#ifdef PIN_4
-		if (currentTimer >= pwmValue[4] && gpio_get_state(PIN_4) != 0) {
-			gpio_clr_pin(PIN_4);
+		#ifdef act_softPWM_PIN_2
+		if (currentTimer >= pwmValue[2] && gpio_get_state(act_softPWM_PIN_2) != 0) {
+			set_pin_2_above_trigger;
 		}
 		#endif
-		#ifdef PIN_5
-		if (currentTimer >= pwmValue[5] && gpio_get_state(PIN_5) != 0) {
-			gpio_clr_pin(PIN_5);
+		#ifdef act_softPWM_PIN_3
+		if (currentTimer >= pwmValue[3] && gpio_get_state(act_softPWM_PIN_3) != 0) {
+			set_pin_3_above_trigger;
 		}
 		#endif
-		#ifdef PIN_6
-		if (currentTimer >= pwmValue[6] && gpio_get_state(PIN_6) != 0) {
-			gpio_clr_pin(PIN_6);
+		#ifdef act_softPWM_PIN_4
+		if (currentTimer >= pwmValue[4] && gpio_get_state(act_softPWM_PIN_4) != 0) {
+			set_pin_4_above_trigger;
 		}
 		#endif
-		#ifdef PIN_7
-		if (currentTimer >= pwmValue[7] && gpio_get_state(PIN_7) != 0) {
-			gpio_clr_pin(PIN_7);
+		#ifdef act_softPWM_PIN_5
+		if (currentTimer >= pwmValue[5] && gpio_get_state(act_softPWM_PIN_5) != 0) {
+			set_pin_5_above_trigger;
+		}
+		#endif
+		#ifdef act_softPWM_PIN_6
+		if (currentTimer >= pwmValue[6] && gpio_get_state(act_softPWM_PIN_6) != 0) {
+			set_pin_6_above_trigger;
+		}
+		#endif
+		#ifdef act_softPWM_PIN_7
+		if (currentTimer >= pwmValue[7] && gpio_get_state(act_softPWM_PIN_7) != 0) {
+			set_pin_7_above_trigger;
 		}
 		#endif
 	}
@@ -177,28 +247,28 @@ void act_softPWM_Process(void)
 		while(1)
 		{
 			if (0
-			    #ifdef PIN_0
+			    #ifdef act_softPWM_PIN_0
 			    || currentSendChannelId == 0
 			    #endif
-			    #ifdef PIN_1
+			    #ifdef act_softPWM_PIN_1
 			    || currentSendChannelId == 1
 			    #endif
-			    #ifdef PIN_2
+			    #ifdef act_softPWM_PIN_2
 			    || currentSendChannelId == 2
 			    #endif
-			    #ifdef PIN_3
+			    #ifdef act_softPWM_PIN_3
 			    || currentSendChannelId == 3
 			    #endif
-			    #ifdef PIN_4
+			    #ifdef act_softPWM_PIN_4
 			    || currentSendChannelId == 4
 			    #endif
-			    #ifdef PIN_5
+			    #ifdef act_softPWM_PIN_5
 			    || currentSendChannelId == 5
 			    #endif
-			    #ifdef PIN_6
+			    #ifdef act_softPWM_PIN_6
 			    || currentSendChannelId == 6
 			    #endif
-			    #ifdef PIN_7
+			    #ifdef act_softPWM_PIN_7
 			    || currentSendChannelId == 7
 			    #endif
 			) {
@@ -217,8 +287,8 @@ void act_softPWM_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 		txMsg.Length = 3;
 		txMsg.Data[0] = currentSendChannelId;
-		txMsg.Data[1] = (pwmValueCAN[currentSendChannelId]>>8)&0xff;
-		txMsg.Data[2] = (pwmValueCAN[currentSendChannelId])&0xff;
+		txMsg.Data[1] = (pwmValue[currentSendChannelId]>>8)&0xff;
+		txMsg.Data[2] = (pwmValue[currentSendChannelId])&0xff;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 //printf("sent pwm2: %d %d\n",pwmValueCAN[currentSendChannelId],currentSendChannelId); 
 #if act_softPWM_ACTIVATE_AUTOOFF != 0
@@ -254,11 +324,11 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 //printf("3\n");
 				if (rxMsg->Data[0] < NUMBEROFCHANNELS) {
 					pwmValueCAN[rxMsg->Data[0]] = ((uint16_t)((rxMsg->Data[1]<<8) + rxMsg->Data[2]));
-if (act_softPWM_INVERT_PWM == 1) {
-					pwmValue[rxMsg->Data[0]] = maxTimer - ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
-}else {
-pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
-}
+					if (pwmValueCAN[rxMsg->Data[0]] >= 10000) {
+						pwmValue[rxMsg->Data[0]] = maxTimer+1;
+					} else {
+						pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
+					}
 					rxMsg->Data[1] = (uint8_t)(0x00ff & (pwmValueCAN[rxMsg->Data[0]]>>8));
 					rxMsg->Data[2] = (uint8_t)(0x00ff & pwmValueCAN[rxMsg->Data[0]]);
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
