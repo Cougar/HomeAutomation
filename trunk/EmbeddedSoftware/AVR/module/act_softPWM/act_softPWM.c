@@ -5,72 +5,71 @@
 	#define set_pin_0_below_trigger	gpio_set_pin(act_softPWM_PIN_0)
 	#define set_pin_0_above_trigger	gpio_clr_pin(act_softPWM_PIN_0)
 #else
-	#define set_pin_0_below_trigger	gpio_set_pin(act_softPWM_PIN_0)
-	#define set_pin_0_above_trigger	gpio_clr_pin(act_softPWM_PIN_0)
+	#define set_pin_0_below_trigger	gpio_clr_pin(act_softPWM_PIN_0)
+	#define set_pin_0_above_trigger	gpio_set_pin(act_softPWM_PIN_0)
 #endif
 
 #if (act_softPWM_PIN_1_INVERT == 0)
 	#define set_pin_1_below_trigger	gpio_set_pin(act_softPWM_PIN_1)
 	#define set_pin_1_above_trigger	gpio_clr_pin(act_softPWM_PIN_1)
 #else
-	#define set_pin_1_below_trigger	gpio_set_pin(act_softPWM_PIN_1)
-	#define set_pin_1_above_trigger	gpio_clr_pin(act_softPWM_PIN_1)
+	#define set_pin_1_below_trigger	gpio_clr_pin(act_softPWM_PIN_1)
+	#define set_pin_1_above_trigger	gpio_set_pin(act_softPWM_PIN_1)
 #endif
 
 #if (act_softPWM_PIN_2_INVERT == 0)
 	#define set_pin_2_below_trigger	gpio_set_pin(act_softPWM_PIN_2)
 	#define set_pin_2_above_trigger	gpio_clr_pin(act_softPWM_PIN_2)
 #else
-	#define set_pin_2_below_trigger	gpio_set_pin(act_softPWM_PIN_2)
-	#define set_pin_2_above_trigger	gpio_clr_pin(act_softPWM_PIN_2)
+	#define set_pin_2_below_trigger	gpio_clr_pin(act_softPWM_PIN_2)
+	#define set_pin_2_above_trigger	gpio_set_pin(act_softPWM_PIN_2)
 #endif
 
 #if (act_softPWM_PIN_3_INVERT == 0)
 	#define set_pin_3_below_trigger	gpio_set_pin(act_softPWM_PIN_3)
 	#define set_pin_3_above_trigger	gpio_clr_pin(act_softPWM_PIN_3)
 #else
-	#define set_pin_3_below_trigger	gpio_set_pin(act_softPWM_PIN_3)
-	#define set_pin_3_above_trigger	gpio_clr_pin(act_softPWM_PIN_3)
+	#define set_pin_3_below_trigger	gpio_clr_pin(act_softPWM_PIN_3)
+	#define set_pin_3_above_trigger	gpio_set_pin(act_softPWM_PIN_3)
 #endif
 
 #if (act_softPWM_PIN_4_INVERT == 0)
 	#define set_pin_4_below_trigger	gpio_set_pin(act_softPWM_PIN_4)
 	#define set_pin_4_above_trigger	gpio_clr_pin(act_softPWM_PIN_4)
 #else
-	#define set_pin_4_below_trigger	gpio_set_pin(act_softPWM_PIN_4)
-	#define set_pin_4_above_trigger	gpio_clr_pin(act_softPWM_PIN_4)
+	#define set_pin_4_below_trigger	gpio_clr_pin(act_softPWM_PIN_4)
+	#define set_pin_4_above_trigger	gpio_set_pin(act_softPWM_PIN_4)
 #endif
 
 #if (act_softPWM_PIN_5_INVERT == 0)
 	#define set_pin_5_below_trigger	gpio_set_pin(act_softPWM_PIN_5)
 	#define set_pin_5_above_trigger	gpio_clr_pin(act_softPWM_PIN_5)
 #else
-	#define set_pin_5_below_trigger	gpio_set_pin(act_softPWM_PIN_5)
-	#define set_pin_5_above_trigger	gpio_clr_pin(act_softPWM_PIN_5)
+	#define set_pin_5_below_trigger	gpio_clr_pin(act_softPWM_PIN_5)
+	#define set_pin_5_above_trigger	gpio_set_pin(act_softPWM_PIN_5)
 #endif
 
 #if (act_softPWM_PIN_6_INVERT == 0)
 	#define set_pin_6_below_trigger	gpio_set_pin(act_softPWM_PIN_6)
 	#define set_pin_6_above_trigger	gpio_clr_pin(act_softPWM_PIN_6)
 #else
-	#define set_pin_6_below_trigger	gpio_set_pin(act_softPWM_PIN_6)
-	#define set_pin_6_above_trigger	gpio_clr_pin(act_softPWM_PIN_6)
+	#define set_pin_6_below_trigger	gpio_clr_pin(act_softPWM_PIN_6)
+	#define set_pin_6_above_trigger	gpio_set_pin(act_softPWM_PIN_6)
 #endif
 
 #if (act_softPWM_PIN_7_INVERT == 0)
 	#define set_pin_7_below_trigger	gpio_set_pin(act_softPWM_PIN_7)
 	#define set_pin_7_above_trigger	gpio_clr_pin(act_softPWM_PIN_7)
 #else
-	#define set_pin_7_below_trigger	gpio_set_pin(act_softPWM_PIN_7)
-	#define set_pin_7_above_trigger	gpio_clr_pin(act_softPWM_PIN_7)
+	#define set_pin_7_below_trigger	gpio_clr_pin(act_softPWM_PIN_7)
+	#define set_pin_7_above_trigger	gpio_set_pin(act_softPWM_PIN_7)
 #endif
 
 static uint16_t currentTimer = 0;
 static uint16_t maxTimer = 10;
-static uint8_t	resolution = 1;
+static uint8_t resolution = 1;
 static uint8_t act_softPWM_ReportInterval =0;
 static uint8_t currentSendChannelId = 0;
-
 
 #ifdef act_softPWM_USEEEPROM
 #include "act_softPWM_eeprom.h"
@@ -202,42 +201,42 @@ void act_softPWM_Process(void)
 			#endif
 		}
 		#ifdef act_softPWM_PIN_0
-		if (currentTimer >= pwmValue[0] && gpio_get_state(act_softPWM_PIN_0) != 0) {
+		if (currentTimer >= pwmValue[0] && gpio_get_state(act_softPWM_PIN_0) != act_softPWM_PIN_0_INVERT) {
 			set_pin_0_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_1
-		if (currentTimer >= pwmValue[1] && gpio_get_state(act_softPWM_PIN_1) != 0) {
+		if (currentTimer >= pwmValue[1] && gpio_get_state(act_softPWM_PIN_1) != act_softPWM_PIN_1_INVERT) {
 			set_pin_1_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_2
-		if (currentTimer >= pwmValue[2] && gpio_get_state(act_softPWM_PIN_2) != 0) {
+		if (currentTimer >= pwmValue[2] && gpio_get_state(act_softPWM_PIN_2) != act_softPWM_PIN_2_INVERT) {
 			set_pin_2_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_3
-		if (currentTimer >= pwmValue[3] && gpio_get_state(act_softPWM_PIN_3) != 0) {
+		if (currentTimer >= pwmValue[3] && gpio_get_state(act_softPWM_PIN_3) != act_softPWM_PIN_3_INVERT) {
 			set_pin_3_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_4
-		if (currentTimer >= pwmValue[4] && gpio_get_state(act_softPWM_PIN_4) != 0) {
+		if (currentTimer >= pwmValue[4] && gpio_get_state(act_softPWM_PIN_4) != act_softPWM_PIN_4_INVERT) {
 			set_pin_4_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_5
-		if (currentTimer >= pwmValue[5] && gpio_get_state(act_softPWM_PIN_5) != 0) {
+		if (currentTimer >= pwmValue[5] && gpio_get_state(act_softPWM_PIN_5) != act_softPWM_PIN_5_INVERT) {
 			set_pin_5_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_6
-		if (currentTimer >= pwmValue[6] && gpio_get_state(act_softPWM_PIN_6) != 0) {
+		if (currentTimer >= pwmValue[6] && gpio_get_state(act_softPWM_PIN_6) != act_softPWM_PIN_6_INVERT) {
 			set_pin_6_above_trigger;
 		}
 		#endif
 		#ifdef act_softPWM_PIN_7
-		if (currentTimer >= pwmValue[7] && gpio_get_state(act_softPWM_PIN_7) != 0) {
+		if (currentTimer >= pwmValue[7] && gpio_get_state(act_softPWM_PIN_7) != act_softPWM_PIN_7_INVERT) {
 			set_pin_7_above_trigger;
 		}
 		#endif
