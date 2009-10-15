@@ -107,9 +107,9 @@ void sendPID(void)
 	txMsg.Header.Command = CAN_MODULE_CMD_PID_PID_STATUS;
 	txMsg.Length = 8;
 	txMsg.Data[0] = (uint8_t)0x00ff & (((uint32_t)(measurementValue*64))>>8);
-	txMsg.Data[1] = (uint8_t)0x00ff & ((uint32_t)measurementValue*64);
+	txMsg.Data[1] = (uint8_t)0x00ff & ((uint32_t)(measurementValue*64));
 	txMsg.Data[2] = (uint8_t)0x00ff & (((uint32_t)(referenceValue*64))>>8);
-	txMsg.Data[3] = (uint8_t)0x00ff & ((uint32_t)referenceValue*64);
+	txMsg.Data[3] = (uint8_t)0x00ff & ((uint32_t)(referenceValue*64));
 	//uint16_t tempPWM =(uint16_t) (pwmValue*10000);
 		txMsg.Data[4] = ( (pwmValue)>>8)&0xff;
 		txMsg.Data[5] = ( (pwmValue))&0xff;
