@@ -65,10 +65,15 @@ public class DaemonConnection {
 					break;
 				
 				string tcpdata = Encoding.ASCII.GetString(data, 0, recv);
-				if (tcpdata.Length>3) {
-					CanPacket cp = new CanPacket(tcpdata.Substring(4));
-					canPackets.Enqueue(cp);
-					//Console.WriteLine(cp.toRawString());
+				string [] split = null;
+				split = tcpdata.Split( '\n' );
+				for (int i = 0; i < split.Length; i++)
+				{
+					if (split[i].Trim().Length>3) {
+						CanPacket cp = new CanPacket(split[i].Trim().Substring(4));
+						canPackets.Enqueue(cp);
+						//Console.WriteLine(cp.toRawString());
+					}
 				}
 			}
 		}

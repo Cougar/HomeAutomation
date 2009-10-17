@@ -51,31 +51,33 @@ public class CanPacket {
 		
 		//1e00007f 1 0 04 03 02 01 96 3f 76 15
 		string [] split = null;
-		split = raw.Split( new Char [] {' '} );
+		//split = raw.Split( new Char [] {' '} );
+		split = raw.Split( ' ' );
 		if ((split.Length >= 3) && (split.Length <= 11)) {
 			try {
 				id = System.Convert.ToUInt32(split[0].Trim(), 16);
 			}
 			catch {
-				Console.WriteLine("overflow 1");
+				Console.WriteLine("\noverflow 1 <"+split[0].Trim()+">\n");
 			}
 			try {
 				ext = (byte)(System.Convert.ToUInt32(split[1].Trim(), 16)&0xFF);
 			}
 			catch {
-				Console.WriteLine("overflow 2");
+				Console.WriteLine("\noverflow 2 <"+split[1].Trim()+">\n");
 			}
 			try {
 				rtr = (byte)(System.Convert.ToUInt32(split[2].Trim(), 16)&0xFF);
 			}
 			catch {
-				Console.WriteLine("overflow 3");
+				Console.WriteLine("\noverflow 3 <"+split[2].Trim()+">\n");
 			}
+			//testa ext och rtr!
+			string dummy="";
 			try {
-				//testa ext och rtr!
 				
 				for (int i = 0; i < split.Length-3; i++) {
-					string dummy = split[i+3].Trim();
+					dummy = split[i+3].Trim();
 					if (dummy.Length == 0) break;
 					data_length = (byte)((i+1)&0xFF);
 					//Console.WriteLine("i: " + i + " i+3: " + (i+3) + " split[i+3]: " +split[i+3]);
@@ -83,7 +85,7 @@ public class CanPacket {
 				}
 			}
 			catch {
-				Console.WriteLine("overflow 4");
+				Console.WriteLine("\noverflow 4 <"+dummy+">\n");
 			}
 		}
 		
