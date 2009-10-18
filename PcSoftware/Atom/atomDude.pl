@@ -3,6 +3,7 @@
 # Written by Mattias Runge 20089
 
 use IO::Socket;
+use Time::HiRes qw(usleep nanosleep);
 
 $| = 1;
 
@@ -82,13 +83,16 @@ if ($filename ne "")
 	close(FILE);
 	print "Hexfile loaded\n";
 
+	usleep(5000);
 	print $sock "programNode('", $hwid, "','";
 
 	foreach $line (@fileData)
 	{
+		usleep(5000);
 		print $sock $line;
 	} 
 
+	usleep(5000);
 	print $sock "', ", $bios, ");\n";
 
 	my $pLoop = 1;
@@ -117,6 +121,7 @@ if ($filename ne "")
 
 if ($reset eq "true")
 {
+	usleep(5000);
 	print $sock "resetNode('", $hwid, "');\n";
 
 	my $rLoop = 1;
@@ -144,5 +149,9 @@ if ($reset eq "true")
 	}
 }
 
+
+usleep(5000);
+print $sock "quit();\n";
+usleep(5000);
 close($sock);
 exit 0;
