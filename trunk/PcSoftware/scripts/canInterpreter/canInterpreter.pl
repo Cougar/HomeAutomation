@@ -64,7 +64,7 @@ print "---------------------------------\n";
 print "Initiating sockets to canDaemon...";
 $remote = IO::Socket::INET->new(
                     Proto    => "tcp",
-                    PeerAddr => "localhost",
+                    PeerAddr => "deep.arune.se",
                     PeerPort => "1200",
                 )
                or die " FAIL: cannot connect to port 1200 at localhost";

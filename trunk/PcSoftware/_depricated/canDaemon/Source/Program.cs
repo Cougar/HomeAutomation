@@ -10,6 +10,7 @@ class Program {
 	static Daemon d;
 	static TcpServer tcps;
 	//static Downloader dl;
+	static tcpport = 1200;
 	
 	static private string argPort;
 	static private int argBaud;
@@ -55,7 +56,7 @@ class Program {
 			} else {
 				
 				d = new Daemon(sc);
-				tcps = new TcpServer(1200);
+				tcps = new TcpServer(tcpport);
 				d.addServer(tcps);
 				
 				Thread t = new Thread(d.thread);
