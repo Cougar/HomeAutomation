@@ -13,13 +13,13 @@ act_hd44780_INITIAL_BACKLIGHT=0x7F
 act_hd44780_INITIAL_CONTRAST=0x10
 
 # PIN definitions for CoreCard setup
-#define LCD_E		EXP_D
-#define LCD_RW		EXP_B
-#define LCD_RS		EXP_A
-#define LCD_DB4		EXP_J
-#define LCD_DB5		EXP_K
-#define LCD_DB6		EXP_L
-#define LCD_DB7		EXP_M
+LCD_E=EXP_D
+LCD_RW=EXP_B
+LCD_RS=EXP_A
+LCD_DB4=EXP_J
+LCD_DB5=EXP_K
+LCD_DB6=EXP_L
+LCD_DB7=EXP_M
 
 # PIN definitions for LCDNode setup
 #LCD_PORT=PORTD          /* port for the LCD lines */
