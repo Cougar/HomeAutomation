@@ -18,39 +18,33 @@
 #include "protocol/Protocol.h"
 #include "utils/convert.h"
 
-using namespace std;
-
 namespace atom {
-namespace message {
 
-using namespace boost::algorithm;
+//using namespace boost::algorithm;
 
 class Message
 {
-	typedef std::map<std::string, Variable> variableMap;
-	typedef std::vector<std::string> responseList;
-
 public:
-	typedef boost::shared_ptr<Message> pointer;
+	typedef boost::shared_ptr<Message> Pointer;
 
-	Message(Header header);
+	Message(const void *origin);
 	Message();
 	virtual ~Message();
 
-	void setOrigin(const void *origin);
-	bool isOrigin(const void *origin);
+	const void *GetOrigin() const;
 
 	Header & getHeader();
 	Variable & getVariable(string name);
 	variableMap & getVariables();
 	responseList getResponses();
 
-	void readBits(BitBuffer & buffer);
-	void writeBits(BitBuffer & buffeer);
-
 	string toString();
 
 private:
+	typedef std::map<std::string, Variable> variableMap;
+	typedef std::vector<std::string> responseList;
+
+
 	log::Logger LOG;
 
 	const void *myOrigin;
@@ -60,7 +54,6 @@ private:
 	responseList myResponses;
 };
 
-}
-}
+} // namespace atom
 
 #endif /* MESSAGE_H_ */

@@ -14,35 +14,33 @@
 #include "log/Logger.h"
 
 namespace atom {
-namespace broker {
-
-using namespace std;
-using namespace message;
 
 class Broker
 {
-	typedef boost::signal<void(Message::pointer message)> OnMessageSignal;
-
 public:
-	typedef boost::shared_ptr<Broker> pointer;
+	typedef boost::shared_ptr<Broker> Pointer;
 
 	~Broker();
 
-	void connect(const OnMessageSignal::slot_type & slot);
-	void put(Message::pointer message);
+	void Connect(const Signal_OnMessage::slot_type &slot);
+	void Put(Message::Pointer message);
 
-	static pointer getInstance();
+	static Pointer GetInstance();
 
 private:
+	typedef boost::signal<void(Message::pointer message)> Signal_OnMessage;
+
 	Broker();
 
-	static pointer Instance;
+	Signal_OnMessage OnMessage;
 
 	log::Logger LOG;
 
-	OnMessageSignal onNewMessage;
+	static Pointer instance_;
+
+
 };
 
-}
-}
+} // namespace atom
+
 #endif /* BROKER_H_ */

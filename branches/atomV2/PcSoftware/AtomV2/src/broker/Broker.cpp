@@ -8,26 +8,8 @@
 #include "Broker.h"
 
 namespace atom {
-namespace broker {
 
-Broker::pointer Broker::Instance(new Broker());
-
-void Broker::connect(const OnMessageSignal::slot_type & slot)
-{
-	LOG.info("New subscriber connected.");
-	this->onNewMessage.connect(slot);
-}
-
-void Broker::put(Message::pointer message)
-{
-	LOG.info("New message received.");
-	this->onNewMessage(message);
-}
-
-Broker::pointer Broker::getInstance()
-{
-	return Broker::Instance;
-}
+Broker::Pointer Broker::instance_(new Broker());
 
 Broker::Broker()
 {
@@ -38,5 +20,21 @@ Broker::~Broker()
 {
 }
 
+void Broker::Connect(const Signal_OnMessage::slot_type &slot)
+{
+	LOG.info("New subscriber connected.");
+	this->OnMessage.connect(slot);
 }
+
+void Broker::Put(Message::Pointer message)
+{
+	LOG.info("New message received.");
+	this->OnMessage(message);
 }
+
+Broker::Pointer Broker::GetInstance()
+{
+	return Broker::instance_;
+}
+
+} // namespace atom

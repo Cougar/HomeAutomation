@@ -26,43 +26,38 @@
 namespace atom {
 namespace subscribers {
 
-using namespace broker;
-using namespace message;
-using namespace std;
-using boost::asio::ip::udp;
-
 // public boost::signals::trackable,
 class CanNet : public Subscriber
 {
 public:
-	typedef boost::shared_ptr<CanNet> pointer;
+	typedef boost::shared_ptr<CanNet> Pointer;
 
-	CanNet(Broker::pointer broker, string address, unsigned int port);
+	CanNet(std::string address, unsigned int port);
 	virtual ~CanNet();
 
-protected:
-	void onNewMessage(Message::pointer message);
-	void onNewData(const udp::endpoint & sender, const byte_list & bytes);
+private:
+	log::Logger LOG;
 
-	byte_list buildPacket(unsigned int id, byte_list data);
-	void processBuffer();
-	void sendPing();
+	void OnMessage(Message::Pointer message);
+	void Slot_OnNewData(const udp::endpoint &sender, const ByteList &bytes);
+
+	ByteList BuildPacket(unsigned int id, ByteList data);
+	void ProcessBuffer();
+	void SendPing();
 
 	enum
 	{
 		PACKET_START = 253, PACKET_END = 250, PACKET_PING = 251
 	};
 
-	net::UdpServer::pointer myUdpServer;
-	udp::endpoint myEndpoint;
-	// TODO Add mutex lock for access to the buffer or are we safe?
-	byte_list myBuffer;
+	net::UdpServer::pointer udp_server_;
+	boost::asio::ip::udp::endpoint endpoint_;
 
-private:
-	log::Logger LOG;
+	// TODO Add mutex lock for access to the buffer or are we safe?
+	ByteList buffer_;
 };
 
-}
-}
+} // namespace subscribers
+} // namespace atom
 
 #endif /* CANNET_H_ */

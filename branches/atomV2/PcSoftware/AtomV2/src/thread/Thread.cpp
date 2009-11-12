@@ -14,52 +14,48 @@ namespace thread {
 
 Thread::Thread()
 {
-	this->myIsRunning = false;
+	this->is_running_ = false;
 }
 
 Thread::~Thread()
 {
 	//cout << "Thread destroy" << endl;
-	this->stop();
+	this->Stop();
 }
 
-void Thread::start()
+void Thread::Start()
 {
-	if (!this->myIsRunning)
+	if (!this->is_running_)
 	{
-		boost::thread localThread(boost::bind(&Thread::runBase, this));
-		this->myThread = localThread.move();
-		this->myIsRunning = true;
+		boost::thread localThread(boost::bind(&Thread::RunBase, this));
+		this->thread_ = localThread.move();
+		this->is_running_ = true;
 	}
 }
 
-void Thread::stop()
+void Thread::Stop()
 {
-	this->myThread.interrupt();
-	this->myThread.join();
-	this->myIsRunning = false;
+	this->thread_.interrupt();
+	this->thread_.join();
+	this->is_running_ = false;
 }
 
-boost::thread::id Thread::getId()
+boost::thread::id Thread::GetId()
 {
-	return this->myThread.get_id();
+	return this->thread_.get_id();
 }
 
-bool Thread::isRunning()
+bool Thread::IsRunning()
 {
-	return this->myIsRunning;
+	return this->is_running_;
 }
 
-void Thread::runBase()
+void Thread::RunBase()
 {
-	this->myIsRunning = true;
-	this->run();
-	this->myIsRunning = false;
+	this->is_running_ = true;
+	this->Run();
+	this->is_running_ = false;
 }
 
-void Thread::run()
-{
-}
-
-}
-}
+} // namespace thread
+} // namespace atom

@@ -97,8 +97,26 @@ return 0;
 #
 }
 */
+
+float stof(const string s)
+{
+	istringstream in(s);
+	float f;
+	in >> f;
+	return f;
+}
+
+
 int main(int argc, char* argv[])
 {
+
+	float a = stof("1,44");
+
+
+
+	cout << a << endl;
+
+	return 0;
 	try
 	{
 		log::Logger LOG;

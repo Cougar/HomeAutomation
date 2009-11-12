@@ -5,12 +5,14 @@
 		<!-- Start required -->
 		
 		<!-- Always a total of 29 bits in length -->
-		<datatype type="unsigned integer" name="moduleType" lenght="13"/>
-		<datatype type="unsigned integer" name="moduleId" lenght="8"/>
-		<datatype type="unsigned integer" name="messageType" length="8"/>
-
+		<datatype type="unsigned integer" name="class_type" lenght="4"/>
+		<datatype type="unsigned integer" name="module_id" lenght="8"/>
+		<datatype type="unsigned integer" name="message_type" length="8"/>
+		<datatype type="unsigned integer" name="nmt_message_type" length="8"/>
+		<datatype type="boolean" name="boolean"/>
+		
 		<!-- Used to send responses, length depends on the number of codes -->
-		<datatype type="enum" name="responseCode">
+		<datatype type="enum" name="response_code">
 			<label name="ok"/>
 			<label name="error"/>
 			<label name="warning"/>
@@ -20,7 +22,7 @@
 		
 
 		<!-- Always 1 bit in length -->
-		<datatype type="boolean" name="boolean"/>
+		
 
 		<!-- Example standard datatypes -->
 		<datatype type="unsigned integer" name="uint10" length="10"/>
@@ -31,16 +33,22 @@
 		<datatype type="decimal" name="decimal10" length="10" scaling="1024"/>
 
 		<!-- Example enum, length depends on the number of labels -->
-		<datatype type="enum" name="enumTest">
+		<datatype type="enum" name="enum_test">
 			<label name="label1"/>
 			<label name="label2"/>
 			<label name="label3"/>
 		</datatype>
 	</datatypes>
 	<header>
-		<variable datatype="moduleType" name="moduleType" required="true"/>
-		<variable datatype="moduleId" name="moduleId" required="true"/>
-		<variable datatype="messageType" name="messageType" required="true"/>
+		<variable datatype="class_type" name="class_type" required="true"/>
+		<headertype class_type="0">
+			<variable datatype="boolean" name="reserved" required="false" default="0"/>
+			<variable datatype="nmt_message_type" name="type" required="true"/>
+		</headertype>
+		<headertype class_type="1">
+			<variable datatype="module_id" name="id" required="true"/>
+			<variable datatype="message_type" name="type" required="true"/>
+		</headertype>
 	</header>
 	<messagetypes>
 		<messagetype name="response">

@@ -13,10 +13,10 @@
 
 namespace atom {
 
-typedef std::vector<unsigned char> byte_list;
-typedef std::vector<std::string> string_list;
-typedef std::vector<bool> bit_list;
+typedef std::vector<unsigned char> ByteList;
+typedef std::vector<std::string> StringList;
+typedef std::vector<bool> BitList;
 
-}
+} // namespace atom
 
 #endif /* TYPES_H_ */

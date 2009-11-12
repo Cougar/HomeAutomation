@@ -7,56 +7,57 @@
 
 #include "Subscriber.h"
 
-namespace atom {
-namespace broker {
+#include "broker/Broker.h"
 
-Subscriber::Subscriber(boost::shared_ptr<Broker> broker, bool receiveFromMyself)
+namespace atom {
+
+Subscriber::Subscriber(bool receive_from_self)
 {
 	LOG.setName("Subscriber");
-	this->myBroker = broker;
-	this->myReceiveFromMyself = receiveFromMyself;
-	this->myBroker->connect(boost::bind(&Subscriber::newMessageHandler, this, _1));
+
+	this->receive_from_self_ = receive_from_self;
+
+	Broker::GetInstance()->Connect(boost::bind(&Subscriber::Slot_OnMessage, this, _1));
 }
 
 Subscriber::~Subscriber()
 {
-	this->stop();
+	this->Stop();
 }
 
-void Subscriber::put(Message::pointer message)
+void Subscriber::Put(Message::Pointer message)
 {
-	message->setOrigin(this);
-	this->myBroker->put(message);
+	Broker::GetInstance()->Put(message);
 }
 
-void Subscriber::onNewMessage(Message::pointer message)
+Message::Pointer CreateMessage()
 {
+	return Message::Pointer(new Message(static_cast<void *>this));
 }
 
-void Subscriber::newMessageHandler(Message::pointer message)
+void Subscriber::Slot_OnMessage(Message::Åointer message)
 {
-	if (this->myReceiveFromMyself || !message->isOrigin(this))
+	if (this->receive_from_self_ || message->GetOrigin() != static_cast<void *>this)
 	{
-		this->myQueue.push(message);
-
-		this->myCondition.notify_all();
+		this->queue_.push(message);
+		this->on_message_condition_.notify_all();
 	}
 }
 
-void Subscriber::run()
+void Subscriber::Run()
 {
 	while (true)
 	{
-		lock guard(this->myMutex);
+		boost::mutex::scoped_lock guard(this->guard_mutex_);
 
 		try
 		{
-			while (this->myQueue.size() > 0)
+			while (this->queue_.size() > 0)
 			{
-				this->onNewMessage(this->myQueue.pop());
+				this->OnMessage(this->queue_.pop());
 			}
 
-			this->myCondition.wait(guard);
+			this->on_message_condition_.wait(guard);
 		}
 		catch (boost::thread_interrupted e)
 		{
@@ -67,5 +68,4 @@ void Subscriber::run()
 	}
 }
 
-}
-}
+} // namespace atom

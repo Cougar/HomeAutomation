@@ -6,9 +6,8 @@
  */
 
 #include "CanNet.h"
-#include <iostream>
 
-using namespace std;
+#include <iostream>
 
 namespace atom {
 namespace subscribers {
@@ -16,27 +15,27 @@ namespace subscribers {
 // TODO Fix input on the form of a URL:
 // ex. udp://192.168.1.250:1100
 // ex. dev://dev/ttyUSB0:57000
-CanNet::CanNet(Broker::pointer broker, string address, unsigned int port) : Subscriber(broker, false)
+CanNet::CanNet(string address, unsigned int port) : Subscriber(false)
 {
 	LOG.setName("CanNetSubscriber");
 
-	this->myUdpServer = net::UdpServer::getInstance(port);
-	this->myUdpServer->connect(boost::bind(&CanNet::onNewData, this, _1, _2));
+	this->udp_server = net::UdpServer::getInstance(port);
+	this->udp_server->connect(boost::bind(&CanNet::Slot_OnNewData, this, _1, _2));
 
-	this->myEndpoint = this->myUdpServer->getEndpoint(address);
+	this->endpoint_ = this->udp_server->getEndpoint(address);
 
-	this->sendPing();
+	this->SendPing();
 
-	this->start();
+	this->Start();
 }
 
 CanNet::~CanNet()
 {
 }
 
-byte_list CanNet::buildPacket(unsigned int id, byte_list data)
+ByteList CanNet::BuildPacket(unsigned int id, ByteList data)
 {
-	byte_list packet;
+	ByteList packet;
 
 	packet.push_back((unsigned char) PACKET_START);
 
@@ -67,9 +66,17 @@ byte_list CanNet::buildPacket(unsigned int id, byte_list data)
 	return packet;
 }
 
-void CanNet::processBuffer()
+void CanNet::SendPing()
 {
-	if (this->myBuffer.size() != 15)
+	ByteList data(1, (unsigned char) PACKET_PING);
+
+	LOG.info("Sending ping packet...");
+	this->myUdpServer->sendTo(this->myEndpoint, data);
+}
+
+void CanNet::ProcessBuffer()
+{
+	if (this->buffer_.size() != 15)
 	{
 		LOG.warn("Received packet of length " + convert::int2string(this->myBuffer.size() + 2) + ", should be 17.");
 		this->myBuffer.clear();
@@ -103,15 +110,7 @@ void CanNet::processBuffer()
 	this->myBuffer.clear();
 }
 
-void CanNet::sendPing()
-{
-	byte_list data(1, (unsigned char) PACKET_PING);
-
-	LOG.info("Sending ping packet...");
-	this->myUdpServer->sendTo(this->myEndpoint, data);
-}
-
-void CanNet::onNewMessage(Message::pointer message)
+void CanNet::OnMessage(Message::Pointer message)
 {
 	LOG.debug("update called");
 
@@ -131,11 +130,11 @@ void CanNet::onNewMessage(Message::pointer message)
 	this->myUdpServer->sendTo(this->myEndpoint, buildPacket(id, data));
 }
 
-void CanNet::onNewData(const udp::endpoint & sender, const byte_list & bytes)
+void CanNet::Slot_OnNewData(const udp::endpoint &sender, const ByteList &bytes)
 {
 	//LOG.debug(udp::endpoint(sender).address().to_string() + "==" + this->myEndpoint.address().to_string());
 	//LOG.debug(itos(udp::endpoint(sender).port()) + "==" + itos(this->myEndpoint.port()));
-	if (sender.address() == this->myEndpoint.address()) // Port is wrong sometimes, therefor we only compare address
+	if (sender.address() == this->enporint_.address()) // Port is wrong sometimes, therefor we only compare address
 	{
 		LOG.debug("Got data.");
 
@@ -143,11 +142,11 @@ void CanNet::onNewData(const udp::endpoint & sender, const byte_list & bytes)
 		{
 			if (bytes[n] == PACKET_START)
 			{
-				this->myBuffer.clear();
+				this->buffer_.clear();
 			}
 			else if (bytes[n] == PACKET_END)
 			{
-				this->processBuffer();
+				this->ProcessBuffer();
 			}
 			else if (bytes[n] == PACKET_PING)
 			{
@@ -156,7 +155,7 @@ void CanNet::onNewData(const udp::endpoint & sender, const byte_list & bytes)
 			else
 			{
 				//LOG.info("Received byte. " + itos(bytes[n]));
-				this->myBuffer.push_back(bytes[n]);
+				this->buffer_.push_back(bytes[n]);
 			}
 		}
 	}

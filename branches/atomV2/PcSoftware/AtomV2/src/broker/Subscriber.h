@@ -16,7 +16,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/thread/locks.hpp>
-#include "Broker.h"
 #include "message/Message.h"
 #include "log/Logger.h"
 #include "thread/Thread.h"
@@ -24,35 +23,35 @@
 #include <boost/make_shared.hpp>
 
 namespace atom {
-namespace broker {
 
 using namespace message;
 
 class Subscriber : public boost::signals::trackable, public thread::Thread
 {
-	typedef boost::mutex::scoped_lock lock;
-
 public:
-	typedef boost::shared_ptr<Subscriber> pointer;
+	typedef boost::shared_ptr<Subscriber> Pointer;
 
-	Subscriber(boost::shared_ptr<Broker> broker, bool receiveFromMyself);
+	Subscriber(bool receive_from_self);
 	virtual ~Subscriber();
 
 protected:
-	boost::shared_ptr<Broker> myBroker;
+	void PutMessage(Message::pointer message);
+	Message::pointer CreateMessage() const;
 
-	void put(Message::pointer message);
-	virtual void onNewMessage(Message::pointer message);
+	virtual void OnMessage(Message::pointer message) = 0;
 
 private:
 	log::Logger LOG;
-	thread::Queue<Message::pointer> myQueue;
-	bool myReceiveFromMyself;
-	boost::condition myCondition;
-	boost::mutex myMutex;
 
-	void newMessageHandler(Message::pointer message);
-	void run();
+	thread::Queue<Message::pointer> queue_;
+	bool receive_from_self_;
+
+	boost::condition on_message_condition_;
+	boost::mutex guard_mutex_;
+
+	void Slot_OnMessage(Message::pointer message);
+
+	void Run();
 };
 
 }

@@ -24,44 +24,40 @@ namespace thread {
 template<typename T>
 class Queue
 {
-	typedef boost::mutex::scoped_lock lock;
-
 public:
-	Queue()
-	{
-	}
+	Queue() { }
+	~Queue() { }
 
-	~Queue()
+	void Push(T item)
 	{
-	}
+		boost::mutex::scoped_lock guard(this->guard_mutex_);
 
-	void push(T item)
-	{
-		lock guard(this->myMutex);
-		this->myQueue.push(item);
+		this->queue_.push(item);
 	}
 
 	T pop()
 	{
-		lock guard(this->myMutex);
-		T item = this->myQueue.front();
-		this->myQueue.pop();
+		boost::mutex::scoped_lock guard(this->guard_mutex_);
+
+		T item = this->queue_.front();
+		this->queue_.pop();
 		return item;
 	}
 
 	unsigned int size()
 	{
-		lock guard(this->myMutex);
-		return this->myQueue.size();
+		boost::mutex::scoped_lock guard(this->guard_mutex_);
+
+		return this->queue_.size();
 	}
 
 private:
-	std::queue<T> myQueue;
-	boost::mutex myMutex;
+	std::queue<T> queue_;
+	boost::mutex guard_mutex_;
 };
 
-}
-}
+} // namespace thread
+} // namespace atom
 
-#endif /* QUEUE_H_ */
+#endif /* QUEUE_HPP_ */
 

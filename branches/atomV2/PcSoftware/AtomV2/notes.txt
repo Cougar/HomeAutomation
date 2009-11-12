@@ -24,6 +24,22 @@ TODO
 * Restart js-vm when atom is running to load new versions of js, maybe a persistant store of variables in c++ that lives between js-vm restarts
 * Ta bort throw new, use references instead?
 * Implement datatype string
+* static_cast<>
+
+V8
+==
+* snapshot=yes
+
+
+Definera vilka pinnar en modul behöver också i xmlfilen och om det är några krav på dom, pwm mm, kanske även vilken defaultpinne dom är på, eller flera om nån är upptagen
+
+Control-interface
+=================
+Atom har en socket öppen dit man kan skicka och få information.
+Tanken är att man här skall kunna interagera med noder, se vilka som är online, vilka metoder dom har, skicka meddelanden etc.. detta blir ett interface mot js-modulerna. Eller/och att man kan skicka meddelanden och tabba fram från protocol-specen.
+Protokollet skall vara human-readable så det går att bara telneta till socketen och skriva ungefär som SMTP.
+Det skall finnas en kommandoradsklient som stödjer autocomplete mm för alla funktioner protokollet stödjer, ungefär som mysql-klienten med lite bash inblandat.
+Det skall även skapas en php-klass för att enkelt prata med control-interfaces så man kan bygga webbgränssnitt enkelt.
 
 TODO - Stage 1
 ==============

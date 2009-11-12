@@ -10,22 +10,23 @@
 namespace atom {
 namespace subscribers {
 
-Monitor::Monitor(Broker::pointer broker) : Subscriber(broker, true)
+Monitor::Monitor() : Subscriber(true)
 {
 	LOG.setName("MonitorSubscriber");
-	this->start();
+	this->Start();
 }
 
 Monitor::~Monitor()
 {
+	this->Stop();
 }
 
-void Monitor::onNewMessage(Message::pointer message)
+void Monitor::OnMessage(Message::Pointer message)
 {
-	LOG.info(message->toString());
+	LOG.info(message->ToString());
 
 	// TODO print origin of message also
 }
 
-}
-}
+} // namespace subscribers
+} // namespace atom

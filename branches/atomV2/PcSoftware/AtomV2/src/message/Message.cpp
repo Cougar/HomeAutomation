@@ -8,7 +8,6 @@
 #include "Message.h"
 
 namespace atom {
-namespace message {
 
 Message::Message(Header header)
 {
@@ -123,5 +122,4 @@ string Message::toString()
 	return buffer;
 }
 
-}
-}
+} // namespace atom

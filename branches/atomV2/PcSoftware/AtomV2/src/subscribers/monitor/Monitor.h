@@ -16,25 +16,22 @@
 namespace atom {
 namespace subscribers {
 
-using namespace broker;
-using namespace message;
-
 class Monitor : public Subscriber
 {
 public:
-	typedef boost::shared_ptr<Monitor> pointer;
+	typedef boost::shared_ptr<Monitor> Pointer;
 
-	Monitor(Broker::pointer broker);
+	Monitor();
 	virtual ~Monitor();
 
 protected:
-	void onNewMessage(Message::pointer message);
+	void OnMessage(Message::Pointer message);
 
 private:
 	log::Logger LOG;
 };
 
-}
-}
+} // namespace subscribers
+} // namesapce atom
 
 #endif /* MONITOR_HPP_ */

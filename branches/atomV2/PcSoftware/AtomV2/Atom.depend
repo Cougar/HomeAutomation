@@ -223,13 +223,13 @@
 1249332740 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Broker.cpp
 	"Broker.h"
 
-1249421417 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Broker.h
+1256816977 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Broker.h
 	<boost/signal.hpp>
 	<boost/make_shared.hpp>
 	"message/Message.h"
 	"log/Logger.h"
 
-1249489743 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.h
+1256817970 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Message.h
 	<string>
 	<vector>
 	<map>
@@ -289,7 +289,7 @@
 1249420545 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Subscriber.cpp
 	"Subscriber.h"
 
-1249421436 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Subscriber.h
+1256817893 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/broker/Subscriber.h
 	<iostream>
 	<boost/bind.hpp>
 	<boost/signal.hpp>
@@ -297,7 +297,6 @@
 	<boost/thread/mutex.hpp>
 	<boost/thread/condition.hpp>
 	<boost/thread/locks.hpp>
-	"Broker.h"
 	"message/Message.h"
 	"log/Logger.h"
 	"thread/Thread.h"
@@ -330,7 +329,7 @@
 	"message/types/Decimal.hpp"
 	"message/types/Enum.hpp"
 
-1249503673 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.cpp
+1249504514 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/Header.cpp
 	"Header.h"
 	"message/types/UnsignedInteger.hpp"
 
@@ -359,7 +358,7 @@
 1248460665 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/module/Module.h
 	<string>
 
-1249499628 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/cannet/CanNet.cpp
+1249504470 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/cannet/CanNet.cpp
 	"CanNet.h"
 	<iostream>
 
@@ -393,7 +392,7 @@
 1249492497 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.cpp
 	"Monitor.h"
 
-1249414666 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.h
+1256818030 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/subscribers/monitor/Monitor.h
 	<boost/make_shared.hpp>
 	"broker/Subscriber.h"
 	"message/Message.h"
@@ -456,7 +455,7 @@
 	"protocol/Protocol.h"
 	"log/Logger.h"
 
-1249504514 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/version.h
+1256818530 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/version.h
 
 1248460665 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/HttpClient.cpp
 	<boost/asio.hpp>
@@ -517,7 +516,7 @@
 	"utils/convert.h"
 	"types.h"
 
-1249415843 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Thread.h
+1256818253 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Thread.h
 	<boost/thread.hpp>
 
 1249420657 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Queue.h
@@ -535,7 +534,7 @@
 
 1249420680 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Queue.cpp
 
-1249420916 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Queue.hpp
+1256818528 /home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/thread/Queue.hpp
 	<queue>
 	<boost/thread.hpp>
 	<boost/thread/mutex.hpp>
@@ -549,7 +548,7 @@
 1249497354 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/message/BitBuffer.cpp
 	"BitBuffer.h"
 
-1249503633 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/atom.cpp
+1254329064 source:/home/migan/projects/HomeAutomation/branches/atomV2/PcSoftware/AtomV2/src/atom.cpp
 	<iostream>
 	<istream>
 	<ostream>

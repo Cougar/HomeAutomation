@@ -19,23 +19,22 @@ public:
 	Thread();
 	virtual ~Thread();
 
-	void start();
-	void stop();
-	boost::thread::id getId();
-	bool isRunning();
-
+	void Start();
+	void Stop();
+	boost::thread::id GetId();
+	bool IsRunning();
 
 protected:
-	virtual void run();
+	virtual void Run() = 0;
 
 private:
-	boost::thread myThread;
-	bool myIsRunning;
+	boost::thread thread_;
+	bool is_running_;
 
-	void runBase();
+	void RunBase();
 };
 
-}
-}
+} // namespace thread
+} // namespace atom
 
 #endif /* THREAD_H_ */
