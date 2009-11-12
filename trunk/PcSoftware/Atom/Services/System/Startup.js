@@ -17,6 +17,7 @@ loadScript("System/IntelHex.js");
 loadScript("System/Base64.js");
 
 loadScript("Other/OnlinePhonebook.js");
+loadScript("Other/Spotify.js");
 loadScript("Other/ExchangeCalendar.js");
 
 loadScript("System/TempSensors.js");

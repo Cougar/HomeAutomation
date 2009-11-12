@@ -44,9 +44,9 @@ HD44789.prototype.canMessageHandler = function(canMessage)
 	this.CanService.prototype.canMessageHandler.call(this, canMessage);
 }
 
-HD44789.prototype.onlineHandler = function()
+HD44789.prototype.setOnline = function()
 {
-	this.CanService.prototype.onlineHandler.call(this);
+	this.CanService.prototype.setOnline.call(this);
 
 	// Request size of LCD
 	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_Size");
@@ -67,9 +67,14 @@ HD44789.prototype.printText = function(x, y, text)
 	text = text.replace(/ö/, String.fromCharCode(239));
 	text = text.replace(/¤/, String.fromCharCode(223));
 
-	while (text.length > 0)
+	while (text.length > 0 && y < this.myHeight)
 	{
 		var text6 = text.substr(0, 6);
+		
+		if (text6.length > this.myWidth - x)
+		{
+			text6 = text6.substr(0, this.myWidth - x);
+		}
 
 		var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_TextAt");
 		canMessage.setData("X", x);
@@ -79,6 +84,12 @@ HD44789.prototype.printText = function(x, y, text)
 		
 		x += text6.length;
 		text = text.slice(text6.length);
+		
+		if (text6.length < 6)
+		{
+			y++;
+			x = 0;
+		}
 	}
 }
 
@@ -90,9 +101,12 @@ HD44789.prototype.clearScreen = function()
 
 HD44789.prototype.setBacklight = function(strength)
 {
-	var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_Backlight");
-	canMessage.setData("Strength", strength);
-	sendMessage(canMessage);
+	if (strength != this.myBacklight)
+	{
+		var canMessage = new CanMessage("act", "To_Owner", this.myName, this.myId, "LCD_Backlight");
+		canMessage.setData("Strength", strength);
+		sendMessage(canMessage);
+	}
 }
 
 HD44789.prototype.getBacklight = function()

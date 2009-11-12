@@ -110,5 +110,9 @@ HTTP.prototype.processBuffer = function()
 	
 	this.myBuffer = "";
 	
-	this.myUserCallback(result, header, contentData);
+	if (this.myUserCallback != null)
+	{
+		this.myUserCallback(result, header, contentData);
+		this.myUserCallback = null;
+	}
 }
