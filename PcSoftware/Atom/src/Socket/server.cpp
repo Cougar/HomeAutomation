@@ -143,8 +143,12 @@ void Server::disconnectClient(int id)
 	{
 		log.add(myName + " had client " + itos(id) + " disconnect!.\n");
 		
-		delete myClientSockets[id];
+		myClientSockets[id]->stop();
+		
+		AsyncSocket* socket = myClientSockets[id];
 		myClientSockets.erase(id);
+		
+		delete socket;
 	}
 }
 

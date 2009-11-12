@@ -480,6 +480,10 @@ string escape(string in)
 				out += "\\'";
 				break;
 
+			case '\\':
+				out += "\\\\";
+				break;
+
 			case '"':
 				out += "\\\"";
 				break;

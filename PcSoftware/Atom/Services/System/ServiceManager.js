@@ -43,3 +43,14 @@ ServiceManager.startService = function(type, name, id, args)
 		service.initialize(args);
 	}
 }
+
+ServiceManager.numServices = function()
+{
+	return ServiceManager.Services.length;
+}
+
+ServiceManager.numCallbacks = function()
+{
+        return ServiceManager.Callbacks.length;
+}
+

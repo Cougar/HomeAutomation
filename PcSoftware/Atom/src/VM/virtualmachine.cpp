@@ -89,6 +89,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
 	myGlobal->Set(String::New("loadDataStore"), FunctionTemplate::New(VirtualMachine::_loadDataStore));
 	myGlobal->Set(String::New("getFileContents"), FunctionTemplate::New(VirtualMachine::_getFileContents));
+	myGlobal->Set(String::New("system"), FunctionTemplate::New(VirtualMachine::_system));
 	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
 	myGlobal->Set(String::New("hex2bin"), FunctionTemplate::New(VirtualMachine::_hex2bin));
 	myGlobal->Set(String::New("bin2hex"), FunctionTemplate::New(VirtualMachine::_bin2hex));
@@ -593,6 +594,32 @@ Handle<Value> VirtualMachine::_getFileContents(const Arguments& args)
 	string content = file_get_contents(*filename);
 
 	return String::New(content.c_str());
+}
+
+#include <string>
+#include <iostream>
+#include <stdio.h>
+
+std::string exec(string cmd) {
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) return "ERROR";
+    char buffer[128];
+    std::string result = "";
+    while(!feof(pipe)) {
+        if(fgets(buffer, 128, pipe) != NULL)
+                result += buffer;
+    }
+    pclose(pipe);
+    return result;
+}
+
+Handle<Value> VirtualMachine::_system(const Arguments& args)
+{
+	String::AsciiValue command(args[0]);
+	
+	string output = exec(*command);
+	
+	return String::New(output.c_str());
 }
 
 Handle<Value> VirtualMachine::_uint2hex(const Arguments& args)
