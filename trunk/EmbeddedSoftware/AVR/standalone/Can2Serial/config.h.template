@@ -6,18 +6,19 @@
 //#define F_CPU 			20000000UL
 #define F_CPU 				8000000UL
 
+//settings for a Corecard
 #define CAN_CONTROLLER 			MCP2515
-#define MCP_CS_PORT 			PORTB
-#define MCP_CS_DDR 			DDRB
-#define MCP_CS_BIT 			PB2
+#define MCP_CS_PORT 			PORTC
+#define MCP_CS_DDR 			DDRC
+#define MCP_CS_BIT 			PC3
 #define MCP_CAN_BITRATE_KBPS 		250
 #define MCP_CLOCK_FREQ_MHZ 		20
 #define MCP_CLOCK_PRESC 		1
 
-//settings for a Corecard, comment lines above
-//#define MCP_CS_PORT 			PORTC
-//#define MCP_CS_DDR 			DDRC
-//#define MCP_CS_BIT 			PC3
+//settings for a old node, comment lines above
+//#define MCP_CS_PORT 			PORTB
+//#define MCP_CS_DDR 			DDRB
+//#define MCP_CS_BIT 			PB2
 
 
 #define SERIAL_BAUDRATE 		19200
