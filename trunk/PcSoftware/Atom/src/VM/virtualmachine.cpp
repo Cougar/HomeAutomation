@@ -89,6 +89,7 @@ void VirtualMachine::run()
 	myGlobal->Set(String::New("sendToSocketThread"), FunctionTemplate::New(VirtualMachine::_sendToSocketThread));
 	myGlobal->Set(String::New("loadDataStore"), FunctionTemplate::New(VirtualMachine::_loadDataStore));
 	myGlobal->Set(String::New("getFileContents"), FunctionTemplate::New(VirtualMachine::_getFileContents));
+	myGlobal->Set(String::New("setFileContents"), FunctionTemplate::New(VirtualMachine::_setFileContents));
 	myGlobal->Set(String::New("system"), FunctionTemplate::New(VirtualMachine::_system));
 	myGlobal->Set(String::New("uint2hex"), FunctionTemplate::New(VirtualMachine::_uint2hex));
 	myGlobal->Set(String::New("hex2bin"), FunctionTemplate::New(VirtualMachine::_hex2bin));
@@ -594,6 +595,25 @@ Handle<Value> VirtualMachine::_getFileContents(const Arguments& args)
 	string content = file_get_contents(*filename);
 
 	return String::New(content.c_str());
+}
+
+Handle<Value> VirtualMachine::_setFileContents(const Arguments& args)
+{
+	String::AsciiValue filename(args[0]);
+	String::AsciiValue content(args[1]);
+
+	std::ofstream dstfile(*filename);
+
+	if (!dstfile.is_open())
+	{
+		dstfile.close();
+		return Undefined();
+	}
+
+	dstfile << *content;
+	dstfile.close();
+
+	return Undefined();
 }
 
 #include <string>
