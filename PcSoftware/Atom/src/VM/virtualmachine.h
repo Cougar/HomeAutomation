@@ -97,6 +97,7 @@ public:
 
 	static Handle<Value> _loadDataStore(const Arguments& args);
 	static Handle<Value> _getFileContents(const Arguments& args);
+	static Handle<Value> _setFileContents(const Arguments& args);
 
 private:
 	bool runExpression(Expression expression);
