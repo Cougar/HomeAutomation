@@ -6,7 +6,8 @@ using System.Globalization;
 
 public class HexFile {
 	private const ulong USER_RESET_ADDR = 0; //0x1000;	//0x1000 för PIC??
-	private const ulong BUFFER_SIZE = 5200000;
+	//private const ulong BUFFER_SIZE = 5200000;
+	//private const ulong BUFFER_SIZE = 5;
 	private const ulong LINE_MAX_SIZE = 1024;
 	private const ulong ERROR_BUFFER_SIZE = 256;
 	private const ulong FILE_PATH_SIZE = 256;
@@ -16,7 +17,7 @@ public class HexFile {
 	private ulong addrUpper = 0;
 	private string filepath = "";
 	private bool valid = false;
-	private byte[] buff = new byte[BUFFER_SIZE];
+	private byte[] buff=new byte[5200000];
 	
 	public HexFile() { }
 	
@@ -38,7 +39,7 @@ public class HexFile {
 		this.valid = false;
 		
 		// Prime the buffer
-		for (ulong i = 0; i < BUFFER_SIZE; i++) buff[i] = 0xFF;
+		for (ulong i = 0; i < 5200000; i++) buff[i] = 0xFF;
 		
 		
 		// Try opening file
@@ -105,7 +106,7 @@ public class HexFile {
 	
 	public byte getByte(ulong addr)
 	{
-		if (addr>=BUFFER_SIZE) return 0xFF;
+		if (addr>=5200000) return 0xFF;
 		return buff[addr];
 	}
 	
