@@ -19,6 +19,7 @@ loadScript("System/Base64.js");
 loadScript("Other/OnlinePhonebook.js");
 loadScript("Other/Spotify.js");
 loadScript("Other/ExchangeCalendar.js");
+loadScript("Other/EggdropIRCpost.js");
 
 loadScript("System/TempSensors.js");
 loadScript("System/Dimmers.js");
