@@ -67,6 +67,7 @@ EggdropIRCpost.prototype.disconnect = function()
 	}
 	else if (this.myState == "CONNECTING")
 	{
+		var self = this;
 		this.myQuitCallback = function() { self.disconnect(); }
 	}
 }
@@ -101,6 +102,7 @@ EggdropIRCpost.prototype.post = function(channel, text)
 
 EggdropIRCpost.prototype.postAndDisconnect = function(channel, text)
 {
+	var self = this;
 	this.myQuitCallback = function() { self.disconnect(); }
 	this.post(channel, text);
 }
