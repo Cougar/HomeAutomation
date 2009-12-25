@@ -17,7 +17,7 @@ SensorPrint.prototype.myEggdropIRCpost = null;
 ...
 this.myEggdropIRCpost = new EggdropIRCpost("hostname", port, "username", "password");
 ...
-this.myEggdropIRCpostAndDisconnect.post("#myplaychannel", "Hello world!");
+this.myEggdropIRCpost.postAndDisconnect("#myplaychannel", "Hello world!");
 
 
 */
@@ -34,6 +34,7 @@ function EggdropIRCpost(hostname, port, username, password)
 EggdropIRCpost.prototype.mySocket = null;
 EggdropIRCpost.prototype.myState = null;
 EggdropIRCpost.prototype.myDataCallback = null;
+EggdropIRCpost.prototype.myQuitCallback = null;
 EggdropIRCpost.prototype.mySendChn = null;
 EggdropIRCpost.prototype.mySendText = null;
 
@@ -58,11 +59,15 @@ EggdropIRCpost.prototype.connect = function()
 
 EggdropIRCpost.prototype.disconnect = function()
 {
-	if (this.mySocket)
+	if (this.mySocket && this.myState == "CONNECTED")
 	{
 		/* Just send text ".quit" and the host will disconnect us */
 		this.mySocket.send(".quit\n");
 		this.myState = "DISCONNECTING"
+	}
+	else if (this.myState == "CONNECTING")
+	{
+		this.myQuitCallback = function() { self.disconnect(); }
 	}
 }
 	
@@ -76,6 +81,11 @@ EggdropIRCpost.prototype.post = function(channel, text)
 	{
 		/* To send text to a channel send text ".say <channelname> <text>" */
 		this.mySocket.send(".say "+channel+" "+text+"\n");
+		if (this.myQuitCallback)
+		{
+			this.myQuitCallback();
+			this.myQuitCallback = null;
+		}
 	}
 	else if (this.myState == "DISCONNECTED")
 	{
@@ -91,9 +101,8 @@ EggdropIRCpost.prototype.post = function(channel, text)
 
 EggdropIRCpost.prototype.postAndDisconnect = function(channel, text)
 {
+	this.myQuitCallback = function() { self.disconnect(); }
 	this.post(channel, text);
-	this.disconnect();
-	
 }
 
 EggdropIRCpost.prototype.DataCallback = function()
@@ -103,7 +112,11 @@ EggdropIRCpost.prototype.DataCallback = function()
 		/* To send text to a channel send text ".say <channelname> <text>" */
 		this.mySocket.send(".say "+this.mySendChn+" "+this.mySendText+"\n");
 	}
-	
+	if (this.myQuitCallback)
+	{
+		this.myQuitCallback();
+		this.myQuitCallback = null;
+	}
 	this.myDataCallback = null;
 }
 
