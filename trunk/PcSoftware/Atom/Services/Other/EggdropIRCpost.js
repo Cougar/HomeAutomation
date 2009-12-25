@@ -1,3 +1,26 @@
+/*
+Usage:
+First create an EggdropIRCpost object, then when needed call post(channelname, text) for each line to post on IRC, when done disconnect with disconnect().
+
+SensorPrint.prototype.myEggdropIRCpost = null;
+...
+this.myEggdropIRCpost = new EggdropIRCpost("hostname", port, "username", "password");
+...
+this.myEggdropIRCpost.post("#myplaychannel", "Hello world!");
+...
+this.myEggdropIRCpost.disconnect();
+
+	OR
+If you only intend to post one line you can use postAndDisconnect(channelname, text).
+
+SensorPrint.prototype.myEggdropIRCpost = null;
+...
+this.myEggdropIRCpost = new EggdropIRCpost("hostname", port, "username", "password");
+...
+this.myEggdropIRCpostAndDisconnect.post("#myplaychannel", "Hello world!");
+
+
+*/
 
 function EggdropIRCpost(hostname, port, username, password)
 {
@@ -8,13 +31,24 @@ function EggdropIRCpost(hostname, port, username, password)
 	this.myState = "DISCONNECTED";
 }
 
+EggdropIRCpost.prototype.mySocket = null;
+EggdropIRCpost.prototype.myState = null;
+EggdropIRCpost.prototype.myDataCallback = null;
+EggdropIRCpost.prototype.mySendChn = null;
+EggdropIRCpost.prototype.mySendText = null;
+
+EggdropIRCpost.prototype.myHostname = null;
+EggdropIRCpost.prototype.myPort = null;
+EggdropIRCpost.prototype.myUsername = null;
+EggdropIRCpost.prototype.myPassword = null;
+
+
 EggdropIRCpost.prototype.connect = function()
 {
 	if (this.mySocket)
 	{
 		this.mySocket.stop();
 	}
-	
 	var self = this;
 
 	this.mySocket = new Socket(function(event, data) { self.socketCallback(event, data); }, this.myHostname, this.myPort, 0);
@@ -36,6 +70,7 @@ EggdropIRCpost.prototype.post = function(channel, text)
 {
 	this.mySendChn = channel;
 	this.mySendText = text;
+	var self = this;
 	
 	if (this.mySocket && this.myState == "CONNECTED")
 	{
@@ -54,6 +89,13 @@ EggdropIRCpost.prototype.post = function(channel, text)
 	} 
 }
 
+EggdropIRCpost.prototype.postAndDisconnect = function(channel, text)
+{
+	this.post(channel, text);
+	this.disconnect();
+	
+}
+
 EggdropIRCpost.prototype.DataCallback = function()
 {
 	if (this.mySocket && this.myState == "CONNECTED")
@@ -64,17 +106,6 @@ EggdropIRCpost.prototype.DataCallback = function()
 	
 	this.myDataCallback = null;
 }
-
-EggdropIRCpost.prototype.mySocket = null;
-EggdropIRCpost.prototype.myState = null;
-EggdropIRCpost.prototype.myDataCallback = null;
-EggdropIRCpost.prototype.mySendChn = null;
-EggdropIRCpost.prototype.mySendText = null;
-
-EggdropIRCpost.prototype.myHostname = null;
-EggdropIRCpost.prototype.myPort = null;
-EggdropIRCpost.prototype.myUsername = null;
-EggdropIRCpost.prototype.myPassword = null;
 
 EggdropIRCpost.prototype.socketCallback = function(event, data)
 {
