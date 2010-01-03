@@ -11,6 +11,10 @@
 #include <inttypes.h>
 #include <avr/io.h>
 
+/* Hack to fix lack of PBx, PCx defines in /usr/lib/avr/include/avr/portpins.h */
+/* http://savannah.nongnu.org/bugs/?25930 http://www.mail-archive.com/avr-libc-dev@nongnu.org/msg03306.html */
+#include <drivers/mcu/portpins.h>
+
 /******************************************************************************
 * Port output functions
 * void gpio_set_pin() sets GPIOX pin to logical 1 level (when output)
