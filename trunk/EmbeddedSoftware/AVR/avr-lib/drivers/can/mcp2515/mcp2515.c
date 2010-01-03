@@ -30,6 +30,10 @@
 #include <drivers/can/mcp2515/mcp2515_defs.h>
 #include <drivers/can/mcp2515/mcp2515_bittime.h>
 
+/* Hack to fix lack of PBx, PCx defines in /usr/lib/avr/include/avr/portpins.h */
+/* http://savannah.nongnu.org/bugs/?25930 http://www.mail-archive.com/avr-libc-dev@nongnu.org/msg03306.html */
+#include <drivers/mcu/portpins.h>
+
 #include <vectors.h>
 
 #ifdef MCP_USART_SPI_MODE
@@ -42,7 +46,7 @@
 #define SPI_DDR		DDRB
 #endif
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	#ifdef MCP_USART_SPI_MODE
 		#define SPI_SCK   PD4
 		#define SPI_MISO  PD0

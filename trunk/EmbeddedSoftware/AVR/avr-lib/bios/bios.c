@@ -22,7 +22,7 @@
 
 #if defined(__AVR_ATmega8__)
 #define IVSEL_REG GICR
-#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 #define IVSEL_REG MCUCR
 #else
 #error AVR device not supported!
@@ -94,6 +94,10 @@ void Can_Process(Can_Message_t* msg) {
 }
 
 int main(void) {
+	// Turn on output
+//	DDRB &= ~(1<<PORTB7);
+//	PORTB |= (1<<PORTB7);
+
 	void (*app_reset)(void) = 0; // Function pointer to jump to application reset vector.
 	uint8_t bios_state;
 	uint8_t nmt_type;

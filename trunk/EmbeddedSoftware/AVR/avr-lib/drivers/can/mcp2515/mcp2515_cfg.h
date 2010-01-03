@@ -52,7 +52,7 @@
 	#define INT1_REG GICR
 	#define DDRSS DDRB
 	#define SS PB2
-#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	#define INT1_REG EIMSK
 	#define DDRSS DDRB
 	#define SS PB2
