@@ -30,15 +30,15 @@ volatile uint32_t gMilliSecTick;
  *---------------------------------------------------------------------------*/
 #if defined(TIMEBASE_NEW_IMPLEMENTATION)
 
-#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 #if defined(TIMER2)
 ISR(TIMER2_COMPA_vect) {
 #else //!defined(TIMER2)
 ISR(TIMER0_COMPA_vect) {
 #endif //defined(TIMER2)
-#else //!defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#else //!defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 ISR(TIMER2_COMP_vect) {
-#endif //defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#endif //defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	gMilliSecTick++;
 }
 
@@ -83,7 +83,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<OCIE2); // enable output compare match interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	TCCR2A = (1<<WGM21); // CTC mode
 	#if TIMEBASE_PRESCALE == 64
 	TCCR2B = (1<<CS22);	// prescaler: 64
@@ -99,7 +99,7 @@ void Timebase_Init() {
 	#error TIMER0 not supported in ATmega8 with TIMEBASE_NEW_IMPLEMENTATION set!
 	#endif
 	
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	TCCR0A = (1<<WGM01); // CTC mode
 	#if TIMEBASE_PRESCALE == 64
 	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
@@ -127,7 +127,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<TOIE2); // enable overflow-interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR2B = (1<<CS22);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256
@@ -149,7 +149,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256

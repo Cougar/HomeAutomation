@@ -24,7 +24,7 @@
  * set to 8MHz. Interrupts must not be enabled when calling this function!
  */
 void Mcu_Init() {
-#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 	// set the clock speed to 8MHz
 	// set the clock prescaler. First write CLKPCE to enable setting of clock the
 	// next four instructions.

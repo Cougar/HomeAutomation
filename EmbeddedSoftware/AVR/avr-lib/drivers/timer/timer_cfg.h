@@ -50,7 +50,7 @@
 #define TIMER2_SET_PRESCALER_256()	TCCR2=(1<<WGM21)|6;
 #define TIMER2_SET_PRESCALER_1024()	TCCR2=(1<<WGM21)|7;
 
-#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 #define TIMER0_MAX					255
 #define TIMER0_VECTOR				TIMER0_COMPA_vect
 #define TIMER0_COMPARE_REG			OCR0A

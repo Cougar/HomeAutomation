@@ -129,7 +129,7 @@ NOTES:
  #define UART0_CONTROL  UCSRB
  #define UART0_DATA     UDR
  #define UART0_UDRIE    UDRIE
-#elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
  #define ATMEGA_USART0
  #define UART0_RECEIVE_INTERRUPT   SIG_USART_RECV
  #define UART0_TRANSMIT_INTERRUPT  SIG_USART_DATA

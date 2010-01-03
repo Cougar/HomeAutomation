@@ -32,7 +32,7 @@ uint8_t mt_data_overflow;
 #if defined(__AVR_ATmega8__)
 #define INT0_REG GICR
 #define INT0_CTRL MCUCR
-#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 #define INT0_REG EIMSK
 #define INT0_CTRL EICRA
 #else
