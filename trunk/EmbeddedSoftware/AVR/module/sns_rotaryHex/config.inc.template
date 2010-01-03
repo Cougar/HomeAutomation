@@ -1,0 +1,22 @@
+## Section sns_rotaryHex -- Do not edit this line
+
+
+sns_rotaryHex_ID=<ID>
+sns_rotaryHex_TIMER=<TIMER>
+sns_rotaryHex_SEND_DELAY=100
+
+sns_rotaryHex_PCINT_CH0=<PCINT>
+sns_rotaryHex_PCINT_CH1=<PCINT>
+sns_rotaryHex_PCINT_CH2=<PCINT>
+sns_rotaryHex_PCINT_CH3=<PCINT>
+sns_rotaryHex_PCINT_CH4=<PCINT>
+
+sns_rotaryHex_DATA0=EXP_K
+sns_rotaryHex_DATA1=EXP_J
+sns_rotaryHex_DATA2=EXP_I
+sns_rotaryHex_DATA3=EXP_H
+sns_rotaryHex_BTN=EXP_G
+
+sns_rotaryHex_BTN_INVERT_OUTPUT=0
+
+## End section sns_rotaryHex -- Do not edit this line

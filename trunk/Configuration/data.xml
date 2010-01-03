@@ -553,6 +553,7 @@
     <module id="20" name="power" class="sns"/>
     <module id="21" name="softPWM" class="act"/>
     <module id="22" name="Touch" class="sns"/>
+    <module id="23" name="RotaryHex" class="sns"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
   </modules>

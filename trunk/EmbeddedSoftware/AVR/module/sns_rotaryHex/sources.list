@@ -1,0 +1,5 @@
+# List all files that needs to be compiled here
+sns_rotaryHex/sns_rotaryHex.c
+
+#Uncomment the line below if you want to use the PCINT lib in this module
+drivers/mcu/pcint.c
