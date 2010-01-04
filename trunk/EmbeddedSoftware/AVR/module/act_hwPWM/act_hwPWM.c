@@ -78,7 +78,14 @@ gpio_set_out(EXP_C);
 
 /* set up counter mode for timer 1 */
 #if act_hwPWM_CH1_COM>0 || act_hwPWM_CH2_COM>0
-TCCR1A|=(act_hwPWM_CH1_COM<<COM1B0)|(act_hwPWM_CH2_COM<<COM1A0);
+if (pwmValue[0]>0)
+{
+	TCCR1A|=(act_hwPWM_CH1_COM<<COM1B0);
+}
+if (pwmValue[1]>0)
+{
+	TCCR1A|=(act_hwPWM_CH2_COM<<COM1A0);
+}
 #endif
 
 /* enable timer 1 */
@@ -108,7 +115,14 @@ gpio_set_out(EXP_G);
 
 /* set up counter mode for timer 0 */
 #if act_hwPWM_CH3_COM>0 || act_hwPWM_CH4_COM>0
-TCCR0A|=(act_hwPWM_CH3_COM<<COM1A0)|(act_hwPWM_CH4_COM<<COM1B0);
+if (pwmValue[2]>0)
+{
+	TCCR0A|=(act_hwPWM_CH3_COM<<COM0A0);
+}
+if (pwmValue[3]>0)
+{
+	TCCR0A|=(act_hwPWM_CH4_COM<<COM0B0);
+}
 #endif
 
 /* enable timer 0 */
@@ -118,6 +132,7 @@ TCCR0B|=(act_hwPWM_CH3_CS<<CS00);
 TCCR0B|=(act_hwPWM_CH4_CS<<CS00);
 #endif
 
+//printf("1A %x, 1B %x, 0A %x, 0B %x\n", TCCR1A, TCCR1B, TCCR0A, TCCR0B);
 
 }
 
@@ -163,21 +178,53 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 #if act_hwPWM_CH1_COM>0
 					case 1:
 						OCR_1=(uint16_t)(pwmValue[channel-1]*act_hwPWM_CH1_FACT)>>8;
+						if (pwmValue[channel-1]==0)
+						{
+							TCCR1A&=~((1<<COM1B0)|(1<<COM1B1));
+						}
+						else
+						{
+							TCCR1A|=(act_hwPWM_CH1_COM<<COM1B0);
+						}
 					break;
 #endif
 #if act_hwPWM_CH2_COM>0
 					case 2:
 						OCR_2=(uint16_t)(pwmValue[channel-1]*act_hwPWM_CH2_FACT)>>8;
+						if (pwmValue[channel-1]==0)
+						{
+							TCCR1A&=~((1<<COM1A0)|(1<<COM1A1));
+						}
+						else
+						{
+							TCCR1A|=(act_hwPWM_CH2_COM<<COM1A0);
+						}
 					break;
 #endif
 #if act_hwPWM_CH3_COM>0
 					case 3:
 						OCR_3=(uint16_t)(pwmValue[channel-1]*act_hwPWM_CH3_FACT)>>8;
+						if (pwmValue[channel-1]==0)
+						{
+							TCCR0A &= ~((1<<COM0A0)|(1<<COM0A1));
+						}
+						else
+						{
+							TCCR0A|=(act_hwPWM_CH3_COM<<COM0A0);
+						}
 					break;
 #endif
 #if act_hwPWM_CH4_COM>0
 					case 4:
 						OCR_4=(uint16_t)(pwmValue[channel-1]*act_hwPWM_CH4_FACT)>>8;
+						if (pwmValue[channel-1]==0)
+						{
+							TCCR0A &= ~((1<<COM0B0)|(1<<COM0B1));
+						}
+						else
+						{
+							TCCR0A|=(act_hwPWM_CH4_COM<<COM0B0);
+						}
 					break;
 #endif
 				}
