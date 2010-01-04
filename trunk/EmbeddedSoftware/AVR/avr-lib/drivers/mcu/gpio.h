@@ -19,6 +19,7 @@
 * Port output functions
 * void gpio_set_pin() sets GPIOX pin to logical 1 level (when output)
 * void gpio_clr_pin() clears GPIOX pin to logical 0 level (when output)
+* void gpio_set_statement(statement, GPIOX) Sets or clears GPIOX pin to logical level depending on statement
 * void gpio_toggle_pin() toggles level of output (when output)
 * uint8_t gpio_get_output_state() returns the output_state
 *
@@ -35,6 +36,7 @@
 *******************************************************************************/
   static inline __attribute__ ((always_inline)) void gpio_set_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port |= (1 << nr);}
   static inline __attribute__ ((always_inline)) void gpio_clr_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port &= ~(1 << nr);}
+  static inline __attribute__ ((always_inline)) void gpio_set_statement(uint8_t statement ,volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {if (statement) { *port |= (1 << nr); } else {*port &= ~(1 << nr);}}
   static inline __attribute__ ((always_inline)) void gpio_toggle_pin(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {*port ^= (1 << nr);}
   static inline __attribute__ ((always_inline)) uint8_t gpio_get_output_state(volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint) {return (*port & (1 << nr)) != 0;}
 

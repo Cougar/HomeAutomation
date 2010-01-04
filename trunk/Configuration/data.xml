@@ -108,6 +108,15 @@
 		<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
       </variables>
     </command>
+    <command id="74" name="SetPin" type="physical" module="" description="">
+      <variables>
+        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+          <value id="1" name="High"/>
+          <value id="0" name="Low"/>
+        </variable>
+      </variables>
+    </command>
     <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
       <variables>
         <variable name="Energy" type="uint" start_bit="0" bit_length="32" unit="W/h" description=""/>
@@ -554,6 +563,8 @@
     <module id="21" name="softPWM" class="act"/>
     <module id="22" name="Touch" class="sns"/>
     <module id="23" name="RotaryHex" class="sns"/>
+    <module id="24" name="output" class="act"/>
+    <module id="25" name="input" class="sns"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
   </modules>
