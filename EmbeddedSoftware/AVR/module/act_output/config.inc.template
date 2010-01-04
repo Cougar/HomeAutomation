@@ -1,0 +1,21 @@
+## Section act_output -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+act_output_USEEEPROM=1
+act_output_CH0=EXP_A
+#act_output_CH1=EXP_A
+#act_output_CH2=EXP_A
+#act_output_CH3=EXP_A
+#act_output_CH4=EXP_A
+#act_output_CH5=EXP_A
+#act_output_CH6=EXP_A
+#act_output_CH7=EXP_A
+act_output_ID=<ID>
+#act_output_DUMMY=1
+act_output_STORE_VALUE_TIMEOUT=<TIMER>
+act_output_STORE_VALUE_TIMEOUT_TIME_S=10
+
+#Uncomment to use the pcint driver
+#act_output_DUMMY_PCINT=<PCINT>
+
+## End section act_output -- Do not edit this line
