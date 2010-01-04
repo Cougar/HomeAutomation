@@ -1,0 +1,34 @@
+## Section sns_input -- Do not edit this line
+
+sns_input_CH0=EXP_D
+sns_input_CH0_pullup=0
+sns_input_PCINT_CH0=<PCINT>
+#sns_input_CH1=EXP_A
+#sns_input_CH1_pullup=0
+#sns_input_PCINT_CH1=<PCINT>
+#sns_input_CH2=EXP_A
+#sns_input_CH2_pullup=0
+#sns_input_PCINT_CH2=<PCINT>
+#sns_input_CH3=EXP_A
+#sns_input_CH3_pullup=0
+#sns_input_PCINT_CH3=<PCINT>
+#sns_input_CH4=EXP_A
+#sns_input_CH4_pullup=0
+#sns_input_PCINT_CH4=<PCINT>
+#sns_input_CH5=EXP_A
+#sns_input_CH5_pullup=0
+#sns_input_PCINT_CH5=<PCINT>
+#sns_input_CH6=EXP_A
+#sns_input_CH6_pullup=0
+#sns_input_PCINT_CH6=<PCINT>
+#sns_input_CH7=EXP_A
+#sns_input_CH7_pullup=0
+#sns_input_PCINT_CH7=<PCINT>
+
+
+sns_input_ID=<ID>
+#sns_input_DUMMY=1
+#sns_input_DUMMY_TIMER=<TIMER>
+
+
+## End section sns_input -- Do not edit this line
