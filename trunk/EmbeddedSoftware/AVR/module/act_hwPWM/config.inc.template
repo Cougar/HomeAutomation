@@ -8,6 +8,13 @@ act_hwPWM_ID=<ID>
 act_hwPWM_STORE_VALUE_TIMEOUT=<TIMER>
 act_hwPWM_STORE_VALUE_TIMEOUT_TIME=10
 
+act_hwPWM_SEND_STATUS_TIMEOUT=<TIMER>
+act_hwPWM_SEND_STATUS_INTERVAL_S=5
+
+act_hwPWM_FADE_TIMER=<TIMER>
+
+act_hwPWM_ENABLE_FADE=1
+
 #### PWM Channel 1, EXP_B, Timer1, OC1B ####
 
 # Select Compare Output Mode, act_hwPWM_CHx_COM
