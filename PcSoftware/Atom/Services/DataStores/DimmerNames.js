@@ -22,5 +22,23 @@
 		moduleType : 'Dimmer230', 
 		moduleId : 5,
 		channel : 0
+	},
+	{
+		name : 'Badrum', 
+		description : 'bla bla', 
+		shortName : 'Badrum',
+		moduleType : 'hwPWM', 
+		moduleId : 1,
+		channel : 2
+	},
+	{
+		name : 'Badrum1', 
+		description : 'bla bla', 
+		shortName : 'Badrum1',
+		moduleType : 'hwPWM', 
+		moduleId : 1,
+		channel : 1
 	}
+
+
 ]}

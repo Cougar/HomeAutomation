@@ -27,8 +27,8 @@ LED_dimmer.prototype.outputStatus = "Low";
 LED_dimmer.prototype.myInterval = null;
 LED_dimmer.prototype.oldPwmValue = 0;
 LED_dimmer.prototype.turnOffCnt = 0;
-const MovementTimeout = 45;
-const AdjustTimeout = 180;
+const MovementTimeout = 120;
+const AdjustTimeout = 240;
 /*  */
 /*  */
 
@@ -47,12 +47,6 @@ LED_dimmer.prototype.initialize = function(initialArguments)
 	if (!this.myInitialArguments["RotaryHex"])
 	{
 		log(this.myName + ":" + this.myId + "> Failed to initialize, RotaryHex-config missing from config.\n");
-		return;
-	}
-
-	if (!this.myInitialArguments["hwPWM"])
-	{
-		log(this.myName + ":" + this.myId + "> Failed to initialize, hwPWM-config missing from config.\n");
 		return;
 	}
 	
@@ -81,7 +75,7 @@ LED_dimmer.prototype.initialize = function(initialArguments)
 	/* If the service is already online we should call the handler here */
 	this.rotaryOnline();
 
-	this.myPWM = ServiceManager.getService("Can", "hwPWM", this.myInitialArguments["hwPWM"]["Id"]);
+	//this.myPWM = ServiceManager.getService("Can", "hwPWM", this.myInitialArguments["hwPWM"]["Id"]);
 	this.myOutput = ServiceManager.getService("Can", "output", this.myInitialArguments["output"]["Id"]);
 	this.myInput = ServiceManager.getService("Can", "input", this.myInitialArguments["input"]["Id"]);
 	/* Add a callback for when the PIR reports detection */
@@ -99,8 +93,9 @@ LED_dimmer.prototype.timerUpdate = function()
 		if (this.turnOffCnt == 0) {
 			//Turn off light
 			log(this.myName + ":" + this.myId + "> Light off.\n");
-			this.oldPwmValue = this.myPWM.getValue(2);
-			this.myPWM.setPWMValue(0,2);
+			this.oldPwmValue = getDimmerValue('Badrum');
+			//this.myPWM.setPWMValue(0,2);
+			getDimmerService('Badrum').absFade(2,129, 0);
 		}
 	}
 }
@@ -116,13 +111,15 @@ LED_dimmer.prototype.rotaryPosUpdate = function(SwitchId)
 	{
 		if (this.myRotaryService.getDirection(SwitchId) == "Clockwise")
 		{
-			this.pwmValue = this.pwmValue +10;
+			getDimmerService('Badrum').relFade(2,132, "Increase", 25);
+this.pwmValue = this.pwmValue +10;
 			if (this.pwmValue > 100) {
 				this.pwmValue = 100;
 			}
 		}
 		else
 		{
+			getDimmerService('Badrum').relFade(2,132, "Decrease", 25);
 			this.pwmValue = this.pwmValue -10;
 			if (this.pwmValue < 0) {
 				this.pwmValue = 0;
@@ -133,18 +130,19 @@ LED_dimmer.prototype.rotaryPosUpdate = function(SwitchId)
 		this.turnOffCnt = AdjustTimeout;
 	}
 //log(this.myName + ":" + this.myId + "> Sent pwm value: "+ this.pwmValue+"\n");
-	this.myPWM.setPWMValue(this.pwmValue,2);
-	this.myPWM.setPWMValue(this.pwmValue,1);
+	//this.myPWM.setPWMValue(this.pwmValue,2);
+	
 }
 
 LED_dimmer.prototype.rotaryBtnUpdate = function(SwitchId)
 {
 	if (this.myRotaryService.getButtonStatus(SwitchId) == "Pressed") {
-		if (this.myPWM.getValue(2) == 0) { 
+		if (getDimmerValue('Badrum') == 0) { 
 			if (this.oldPwmValue == 0) {
 				this.oldPwmValue = 50;
 			}
-			this.myPWM.setPWMValue(this.oldPwmValue,2);
+			getDimmerService('Badrum').absFade(2,129, 128);
+			//this.myPWM.setPWMValue(this.oldPwmValue,2);
 		}
 		if (this.turnOffCnt <  AdjustTimeout) {
 			this.turnOffCnt = AdjustTimeout;
@@ -161,17 +159,21 @@ LED_dimmer.prototype.pirUpdate = function(SwitchId)
 {
 	//log(this.myName + ":" + this.myId + "> Value is: "+ this.myInput.getValue(SwitchId)+"\n");
 	if (this.myInput.getValue(SwitchId) == "Low") {
+		  getDimmerService('Badrum').absFade(1,129, 255);
 		//this.myOutput.setPin("High",0);
 		log(this.myName + ":" + this.myId + "> Trigg.\n");
-		if (this.myPWM.getValue(2) == 0) { 
+		if (getDimmerValue('Badrum') == 0) { 
 			log(this.myName + ":" + this.myId + "> Light on.\n");
 			if (this.oldPwmValue == 0) {
 				this.oldPwmValue = 50;
 			}
-			this.myPWM.setPWMValue(this.oldPwmValue,2);
-			if (this.turnOffCnt <  MovementTimeout) {
-				this.turnOffCnt = MovementTimeout;
-			}
+			//this.myPWM.setPWMValue(this.oldPwmValue,2);
+			getDimmerService('Badrum').absFade(2,129, 128);
 		}
+	} else {
+		getDimmerService('Badrum').absFade(1,129, 0);
+	}
+	if (this.turnOffCnt <  MovementTimeout) {
+		this.turnOffCnt = MovementTimeout;
 	}
 }
