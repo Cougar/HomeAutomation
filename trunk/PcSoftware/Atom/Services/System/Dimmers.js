@@ -4,7 +4,7 @@ var dimmerValues = new Array();
 ServiceManager.addCallback(this._Dimmers_DimmerSeviceOnline);
 
 function _Dimmers_DimmerSeviceOnline(service) {
-  if (service.getName() == "Dimmer230") {
+  if (service.getName() == "Dimmer230" || service.getName() == "hwPWM") {
     _Dimmers_updateDimmerList();
   }
 }
@@ -13,7 +13,7 @@ function _Dimmers_updateDimmerList() {
   this.dimmerServices = new Array();
   for (var id in ServiceManager.Services)
   {
-    if (ServiceManager.Services[id].getName() == "Dimmer230")
+    if (ServiceManager.Services[id].getName() == "Dimmer230" || ServiceManager.Services[id].getName() == "hwPWM")
   {
     ServiceManager.Services[id].registerEventCallback("newValue", function(args) { _Dimmers_NewData(args); });
     ServiceManager.Services[id].registerEventCallback("offline", function(args) { _Dimmers_DimmerOffline(args); });
