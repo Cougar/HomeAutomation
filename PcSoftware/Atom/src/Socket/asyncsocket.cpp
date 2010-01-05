@@ -414,7 +414,7 @@ void AsyncSocket::sendData(string data)
 //cout << "\n";
 	mySendMutex.lock();
 
-	int status = ::send(mySocket, data.c_str(), data.size(), MSG_NOSIGNAL);
+	int status = ::send(mySocket, data.c_str(), data.size(), 0); // 0 instead of MSG_NOSIGNAL
 //Logger::getInstance().add("Sent: \"" + data + "\" status was " + itos(status) + "\n");
 	mySendMutex.unlock();
 
