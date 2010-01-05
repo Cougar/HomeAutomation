@@ -81,6 +81,13 @@ void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 #define OCR_3	OCR0A
 #define OCR_4	OCR0B
 
+#define ACT_HWPWM_MAX_DIM				10000UL
+#define ACT_HWPWM_MIN_DIM				0
+
+#define ACT_HWPWM_DEMO_STATE_NOT_RUNNING	0
+#define ACT_HWPWM_DEMO_STATE_DECREASE		1
+#define ACT_HWPWM_DEMO_STATE_INCREASE		2
+#define ACT_HWPWM_DEMO_STATE_GOBACK		3
 
 #ifdef act_hwPWM_USEEEPROM
 	struct act_hwPWM_Data{
