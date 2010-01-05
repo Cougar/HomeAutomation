@@ -16,6 +16,7 @@
 
 #include <drivers/lcd/clcd/lcd_HD44780.h>
 #include <string.h> //for memcpy
+#include <drivers/adc/adc.h>
 
 void act_hd44780_Init(void);
 void act_hd44780_Process(void);

@@ -177,6 +177,10 @@
     <command id="132" name="LCD_Backlight" type="specific" module="HD44789" description="Set LCD backlight brightness">
       <variables>
         <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="AutoLight" type="enum" start_bit="15" bit_length="1" unit="" description="">
+	    <value id="0" name="OFF"/>
+	    <value id="1" name="ON"/>
+	</variable>
       </variables>
     </command>
       <command id="133" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
@@ -282,6 +286,10 @@
     <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
       <variables>
         <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="AutoLight" type="enum" start_bit="15" bit_length="1" unit="" description="">
+	    <value id="0" name="OFF"/>
+	    <value id="1" name="ON"/>
+	</variable>
       </variables>
     </command>
     <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">

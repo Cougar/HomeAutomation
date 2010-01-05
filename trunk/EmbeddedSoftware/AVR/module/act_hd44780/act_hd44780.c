@@ -2,7 +2,9 @@
 #include "act_hd44780.h"
 
 uint8_t Command = 0;
-
+#if act_hd44780_USE_AUTO_BL == 1
+uint8_t autoMode = CAN_MODULE_ENUM_HD44789_LCD_BACKLIGHT_AUTOLIGHT_ON;
+#endif
 void act_hd44780_Init(void)
 {
 	///FIXME: What is this, this needs to be more clear by far....
@@ -29,6 +31,30 @@ void act_hd44780_Init(void)
 
 void act_hd44780_Process(void)
 {
+  #if act_hd44780_USE_AUTO_BL == 1
+	if (autoMode == CAN_MODULE_ENUM_HD44789_LCD_BACKLIGHT_AUTOLIGHT_ON) {
+#if (act_hd44780_TYPE==0)
+		if ( OCR0A == 0) {
+#else
+		if ( OCR0B == 0) {
+#endif
+
+		} else {
+			uint16_t Voltage = (0x3ff & ADC_Get(act_hd44780_LIGHTSENSOR_AD));
+#if (act_hd44780_TYPE==0)
+			OCR0A = Voltage/4;
+			if (OCR0A == 0) {
+				OCR0A = 1;
+			}
+#else
+			OCR0B = Voltage/4;
+			if (OCR0B == 0) {
+				OCR0B = 1;
+			}
+#endif
+		}
+	}
+	#endif
 }
 
 void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
@@ -95,6 +121,11 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 #else
 			OCR0B = rxMsg->Data[0];
 #endif
+#if act_hd44780_USE_AUTO_BL == 1
+			if (rxMsg->Length == 2) {
+				autoMode = rxMsg->Data[0]; 
+			}
+#endif
 		}
 
 		StdCan_Msg_t txMsg;
@@ -111,7 +142,10 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 #else
 			txMsg.Data[0] = OCR0B;
 #endif
-
+#if act_hd44780_USE_AUTO_BL == 1
+		txMsg.Data[1] = autoMode;
+		txMsg.Length = 2;
+#endif
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		break;
 		}

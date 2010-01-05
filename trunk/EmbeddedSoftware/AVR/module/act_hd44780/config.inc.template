@@ -38,5 +38,9 @@ LCD_DB7=EXP_M
 #LCD_E_PORT=PORTD        /* port for Enable line */
 #LCD_E_PIN=4             /* pin  for Enable line */
 
+act_hd44780_USE_AUTO_BL=1
+act_hd44780_LIGHTSENSOR_AD=7
+ADCHAN7=1
+
 
 ## End section act_hd44780 -- Do not edit this line
