@@ -47,11 +47,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/Socket/asyncsocket.o
 
 # C Compiler Flags
-CFLAGS=-m32
+CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m32
-CXXFLAGS=-m32
+CCFLAGS=
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -66,7 +66,7 @@ LDLIBSOPTIONS=-lpthread src/v8/libv8_g.a -lrt
 atom: src/v8/libv8_g.a
 
 atom: ${OBJECTFILES}
-	${LINK.cc} -m32 -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/src/Socket/server.o: src/Socket/server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Socket

@@ -66,7 +66,7 @@ LDLIBSOPTIONS=-lpthread src/v8/libv8.a -lrt
 atom: src/v8/libv8.a
 
 atom: ${OBJECTFILES}
-	${LINK.cc} -m32 -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o atom ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/src/Socket/server.o: src/Socket/server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Socket
