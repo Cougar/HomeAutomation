@@ -41,12 +41,12 @@ LDLIBSOPTIONS=-pthread
 build: .build-post
 
 .build-pre:
-	if test -e src/v8/libv8.a && test -e src/v8/libv8_g.a; then \
-	echo "Google V8 found"; \
-	else \
-	echo "Google V8 not found, running script..."; \
-	./src/fetchV8.sh; \
-	fi
+#	if test -e src/v8/libv8.a && test -e src/v8/libv8_g.a; then \
+#	echo "Google V8 found"; \
+#	else \
+#	echo "Google V8 not found, running script..."; \
+#	./src/fetchV8.sh; \
+#	fi
 
 # Add your pre 'build' code here...
 
