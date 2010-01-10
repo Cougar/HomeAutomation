@@ -230,6 +230,24 @@ void act_hwPWM_Process(void)
 		*/
 		sendInfo[channel_to_send-1] = 1;
 		channel_to_send++;
+#if act_hwPWM_CH1_COM==0
+		  if (channel_to_send == 1)
+		    channel_to_send++;
+#endif		
+#if act_hwPWM_CH2_COM==0
+		  if (channel_to_send == 2)
+		    channel_to_send++;
+#endif	
+#if act_hwPWM_CH3_COM==0
+		  if (channel_to_send == 3)
+		    channel_to_send++;
+#endif	
+#if act_hwPWM_CH4_COM==0
+		  if (channel_to_send == 4)
+		    channel_to_send++;
+#endif	
+		
+		
 	}
   	/* Send netinfo packet (if pwmvalue has changed, and periodically) */
 	uint8_t index;
@@ -278,7 +296,7 @@ void act_hwPWM_Process(void)
 	if (OCR_1 != (uint16_t)(pwmValue[0]*act_hwPWM_CH1_FACT)>>8) {
 		cli();	
 		OCR_1=(uint16_t)(pwmValue[0]*act_hwPWM_CH1_FACT)>>8;
-		if (pwmValue[0]==0)
+		if (OCR_1==0)
 		{
 			TCCR1A&=~((1<<COM1B0)|(1<<COM1B1));
 		}
@@ -294,7 +312,7 @@ void act_hwPWM_Process(void)
 	if (OCR_2 != (uint16_t)(pwmValue[1]*act_hwPWM_CH2_FACT)>>8) {
 		cli();	
 		OCR_2=(uint16_t)(pwmValue[1]*act_hwPWM_CH2_FACT)>>8;
-		if (pwmValue[1]==0)
+		if (OCR_2==0)
 		{
 			TCCR1A&=~((1<<COM1A0)|(1<<COM1A1));
 		}
@@ -310,7 +328,7 @@ void act_hwPWM_Process(void)
 	if (OCR_3 != (uint16_t)(pwmValue[2]*act_hwPWM_CH3_FACT)>>8) {
 		cli();	
 		OCR_3=(uint16_t)(pwmValue[2]*act_hwPWM_CH3_FACT)>>8;
-		if (pwmValue[2]==0)
+		if (OCR_3==0)
 		{
 			TCCR0A &= ~((1<<COM0A0)|(1<<COM0A1));
 		}
@@ -326,7 +344,7 @@ void act_hwPWM_Process(void)
 	if (OCR_4 != (uint16_t)(pwmValue[3]*act_hwPWM_CH4_FACT)>>8) {
 		cli();	
 		OCR_4=(uint16_t)(pwmValue[3]*act_hwPWM_CH4_FACT)>>8;
-		if (pwmValue[3]==0)
+		if (OCR_4==0)
 		{
 			TCCR0A &= ~((1<<COM0B0)|(1<<COM0B1));
 		}
