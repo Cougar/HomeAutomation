@@ -1,45 +1,55 @@
 var sensorServices = new Array();
 var sensorValues = new Array();
+//var sensorNames = new Array();
 
 ServiceManager.addCallback(this._TempSensors_SensorSeviceOnline);
 
 function _TempSensors_SensorSeviceOnline(service) {
-  if (service.getName() == "DS18x20" || service.getName() == "TC1047A" || service.getName() == "FOST02") {
-    _TempSensors_updateSensorList();
-  }
-//log("Sensor online\n");
+	if (service.getName() == "DS18x20" || service.getName() == "TC1047A" || service.getName() == "FOST02") {
+		_TempSensors_updateSensorList();
+	}
+	//log("Sensor online\n");
 }
 
 function _TempSensors_updateSensorList() {
-  this.sensorServices = new Array();
-  for (var id in ServiceManager.Services)
-  {
-    if (ServiceManager.Services[id].getName() == "DS18x20" || ServiceManager.Services[id].getName() == "TC1047A" || ServiceManager.Services[id].getName() == "FOST02")
-  {
-    ServiceManager.Services[id].registerEventCallback("newValue", function(args) { _TempSensors_NewTemperature(args); });
-    ServiceManager.Services[id].registerEventCallback("offline", function(args) { _TempSensors_SensorOffline(args); });
-    ServiceManager.Services[id].setReportInterval(2);
-    this.sensorServices[sensorServices.length] = ServiceManager.Services[id];
-//log("found sensors\n");
-  }
-  }
+	this.sensorServices = new Array();
+
+	for (var id in ServiceManager.Services)
+	{
+		if (ServiceManager.Services[id].getName() == "DS18x20" || ServiceManager.Services[id].getName() == "TC1047A" || ServiceManager.Services[id].getName() == "FOST02")
+		{
+			ServiceManager.Services[id].registerEventCallback("newValue", function(args) { _TempSensors_NewTemperature(args); });
+			ServiceManager.Services[id].registerEventCallback("offline", function(args) { _TempSensors_SensorOffline(args); });
+			ServiceManager.Services[id].setReportInterval(2);
+			this.sensorServices[sensorServices.length] = ServiceManager.Services[id];
+			//log("found sensors\n");
+		}
+	}
 }
 
-//dataArray["service"] = self;
-//dataArray["sensor"] = canMessage.getData("SensorId");
-//dataArray["value"] = canMessage.getData("Value");
-//dataArray["moduleName"] = canMessage.getModuleName();
-//dataArray["moduleId"] = canMessage.getModuleId();
 function _TempSensors_NewTemperature(array){
-sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]] = new Array();
-sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['value'] = array["value"];
-sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['service'] = array["service"];
-//log("new value: from: "+""+array["moduleName"]+array["moduleId"]+array["sensor"] +"with value: "+ sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]["value"]+"\n");
-//log("length is now: "+sensorValues.+" \n");
+      sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]] = new Array();
+      sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['value'] = array["value"];
+      sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]['service'] = array["service"];
+      //log("new value: from: "+""+array["moduleName"]+array["moduleId"]+array["sensor"] +"with value: "+ sensorValues[""+array["moduleName"]+array["moduleId"]+array["sensor"]]["value"]+"\n");
+      //log("length is now: "+sensorValues+" \n");
+/*
+      if (sensorNames[""+array["moduleName"]+array["moduleId"]+array["sensor"]] == null) {
+		if(getSensorName(array["moduleName"], array["moduleId"], array["sensor"]) == null) {
+			sensorNames[""+array["moduleName"]+array["moduleId"]+array["sensor"]]="TempSensor_"+array["moduleName"]+array["moduleId"]+array["sensor"]
+		} else {
+			sensorNames[""+array["moduleName"]+array["moduleId"]+array["sensor"]]="TempSensor_"+getSensorName(array["moduleName"], array["moduleId"], array["sensor"]);
+		}
+		//log("Found Temperature sensor: "+ sensorNames[""+array["moduleName"]+array["moduleId"]+array["sensor"]]+"\n");
+      }
+      var content = array["value"]+"\n";
+      var filename = "/dev/shm/can/" + sensorNames[""+array["moduleName"]+array["moduleId"]+array["sensor"]];
+      setFileContents(filename, content);
+*/
 }
 
 function _TempSensors_SensorOffline(data) {
-  var sensorValues = new Array();
+	var sensorValues = new Array();
 }
 		
 function getSensorValue(SensorName)
@@ -143,9 +153,14 @@ function getSensorName(moduleType, moduleId, sensorId)
 	{
 		for (var n = 0; n < sensorStore['SensorNames'].length; n++)
 		{
-			if (this.sensorValues[moduleType +""+moduleId+""+sensorId] != null) 
+			if (sensorStore['SensorNames'][n]['sensorId'] == sensorId)
 			{
-				return sensorStore['SensorNames'][n]['name'];
+				if (sensorStore['SensorNames'][n]['moduleId'] == moduleId)
+				{
+					if (sensorStore['SensorNames'][n]['moduleType'] == moduleType) {
+						return sensorStore['SensorNames'][n]['name'];
+					}
+				}
 			}
 		}
 	}
