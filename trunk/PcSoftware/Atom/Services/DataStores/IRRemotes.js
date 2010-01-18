@@ -250,6 +250,31 @@
 		}
 	},
 	{
+		"name" : "WDTV Live", 
+		"protocol" : "NEC", 
+		"brand" : "WD", 
+		"model" : "XHY3328F103", 
+		"codes" : 
+		{
+			"3977410948" : "POWER", 
+			"4177951108" : "HOME", 
+			"4161239428" : "LEFT", 
+			"4127816068" : "RIGHT", 
+			"4194662788" : "UP", 
+			"4278221188" : "DOWN", 
+			"4144527748" : "ENTER", 
+			"3827005828" : "BACK", 
+			"4211374468" : "STOP", 
+			"3843717508" : "OPTION", 
+			"3760159108" : "REWIND", 
+			"4111104388" : "PLAY_PAUSE", 
+			"3776870788" : "FORWARD", 
+			"4244797828" : "PREVIOUS", 
+			"4261509508" : "NEXT", 
+			"4027545988" : "SEARCH", 
+			"4010834308" : "EJECT"
+		}
+	},	{
 		"name" : "Testing", 
 		"protocol" : "RC5", 
 		"brand" : "Remotec", 
