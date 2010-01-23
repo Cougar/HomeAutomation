@@ -26,6 +26,15 @@ power.prototype.canMessageHandler = function(canMessage)
 		this.myLastValuePower32 = canMessage.getData("Power32");
 		this.myLastValueEnergy = canMessage.getData("EnergySum");
 		this.callEvent("newValue");
+//		var content = canMessage.getData("Power32")+"\n";
+//		var filename = "/dev/shm/can/"+this.myName + "_" + this.myId+"_Power32";
+//		setFileContents(filename, content);
+//		content = canMessage.getData("Power")+"\n";
+//		filename = "/dev/shm/can/"+this.myName + "_" + this.myId+"_Power";
+//		setFileContents(filename, content);
+//		content = canMessage.getData("EnergySum")+"\n";
+//		filename = "/dev/shm/can/"+this.myName + "_" + this.myId+"_EnergySum";
+//		setFileContents(filename, content);                                                                                                                                        
 		break;
 		
 		case "Report_Interval":
