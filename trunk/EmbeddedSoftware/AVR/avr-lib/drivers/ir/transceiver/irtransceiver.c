@@ -19,10 +19,18 @@
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
-uint16_t *rxbuf, *txbuf;
-uint8_t rxlen, txlen;
+#if IR_RX_ENABLE==1
+uint16_t *rxbuf;
+uint8_t rxlen;
+#endif
+#if IR_TX_ENABLE==1
+uint16_t *txbuf;
+uint8_t txlen;
+#endif
 
+#if IR_TX_ENABLE==1
 static uint8_t bufIndex;							//selects the pulse width in buffer to send
+#endif
 volatile uint8_t data_received;
 volatile uint8_t data_transmitted;
 uint8_t detect_edge;
@@ -31,9 +39,22 @@ uint8_t store;
 /*-----------------------------------------------------------------------------
  * Prerequisites
  *---------------------------------------------------------------------------*/
+#ifndef IR_RX_ACTIVE_LOW
+#define IR_RX_ACTIVE_LOW    1
+#endif
+
 #ifndef IR_TX_ACTIVE_LOW
 #define IR_TX_ACTIVE_LOW	0
 #endif
+
+#ifndef IR_TX_ENABLE
+#define IR_TX_ENABLE	0
+#endif
+
+#ifndef IR_RX_ENABLE
+#define IR_RX_ENABLE	0
+#endif
+
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
 #define TIMSK1	TIMSK
@@ -70,6 +91,7 @@ uint8_t store;
  * Interrupt Handlers
  *---------------------------------------------------------------------------*/
 
+#if IR_TX_ENABLE==1
 ISR(IR_COMPARE_VECTOR)
 {
 	if ((bufIndex&1) == 1) {		/* if odd, ir-pause */
@@ -95,7 +117,9 @@ ISR(IR_COMPARE_VECTOR)
 		data_transmitted = 1;
 	}
 }
+#endif
 
+#if IR_RX_ENABLE==1
 ISR(IR_TIMEOUT_VECTOR)
 {
 	if (rxlen)
@@ -109,7 +133,9 @@ ISR(IR_TIMEOUT_VECTOR)
 	}
 	store = 0;
 }
+#endif
 
+#if IR_RX_ENABLE==1
 ISR(IR_CAPTURE_VECTOR)
 {
 	static uint16_t prev_time;
@@ -160,7 +186,7 @@ ISR(IR_CAPTURE_VECTOR)
 		IR_UNMASK_TIMEOUT();
 	}
 }
-
+#endif
 
 
 /*-----------------------------------------------------------------------------
@@ -169,12 +195,15 @@ ISR(IR_CAPTURE_VECTOR)
 
 void IrTransceiver_Init(void)
 {
-	/* Set up receiver */
 	IR_TIMER_INIT();
+#if IR_RX_ENABLE==1
+	/* Set up receiver */
 	IR_TIMEOUT_REG = IR_MAX_PULSE_WIDTH;
 	IR_R_DDR &= ~(1<<IR_R_BIT);
 	//DDRC |= (1<<PC5);
+#endif
 	
+#if IR_TX_ENABLE==1
 	/* Set up transmitter */
 	IR_T_DDR |= (1<<IR_T_BIT);
 	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
@@ -189,10 +218,13 @@ void IrTransceiver_Init(void)
 	/* when pwm is disconnected from port (during low) the port should output 0V */
 	IR_T_PORT &= ~(1<<IR_T_BIT);
 #endif
+
+#endif
 }
 
 void IrTransceiver_Receive_Start(uint16_t *buffer)
 {
+#if IR_RX_ENABLE==1
 	 /* Setup buffer and arm the edge detection. */
 	rxbuf = buffer;
 	rxlen = 0;
@@ -206,10 +238,12 @@ void IrTransceiver_Receive_Start(uint16_t *buffer)
 	detect_edge = 1;
 #endif
 	IR_UNMASK_CAPTURE();
+#endif
 }
 
 uint8_t IrTransceiver_Receive_Poll(uint8_t *len)
 {
+#if IR_RX_ENABLE==1
 	*len = rxlen;
 	if (data_received)
 	{
@@ -221,18 +255,26 @@ uint8_t IrTransceiver_Receive_Poll(uint8_t *len)
 	} else {
 		return IR_NO_DATA;
 	}
+#else
+	return 0;
+#endif
 }
 
 uint8_t IrTransceiver_Transmit_Poll(void) {
+#if IR_TX_ENABLE==1
 	if (data_transmitted == 0) {
 		return IR_NOT_FINISHED;
 	} else {
 		return IR_OK;
 	}
+#else
+	return 0;
+#endif
 }
 
 uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq)
 {
+#if IR_TX_ENABLE==1
 	data_transmitted = 0;
 	
 	if (length == 0) return IR_NO_DATA;
@@ -252,4 +294,7 @@ uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq
 	//while (!data_transmitted);
 	
 	return IR_OK;
+#else
+	return 0;
+#endif
 }
