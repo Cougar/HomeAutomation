@@ -12,6 +12,13 @@ sns_power_PCINT=<PCINT>
 #Default report interval in seconds, not greater then 64.
 sns_power_SEND_PERIOD=10
 
+sns_power_10000_PULSES_PER_KWH=1
+#sns_power_1000_PULSES_PER_KWH=1
+
+# if sns_power_SEND_1_MIN_AVG is active, also enable the sns_power_SEND_TIMER_1_MIN_AVG
+sns_power_SEND_1_MIN_AVG=1
+sns_power_SEND_TIMER_1_MIN_AVG=<TIMER>
+
 POWER_SNS_PIN=EXP_C
 
 ## End section sns_power -- Do not edit this line
