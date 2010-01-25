@@ -3,11 +3,17 @@
 
 static uint32_t volatile PreviusTimerValue, lastMeasurment;
 
-static uint8_t volatile tmpCounter=0, StoreInEEPROM = 0;
+#ifdef sns_power_10000_PULSES_PER_KWH
+static uint8_t volatile tmpCounter=0;
+#endif
+static uint8_t volatile StoreInEEPROM = 0;
 static uint8_t sns_power_ReportInterval = (uint8_t)sns_power_SEND_PERIOD;
 static uint16_t volatile MeasurmentBuffer[32]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 static uint8_t volatile MeasurmentBufferPointer=0;
 static uint32_t volatile EnergyCounter=0;
+#if sns_power_SEND_1_MIN_AVG == 1
+static uint16_t volatile avgCounter = 0;
+#endif
 
 #ifdef sns_power_USEEEPROM
 #include "sns_power_eeprom.h"
@@ -23,10 +29,27 @@ struct eeprom_sns_power EEMEM eeprom_sns_power =
 }; 
 #endif
 
+#if sns_power_SEND_1_MIN_AVG == 1
+void sns_power_timer_callback(uint8_t timer) 
+{
+	StdCan_Msg_t txMsg;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER; ///TODO: Change this to the actual module type
+	txMsg.Header.ModuleId = sns_power_ID;
+	txMsg.Header.Command = CAN_MODULE_CMD_POWER_AVGPOWER;
+	txMsg.Length = 2;
+	cli();
+	txMsg.Data[0] = (uint8_t)((avgCounter>>8) & 0xff);
+	txMsg.Data[1] = (uint8_t)(avgCounter & 0xff);
+	avgCounter = 0;
+	sei();
+	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+}
+#endif
 
 void sns_power_pcint_callback(uint8_t id, uint8_t status) 
 {
-	//if (gpio_get_state(POWER_SNS_PIN) == 0)
 	if (status == 0)
 	{
 		if (Timer_GetTicks() - PreviusTimerValue >= 16)
@@ -36,13 +59,23 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 			lastMeasurment =  Timer_GetTicks() - PreviusTimerValue;
 			MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) (lastMeasurment & 0x0000FFFF);
 			PreviusTimerValue = Timer_GetTicks();
-			tmpCounter++;
-			if(tmpCounter >= 10) {
+			#if sns_power_1000_PULSES_PER_KWH == 1
 				EnergyCounter++;
 				if (EnergyCounter % 1024 == 0)
-					StoreInEEPROM = 1;
-				tmpCounter = 0;
-			}
+					StoreInEEPROM = 1;	
+			#endif
+			#if sns_power_10000_PULSES_PER_KWH == 1
+				tmpCounter++;
+				#if sns_power_SEND_1_MIN_AVG == 1
+				avgCounter++;
+				#endif
+				if(tmpCounter >= 10) {
+					EnergyCounter++;
+					if (EnergyCounter % 1024 == 0)
+						StoreInEEPROM = 1;
+					tmpCounter = 0;
+				}
+			#endif
 		}
 	}
 }
@@ -72,6 +105,9 @@ void sns_power_Init(void)
 
 	MeasurmentBufferPointer = 0;
 	Timer_SetTimeout(sns_power_SEND_TIMER, sns_power_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+#if sns_power_SEND_1_MIN_AVG == 1
+	Timer_SetTimeout(sns_power_SEND_TIMER_1_MIN_AVG, 60000-10 , TimerTypeFreeRunning, &sns_power_timer_callback);
+#endif
 }
 
 void sns_power_Process(void)
@@ -86,15 +122,21 @@ void sns_power_Process(void)
 	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_power_SEND_TIMER)) {
 		//4 times average
-		uint32_t Avg4 = MeasurmentBuffer[MeasurmentBufferPointer] + MeasurmentBuffer[MeasurmentBufferPointer-1] + MeasurmentBuffer[MeasurmentBufferPointer-2] + MeasurmentBuffer[MeasurmentBufferPointer-3];
+		/*uint32_t Avg4 = MeasurmentBuffer[MeasurmentBufferPointer] + MeasurmentBuffer[MeasurmentBufferPointer-1] + MeasurmentBuffer[MeasurmentBufferPointer-2] + MeasurmentBuffer[MeasurmentBufferPointer-3];
 		Avg4 = (360000/(Avg4/4));
+		*/
 		//32 times average
 		uint32_t Avg32 = 0;
 		for (uint8_t i = 0; i<32;i++) {
 			 Avg32 += MeasurmentBuffer[i]; 
 		}
 		Avg32 /= 32;
-		Avg32 = (360000/Avg32);
+		#if sns_power_1000_PULSES_PER_KWH == 1
+			Avg32 = (3600000/Avg32);
+		#endif
+		#if sns_power_10000_PULSES_PER_KWH == 1
+			Avg32 = (360000/Avg32);
+		#endif
 
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -102,7 +144,12 @@ void sns_power_Process(void)
 		txMsg.Header.ModuleId = sns_power_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_ELECTRICPOWER;
 		txMsg.Length = 8;
-		uint32_t tmp = 360000/MeasurmentBuffer[MeasurmentBufferPointer];
+		#if sns_power_1000_PULSES_PER_KWH == 1
+			uint32_t tmp = 3600000/MeasurmentBuffer[MeasurmentBufferPointer];
+		#endif
+		#if sns_power_10000_PULSES_PER_KWH == 1
+			uint32_t tmp = 360000/MeasurmentBuffer[MeasurmentBufferPointer];
+		#endif
 		txMsg.Data[0] = (uint8_t)((tmp>>8) & 0xff);
 		txMsg.Data[1] = (uint8_t)(tmp & 0xff);
 		txMsg.Data[5] = (uint8_t)EnergyCounter & 0xff;
