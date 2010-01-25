@@ -6,4 +6,6 @@ sns_irReceive_ID=<ID>
 sns_irReceive_REPEATE_TIMER=<TIMER>
 sns_irReceive_SEND_DEBUG=0
 
+IR_RX_ENABLE=1
+
 ## End section sns_irReceive -- Do not edit this line

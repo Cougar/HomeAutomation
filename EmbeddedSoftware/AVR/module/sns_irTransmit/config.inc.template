@@ -4,5 +4,6 @@ sns_irTransmit_ID=<ID>
 sns_irTransmit_REPEAT_TIMER=<TIMER>
 sns_irTransmit_SEND_DEBUG=0
 IR_TX_ACTIVE_LOW=0
+IR_TX_ENABLE=1
 
 ## End section sns_irTransmit -- Do not edit this line
