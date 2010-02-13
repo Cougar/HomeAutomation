@@ -699,6 +699,7 @@
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
     <module id="45" name="PIR" class="sns"/>
+    <module id="46" name="TCN75A" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

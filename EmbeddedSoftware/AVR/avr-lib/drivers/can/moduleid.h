@@ -1,4 +1,4 @@
-// Built on Sat Feb 13 15:01:42 2010 by makeCanId.pl
+// Built on Sat Feb 13 19:47:43 2010 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -221,6 +221,7 @@
 #define CAN_MODULE_TYPE_CHN_CHNMASTER 30
 #define CAN_MODULE_TYPE_CHN_CHNCONTROLLER 31
 #define CAN_MODULE_TYPE_SNS_PIR 45
+#define CAN_MODULE_TYPE_SNS_TCN75A 46
 
 //----------------- //
 // Misc definitions //
