@@ -465,6 +465,18 @@
       <variables>
       </variables>
     </command>
+
+    <command id="128" name="Motion" type="specific" module="PIR" description="Motion and brightness from PIR-sensor">
+     <variables>
+        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Brightness" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="MotionDetect" type="enum" start_bit="16" bit_length="8" unit="" description="">
+		    <value id="0" name="NoMotion"/>
+		    <value id="1" name="MotionDetected"/>
+	    </variable>
+      </variables>
+    </command>
+
     
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
      <variables>
@@ -686,6 +698,7 @@
     <module id="26" name="RGBW" class="act"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
+    <module id="45" name="PIR" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

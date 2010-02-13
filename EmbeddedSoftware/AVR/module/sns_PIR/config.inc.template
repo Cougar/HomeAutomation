@@ -1,0 +1,19 @@
+## Section sns_PIR -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_PIR_USEEEPROM=1
+
+sns_PIR_ID=<ID>
+#sns_PIR_DUMMY=1
+#sns_PIR_DUMMY_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#sns_PIR_DUMMY_PCINT=<PCINT>
+sns_PIR_SEND_PERIOD=5
+sns_PIR_BRIGHT_TIMER=<TIMER>
+
+sns_PIR_BRIGHTNESS_AD=6
+ADCHAN6=1
+
+
+## End section sns_PIR -- Do not edit this line
