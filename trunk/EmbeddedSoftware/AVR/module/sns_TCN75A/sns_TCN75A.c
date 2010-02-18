@@ -63,7 +63,7 @@ void sns_TCN75A_Process(void)
 		TWI_Start_Read_Write( messageBuf, 3 );
 		
 		/* wait for data and then fetch data to messageBuf */
-		if (TWI_Read_Data_From_Buffer(messageBuf, 2) == TRUE)
+		if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
 		{
 			StdCan_Msg_t txMsg;
 			StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
@@ -72,9 +72,15 @@ void sns_TCN75A_Process(void)
 			txMsg.Header.ModuleId = sns_TCN75A_ID;
 			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
 			txMsg.Length = 3;
+			/* set up sensor id byte */
 			txMsg.Data[0] = 0;
-			txMsg.Data[1] = messageBuf[0];
-			txMsg.Data[2] = messageBuf[1];
+			/* set up sign bit */
+			txMsg.Data[1] = messageBuf[1]&0x80;
+			/* set up msb byte */
+			txMsg.Data[1] |= ((messageBuf[1]&0x7f) >>2 );
+			/* set up lsb byte */
+			txMsg.Data[2] = ((messageBuf[1]&0x03) <<6 );
+			txMsg.Data[2] |= (messageBuf[2] >>2);
 
 			StdCan_Put(&txMsg);
 		}
