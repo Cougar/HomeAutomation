@@ -13,7 +13,6 @@ sns_PIR_SEND_PERIOD=5
 sns_PIR_BRIGHT_TIMER=<TIMER>
 
 sns_PIR_BRIGHTNESS_AD=6
-ADCHAN6=1
 
 
 ## End section sns_PIR -- Do not edit this line
