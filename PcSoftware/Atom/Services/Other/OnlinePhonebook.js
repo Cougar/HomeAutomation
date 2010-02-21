@@ -52,6 +52,29 @@ OnlinePhonebook.prototype.httpCallback = function(result, header, content)
 	{
 		log("OnlinePhonebook: Failed to do name lookup, result was: " + result + "\n");
 	}
+/* Uncomment to enable output to file
+	// Update main dtmf menu
+	var date = new Date();
+	// Get the current date time on the format YYYY-mm-dd HH.ii.ss 
+	var dateAndTime = date.getDateTimeFormated();
+	var filename = "/dev/shm/can/lastPhoneCall";
+	var content = getFileContents(filename);
+	if (!content) {
+		content = "";
+	}
+	content += dateAndTime +": ";
+	content += this.myPhonenumber+"\t";
+	var i = 0;
+	var separator = "";
+	while (persons[i] != null) {
+		content += separator + persons[i];
+		i++;
+		separator = ", ";
+	}
 	
+	content += "\n";
+	var filename = "/dev/shm/can/lastPhoneCall";
+	setFileContents(filename, content);
+*/
 	this.myCallback(this.myPhonenumber, persons);
 }
