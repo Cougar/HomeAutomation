@@ -1,0 +1,60 @@
+## Section sns_VoltageCurrent -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_VoltageCurrent_USEEEPROM=1
+
+sns_VoltageCurrent_ID=<ID>
+sns_VoltageCurrent_TIMER=<TIMER>
+sns_VoltageCurrent_SEND_PERIOD=10
+
+#Uncomment to use the pcint driver
+#sns_VoltageCurrent_DUMMY_PCINT=<PCINT>
+
+# Use # to disable a channel
+
+### Config first voltage/current port ###
+# AD channel
+sns_VoltageCurrent0AD=4
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent0VorA=0
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent0Factor=33.3333
+# Choose AD scaling
+sns_VoltageCurrent0Scale=10
+
+### Config second voltage/current port ###
+# AD channel
+sns_VoltageCurrent1AD=1
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent1VorA=0
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent1Factor=33.3333
+# Choose AD scaling
+sns_VoltageCurrent1Scale=10
+
+### Config third voltage/current port ###
+# AD channel
+sns_VoltageCurrent2AD=0
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent2VorA=1
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent2Factor=0.002151
+# Choose AD scaling
+sns_VoltageCurrent2Scale=10
+
+### Config fourth voltage/current port ###
+# AD channel
+sns_VoltageCurrent3AD=2
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent3VorA=1
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent3Factor=0.002151
+# Choose AD scaling
+sns_VoltageCurrent3Scale=10
+
+
+## End section sns_VoltageCurrent -- Do not edit this line
