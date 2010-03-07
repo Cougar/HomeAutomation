@@ -1,0 +1,24 @@
+## Section sns_Serial -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_Serial_USEEEPROM=1
+
+sns_Serial_ID=<ID>
+#sns_Serial_DUMMY=1
+#sns_Serial_DUMMY_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#sns_Serial_DUMMY_PCINT=<PCINT>
+
+sns_Serial_CTS=GPIO_D2
+sns_Serial_RTS=GPIO_D4
+sns_Serial_ON=GPIO_D5
+sns_Serial_RXEN=GPIO_D6
+sns_Serial_TXEN=GPIO_D7
+sns_Serial_485_232=GPIO_B0
+sns_Serial_EXT_LED=GPIO_B1
+sns_Serial_EXT_SWITCH=GPIO_C0
+sns_Serial_485_CONNECT=GPIO_C4
+sns_Serial_TERM_EN=GPIO_C5
+
+## End section sns_Serial -- Do not edit this line
