@@ -207,7 +207,11 @@
 	  <variable name="PWM_B" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
 	</variables>
       </command>
-      
+    <command id="128" name="SerialData" type="specific" module="Serial" description="Serial data">
+      <variables>
+        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>  
     <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
 	<variables>
 	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
@@ -701,6 +705,7 @@
     <module id="45" name="PIR" class="sns"/>
     <module id="46" name="TCN75A" class="sns"/>
     <module id="47" name="VoltageCurrent" class="sns"/>
+    <module id="48" name="Serial" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
