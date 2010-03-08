@@ -10,15 +10,32 @@ sns_Serial_ID=<ID>
 #Uncomment to use the pcint driver
 #sns_Serial_DUMMY_PCINT=<PCINT>
 
+# Configuration based on RS232/RS485-driver LTC1387
+
+#port for hw flow control, clear to send
 sns_Serial_CTS=GPIO_D2
+#port for hw flow control, request to send
 sns_Serial_RTS=GPIO_D4
+#port for ON
+#high ON enables charge pump, low ON enables loopback mode
 sns_Serial_ON=GPIO_D5
+#port for enable receive
+#high RXEN enables receive
 sns_Serial_RXEN=GPIO_D6
+#port for enable transmit
+#high TXEN enables transmit
 sns_Serial_TXEN=GPIO_D7
+#port for choosing RS485 or RS232
+#high is RS485, low is RS232
 sns_Serial_485_232=GPIO_B0
+#port for external (DSUB-connector) LED
 sns_Serial_EXT_LED=GPIO_B1
+#port for external (DSUB-connector) switch
 sns_Serial_EXT_SWITCH=GPIO_C0
+#port for joining RS485 transmit and receive, full vs half duplex
 sns_Serial_485_CONNECT=GPIO_C4
+#port for enabling termination resistor
+#when used mode should be 485 and half duplex
 sns_Serial_TERM_EN=GPIO_C5
 
 ## End section sns_Serial -- Do not edit this line
