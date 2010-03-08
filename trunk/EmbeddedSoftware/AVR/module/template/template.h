@@ -15,9 +15,7 @@
 #include <drivers/timer/timer.h>
 #include <drivers/mcu/gpio.h>
 #include <drivers/adc/adc.h>
-
-//to use PCINT lib. uncomment the line below
-//#include <drivers/mcu/pcint.h>
+#include <drivers/mcu/pcint.h>
 
 void <template>_Init(void);
 void <template>_Process(void);
