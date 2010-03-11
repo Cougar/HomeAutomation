@@ -14,6 +14,18 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 };
 #endif
 
+// types
+typedef enum
+{
+	SNS_SERIAL_PHYFORMAT_RS232 = 0,
+	SNS_SERIAL_PHYFORMAT_RS485 = 1,
+	SNS_SERIAL_PHYFORMAT_LOOPBACK = 2
+} snsSerialPhyFormat_t;
+
+// internal variables
+static uint16_t baudRate = 9600;
+static snsSerialPhyFormat_t format = SNS_SERIAL_PHYFORMAT_RS232;
+
 void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
@@ -30,7 +42,7 @@ void sns_Serial_Init(void)
 	}
 #endif
 	///TODO: Initialize hardware etc here
-	uart_init(UART_BAUD_SELECT(9600, F_CPU));
+	uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 	gpio_set_out(sns_Serial_RXEN);
 	gpio_set_out(sns_Serial_TXEN);
 	gpio_set_pin(sns_Serial_RXEN);
@@ -73,12 +85,17 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_MODULE_CMD_SERIAL_SERIALDATA:
-			for (uint8_t i=0; i<rxMsg->Length; i++)
-			{
-				uart_putc(rxMsg->Data[i]);
-			}
-			break;
+			case CAN_MODULE_CMD_SERIAL_SERIALDATA:
+				for (uint8_t i=0; i<rxMsg->Length; i++)
+				{
+					uart_putc(rxMsg->Data[i]);
+				}
+				break;
+			case CAN_MODULE_CMD_SERIAL_SERIALCONFIG:
+				baudRate = ((uint16_t)rxMsg->Data[0] << 0) | ((uint16_t)rxMsg->Data[1] << 8);
+				format = (snsSerialPhyFormat_t)rxMsg->Data[2];
+				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
+				break;
 		}
 	}
 }

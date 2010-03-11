@@ -211,7 +211,17 @@
       <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
-    </command>  
+    </command>
+    <command id="129" name="SerialConfig" type="specific" module="Serial" description="Serial config">
+      <variables>
+        <variable name="BaudRate" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="PhysicalFormat" type="enum" start_bit="16" bit_length="8" unit="" description="">
+        	<value id="0" name="RS232"/>
+	    	<value id="1" name="RS485"/>
+	    	<value id="2" name="Loopback"/>
+	    </variable>
+      </variables>
+    </command>
     <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
 	<variables>
 	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
