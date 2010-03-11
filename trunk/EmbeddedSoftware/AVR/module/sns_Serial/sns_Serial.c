@@ -55,23 +55,40 @@ void sns_Serial_Init(void)
 
 void sns_Serial_Process(void)
 {
-	///TODO: Stuff that needs doing is done here
-	unsigned int data = uart_getc();
-	unsigned char c = (unsigned char)(data & 0x00FF);
-	unsigned char status = (unsigned char)((data & 0xFF00) >> 8);
+	// prepare a new message, in case new data is available
+	StdCan_Msg_t msg;
+	msg.Length = 0; // no data so far
+	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(msg.Header, DIRECTIONFLAG_TO_OWNER);
+	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_SERIAL;
+	msg.Header.ModuleId = sns_Serial_ID;
+	msg.Header.Command = CAN_MODULE_CMD_SERIAL_SERIALDATA;
 	
-	if (status == 0)
+	unsigned char status;
+	
+	do
 	{
-		// data received from uart
-		StdCan_Msg_t msg;
-		msg.Length = 1;
-		msg.Data[0] = c;
-		StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
-		StdCan_Set_direction(msg.Header, DIRECTIONFLAG_TO_OWNER);
-		msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_SERIAL;
-		msg.Header.ModuleId = sns_Serial_ID;
-		msg.Header.Command = CAN_MODULE_CMD_SERIAL_SERIALDATA;
-		// transmit
+		// ask uart driver for more data
+		unsigned int data = uart_getc();
+		// character is contained in LSB
+		unsigned char c = (unsigned char)(data & 0x00FF);
+		// status is contained in MSB
+		status = (unsigned char)((data & 0xFF00) >> 8);
+		
+		// status == 0 means we just received a new char
+		if (status == 0)
+		{
+			// insert it into the message
+			msg.Data[(uint8_t)msg.Length] = c;
+			msg.Length++;
+		}
+	// keep going until max data length reached, or until uart RXBUF is empty
+	} while (status == 0 && msg.Length < 8);
+	
+	// did we fill any data into the message?
+	if (msg.Length > 0)
+	{
+		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
 	}
 }
