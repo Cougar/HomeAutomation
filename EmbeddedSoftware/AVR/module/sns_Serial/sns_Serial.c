@@ -41,12 +41,16 @@ void sns_Serial_Init(void)
 	  EEDATA_UPDATE_CRC;
 	}
 #endif
-	///TODO: Initialize hardware etc here
+	// default baudrate
 	uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
+	// configure control pins
 	gpio_set_out(sns_Serial_RXEN);
 	gpio_set_out(sns_Serial_TXEN);
-	gpio_set_pin(sns_Serial_RXEN);
-	gpio_set_pin(sns_Serial_TXEN);
+	gpio_set_out(sns_Serial_ON);
+	gpio_set_out(sns_Serial_485_232);
+	//default to loopback mode until config command received
+	gpio_clr_pin(sns_Serial_ON);
+	gpio_clr_pin(sns_Serial_485_232);
 
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(sns_Serial_PCINT, EXP_C , &sns_Serial_pcint_callback);
@@ -112,6 +116,55 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				baudRate = ((uint16_t)rxMsg->Data[0] << 0) | ((uint16_t)rxMsg->Data[1] << 8);
 				format = (snsSerialPhyFormat_t)rxMsg->Data[2];
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
+				if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232)
+				{
+					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+					gpio_clr_pin(sns_Serial_485_232);		// RS232 mode
+					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+					gpio_set_pin(sns_Serial_TXEN);			// enable TX
+					gpio_set_pin(sns_Serial_ON);			// enable charge pump
+				}
+				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485FULLDUPLEX)
+				{
+					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+					gpio_set_pin(sns_Serial_TXEN);			// enable TX
+					gpio_set_pin(sns_Serial_ON);			// enable charge pump
+				}
+				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEX)
+				{
+					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
+					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+					gpio_clr_pin(sns_Serial_TXEN);			// disable TX
+					gpio_set_pin(sns_Serial_ON);			// enable charge pump
+				}
+				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEXWITHTERMINATION)
+				{
+					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
+					gpio_set_pin(sns_Serial_TERM_EN);		// enable termination
+					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+					gpio_clr_pin(sns_Serial_TXEN);			// disable TX
+					gpio_set_pin(sns_Serial_ON);			// enable charge pump
+				}
+				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK)
+				{
+					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+					gpio_set_pin(sns_Serial_485_232);		// RS232 mode
+					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+					gpio_set_pin(sns_Serial_TXEN);			// enable TX
+					gpio_clr_pin(sns_Serial_ON);			// disable charge pump (i.e. enable loopback)
+				}
+				else
+				{
+					//invalid format
+				}
 				break;
 		}
 	}
