@@ -214,11 +214,13 @@
     </command>
     <command id="129" name="SerialConfig" type="specific" module="Serial" description="Serial config">
       <variables>
-        <variable name="BaudRate" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="BaudRate" type="uint" start_bit="0" bit_length="16" unit="" description="Baudrate/10"/>
         <variable name="PhysicalFormat" type="enum" start_bit="16" bit_length="8" unit="" description="">
         	<value id="0" name="RS232"/>
-	    	<value id="1" name="RS485"/>
-	    	<value id="2" name="Loopback"/>
+	    	<value id="1" name="RS485FullDuplex"/>
+	    	<value id="2" name="RS485HalfDuplex"/>
+	    	<value id="3" name="RS485HalfDuplexWithTermination"/>
+	    	<value id="255" name="Loopback"/>
 	    </variable>
       </variables>
     </command>
