@@ -18,7 +18,7 @@
 #define TRIMBLE_LASSEN_LP 0
 #endif
 
-#if TRIMBLE_LASSEN_LP = 1
+#if TRIMBLE_LASSEN_LP == 1
 #define LAT_LENGTH 9
 #define LON_LENGTH 10
 #define TSIP_AT_STARTUP
