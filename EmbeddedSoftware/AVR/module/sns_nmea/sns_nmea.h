@@ -14,6 +14,15 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
+#ifdef TRIMBLE_LASSEN_LP
+#define LAT_LENGTH 9
+#define LON_LENGTH 10
+#define TSIP_AT_STARTUP
+#else // Default
+#define LAT_LENGTH 10
+#define LON_LENGTH 11
+#endif
+
 void sns_nmea_Init(void);
 void sns_nmea_Process(void);
 void sns_nmea_HandleMessage(StdCan_Msg_t *rxMsg);

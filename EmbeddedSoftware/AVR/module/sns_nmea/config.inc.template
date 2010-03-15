@@ -8,5 +8,6 @@ sns_nmea_cansend_TIMER=<TIMER>
 sns_nmea_cansend_SEND_PERIOD=10000
 
 SERIAL_BAUDRATE=4800
+#TRIMBLE_LASSEN_LP=1
 
 ## End section sns_nmea -- Do not edit this line
