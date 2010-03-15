@@ -38,7 +38,7 @@ void nmea_parse_GGA(void) {
 		NMEA_data.usedsat = 10*a2d(nmea_buffer[nmea_comindex[6]+1]) + a2d(nmea_buffer[nmea_comindex[6]+2]);
 		
 		// Get latitude
-		if (nmea_comindex[2]-nmea_comindex[1] == 10) {
+		if (nmea_comindex[2]-nmea_comindex[1] == LAT_LENGTH) {
 			NMEA_data.lat_deg = 10*a2d(nmea_buffer[nmea_comindex[1]+1])
 			+ a2d(nmea_buffer[nmea_comindex[1]+2]);
 			
@@ -61,7 +61,7 @@ void nmea_parse_GGA(void) {
 		
 		
 		// Get longitude
-		if (nmea_comindex[4]-nmea_comindex[3] == 11) {
+		if (nmea_comindex[4]-nmea_comindex[3] == LON_LENGTH) {
 			NMEA_data.lon_deg = 100*a2d(nmea_buffer[nmea_comindex[3]+1])
 			+ 10*a2d(nmea_buffer[nmea_comindex[3]+2])
 			+ a2d(nmea_buffer[nmea_comindex[3]+3]);
@@ -144,8 +144,19 @@ void nmea_parse(void) {
 
 void sns_nmea_Init(void)
 {
+	uint8_t i;
 	Serial_Init();	
 	Timer_SetTimeout(sns_nmea_cansend_TIMER, sns_nmea_cansend_SEND_PERIOD , TimerTypeFreeRunning, &nmea_send_can);
+
+#ifdef TSIP_AT_STARTUP
+	// Tell GPS to switch to NMEA and 9600 baud
+	//TODO: put in progmem to save space
+	//TODO: do not send this directly at power on, the GPS module is quite slow at startup
+	uint8_t tsip_command[] = {0x10, 0xBC, 0x00, 0x07, 0x07, 0x03, 0x00, 0x00, 0x00, 0x02, 0x04, 0x00, 0x10, 0x03};
+	for(i = 0; i<14; i++){
+		uart_putc(tsip_command[i]);
+	}
+#endif
 }
 
 void sns_nmea_Process(void)
