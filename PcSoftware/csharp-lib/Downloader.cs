@@ -45,7 +45,7 @@ public class Downloader {
 	private const byte HWID3_INDEX = 7;
 	
 	private const int TIMEOUT_MS = 1000;
-	private const int TIMEOUT_SHORT_MS = 200;
+	private const int TIMEOUT_SHORT_MS = 500;
 	
 	private long timeStart = 0;
 	
