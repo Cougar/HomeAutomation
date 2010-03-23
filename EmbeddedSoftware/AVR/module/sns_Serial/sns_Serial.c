@@ -48,9 +48,13 @@ void sns_Serial_Init(void)
 	gpio_set_out(sns_Serial_TXEN);
 	gpio_set_out(sns_Serial_ON);
 	gpio_set_out(sns_Serial_485_232);
+	gpio_set_out(sns_Serial_TERM_EN);
+	gpio_set_out(sns_Serial_485_CONNECT);
 	//default to loopback mode until config command received
 	gpio_clr_pin(sns_Serial_ON);
 	gpio_clr_pin(sns_Serial_485_232);
+	gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+	gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(sns_Serial_PCINT, EXP_C , &sns_Serial_pcint_callback);
