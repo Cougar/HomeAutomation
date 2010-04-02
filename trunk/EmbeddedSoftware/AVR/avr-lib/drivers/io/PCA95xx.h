@@ -12,13 +12,36 @@
 
 /**@{*/
 
-#ifndef PCA9XX_H_
-#define PCA9XX_H_
+#ifndef PCA95XX_H_
+#define PCA95XX_H_
 
 #include <config.h>
-#ifndef PCA9XX_NUM_CALLBACKS
-#define PCA9XX_NUM_CALLBACKS 1
+
+#ifndef PCA95XX_NUM_CALLBACKS
+#define PCA95XX_NUM_CALLBACKS 0
 #endif
+
+#ifndef PCA_INT_VECTOR
+#define PCA_INT_VECTOR	INT0_vect
+#endif
+
+
+#if defined(__AVR_ATmega8__)
+	#define INT1_REG GICR
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+	#define INT1_REG EIMSK
+#else
+#error AVR device not supported!
+#endif
+
+#if PCA_INT_VECTOR==INT0_vect
+	#define PCA_INT_ENABLE()	INT1_REG |= _BV(INT0)
+	#define PCA_INT_DISABLE()	INT1_REG &= ~(_BV(INT0))
+#else
+	#define PCA_INT_ENABLE()	INT1_REG |= _BV(INT1)
+	#define PCA_INT_DISABLE()	INT1_REG &= ~(_BV(INT1))
+#endif
+
 
 /*-----------------------------------------------------------------------------
  * Includes
@@ -38,11 +61,21 @@
 /**
  * @brief Type of the callback function pointer
  */
-typedef void (*pca9xxCallback_t)(uint8_t, uint8_t);
+typedef void (*pca95xxCallback_t)(uint16_t);
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
+
+/**
+ * @brief Poll the PCA95xx for the input status. 
+ * 
+ * Reads the input status of the PCA95xx and returns the data.
+ * 
+ * @param address
+ * 		The address used when communicating with the device.
+ */ 
+void Pca95xx_Init(uint8_t address);
 
 /**
  * @brief Stores a callback for an io interrupt. 
@@ -53,7 +86,7 @@ typedef void (*pca9xxCallback_t)(uint8_t, uint8_t);
  * 		port status as the argument whenever the interrupt is thrown. It is called
  * 		from the interrupt handler and must be very short. 
  */ 
-void Pca95xx_SetCallback(pca9xxCallback_t callback);
+void Pca95xx_SetCallback(pca95xxCallback_t callback);
 
 /**
  * @brief Poll the PCA95xx for the input status. 
@@ -68,28 +101,28 @@ uint16_t Pca95xx_GetInputs(void);
 /**
  * @brief Sets the PCA95xx outputs. 
  * 
- * @param Outputs
+ * @param outputs
  * 		The data to be set as outputs.
- * @param Mask
+ * @param mask
  * 		Passing a mask makes it possible to set one or more output without
  * 		affecting the other ports. Set bit to 1 to set the corresponding
  * 		port bit to the value of the Output parameter bit.
  */ 
-void Pca95xx_SetOutputs(uint16_t Outputs, uint16_t Mask);
+void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask);
 
 /**
  * @brief Sets the PCA95xx port direction. 
  * 
- * @param Direction
+ * @param direction
  * 		The data to be used for setting port direction.
- * @param Mask
+ * @param mask
  * 		Passing a mask makes it possible to set direction for one or more 
  * 		ports without affecting the others. Set bit to 1 to set the 
  * 		corresponding direction bit to the value of the Direction parameter 
  * 		bit.
  */ 
-void Pca95xx_SetDirection(uint16_t Direction, uint16_t Mask);
+void Pca95xx_SetDirection(uint16_t direction, uint16_t mask);
 
 
 /**@}*/
-#endif /*PCA9XX_H_*/
+#endif /*PCA95XX_H_*/
