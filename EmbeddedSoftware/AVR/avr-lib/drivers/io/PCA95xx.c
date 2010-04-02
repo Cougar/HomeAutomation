@@ -56,7 +56,7 @@ void Pca95xx_Init(uint8_t address)
 {
 	unsigned char messageBuf[5];
 
-	/* Disable intterupts while tampering with the global vars */
+	/* Disable interrupts while tampering with the global vars */
 	uint8_t sreg = SREG;
 	cli();
 
@@ -65,9 +65,9 @@ void Pca95xx_Init(uint8_t address)
 	
 	/* Set up interrupt */
 #if PCA_INT_VECTOR==INT0_vect
-	PORTD|=(1<<PD2);	/* setup pullup */
+	PORTD|=(1<<PORT2);	/* setup pullup */
 #else
-	PORTD|=(1<<PD3);	/* setup pullup */
+	PORTD|=(1<<PORT3);	/* setup pullup */
 #endif
 	/* Set up ports? */
 	TWI_Master_Initialise();
@@ -102,7 +102,7 @@ void Pca95xx_Init(uint8_t address)
 #if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_ENABLE();
 #endif
-	sei();
+	SREG = sreg;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ void Pca95xx_Init(uint8_t address)
 #if PCA95XX_NUM_CALLBACKS > 0
 void Pca95xx_SetCallback(uint8_t index, pca95xxCallback_t callback)
 {
-	/* Disable intterupts while tampering with the global vars */
+	/* Disable interrupts while tampering with the global vars */
 	uint8_t sreg = SREG;
 	cli();
 
@@ -120,7 +120,7 @@ void Pca95xx_SetCallback(uint8_t index, pca95xxCallback_t callback)
 		Pca95xx_callback[index] = callback;
 	}
 
-	sei();
+	SREG = sreg;
 }
 #endif
 
@@ -128,7 +128,9 @@ void Pca95xx_SetCallback(uint8_t index, pca95xxCallback_t callback)
 
 uint16_t Pca95xx_GetInputs(void)
 {
-	/* Disable device interupts while communicating with the device */
+	unsigned char messageBuf[5];
+
+	/* Disable device interrupts while communicating with the device */
 	PCA_INT_DISABLE();
 	uint16_t inputs = 0;
 
@@ -153,7 +155,9 @@ uint16_t Pca95xx_GetInputs(void)
 
 void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 {
-	/* Disable intterupts while tampering with the global vars */
+	unsigned char messageBuf[5];
+
+	/* Disable interrupts while tampering with the global vars */
 	uint8_t sreg = SREG;
 	cli();
 	
@@ -169,14 +173,16 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
 
-	sei();
+	SREG = sreg;
 }
 
 /*---------------------------------------------------------------------------*/
 
 void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 {
-	/* Disable intterupts while tampering with the global vars */
+	unsigned char messageBuf[5];
+
+	/* Disable interrupts while tampering with the global vars */
 	uint8_t sreg = SREG;
 	cli();
 
@@ -191,5 +197,5 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	messageBuf[3] = (direction>>8)&0xff;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
-	sei();
+	SREG = sreg;
 }
