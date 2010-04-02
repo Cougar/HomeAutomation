@@ -54,26 +54,54 @@ ISR(PCA_INT_VECTOR)
 
 void Pca95xx_Init(uint8_t address)
 {
+	unsigned char messageBuf[5];
+
 	/* Disable intterupts while tampering with the global vars */
 	uint8_t sreg = SREG;
 	cli();
 
 	/* Store address */
-	Pca95xx_address = address;
+	Pca95xx_address = (PCA95xx_I2C_DEV_ADDR|(address&7));
 	
 	/* Set up interrupt */
-	
+#if PCA_INT_VECTOR==INT0_vect
+	PORTD|=(1<<PD2);	/* setup pullup */
+#else
+	PORTD|=(1<<PD3);	/* setup pullup */
+#endif
 	/* Set up ports? */
+	TWI_Master_Initialise();
 	
-	/* Read direction registers from device to global var */
-	//TODO: communication with device
-	//Pca95xx_direction = ;
 	/* Read output registers from device to global var */
-	//TODO: communication with device
-	//Pca95xx_outputs = ;
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
+	messageBuf[1] = PCA95xx_REG_OUTPUT0;
+	TWI_Start_Read_Write( messageBuf, 2 );
+	while ( TWI_Transceiver_Busy() );
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (TRUE<<TWI_READ_BIT);
+	TWI_Start_Read_Write( messageBuf, 3 );
+	while ( TWI_Transceiver_Busy() );
+	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
+	{
+		Pca95xx_outputs = (messageBuf[2]<<8)|messageBuf[1];
+	}
+
+	/* Read direction registers from device to global var */
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
+	messageBuf[1] = PCA95xx_REG_CONF0;
+	TWI_Start_Read_Write( messageBuf, 2 );
+	while ( TWI_Transceiver_Busy() );
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (TRUE<<TWI_READ_BIT);
+	TWI_Start_Read_Write( messageBuf, 3 );
+	while ( TWI_Transceiver_Busy() );
+	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
+	{
+		Pca95xx_direction = (messageBuf[2]<<8)|messageBuf[1];
+	}
 	
 	/* Enable interrupt */
+#if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_ENABLE();
+#endif
 	sei();
 }
 
@@ -102,10 +130,20 @@ uint16_t Pca95xx_GetInputs(void)
 {
 	/* Disable device interupts while communicating with the device */
 	PCA_INT_DISABLE();
+	uint16_t inputs = 0;
 
 	/* Read input registers from device */
-	//TODO: communication with device
-	uint16_t inputs = ;
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
+	messageBuf[1] = PCA95xx_REG_INPUT0;
+	TWI_Start_Read_Write( messageBuf, 2 );
+	while ( TWI_Transceiver_Busy() );
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (TRUE<<TWI_READ_BIT);
+	TWI_Start_Read_Write( messageBuf, 3 );
+	while ( TWI_Transceiver_Busy() );
+	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
+	{
+		inputs = (messageBuf[2]<<8)|messageBuf[1];
+	}
 	
 	PCA_INT_ENABLE();
 	return inputs;
@@ -124,7 +162,13 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	/* Clear masked zeros in outputs to global var */
 	Pca95xx_outputs &= (outputs|(~mask));
 	/* Set output registers */
-	//TODO: communication with device
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
+	messageBuf[1] = PCA95xx_REG_OUTPUT0;
+	messageBuf[2] = outputs&0xff;
+	messageBuf[3] = (outputs>>8)&0xff;
+	TWI_Start_Read_Write( messageBuf, 4 );
+	while ( TWI_Transceiver_Busy() );
+
 	sei();
 }
 
@@ -141,6 +185,11 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	/* Clear masked zeros in direction to global var */
 	Pca95xx_direction &= (direction|(~mask));
 	/* Set direction registers */
-	//TODO: communication with device
+	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
+	messageBuf[1] = PCA95xx_REG_CONF0;
+	messageBuf[2] = direction&0xff;
+	messageBuf[3] = (direction>>8)&0xff;
+	TWI_Start_Read_Write( messageBuf, 4 );
+	while ( TWI_Transceiver_Busy() );
 	sei();
 }

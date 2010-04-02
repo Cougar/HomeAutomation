@@ -48,11 +48,21 @@
  *---------------------------------------------------------------------------*/
 #include <inttypes.h>
 #include <stdio.h>
+#include <drivers/mcu/TWI_Master.h>
 
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
+#define PCA95xx_REG_INPUT0	0
+#define PCA95xx_REG_INPUT1	1
+#define PCA95xx_REG_OUTPUT0	2
+#define PCA95xx_REG_OUTPUT1	3
+#define PCA95xx_REG_POLINV0	4
+#define PCA95xx_REG_POLINV1	5
+#define PCA95xx_REG_CONF0	6
+#define PCA95xx_REG_CONF1	7
 
+#define PCA95xx_I2C_DEV_ADDR	0x40
 
 /*-----------------------------------------------------------------------------
  * Public Types
