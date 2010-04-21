@@ -1,7 +1,7 @@
 /**
  * ...
  * 
- * @author	Linus Lundin
+ * @author	Linus Lundin, Anders Runeson
  * 
  * @date	2009-03-01
  */
@@ -25,6 +25,7 @@
 
 struct {
 	uint8_t pcintBit;
+	uint8_t pcintMask;
 	uint8_t lastStatus;
 	pcintCallback_t callback;
 } pcints[PCINT_NUM_PCINTS];
@@ -50,18 +51,18 @@ ISR(PCINT0_vect) {
 	for (p = 0; p < PCINT_NUM_PCINTS; p++)
 	{
 		if (pcints[p].pcintBit < 8) {
-			if (pcints[p].lastStatus != (rPinB & (1 << pcints[p].pcintBit))) {
-				pcints[p].lastStatus = (rPinB & (1 << pcints[p].pcintBit));
+			if (pcints[p].lastStatus != (rPinB & pcints[p].pcintMask)) {
+				pcints[p].lastStatus = (rPinB & pcints[p].pcintMask);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		} else if (pcints[p].pcintBit < 16) {
-			if (pcints[p].lastStatus != (rPinC & (1 << pcints[p].pcintBit%8))) {
-				pcints[p].lastStatus = (rPinC & (1 << pcints[p].pcintBit%8));
+			if (pcints[p].lastStatus != (rPinC & pcints[p].pcintMask)) {
+				pcints[p].lastStatus = (rPinC & pcints[p].pcintMask);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		} else if (pcints[p].pcintBit < 24) {
-			if (pcints[p].lastStatus != (rPinD & (1 << pcints[p].pcintBit%8))) {
-				pcints[p].lastStatus = (rPinD & (1 << pcints[p].pcintBit%8));
+			if (pcints[p].lastStatus != (rPinD & pcints[p].pcintMask)) {
+				pcints[p].lastStatus = (rPinD & pcints[p].pcintMask);
 				pcints[p].callback(p, pcints[p].lastStatus);
 			}
 		}
@@ -106,35 +107,31 @@ void Pcint_SetCallback(uint8_t pcint_id, uint8_t pcintBit, pcintCallback_t callb
 
 		PCIFR=(1<<PCIF0|1<<PCIF1|1<<PCIF2);	/* clear any pending interrupt before enabling interrupts */
 		PCICR|=(1<<PCIE0|1<<PCIE1|1<<PCIE2);	/* enable interrupt for PCINT0-2 */
-#if 0
-		PCIFR=(1<<PCIF1);	/* clear any pending interrupt before enabling interrupts */
-		PCICR|=(1<<PCIE1);	/* enable interrupt for PCINT1 */
-		PCIFR=(1<<PCIF2);	/* clear any pending interrupt before enabling interrupts */
-		PCICR|=(1<<PCIE2);	/* enable interrupt for PCINT2 */
-#endif
+
 		pcints[pcint_id].pcintBit = pcintBit;
+		pcints[pcint_id].pcintMask = 1<<pcints[pcint_id].pcintBit%8;
 		pcints[pcint_id].lastStatus = 0;
 		if (callback != 0) {
 			if (pcints[pcint_id].pcintBit < 8) {
-				pcints[pcint_id].lastStatus = (PINB & (1 << pcints[pcint_id].pcintBit%8));
-				PCMSK0 |= (1<<pcints[pcint_id].pcintBit%8);
+				pcints[pcint_id].lastStatus = (PINB & pcints[pcint_id].pcintMask);
+				PCMSK0 |= pcints[pcint_id].pcintMask;
 //printf("PCMSK %u\n", PCMSK0);
 			} else if (pcints[pcint_id].pcintBit < 16) {
-				pcints[pcint_id].lastStatus = (PINC & (1 << pcints[pcint_id].pcintBit%8));
-				PCMSK1 |= (1<<pcints[pcint_id].pcintBit%8);
+				pcints[pcint_id].lastStatus = (PINC & pcints[pcint_id].pcintMask);
+				PCMSK1 |= pcints[pcint_id].pcintMask;
 //printf("PCMSK1 %u\n", PCMSK1);
 			} else if (pcints[pcint_id].pcintBit < 24) {
-				pcints[pcint_id].lastStatus = (PIND & (1 << pcints[pcint_id].pcintBit%8));
-				PCMSK2 |= (1<<pcints[pcint_id].pcintBit%8);
+				pcints[pcint_id].lastStatus = (PIND & pcints[pcint_id].pcintMask);
+				PCMSK2 |= pcints[pcint_id].pcintMask;
 //printf("PCMSK2 %u\n", PCMSK2);
 			}
 		} else { //turn off interupt
 			if (pcints[pcint_id].pcintBit < 8) {
-				PCMSK0 &= ~(1<<(pcints[pcint_id].pcintBit%8));
+				PCMSK0 &= ~pcints[pcint_id].pcintMask;
 			} else if (pcints[pcint_id].pcintBit < 16) {
-				PCMSK1 &= ~(1<<(pcints[pcint_id].pcintBit%8));
+				PCMSK1 &= ~pcints[pcint_id].pcintMask;
 			} else if (pcints[pcint_id].pcintBit < 24) {
-				PCMSK2 &= ~(1<<(pcints[pcint_id].pcintBit%8));
+				PCMSK2 &= ~pcints[pcint_id].pcintMask;
 			}
 		}
 
