@@ -260,7 +260,7 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
-ifneq (,$(filter atmega88 atmega168, $(MCU)))
+ifneq (,$(filter atmega88 atmega168 atmega168p, $(MCU)))
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
 	@echo GCC bug workaround for ATmega88/ATmega168:

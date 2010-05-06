@@ -299,7 +299,7 @@ void IrTransceiver_Init(void)
 #if IR_TX_ENABLE==1
 	/* Set up transmitter */
 	IR_T_DDR |= (1<<IR_T_BIT);
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
 	TCCR0A = (0<<COM0A1)|(0<<COM0A0)|(1<<WGM01)|(0<<WGM00);
 	TCCR0B = (0<<WGM02)|(1<<CS00)|(0<<CS01)|(0<<CS02);
 	#endif

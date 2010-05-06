@@ -46,7 +46,7 @@
 #define SPI_DDR		DDRB
 #endif
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
 	#ifdef MCP_USART_SPI_MODE
 		#define SPI_SCK   PD4
 		#define SPI_MISO  PD0
