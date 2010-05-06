@@ -15,6 +15,7 @@
 #include <drivers/ir/protocols.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <drivers/mcu/pcint.h>
 
 /*-----------------------------------------------------------------------------
  * Globals
@@ -22,6 +23,17 @@
 #if IR_RX_ENABLE==1
 uint16_t *rxbuf;
 uint8_t rxlen;
+
+/*struct {
+	uint8_t		dataReceived;
+	uint16_t	timeout;
+	uint8_t		timeoutEnable;
+	uint16_t	*rxbuf;
+	uint8_t		rxlen;
+	uint8_t		storeEnable;
+} irRxChannel[3];
+*/
+
 #endif
 #if IR_TX_ENABLE==1
 uint16_t *txbuf;
@@ -35,9 +47,6 @@ volatile uint8_t data_received;
 volatile uint8_t data_transmitted;
 //uint8_t detect_edge;
 uint8_t store;
-uint8_t gPinB;
-uint8_t gPinC;
-uint8_t gPinD;
 
 
 /*-----------------------------------------------------------------------------
@@ -153,7 +162,7 @@ ISR(IR_TIMEOUT_VECTOR)
 }
 #endif
 
-#if IR_RX_ENABLE==1
+#if 0
 
 //ISR(IR_CAPTURE_VECTOR)
 //TODO: skriv denna för multi receiver
@@ -181,6 +190,19 @@ ISR(PCINT0_vect) {
  *---------------------------------------------------------------------------*/
  
 #if IR_RX_ENABLE==1
+void IrTransceiver_Store_ch0(uint8_t id, uint8_t status)
+{
+	IrTransceiver_Store(0);
+}
+void IrTransceiver_Store_ch1(uint8_t id, uint8_t status)
+{
+	IrTransceiver_Store(1);
+}
+void IrTransceiver_Store_ch2(uint8_t id, uint8_t status)
+{
+	IrTransceiver_Store(2);
+}
+
 void IrTransceiver_Store(uint8_t channel)
 {
 	static uint16_t prev_time;
@@ -190,19 +212,7 @@ void IrTransceiver_Store(uint8_t channel)
 	//uint16_t time = IR_CAPTURE_REG;
 	/* Read the timer counter register to get the current "time". */
 	uint16_t time = IR_COUNT_REG;
-	
-	/* Toggle the edge detection. */
-//	if (detect_edge == 0)
-//	{
-//		IR_CAPTURE_RISING();
-//		detect_edge = 1;
-//	}
-//	else
-//	{
-//		IR_CAPTURE_FALLING();
-//		detect_edge = 0;
-//	}
-	
+		
 	/* Subtract the current measurement from the previous to get the pulse
 	 * width. */
 	pulsewidth = time - prev_time;
@@ -232,6 +242,8 @@ void IrTransceiver_Store(uint8_t channel)
 		/* Enable timeout interrupt for detection of the end of the pulse
 		 * train. */
 		IR_UNMASK_TIMEOUT();
+
+		//TODO: if buffer resource coordinator is implemented this is where a buffer should be assinged to this channel
 	}
 }
 #endif
@@ -242,19 +254,31 @@ void IrTransceiver_Store(uint8_t channel)
  *---------------------------------------------------------------------------*/
 
 /* call this function like this:
-	IrTransceiver_Init_TX_Channel(0, buffer, callback, GPIO_D6);
+	IrTransceiver_Init_TX_Channel(0, buffer, callback, pcint-id, GPIO_D6);
 	buffer is a memory location 
 	callback is a function to call when a receive/transmitt is complete
 	also call with IO port to use
 	
 	function to deactivate channel may later be needed
 */
-/*
-void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
+
+void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
 {
-	
+	if (channel == 0)
+	{
+		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch0);
+	}
+	else if (channel == 1)
+	{
+		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch1);
+	}
+	else if (channel == 2)
+	{
+		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch2);
+	}
 }
 
+/*
 void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
 {
 	
