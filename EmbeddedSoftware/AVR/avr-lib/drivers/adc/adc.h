@@ -18,7 +18,7 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-#if !defined(__AVR_ATmega88__) && !defined(__AVR_ATmega168__) && !defined(__AVR_ATmega328P__)
+#if !defined(__AVR_ATmega88__) && !defined(__AVR_ATmega168__) && !defined(__AVR_ATmega168P__) && !defined(__AVR_ATmega328P__)
 #error only tested on ATmega88/168/328
 #endif
 
