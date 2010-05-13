@@ -51,6 +51,12 @@ uint8_t IrTransceiver_Receive_Poll(uint8_t *len);
 uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq);
 uint8_t IrTransceiver_Transmit_Poll(void);
 
+/**
+ * @brief Type of the callback function pointer
+ * parameters: channel, buffer, length
+ */
+typedef void (*irCallback_t)(uint8_t, uint16_t, uint8_t);
+
 
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes

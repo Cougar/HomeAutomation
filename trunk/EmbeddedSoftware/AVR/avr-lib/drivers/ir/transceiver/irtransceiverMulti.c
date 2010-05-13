@@ -21,32 +21,24 @@
  * Globals
  *---------------------------------------------------------------------------*/
 #if IR_RX_ENABLE==1
-uint16_t *rxbuf;
-uint8_t rxlen;
-
-/*struct {
-	uint8_t		dataReceived;
+struct {
 	uint16_t	timeout;
 	uint8_t		timeoutEnable;
 	uint16_t	*rxbuf;
 	uint8_t		rxlen;
 	uint8_t		storeEnable;
+	irCallback_t callback;
 } irRxChannel[3];
-*/
+
 
 #endif
 #if IR_TX_ENABLE==1
 uint16_t *txbuf;
 uint8_t txlen;
-#endif
-
-#if IR_TX_ENABLE==1
 static uint8_t bufIndex;							//selects the pulse width in buffer to send
 #endif
-volatile uint8_t data_received;
+
 volatile uint8_t data_transmitted;
-//uint8_t detect_edge;
-uint8_t store;
 
 
 /*-----------------------------------------------------------------------------
@@ -145,43 +137,51 @@ ISR(IR_COMPARE_VECTOR)
 //TODO: hur hantera detta i multi receiver
 //TODO: ha en array med tider och nån enableflagga för varje kanal
 //TODO: mot slutet av ISRen laddas nästa tid in...
+
+/* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)
 {
-	if (rxlen)
-	{
-		/* Disable interrupts until the application has taken action on the
-		 * current data and reenabled reception. */
-//		IR_MASK_CAPTURE();
-//		IR_MASK_TIMEOUT();
-		PCMSK0 &= ~(1<<IR_TRANS_CH0_MASK);
 
+	/* Find which channel timed out */
+	uint16_t timeDiff = 0xffff;
+	uint8_t channel = 0;
+	for (uint8_t i=0; i < 3; i++)
+	{
+		if ((irRxChannel[channel].timeoutEnable) && (IR_TIMEOUT_REG-irRxChannel[i].timeout < timeDiff))
+		{
+			timeDiff = IR_TIMEOUT_REG-irRxChannel[i].timeout;
+			channel = i;
+		}
+	}
+
+	/* If more than 3 flanks was recevied */
+	if (irRxChannel[channel].rxlen > 3)
+	{
 		/* Notify the application that a pulse train has been received. */
-		data_received = 1;
+		irRxChannel[channel].callback(channel, irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 	}
-	store = 0;
-}
-#endif
 
-#if 0
+	irRxChannel[channel].storeEnable = FALSE;
+	irRxChannel[channel].timeoutEnable = FALSE;
 
-//ISR(IR_CAPTURE_VECTOR)
-//TODO: skriv denna för multi receiver
-ISR(PCINT0_vect) {
-//	uint8_t p;
-	uint8_t rPinB=PINB;
-	uint8_t rPinC=PINC;
-	uint8_t rPinD=PIND;
+	IR_UNMASK_TIMEOUT();
 	
-	/* check if channel 0 pin was changed */
-	if ((rPinB ^ gPinB)&(1<<IR_TRANS_CH0_MASK))
+//TODO: reset the timeout for next enabled channel
+/*
+	uint16_t nextTimeout = irRxChannel[channel].timeout;
+	for (uint8_t i=0; i < 3; i++)
 	{
-		IrTransceiver_Store(0);
+//TODO: hitta den med timeout härnäst (svårt med tanke på att den tiden kan ha passerat eftersom vi är under interrupt)
+//kanske inte är så noga, i värsta fall tar det 65ms extra
+		if ((irRxChannel[channel].timeoutEnable) && (irRxChannel[i].timeout < nextTimeout))
+		{
+			nextTimeout = irRxChannel[i].timeout;
+		}
 	}
-	
-	gPinB=rPinB;
-	gPinC=rPinC;
-	gPinD=rPinD;
-} /* ISR(PCINT0_vect) */
+	IR_MASK_TIMEOUT();
+	IR_TIMEOUT_REG = nextTimeout;
+*/
+}
 #endif
 
 
@@ -190,6 +190,8 @@ ISR(PCINT0_vect) {
  *---------------------------------------------------------------------------*/
  
 #if IR_RX_ENABLE==1
+
+/* these wrapper functions are called from the pcint driver (callback) */
 void IrTransceiver_Store_ch0(uint8_t id, uint8_t status)
 {
 	IrTransceiver_Store(0);
@@ -219,18 +221,31 @@ void IrTransceiver_Store(uint8_t channel)
 	prev_time = time;
 	
 	/* Set the timeout. */
-	IR_TIMEOUT_REG = time + IR_MAX_PULSE_WIDTH;
+	irRxChannel[channel].timeout = time + IR_MAX_PULSE_WIDTH;
+	irRxChannel[channel].timeoutEnable = TRUE;
+	uint16_t nextTimeout = irRxChannel[channel].timeout;
+	for (uint8_t i=0; i < 3; i++)
+	{
+//TODO: hitta den med timeout härnäst (svårt med tanke på att den tiden kan ha passerat eftersom vi är under interrupt)
+//kanske inte är så noga, i värsta fall tar det 65ms extra
+		if ((irRxChannel[channel].timeoutEnable) && (irRxChannel[i].timeout < nextTimeout))
+		{
+			nextTimeout = irRxChannel[i].timeout;
+		}
+	}
+	IR_TIMEOUT_REG = nextTimeout;
 	
-	if (store)
+	if (irRxChannel[channel].storeEnable)
 	{
 		/* Store the measurement. */
-		rxbuf[rxlen++] = pulsewidth;
-		//*(rxbuf+rxlen++) = pulsewidth;
+		irRxChannel[channel].rxbuf[irRxChannel[channel].rxlen++] = pulsewidth;
+
 		/* Disable future measurements if we've filled the buffer. */
 		//TODO: What to do in multi recevier?
 		//TODO: Report overflow to application
-		if (rxlen == MAX_NR_TIMES)
+		if (irRxChannel[channel].rxlen == MAX_NR_TIMES)
 		{
+			irRxChannel[channel].rxlen = MAX_NR_TIMES-1;
 			//IR_MASK_CAPTURE();
 		}
 	}
@@ -238,9 +253,9 @@ void IrTransceiver_Store(uint8_t channel)
 	{
 		/* The first edge of the pulse train has been detected. Enable the
 		 * storage of the following pulsewidths. */
-		store = 1;
-		/* Enable timeout interrupt for detection of the end of the pulse
-		 * train. */
+		irRxChannel[channel].storeEnable = TRUE;
+		irRxChannel[channel].rxlen = 0;
+		/* Enable timeout interrupt for detection of the end of the pulse train. */
 		IR_UNMASK_TIMEOUT();
 
 		//TODO: if buffer resource coordinator is implemented this is where a buffer should be assinged to this channel
@@ -262,6 +277,7 @@ void IrTransceiver_Store(uint8_t channel)
 	function to deactivate channel may later be needed
 */
 
+#if IR_RX_ENABLE==1
 void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
 {
 	if (channel == 0)
@@ -276,7 +292,21 @@ void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback
 	{
 		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch2);
 	}
+	
+	if (channel < 3)
+	{
+		/* Set port direction to input */
+		*ddr &= ~(1 << nr);
+		
+		irRxChannel[channel].rxbuf = buffer;
+		irRxChannel[channel].rxlen = 0;
+		irRxChannel[channel].storeEnable = FALSE;
+		irRxChannel[channel].timeoutEnable = FALSE;
+		irRxChannel[channel].callback = callback;
+		
+	}
 }
+#endif
 
 /*
 void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
@@ -288,14 +318,7 @@ void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback
 void IrTransceiver_Init(void)
 {
 	IR_TIMER_INIT();
-	
-#if IR_RX_ENABLE==1
-	/* Set up receiver */
-	//IR_TIMEOUT_REG = IR_MAX_PULSE_WIDTH;
-	IR_R_DDR &= ~(1<<IR_R_BIT);
-	//DDRC |= (1<<PC5);
-#endif
-	
+		
 #if IR_TX_ENABLE==1
 	/* Set up transmitter */
 	IR_T_DDR |= (1<<IR_T_BIT);
@@ -314,55 +337,6 @@ void IrTransceiver_Init(void)
 
 #endif
 
-}
-
-void IrTransceiver_Receive_Start(uint16_t *buffer)
-{
-#if IR_RX_ENABLE==1
-	 /* Setup buffer and arm the edge detection. */
-	rxbuf = buffer;
-	rxlen = 0;
-	data_received = 0;
-	store = 0;
-#if (IR_RX_ACTIVE_LOW == 1)
-	//IR_CAPTURE_FALLING();
-	//detect_edge = 0;
-#else
-	//IR_CAPTURE_RISING();
-	//detect_edge = 1;
-#endif
-	//IR_UNMASK_CAPTURE();
-
-	gPinB=PINB;
-	gPinC=PINC;
-	gPinD=PIND;
-	PCIFR=(1<<PCIF0|1<<PCIF1|1<<PCIF2);	/* clear any pending interrupt before enabling interrupts */
-//	PCICR|=(1<<PCIE0|1<<PCIE1|1<<PCIE2);	/* enable interrupt for PCINT0-2 */
-	PCICR|=(1<<PCIE0);	/* enable interrupt for PCINT0 */
-	PCMSK0 |= (1<<IR_TRANS_CH0_MASK);
-//	PCMSK1 |= (1<<pcints[pcint_id].pcintBit%8);
-//	PCMSK2 |= (1<<pcints[pcint_id].pcintBit%8);
-#endif
-
-}
-
-uint8_t IrTransceiver_Receive_Poll(uint8_t *len)
-{
-#if IR_RX_ENABLE==1
-	*len = rxlen;
-	if (data_received)
-	{
-		return IR_OK;
-	}
-	else if (rxlen > 0) 
-	{
-		return IR_NOT_FINISHED;
-	} else {
-		return IR_NO_DATA;
-	}
-#else
-	return 0;
-#endif
 }
 
 uint8_t IrTransceiver_Transmit_Poll(void) {
