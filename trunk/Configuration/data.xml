@@ -145,6 +145,14 @@
         <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
       </variables>
     </command>
+    <command id="128" name="IRraw" type="specific" module="irTransceive" description="If a protocol not could be found, then send raw data">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Millisecond" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Millisecond" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
+      </variables>
+    </command>
     <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
 	<variables>
 		<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
@@ -713,6 +721,7 @@
     <module id="24" name="output" class="act"/>
     <module id="25" name="input" class="sns"/>
     <module id="26" name="RGBW" class="act"/>
+    <module id="27" name="irTransceive" class="sns"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
     <module id="45" name="PIR" class="sns"/>
