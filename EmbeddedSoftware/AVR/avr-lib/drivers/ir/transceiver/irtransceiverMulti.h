@@ -42,6 +42,9 @@
 #define IR_TRANS_CH0_MASK PB0
 #endif
 
+#define TRUE 1
+#define FALSE 0
+
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
@@ -55,7 +58,7 @@ uint8_t IrTransceiver_Transmit_Poll(void);
  * @brief Type of the callback function pointer
  * parameters: channel, buffer, length
  */
-typedef void (*irCallback_t)(uint8_t, uint16_t, uint8_t);
+typedef void (*irCallback_t)(uint8_t, uint16_t*, uint8_t);
 
 
 /*-----------------------------------------------------------------------------

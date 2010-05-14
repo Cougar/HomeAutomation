@@ -1,0 +1,5 @@
+# List all files that needs to be compiled here
+drivers/ir/transceiver/irtransceiverMulti.c
+drivers/ir/protocols.c
+drivers/mcu/pcint.c
+sns_irTransceive/sns_irTransceive.c
