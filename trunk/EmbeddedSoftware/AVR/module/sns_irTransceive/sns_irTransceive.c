@@ -99,8 +99,10 @@ void sns_irTransceive_Process(void)
 #endif
 			}
 */			
+#if (sns_irTransceive_SEND_DEBUG==1)
 				send_debug(rxbuffer, len);
 				proto.timeout=300;
+#endif
 
 			state = sns_irTransceive_STATE_START_PAUSE;
 		}
