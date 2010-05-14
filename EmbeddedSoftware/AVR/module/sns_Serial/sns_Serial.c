@@ -14,17 +14,9 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 };
 #endif
 
-// types
-typedef enum
-{
-	SNS_SERIAL_PHYFORMAT_RS232 = 0,
-	SNS_SERIAL_PHYFORMAT_RS485 = 1,
-	SNS_SERIAL_PHYFORMAT_LOOPBACK = 2
-} snsSerialPhyFormat_t;
-
 // internal variables
-static uint16_t baudRate = 9600;
-static snsSerialPhyFormat_t format = SNS_SERIAL_PHYFORMAT_RS232;
+static uint32_t baudRate = 9600;
+static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
 
 void sns_Serial_Init(void)
 {
@@ -55,10 +47,14 @@ void sns_Serial_Init(void)
 	gpio_clr_pin(sns_Serial_485_232);
 	gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 	gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+	gpio_set_pin(sns_Serial_485_232);		// RS232 mode
+	gpio_set_pin(sns_Serial_RXEN);			// enable RX
+	gpio_set_pin(sns_Serial_TXEN);			// enable TX
 
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(sns_Serial_PCINT, EXP_C , &sns_Serial_pcint_callback);
 
+	printf("Serial started!\n");
 }
 
 void sns_Serial_Process(void)
@@ -86,6 +82,7 @@ void sns_Serial_Process(void)
 		// status == 0 means we just received a new char
 		if (status == 0)
 		{
+			printf("RX\n");
 			// insert it into the message
 			msg.Data[(uint8_t)msg.Length] = c;
 			msg.Length++;
@@ -111,26 +108,29 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 			case CAN_MODULE_CMD_SERIAL_SERIALDATA:
+				gpio_set_pin(sns_Serial_TXEN);			// enable TX
 				for (uint8_t i=0; i<rxMsg->Length; i++)
 				{
 					uart_putc(rxMsg->Data[i]);
 				}
+				gpio_clr_pin(sns_Serial_TXEN);			// disable TX
 				break;
 			case CAN_MODULE_CMD_SERIAL_SERIALCONFIG:
-				baudRate = ((uint16_t)rxMsg->Data[0] << 0) | ((uint16_t)rxMsg->Data[1] << 8);
-				format = (snsSerialPhyFormat_t)rxMsg->Data[2];
+				baudRate = 10 * (((uint32_t)rxMsg->Data[1] << 0) | ((uint32_t)rxMsg->Data[0] << 8));
+				format = (uint16_t)rxMsg->Data[2];
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 				if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232)
 				{
+					printf("RS232\n");
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_clr_pin(sns_Serial_485_232);		// RS232 mode
 					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_set_pin(sns_Serial_TXEN);			// enable TX
 					gpio_set_pin(sns_Serial_ON);			// enable charge pump
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485FULLDUPLEX)
 				{
+					printf("RS485FD\n");
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
@@ -140,24 +140,27 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEX)
 				{
+					printf("RS485HD\n");
 					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
 					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_clr_pin(sns_Serial_TXEN);			// disable TX
+					gpio_set_pin(sns_Serial_TXEN);			// enable TX
 					gpio_set_pin(sns_Serial_ON);			// enable charge pump
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEXWITHTERMINATION)
 				{
+					printf("485HDT\n");
 					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
 					gpio_set_pin(sns_Serial_TERM_EN);		// enable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
 					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_clr_pin(sns_Serial_TXEN);			// disable TX
+					gpio_set_pin(sns_Serial_TXEN);			// enable TX
 					gpio_set_pin(sns_Serial_ON);			// enable charge pump
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK)
 				{
+					printf("LPMODE\n");
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS232 mode
@@ -168,6 +171,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				else
 				{
 					//invalid format
+					printf("ERROR!\n");
 				}
 				break;
 		}
@@ -195,3 +199,4 @@ void sns_Serial_List(uint8_t ModuleSequenceNumber)
 
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 }
+
