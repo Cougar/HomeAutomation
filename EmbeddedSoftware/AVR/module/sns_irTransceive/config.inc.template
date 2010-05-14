@@ -8,4 +8,8 @@ sns_irTransceive_SEND_DEBUG=0
 
 IR_RX_ENABLE=1
 
+sns_irTransceive_RX0_PCINT=<PCINT>
+sns_irTransceive_RX1_PCINT=<PCINT>
+sns_irTransceive_RX2_PCINT=<PCINT>
+
 ## End section sns_irTransceive -- Do not edit this line
