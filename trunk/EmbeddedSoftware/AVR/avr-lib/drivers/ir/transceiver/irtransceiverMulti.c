@@ -282,15 +282,15 @@ void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback
 {
 	if (channel == 0)
 	{
-		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch0);
+//		Pcint_SetCallback(pcint_id, pcint, &IrTransceiver_Store_ch0);
 	}
 	else if (channel == 1)
 	{
-		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch1);
+//		Pcint_SetCallback(pcint_id, pcint, &IrTransceiver_Store_ch1);
 	}
 	else if (channel == 2)
 	{
-		Pcint_SetCallback(uint8_t pcint_id, uint8_t pcint, &IrTransceiver_Store_ch2);
+//		Pcint_SetCallback(pcint_id, pcint, &IrTransceiver_Store_ch2);
 	}
 	
 	if (channel < 3)

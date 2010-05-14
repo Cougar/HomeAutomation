@@ -1,0 +1,11 @@
+## Section sns_irTransceive -- Do not edit this line
+
+sns_irTransceive_ID=<ID>
+#sns_irTransceive_DUMMY=1
+
+sns_irTransceive_REPEATE_TIMER=<TIMER>
+sns_irTransceive_SEND_DEBUG=0
+
+IR_RX_ENABLE=1
+
+## End section sns_irTransceive -- Do not edit this line
