@@ -1,5 +1,5 @@
 # List all files that needs to be compiled here
-drivers/adc/adc.c
+drivers/adc/ltc2450.c
 sns_PIR/sns_PIR.c
 #Uncomment the line below if you want to use EEPROM with this module
 #drivers/misc/eeprom_crc8.c
