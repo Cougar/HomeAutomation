@@ -9,7 +9,7 @@ sns_PIR_ID=<ID>
 
 #Uncomment to use the pcint driver
 #sns_PIR_DUMMY_PCINT=<PCINT>
-sns_PIR_SEND_PERIOD=5
+sns_PIR_SEND_PERIOD=1
 sns_PIR_BRIGHT_TIMER=<TIMER>
 
 sns_PIR_BRIGHTNESS_AD=6
