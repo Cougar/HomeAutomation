@@ -3,13 +3,20 @@
 sns_irTransceive_ID=<ID>
 #sns_irTransceive_DUMMY=1
 
-sns_irTransceive_REPEATE_TIMER=<TIMER>
 sns_irTransceive_SEND_DEBUG=0
 
 IR_RX_ENABLE=1
 
+sns_irTransceive_RX0_PIN=GPIO_C0
 sns_irTransceive_RX0_PCINT=<PCINT>
+sns_irTransceive_RX0_REPEATE_TIMER=<TIMER>
+
+sns_irTransceive_RX1_PIN=GPIO_C1
 sns_irTransceive_RX1_PCINT=<PCINT>
+sns_irTransceive_RX1_REPEATE_TIMER=<TIMER>
+
+sns_irTransceive_RX2_PIN=GPIO_C2
 sns_irTransceive_RX2_PCINT=<PCINT>
+sns_irTransceive_RX2_REPEATE_TIMER=<TIMER>
 
 ## End section sns_irTransceive -- Do not edit this line

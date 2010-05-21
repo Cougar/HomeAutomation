@@ -1,146 +1,191 @@
 
 #include "sns_irTransceive.h"
 
-uint8_t state = sns_irTransceive_STATE_IDLE;
-Ir_Protocol_Data_t proto;
-uint8_t len=0;
-uint16_t rxbuffer[MAX_NR_TIMES];
-StdCan_Msg_t irTxMsg;
+struct {
+	uint8_t				state;
+	uint8_t				newData;
+	uint16_t			rxbuf[MAX_NR_TIMES];
+	uint8_t				rxlen;
+	uint8_t				timerNum;
+	Ir_Protocol_Data_t	proto;
+} irRxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
 
+StdCan_Msg_t		irTxMsg;
 
 #if (sns_irTransceive_SEND_DEBUG==1)
 void send_debug(uint16_t *buffer, uint8_t len) {
-
+	StdCan_Msg_t dbgIrTxMsg;
 	/* the protocol is unknown so the raw ir-data is sent, makes it easier to develop a new protocol */
 
-	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
-	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	irTxMsg.Length = 8;
-	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
-	irTxMsg.Header.ModuleId = sns_irTransceive_ID;
-	irTxMsg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRRAW;
+	StdCan_Set_class(dbgIrTxMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(dbgIrTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	dbgIrTxMsg.Length = 8;
+	dbgIrTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
+	dbgIrTxMsg.Header.ModuleId = sns_irTransceive_ID;
+	dbgIrTxMsg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRRAW;
 	for (uint8_t i = 0; i < len>>2; i++) {
 		uint8_t index = i<<2;
 
-		irTxMsg.Data[0] = (buffer[index]>>8)&0xff;
-		irTxMsg.Data[1] = (buffer[index]>>0)&0xff;
-		irTxMsg.Data[2] = (buffer[index+1]>>8)&0xff;
-		irTxMsg.Data[3] = (buffer[index+1]>>0)&0xff;
-		irTxMsg.Data[4] = (buffer[index+2]>>8)&0xff;
-		irTxMsg.Data[5] = (buffer[index+2]>>0)&0xff;
-		irTxMsg.Data[6] = (buffer[index+3]>>8)&0xff;
-		irTxMsg.Data[7] = (buffer[index+3]>>0)&0xff;
+		dbgIrTxMsg.Data[0] = (buffer[index]>>8)&0xff;
+		dbgIrTxMsg.Data[1] = (buffer[index]>>0)&0xff;
+		dbgIrTxMsg.Data[2] = (buffer[index+1]>>8)&0xff;
+		dbgIrTxMsg.Data[3] = (buffer[index+1]>>0)&0xff;
+		dbgIrTxMsg.Data[4] = (buffer[index+2]>>8)&0xff;
+		dbgIrTxMsg.Data[5] = (buffer[index+2]>>0)&0xff;
+		dbgIrTxMsg.Data[6] = (buffer[index+3]>>8)&0xff;
+		dbgIrTxMsg.Data[7] = (buffer[index+3]>>0)&0xff;
 				
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		while (StdCan_Put(&dbgIrTxMsg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
 	}
 	
 	uint8_t lastpacketcnt = len&0x03;
 	if (lastpacketcnt > 0) {
-		irTxMsg.Length = lastpacketcnt<<1;
+		dbgIrTxMsg.Length = lastpacketcnt<<1;
 		for (uint8_t i = 0; i < lastpacketcnt; i++) {
-			irTxMsg.Data[i<<1] = (buffer[(len&0xfc)|i]>>8)&0xff;
-			irTxMsg.Data[(i<<1)+1] = (buffer[(len&0xfc)|i]>>0)&0xff;
+			dbgIrTxMsg.Data[i<<1] = (buffer[(len&0xfc)|i]>>8)&0xff;
+			dbgIrTxMsg.Data[(i<<1)+1] = (buffer[(len&0xfc)|i]>>0)&0xff;
 		}
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		while (StdCan_Put(&dbgIrTxMsg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
 	}
 
 }
 #endif
 
+void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t* buffer, uint8_t len)
+{
+	if (channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+	{
+		irRxChannel[channel].newData = TRUE;
+		irRxChannel[channel].rxlen = len;
+	}
+}
+
 void sns_irTransceive_Init(void)
 {
-	////////IrTransceiver_Init();
-	proto.timeout=0; proto.data=0; proto.repeats=0; proto.protocol=0;
+gpio_set_out(EXP_A);
+gpio_set_pin(EXP_A);
+	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
+	irTxMsg.Header.ModuleId = sns_irTransceive_ID;
+	irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
+	irTxMsg.Length = 6;
 
+	for (uint8_t i = 0; i < sns_irTransceive_SUPPORTED_NUM_CHANNELS; i++)
+	{
+		irRxChannel[i].state = sns_irTransceive_STATE_RECEIVING;
+		irRxChannel[i].newData = FALSE;
+		irRxChannel[i].rxlen = 0;
+		irRxChannel[i].proto.timeout=0; 
+		irRxChannel[i].proto.data=0; 
+		irRxChannel[i].proto.repeats=0; 
+		irRxChannel[i].proto.protocol=0;
+	}
+	irRxChannel[0].timerNum=sns_irTransceive_RX0_REPEATE_TIMER;
+	irRxChannel[1].timerNum=sns_irTransceive_RX1_REPEATE_TIMER;
+	irRxChannel[2].timerNum=sns_irTransceive_RX2_REPEATE_TIMER;
+	
+	IrTransceiver_Init();
+	
+	IrTransceiver_Init_TX_Channel(0, irRxChannel[0].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
 }
 
 void sns_irTransceive_Process(void)
 {
 	uint8_t res;
-	switch (state)
+	for (uint8_t channel=0; channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS; channel++)
 	{
-	case sns_irTransceive_STATE_IDLE:
-		////////////IrTransceiver_Receive_Start(rxbuffer);
-		state = sns_irTransceive_STATE_START_RECEIVE;
-		break;
+//gpio_toggle_pin(EXP_A);
+		switch (irRxChannel[channel].state)
+		{
+		case sns_irTransceive_STATE_IDLE:
+			irRxChannel[channel].state = sns_irTransceive_STATE_START_RECEIVE;
+			break;
 
-	case sns_irTransceive_STATE_START_RECEIVE:
-		state = sns_irTransceive_STATE_RECEIVING;
-		break;
-
-	case sns_irTransceive_STATE_RECEIVING:
-		///////////////res = IrTransceiver_Receive_Poll(&len);
-		if ((res == IR_OK) && (len > 0)) {
-			//låt protocols parsa och skicka sen på can
-/*			uint8_t res2 = parseProtocol(rxbuffer, len, &proto);
-			if (res2 == IR_OK && proto.protocol != IR_PROTO_UNKNOWN) {
-				StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
-				StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-				irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
-				irTxMsg.Header.ModuleId = sns_irTransceive_ID;
-				irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
-				irTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
-				irTxMsg.Data[1] = proto.protocol;
-				irTxMsg.Data[2] = (proto.data>>24)&0xff;
-				irTxMsg.Data[3] = (proto.data>>16)&0xff;
-				irTxMsg.Data[4] = (proto.data>>8)&0xff;
-				irTxMsg.Data[5] = proto.data&0xff;
-				irTxMsg.Length = 6;
-				StdCan_Put(&irTxMsg);
-			} else if (proto.protocol == IR_PROTO_UNKNOWN) {
-
-#if (sns_irTransceive_SEND_DEBUG==1)
-				send_debug(rxbuffer, len);
-				proto.timeout=300;
-#endif
-			}
-*/			
-#if (sns_irTransceive_SEND_DEBUG==1)
-				send_debug(rxbuffer, len);
-				proto.timeout=300;
-#endif
-
-			state = sns_irTransceive_STATE_START_PAUSE;
-		}
-		break;
-
-	case sns_irTransceive_STATE_START_PAUSE:
-		//////////////IrTransceiver_Receive_Start(rxbuffer);
-		Timer_SetTimeout(sns_irTransceive_REPEATE_TIMER, proto.timeout, TimerTypeOneShot, 0);
-		state = sns_irTransceive_STATE_PAUSING;
-		break;
-
-	case sns_irTransceive_STATE_PAUSING:
-		//resetta timebase-var om ir finns
-		////////////////res = IrTransceiver_Receive_Poll(&len);
-		if (res == IR_NOT_FINISHED || res == IR_OK) {
-			Timer_SetTimeout(sns_irTransceive_REPEATE_TIMER, proto.timeout, TimerTypeOneShot, 0);
-		}
-		if (res == IR_OK) {
-			/* start a new reception */
-			///////////IrTransceiver_Receive_Start(rxbuffer);
-		}
+		case sns_irTransceive_STATE_START_RECEIVE:
+			IrTransceiver_Reset(channel);
+			cli();
+			irRxChannel[channel].newData = FALSE;
+			sei();
+			irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
+			break;
 		
-		if (Timer_Expired(sns_irTransceive_REPEATE_TIMER)) {
-			state = sns_irTransceive_STATE_START_IDLE;
-		}
-		break;
+		case sns_irTransceive_STATE_RECEIVING:
+			if (irRxChannel[channel].newData == TRUE) {
+				IrTransceiver_Disable(channel);
+				cli();
+				irRxChannel[channel].newData = FALSE;
+				sei();
 
-	case sns_irTransceive_STATE_START_IDLE:
-		if (proto.protocol != IR_PROTO_UNKNOWN) {
-			//skicka på can
-			irTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
-			StdCan_Put(&irTxMsg);
-		}
-		state = sns_irTransceive_STATE_IDLE;
-		break;
+				/* Let protocol driver parse and then send on CAN */ 
+				uint8_t res2 = parseProtocol(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, &irRxChannel[channel].proto);
+				if (res2 == IR_OK && irRxChannel[channel].proto.protocol != IR_PROTO_UNKNOWN) {
+					irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
+					irTxMsg.Data[0] |= channel<<4;
+					irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
+					irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
+					irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
+					irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
+					irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
 
+					StdCan_Put(&irTxMsg);
+				} 
+				else if (irRxChannel[channel].proto.protocol == IR_PROTO_UNKNOWN) 
+				{
+#if (sns_irTransceive_SEND_DEBUG==1)
+					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
+					irRxChannel[channel].proto.timeout=300;
+#endif
+				}
+				
+				/* Enable the receiver again */
+				IrTransceiver_Enable(channel);
+				
+				irRxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
+			}
+			break;
+
+		case sns_irTransceive_STATE_START_PAUSE:
+			/* set a timer so we can send release button event when no new IR is arriving */
+			Timer_SetTimeout(irRxChannel[channel].timerNum, irRxChannel[channel].proto.timeout, TimerTypeOneShot, 0);
+			irRxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
+			break;
+
+		case sns_irTransceive_STATE_PAUSING:
+			/* reset timer if new IR arrived */
+			if (irRxChannel[channel].newData == TRUE || IrTransceiver_GetStoreEnable(channel) == TRUE) {
+				cli();
+				irRxChannel[channel].newData = FALSE;
+				sei();
+				Timer_SetTimeout(irRxChannel[channel].timerNum, irRxChannel[channel].proto.timeout, TimerTypeOneShot, 0);
+			}
+		
+			if (Timer_Expired(irRxChannel[channel].timerNum)) {
+				irRxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+			}
+			break;
+
+		case sns_irTransceive_STATE_START_IDLE:
+			if (irRxChannel[channel].proto.protocol != IR_PROTO_UNKNOWN) {
+				/* Send button release command on CAN */
+				irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
+				irTxMsg.Data[0] |= channel<<4;
+				irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
+				irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
+				irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
+				irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
+				irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
+
+				StdCan_Put(&irTxMsg);
+			}
+			irRxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+			break;
+		}
 	}
-
 }
 
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)

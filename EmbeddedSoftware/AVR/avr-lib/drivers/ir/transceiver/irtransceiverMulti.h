@@ -48,11 +48,16 @@
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void IrTransceiver_Init(void);
-void IrTransceiver_Receive_Start(uint16_t *buffer);
-uint8_t IrTransceiver_Receive_Poll(uint8_t *len);
 uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq);
 uint8_t IrTransceiver_Transmit_Poll(void);
+
+void IrTransceiver_Init(void);
+uint8_t IrTransceiver_GetStoreEnable(uint8_t channel);
+void IrTransceiver_Disable(uint8_t channel);
+void IrTransceiver_Enable(uint8_t channel);
+void IrTransceiver_Reset(uint8_t channel);
+
+//void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
 
 /**
  * @brief Type of the callback function pointer
