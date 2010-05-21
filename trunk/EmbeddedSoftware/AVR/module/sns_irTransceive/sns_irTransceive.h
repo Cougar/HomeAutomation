@@ -17,6 +17,7 @@
 /* delay.h must be declared after F_CPU */
 #include <util/delay.h>
 
+#include <drivers/mcu/gpio.h>
 #include <drivers/ir/transceiver/irtransceiverMulti.h>
 #include <drivers/ir/protocols.h>
 
@@ -25,13 +26,18 @@ void sns_irTransceive_Process(void);
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 
-#define sns_irTransceive_STATE_IDLE			0
+#define sns_irTransceive_STATE_IDLE				0
 #define sns_irTransceive_STATE_IR_REPEAT		1
 #define sns_irTransceive_STATE_START_RECEIVE	2
 #define sns_irTransceive_STATE_RECEIVING		3
 #define sns_irTransceive_STATE_START_PAUSE		4
 #define sns_irTransceive_STATE_PAUSING			5
 #define sns_irTransceive_STATE_START_IDLE		6
+
+#define TRUE 1
+#define FALSE 0
+
+#define sns_irTransceive_SUPPORTED_NUM_CHANNELS 3
 
 
 #endif // SNS_IRTRANSCEIVE
