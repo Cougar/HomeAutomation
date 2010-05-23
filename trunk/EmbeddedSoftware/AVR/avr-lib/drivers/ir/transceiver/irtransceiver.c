@@ -55,6 +55,10 @@ uint8_t store;
 #define IR_RX_ENABLE	0
 #endif
 
+#ifndef IR_TX_HACK
+#define IR_TX_HACK 0
+#endif
+
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
 #define TIMSK1	TIMSK
@@ -83,8 +87,21 @@ uint8_t store;
 #define IR_CAPTURE_RISING()		TCCR1B |= (1<<ICES1); \
 								TIFR1 = (1<<ICF1);
 
+#if IR_TX_HACK==0
 #define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
 #define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
+#endif
+
+#if IR_TX_HACK==1
+#define IR_T_PORT_HACK			PORTD
+#define IR_T_PIN_HACK			PIND
+#define IR_T_DDR_HACK			DDRD
+#define IR_T_BIT_HACK			PD5
+
+#define IR_OUTP_HIGH()			IR_T_PORT_HACK &= ~(1<<IR_T_BIT_HACK);
+#define IR_OUTP_LOW()			IR_T_PORT_HACK |= (1<<IR_T_BIT_HACK);
+#endif
+
 
 
 /*-----------------------------------------------------------------------------
@@ -211,12 +228,27 @@ void IrTransceiver_Init(void)
 	TCCR0B = (0<<WGM02)|(1<<CS00)|(0<<CS01)|(0<<CS02);
 	#endif
 	
+#if IR_TX_HACK==0
 #if IR_TX_ACTIVE_LOW==1
 	/* when pwm is disconnected from port (during low) the port should output 5V */
 	IR_T_PORT |= (1<<IR_T_BIT);
 #else
 	/* when pwm is disconnected from port (during low) the port should output 0V */
 	IR_T_PORT &= ~(1<<IR_T_BIT);
+#endif
+#endif
+
+#if IR_TX_HACK==1
+	/* Set up transmitter */
+	IR_T_DDR_HACK |= (1<<IR_T_BIT_HACK);
+	
+	/* when pwm is disconnected from port (during low) the port should output 5V */
+	IR_T_PORT_HACK |= (1<<IR_T_BIT_HACK);
+	
+	IR_MODULATION_REG = (((F_CPU/2000)/38) -1);
+	
+	/* start pwm generator */
+	TCCR0A |= (1<<COM0A0);
 #endif
 
 #endif
