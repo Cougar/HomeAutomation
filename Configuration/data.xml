@@ -494,8 +494,8 @@
     <command id="128" name="Motion" type="specific" module="PIR" description="Motion and brightness from PIR-sensor">
      <variables>
         <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Brightness" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="MotionDetect" type="enum" start_bit="16" bit_length="8" unit="" description="">
+        <variable name="Brightness" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
+        <variable name="MotionDetect" type="enum" start_bit="24" bit_length="8" unit="" description="">
 		    <value id="0" name="NoMotion"/>
 		    <value id="1" name="MotionDetected"/>
 	    </variable>
