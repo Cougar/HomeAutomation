@@ -195,6 +195,7 @@ void sns_input_Process(void)
 			} else {
 				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
 			}
+			pinStatus[index] = NOCHANGE;
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		}
 	}
