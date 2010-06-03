@@ -19,33 +19,9 @@
 #include <avr/interrupt.h>
 
 /*-----------------------------------------------------------------------------
- * Globals
- *---------------------------------------------------------------------------*/
-#if IR_RX_ENABLE==1
-struct {
-	uint8_t		enable;
-	uint16_t	timeout;
-	uint8_t		timeoutEnable;
-	uint16_t	*rxbuf;
-	uint8_t		rxlen;
-	uint8_t		storeEnable;
-	irCallback_t callback;
-} drvIrRxChannel[3];
-
-
-#endif
-#if IR_TX_ENABLE==1
-uint16_t *txbuf;
-uint8_t txlen;
-static uint8_t bufIndex;							//selects the pulse width in buffer to send
-volatile uint8_t data_transmitted;
-#endif
-
-
-
-/*-----------------------------------------------------------------------------
  * Prerequisites
  *---------------------------------------------------------------------------*/
+//TODO: Use this define, might fix the bug
 #ifndef IR_RX_ACTIVE_LOW
 #define IR_RX_ACTIVE_LOW    1
 #endif
@@ -93,8 +69,45 @@ volatile uint8_t data_transmitted;
 #define IR_CAPTURE_RISING()		TCCR1B |= (1<<ICES1); \
 								TIFR1 = (1<<ICF1);
 
-#define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
-#define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
+//#define IR_OUTP_HIGH()			TCCR0A |= (1<<COM0A0);
+//#define IR_OUTP_LOW()			TCCR0A &= ~(1<<COM0A0);
+#if IR_TX_ACTIVE_LOW==1
+#define IR_OUTP_HIGH()	*drvIrTxChannel[channel].port &= ~drvIrTxChannel[channel].pinmask
+#define IR_OUTP_LOW()	*drvIrTxChannel[channel].port |= drvIrTxChannel[channel].pinmask
+#else
+#define IR_OUTP_HIGH()	*drvIrTxChannel[channel].port |= drvIrTxChannel[channel].pinmask
+#define IR_OUTP_LOW()	*drvIrTxChannel[channel].port &= ~drvIrTxChannel[channel].pinmask
+#endif
+
+
+/*-----------------------------------------------------------------------------
+ * Globals
+ *---------------------------------------------------------------------------*/
+#if IR_RX_ENABLE==1
+struct {
+	uint8_t		enable;
+	uint16_t	timeout;
+	uint8_t		timeoutEnable;
+	uint16_t	*rxbuf;
+	uint8_t		rxlen;
+	uint8_t		storeEnable;
+	irRxCallback_t callback;
+} drvIrRxChannel[3];
+#endif
+
+#if IR_TX_ENABLE==1
+struct {
+	uint8_t		enable;
+	uint16_t	timeout;
+	uint8_t		timeoutEnable;
+	uint16_t	*txbuf;
+	uint8_t		txlen;
+	uint8_t		txindex;
+	irTxCallback_t callback;
+	volatile uint8_t 	*port;
+	uint8_t 	pinmask;
+} drvIrTxChannel[3];
+#endif
 
 
 /*-----------------------------------------------------------------------------
@@ -110,28 +123,31 @@ timer 1 has two comprare registers and compare ISRs, one is used below for "time
 #if IR_TX_ENABLE==1
 ISR(IR_COMPARE_VECTOR)
 {
-	if ((bufIndex&1) == 1) {		/* if odd, ir-pause */
+
+	/* TODO find which channel */
+	uint8_t channel = 0;
+	
+	
+	if ((drvIrTxChannel[channel].txindex&1) == 1) {		/* if odd, ir-pause */
 		IR_OUTP_LOW();
 	} else {
 		IR_OUTP_HIGH();
 	}
 	
-	//The following three lines is just to allow a start signal to be zero.
-/*	bufIndex++;
-	while (txbuf[bufIndex] == 0){
-		bufIndex++;
-	}*/
-	
-	if (bufIndex < txlen)
-	{		
-		IR_COMPARE_REG += txbuf[bufIndex++];		
-		//IR_COMPARE_REG += *(txbuf + bufIndex++);		
+	if (drvIrTxChannel[channel].txindex < drvIrTxChannel[channel].txlen)
+	{
+		drvIrTxChannel[channel].timeout = IR_COMPARE_REG + drvIrTxChannel[channel].txbuf[drvIrTxChannel[channel].txindex++];
 	}
 	else
 	{
 		IR_MASK_COMPARE();
-		data_transmitted = 1;
+
+		/* Notify the application that a pulse train has been sent. */
+		drvIrTxChannel[channel].callback(channel);
 	}
+
+	/* TODO: find channel with lowest time left */
+	IR_COMPARE_REG = drvIrTxChannel[channel].timeout;
 }
 #endif
 
@@ -266,14 +282,14 @@ void IrTransceiver_Store(uint8_t channel)
  *---------------------------------------------------------------------------*/
 
 /* call this function like this:
-	IrTransceiver_Init_TX_Channel(channelnumber, buffer, callback, pcint-id, GPIO_D6);
+	IrTransceiver_Init_RX_Channel(channelnumber, buffer, callback, pcint-id, GPIO_D6);
 	buffer is a memory location 
 	callback is a function to call when a receive/transmitt is complete
 	also call with IO port to use	
 */
 
 #if IR_RX_ENABLE==1
-void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
+void IrTransceiver_InitRxChannel(uint8_t channel, uint16_t *buffer, irRxCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
 {
 	if (channel == 0)
 	{
@@ -303,10 +319,10 @@ void IrTransceiver_Init_TX_Channel(uint8_t channel, uint16_t *buffer, irCallback
 }
 
 /* call this function like this:
-	IrTransceiver_DeInit_TX_Channel(channelnumber, pcint-id, GPIO_D6);
+	IrTransceiver_DeInit_RX_Channel(channelnumber, pcint-id, GPIO_D6);
 */
 
-void IrTransceiver_DeInit_TX_Channel(uint8_t channel, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
+void IrTransceiver_DeInitRxChannel(uint8_t channel, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
 {
 	/* Deactivate interrupt */
 	Pcint_SetCallback(pcint_id, pcint, 0);
@@ -322,12 +338,12 @@ void IrTransceiver_DeInit_TX_Channel(uint8_t channel, uint8_t pcint_id, volatile
 	}
 }
 
-uint8_t IrTransceiver_GetStoreEnable(uint8_t channel)
+uint8_t IrTransceiver_GetStoreEnableRx(uint8_t channel)
 {
 	return drvIrRxChannel[channel].storeEnable;
 }
 
-void IrTransceiver_Disable(uint8_t channel)
+void IrTransceiver_DisableRx(uint8_t channel)
 {
 	if (channel < 3)
 	{
@@ -335,7 +351,7 @@ void IrTransceiver_Disable(uint8_t channel)
 		drvIrRxChannel[channel].enable = FALSE;
 	}
 }
-void IrTransceiver_Enable(uint8_t channel)
+void IrTransceiver_EnableRx(uint8_t channel)
 {
 	if (channel < 3)
 	{
@@ -343,7 +359,7 @@ void IrTransceiver_Enable(uint8_t channel)
 		drvIrRxChannel[channel].enable = TRUE;
 	}
 }
-void IrTransceiver_Reset(uint8_t channel)
+void IrTransceiver_ResetRx(uint8_t channel)
 {
 	if (channel < 3)
 	{
@@ -356,79 +372,77 @@ void IrTransceiver_Reset(uint8_t channel)
 
 #endif
 
-/*
-void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)
-{
-	
-}
-*/
 
 void IrTransceiver_Init(void)
 {
+	IR_TIMER_INIT();
+
+#if IR_RX_ENABLE==1
 	for (uint8_t i = 0; i < 3; i++)
 	{
 		drvIrRxChannel[i].storeEnable = FALSE;
 		drvIrRxChannel[i].timeoutEnable = FALSE;
 		drvIrRxChannel[i].rxlen = 0;
 	}
-
-	IR_TIMER_INIT();
-		
+#endif
+	
 #if IR_TX_ENABLE==1
 	/* Set up transmitter */
-	IR_T_DDR |= (1<<IR_T_BIT);
 	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
 	TCCR0A = (0<<COM0A1)|(0<<COM0A0)|(1<<WGM01)|(0<<WGM00);
 	TCCR0B = (0<<WGM02)|(1<<CS00)|(0<<CS01)|(0<<CS02);
+	
+	/* set up modulation frequency to 38kHz */
+	IR_MODULATION_REG = (((F_CPU/2000)/38) -1);
+
+	/* start pwm generator */
+	TCCR0A |= (1<<COM0A0);
 	#endif
-	
-#if IR_TX_ACTIVE_LOW==1
-	/* when pwm is disconnected from port (during low) the port should output 5V */
-	IR_T_PORT |= (1<<IR_T_BIT);
-#else
-	/* when pwm is disconnected from port (during low) the port should output 0V */
-	IR_T_PORT &= ~(1<<IR_T_BIT);
-#endif
 
 #endif
 
 }
 
-uint8_t IrTransceiver_Transmit_Poll(void) {
 #if IR_TX_ENABLE==1
-	if (data_transmitted == 0) {
-		return IR_NOT_FINISHED;
-	} else {
-		return IR_OK;
-	}
-#else
-	return 0;
-#endif
-}
-
-uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq)
+void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volatile uint8_t *port, volatile uint8_t *pin, volatile uint8_t *ddr,uint8_t nr, uint8_t pcint)
 {
-#if IR_TX_ENABLE==1
-	data_transmitted = 0;
+	if (channel < 3)
+	{
+		drvIrTxChannel[channel].port=port;
+		drvIrTxChannel[channel].pinmask=(1<<*pin);
 	
-	if (length == 0) return IR_NO_DATA;
+		/* set up port as output */	
+		*ddr |= (1<<*pin);
 
-	txbuf = buffer;
-	txlen = length;
-	bufIndex = 1;
-	
-	IR_MODULATION_REG = modfreq;
-	
-	IR_COMPARE_REG = IR_COUNT_REG + txbuf[0];
-	
-	IR_OUTP_HIGH();	
-	
-	IR_UNMASK_COMPARE();
-	
-	//while (!data_transmitted);
-	
-	return IR_OK;
-#else
-	return 0;
-#endif
+		IR_OUTP_LOW();
+			
+		drvIrTxChannel[channel].callback = callback;
+		drvIrTxChannel[channel].enable = TRUE;
+		drvIrTxChannel[channel].timeoutEnable = FALSE;
+	}
 }
+
+void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t length)
+{
+	if (length > 0)
+	{
+		if (drvIrTxChannel[channel].timeoutEnable == FALSE)
+		{
+			drvIrTxChannel[channel].timeoutEnable = TRUE;
+			drvIrTxChannel[channel].txbuf = buffer;
+			drvIrTxChannel[channel].txlen = length;
+			/* first value will be loaded directly to timer below */
+			drvIrTxChannel[channel].txindex = 1; 
+			
+			drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[0];
+			/* TODO: only modify timer reg if this channel has the lowest time left */
+			IR_COMPARE_REG = drvIrTxChannel[channel].timeout;
+
+			IR_OUTP_HIGH();
+
+			IR_UNMASK_COMPARE();
+		}
+	}
+}
+#endif
+
