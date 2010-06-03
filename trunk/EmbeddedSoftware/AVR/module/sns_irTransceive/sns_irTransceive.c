@@ -12,10 +12,20 @@ struct {
 } irRxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
 #endif
 
+#if IR_TX_ENABLE==1
+struct {
+	uint8_t				state;
+	uint8_t				sendComplete;
+	uint16_t			*txbuf;
+	uint8_t				txlen;
+	uint8_t				timerNum;
+	Ir_Protocol_Data_t	proto;
+} irTxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
+#endif
+
 uint16_t	buf0[MAX_NR_TIMES];
 uint16_t	buf1[MAX_NR_TIMES];
-uint16_t	buf2[MAX_NR_TIMES];
-
+//uint16_t	buf2[MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
@@ -75,7 +85,10 @@ void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 
 void sns_irTransceive_TX_done_callback(uint8_t channel)
 {
-
+	if (channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+	{
+		irTxChannel[channel].sendComplete == TRUE;
+	}
 }
 
 void sns_irTransceive_Init(void)
@@ -100,12 +113,28 @@ gpio_set_pin(EXP_A);
 		irRxChannel[i].proto.repeats=0; 
 		irRxChannel[i].proto.protocol=0;
 #endif
+
+#if IR_TX_ENABLE==1
+		irTxChannel[i].state = sns_irTransceive_STATE_IDLE;
+		irTxChannel[i].sendComplete = FALSE;
+		irTxChannel[i].txlen = 0;
+		irTxChannel[i].proto.timeout=0; 
+		irTxChannel[i].proto.data=0; 
+		irTxChannel[i].proto.repeats=0; 
+		irTxChannel[i].proto.protocol=0;
+#endif
 	}
 	
 #if IR_RX_ENABLE==1
 	irRxChannel[0].timerNum=sns_irTransceive_RX0_REPEATE_TIMER;
 	irRxChannel[1].timerNum=sns_irTransceive_RX1_REPEATE_TIMER;
 	irRxChannel[2].timerNum=sns_irTransceive_RX2_REPEATE_TIMER;
+#endif
+
+#if IR_TX_ENABLE==1
+	irTxChannel[0].timerNum=sns_irTransceive_TX0_REPEATE_TIMER;
+	irTxChannel[1].timerNum=sns_irTransceive_TX1_REPEATE_TIMER;
+	irTxChannel[2].timerNum=sns_irTransceive_TX2_REPEATE_TIMER;
 #endif
 	
 	IrTransceiver_Init();
@@ -123,8 +152,6 @@ gpio_set_pin(EXP_A);
 
 void sns_irTransceive_Process(void)
 {
-	uint8_t res;
-	
 	for (uint8_t channel=0; channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS; channel++)
 	{
 //gpio_toggle_pin(EXP_A);
@@ -218,6 +245,46 @@ void sns_irTransceive_Process(void)
 		}
 #endif
 
+#if IR_TX_ENABLE==1
+		switch (irTxChannel[channel].state)
+		{
+		case sns_irTransceive_STATE_IDLE:
+			break;
+
+		case sns_irTransceive_STATE_START_TRANSMIT:
+			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK)
+			{
+				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, irTxChannel[channel].txlen);
+				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+			}
+			else
+			{
+				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+			}
+			break;
+		
+		case sns_irTransceive_STATE_TRANSMITTING:
+			if (irTxChannel[channel].sendComplete == TRUE)
+			{
+				cli();
+				irTxChannel[channel].sendComplete = FALSE;
+				sei();
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
+			}
+			break;
+
+		case sns_irTransceive_STATE_START_PAUSE:
+			break;
+
+		case sns_irTransceive_STATE_PAUSING:
+			break;
+
+		case sns_irTransceive_STATE_START_IDLE:
+		
+			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+			break;
+		}
+#endif
 
 	}
 }
