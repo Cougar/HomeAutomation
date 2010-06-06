@@ -50,15 +50,17 @@ void sns_PIR_Process(void)
 		for (uint8_t i=0; i<NR_AVG_VALUES; i++) {
 			avgValue += ABS(avgValues[i]);
 		}
+		
 		// TODO: keep motiondetect==1 true for at least one CAN send period, so detections are never lost
 		motionDetect = (avgValue >= 80);
 		
+	}
+	else if (Timer_Expired(sns_PIR_SEND_TIMER)) {
 		/**
 		 * Read brightness sensor (via internal ADC).
 		 */
 		brightness = ADC_Get(sns_PIR_BRIGHTNESS_AD);
-	}
-	else if (Timer_Expired(sns_PIR_SEND_TIMER)) {
+
 		/**
 		 * Time to send CAN message.
 		 */
