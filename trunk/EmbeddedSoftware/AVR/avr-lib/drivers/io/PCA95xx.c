@@ -57,17 +57,19 @@ void Pca95xx_Init(uint8_t address)
 	unsigned char messageBuf[5];
 
 	/* Disable interrupts while tampering with the global vars */
-	uint8_t sreg = SREG;
-	cli();
+//	uint8_t sreg = SREG;
+//	cli();
 
 	/* Store address */
 	Pca95xx_address = (PCA95xx_I2C_DEV_ADDR|(address&7));
 	
 	/* Set up interrupt */
+#if PCA95XX_NUM_CALLBACKS > 0
 #if PCA_INT_VECTOR==INT0_vect
 	PORTD|=(1<<PORT2);	/* setup pullup */
 #else
 	PORTD|=(1<<PORT3);	/* setup pullup */
+#endif
 #endif
 	/* Set up ports? */
 	TWI_Master_Initialise();
@@ -102,7 +104,7 @@ void Pca95xx_Init(uint8_t address)
 #if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_ENABLE();
 #endif
-	SREG = sreg;
+//	SREG = sreg;
 }
 
 /*---------------------------------------------------------------------------*/
