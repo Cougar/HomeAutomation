@@ -19,6 +19,8 @@ struct {
 	uint16_t			*txbuf;
 	uint8_t				txlen;
 	uint8_t				timerNum;
+	uint8_t				repeatCount;
+	uint8_t				stopSend;
 	Ir_Protocol_Data_t	proto;
 } irTxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
 #endif
@@ -117,10 +119,11 @@ gpio_set_pin(EXP_A);
 #if IR_TX_ENABLE==1
 		irTxChannel[i].state = sns_irTransceive_STATE_IDLE;
 		irTxChannel[i].sendComplete = FALSE;
+		irTxChannel[i].repeatCount = 0;
 		irTxChannel[i].txlen = 0;
-		irTxChannel[i].proto.timeout=0; 
 		irTxChannel[i].proto.data=0; 
-		irTxChannel[i].proto.repeats=0; 
+		irTxChannel[i].proto.repeats=0;
+		irTxChannel[i].proto.framecnt=0; 
 		irTxChannel[i].proto.protocol=0;
 #endif
 	}
@@ -145,6 +148,7 @@ gpio_set_pin(EXP_A);
 #endif
 
 #if IR_TX_ENABLE==1
+	irTxChannel[0].txbuf = buf1;
 	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
 #endif
 
@@ -249,6 +253,7 @@ void sns_irTransceive_Process(void)
 		switch (irTxChannel[channel].state)
 		{
 		case sns_irTransceive_STATE_IDLE:
+			/* transmission is started when a command is received on can */
 			break;
 
 		case sns_irTransceive_STATE_START_TRANSMIT:
@@ -274,13 +279,40 @@ void sns_irTransceive_Process(void)
 			break;
 
 		case sns_irTransceive_STATE_START_PAUSE:
+			if (irTxChannel[channel].repeatCount < irTxChannel[channel].proto.repeats)
+			{
+				irTxChannel[channel].repeatCount++;
+			}
+			
+			Timer_SetTimeout(irTxChannel[channel].timerNum, irTxChannel[channel].proto.timeout, TimerTypeOneShot, 0);
+
+			if (irTxChannel[channel].proto.framecnt != 255)
+			{
+				irTxChannel[channel].proto.framecnt++;
+			}
+			
+			irTxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
 			break;
 
 		case sns_irTransceive_STATE_PAUSING:
+			if (Timer_Expired(irTxChannel[channel].timerNum))
+			{
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+			}
+			
+			/* transmission is stopped when such command is recevied on can */
+			if (irTxChannel[channel].stopSend == TRUE && irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats)
+			{
+				//TODO maybe send message on can for status? to confirm stopped sending, ready for new command
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+			}
 			break;
 
 		case sns_irTransceive_STATE_START_IDLE:
-		
+			irTxChannel[channel].stopSend = FALSE;
+			irTxChannel[channel].repeatCount = 0;
+			irTxChannel[channel].proto.framecnt = 0;
+			
 			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
@@ -291,18 +323,43 @@ void sns_irTransceive_Process(void)
 
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-	/*if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
-		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_IRTRANSCEIVE && 
 		rxMsg->Header.ModuleId == sns_irTransceive_ID)
 	{
+		uint8_t channel;
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_DUMMY:
-		///TODO: Do something dummy
-		break;
+		case CAN_MODULE_CMD_PHYSICAL_IR:
+			channel = rxMsg->Data[0]>>4;
+			if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED && channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+			{
+				if (irTxChannel[channel].state == sns_irTransceive_STATE_IDLE)
+				{
+					irTxChannel[channel].proto.protocol = rxMsg->Data[1];
+
+					irTxChannel[channel].proto.data = rxMsg->Data[2];
+					irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
+					irTxChannel[channel].proto.data |= rxMsg->Data[3];
+					irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
+					irTxChannel[channel].proto.data |= rxMsg->Data[4];
+					irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
+					irTxChannel[channel].proto.data |= rxMsg->Data[5];
+
+					irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+				}
+			}
+			else if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED && channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+			{
+				if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE)
+				{
+					irTxChannel[channel].stopSend = TRUE;
+				}
+			}
+			break;
 		}
-	}*/
+	}
 }
 
 void sns_irTransceive_List(uint8_t ModuleSequenceNumber)

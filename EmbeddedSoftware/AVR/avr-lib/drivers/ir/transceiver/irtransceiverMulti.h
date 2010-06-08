@@ -22,25 +22,8 @@
 /*-----------------------------------------------------------------------------
  * Defines
  *---------------------------------------------------------------------------*/
-#define IR_R_PORT	PORTB
-#define IR_R_PIN	PINB
-#define IR_R_DDR	DDRB
-#define IR_R_BIT	PB0 // Input Capture Pin
-
-#define IR_T_PORT	PORTD
-#define IR_T_PIN	PIND
-#define IR_T_DDR	DDRD
-#define IR_T_BIT	PD6
 
 #define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
-
-#ifndef IRTRANS_NUM_IR_REC
-#define IRTRANS_NUM_IR_REC 1
-#endif
-
-#ifndef IR_TRANS_CH0_MASK
-#define IR_TRANS_CH0_MASK PB0
-#endif
 
 #define TRUE 1
 #define FALSE 0
