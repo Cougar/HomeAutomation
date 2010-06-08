@@ -140,6 +140,7 @@ ISR(IR_COMPARE_VECTOR)
 	}
 	else
 	{
+		//TODO only mask if noone is sending (checked below)
 		IR_MASK_COMPARE();
 
 		/* Notify the application that a pulse train has been sent. */
@@ -277,10 +278,6 @@ void IrTransceiver_Store(uint8_t channel)
 #endif
 
 
-/*-----------------------------------------------------------------------------
- * Public Functions
- *---------------------------------------------------------------------------*/
-
 /* call this function like this:
 	IrTransceiver_Init_RX_Channel(channelnumber, buffer, callback, pcint-id, GPIO_D6);
 	buffer is a memory location 
@@ -351,6 +348,7 @@ void IrTransceiver_DisableRx(uint8_t channel)
 		drvIrRxChannel[channel].enable = FALSE;
 	}
 }
+
 void IrTransceiver_EnableRx(uint8_t channel)
 {
 	if (channel < 3)
@@ -359,6 +357,7 @@ void IrTransceiver_EnableRx(uint8_t channel)
 		drvIrRxChannel[channel].enable = TRUE;
 	}
 }
+
 void IrTransceiver_ResetRx(uint8_t channel)
 {
 	if (channel < 3)
@@ -369,7 +368,6 @@ void IrTransceiver_ResetRx(uint8_t channel)
 		drvIrRxChannel[channel].timeoutEnable = FALSE;
 	}
 }
-
 #endif
 
 
