@@ -142,7 +142,9 @@ ISR(IR_COMPARE_VECTOR)
 	{
 		//TODO only mask if noone is sending (checked below)
 		IR_MASK_COMPARE();
-
+		
+		drvIrTxChannel[channel].timeoutEnable = FALSE;
+		
 		/* Notify the application that a pulse train has been sent. */
 		drvIrTxChannel[channel].callback(channel);
 	}
@@ -407,10 +409,10 @@ void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volat
 	if (channel < 3)
 	{
 		drvIrTxChannel[channel].port=port;
-		drvIrTxChannel[channel].pinmask=(1<<*pin);
+		drvIrTxChannel[channel].pinmask=(1<<nr);
 	
 		/* set up port as output */	
-		*ddr |= (1<<*pin);
+		*ddr |= (1<<nr);
 
 		IR_OUTP_LOW();
 			

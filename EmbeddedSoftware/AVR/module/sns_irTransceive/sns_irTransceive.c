@@ -25,9 +25,7 @@ struct {
 } irTxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
 #endif
 
-uint16_t	buf0[MAX_NR_TIMES];
-uint16_t	buf1[MAX_NR_TIMES];
-//uint16_t	buf2[MAX_NR_TIMES];
+uint16_t	buf[2][MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
@@ -89,7 +87,7 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 {
 	if (channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
 	{
-		irTxChannel[channel].sendComplete == TRUE;
+		irTxChannel[channel].sendComplete = TRUE;
 	}
 }
 
@@ -143,12 +141,12 @@ gpio_set_pin(EXP_A);
 	IrTransceiver_Init();
 
 #if IR_RX_ENABLE==1
-	irRxChannel[0].rxbuf = buf0;
+	irRxChannel[0].rxbuf = buf[0];
 	IrTransceiver_InitRxChannel(0, irRxChannel[0].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
 #endif
 
 #if IR_TX_ENABLE==1
-	irTxChannel[0].txbuf = buf1;
+	irTxChannel[0].txbuf = buf[1];
 	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
 #endif
 
@@ -257,10 +255,12 @@ void sns_irTransceive_Process(void)
 			break;
 
 		case sns_irTransceive_STATE_START_TRANSMIT:
+//		printf("1\n");
 			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK)
 			{
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, irTxChannel[channel].txlen);
 				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+//		printf("2\n");
 			}
 			else
 			{
@@ -275,6 +275,7 @@ void sns_irTransceive_Process(void)
 				irTxChannel[channel].sendComplete = FALSE;
 				sei();
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
+//		printf("3\n");
 			}
 			break;
 
@@ -298,6 +299,7 @@ void sns_irTransceive_Process(void)
 			if (Timer_Expired(irTxChannel[channel].timerNum))
 			{
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+//		printf("4\n");
 			}
 			
 			/* transmission is stopped when such command is recevied on can */
@@ -305,6 +307,7 @@ void sns_irTransceive_Process(void)
 			{
 				//TODO maybe send message on can for status? to confirm stopped sending, ready for new command
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+//		printf("5\n");
 			}
 			break;
 
@@ -314,6 +317,7 @@ void sns_irTransceive_Process(void)
 			irTxChannel[channel].proto.framecnt = 0;
 			
 			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+//		printf("6\n");
 			break;
 		}
 #endif
