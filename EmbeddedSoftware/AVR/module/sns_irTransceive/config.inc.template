@@ -7,6 +7,7 @@ sns_irTransceive_SEND_DEBUG=0
 
 IR_RX_ENABLE=1
 IR_TX_ENABLE=1
+IR_TX_ACTIVE_LOW=1
 
 sns_irTransceive_MOD_PIN=GPIO_D6
 
