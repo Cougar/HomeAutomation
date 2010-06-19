@@ -139,6 +139,12 @@ gpio_set_pin(EXP_A);
 #endif
 	
 	IrTransceiver_Init();
+	gpio_set_out(sns_irTransceive_VCC_EN0_PIN);
+	gpio_set_out(sns_irTransceive_VCC_EN1_PIN);
+	gpio_set_out(sns_irTransceive_VCC_EN2_PIN);
+	gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
+	gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
+	gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
 
 #if IR_RX_ENABLE==1
 	irRxChannel[0].rxbuf = buf[0];
@@ -146,6 +152,14 @@ gpio_set_pin(EXP_A);
 #endif
 
 #if IR_TX_ENABLE==1
+	gpio_set_out(sns_irTransceive_MOD_PIN);
+	gpio_set_out(sns_irTransceive_TX0_PIN);
+	gpio_set_out(sns_irTransceive_TX1_PIN);
+	gpio_set_out(sns_irTransceive_TX2_PIN);
+	gpio_set_pin(sns_irTransceive_TX0_PIN);
+	gpio_set_pin(sns_irTransceive_TX1_PIN);
+	gpio_set_pin(sns_irTransceive_TX2_PIN);
+
 	irTxChannel[0].txbuf = buf[1];
 	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
 #endif
