@@ -156,9 +156,11 @@ gpio_set_pin(EXP_A);
 	gpio_set_out(sns_irTransceive_TX0_PIN);
 	gpio_set_out(sns_irTransceive_TX1_PIN);
 	gpio_set_out(sns_irTransceive_TX2_PIN);
+#if IR_TX_ACTIVE_LOW==1
 	gpio_set_pin(sns_irTransceive_TX0_PIN);
 	gpio_set_pin(sns_irTransceive_TX1_PIN);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
+#endif
 
 	irTxChannel[0].txbuf = buf[1];
 	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
