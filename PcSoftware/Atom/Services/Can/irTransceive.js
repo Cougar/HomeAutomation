@@ -20,9 +20,9 @@ irTransceive.prototype.canMessageHandler = function(canMessage)
 	this.CanService.prototype.canMessageHandler.call(this, canMessage);
 }
 
-irTransceive.prototype.sendClick = function(remoteName, buttonName, time)
+irTransceive.prototype.sendClick = function(channel, remoteName, buttonName, time)
 {
-	this.sendButton(remoteName, buttonName, true);
+	this.sendButton(channel, remoteName, buttonName, true);
 	
 	if (time)
 	{
@@ -33,10 +33,10 @@ irTransceive.prototype.sendClick = function(remoteName, buttonName, time)
 		sleep(50000);
 	}
 	
-	this.sendButton(remoteName, buttonName, false);
+	this.sendButton(channel, remoteName, buttonName, false);
 }
 
-irTransceive.prototype.sendButton = function(remoteName, buttonName, down)
+irTransceive.prototype.sendButton = function(channel, remoteName, buttonName, down)
 {
 	var remotesStore = DataStore.getStore("IRRemotes");
 	
@@ -50,7 +50,7 @@ irTransceive.prototype.sendButton = function(remoteName, buttonName, down)
 				{
 					if (remotesStore['remotes'][n]['codes'][code] == buttonName)
 					{
-						this.sendData(remotesStore['remotes'][n]['protocol'], code, down ? "Pressed" : "Released");
+						this.sendData(channel, remotesStore['remotes'][n]['protocol'], code, down ? "Pressed" : "Released");
 						return;
 					}
 				}
@@ -59,9 +59,10 @@ irTransceive.prototype.sendButton = function(remoteName, buttonName, down)
 	}
 }
 
-irTransceive.prototype.sendData = function(protocol, data, status)
+irTransceive.prototype.sendData = function(channel, protocol, data, status)
 {
 	var canMessage = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IR");
+	canMessage.setData("Channel", channel);
 	canMessage.setData("Status", status);
 	canMessage.setData("Protocol", protocol);
 	canMessage.setData("IRdata", data);
