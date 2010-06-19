@@ -8,6 +8,13 @@ sns_irTransceive_SEND_DEBUG=0
 IR_RX_ENABLE=1
 IR_TX_ENABLE=1
 
+sns_irTransceive_MOD_PIN=GPIO_D6
+
+sns_irTransceive_VCC_EN0_PIN=GPIO_D0
+sns_irTransceive_VCC_EN1_PIN=GPIO_D1
+sns_irTransceive_VCC_EN2_PIN=GPIO_D4
+
+
 sns_irTransceive_TX0_PIN=GPIO_D5
 sns_irTransceive_TX0_REPEATE_TIMER=<TIMER>
 
