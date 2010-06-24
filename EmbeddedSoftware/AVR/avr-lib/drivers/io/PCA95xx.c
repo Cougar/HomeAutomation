@@ -133,7 +133,9 @@ uint16_t Pca95xx_GetInputs(void)
 	unsigned char messageBuf[5];
 
 	/* Disable device interrupts while communicating with the device */
+#if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_DISABLE();
+#endif
 	uint16_t inputs = 0;
 
 	/* Read input registers from device */
@@ -149,7 +151,9 @@ uint16_t Pca95xx_GetInputs(void)
 		inputs = (messageBuf[2]<<8)|messageBuf[1];
 	}
 	
+#if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_ENABLE();
+#endif
 	return inputs;
 }
 

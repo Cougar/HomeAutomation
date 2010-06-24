@@ -78,9 +78,9 @@ typedef void (*pca95xxCallback_t)(uint16_t);
  *---------------------------------------------------------------------------*/
 
 /**
- * @brief Poll the PCA95xx for the input status. 
+ * @brief Initiate communication to PCA95xx. 
  * 
- * Reads the input status of the PCA95xx and returns the data.
+ * Initiate communication to PCA95xx and reads the internal registers, outputs and direction.
  * 
  * @param address
  * 		The address used when communicating with the device.
