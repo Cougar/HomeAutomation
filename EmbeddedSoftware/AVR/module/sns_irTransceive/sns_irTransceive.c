@@ -9,7 +9,7 @@ struct {
 	uint8_t				rxlen;
 	uint8_t				timerNum;
 	Ir_Protocol_Data_t	proto;
-} irRxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
+} irRxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
 #if IR_TX_ENABLE==1
@@ -22,10 +22,10 @@ struct {
 	uint8_t				repeatCount;
 	uint8_t				stopSend;
 	Ir_Protocol_Data_t	proto;
-} irTxChannel[sns_irTransceive_SUPPORTED_NUM_CHANNELS];
+} irTxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
-uint16_t	buf[2][MAX_NR_TIMES];
+uint16_t	buf[3][MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
@@ -75,7 +75,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #if IR_RX_ENABLE==1
 void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len)
 {
-	if (channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+	if (channel < IR_SUPPORTED_NUM_CHANNELS)
 	{
 		irRxChannel[channel].newData = TRUE;
 		irRxChannel[channel].rxlen = len;
@@ -85,7 +85,7 @@ void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 
 void sns_irTransceive_TX_done_callback(uint8_t channel)
 {
-	if (channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+	if (channel < IR_SUPPORTED_NUM_CHANNELS)
 	{
 		irTxChannel[channel].sendComplete = TRUE;
 	}
@@ -102,7 +102,7 @@ gpio_set_pin(EXP_A);
 	irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
 	irTxMsg.Length = 6;
 
-	for (uint8_t i = 0; i < sns_irTransceive_SUPPORTED_NUM_CHANNELS; i++)
+	for (uint8_t i = 0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
 #if IR_RX_ENABLE==1
 		irRxChannel[i].state = sns_irTransceive_STATE_RECEIVING;
@@ -162,15 +162,21 @@ gpio_set_pin(EXP_A);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
 #endif
 
-	irTxChannel[0].txbuf = buf[1];
+	irTxChannel[0].txbuf = buf[0];
 	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
+
+	irTxChannel[1].txbuf = buf[1];
+	IrTransceiver_InitTxChannel(1, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
+
+	irTxChannel[2].txbuf = buf[2];
+	IrTransceiver_InitTxChannel(2, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
 #endif
 
 }
 
 void sns_irTransceive_Process(void)
 {
-	for (uint8_t channel=0; channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS; channel++)
+	for (uint8_t channel=0; channel < IR_SUPPORTED_NUM_CHANNELS; channel++)
 	{
 //gpio_toggle_pin(EXP_A);
 
@@ -353,7 +359,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_IR:
 			channel = rxMsg->Data[0]>>4;
-			if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED && channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+			if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED && channel < IR_SUPPORTED_NUM_CHANNELS)
 			{
 				if (irTxChannel[channel].state == sns_irTransceive_STATE_IDLE)
 				{
@@ -370,7 +376,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 					irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
 				}
 			}
-			else if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED && channel < sns_irTransceive_SUPPORTED_NUM_CHANNELS)
+			else if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED && channel < IR_SUPPORTED_NUM_CHANNELS)
 			{
 				if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE)
 				{
