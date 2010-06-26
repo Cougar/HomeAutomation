@@ -21,24 +21,6 @@
 /*-----------------------------------------------------------------------------
  * Prerequisites
  *---------------------------------------------------------------------------*/
-//TODO: Use this define, might fix the bug
-#ifndef IR_RX_ACTIVE_LOW
-#define IR_RX_ACTIVE_LOW    1
-#endif
-
-#ifndef IR_TX_ACTIVE_LOW
-#define IR_TX_ACTIVE_LOW	0
-#endif
-
-#ifndef IR_TX_ENABLE
-#define IR_TX_ENABLE	0
-#endif
-
-#ifndef IR_RX_ENABLE
-#define IR_RX_ENABLE	0
-#endif
-
-
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
 #define TIMSK1	TIMSK
 #define TIFR1	TIFR
@@ -113,43 +95,71 @@ struct {
 /*-----------------------------------------------------------------------------
  * Interrupt Handlers
  *---------------------------------------------------------------------------*/
-
-
-/*
-timer 1 has two comprare registers and compare ISRs, one is used below for "timeout" on receive and the other is used here for transmitter
-//TODO: how to handle more than one transmitter on one compare interrupt, spara en array med tider och nån enableflagga för varje kanal
-*/
-
 #if IR_TX_ENABLE==1
 ISR(IR_COMPARE_VECTOR)
 {
+	/* find which channel */
+	uint16_t time = IR_COMPARE_REG;
+	uint16_t diff;
+	uint8_t channel;
 
-	/* TODO find which channel */
-	uint8_t channel = 0;
-	
-	
-	if ((drvIrTxChannel[channel].txindex&1) == 1) {		/* if odd, ir-pause */
-		IR_OUTP_LOW();
-	} else {
-		IR_OUTP_HIGH();
-	}
-	
-	if (drvIrTxChannel[channel].txindex < drvIrTxChannel[channel].txlen)
+	/* go through all channels and check which of thems have overflowed */
+	for (channel=0; channel < IR_SUPPORTED_NUM_CHANNELS; channel++)
 	{
-		drvIrTxChannel[channel].timeout = IR_COMPARE_REG + drvIrTxChannel[channel].txbuf[drvIrTxChannel[channel].txindex++];
-	}
-	else
-	{
-		//TODO only mask if noone is sending (checked below)
-		IR_MASK_COMPARE();
-		
-		drvIrTxChannel[channel].timeoutEnable = FALSE;
-		
-		/* Notify the application that a pulse train has been sent. */
-		drvIrTxChannel[channel].callback(channel);
-	}
+		/* if channel is waiting for an overflow */
+		if (drvIrTxChannel[channel].timeoutEnable==TRUE)
+		{
+			/* check if channel have overflowed or is about to overflow */
+			diff = (time+50)-drvIrTxChannel[channel].timeout;
+			if (diff < IR_MAX_PULSE_WIDTH)
+			{
+				/* check what to output next */
+				if ((drvIrTxChannel[channel].txindex&1) == 1) {		/* if odd, ir-pause */
+					IR_OUTP_LOW();
+				} else {
+					IR_OUTP_HIGH();
+				}
+				
+				/* is there more to send */
+				if (drvIrTxChannel[channel].txindex < drvIrTxChannel[channel].txlen)
+				{
+					/* load next timeout value */
+					drvIrTxChannel[channel].timeout = IR_COMPARE_REG + drvIrTxChannel[channel].txbuf[drvIrTxChannel[channel].txindex++];
+				}
+				else
+				{
+					/* disable this channel */
+					drvIrTxChannel[channel].timeoutEnable = FALSE;
 
-	/* TODO: find channel with lowest time left */
+					/* disable the overflow interrupt */
+					IR_MASK_COMPARE();
+		
+					/* notify the application that a pulse train has been sent. */
+					drvIrTxChannel[channel].callback(channel);
+				}
+			}
+		}
+	}
+	
+	channel = 0;
+	diff = 0xffff;
+	/* go through all channels and find the one that have the next overflow */
+	for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
+	{
+		/* if channel is waiting for an overflow */
+		if (drvIrTxChannel[i].timeoutEnable==TRUE)
+		{
+			if (drvIrTxChannel[i].timeout - time < diff)
+			{
+				diff = drvIrTxChannel[i].timeout - time;
+				channel = i;
+			}
+			/* enable overflow interrupt */
+			IR_UNMASK_COMPARE();
+		}		
+	}	
+
+	/* set compare value to the channel that have the next overflow */
 	IR_COMPARE_REG = drvIrTxChannel[channel].timeout;
 }
 #endif
@@ -157,7 +167,7 @@ ISR(IR_COMPARE_VECTOR)
 #if IR_RX_ENABLE==1
 //TODO: hur hantera detta i multi receiver
 //TODO: ha en array med tider och nån enableflagga för varje kanal
-//TODO: mot slutet av ISRen laddas nästa tid in...
+//TODO: mot slutet av ISRen laddas nästa tid in... likadant som för TX, se ovan ISR
 
 /* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)

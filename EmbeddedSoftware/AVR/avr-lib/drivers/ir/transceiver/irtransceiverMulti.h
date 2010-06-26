@@ -23,10 +23,32 @@
  * Defines
  *---------------------------------------------------------------------------*/
 
-#define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
+//#define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
+#define MAX_NR_TIMES		81
 
 #define TRUE 1
 #define FALSE 0
+
+#ifndef IR_RX_ACTIVE_LOW
+#define IR_RX_ACTIVE_LOW    1
+#endif
+
+#ifndef IR_TX_ACTIVE_LOW
+#define IR_TX_ACTIVE_LOW	0
+#endif
+
+#ifndef IR_TX_ENABLE
+#define IR_TX_ENABLE	0
+#endif
+
+#ifndef IR_RX_ENABLE
+#define IR_RX_ENABLE	0
+#endif
+
+#ifndef IR_SUPPORTED_NUM_CHANNELS
+#define IR_SUPPORTED_NUM_CHANNELS 3
+#endif
+
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
