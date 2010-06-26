@@ -56,12 +56,9 @@ void Pca95xx_Init(uint8_t address)
 {
 	unsigned char messageBuf[5];
 
-	/* Disable interrupts while tampering with the global vars */
-//	uint8_t sreg = SREG;
-//	cli();
-
 	/* Store address */
 	Pca95xx_address = (PCA95xx_I2C_DEV_ADDR|(address&7));
+	//printf("i0x%04X\n", Pca95xx_address);
 	
 	/* Set up interrupt */
 #if PCA95XX_NUM_CALLBACKS > 0
@@ -73,7 +70,7 @@ void Pca95xx_Init(uint8_t address)
 #endif
 	/* Set up ports? */
 	TWI_Master_Initialise();
-	
+
 	/* Read output registers from device to global var */
 	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
 	messageBuf[1] = PCA95xx_REG_OUTPUT0;
@@ -84,7 +81,12 @@ void Pca95xx_Init(uint8_t address)
 	while ( TWI_Transceiver_Busy() );
 	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
 	{
+		/* Disable interrupts while tampering with the global vars */
+		uint8_t sreg = SREG;
+		cli();
 		Pca95xx_outputs = (messageBuf[2]<<8)|messageBuf[1];
+		SREG = sreg;
+		//printf("o0x%04X\n", Pca95xx_outputs);
 	}
 
 	/* Read direction registers from device to global var */
@@ -97,14 +99,18 @@ void Pca95xx_Init(uint8_t address)
 	while ( TWI_Transceiver_Busy() );
 	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
 	{
+		/* Disable interrupts while tampering with the global vars */
+		uint8_t sreg = SREG;
+		cli();
 		Pca95xx_direction = (messageBuf[2]<<8)|messageBuf[1];
+		SREG = sreg;
+		//printf("d0x%04X\n", Pca95xx_direction);
 	}
-	
+
 	/* Enable interrupt */
 #if PCA95XX_NUM_CALLBACKS > 0
 	PCA_INT_ENABLE();
 #endif
-//	SREG = sreg;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -149,6 +155,7 @@ uint16_t Pca95xx_GetInputs(void)
 	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
 	{
 		inputs = (messageBuf[2]<<8)|messageBuf[1];
+		//printf("i0x%04X\n", inputs);
 	}
 	
 #if PCA95XX_NUM_CALLBACKS > 0
