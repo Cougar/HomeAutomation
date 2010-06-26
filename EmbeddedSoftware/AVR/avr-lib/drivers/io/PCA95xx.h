@@ -62,6 +62,9 @@
 #define PCA95xx_REG_CONF0	6
 #define PCA95xx_REG_CONF1	7
 
+#define PCA95xx_CONF_OUTPUT	0
+#define PCA95xx_CONF_INPUT	1
+
 #define PCA95xx_I2C_DEV_ADDR	0x20
 
 /*-----------------------------------------------------------------------------
