@@ -135,7 +135,7 @@ void act_protectedOutput_Process() {
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_INPUT;
-		txMsg.Header.ModuleId = sns_input_ID;
+		txMsg.Header.ModuleId = act_protectedOutput_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PINSTATUS;
 		txMsg.Length = 2;
 		txMsg.Data[0] = 0; //TODO: add support for more channels
