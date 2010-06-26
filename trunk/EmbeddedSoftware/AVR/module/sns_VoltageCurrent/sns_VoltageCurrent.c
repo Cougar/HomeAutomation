@@ -3,6 +3,7 @@
 
 #ifdef sns_VoltageCurrent_USEEEPROM
 #include "sns_VoltageCurrent_eeprom.h"
+
 struct eeprom_sns_VoltageCurrent EEMEM eeprom_sns_VoltageCurrent = 
 {
 	{
@@ -37,6 +38,7 @@ void sns_VoltageCurrent_Init(void)
 	Timer_SetTimeout(sns_VoltageCurrent_TIMER, sns_VoltageCurrent_SEND_PERIOD*1000 , TimerTypeFreeRunning, 0);
 }
 
+uint8_t VoltageCurrentChannelToSend = 0;
 void sns_VoltageCurrent_Process(void)
 {
 	if (Timer_Expired(sns_VoltageCurrent_TIMER)) {
@@ -49,65 +51,81 @@ void sns_VoltageCurrent_Process(void)
 		uint16_t ADvalue;
 		
 #ifdef sns_VoltageCurrent0AD
-		ADvalue = ADC_Get(sns_VoltageCurrent0AD);
-		ADvalue = ADvalue * sns_VoltageCurrent0Factor;
+		if (VoltageCurrentChannelToSend==0)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent0AD);
+			ADvalue = ADvalue * sns_VoltageCurrent0Factor;
 #if sns_VoltageCurrent0VorA==0
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
 #else
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
 #endif
-		txMsg.Data[0] = 0;
-		txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent0Scale-6+8))&0xff;
-		txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent0Scale-6))&0xff;
+			txMsg.Data[0] = 0;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent0Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent0Scale-6))&0xff;
 
-		while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
 #endif
 
 #ifdef sns_VoltageCurrent1AD
-		ADvalue = ADC_Get(sns_VoltageCurrent1AD);
-		ADvalue = ADvalue * sns_VoltageCurrent1Factor;
+		if (VoltageCurrentChannelToSend==1)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent1AD);
+			ADvalue = ADvalue * sns_VoltageCurrent1Factor;
 #if sns_VoltageCurrent1VorA==0
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
 #else
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
 #endif
-		txMsg.Data[0] = 1;
-		txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent1Scale-6+8))&0xff;
-		txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent1Scale-6))&0xff;
+			txMsg.Data[0] = 1;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent1Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent1Scale-6))&0xff;
 
-		while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
 #endif
 
 #ifdef sns_VoltageCurrent2AD
-		ADvalue = ADC_Get(sns_VoltageCurrent2AD);
-		ADvalue = ADvalue * sns_VoltageCurrent2Factor;
+		if (VoltageCurrentChannelToSend==2)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent2AD);
+			ADvalue = ADvalue * sns_VoltageCurrent2Factor;
 #if sns_VoltageCurrent2VorA==0
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
 #else
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
 #endif
-		txMsg.Data[0] = 2;
-		txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent2Scale-6+8))&0xff;
-		txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent2Scale-6))&0xff;
+			txMsg.Data[0] = 2;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent2Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent2Scale-6))&0xff;
 
-		while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
 #endif
 
 #ifdef sns_VoltageCurrent3AD
-		ADvalue = ADC_Get(sns_VoltageCurrent3AD);
-		ADvalue = ADvalue * sns_VoltageCurrent3Factor;
+		if (VoltageCurrentChannelToSend==3)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent3AD);
+			ADvalue = ADvalue * sns_VoltageCurrent3Factor;
 #if sns_VoltageCurrent3VorA==0
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
 #else
-		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
 #endif
-		txMsg.Data[0] = 3;
-		txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent3Scale-6+8))&0xff;
-		txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent3Scale-6))&0xff;
+			txMsg.Data[0] = 3;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent3Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent3Scale-6))&0xff;
 
-		while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
 #endif
 
+		if (VoltageCurrentChannelToSend++ >=4)
+		{
+			VoltageCurrentChannelToSend=0;
+		}
 	}
 }
 
