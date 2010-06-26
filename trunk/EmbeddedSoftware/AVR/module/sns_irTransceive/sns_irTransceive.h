@@ -41,7 +41,4 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define TRUE 1
 #define FALSE 0
 
-#define sns_irTransceive_SUPPORTED_NUM_CHANNELS 3
-
-
 #endif // SNS_IRTRANSCEIVE
