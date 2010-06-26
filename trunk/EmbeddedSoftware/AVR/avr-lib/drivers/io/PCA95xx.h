@@ -136,6 +136,23 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask);
  */ 
 void Pca95xx_SetDirection(uint16_t direction, uint16_t mask);
 
+/* GPIO.H interface */
+
+/* Port output functions */
+void Pca95xx_set_pin(uint8_t nr);
+void Pca95xx_clr_pin(uint8_t nr);
+void Pca95xx_set_statement(uint8_t statement, uint8_t nr);
+void Pca95xx_toggle_pin(uint8_t nr);
+uint8_t Pca95xx_get_output_state(uint8_t nr);
+
+/* Port input functions */
+uint8_t Pca95xx_get_state(uint8_t nr);
+
+/* Direction functions */
+void Pca95xx_set_in(uint8_t nr);
+void Pca95xx_set_out(uint8_t nr);
+uint8_t Pca95xx_get_direction(uint8_t nr);
+
 
 /**@}*/
 #endif /*PCA95XX_H_*/
