@@ -55,7 +55,7 @@ ISR(PCA_INT_VECTOR)
 void Pca95xx_Init(uint8_t address)
 {
 	unsigned char messageBuf[5];
-
+	
 	/* Store address */
 	Pca95xx_address = (PCA95xx_I2C_DEV_ADDR|(address&7));
 	//printf("i0x%04X\n", Pca95xx_address);
@@ -171,9 +171,9 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	unsigned char messageBuf[5];
 
 	/* Disable interrupts while tampering with the global vars */
-	uint8_t sreg = SREG;
-	cli();
-	
+//	uint8_t sreg = SREG;
+//	cli();
+
 	/* Set masked ones in outputs to global var */
 	Pca95xx_outputs |= (outputs&mask);
 	/* Clear masked zeros in outputs to global var */
@@ -181,12 +181,12 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	/* Set output registers */
 	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
 	messageBuf[1] = PCA95xx_REG_OUTPUT0;
-	messageBuf[2] = outputs&0xff;
-	messageBuf[3] = (outputs>>8)&0xff;
+	messageBuf[2] = Pca95xx_outputs&0xff;
+	messageBuf[3] = (Pca95xx_outputs>>8)&0xff;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
 
-	SREG = sreg;
+//	SREG = sreg;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -196,8 +196,8 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	unsigned char messageBuf[5];
 
 	/* Disable interrupts while tampering with the global vars */
-	uint8_t sreg = SREG;
-	cli();
+//	uint8_t sreg = SREG;
+//	cli();
 
 	/* Set masked ones in direction to global var */
 	Pca95xx_direction |= (direction&mask);
@@ -206,9 +206,9 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	/* Set direction registers */
 	messageBuf[0] = (Pca95xx_address<<TWI_ADR_BITS) | (FALSE<<TWI_READ_BIT);
 	messageBuf[1] = PCA95xx_REG_CONF0;
-	messageBuf[2] = direction&0xff;
-	messageBuf[3] = (direction>>8)&0xff;
+	messageBuf[2] = Pca95xx_direction&0xff;
+	messageBuf[3] = (Pca95xx_direction>>8)&0xff;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
-	SREG = sreg;
+//	SREG = sreg;
 }
