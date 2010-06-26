@@ -166,7 +166,7 @@ void act_hwPWM_Init(void)
 	TCCR0B=(((act_hwPWM_CH4_WGM>>2)&0x01)<<WGM02);
 	#endif
 
-	/* enable outputs for timer 1 */
+	/* enable outputs for timer 0 */
 	#if act_hwPWM_CH3_COM>0
 	gpio_set_out(EXP_F);
 	#endif
@@ -200,7 +200,7 @@ void act_hwPWM_Init(void)
 	
 	/* Setup timeout for sending the status packet */
 	Timer_SetTimeout(act_hwPWM_SEND_STATUS_TIMEOUT, act_hwPWM_SEND_STATUS_INTERVAL_S*1000, TimerTypeFreeRunning, 0);
-	printf("Hello world!\n");
+	//printf("Hello world!\n");
 }
 uint8_t channel_to_send = 1;
 void act_hwPWM_Process(void)
