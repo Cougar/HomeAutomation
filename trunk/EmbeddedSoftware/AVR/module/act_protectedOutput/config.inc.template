@@ -22,7 +22,7 @@ act_protectedOutput_DIAG_PIN_PULL_ENABLED=0
 # When the output pin has been turned off by a DIAG assertion, software can try to enable it again after a specified timeout.
 # Set timeout to 0 to disable this mechanism.
 act_protectedOutput_RETRY_TIMER=<TIMER>
-act_protectedOutput_RETRY_TIMER_TIME_S=s10
+act_protectedOutput_RETRY_TIMER_TIME_S=10
 
 # This timer polls the DIAG pin. Perhaps change this so we trigger on interrupt instead?
 act_protectedOutput_DIAG_POLL_TIMER=<TIMER>
