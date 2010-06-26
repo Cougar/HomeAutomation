@@ -212,3 +212,59 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	while ( TWI_Transceiver_Busy() );
 //	SREG = sreg;
 }
+
+
+
+/* GPIO.H interface */
+
+/* Port output functions */
+void Pca95xx_set_pin(uint8_t nr)
+{
+	Pca95xx_SetOutputs(1<<nr, 1<<nr);
+}
+
+void Pca95xx_clr_pin(uint8_t nr)
+{
+	Pca95xx_SetOutputs(0<<nr, 1<<nr);
+}
+
+void Pca95xx_set_statement(uint8_t statement, uint8_t nr)
+{
+	Pca95xx_SetOutputs(statement<<nr, 1<<nr);
+}
+
+void Pca95xx_toggle_pin(uint8_t nr)
+{
+	Pca95xx_SetOutputs(Pca95xx_outputs^(1<<nr), 1<<nr);
+}
+
+uint8_t Pca95xx_get_output_state(uint8_t nr)
+{
+	return ((Pca95xx_outputs>>nr)&0x1);
+}
+
+
+/* Port input functions */
+uint8_t Pca95xx_get_state(uint8_t nr)
+{
+	return ((Pca95xx_GetInputs()>>nr)&0x1);
+}
+
+
+/* Direction functions */
+void Pca95xx_set_in(uint8_t nr)
+{
+	Pca95xx_SetDirection(PCA95xx_CONF_INPUT<<nr, 1<<nr);
+}
+
+void Pca95xx_set_out(uint8_t nr)
+{
+	Pca95xx_SetDirection(PCA95xx_CONF_OUTPUT<<nr, 1<<nr);
+}
+
+uint8_t Pca95xx_get_direction(uint8_t nr)
+{
+	return ((Pca95xx_direction>>nr)&0x1);
+}
+
+
