@@ -52,6 +52,32 @@ void act_output_List(uint8_t ModuleSequenceNumber);
 #ifdef	act_output_CH7
 		uint8_t ch7;
 #endif
+
+#ifndef	act_output_CH0PCA95xxIO
+#define act_output_CH0PCA95xxIO 0
+#endif
+#ifndef	act_output_CH1PCA95xxIO
+#define act_output_CH1PCA95xxIO 0
+#endif
+#ifndef	act_output_CH2PCA95xxIO
+#define act_output_CH2PCA95xxIO 0
+#endif
+#ifndef	act_output_CH3PCA95xxIO
+#define act_output_CH3PCA95xxIO 0
+#endif
+#ifndef	act_output_CH4PCA95xxIO
+#define act_output_CH4PCA95xxIO 0
+#endif
+#ifndef	act_output_CH5PCA95xxIO
+#define act_output_CH5PCA95xxIO 0
+#endif
+#ifndef	act_output_CH6PCA95xxIO
+#define act_output_CH6PCA95xxIO 0
+#endif
+#ifndef	act_output_CH7PCA95xxIO
+#define act_output_CH7PCA95xxIO 0
+#endif
+
 	
 	};	
 #endif
