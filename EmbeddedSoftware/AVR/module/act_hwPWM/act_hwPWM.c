@@ -194,7 +194,9 @@ void act_hwPWM_Init(void)
 	#endif
 	//printf("1A %x, 1B %x, 0A %x, 0B %x\n", TCCR1A, TCCR1B, TCCR0A, TCCR0B);
 	
+#if act_hwPWM_ENABLE_FADE == 1
 	Timer_SetTimeout(act_hwPWM_FADE_TIMER, 10, TimerTypeFreeRunning, &act_hwPWM_timer_callback);
+#endif
 	
 	/* Setup timeout for sending the status packet */
 	Timer_SetTimeout(act_hwPWM_SEND_STATUS_TIMEOUT, act_hwPWM_SEND_STATUS_INTERVAL_S*1000, TimerTypeFreeRunning, 0);
