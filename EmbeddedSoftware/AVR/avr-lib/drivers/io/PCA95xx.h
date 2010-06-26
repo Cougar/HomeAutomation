@@ -62,7 +62,7 @@
 #define PCA95xx_REG_CONF0	6
 #define PCA95xx_REG_CONF1	7
 
-#define PCA95xx_I2C_DEV_ADDR	0x40
+#define PCA95xx_I2C_DEV_ADDR	0x20
 
 /*-----------------------------------------------------------------------------
  * Public Types
