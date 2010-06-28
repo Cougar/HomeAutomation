@@ -11,7 +11,7 @@ OnlinePhonebook.prototype.myPhonenumber;
 
 OnlinePhonebook.prototype.lookup = function(phonenumber)
 {
-	var self = this;
+	var self = this; 
 
 	this.myPhonenumber = phonenumber;
 
