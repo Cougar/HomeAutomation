@@ -5,4 +5,4 @@ LOGFILE=/var/www/appdata/tmp/results.log
 
 DOPOSTIRC=0
 POSTLINE=/home/script/generic/postircline.pl
-
+POSTLINE2=/home/script/generic/posttwitterline.pl

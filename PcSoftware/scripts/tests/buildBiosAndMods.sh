@@ -134,6 +134,7 @@ echo ""
 if [ $DOPOSTIRC -eq "1" ] ; then
 	if [ ${#failed[@]} -ne "0" ] ; then
 		$POSTLINE \#hobby Tested to build modules, ${#failed[@]} failed, ${#successfull[@]} successfull, http://projekt.auml.se/homeautomation:software:embedded:last-build-mod-test
+		$POSTLINE2 Tested to build modules, ${#failed[@]} failed, ${#successfull[@]} successfull, http://projekt.auml.se/homeautomation:software:embedded:last-build-mod-test
 	fi
 fi
 
