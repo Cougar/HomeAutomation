@@ -106,85 +106,90 @@ void act_output_Init(void)
 #endif  
 	///Initialize hardware
 	uint8_t index = 0;
+
+#if act_output_CH0PCA95xxIO==1 |act_output_CH1PCA95xxIO==1 | act_output_CH2PCA95xxIO==1 | act_output_CH3PCA95xxIO==1 | act_output_CH4PCA95xxIO==1 | act_output_CH5PCA95xxIO==1 | act_output_CH6PCA95xxIO==1 | act_output_CH7PCA95xxIO==1
+	Pca95xx_Init(0);
+#endif 
+	
 #ifdef	act_output_CH0
 #if act_output_CH0PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH0);
-		gpio_set_out(act_output_CH0);
+	gpio_set_statement(chnValue[index],act_output_CH0);
+	gpio_set_out(act_output_CH0);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH0);
-		Pca95xx_set_out(act_output_CH0);
+	Pca95xx_set_statement(chnValue[index],act_output_CH0);
+	Pca95xx_set_out(act_output_CH0);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH1
 #if act_output_CH1PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH1);
-		gpio_set_out(act_output_CH1);
+	gpio_set_statement(chnValue[index],act_output_CH1);
+	gpio_set_out(act_output_CH1);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH1);
-		Pca95xx_set_out(act_output_CH1);
+	Pca95xx_set_statement(chnValue[index],act_output_CH1);
+	Pca95xx_set_out(act_output_CH1);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH2
 #if act_output_CH2PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH2);
-		gpio_set_out(act_output_CH2);
+	gpio_set_statement(chnValue[index],act_output_CH2);
+	gpio_set_out(act_output_CH2);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH2);
-		Pca95xx_set_out(act_output_CH2);
+	Pca95xx_set_statement(chnValue[index],act_output_CH2);
+	Pca95xx_set_out(act_output_CH2);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH3
 #if act_output_CH3PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH3);
-		gpio_set_out(act_output_CH3);
+	gpio_set_statement(chnValue[index],act_output_CH3);
+	gpio_set_out(act_output_CH3);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH3);
-		Pca95xx_set_out(act_output_CH3);
+	Pca95xx_set_statement(chnValue[index],act_output_CH3);
+	Pca95xx_set_out(act_output_CH3);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH4
 #if act_output_CH4PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH4);
-		gpio_set_out(act_output_CH4);
+	gpio_set_statement(chnValue[index],act_output_CH4);
+	gpio_set_out(act_output_CH4);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH4);
-		Pca95xx_set_out(act_output_CH4);
+	Pca95xx_set_statement(chnValue[index],act_output_CH4);
+	Pca95xx_set_out(act_output_CH4);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH5
 #if act_output_CH5PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH5);
-		gpio_set_out(act_output_CH5);
+	gpio_set_statement(chnValue[index],act_output_CH5);
+	gpio_set_out(act_output_CH5);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH5);
-		Pca95xx_set_out(act_output_CH5);
+	Pca95xx_set_statement(chnValue[index],act_output_CH5);
+	Pca95xx_set_out(act_output_CH5);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH6
 #if act_output_CH6PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH6);
-		gpio_set_out(act_output_CH6);
+	gpio_set_statement(chnValue[index],act_output_CH6);
+	gpio_set_out(act_output_CH6);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH6);
-		Pca95xx_set_out(act_output_CH6);
+	Pca95xx_set_statement(chnValue[index],act_output_CH6);
+	Pca95xx_set_out(act_output_CH6);
 #endif
-		index++;
+	index++;
 #endif
 #ifdef	act_output_CH7
 #if act_output_CH7PCA95xxIO==0
-		gpio_set_statement(chnValue[index],act_output_CH7);
-		gpio_set_out(act_output_CH7);
+	gpio_set_statement(chnValue[index],act_output_CH7);
+	gpio_set_out(act_output_CH7);
 #else
-		Pca95xx_set_statement(chnValue[index],act_output_CH7);
-		Pca95xx_set_out(act_output_CH7);
+	Pca95xx_set_statement(chnValue[index],act_output_CH7);
+	Pca95xx_set_out(act_output_CH7);
 #endif
-		index++;
+	index++;
 #endif
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(act_output_PCINT, EXP_C , &act_output_pcint_callback);

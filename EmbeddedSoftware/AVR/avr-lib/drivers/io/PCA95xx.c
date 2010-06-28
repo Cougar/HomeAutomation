@@ -173,6 +173,7 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	/* Disable interrupts while tampering with the global vars */
 //	uint8_t sreg = SREG;
 //	cli();
+	//printf("o0x%04X\n", Pca95xx_outputs);
 
 	/* Set masked ones in outputs to global var */
 	Pca95xx_outputs |= (outputs&mask);
@@ -186,6 +187,8 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
 
+	//printf("o0x%04X\n", Pca95xx_outputs);
+
 //	SREG = sreg;
 }
 
@@ -198,6 +201,7 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	/* Disable interrupts while tampering with the global vars */
 //	uint8_t sreg = SREG;
 //	cli();
+	//printf("d0x%04X\n", Pca95xx_direction);
 
 	/* Set masked ones in direction to global var */
 	Pca95xx_direction |= (direction&mask);
@@ -210,6 +214,8 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	messageBuf[3] = (Pca95xx_direction>>8)&0xff;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
+
+	//printf("d0x%04X\n", Pca95xx_direction);
 //	SREG = sreg;
 }
 
@@ -230,7 +236,7 @@ void Pca95xx_clr_pin(uint8_t nr)
 
 void Pca95xx_set_statement(uint8_t statement, uint8_t nr)
 {
-	Pca95xx_SetOutputs(statement<<nr, 1<<nr);
+	Pca95xx_SetOutputs((statement)<<nr, 1<<nr);
 }
 
 void Pca95xx_toggle_pin(uint8_t nr)

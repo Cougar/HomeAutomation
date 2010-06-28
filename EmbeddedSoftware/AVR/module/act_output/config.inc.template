@@ -1,6 +1,6 @@
 ## Section act_output -- Do not edit this line
 
-#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#Comment the line below if you want to disable EEPROM with this module
 act_output_USEEEPROM=1
 act_output_CH0=EXP_A
 act_output_CH0PCA95xxIO=0
