@@ -15,7 +15,7 @@ OnlinePhonebook.prototype.lookup = function(phonenumber)
 
 	this.myPhonenumber = phonenumber;
 
-	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, "mobil.hitta.se/default.aspx?Who=" + phonenumber + "&Where=&PageAction=White");
+	this.myHTTP.request(function(result, header, content) { self.httpCallback(result, header, content); }, "wap.hitta.se/default.aspx?Who=" + phonenumber + "&Where=&PageAction=White");
 }
 
 OnlinePhonebook.prototype.httpCallback = function(result, header, content)
