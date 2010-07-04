@@ -25,7 +25,7 @@ volatile uint16_t Pca95xx_direction;
 volatile uint16_t Pca95xx_outputs;
 
 #if PCA95XX_NUM_CALLBACKS > 0
-volatile pca95xxCallback_t[PCA95XX_NUM_CALLBACKS] Pca95xx_callback;
+volatile pca95xxCallback_t Pca95xx_callback[PCA95XX_NUM_CALLBACKS];
 #endif
 
 
@@ -37,8 +37,7 @@ ISR(PCA_INT_VECTOR)
 {
 	uint8_t t;
 	/* Read input registers from device */
-	//TODO: communication with device
-	uint16_t inputs = ;
+	uint16_t inputs = Pca95xx_GetInputs();
 	
 	/* Call all callbacks with the input as argument */
 	for (t = 0; t < PCA95XX_NUM_CALLBACKS; t++)
@@ -63,9 +62,9 @@ void Pca95xx_Init(uint8_t address)
 	/* Set up interrupt */
 #if PCA95XX_NUM_CALLBACKS > 0
 #if PCA_INT_VECTOR==INT0_vect
-	PORTD|=(1<<PORT2);	/* setup pullup */
+	PORTD|=(1<<PORT2);	/* setup pullup on interrupt input */
 #else
-	PORTD|=(1<<PORT3);	/* setup pullup */
+	PORTD|=(1<<PORT3);	/* setup pullup on interrupt input */
 #endif
 #endif
 	/* Set up ports? */
@@ -140,7 +139,7 @@ uint16_t Pca95xx_GetInputs(void)
 
 	/* Disable device interrupts while communicating with the device */
 #if PCA95XX_NUM_CALLBACKS > 0
-	PCA_INT_DISABLE();
+//	PCA_INT_DISABLE();
 #endif
 	uint16_t inputs = 0;
 
@@ -159,7 +158,7 @@ uint16_t Pca95xx_GetInputs(void)
 	}
 	
 #if PCA95XX_NUM_CALLBACKS > 0
-	PCA_INT_ENABLE();
+//	PCA_INT_ENABLE();
 #endif
 	return inputs;
 }
