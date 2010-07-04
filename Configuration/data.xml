@@ -728,6 +728,7 @@
     <module id="46" name="TCN75A" class="sns"/>
     <module id="47" name="VoltageCurrent" class="sns"/>
     <module id="48" name="Serial" class="sns"/>
+    <module id="49" name="protectedOutput" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

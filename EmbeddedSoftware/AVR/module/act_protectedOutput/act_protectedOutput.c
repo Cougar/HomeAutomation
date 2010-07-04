@@ -134,7 +134,7 @@ void act_protectedOutput_Process() {
 		StdCan_Msg_t txMsg;
 		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_INPUT;
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT;
 		txMsg.Header.ModuleId = act_protectedOutput_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PINSTATUS;
 		txMsg.Length = 2;
@@ -154,7 +154,7 @@ void act_protectedOutput_Process() {
 void act_protectedOutput_HandleMessage(StdCan_Msg_t *rxMsg) {
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_ACT &&
 		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
-		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_ACT_OUTPUT && 
+		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT && 
 		rxMsg->Header.ModuleId == act_protectedOutput_ID)
 	{
 		switch (rxMsg->Header.Command) {
@@ -183,7 +183,7 @@ void act_protectedOutput_List(uint8_t ModuleSequenceNumber)
 	StdCan_Msg_t txMsg;
 	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_OUTPUT;
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT;
 	txMsg.Header.ModuleId = act_protectedOutput_ID;
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
