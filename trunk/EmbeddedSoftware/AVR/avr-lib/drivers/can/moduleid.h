@@ -1,4 +1,4 @@
-// Built on Tue May 25 20:22:14 2010 by makeCanId.pl
+// Built on Sun Jul  4 15:51:38 2010 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -233,6 +233,7 @@
 #define CAN_MODULE_TYPE_SNS_TCN75A 46
 #define CAN_MODULE_TYPE_SNS_VOLTAGECURRENT 47
 #define CAN_MODULE_TYPE_SNS_SERIAL 48
+#define CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT 49
 
 //----------------- //
 // Misc definitions //
