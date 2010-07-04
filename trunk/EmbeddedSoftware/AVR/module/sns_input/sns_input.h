@@ -17,6 +17,7 @@
 
 //to use PCINT lib. uncomment the line below
 #include <drivers/mcu/pcint.h>
+#include <drivers/io/PCA95xx.h>
 
 void sns_input_Init(void);
 void sns_input_Process(void);
