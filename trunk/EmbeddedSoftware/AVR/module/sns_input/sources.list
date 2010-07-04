@@ -1,5 +1,7 @@
 # List all files that needs to be compiled here
 sns_input/sns_input.c
+drivers/mcu/TWI_Master.c
+drivers/io/PCA95xx.c
 #Uncomment the line below if you want to use EEPROM with this module
 #drivers/misc/eeprom_crc8.c
 #Uncomment the line below if you want to use the PCINT lib in this module
