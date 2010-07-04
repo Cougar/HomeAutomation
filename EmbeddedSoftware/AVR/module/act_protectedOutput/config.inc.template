@@ -24,10 +24,6 @@ act_protectedOutput_DIAG_PIN_PULL_ENABLED=0
 act_protectedOutput_RETRY_TIMER=<TIMER>
 act_protectedOutput_RETRY_TIMER_TIME_S=10
 
-# This timer polls the DIAG pin. Perhaps change this so we trigger on interrupt instead?
-act_protectedOutput_DIAG_POLL_TIMER=<TIMER>
-act_protectedOutput_DIAG_POLL_TIMER_TIME_MS=100
-
 act_protectedOutput_ID=<ID>
 
 ## End section act_protectedOutput -- Do not edit this line

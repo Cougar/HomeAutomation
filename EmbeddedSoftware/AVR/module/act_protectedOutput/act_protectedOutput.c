@@ -99,34 +99,24 @@ void act_protectedOutput_Init() {
 	
 	outputTargetState = OUTPUT_OFF;
 	diagState = DIAG_NORMAL;
-	
-	//obsolete: replaced polling by PCINT callback
-	//Timer_SetTimeout(act_protectedOutput_DIAG_POLL_TIMER, act_protectedOutput_DIAG_POLL_TIMER_TIME_MS, TimerTypeFreeRunning, 0);
 }
 
 
 void act_protectedOutput_Process() {
-#if 0
-	if (Timer_Expired(act_protectedOutput_DIAG_POLL_TIMER)) {
-		// time to poll DIAG pin
-		readDiagPin();
-		updateOutput();
-		if (diagState == DIAG_ASSERTED) {
-			// if DIAG was asserted, init retry timer
-			if (act_protectedOutput_RETRY_TIMER_TIME_S > 0) {
-				Timer_SetTimeout(act_protectedOutput_RETRY_TIMER, act_protectedOutput_RETRY_TIMER_TIME_S*1000, TimerTypeOneShot, 0);
-			}
-		}
-	}
-#endif
 
 	// shall we retry to set target output state?
 	if (Timer_Expired(act_protectedOutput_RETRY_TIMER)) {
 		// read DIAG pin again and update outputs accordingly
 		readDiagPin();
 		updateOutput();
-		// if DIAG was still asserted, initiate another timer run
-		Timer_SetTimeout(act_protectedOutput_RETRY_TIMER, act_protectedOutput_RETRY_TIMER_TIME_S*1000, TimerTypeOneShot, 0);
+		if (diagState == DIAG_ASSERTED) {
+			// if DIAG was still asserted, initiate another timer run
+			Timer_SetTimeout(act_protectedOutput_RETRY_TIMER, act_protectedOutput_RETRY_TIMER_TIME_S*1000, TimerTypeOneShot, 0);
+		}
+		else {
+			// things went back to normal. report this
+			diagReportPending = 1;
+		}
 	}
 	
 	// shall we report diag status to CAN?
