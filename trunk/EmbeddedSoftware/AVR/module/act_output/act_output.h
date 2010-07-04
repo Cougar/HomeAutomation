@@ -52,6 +52,8 @@ void act_output_List(uint8_t ModuleSequenceNumber);
 #ifdef	act_output_CH7
 		uint8_t ch7;
 #endif
+	};	
+#endif
 
 #ifndef	act_output_CH0PCA95xxIO
 #define act_output_CH0PCA95xxIO 0
@@ -78,8 +80,5 @@ void act_output_List(uint8_t ModuleSequenceNumber);
 #define act_output_CH7PCA95xxIO 0
 #endif
 
-	
-	};	
-#endif
 
 #endif // ACT_OUTPUT
