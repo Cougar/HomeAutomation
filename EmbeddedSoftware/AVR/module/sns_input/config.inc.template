@@ -1,29 +1,49 @@
 ## Section sns_input -- Do not edit this line
 
 sns_input_CH0=EXP_D
+sns_input_CH0PCA95xxIO=0
 sns_input_CH0_pullup=0
+# Comment the PCINT line if PCA95xx is used
 sns_input_PCINT_CH0=<PCINT>
 #sns_input_CH1=EXP_A
+#sns_input_CH1PCA95xxIO=0
 #sns_input_CH1_pullup=0
 #sns_input_PCINT_CH1=<PCINT>
 #sns_input_CH2=EXP_A
+#sns_input_CH2PCA95xxIO=0
 #sns_input_CH2_pullup=0
 #sns_input_PCINT_CH2=<PCINT>
 #sns_input_CH3=EXP_A
+#sns_input_CH3PCA95xxIO=0
 #sns_input_CH3_pullup=0
 #sns_input_PCINT_CH3=<PCINT>
 #sns_input_CH4=EXP_A
+#sns_input_CH4PCA95xxIO=0
 #sns_input_CH4_pullup=0
 #sns_input_PCINT_CH4=<PCINT>
 #sns_input_CH5=EXP_A
+#sns_input_CH5PCA95xxIO=0
 #sns_input_CH5_pullup=0
 #sns_input_PCINT_CH5=<PCINT>
 #sns_input_CH6=EXP_A
+#sns_input_CH6PCA95xxIO=0
 #sns_input_CH6_pullup=0
 #sns_input_PCINT_CH6=<PCINT>
 #sns_input_CH7=EXP_A
+#sns_input_CH7PCA95xxIO=0
 #sns_input_CH7_pullup=0
 #sns_input_PCINT_CH7=<PCINT>
+
+
+# Enable this line if PCA95xx is used
+#sns_input_PCA95XX_POLL_TIMER=<TIMER>
+sns_input_PCA95XX_POLL_TIME=20
+
+###
+# If more than one module uses PCA95xx then set the value to the number of users
+#PCA95XX_NUM_CALLBACKS=1
+# If more than one module uses PCA95xx then set a unique number as index
+#sns_input_PCA95XX_CALLBACK_INDEX=1
 
 
 sns_input_ID=<ID>

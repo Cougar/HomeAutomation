@@ -7,6 +7,7 @@ uint8_t pinStatus[8];
 void sns_input_pcint_callback(uint8_t id, uint8_t status) 
 {
 #ifdef	sns_input_CH0
+#if sns_input_CH0PCA95xxIO==0
 	if (id == sns_input_PCINT_CH0) {
 	  if (0 != status) {
 	    pinStatus[0] = HIGH;
@@ -15,7 +16,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH1
+#if sns_input_CH1PCA95xxIO==0
 	if (id == sns_input_PCINT_CH1) {
 	  if (0 != status) {
 	    pinStatus[1] = HIGH;
@@ -24,7 +27,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH2
+#if sns_input_CH2PCA95xxIO==0
 	if (id == sns_input_PCINT_CH2) {
 	  if (0 != status) {
 	    pinStatus[2] = HIGH;
@@ -33,7 +38,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH3
+#if sns_input_CH3PCA95xxIO==0
 	if (id == sns_input_PCINT_CH3) {
 	  if (0 != status) {
 	    pinStatus[3] = HIGH;
@@ -42,7 +49,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH4
+#if sns_input_CH4PCA95xxIO==0
 	if (id == sns_input_PCINT_CH4) {
 	  if (0 != status) {
 	    pinStatus[4] = HIGH;
@@ -51,7 +60,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH5
+#if sns_input_CH5PCA95xxIO==0
 	if (id == sns_input_PCINT_CH5) {
 	  if (0 != status) {
 	    pinStatus[5] = HIGH;
@@ -60,7 +71,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH6
+#if sns_input_CH6PCA95xxIO==0
 	if (id == sns_input_PCINT_CH6) {
 	  if (0 != status) {
 	    pinStatus[6] = HIGH;
@@ -69,7 +82,9 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 #ifdef	sns_input_CH7
+#if sns_input_CH7PCA95xxIO==0
 	if (id == sns_input_PCINT_CH7) {
 	  if (0 != status) {
 	    pinStatus[7] = HIGH;
@@ -78,10 +93,26 @@ void sns_input_pcint_callback(uint8_t id, uint8_t status)
 	  }
 	}
 #endif
+#endif
 }
+
+#if sns_input_CH0PCA95xxIO==1 | sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+/*void sns_input_PCA95xx_callback(uint16_t status) 
+{
+	printf("0x%x\n",status);
+}*/
+#endif 
+
 
 void sns_input_Init(void)
 {
+
+#if sns_input_CH0PCA95xxIO==1 |sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+	Pca95xx_Init(0);
+	//Pca95xx_SetCallback(sns_input_PCA95XX_CALLBACK_INDEX, &sns_input_PCA95xx_callback);
+	Timer_SetTimeout(sns_input_PCA95XX_POLL_TIMER, sns_input_PCA95XX_POLL_TIME, TimerTypeFreeRunning, 0);
+#endif 
+
 	pinStatus[0] = NOCHANGE;
 	pinStatus[1] = NOCHANGE;
 	pinStatus[2] = NOCHANGE;
@@ -92,6 +123,7 @@ void sns_input_Init(void)
 	pinStatus[7] = NOCHANGE;
 	uint8_t index = 0;
 #ifdef	sns_input_CH0
+#if sns_input_CH0PCA95xxIO==0
 	#if (sns_input_CH0_pullup == 1)
 		gpio_set_pullup(sns_input_CH0);
 	#else
@@ -99,9 +131,13 @@ void sns_input_Init(void)
 	#endif
 		gpio_set_in(sns_input_CH0);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH0, sns_input_CH0, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH0);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH1
+#if sns_input_CH1PCA95xxIO==0
 	#if (sns_input_CH1_pullup == 1)
 		gpio_set_pullup(sns_input_CH1);
 	#else
@@ -109,9 +145,13 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH1);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH1, sns_input_CH1, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH1);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH2
+#if sns_input_CH2PCA95xxIO==0
 	#if (sns_input_CH2_pullup == 1)
 		gpio_set_pullup(sns_input_CH2);
 	#else
@@ -119,9 +159,13 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH2);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH2, sns_input_CH2, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH2);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH3
+#if sns_input_CH3PCA95xxIO==0
 	#if (sns_input_CH3_pullup == 1)
 		gpio_set_pullup(sns_input_CH3);
 	#else
@@ -129,9 +173,13 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH3);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH3, sns_input_CH3, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH3);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH4
+#if sns_input_CH4PCA95xxIO==0
 	#if (sns_input_CH4_pullup == 1)
 		gpio_set_pullup(sns_input_CH4);
 	#else
@@ -139,9 +187,13 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH4);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH4, sns_input_CH4, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH4);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH5
+#if sns_input_CH5PCA95xxIO==0
 	#if (sns_input_CH5_pullup == 1)
 		gpio_set_pullup(sns_input_CH5);
 	#else
@@ -149,9 +201,13 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH5);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH5, sns_input_CH5, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH5);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH6
+#if sns_input_CH6PCA95xxIO==0
 	#if (sns_input_CH6_pullup == 1)
 		gpio_set_pullup(sns_input_CH6);
 	#else
@@ -159,9 +215,13 @@ void sns_input_Init(void)
 	#endif			
 		gpio_set_in(sns_input_CH6);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH6, sns_input_CH6, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH6);
+#endif
 		index++;
 #endif
 #ifdef	sns_input_CH7
+#if sns_input_CH7PCA95xxIO==0
 	#if (sns_input_CH7_pullup == 1)
 		gpio_set_pullup(sns_input_CH7);
 	#else
@@ -169,6 +229,9 @@ void sns_input_Init(void)
 	#endif		
 		gpio_set_in(sns_input_CH7);
 		Pcint_SetCallbackPin(sns_input_PCINT_CH7, sns_input_CH7, &sns_input_pcint_callback);
+#else
+		Pca95xx_set_in(sns_input_CH7);
+#endif
 		index++;
 #endif
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
@@ -199,6 +262,25 @@ void sns_input_Process(void)
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		}
 	}
+
+#if sns_input_CH0PCA95xxIO==1 | sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+	if (Timer_Expired(sns_input_PCA95XX_POLL_TIMER))
+	{
+	uint16_t status = Pca95xx_GetInputs();
+#ifdef	sns_input_CH0
+#if sns_input_CH0PCA95xxIO==1
+		/* TODO: går inte så bra med tanke på att modulen inte minns föregående pinstatus!!
+		if ((status>>sns_input_CH0)&0x1 != pinStatus[0]) {
+			pinStatus[0] = status>>sns_input_CH0)&0x1;
+		} else {
+			pinStatus[0] = LOW;
+		}
+		*/
+#endif
+#endif
+		
+	}
+#endif 
 }
 
 void sns_input_HandleMessage(StdCan_Msg_t *rxMsg)

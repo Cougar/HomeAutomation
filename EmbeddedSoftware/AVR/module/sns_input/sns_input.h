@@ -23,5 +23,30 @@ void sns_input_Process(void);
 void sns_input_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_input_List(uint8_t ModuleSequenceNumber);
 
+#ifndef	sns_input_CH0PCA95xxIO
+#define sns_input_CH0PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH1PCA95xxIO
+#define sns_input_CH1PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH2PCA95xxIO
+#define sns_input_CH2PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH3PCA95xxIO
+#define sns_input_CH3PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH4PCA95xxIO
+#define sns_input_CH4PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH5PCA95xxIO
+#define sns_input_CH5PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH6PCA95xxIO
+#define sns_input_CH6PCA95xxIO 0
+#endif
+#ifndef	sns_input_CH7PCA95xxIO
+#define sns_input_CH7PCA95xxIO 0
+#endif
+
 
 #endif // SNS_INPUT
