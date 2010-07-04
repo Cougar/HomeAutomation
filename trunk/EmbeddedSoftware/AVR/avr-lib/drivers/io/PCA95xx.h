@@ -25,7 +25,6 @@
 #define PCA_INT_VECTOR	INT0_vect
 #endif
 
-
 #if defined(__AVR_ATmega8__)
 	#define INT1_REG GICR
 #elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
@@ -99,7 +98,7 @@ void Pca95xx_Init(uint8_t address);
  * 		port status as the argument whenever the interrupt is thrown. It is called
  * 		from the interrupt handler and must be very short. 
  */ 
-void Pca95xx_SetCallback(pca95xxCallback_t callback);
+void Pca95xx_SetCallback(uint8_t index, pca95xxCallback_t callback);
 
 /**
  * @brief Poll the PCA95xx for the input status. 
