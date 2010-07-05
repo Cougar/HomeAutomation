@@ -197,7 +197,7 @@ void sns_input_Init(void)
 	Pca95xx_Init(0);
 	/* Currently only polling of ports is implemented */
 	//Pca95xx_SetCallback(sns_input_PCA95XX_CALLBACK_INDEX, &sns_input_PCA95xx_callback);
-	Timer_SetTimeout(sns_input_PCA95XX_POLL_TIMER, sns_input_PCA95XX_POLL_TIME, TimerTypeFreeRunning, 0);
+	Timer_SetTimeout(sns_input_PCA95XX_POLL_TIMER, sns_input_PCA95XX_POLL_TIME_MS, TimerTypeFreeRunning, 0);
 #endif 
 
 	pinStatus[0] = NOCHANGE;

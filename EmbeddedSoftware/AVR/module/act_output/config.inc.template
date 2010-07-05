@@ -23,6 +23,9 @@ act_output_ID=<ID>
 act_output_STORE_VALUE_TIMEOUT=<TIMER>
 act_output_STORE_VALUE_TIMEOUT_TIME_S=10
 
+# Enable this line if PCA95xx is used
+#USE_PCA95XX=1
+
 #Uncomment to use the pcint driver
 #act_output_DUMMY_PCINT=<PCINT>
 
