@@ -21,6 +21,11 @@
 #define PCA95XX_NUM_CALLBACKS 0
 #endif
 
+#ifndef USE_PCA95XX
+#define USE_PCA95XX 0
+#endif
+
+
 #ifndef PCA_INT_VECTOR
 #define PCA_INT_VECTOR	INT0_vect
 #endif

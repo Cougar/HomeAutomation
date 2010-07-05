@@ -16,6 +16,7 @@
 
 #include <drivers/io/PCA95xx.h>
 
+#if USE_PCA95XX==1
 
 /*-----------------------------------------------------------------------------
  * Globals
@@ -272,4 +273,4 @@ uint8_t Pca95xx_get_direction(uint8_t nr)
 	return ((Pca95xx_direction>>nr)&0x1);
 }
 
-
+#endif
