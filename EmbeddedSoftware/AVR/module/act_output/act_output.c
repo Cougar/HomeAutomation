@@ -1,6 +1,8 @@
 
 #include "act_output.h"
-uint8_t chnValue[8];
+
+uint8_t chnValue[act_output_NUM_SUPPORTED];
+
 #ifdef act_output_USEEEPROM
 #include "act_output_eeprom.h"
 struct eeprom_act_output EEMEM eeprom_act_output = 
@@ -29,6 +31,12 @@ struct eeprom_act_output EEMEM eeprom_act_output =
 		0x00,
 #endif
 #ifdef	act_output_CH7
+		0x00,
+#endif
+#ifdef	act_output_CH8
+		0x00,
+#endif
+#ifdef	act_output_CH9
 		0x00,
 #endif
 	},
@@ -75,6 +83,14 @@ void act_output_Init(void)
 		chnValue[index] = eeprom_read_byte(EEDATA.ch7);
 		index++;
 #endif	  
+#ifdef	act_output_CH8
+		chnValue[index] = eeprom_read_byte(EEDATA.ch8);
+		index++;
+#endif	  
+#ifdef	act_output_CH9
+		chnValue[index] = eeprom_read_byte(EEDATA.ch9);
+		index++;
+#endif	  
 	} else
 	{	//The CRC of the EEPROM is not correct, store default values and update CRC
 #ifdef	act_output_CH0
@@ -100,6 +116,12 @@ void act_output_Init(void)
 #endif
 #ifdef	act_output_CH7
 		eeprom_write_byte_crc(EEDATA.ch7, 0x00, WITHOUT_CRC);
+#endif	  
+#ifdef	act_output_CH8
+		eeprom_write_byte_crc(EEDATA.ch8, 0x00, WITHOUT_CRC);
+#endif	  
+#ifdef	act_output_CH9
+		eeprom_write_byte_crc(EEDATA.ch9, 0x00, WITHOUT_CRC);
 #endif	  
 		EEDATA_UPDATE_CRC;
 	}
@@ -191,8 +213,26 @@ void act_output_Init(void)
 #endif
 	index++;
 #endif
-	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
-	// Pcint_SetCallbackPin(act_output_PCINT, EXP_C , &act_output_pcint_callback);
+#ifdef	act_output_CH8
+#if act_output_CH8PCA95xxIO==0
+	gpio_set_statement(chnValue[index],act_output_CH8);
+	gpio_set_out(act_output_CH8);
+#else
+	Pca95xx_set_statement(chnValue[index],act_output_CH8);
+	Pca95xx_set_out(act_output_CH8);
+#endif
+	index++;
+#endif
+#ifdef	act_output_CH9
+#if act_output_CH9PCA95xxIO==0
+	gpio_set_statement(chnValue[index],act_output_CH9);
+	gpio_set_out(act_output_CH9);
+#else
+	Pca95xx_set_statement(chnValue[index],act_output_CH9);
+	Pca95xx_set_out(act_output_CH9);
+#endif
+	index++;
+#endif
 
 }
 
@@ -231,6 +271,14 @@ void act_output_Process(void)
 #endif
 #ifdef	act_output_CH7
 		eeprom_write_byte_crc(EEDATA.ch7, chnValue[index], WITHOUT_CRC);
+		index++;
+#endif	  
+#ifdef	act_output_CH8
+		eeprom_write_byte_crc(EEDATA.ch8, chnValue[index], WITHOUT_CRC);
+		index++;
+#endif	  
+#ifdef	act_output_CH9
+		eeprom_write_byte_crc(EEDATA.ch9, chnValue[index], WITHOUT_CRC);
 		index++;
 #endif	  
 		EEDATA_UPDATE_CRC;
@@ -302,6 +350,7 @@ void act_output_HandleMessage(StdCan_Msg_t *rxMsg)
 	#if act_output_CH4PCA95xxIO==0
 					gpio_set_statement(chnValue[index],act_output_CH4);
 	#else
+
 					Pca95xx_set_statement(chnValue[index],act_output_CH4);
 	#endif
 				}
@@ -336,6 +385,28 @@ void act_output_HandleMessage(StdCan_Msg_t *rxMsg)
 					gpio_set_statement(chnValue[index],act_output_CH7);
 	#else
 					Pca95xx_set_statement(chnValue[index],act_output_CH7);
+	#endif
+				}
+				index++;
+	#endif	  
+	#ifdef	act_output_CH8
+				if (rxMsg->Data[0] == 8) {
+					chnValue[index] = rxMsg->Data[1];
+	#if act_output_CH8PCA95xxIO==0
+					gpio_set_statement(chnValue[index],act_output_CH8);
+	#else
+					Pca95xx_set_statement(chnValue[index],act_output_CH8);
+	#endif
+				}
+				index++;
+	#endif	  
+	#ifdef	act_output_CH9
+				if (rxMsg->Data[0] == 9) {
+					chnValue[index] = rxMsg->Data[1];
+	#if act_output_CH9PCA95xxIO==0
+					gpio_set_statement(chnValue[index],act_output_CH9);
+	#else
+					Pca95xx_set_statement(chnValue[index],act_output_CH9);
 	#endif
 				}
 				index++;
@@ -376,6 +447,14 @@ void act_output_HandleMessage(StdCan_Msg_t *rxMsg)
 		#endif
 		#ifdef	act_output_CH7
 				if (rxMsg->Data[0] == 7) {value = chnValue[index];}
+				index++;
+		#endif	  	
+		#ifdef	act_output_CH8
+				if (rxMsg->Data[0] == 8) {value = chnValue[index];}
+				index++;
+		#endif	  	
+		#ifdef	act_output_CH9
+				if (rxMsg->Data[0] == 9) {value = chnValue[index];}
 				index++;
 		#endif	  	
 				rxMsg->Data[1] = value;

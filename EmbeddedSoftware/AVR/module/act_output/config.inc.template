@@ -18,6 +18,10 @@ act_output_CH0PCA95xxIO=0
 #act_output_CH6PCA95xxIO=0
 #act_output_CH7=EXP_A
 #act_output_CH7PCA95xxIO=0
+#act_output_CH8=EXP_A
+#act_output_CH8PCA95xxIO=0
+#act_output_CH9=EXP_A
+#act_output_CH9PCA95xxIO=0
 act_output_ID=<ID>
 #act_output_DUMMY=1
 act_output_STORE_VALUE_TIMEOUT=<TIMER>
@@ -26,7 +30,7 @@ act_output_STORE_VALUE_TIMEOUT_TIME_S=10
 # Enable this line if PCA95xx is used
 #USE_PCA95XX=1
 
-#Uncomment to use the pcint driver
-#act_output_DUMMY_PCINT=<PCINT>
+#To save a few bytes ram, set this to the number of outputs used
+act_output_NUM_SUPPORTED=10
 
 ## End section act_output -- Do not edit this line

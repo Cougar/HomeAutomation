@@ -14,6 +14,7 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 #include <drivers/mcu/gpio.h>
+#include <drivers/io/PCA95xx.h>
 
 //to use PCINT lib. uncomment the line below
 //#include <drivers/mcu/pcint.h>
@@ -52,7 +53,17 @@ void act_output_List(uint8_t ModuleSequenceNumber);
 #ifdef	act_output_CH7
 		uint8_t ch7;
 #endif
+#ifdef	act_output_CH8
+		uint8_t ch8;
+#endif
+#ifdef	act_output_CH9
+		uint8_t ch9;
+#endif
 	};	
+#endif
+
+#ifndef	act_output_NUM_SUPPORTED
+#define act_output_NUM_SUPPORTED 10
 #endif
 
 #ifndef	act_output_CH0PCA95xxIO
@@ -78,6 +89,12 @@ void act_output_List(uint8_t ModuleSequenceNumber);
 #endif
 #ifndef	act_output_CH7PCA95xxIO
 #define act_output_CH7PCA95xxIO 0
+#endif
+#ifndef	act_output_CH8PCA95xxIO
+#define act_output_CH8PCA95xxIO 0
+#endif
+#ifndef	act_output_CH9PCA95xxIO
+#define act_output_CH9PCA95xxIO 0
 #endif
 
 
