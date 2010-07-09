@@ -192,14 +192,6 @@ void sns_input_setPCA95xxPinStatus(void)
 
 void sns_input_Init(void)
 {
-
-#if sns_input_CH0PCA95xxIO==1 |sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
-	Pca95xx_Init(0);
-	/* Currently only polling of ports is implemented */
-	//Pca95xx_SetCallback(sns_input_PCA95XX_CALLBACK_INDEX, &sns_input_PCA95xx_callback);
-	Timer_SetTimeout(sns_input_PCA95XX_POLL_TIMER, sns_input_PCA95XX_POLL_TIME_MS, TimerTypeFreeRunning, 0);
-#endif 
-
 	pinStatus[0] = NOCHANGE;
 	pinStatus[1] = NOCHANGE;
 	pinStatus[2] = NOCHANGE;
@@ -209,6 +201,11 @@ void sns_input_Init(void)
 	pinStatus[6] = NOCHANGE;
 	pinStatus[7] = NOCHANGE;
 	uint8_t index = 0;
+
+#if sns_input_CH0PCA95xxIO==1 |sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+	Pca95xx_Init(0);
+#endif 
+
 #ifdef	sns_input_CH0
 #if sns_input_CH0PCA95xxIO==0
 	#if (sns_input_CH0_pullup == 1)
@@ -322,6 +319,13 @@ void sns_input_Init(void)
 		index++;
 #endif
 
+#if sns_input_CH0PCA95xxIO==1 |sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+	sns_input_setPCA95xxPinStatus();
+	/* Currently only polling of ports is implemented */
+	//Pca95xx_SetCallback(sns_input_PCA95XX_CALLBACK_INDEX, &sns_input_PCA95xx_callback);
+	Timer_SetTimeout(sns_input_PCA95XX_POLL_TIMER, sns_input_PCA95XX_POLL_TIME_MS, TimerTypeFreeRunning, 0);
+#endif 
+
 }
 
 void sns_input_Process(void)
@@ -356,72 +360,72 @@ void sns_input_Process(void)
 		uint16_t status = Pca95xx_GetInputs();
 #ifdef	sns_input_CH0
 #if sns_input_CH0PCA95xxIO==1
-		if (pinStatus[0] == LOW_NOCH && ((status>>sns_input_CH0)&0x1) == HIGH) {
+		if (pinStatus[0] == LOW_NOCH && ((status>>sns_input_CH0)&0x1) == IO_HIGH) {
 			pinStatus[0] = HIGH;
-		} else if (pinStatus[0] == HIGH_NOCH && ((status>>sns_input_CH0)&0x1) == LOW) {
+		} else if (pinStatus[0] == HIGH_NOCH && ((status>>sns_input_CH0)&0x1) == IO_LOW) {
 			pinStatus[0] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH1
 #if sns_input_CH1PCA95xxIO==1
-		if (pinStatus[1] == LOW_NOCH && ((status>>sns_input_CH1)&0x1) == HIGH) {
+		if (pinStatus[1] == LOW_NOCH && ((status>>sns_input_CH1)&0x1) == IO_HIGH) {
 			pinStatus[1] = HIGH;
-		} else if (pinStatus[1] == HIGH_NOCH && ((status>>sns_input_CH1)&0x1) == LOW) {
+		} else if (pinStatus[1] == HIGH_NOCH && ((status>>sns_input_CH1)&0x1) == IO_LOW) {
 			pinStatus[1] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH2
 #if sns_input_CH2PCA95xxIO==1
-		if (pinStatus[2] == LOW_NOCH && ((status>>sns_input_CH2)&0x1) == HIGH) {
+		if (pinStatus[2] == LOW_NOCH && ((status>>sns_input_CH2)&0x1) == IO_HIGH) {
 			pinStatus[2] = HIGH;
-		} else if (pinStatus[2] == HIGH_NOCH && ((status>>sns_input_CH2)&0x1) == LOW) {
+		} else if (pinStatus[2] == HIGH_NOCH && ((status>>sns_input_CH2)&0x1) == IO_LOW) {
 			pinStatus[2] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH3
 #if sns_input_CH3PCA95xxIO==1
-		if (pinStatus[3] == LOW_NOCH && ((status>>sns_input_CH3)&0x1) == HIGH) {
+		if (pinStatus[3] == LOW_NOCH && ((status>>sns_input_CH3)&0x1) == IO_HIGH) {
 			pinStatus[3] = HIGH;
-		} else if (pinStatus[3] == HIGH_NOCH && ((status>>sns_input_CH3)&0x1) == LOW) {
+		} else if (pinStatus[3] == HIGH_NOCH && ((status>>sns_input_CH3)&0x1) == IO_LOW) {
 			pinStatus[3] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH4
 #if sns_input_CH4PCA95xxIO==1
-		if (pinStatus[4] == LOW_NOCH && ((status>>sns_input_CH4)&0x1) == HIGH) {
+		if (pinStatus[4] == LOW_NOCH && ((status>>sns_input_CH4)&0x1) == IO_HIGH) {
 			pinStatus[4] = HIGH;
-		} else if (pinStatus[4] == HIGH_NOCH && ((status>>sns_input_CH4)&0x1) == LOW) {
+		} else if (pinStatus[4] == HIGH_NOCH && ((status>>sns_input_CH4)&0x1) == IO_LOW) {
 			pinStatus[4] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH5
 #if sns_input_CH5PCA95xxIO==1
-		if (pinStatus[5] == LOW_NOCH && ((status>>sns_input_CH5)&0x1) == HIGH) {
+		if (pinStatus[5] == LOW_NOCH && ((status>>sns_input_CH5)&0x1) == IO_HIGH) {
 			pinStatus[5] = HIGH;
-		} else if (pinStatus[5] == HIGH_NOCH && ((status>>sns_input_CH5)&0x1) == LOW) {
+		} else if (pinStatus[5] == HIGH_NOCH && ((status>>sns_input_CH5)&0x1) == IO_LOW) {
 			pinStatus[5] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH6
 #if sns_input_CH0PCA95xxIO==1
-		if (pinStatus[6] == LOW_NOCH && ((status>>sns_input_CH6)&0x1) == HIGH) {
+		if (pinStatus[6] == LOW_NOCH && ((status>>sns_input_CH6)&0x1) == IO_HIGH) {
 			pinStatus[6] = HIGH;
-		} else if (pinStatus[6] == HIGH_NOCH && ((status>>sns_input_CH6)&0x1) == LOW) {
+		} else if (pinStatus[6] == HIGH_NOCH && ((status>>sns_input_CH6)&0x1) == IO_LOW) {
 			pinStatus[6] = LOW;
 		}
 #endif
 #endif
 #ifdef	sns_input_CH7
 #if sns_input_CH7PCA95xxIO==1
-		if (pinStatus[7] == LOW_NOCH && ((status>>sns_input_CH7)&0x1) == HIGH) {
+		if (pinStatus[7] == LOW_NOCH && ((status>>sns_input_CH7)&0x1) == IO_HIGH) {
 			pinStatus[7] = HIGH;
-		} else if (pinStatus[7] == HIGH_NOCH && ((status>>sns_input_CH7)&0x1) == LOW) {
+		} else if (pinStatus[7] == HIGH_NOCH && ((status>>sns_input_CH7)&0x1) == IO_LOW) {
 			pinStatus[7] = LOW;
 		}
 #endif
