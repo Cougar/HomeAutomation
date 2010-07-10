@@ -1,0 +1,25 @@
+## Section sns_identification -- Do not edit this line
+
+sns_identification_PIN=EXP_A
+sns_identification_PCA95xxIO=0
+sns_identification_pullup=0
+# Disable the PCINT line if PCA95xx is used (and run --regenerate)
+sns_identification_PCINT=<PCINT>
+sns_identification_POLL_TIMER=<TIMER>
+sns_identification_POLL_TIME_MS=50
+
+
+# Enable these lines if PCA95xx is used
+#USE_PCA95XX=1
+
+### Not implemented!!
+# If more than one module uses PCA95xx then set the value to the number of users
+#PCA95XX_NUM_CALLBACKS=1
+# If more than one module uses PCA95xx then set a unique number as index
+#sns_identification_PCA95XX_CALLBACK_INDEX=1
+####
+
+sns_identification_ID=<ID>
+
+
+## End section sns_identification -- Do not edit this line

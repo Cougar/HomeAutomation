@@ -643,6 +643,12 @@
       </variables>
     </command>
 
+    <command id="128" name="Id" type="specific" module="identification" description="Broadcast this nodes ID">
+     <variables>
+        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+     </variables>
+    </command>
+
     <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
      <variables>
         <variable name="Period" type="uint" start_bit="0" bit_length="16" unit="ms" description=""/>
@@ -722,6 +728,7 @@
     <module id="25" name="input" class="sns"/>
     <module id="26" name="RGBW" class="act"/>
     <module id="27" name="irTransceive" class="sns"/>
+    <module id="28" name="identification" class="sns"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
     <module id="45" name="PIR" class="sns"/>
