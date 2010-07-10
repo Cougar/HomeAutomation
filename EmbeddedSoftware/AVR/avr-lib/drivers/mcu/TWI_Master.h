@@ -1,3 +1,6 @@
+#ifndef TWI_MASTER_H
+#define TWI_MASTER_H
+
 /*****************************************************************************
 *
 * File				TWI_Master.h compiled with gcc
@@ -88,4 +91,4 @@ unsigned char TWI_Read_Data_From_Buffer( unsigned char *, unsigned char );
 // TWI Miscellaneous status codes
 #define TWI_NO_STATE               0xF8  // No relevant state information available; TWINT = �0�
 #define TWI_BUS_ERROR              0x00  // Bus error due to an illegal START or STOP condition
-
+#endif /* TWI_MASTER_H */
