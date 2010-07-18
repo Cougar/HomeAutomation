@@ -1,4 +1,9 @@
 #!/usr/bin/perl
+###########################################################
+# Eagle diff script
+# Author: Anders Runeson, 2010-07-18, arune @ EFnet
+###########################################################
+
 
 use File::Basename;
 use File::Copy;
