@@ -17,14 +17,24 @@
 
 #include <config.h>
 
-#ifndef PCA95XX_NUM_CALLBACKS
-#define PCA95XX_NUM_CALLBACKS 0
-#endif
-
 #ifndef USE_PCA95XX
 #define USE_PCA95XX 0
 #endif
 
+//#define PCA95XX_DEBUG 1
+#ifndef PCA95XX_DEBUG
+#define PCA95XX_DEBUG 0
+#endif
+
+#ifndef PCA95XX_NUM_CALLBACKS
+#define PCA95XX_NUM_CALLBACKS 0
+#endif
+
+#if PCA95XX_NUM_CALLBACKS > 0
+#define PCA95XX_USE_INTERRUPT 1
+#else
+#define PCA95XX_USE_INTERRUPT 0
+#endif
 
 #ifndef PCA_INT_VECTOR
 #define PCA_INT_VECTOR	INT0_vect
