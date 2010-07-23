@@ -34,17 +34,16 @@ sns_input_PCINT_CH0=<PCINT>
 #sns_input_CH7_pullup=0
 #sns_input_PCINT_CH7=<PCINT>
 
+sns_input_DEBOUNCE_TIMER=<TIMER>
+sns_input_DEBOUNCE_TIME_MS=20
+
 
 # Enable these lines if PCA95xx is used
-#sns_input_PCA95XX_POLL_TIMER=<TIMER>
 #USE_PCA95XX=1
-sns_input_PCA95XX_POLL_TIME_MS=20
-
-### Not implemented!!
 # If more than one module uses PCA95xx then set the value to the number of users
 #PCA95XX_NUM_CALLBACKS=1
-# If more than one module uses PCA95xx then set a unique number as index
-#sns_input_PCA95XX_CALLBACK_INDEX=1
+# If more than one module uses PCA95xx then set a unique number as index (start from 0 and increase for each user)
+#sns_input_PCA95XX_CALLBACK_INDEX=0
 ####
 
 sns_input_ID=<ID>

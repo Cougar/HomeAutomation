@@ -49,5 +49,10 @@ void sns_input_List(uint8_t ModuleSequenceNumber);
 #define sns_input_CH7PCA95xxIO 0
 #endif
 
+#if sns_input_CH0PCA95xxIO==1 |sns_input_CH1PCA95xxIO==1 | sns_input_CH2PCA95xxIO==1 | sns_input_CH3PCA95xxIO==1 | sns_input_CH4PCA95xxIO==1 | sns_input_CH5PCA95xxIO==1 | sns_input_CH6PCA95xxIO==1 | sns_input_CH7PCA95xxIO==1
+#define sns_input_ENABLE_PCA95xx 1
+#else
+#define sns_input_ENABLE_PCA95xx 0
+#endif
 
 #endif // SNS_INPUT
