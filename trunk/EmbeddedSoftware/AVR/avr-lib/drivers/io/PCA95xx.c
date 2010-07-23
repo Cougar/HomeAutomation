@@ -25,7 +25,7 @@ volatile uint8_t Pca95xx_address;
 volatile uint16_t Pca95xx_direction;
 volatile uint16_t Pca95xx_outputs;
 
-#if PCA95XX_NUM_CALLBACKS > 0
+#if PCA95XX_USE_INTERRUPT == 1
 volatile pca95xxCallback_t Pca95xx_callback[PCA95XX_NUM_CALLBACKS];
 #endif
 
@@ -33,10 +33,12 @@ volatile pca95xxCallback_t Pca95xx_callback[PCA95XX_NUM_CALLBACKS];
 /*-----------------------------------------------------------------------------
  * Interrupt Service Routines
  *---------------------------------------------------------------------------*/
-#if PCA95XX_NUM_CALLBACKS > 0
+#if PCA95XX_USE_INTERRUPT == 1
 ISR(PCA_INT_VECTOR)
 {
 	uint8_t t;
+	PCA_INT_DISABLE();
+	sei();
 	/* Read input registers from device */
 	uint16_t inputs = Pca95xx_GetInputs();
 	
@@ -45,6 +47,7 @@ ISR(PCA_INT_VECTOR)
 	{
 		Pca95xx_callback[t](inputs);
 	}
+	PCA_INT_ENABLE();
 }
 #endif
 
@@ -58,14 +61,19 @@ void Pca95xx_Init(uint8_t address)
 	
 	/* Store address */
 	Pca95xx_address = (PCA95xx_I2C_DEV_ADDR|(address&7));
-	//printf("i0x%04X\n", Pca95xx_address);
-	
+
+#if PCA95XX_DEBUG==1
+	printf("a0x%04X\n", Pca95xx_address);
+#endif
+
 	/* Set up interrupt */
-#if PCA95XX_NUM_CALLBACKS > 0
+#if PCA95XX_USE_INTERRUPT == 1
 #if PCA_INT_VECTOR==INT0_vect
-	PORTD|=(1<<PORT2);	/* setup pullup on interrupt input */
+	DDRD &=~(1<<PD2);
+	PORTD|=(1<<PD2);	/* setup pullup on interrupt input */
 #else
-	PORTD|=(1<<PORT3);	/* setup pullup on interrupt input */
+	DDRD &=~(1<<PD3);
+	PORTD|=(1<<PD3);	/* setup pullup on interrupt input */
 #endif
 #endif
 	/* Set up ports? */
@@ -86,7 +94,9 @@ void Pca95xx_Init(uint8_t address)
 		cli();
 		Pca95xx_outputs = (messageBuf[2]<<8)|messageBuf[1];
 		SREG = sreg;
-		//printf("o0x%04X\n", Pca95xx_outputs);
+#if PCA95XX_DEBUG==1
+		printf("o0x%04X\n", Pca95xx_outputs);
+#endif
 	}
 
 	/* Read direction registers from device to global var */
@@ -104,18 +114,20 @@ void Pca95xx_Init(uint8_t address)
 		cli();
 		Pca95xx_direction = (messageBuf[2]<<8)|messageBuf[1];
 		SREG = sreg;
-		//printf("d0x%04X\n", Pca95xx_direction);
+#if PCA95XX_DEBUG==1
+		printf("d0x%04X\n", Pca95xx_direction);
+#endif
 	}
 
 	/* Enable interrupt */
-#if PCA95XX_NUM_CALLBACKS > 0
+#if PCA95XX_USE_INTERRUPT == 1
 	PCA_INT_ENABLE();
 #endif
 }
 
 /*---------------------------------------------------------------------------*/
 
-#if PCA95XX_NUM_CALLBACKS > 0
+#if PCA95XX_USE_INTERRUPT == 1
 void Pca95xx_SetCallback(uint8_t index, pca95xxCallback_t callback)
 {
 	/* Disable interrupts while tampering with the global vars */
@@ -139,9 +151,7 @@ uint16_t Pca95xx_GetInputs(void)
 	unsigned char messageBuf[5];
 
 	/* Disable device interrupts while communicating with the device */
-#if PCA95XX_NUM_CALLBACKS > 0
-//	PCA_INT_DISABLE();
-#endif
+	//TODO: Interupts needed for I2C...
 	uint16_t inputs = 0;
 
 	/* Read input registers from device */
@@ -155,12 +165,11 @@ uint16_t Pca95xx_GetInputs(void)
 	if (TWI_Read_Data_From_Buffer(messageBuf, 3) == TRUE)
 	{
 		inputs = (messageBuf[2]<<8)|messageBuf[1];
-		//printf("i0x%04X\n", inputs);
+#if PCA95XX_DEBUG==1
+		printf("i0x%04X\n", inputs);
+#endif
 	}
 	
-#if PCA95XX_NUM_CALLBACKS > 0
-//	PCA_INT_ENABLE();
-#endif
 	return inputs;
 }
 
@@ -169,12 +178,13 @@ uint16_t Pca95xx_GetInputs(void)
 void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 {
 	unsigned char messageBuf[5];
+#if PCA95XX_DEBUG==1
+	printf("o0x%04X\n", Pca95xx_outputs);
+#endif
 
 	/* Disable interrupts while tampering with the global vars */
-//	uint8_t sreg = SREG;
-//	cli();
-	//printf("o0x%04X\n", Pca95xx_outputs);
-
+	uint8_t sreg = SREG;
+	cli();
 	/* Set masked ones in outputs to global var */
 	Pca95xx_outputs |= (outputs&mask);
 	/* Clear masked zeros in outputs to global var */
@@ -184,12 +194,13 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 	messageBuf[1] = PCA95xx_REG_OUTPUT0;
 	messageBuf[2] = Pca95xx_outputs&0xff;
 	messageBuf[3] = (Pca95xx_outputs>>8)&0xff;
+	SREG = sreg;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
 
-	//printf("o0x%04X\n", Pca95xx_outputs);
-
-//	SREG = sreg;
+#if PCA95XX_DEBUG==1
+	printf("o0x%04X\n", Pca95xx_outputs);
+#endif
 }
 
 /*---------------------------------------------------------------------------*/
@@ -197,12 +208,13 @@ void Pca95xx_SetOutputs(uint16_t outputs, uint16_t mask)
 void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 {
 	unsigned char messageBuf[5];
+#if PCA95XX_DEBUG==1
+	printf("d0x%04X\n", Pca95xx_direction);
+#endif
 
 	/* Disable interrupts while tampering with the global vars */
-//	uint8_t sreg = SREG;
-//	cli();
-	//printf("d0x%04X\n", Pca95xx_direction);
-
+	uint8_t sreg = SREG;
+	cli();
 	/* Set masked ones in direction to global var */
 	Pca95xx_direction |= (direction&mask);
 	/* Clear masked zeros in direction to global var */
@@ -212,11 +224,13 @@ void Pca95xx_SetDirection(uint16_t direction, uint16_t mask)
 	messageBuf[1] = PCA95xx_REG_CONF0;
 	messageBuf[2] = Pca95xx_direction&0xff;
 	messageBuf[3] = (Pca95xx_direction>>8)&0xff;
+	SREG = sreg;
 	TWI_Start_Read_Write( messageBuf, 4 );
 	while ( TWI_Transceiver_Busy() );
 
-	//printf("d0x%04X\n", Pca95xx_direction);
-//	SREG = sreg;
+#if PCA95XX_DEBUG==1
+	printf("d0x%04X\n", Pca95xx_direction);
+#endif
 }
 
 
