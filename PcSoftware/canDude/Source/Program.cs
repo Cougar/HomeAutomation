@@ -212,7 +212,8 @@ class Program {
 		Console.WriteLine("Host and port are host and port of canDaemon, most likely localhost and 1200.");
 		Console.WriteLine("Options:");
 		Console.WriteLine("  -f <hexfile>   Specify a file to be loaded to target.");
-		Console.WriteLine("  -n <nodeid>    Id of target node, hex or decimal.");
+		Console.WriteLine("  -n <nodeid>    Id of target node, hex or decimal, depricated.");
+		Console.WriteLine("  -i <HWid>      Id of target node, hex or decimal.");
 		Console.WriteLine("  -t             Enter terminal mode.");
 		Console.WriteLine("  -r             Reset node before loading target.");
 		Console.WriteLine("  -s             Start node after loading target.");
@@ -222,7 +223,8 @@ class Program {
 	static private void printHelp() {
 		Console.WriteLine("canDude commands:");
 		Console.WriteLine("load [<hexfile>] - reload hexfile or load new hexfile");
-		Console.WriteLine("node <nodeid>    - specify id of target node, hex or decimal");
+		Console.WriteLine("node <nodeid>    - specify id of target node, hex or decimal, depricated");
+		Console.WriteLine("hwid <HWid>      - specify id of target node, hex or decimal");
 		Console.WriteLine("reset            - reset node");
 		Console.WriteLine("start            - start application in node (no feedback yet)");
 		Console.WriteLine("go               - start download application to target");
@@ -297,20 +299,20 @@ class Program {
 	static private bool parseInput(string instr) {
 		//parse commands entered on std in
 		if (instr.Equals("reset")) {		//reset command, send a reset to current node
-			if (sNodeid) {
+			if (sHWid) {
 				dc.flushData();
 				CanNMT cpn = new CanNMT(HWID_INUSE);
                 cpn.doReset(dc, nodeid, HWid);
 			} else {
-				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No HWid has been specified"); }
 			}
 		}
 		else if (instr.Equals("start")) {	//start command, send a start to current node
-			if (sNodeid) {
+			if (sHWid) {
 				CanNMT cpn = new CanNMT(HWID_INUSE);
 				cpn.doStart(dc, nodeid, HWid);
 			} else {
-				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No HWid has been specified"); }
 			}
 		}
 		else if (instr.StartsWith("go")) {	//downloading command
@@ -323,8 +325,8 @@ class Program {
 				error = false;
 			}
 			
-			if (!sNodeid) {
-				if (DEBUG_LEVEL>0) { Console.WriteLine("No nodeid has been specified"); }
+			if (!sHWid) {
+				if (DEBUG_LEVEL>0) { Console.WriteLine("No HWid has been specified"); }
 				error = true;
 			}
 			if (!sHexfile) {
@@ -389,6 +391,15 @@ class Program {
 				parseNodeId(node);
 			}
 			if (DEBUG_LEVEL>1) { Console.WriteLine("NodeId is 0x"+ String.Format("{0:x2}", nodeid)); }
+		}
+		else if (instr.StartsWith("hwid")) {
+			//change hwid
+			if (instr.Length > 5) {
+				//second argument is nodeid
+				string node = instr.Substring(5);
+				parseHWId(node);
+			}
+			if (DEBUG_LEVEL>1) { Console.WriteLine("HWid is 0x"+ String.Format("{0:x8}", HWid)); }
 		}
 		else if (instr.Equals("help")) {
 			printHelp();
