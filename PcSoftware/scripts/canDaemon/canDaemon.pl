@@ -148,7 +148,7 @@ sub hardwareConnThread {
 }
 
 sub hardwareConnInit {
-	print "Connecting hardware to tcpServer\n";
+	print localtime()." Connecting hardware to tcpServer\n";
     $hwCremote = IO::Socket::INET->new(Proto    => "tcp", PeerAddr => "localhost", PeerPort => $hubport,)
                   or die "cannot connect to $hubport port at localhost";
 }
@@ -181,7 +181,7 @@ sub serialConnProcessBuffer {
 				break;
 			} 
 			if (ord(substr($input, $i, 1)) == $C2PINGSTR) {
-				print "Got pong from hardware\n";
+				print localtime()." Got pong from hardware\n";
 				$input = substr($input, $i+1);
 				$output = $input;
 			}
@@ -210,7 +210,7 @@ sub serialConnProcessBuffer {
 }
 
 sub serialConnInit {
-	print "Connecting to hardware over serial port\n";
+	print localtime()." Connecting to hardware over serial port\n";
 	$quiet=0;
 	if ($usingDeviceSerial == 1) {
 		$serialPort = new Device::SerialPort($devicearg, $quiet) || die "failed to open serial port, $devicearg is not valid?";
@@ -227,7 +227,7 @@ sub serialConnInit {
 	$serialPort->read_char_time(0);     # don't wait for each character
 	$serialPort->read_const_time(1000); # 1 second per unfulfilled "read" call
 
-	print "Testing connection to hardware: ping (hardware should answer with a pong)\n";
+	print localtime()." Testing connection to hardware: ping (hardware should answer with a pong)\n";
 	serialConnSend(chr($C2PINGSTR));
 	
 	### create a connection between the hardware and the tcp-server ###
@@ -265,7 +265,7 @@ sub udpServerThread {
 			{
 				if (ord(substr($newmsg, 0, 1)) == $C2PINGSTR) 
 				{
-					print "Got pong from hardware\n";
+					print localtime()." Got pong from hardware\n";
 				}
 			}
 		}
@@ -274,7 +274,7 @@ sub udpServerThread {
 }
 
 sub udpServerInit {
-	print "Starting udpServer\n";
+	print localtime()." Starting udpServer\n";
 	$udpSsocket = IO::Socket::INET->new(LocalPort => $udpport, Proto => 'udp')
 	    or die "socket: $@";
 
@@ -294,7 +294,7 @@ sub udpServerInit {
 #	{
 #		print "Could not create initpacket\n";
 #	}
-	print "Testing connection to hardware: ping (hardware should answer with a pong)\n";
+	print localtime()." Testing connection to hardware: ping (hardware should answer with a pong)\n";
 	udpServerSend(chr($C2PINGSTR));
 
 	### create a connection between the hardware and the tcp-server ###
@@ -323,9 +323,9 @@ sub tcpServerThread {
 					$line =~ s/\r//gm;	#remove linefeed
 					@lines = split(/\n/, $line);
 					foreach $line (@lines) {
-						print "Got packet '".$line."' from client ".$tcpSsocket->fileno."\n";
+						print localtime()." Got packet '".$line."' from client ".$tcpSsocket->fileno."\n";
 						if ($line eq "PING") {
-							print "Sending PONG to client ".$tcpSsocket->fileno."\n";
+							print localtime()." Sending PONG to client ".$tcpSsocket->fileno."\n";
 						
 							$tcpSsocket->send("PONG\n");
 						}
@@ -354,19 +354,19 @@ sub tcpServerInit {
 				or die $!;
 
 	$tcpSselect = IO::Select->new($tcpSlisten);
-	print "Starting tcpServer\n";
+	print localtime()." Starting tcpServer\n";
 }
 
 #a client connected
 sub tcpServerConn {
 	$new = $tcpSlisten->accept;
 	$tcpSselect->add($new);
-	print $new->fileno . ": connected\n";
+	print localtime()." ".$new->fileno . ": connected\n";
 }
 
 #a client disconnected
 sub tcpServerClientDis {
-	print $tcpSsocket->fileno . ": disconnected\n";
+	print localtime()." ".$tcpSsocket->fileno . ": disconnected\n";
 	$tcpSselect->remove($tcpSsocket);
 	$tcpSsocket->close;
 }
@@ -384,7 +384,7 @@ sub tcpServerBroadcastExcept {
 		} else {
 			if ($first==0) {
 				$first = 1;
-				print "Sending to client ".$eachsocket->fileno;
+				print localtime()." Sending to client ".$eachsocket->fileno;
 			} else {
 				print ", ".$eachsocket->fileno;
 			}
@@ -410,11 +410,11 @@ sub testPacket {
 	$testErr = 0;
 	if (length($input) < 16) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, not long enough\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, not long enough\n";}
 	}
 	if ($testErr == 0 && substr($input, 0, 4) != "PKT ") {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, should start with PKT\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, should start with PKT\n";}
 	}
 	#if (substr($line, 12, 1) != " " || substr($line, 14, 1) != " ") {
 	#	$testErr = 1;
@@ -424,31 +424,31 @@ sub testPacket {
 	$inputarrlen = @splitinput;
 	if ($testErr == 0 && ($inputarrlen < 4 || $inputarrlen > 12)) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, to many or to few parts\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, to many or to few parts\n";}
 	}
 	if ($testErr == 0 && length($splitinput[1]) != 8) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, id part must be 8 digits (padded with zeros)\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, id part must be 8 digits (padded with zeros)\n";}
 	}
 	if ($testErr == 0 && length($splitinput[2]) != 1) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, ext part must be 1 digit\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, ext part must be 1 digit\n";}
 	}
 	if ($testErr == 0 && length($splitinput[3]) != 1) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, rtr part must be 1 digit\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, rtr part must be 1 digit\n";}
 	}
 	for ($i = 4; $i < $inputarrlen; $i++) {
 		if ($testErr == 0 && length($splitinput[$i]) != 2) {
 			$testErr = 1;
-			if ($messages!=1) {print "Packet was malformed, data parts must be 2 digits (padded with zero)\n";}
+			if ($messages!=1) {print localtime()." Packet was malformed, data parts must be 2 digits (padded with zero)\n";}
 		}
 	}
 	$checkstrlen = length($input)-4;
 	$checkstr = substr($input, 4, $checkstrlen);
 	if ($testErr == 0 && $checkstr !~ m/^[0-9a-fA-F ]*$/) {
 		$testErr = 1;
-		if ($messages!=1) {print "Packet was malformed, not hex\n";}
+		if ($messages!=1) {print localtime()." Packet was malformed, not hex\n";}
 	}
 	
 	$_[2] = $testErr;
