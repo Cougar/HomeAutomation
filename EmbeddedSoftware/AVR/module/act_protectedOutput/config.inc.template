@@ -1,15 +1,24 @@
 ## Section act_protectedOutput -- Do not edit this line
 
-# Define a pair of output/input pins. The diagnostics pin is used as enable flag for the protected output.
-# External hardware can monitor the output and assert the diagnostics pin whenever the output must be turned off, to protect whatever is connected to it.
+# Define a number of outputs with a common diagnostic input pin used as a global enable flag for all the outputs.
+# External hardware can monitor the outputs and assert the diagnostics pin whenever the outputs must be turned off, to protect whatever is connected to them.
 
-# Output pin.
-act_protectedOutput_OUTPUT_PIN=GPIO_D5
+# Number of ouput pins.
+act_protectedOutput_NR_OUTPUT_PINS=1
+
+# Output pins.
+act_protectedOutput_OUTPUT0_PIN=GPIO_D5
+act_protectedOutput_OUTPUT1_PIN=GPIO_D1
+act_protectedOutput_OUTPUT2_PIN=GPIO_D7
+act_protectedOutput_OUTPUT3_PIN=GPIO_B0
 
 # Defines the ACTIVE state of the OUTPUT pin. 1 means output is active high, 0 means active low.
-act_protectedOutput_OUTPUT_PIN_ACTIVE_STATE=1
+act_protectedOutput_OUTPUT0_PIN_ACTIVE_STATE=1
+act_protectedOutput_OUTPUT1_PIN_ACTIVE_STATE=1
+act_protectedOutput_OUTPUT2_PIN_ACTIVE_STATE=0
+act_protectedOutput_OUTPUT3_PIN_ACTIVE_STATE=1
 
-# Diagnostics pin. Asserted from external monitors if the output needs to be disabled.
+# Diagnostics pin. Asserted from external monitors if the outputs need to be disabled.
 act_protectedOutput_DIAG_PIN=GPIO_D2
 act_protectedOutput_DIAG_PIN_PCINT=<PCINT>
 
@@ -19,7 +28,7 @@ act_protectedOutput_DIAG_PIN_ASSERTED_STATE=0
 # Enables internal pull-up resistor for the DIAG pin. This is only used if ASSERTED state is defined as 0 (i.e. active low).
 act_protectedOutput_DIAG_PIN_PULL_ENABLED=0
 
-# When the output pin has been turned off by a DIAG assertion, software can try to enable it again after a specified timeout.
+# When the output pins have been turned off by a DIAG assertion, software can try to enable them again after a specified timeout.
 # Set timeout to 0 to disable this mechanism.
 act_protectedOutput_RETRY_TIMER=<TIMER>
 act_protectedOutput_RETRY_TIMER_TIME_S=10
