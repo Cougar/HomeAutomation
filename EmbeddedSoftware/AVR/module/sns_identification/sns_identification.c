@@ -96,7 +96,7 @@ void sns_identification_Process(void)
 			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IDENTIFICATION;
 			txMsg.Header.ModuleId = sns_identification_ID;
-			txMsg.Header.Command = CAN_MODULE_CMD_IDENDTIFICATION_ID;
+			txMsg.Header.Command = CAN_MODULE_CMD_IDENTIFICATION_ID;
 			txMsg.Length = 4;
 			txMsg.Data[0] = NODE_HW_ID_BYTE0;
 			txMsg.Data[1] = NODE_HW_ID_BYTE1;
