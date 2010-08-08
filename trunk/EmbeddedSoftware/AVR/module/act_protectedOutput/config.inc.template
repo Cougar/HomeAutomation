@@ -3,20 +3,25 @@
 # Define a number of outputs with a common diagnostic input pin used as a global enable flag for all the outputs.
 # External hardware can monitor the outputs and assert the diagnostics pin whenever the outputs must be turned off, to protect whatever is connected to them.
 
+# Shall the output states be remembered in EEPROM?
+# If this is disabled (0), outputs will be initialized
+# to OFF state.
+act_protectedOutput_EEPROM_ENABLED=1
+
 # Number of ouput pins.
-act_protectedOutput_NR_OUTPUT_PINS=1
+act_protectedOutput_CH_COUNT=1
 
 # Output pins.
-act_protectedOutput_OUTPUT0_PIN=GPIO_D5
-act_protectedOutput_OUTPUT1_PIN=GPIO_D1
-act_protectedOutput_OUTPUT2_PIN=GPIO_D7
-act_protectedOutput_OUTPUT3_PIN=GPIO_B0
+act_protectedOutput_CH0=GPIO_D5
+act_protectedOutput_CH1=GPIO_D1
+act_protectedOutput_CH2=GPIO_D7
+act_protectedOutput_CH3=GPIO_B0
 
-# Defines the ACTIVE state of the OUTPUT pin. 1 means output is active high, 0 means active low.
-act_protectedOutput_OUTPUT0_PIN_ACTIVE_STATE=1
-act_protectedOutput_OUTPUT1_PIN_ACTIVE_STATE=1
-act_protectedOutput_OUTPUT2_PIN_ACTIVE_STATE=0
-act_protectedOutput_OUTPUT3_PIN_ACTIVE_STATE=1
+# Defines the polarity of each OUTPUT channel. 1 means output is active high, 0 means active low.
+act_protectedOutput_CH0_POLARITY=1
+act_protectedOutput_CH1_POLARITY=1
+act_protectedOutput_CH2_POLARITY=0
+act_protectedOutput_CH3_POLARITY=1
 
 # Diagnostics pin. Asserted from external monitors if the outputs need to be disabled.
 act_protectedOutput_DIAG_PIN=GPIO_D2
