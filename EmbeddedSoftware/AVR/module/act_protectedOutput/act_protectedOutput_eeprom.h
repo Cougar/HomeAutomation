@@ -1,24 +1,24 @@
 #ifndef ACT_OUTPUT_EEPROM
 #define ACT_OUTPUT_EEPROM
 
-#include "act_output.h"
+#include "act_protectedOutput.h"
 // Do not change anything below this line.
 // ----------------------------------------------------------------
 
 	#include <drivers/misc/eeprom_crc8.h>
 	#include <avr/eeprom.h>
-	#define EEDATA 			(uint8_t*)&eeprom_act_output.Data
-	#define EEDATA16		(uint16_t*)&eeprom_act_output.Data
-	#define EEDATA_CALC_CRC		eeprom_crc8((uint8_t*)&eeprom_act_output.Data,sizeof(struct act_output_Data))
-	#define EEDATA_UPDATE_CRC	eeprom_write_byte((uint8_t*)&eeprom_act_output.crc,eeprom_crc8((uint8_t*)&eeprom_act_output.Data,sizeof(struct act_output_Data)))
+	#define EEDATA 			(uint8_t*)&eeprom_act_protectedOutput.Data
+	#define EEDATA16		(uint16_t*)&eeprom_act_protectedOutput.Data
+	#define EEDATA_CALC_CRC		eeprom_crc8((uint8_t*)&eeprom_act_protectedOutput.Data,sizeof(act_protectedOutput_Data_t))
+	#define EEDATA_UPDATE_CRC	eeprom_write_byte((uint8_t*)&eeprom_act_protectedOutput.crc,eeprom_crc8((uint8_t*)&eeprom_act_protectedOutput.Data,sizeof(act_protectedOutput_Data_t)))
 	#define EEDATA_OK		EEDATA_CALC_CRC == EEDATA_STORED_CRC
-	#define EEDATA_STORED_CRC 	eeprom_read_byte((uint8_t*)&eeprom_act_output.crc)
+	#define EEDATA_STORED_CRC 	eeprom_read_byte((uint8_t*)&eeprom_act_protectedOutput.crc)
 	
-	struct eeprom_act_output{
-		struct act_output_Data Data;
+	struct eeprom_act_protectedOutput {
+		act_protectedOutput_Data_t Data;
 		uint8_t crc;
 	};
-	extern struct eeprom_act_output EEMEM eeprom_act_output;
+	extern struct eeprom_act_protectedOutput EEMEM eeprom_act_protectedOutput;
 	
 	#define WITH_CRC	1
 	#define WITHOUT_CRC	0
