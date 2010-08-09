@@ -18,6 +18,8 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 static uint32_t baudRate = 9600;
 static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
 
+#define sns_Serial_DEBUG 0
+
 void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
@@ -54,7 +56,9 @@ void sns_Serial_Init(void)
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(sns_Serial_PCINT, EXP_C , &sns_Serial_pcint_callback);
 
+#if sns_Serial_DEBUG==1
 	printf("Serial started!\n");
+#endif
 }
 
 void sns_Serial_Process(void)
@@ -82,7 +86,9 @@ void sns_Serial_Process(void)
 		// status == 0 means we just received a new char
 		if (status == 0)
 		{
+#if sns_Serial_DEBUG==1
 			printf("RX\n");
+#endif
 			// insert it into the message
 			msg.Data[(uint8_t)msg.Length] = c;
 			msg.Length++;
@@ -108,12 +114,16 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 			case CAN_MODULE_CMD_SERIAL_SERIALDATA:
+#if sns_Serial_DEBUG==1
+				printf("TX\n");
+#endif
 				gpio_set_pin(sns_Serial_TXEN);			// enable TX
 				for (uint8_t i=0; i<rxMsg->Length; i++)
 				{
 					uart_putc(rxMsg->Data[i]);
 				}
-				gpio_clr_pin(sns_Serial_TXEN);			// disable TX
+				/* TODO Cannot disable TX yet, the data has only been placed in buffer but not sent */
+//				gpio_clr_pin(sns_Serial_TXEN);			// disable TX
 				break;
 			case CAN_MODULE_CMD_SERIAL_SERIALCONFIG:
 				baudRate = 10 * (((uint32_t)rxMsg->Data[1] << 0) | ((uint32_t)rxMsg->Data[0] << 8));
@@ -121,7 +131,9 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 				if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232)
 				{
+#if sns_Serial_DEBUG==1
 					printf("RS232\n");
+#endif
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_clr_pin(sns_Serial_485_232);		// RS232 mode
@@ -130,7 +142,9 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485FULLDUPLEX)
 				{
+#if sns_Serial_DEBUG==1
 					printf("RS485FD\n");
+#endif
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
@@ -140,27 +154,35 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEX)
 				{
+#if sns_Serial_DEBUG==1
 					printf("RS485HD\n");
+#endif
 					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
 					gpio_set_pin(sns_Serial_RXEN);			// enable RX
+				/* TODO shoud the TX really be enabled in half duplex? */
 					gpio_set_pin(sns_Serial_TXEN);			// enable TX
 					gpio_set_pin(sns_Serial_ON);			// enable charge pump
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEXWITHTERMINATION)
 				{
+#if sns_Serial_DEBUG==1
 					printf("485HDT\n");
+#endif
 					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
 					gpio_set_pin(sns_Serial_TERM_EN);		// enable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+				/* TODO shoud the TX really be enabled in half duplex? */
 					gpio_set_pin(sns_Serial_RXEN);			// enable RX
 					gpio_set_pin(sns_Serial_TXEN);			// enable TX
 					gpio_set_pin(sns_Serial_ON);			// enable charge pump
 				}
 				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK)
 				{
+#if sns_Serial_DEBUG==1
 					printf("LPMODE\n");
+#endif
 					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
 					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
 					gpio_set_pin(sns_Serial_485_232);		// RS232 mode
@@ -171,7 +193,9 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				else
 				{
 					//invalid format
+#if sns_Serial_DEBUG==1
 					printf("ERROR!\n");
+#endif
 				}
 				break;
 		}
