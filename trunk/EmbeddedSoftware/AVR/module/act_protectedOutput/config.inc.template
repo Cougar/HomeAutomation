@@ -38,6 +38,9 @@ act_protectedOutput_DIAG_PIN_PULL_ENABLED=0
 act_protectedOutput_RETRY_TIMER=<TIMER>
 act_protectedOutput_RETRY_TIMER_TIME_S=10
 
+act_protectedOutput_STORE_VALUE_TIMEOUT=<TIMER>
+act_protectedOutput_STORE_VALUE_TIMEOUT_TIME_S=10
+
 act_protectedOutput_ID=<ID>
 
 ## End section act_protectedOutput -- Do not edit this line
