@@ -33,8 +33,20 @@ act_protectedOutput_DIAG_PIN_POLARITY=0
 # Enables internal pull-up resistor for the DIAG pin. This is only used if polarity is defined as 0 (i.e. active low).
 act_protectedOutput_DIAG_PIN_PULL_ENABLED=0
 
-# When the output pins have been turned off by a DIAG assertion, software can try to enable them again after a specified timeout.
-# Set timeout to 0 to disable this mechanism.
+# If this is set to 1, the retry attempts will be forced, no matter
+# what the state of the DIAG PIN is after the timeout period. In some
+# applications, the DIAG PIN holds relevant information only during
+# a real output activation. In such a scenario, FORCED RETRIES must
+# be used in order not to get stuck in the protection state because
+# of false-alarm DIAG assertions.
+act_protectedOutput_FORCED_RETRIES=0
+
+# When the output pins have been turned off by a DIAG assertion,
+# software can try to enable them again after a specified timeout.
+# Set timeout to 0 to disable this mechanism. When disabled, a
+# DIAG assertion will cause the outputs to be permanently switched
+# off until user tries to enable them again. This affects also the
+# EEPROM data.
 act_protectedOutput_RETRY_TIMER=<TIMER>
 act_protectedOutput_RETRY_TIMER_TIME_S=10
 

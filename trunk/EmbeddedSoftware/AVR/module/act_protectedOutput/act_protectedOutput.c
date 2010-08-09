@@ -112,7 +112,7 @@ struct eeprom_act_protectedOutput EEMEM eeprom_act_protectedOutput =
  * Variables
  *---------------------------------------------------------------------------*/
 
-static uint8_t outputStateTarget[act_protectedOutput_CH_COUNT];
+static uint8_t chTargetState[act_protectedOutput_CH_COUNT];
 static uint8_t diagState = DIAG_NORMAL;
 
 // is there a recent status change that we should report via CAN?
@@ -122,7 +122,7 @@ static uint8_t diagReportPending = 0;
 /*-----------------------------------------------------------------------------
  * Internal Function Prototypes
  *---------------------------------------------------------------------------*/
-static void updateOutput(void);
+static void updateOutput(uint8_t skipDiagCheck);
 static void readDiagPin(void);
 static void pcIntCallback(uint8_t id, uint8_t status);
 
@@ -131,14 +131,14 @@ static void pcIntCallback(uint8_t id, uint8_t status);
  * Function Implementations
  *---------------------------------------------------------------------------*/
 
-static void updateOutput() {
+static void updateOutput(uint8_t skipDiagCheck) {
 
 	#if act_protectedOutput_CH_COUNT >= 1
-	if (outputStateTarget[0] == 0) {
+	if (chTargetState[0] == 0) {
 		gpio_set_statement(CH0_OFF, CH0_PIN);
 	}
-	else if (outputStateTarget[0] == 1) {
-		if (diagState == DIAG_NORMAL) {
+	else if (chTargetState[0] == 1) {
+		if (diagState == DIAG_NORMAL || skipDiagCheck) {
 			gpio_set_statement(CH0_ON, CH0_PIN);
 		}
 		else {
@@ -149,11 +149,11 @@ static void updateOutput() {
 	#endif
 
 	#if act_protectedOutput_CH_COUNT >= 2
-	if (outputStateTarget[1] == 0) {
+	if (chTargetState[1] == 0) {
 		gpio_set_statement(CH1_OFF, CH1_PIN);
 	}
-	else if (outputStateTarget[1] == 1) {
-		if (diagState == DIAG_NORMAL) {
+	else if (chTargetState[1] == 1) {
+		if (diagState == DIAG_NORMAL || skipDiagCheck) {
 			gpio_set_statement(CH1_ON, CH1_PIN);
 		}
 		else {
@@ -164,11 +164,11 @@ static void updateOutput() {
 	#endif
 
 	#if act_protectedOutput_CH_COUNT >= 3
-	if (outputStateTarget[2] == 0) {
+	if (chTargetState[2] == 0) {
 		gpio_set_statement(CH2_OFF, CH2_PIN);
 	}
-	else if (outputStateTarget[2] == 1) {
-		if (diagState == DIAG_NORMAL) {
+	else if (chTargetState[2] == 1) {
+		if (diagState == DIAG_NORMAL || skipDiagCheck) {
 			gpio_set_statement(CH2_ON, CH2_PIN);
 		}
 		else {
@@ -179,11 +179,11 @@ static void updateOutput() {
 	#endif
 
 	#if act_protectedOutput_CH_COUNT >= 4
-	if (outputStateTarget[3] == 0) {
+	if (chTargetState[3] == 0) {
 		gpio_set_statement(CH3_OFF, CH3_PIN);
 	}
-	else if (outputStateTarget[3] == 1) {
-		if (diagState == DIAG_NORMAL) {
+	else if (chTargetState[3] == 1) {
+		if (diagState == DIAG_NORMAL || skipDiagCheck) {
 			gpio_set_statement(CH3_ON, CH3_PIN);
 		}
 		else {
@@ -204,7 +204,7 @@ static void pcIntCallback(uint8_t id, uint8_t status) {
 	// new state of the DIAG pin?
 	if (id == act_protectedOutput_DIAG_PIN_PCINT) {
 		diagState = status;
-		updateOutput();
+		updateOutput(0);
 		// DIAG asserted?
 		if (diagState == DIAG_ASSERTED) {
 			// if retry-timer mechanism is enabled, initiate timer
@@ -214,8 +214,12 @@ static void pcIntCallback(uint8_t id, uint8_t status) {
 			// if the retry-mechanism is disabled, change the target output state to OFF
 			else {
 				for (uint8_t i=0; i<act_protectedOutput_CH_COUNT; i++) {
-					outputStateTarget[i] = 0;
+					chTargetState[i] = 0;
 				}
+#if act_protectedOutput_EEPROM_ENABLED == 1
+				// output states changed, store to EE after this timer delay
+				Timer_SetTimeout(act_protectedOutput_STORE_VALUE_TIMEOUT, act_protectedOutput_STORE_VALUE_TIMEOUT_TIME_S*1000, TimerTypeOneShot, 0);
+#endif
 			}
 		}
 		// something interesting obviously happened. let's report it
@@ -229,7 +233,7 @@ void act_protectedOutput_Init() {
 	 * Init target state vector, in case EEPROM is disabled
 	 */
 	for (uint8_t i=0; i<act_protectedOutput_CH_COUNT; i++) {
-		outputStateTarget[i] = 0;
+		chTargetState[i] = 0;
 	}
 
 	/*
@@ -248,16 +252,16 @@ void act_protectedOutput_Init() {
 #if act_protectedOutput_EEPROM_ENABLED == 1
 	if (EEDATA_OK) {
 #if	act_protectedOutput_CH_COUNT >= 1
-	  outputStateTarget[0] = eeprom_read_byte(EEDATA.ch0);
+	  chTargetState[0] = eeprom_read_byte(EEDATA.ch0);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 2
-	  outputStateTarget[1] = eeprom_read_byte(EEDATA.ch1);
+	  chTargetState[1] = eeprom_read_byte(EEDATA.ch1);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 3
-	  outputStateTarget[2] = eeprom_read_byte(EEDATA.ch2);
+	  chTargetState[2] = eeprom_read_byte(EEDATA.ch2);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 4
-	  outputStateTarget[3] = eeprom_read_byte(EEDATA.ch3);
+	  chTargetState[3] = eeprom_read_byte(EEDATA.ch3);
 #endif
 	}
 	else {
@@ -310,16 +314,16 @@ void act_protectedOutput_Process() {
 #if act_protectedOutput_EEPROM_ENABLED == 1
 	if (Timer_Expired(act_protectedOutput_STORE_VALUE_TIMEOUT)) {
 #if	act_protectedOutput_CH_COUNT >= 1
-		eeprom_write_byte_crc(EEDATA.ch0, outputStateTarget[0], WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch0, chTargetState[0], WITHOUT_CRC);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 2
-		eeprom_write_byte_crc(EEDATA.ch1, outputStateTarget[1], WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch1, chTargetState[1], WITHOUT_CRC);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 3
-		eeprom_write_byte_crc(EEDATA.ch2, outputStateTarget[2], WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch2, chTargetState[2], WITHOUT_CRC);
 #endif
 #if	act_protectedOutput_CH_COUNT >= 4
-		eeprom_write_byte_crc(EEDATA.ch3, outputStateTarget[3], WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch3, chTargetState[3], WITHOUT_CRC);
 #endif
 		EEDATA_UPDATE_CRC;
 	}
@@ -329,7 +333,15 @@ void act_protectedOutput_Process() {
 	if (Timer_Expired(act_protectedOutput_RETRY_TIMER)) {
 		// read DIAG pin again and update outputs accordingly
 		readDiagPin();
-		updateOutput();
+#if act_protectedOutput_FORCED_RETRIES == 1
+		// forced retry to set output states, regardless of DIAG
+		updateOutput(1);
+		// read DIAG pin again and hope we have a better flag
+		readDiagPin();
+#else
+		// if DIAG allows it, retry to set the output states
+		updateOutput(0);
+#endif
 		if (diagState == DIAG_ASSERTED) {
 			// if DIAG was still asserted, initiate another timer run
 			Timer_SetTimeout(act_protectedOutput_RETRY_TIMER, act_protectedOutput_RETRY_TIMER_TIME_S*1000, TimerTypeOneShot, 0);
@@ -378,14 +390,18 @@ void act_protectedOutput_HandleMessage(StdCan_Msg_t *rxMsg) {
 				if (rxMsg->Length == 2) {
 					uint8_t channel = rxMsg->Data[0];
 					if (channel >= 0 && channel < act_protectedOutput_CH_COUNT) {
-						outputStateTarget[channel] = rxMsg->Data[1];
+						chTargetState[channel] = rxMsg->Data[1];
 						readDiagPin();
-						updateOutput();
+#if act_protectedOutput_FORCED_RETRIES == 1
+						updateOutput(1);
+#else
+						updateOutput(0);
+#endif
 #if act_protectedOutput_EEPROM_ENABLED == 1
-						// output states changed, store to EE after thie timer delay
+						// output states changed, store to EE after this timer delay
 						Timer_SetTimeout(act_protectedOutput_STORE_VALUE_TIMEOUT, act_protectedOutput_STORE_VALUE_TIMEOUT_TIME_S*1000, TimerTypeOneShot, 0);
 #endif
-					}				
+					}
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 					rxMsg->Length = 2;
 					while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
