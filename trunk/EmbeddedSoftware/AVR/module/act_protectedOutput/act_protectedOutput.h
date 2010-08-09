@@ -20,7 +20,7 @@
 #include <drivers/mcu/pcint.h>
 
 
-#ifdef act_protectedOutput_EEPROM_ENABLED
+#if act_protectedOutput_EEPROM_ENABLED == 1
 	typedef struct {
 		///TODO: Define EEPROM variables needed by the module
 #if	act_protectedOutput_CH_COUNT >= 1
