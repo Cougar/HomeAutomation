@@ -246,10 +246,7 @@ void act_protectedOutput_Init() {
 	 * Read EEPROM data
 	 */
 #ifdef act_protectedOutput_EEPROM_ENABLED
-	if (EEDATA_OK)
-	{
-	  ///TODO: Use stored data to set initial values for the module
-	  uint8_t index = 0;
+	if (EEDATA_OK) {
 #if	act_protectedOutput_CH_COUNT >= 1
 	  outputStateTarget[0] = eeprom_read_byte(EEDATA.ch0);
 #endif
@@ -310,6 +307,22 @@ void act_protectedOutput_Init() {
 
 void act_protectedOutput_Process() {
 
+	if (Timer_Expired(act_protectedOutput_STORE_VALUE_TIMEOUT)) {
+#if	act_protectedOutput_CH_COUNT >= 1
+		eeprom_write_byte_crc(EEDATA.ch0, outputStateTarget[0], WITHOUT_CRC);
+#endif
+#if	act_protectedOutput_CH_COUNT >= 2
+		eeprom_write_byte_crc(EEDATA.ch1, outputStateTarget[1], WITHOUT_CRC);
+#endif
+#if	act_protectedOutput_CH_COUNT >= 3
+		eeprom_write_byte_crc(EEDATA.ch2, outputStateTarget[2], WITHOUT_CRC);
+#endif
+#if	act_protectedOutput_CH_COUNT >= 4
+		eeprom_write_byte_crc(EEDATA.ch3, outputStateTarget[3], WITHOUT_CRC);
+#endif
+		EEDATA_UPDATE_CRC;
+	}
+
 	// shall we retry to set target output state?
 	if (Timer_Expired(act_protectedOutput_RETRY_TIMER)) {
 		// read DIAG pin again and update outputs accordingly
@@ -366,6 +379,8 @@ void act_protectedOutput_HandleMessage(StdCan_Msg_t *rxMsg) {
 						outputStateTarget[channel] = rxMsg->Data[1];
 						readDiagPin();
 						updateOutput();
+						// output states changed, store to EE after thie timer delay
+						Timer_SetTimeout(act_protectedOutput_STORE_VALUE_TIMEOUT, act_protectedOutput_STORE_VALUE_TIMEOUT_TIME_S*1000, TimerTypeOneShot, 0);
 					}				
 					StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
 					rxMsg->Length = 2;
