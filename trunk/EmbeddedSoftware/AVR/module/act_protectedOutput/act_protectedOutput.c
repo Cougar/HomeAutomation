@@ -203,7 +203,8 @@ static void readDiagPin() {
 static void pcIntCallback(uint8_t id, uint8_t status) {
 	// new state of the DIAG pin?
 	if (id == act_protectedOutput_DIAG_PIN_PCINT) {
-		diagState = status;
+		//diagState = status;
+		readDiagPin();
 		updateOutput(0);
 		// DIAG asserted?
 		if (diagState == DIAG_ASSERTED) {
