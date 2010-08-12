@@ -233,6 +233,28 @@
 	    </variable>
       </variables>
     </command>
+
+    <command id="128" name="AnalogConfig" type="specific" module="inputAnalog" description="Configuration for analog input module">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="4" unit="" description="Which input to configure"/>
+        <variable name="Setting" type="enum" start_bit="4" bit_length="4" unit="" description="">
+        	<value id="0" name="PeriodicMeasure"/>
+	    	<value id="1" name="DigitalInput"/>
+	    </variable>
+        <variable name="Pullup" type="enum" start_bit="8" bit_length="1" unit="" description="Enable pullup on sensor">
+        	<value id="0" name="Disable"/>
+	    	<value id="1" name="Enable"/>
+	    </variable>
+        <variable name="Reference" type="enum" start_bit="9" bit_length="1" unit="" description="Enable GND reference on sensor">
+        	<value id="0" name="Disable"/>
+	    	<value id="1" name="Enable"/>
+	    </variable>
+        <variable name="VoltageLowTh" type="float" start_bit="10" bit_length="16" unit="Volt" description="Low threshold for digital input"/>
+        <variable name="VoltageHighTh" type="float" start_bit="26" bit_length="16" unit="Volt" description="High threshold for digital input"/>
+        <variable name="Periodicity" type="uint" start_bit="42" bit_length="16" unit="Millisecond" description="The periodicity at which the sensorvalue is sent during periodic measure"/>
+      </variables>
+    </command>
+
     <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
 	<variables>
 	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
@@ -736,6 +758,7 @@
     <module id="47" name="VoltageCurrent" class="sns"/>
     <module id="48" name="Serial" class="sns"/>
     <module id="49" name="protectedOutput" class="sns"/>
+    <module id="50" name="inputAnalog" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>

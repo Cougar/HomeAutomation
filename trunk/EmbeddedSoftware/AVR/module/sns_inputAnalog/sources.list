@@ -1,0 +1,8 @@
+# List all files that needs to be compiled here
+drivers/adc/adc.c
+sns_inputAnalog/sns_inputAnalog.c
+drivers/io/PCA95xx.c
+#Uncomment the line below if you want to use EEPROM with this module
+#drivers/misc/eeprom_crc8.c
+#Uncomment the line below if you want to use the PCINT lib in this module
+#drivers/mcu/pcint.c

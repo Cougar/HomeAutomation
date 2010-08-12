@@ -1,0 +1,57 @@
+## Section sns_inputAnalog -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_inputAnalog_USEEEPROM=1
+
+sns_inputAnalog_ID=<ID>
+sns_inputAnalog_TIMER=<TIMER>
+#The resolution of sensor reading, should not be set lower than 10ms
+sns_inputAnalog_POLL_PERIOD_MS=20
+
+#Uncomment to use the pcint driver
+#sns_inputAnalog_DUMMY_PCINT=<PCINT>
+
+#Set this parameter to the number of supported sensors
+sns_inputAnalog_NUM_SUPPORTED=4
+
+### Config first voltage port ###
+# AD channel
+sns_inputAnalog0AD=4
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_inputAnalog0Factor=33.3333
+# Choose AD scaling
+sns_inputAnalog0Scale=10
+
+### Config second voltage port ###
+# AD channel
+sns_inputAnalog1AD=1
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_inputAnalog1Factor=33.3333
+# Choose AD scaling
+sns_inputAnalog1Scale=10
+
+### Config third voltage port ###
+# AD channel
+sns_inputAnalog2AD=0
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_inputAnalog2Factor=0.002151
+# Choose AD scaling
+sns_inputAnalog2Scale=10
+
+### Config fourth voltage port ###
+# AD channel
+sns_inputAnalog3AD=2
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_inputAnalog3Factor=0.002151
+# Choose AD scaling
+sns_inputAnalog3Scale=10
+
+
+#USE_PCA95XX=1
+
+
+## End section sns_inputAnalog -- Do not edit this line
