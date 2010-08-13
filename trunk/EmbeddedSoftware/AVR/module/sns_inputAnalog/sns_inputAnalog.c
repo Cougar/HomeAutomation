@@ -1,6 +1,5 @@
 
 #include "sns_inputAnalog.h"
-//TODO: pullups, references
 
 struct {
 	uint8_t				Status;			//Used for digital input, high or low
@@ -65,14 +64,192 @@ struct eeprom_sns_inputAnalog EEMEM eeprom_sns_inputAnalog =
 }; 
 #endif
 
+/* Will set up pullup enable outputs according config */
 void setPullups(void)
 {
+	if (sns_inputAnalog_Config[0].PullupEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_ENABLE)
+	{
+#if sns_inputAnalog0PullupPCA95xx==0
+		gpio_set_pin(sns_inputAnalog0Pullup);
+		gpio_set_out(sns_inputAnalog0Pullup);
+#else
+		Pca95xx_set_pin(sns_inputAnalog0Pullup);
+		Pca95xx_set_out(sns_inputAnalog0Pullup);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog0PullupPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog0Pullup);
+		gpio_set_out(sns_inputAnalog0Pullup);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog0Pullup);
+		Pca95xx_set_out(sns_inputAnalog0Pullup);
+#endif
+	}
 	
+#if sns_inputAnalog_NUM_SUPPORTED>=2
+	if (sns_inputAnalog_Config[1].PullupEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_ENABLE)
+	{
+#if sns_inputAnalog1PullupPCA95xx==0
+		gpio_set_pin(sns_inputAnalog1Pullup);
+		gpio_set_out(sns_inputAnalog1Pullup);
+#else
+		Pca95xx_set_pin(sns_inputAnalog1Pullup);
+		Pca95xx_set_out(sns_inputAnalog1Pullup);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog1PullupPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog1Pullup);
+		gpio_set_out(sns_inputAnalog1Pullup);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog1Pullup);
+		Pca95xx_set_out(sns_inputAnalog1Pullup);
+#endif
+	}
+#endif
+
+#if sns_inputAnalog_NUM_SUPPORTED>=3
+	if (sns_inputAnalog_Config[2].PullupEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_ENABLE)
+	{
+#if sns_inputAnalog2PullupPCA95xx==0
+		gpio_set_pin(sns_inputAnalog2Pullup);
+		gpio_set_out(sns_inputAnalog2Pullup);
+#else
+		Pca95xx_set_pin(sns_inputAnalog2Pullup);
+		Pca95xx_set_out(sns_inputAnalog2Pullup);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog2PullupPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog2Pullup);
+		gpio_set_out(sns_inputAnalog2Pullup);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog2Pullup);
+		Pca95xx_set_out(sns_inputAnalog2Pullup);
+#endif
+	}
+#endif
+
+#if sns_inputAnalog_NUM_SUPPORTED>=4
+	if (sns_inputAnalog_Config[3].PullupEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_ENABLE)
+	{
+#if sns_inputAnalog3PullupPCA95xx==0
+		gpio_set_pin(sns_inputAnalog3Pullup);
+		gpio_set_out(sns_inputAnalog3Pullup);
+#else
+		Pca95xx_set_pin(sns_inputAnalog3Pullup);
+		Pca95xx_set_out(sns_inputAnalog3Pullup);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog3PullupPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog3Pullup);
+		gpio_set_out(sns_inputAnalog3Pullup);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog3Pullup);
+		Pca95xx_set_out(sns_inputAnalog3Pullup);
+#endif
+	}
+#endif
 }
 
+/* Will set up reference enable outputs according config */
 void setReferences(void)
 {
+	if (sns_inputAnalog_Config[0].RefEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_ENABLE)
+	{
+#if sns_inputAnalog0RefPCA95xx==0
+		gpio_set_pin(sns_inputAnalog0Ref);
+		gpio_set_out(sns_inputAnalog0Ref);
+#else
+		Pca95xx_set_pin(sns_inputAnalog0Ref);
+		Pca95xx_set_out(sns_inputAnalog0Ref);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog0RefPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog0Ref);
+		gpio_set_out(sns_inputAnalog0Ref);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog0Ref);
+		Pca95xx_set_out(sns_inputAnalog0Ref);
+#endif
+	}
 	
+#if sns_inputAnalog_NUM_SUPPORTED>=2
+	if (sns_inputAnalog_Config[1].RefEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_ENABLE)
+	{
+#if sns_inputAnalog1RefPCA95xx==0
+		gpio_set_pin(sns_inputAnalog1Ref);
+		gpio_set_out(sns_inputAnalog1Ref);
+#else
+		Pca95xx_set_pin(sns_inputAnalog1Ref);
+		Pca95xx_set_out(sns_inputAnalog1Ref);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog1RefPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog1Ref);
+		gpio_set_out(sns_inputAnalog1Ref);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog1Ref);
+		Pca95xx_set_out(sns_inputAnalog1Ref);
+#endif
+	}
+#endif
+
+#if sns_inputAnalog_NUM_SUPPORTED>=3
+	if (sns_inputAnalog_Config[2].RefEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_ENABLE)
+	{
+#if sns_inputAnalog2RefPCA95xx==0
+		gpio_set_pin(sns_inputAnalog2Ref);
+		gpio_set_out(sns_inputAnalog2Ref);
+#else
+		Pca95xx_set_pin(sns_inputAnalog2Ref);
+		Pca95xx_set_out(sns_inputAnalog2Ref);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog2RefPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog2Ref);
+		gpio_set_out(sns_inputAnalog2Ref);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog2Ref);
+		Pca95xx_set_out(sns_inputAnalog2Ref);
+#endif
+	}
+#endif
+
+#if sns_inputAnalog_NUM_SUPPORTED>=4
+	if (sns_inputAnalog_Config[3].RefEnable==CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_ENABLE)
+	{
+#if sns_inputAnalog3RefPCA95xx==0
+		gpio_set_pin(sns_inputAnalog3Ref);
+		gpio_set_out(sns_inputAnalog3Ref);
+#else
+		Pca95xx_set_pin(sns_inputAnalog3Ref);
+		Pca95xx_set_out(sns_inputAnalog3Ref);
+#endif
+	}
+	else
+	{
+#if sns_inputAnalog3RefPCA95xx==0
+		gpio_clr_pin(sns_inputAnalog3Ref);
+		gpio_set_out(sns_inputAnalog3Ref);
+#else
+		Pca95xx_clr_pin(sns_inputAnalog3Ref);
+		Pca95xx_set_out(sns_inputAnalog3Ref);
+#endif
+	}
+#endif	
 }
 
 void sns_inputAnalog_Init(void)
@@ -110,6 +287,9 @@ void sns_inputAnalog_Init(void)
 	}
 #endif  
 
+#if sns_inputAnalog_ENABLE_PCA95xx==1
+	Pca95xx_Init(0);
+#endif 
 	/* Initiate ADC */
 	ADC_Init();
 	/* Start timer for reading inputs */
