@@ -22,6 +22,13 @@ sns_inputAnalog0AD=4
 sns_inputAnalog0Factor=33.3333
 # Choose AD scaling
 sns_inputAnalog0Scale=10
+#Pullup enable port
+sns_inputAnalog0Pullup=GPIO_D0
+sns_inputAnalog0PullupPCA95xx=0
+#GND Reference enable port
+sns_inputAnalog0Ref=GPIO_D1
+sns_inputAnalog0RefPCA95xx=0
+
 
 ### Config second voltage port ###
 # AD channel
@@ -31,6 +38,13 @@ sns_inputAnalog1AD=1
 sns_inputAnalog1Factor=33.3333
 # Choose AD scaling
 sns_inputAnalog1Scale=10
+#Pullup enable port
+sns_inputAnalog1Pullup=GPIO_D2
+sns_inputAnalog1PullupPCA95xx=0
+#GND Reference enable port
+sns_inputAnalog1Ref=GPIO_D4
+sns_inputAnalog1RefPCA95xx=0
+
 
 ### Config third voltage port ###
 # AD channel
@@ -40,6 +54,13 @@ sns_inputAnalog2AD=0
 sns_inputAnalog2Factor=0.002151
 # Choose AD scaling
 sns_inputAnalog2Scale=10
+#Pullup enable port
+sns_inputAnalog2Pullup=GPIO_D5
+sns_inputAnalog2PullupPCA95xx=0
+#GND Reference enable port
+sns_inputAnalog2Ref=GPIO_D6
+sns_inputAnalog2RefPCA95xx=0
+
 
 ### Config fourth voltage port ###
 # AD channel
@@ -49,6 +70,12 @@ sns_inputAnalog3AD=2
 sns_inputAnalog3Factor=0.002151
 # Choose AD scaling
 sns_inputAnalog3Scale=10
+#Pullup enable port
+sns_inputAnalog3Pullup=GPIO_D7
+sns_inputAnalog3PullupPCA95xx=0
+#GND Reference enable port
+sns_inputAnalog3Ref=GPIO_B0
+sns_inputAnalog3RefPCA95xx=0
 
 
 #USE_PCA95XX=1

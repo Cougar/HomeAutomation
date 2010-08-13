@@ -55,4 +55,11 @@ struct sns_inputAnalog_Config{
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 
+#if sns_inputAnalog0PullupPCA95xx==1 | sns_inputAnalog1PullupPCA95xx==1 | sns_inputAnalog2PullupPCA95xx==1 | sns_inputAnalog3PullupPCA95xx==1 | sns_inputAnalog0RefPCA95xx==1 | sns_inputAnalog1RefPCA95xx==1 | sns_inputAnalog2RefPCA95xx==1 | sns_inputAnalog3RefPCA95xx==1
+#define sns_inputAnalog_ENABLE_PCA95xx 1
+#else
+#define sns_inputAnalog_ENABLE_PCA95xx 0
+#endif
+
+
 #endif // SNS_INPUTANALOG
