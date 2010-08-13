@@ -1,6 +1,6 @@
 
 #include "sns_inputAnalog.h"
-//TODO: Config over CAN, save to eeprom, pullups, references
+//TODO: pullups, references
 
 struct {
 	uint8_t				Status;			//Used for digital input, high or low
@@ -65,6 +65,16 @@ struct eeprom_sns_inputAnalog EEMEM eeprom_sns_inputAnalog =
 }; 
 #endif
 
+void setPullups(void)
+{
+	
+}
+
+void setReferences(void)
+{
+	
+}
+
 void sns_inputAnalog_Init(void)
 {
 #ifdef sns_inputAnalog_USEEEPROM
@@ -93,15 +103,21 @@ void sns_inputAnalog_Init(void)
 			eeprom_update_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
 #else
 			eeprom_write_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
-			#warning Using old version of AVRlibc
+			#warning Using old version of AVRlibc, does not support eeprom_update-functions
 #endif
 		}
 		EEDATA_UPDATE_CRC;
 	}
 #endif  
 
+	/* Initiate ADC */
 	ADC_Init();
+	/* Start timer for reading inputs */
 	Timer_SetTimeout(sns_inputAnalog_TIMER, sns_inputAnalog_POLL_PERIOD_MS , TimerTypeFreeRunning, 0);
+	/* Set pullups according config */
+	setPullups();
+	/* Set gnd references according config */
+	setReferences();
 }
 
 void sns_inputAnalog_Process(void)
@@ -215,24 +231,77 @@ void sns_inputAnalog_Process(void)
 				}
 			}
 		}
-
 	}
 }
 
 void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-/*	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
+	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
 		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_INPUTANALOG && 
 		rxMsg->Header.ModuleId == sns_inputAnalog_ID)
 	{
+		uint8_t index=0;
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_DUMMY:
-		///TODO: Do something dummy
-		break;
+		case CAN_MODULE_CMD_INPUTANALOG_ANALOGCONFIG:
+			/* Find sensor id from incoming data */
+			index=rxMsg->Data[0]&0x0f;
+			/* Check if sensor id is in range */
+			if (index < sns_inputAnalog_NUM_SUPPORTED)
+			{
+				/* Save all config values */
+				sns_inputAnalog_Config[index].Type=(rxMsg->Data[0]>>4)&0x03;
+				sns_inputAnalog_Config[index].PullupEnable=(rxMsg->Data[0]>>6)&0x01;
+				sns_inputAnalog_Config[index].RefEnable=(rxMsg->Data[0]>>7)&0x01;
+				sns_inputAnalog_Config[index].LowTh=(rxMsg->Data[2])|(rxMsg->Data[1]<<8);
+				sns_inputAnalog_Config[index].HighTh=(rxMsg->Data[4])|(rxMsg->Data[3]<<8);
+				sns_inputAnalog_Config[index].Periodicity=(rxMsg->Data[6])|(rxMsg->Data[5]<<8);
+				
+				/* Convert voltage to AD value (0-1023) acording static config parameters */
+				switch (index)
+				{
+					case 0:
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog0Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog0Factor;
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog0Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog0Factor;
+						break;
+					case 1:
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog1Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog1Factor;
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog1Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog1Factor;
+						break;
+					case 2:
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog2Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog2Factor;
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog2Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog2Factor;
+						break;
+					case 3:
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog3Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog3Factor;
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog3Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog3Factor;
+						break;
+				}
+				
+				/* Store config to eeprom */
+#if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >= 7)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
+				eeprom_update_block( &sns_inputAnalog_Config[index], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*index, sizeof(sns_inputAnalog_Config) );
+#else
+				eeprom_write_block( &sns_inputAnalog_Config[index], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*index, sizeof(sns_inputAnalog_Config) );
+				#warning Using old version of AVRlibc, does not support eeprom_update-functions
+#endif
+			}
+			break;
 		}
-	}*/
+		/* Set pullups according config */
+		setPullups();
+		/* Set gnd references according config */
+		setReferences();
+	}
 }
 
 void sns_inputAnalog_List(uint8_t ModuleSequenceNumber)
