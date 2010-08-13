@@ -1,7 +1,7 @@
 ## Section sns_inputAnalog -- Do not edit this line
 
 #Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
-#sns_inputAnalog_USEEEPROM=1
+sns_inputAnalog_USEEEPROM=1
 
 sns_inputAnalog_ID=<ID>
 sns_inputAnalog_TIMER=<TIMER>

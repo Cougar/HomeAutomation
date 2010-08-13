@@ -1,19 +1,13 @@
 
 #include "sns_inputAnalog.h"
-
-struct {
-	uint16_t			LowTh;			//Config, low level threshold voltage
-	uint16_t			HighTh;			//Config, high level threshold voltage
-	uint16_t			Periodicity;	//Config, periodicity
-	uint8_t				Type;			//Config, if sensor is of type periodic or digital input
-	uint8_t				PullupEnable;	//Config, if the pullup should be enabled
-	uint8_t				RefEnable;		//Config, if the reference to GND should be enabled
-} sns_inputAnalog_Config[sns_inputAnalog_NUM_SUPPORTED];
+//TODO: Config over CAN, save to eeprom, pullups, references
 
 struct {
 	uint8_t				Status;			//Used for digital input, high or low
 	uint16_t			PeriodCnt;		//Counter for periodicity
+	uint16_t			LastSentAdVal;	//Remember the last sent AD value
 } sns_inputAnalog_Sensor[sns_inputAnalog_NUM_SUPPORTED];
+
 
 #define HIGH		1
 #define LOW			2
@@ -25,9 +19,47 @@ struct {
 struct eeprom_sns_inputAnalog EEMEM eeprom_sns_inputAnalog = 
 {
 	{
-		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
-		0xAB,	// x
-		0x1234	// y
+		{
+		/* Define initialization values on the EEPROM variables here, this will generate a *.eep file 
+		that can be used to store this values to the node, can in future be done with a EEPROM module 
+		and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file.  */
+		1*sns_inputAnalog0Factor/(2^sns_inputAnalog0Scale),	//Config, low level threshold voltage, (1 volt)
+		2*sns_inputAnalog0Factor/(2^sns_inputAnalog0Scale),	//Config, high level threshold voltage, (2 volts)
+		4800,	//Config, periodicity
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE,	//Config, if sensor is of type periodic or digital input
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE,			//Config, if the pullup should be enabled
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE,			//Config, if the reference to GND should be enabled
+		},
+#if sns_inputAnalog_NUM_SUPPORTED>=2
+		{
+		1*sns_inputAnalog1Factor/(2^sns_inputAnalog1Scale),	//Config, low level threshold voltage, (1 volt)
+		2*sns_inputAnalog1Factor/(2^sns_inputAnalog1Scale),	//Config, high level threshold voltage, (2 volts)
+		4900,	
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE,	//Config, if sensor is of type periodic or digital input
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE,			//Config, if the pullup should be enabled
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE,			//Config, if the reference to GND should be enabled
+		},
+#endif
+#if sns_inputAnalog_NUM_SUPPORTED>=3
+		{
+		1*sns_inputAnalog2Factor/(2^sns_inputAnalog2Scale),	//Config, low level threshold voltage
+		2*sns_inputAnalog2Factor/(2^sns_inputAnalog2Scale),	//Config, high level threshold voltage, (2 volts)
+		5100,
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE,	//Config, if sensor is of type periodic or digital input
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE,			//Config, if the pullup should be enabled
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE,			//Config, if the reference to GND should be enabled
+		},
+#endif
+#if sns_inputAnalog_NUM_SUPPORTED>=4
+		{
+		1*sns_inputAnalog3Factor/(2^sns_inputAnalog3Scale),	//Config, low level threshold voltage
+		2*sns_inputAnalog3Factor/(2^sns_inputAnalog3Scale),	//Config, high level threshold voltage, (2 volts)
+		5200,
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE,	//Config, if sensor is of type periodic or digital input
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE,			//Config, if the pullup should be enabled
+		CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE,			//Config, if the reference to GND should be enabled
+		}
+#endif
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 }; 
@@ -38,14 +70,28 @@ void sns_inputAnalog_Init(void)
 #ifdef sns_inputAnalog_USEEEPROM
 	if (EEDATA_OK)
 	{
-	  ///TODO: Use stored data to set initial values for the module
-	  blablaX = eeprom_read_byte(EEDATA.x);
-	  blablaY = eeprom_read_word(EEDATA.y);
-	} else
-	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-	  eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
-	  eeprom_write_word_crc(EEDATA.y, 0x1234, WITHOUT_CRC);
-	  EEDATA_UPDATE_CRC;
+		/* Use stored data to set initial values for the module */
+		for (uint8_t i=0; i<sns_inputAnalog_NUM_SUPPORTED; i++)
+		{
+			//eeprom_write_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog, sizeof(sns_inputAnalog_Config)*i );
+			eeprom_read_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
+		}
+	} 
+	else
+	{
+		/* The CRC of the EEPROM is not correct, store default values and update CRC */
+		for (uint8_t i=0; i<sns_inputAnalog_NUM_SUPPORTED; i++)
+		{
+			sns_inputAnalog_Config[i].LowTh=50;			//Config, low level threshold voltage
+			sns_inputAnalog_Config[i].HighTh=100;		//Config, high level threshold voltage
+			sns_inputAnalog_Config[i].Periodicity=5000;	//Config, periodicity
+			sns_inputAnalog_Config[i].Type=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE;	//Config, if sensor is of type periodic or digital input
+			sns_inputAnalog_Config[i].PullupEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE;		//Config, if the pullup should be enabled
+			sns_inputAnalog_Config[i].RefEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE;		//Config, if the reference to GND should be enabled
+			
+			eeprom_update_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
+		}
+		EEDATA_UPDATE_CRC;
 	}
 #endif  
 
@@ -64,28 +110,23 @@ void sns_inputAnalog_Process(void)
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_INPUTANALOG;
 		txMsg.Header.ModuleId = sns_inputAnalog_ID;
 
-		uint16_t AdValue;
+		uint16_t AdValue=0;
 		/* For each channel */
 		for (uint8_t i=0; i<sns_inputAnalog_NUM_SUPPORTED; i++)
 		{
-			uint8_t analogScale = 10;
-			/* Select some parameters and do reading of AD channel */
+			/* Do reading of AD channel */
 			switch (i)
 			{
 				case 0:
-					analogScale = sns_inputAnalog0Scale;
 					AdValue = ADC_Get(sns_inputAnalog0AD);
 					break;
 				case 1:
-					analogScale = sns_inputAnalog1Scale;
 					AdValue = ADC_Get(sns_inputAnalog1AD);
 					break;
 				case 2:
-					analogScale = sns_inputAnalog2Scale;
 					AdValue = ADC_Get(sns_inputAnalog2AD);
 					break;
 				case 3:
-					analogScale = sns_inputAnalog3Scale;
 					AdValue = ADC_Get(sns_inputAnalog3AD);
 					break;
 			}
@@ -95,35 +136,48 @@ void sns_inputAnalog_Process(void)
 			{
 				/* Count periodicity */
 				sns_inputAnalog_Sensor[i].PeriodCnt += sns_inputAnalog_POLL_PERIOD_MS;
-				/* If periodicity overflowed */
-				if (sns_inputAnalog_Sensor[i].PeriodCnt >= sns_inputAnalog_Config[i].Periodicity)
+				/* If periodicity overflowed or AD value changed more than threshold since last sent value */
+				if (sns_inputAnalog_Sensor[i].PeriodCnt >= sns_inputAnalog_Config[i].Periodicity ||
+					MAX(AdValue,sns_inputAnalog_Sensor[i].LastSentAdVal)-MIN(AdValue,sns_inputAnalog_Sensor[i].LastSentAdVal) > sns_inputAnalog_Config[i].LowTh)
+				//if (sns_inputAnalog_Sensor[i].PeriodCnt >= sns_inputAnalog_Config[i].Periodicity ||
+				//	abs(AdValue-sns_inputAnalog_Sensor[i].LastSentAdVal) > sns_inputAnalog_Config[i].LowTh)
 				{
+					/* Reset periodicity counter */
 					sns_inputAnalog_Sensor[i].PeriodCnt = 0;
+					/* Store value as last sent */
+					sns_inputAnalog_Sensor[i].LastSentAdVal = AdValue;
 					
 					/* send sensor value on CAN with command CAN_MODULE_CMD_PHYSICAL_VOLTAGE */
 					txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
 					txMsg.Length = 3;
 					/* The channel should be transmitted in byte 0 */
 					txMsg.Data[0] = i;
-					/* Select parameter */
+					
+					uint8_t analogScale = 10;
+					/* Select parameters for AD conversion */
 					switch (i)
 					{
 						case 0:
+							analogScale = sns_inputAnalog0Scale;
 							AdValue = AdValue * sns_inputAnalog0Factor;
 							break;
 						case 1:
+							analogScale = sns_inputAnalog1Scale;
 							AdValue = AdValue * sns_inputAnalog1Factor;
 							break;
 						case 2:
+							analogScale = sns_inputAnalog2Scale;
 							AdValue = AdValue * sns_inputAnalog2Factor;
 							break;
 						case 3:
+							analogScale = sns_inputAnalog3Scale;
 							AdValue = AdValue * sns_inputAnalog3Factor;
 							break;
 					}
 					txMsg.Data[1] = (AdValue>>(analogScale-6+8))&0xff;
 					txMsg.Data[2] = (AdValue>>(analogScale-6))&0xff;
 					
+					/* Send value on CAN */
 					while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
 				}
 			}
