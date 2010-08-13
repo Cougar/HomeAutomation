@@ -237,21 +237,21 @@
     <command id="128" name="AnalogConfig" type="specific" module="inputAnalog" description="Configuration for analog input module">
       <variables>
         <variable name="SensorId" type="uint" start_bit="0" bit_length="4" unit="" description="Which input to configure"/>
-        <variable name="Setting" type="enum" start_bit="4" bit_length="4" unit="" description="">
+        <variable name="Setting" type="enum" start_bit="4" bit_length="2" unit="" description="">
         	<value id="0" name="PeriodicMeasure"/>
 	    	<value id="1" name="DigitalInput"/>
 	    </variable>
-        <variable name="Pullup" type="enum" start_bit="8" bit_length="1" unit="" description="Enable pullup on sensor">
+        <variable name="Pullup" type="enum" start_bit="6" bit_length="1" unit="" description="Enable pullup on sensor">
         	<value id="0" name="Disable"/>
 	    	<value id="1" name="Enable"/>
 	    </variable>
-        <variable name="Reference" type="enum" start_bit="9" bit_length="1" unit="" description="Enable GND reference on sensor">
+        <variable name="Reference" type="enum" start_bit="7" bit_length="1" unit="" description="Enable GND reference on sensor">
         	<value id="0" name="Disable"/>
 	    	<value id="1" name="Enable"/>
 	    </variable>
-        <variable name="VoltageLowTh" type="float" start_bit="10" bit_length="16" unit="Volt" description="Low threshold for digital input"/>
-        <variable name="VoltageHighTh" type="float" start_bit="26" bit_length="16" unit="Volt" description="High threshold for digital input"/>
-        <variable name="Periodicity" type="uint" start_bit="42" bit_length="16" unit="Millisecond" description="The periodicity at which the sensorvalue is sent during periodic measure"/>
+        <variable name="VoltageLowTh" type="float" start_bit="8" bit_length="16" unit="Volt" description="Low threshold for digital input"/>
+        <variable name="VoltageHighTh" type="float" start_bit="24" bit_length="16" unit="Volt" description="High threshold for digital input"/>
+        <variable name="Periodicity" type="uint" start_bit="40" bit_length="16" unit="Millisecond" description="The periodicity at which the sensorvalue is sent during periodic measure"/>
       </variables>
     </command>
 
