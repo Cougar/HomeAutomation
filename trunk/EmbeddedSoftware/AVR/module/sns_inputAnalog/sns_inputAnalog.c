@@ -89,7 +89,12 @@ void sns_inputAnalog_Init(void)
 			sns_inputAnalog_Config[i].PullupEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE;		//Config, if the pullup should be enabled
 			sns_inputAnalog_Config[i].RefEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE;		//Config, if the reference to GND should be enabled
 			
+#if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >= 7)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 			eeprom_update_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
+#else
+			eeprom_write_block( &sns_inputAnalog_Config[i], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*i, sizeof(sns_inputAnalog_Config) );
+			#warning Using old version of AVRlibc
+#endif
 		}
 		EEDATA_UPDATE_CRC;
 	}
