@@ -271,7 +271,7 @@ void sns_inputAnalog_Init(void)
 		{
 			sns_inputAnalog_Config[i].LowTh=50;			//Config, low level threshold voltage
 			sns_inputAnalog_Config[i].HighTh=100;		//Config, high level threshold voltage
-			sns_inputAnalog_Config[i].Periodicity=5000;	//Config, periodicity
+			sns_inputAnalog_Config[i].Periodicity=5000+i*100;	//Config, periodicity
 			sns_inputAnalog_Config[i].Type=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_SETTING_PERIODICMEASURE;	//Config, if sensor is of type periodic or digital input
 			sns_inputAnalog_Config[i].PullupEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_PULLUP_DISABLE;		//Config, if the pullup should be enabled
 			sns_inputAnalog_Config[i].RefEnable=CAN_MODULE_ENUM_INPUTANALOG_ANALOGCONFIG_REFERENCE_DISABLE;		//Config, if the reference to GND should be enabled
@@ -426,14 +426,14 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 		{
 		case CAN_MODULE_CMD_INPUTANALOG_ANALOGCONFIG:
 			/* Find sensor id from incoming data */
-			index=rxMsg->Data[0]&0x0f;
+			index=(rxMsg->Data[0]>>4)&0x0f;
 			/* Check if sensor id is in range */
 			if (index < sns_inputAnalog_NUM_SUPPORTED)
 			{
 				/* Save all config values */
-				sns_inputAnalog_Config[index].Type=(rxMsg->Data[0]>>4)&0x03;
-				sns_inputAnalog_Config[index].PullupEnable=(rxMsg->Data[0]>>6)&0x01;
-				sns_inputAnalog_Config[index].RefEnable=(rxMsg->Data[0]>>7)&0x01;
+				sns_inputAnalog_Config[index].Type=(rxMsg->Data[0]>>2)&0x03;
+				sns_inputAnalog_Config[index].PullupEnable=(rxMsg->Data[0]>>1)&0x01;
+				sns_inputAnalog_Config[index].RefEnable=(rxMsg->Data[0]>>0)&0x01;
 				sns_inputAnalog_Config[index].LowTh=(rxMsg->Data[2])|(rxMsg->Data[1]<<8);
 				sns_inputAnalog_Config[index].HighTh=(rxMsg->Data[4])|(rxMsg->Data[3]<<8);
 				sns_inputAnalog_Config[index].Periodicity=(rxMsg->Data[6])|(rxMsg->Data[5]<<8);
@@ -474,6 +474,7 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 				eeprom_write_block( &sns_inputAnalog_Config[index], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*index, sizeof(sns_inputAnalog_Config) );
 				#warning Using old version of AVRlibc, does not support eeprom_update-functions
 #endif
+				EEDATA_UPDATE_CRC;
 			}
 			break;
 		}
