@@ -467,6 +467,7 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 						break;
 				}
 				
+#ifdef sns_inputAnalog_USEEEPROM
 				/* Store config to eeprom */
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >= 7)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 				eeprom_update_block( &sns_inputAnalog_Config[index], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*index, sizeof(sns_inputAnalog_Config) );
@@ -475,6 +476,7 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 				#warning Using old version of AVRlibc, does not support eeprom_update-functions
 #endif
 				EEDATA_UPDATE_CRC;
+#endif
 			}
 			break;
 		}
