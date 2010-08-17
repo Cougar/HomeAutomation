@@ -1,5 +1,5 @@
-#ifndef SNS_BUSVOLTAGE
-#define SNS_BUSVOLTAGE
+#ifndef SNS_TC1047A
+#define SNS_TC1047A
 
 /*-----------------------------------------------------------------------------
  * Includes
