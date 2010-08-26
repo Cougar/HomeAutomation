@@ -244,6 +244,7 @@
 #define CAN_MODULE_TYPE_SNS_SERIAL 48
 #define CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT 49
 #define CAN_MODULE_TYPE_SNS_INPUTANALOG 50
+#define CAN_MODULE_TYPE_SNS_LM335 51
 
 //----------------- //
 // Misc definitions //
