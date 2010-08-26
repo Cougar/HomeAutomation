@@ -759,6 +759,7 @@
     <module id="48" name="Serial" class="sns"/>
     <module id="49" name="protectedOutput" class="sns"/>
     <module id="50" name="inputAnalog" class="sns"/>
+    <module id="51" name="LM335" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
