@@ -23,16 +23,15 @@ static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOP
 void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
-	if (EEDATA_OK)
-	{
-	  ///TODO: Use stored data to set initial values for the module
-	  blablaX = eeprom_read_byte(EEDATA.x);
-	  blablaY = eeprom_read_word(EEDATA16.y);
-	} else
-	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-	  eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
-	  eeprom_write_word_crc(EEDATA16.y, 0x1234, WITHOUT_CRC);
-	  EEDATA_UPDATE_CRC;
+	if (EEDATA_OK) {
+		baudRate = eeprom_read_dword(EEDATA32.baudRate);
+		format = eeprom_read_word(EEDATA16.format);
+	}
+	else {
+		//The CRC of the EEPROM is not correct, store default values and update CRC
+		eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
+		EEDATA_UPDATE_CRC;
 	}
 #endif
 	// default baudrate
@@ -196,7 +195,15 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 #if sns_Serial_DEBUG==1
 					printf("ERROR!\n");
 #endif
+					//break prematurely, to prevent data from being saved in EEPROM
+					break;
 				}
+				
+				// update EEPROM data
+				eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
+				eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
+				EEDATA_UPDATE_CRC;
+				
 				break;
 		}
 	}

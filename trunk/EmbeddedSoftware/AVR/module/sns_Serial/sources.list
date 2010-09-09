@@ -1,7 +1,7 @@
 # List all files that needs to be compiled here
 sns_Serial/sns_Serial.c
 #Uncomment the line below if you want to use EEPROM with this module
-#drivers/misc/eeprom_crc8.c
+drivers/misc/eeprom_crc8.c
 #Uncomment the line below if you want to use the PCINT driver in this module
 #drivers/mcu/pcint.c
 #Uncomment the line below if you want to use the ADC driver in this module

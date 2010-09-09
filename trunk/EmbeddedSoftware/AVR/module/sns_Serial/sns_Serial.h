@@ -28,9 +28,8 @@ void sns_Serial_List(uint8_t ModuleSequenceNumber);
 
 #ifdef sns_Serial_USEEEPROM
 	struct sns_Serial_Data{
-		///TODO: Define EEPROM variables needed by the module
-		uint8_t x;
-		uint16_t y;
+		uint32_t baudRate;
+		uint16_t format;
 	};	
 #endif
 

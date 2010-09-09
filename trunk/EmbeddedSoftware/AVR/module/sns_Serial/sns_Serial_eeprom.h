@@ -9,6 +9,7 @@
 	#include <avr/eeprom.h>
 	#define EEDATA 			(uint8_t*)&eeprom_sns_Serial.Data
 	#define EEDATA16		(uint16_t*)&eeprom_sns_Serial.Data
+	#define EEDATA32		(uint32_t*)&eeprom_sns_Serial.Data
 	#define EEDATA_CALC_CRC		eeprom_crc8((uint8_t*)&eeprom_sns_Serial.Data,sizeof(struct sns_Serial_Data))
 	#define EEDATA_UPDATE_CRC	eeprom_write_byte((uint8_t*)&eeprom_sns_Serial.crc,eeprom_crc8((uint8_t*)&eeprom_sns_Serial.Data,sizeof(struct sns_Serial_Data)))
 	#define EEDATA_OK		EEDATA_CALC_CRC == EEDATA_STORED_CRC
@@ -36,6 +37,16 @@
 	  if (__value != eeprom_read_word(__p))
 	  {
 	    eeprom_write_word(__p, __value);
+	    if (crc == WITH_CRC)
+	    {
+	      EEDATA_UPDATE_CRC;
+	    }
+	  }
+	}
+	static __inline__ void eeprom_write_dword_crc(uint32_t *__p, uint32_t __value, uint8_t crc) {
+	  if (__value != eeprom_read_dword(__p))
+	  {
+	    eeprom_write_dword(__p, __value);
 	    if (crc == WITH_CRC)
 	    {
 	      EEDATA_UPDATE_CRC;
