@@ -24,12 +24,20 @@ void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
 	if (EEDATA_OK) {
+#if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 		baudRate = eeprom_read_dword(EEDATA32.baudRate);
+#else
+#warning This version of AVR-libc does not have support for eeprom read dword
+#endif
 		format = eeprom_read_word(EEDATA16.format);
 	}
 	else {
 		//The CRC of the EEPROM is not correct, store default values and update CRC
+#if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 		eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
+#else
+#warning This version of AVR-libc does not have support for eeprom write dword
+#endif
 		eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
@@ -200,7 +208,11 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				
 				// update EEPROM data
+#if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 				eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
+#else
+#warning This version of AVR-libc does not have support for eeprom read dword
+#endif
 				eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
 				EEDATA_UPDATE_CRC;
 				
