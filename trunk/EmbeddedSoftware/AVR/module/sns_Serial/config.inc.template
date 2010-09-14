@@ -7,6 +7,7 @@ sns_Serial_ID=<ID>
 #sns_Serial_DUMMY=1
 
 sns_Serial_FORCE_SEND_TIMER=<TIMER>
+# Force sending data after a few ms, if set to 0 then data will be sent directly
 sns_Serial_FORCE_SEND_TIME_MS=2
 
 #Uncomment to use the pcint driver

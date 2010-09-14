@@ -105,13 +105,15 @@ void sns_Serial_Process(void)
 			msg.Data[(uint8_t)msg.Length] = c;
 			msg.Length++;
 			
+#if sns_Serial_FORCE_SEND_TIME_MS > 0
 			Timer_SetTimeout(sns_Serial_FORCE_SEND_TIMER, sns_Serial_FORCE_SEND_TIME_MS , TimerTypeOneShot, 0);
+#endif
 		}
 	// keep going until max data length reached, or until uart RXBUF is empty
 	} while (status == 0 && msg.Length < 8);
 	
 	// check if force send or send-frame full
-	if (Timer_Expired(sns_Serial_FORCE_SEND_TIMER) || msg.Length == 8) 
+	if (Timer_Expired(sns_Serial_FORCE_SEND_TIMER) || msg.Length == 8 || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
 	{
 		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
