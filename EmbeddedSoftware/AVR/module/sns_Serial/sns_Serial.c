@@ -23,6 +23,86 @@ static StdCan_Msg_t msg;
 
 #define sns_Serial_DEBUG 0
 
+
+
+uint8_t sns_Serial_setSettings(void)
+{
+	uint8_t returnval = 1;
+	
+	if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232)
+	{
+#if sns_Serial_DEBUG==1
+		printf("RS232\n");
+#endif
+		gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+		gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+		gpio_clr_pin(sns_Serial_485_232);		// RS232 mode
+		gpio_set_pin(sns_Serial_RXEN);			// enable RX
+		gpio_set_pin(sns_Serial_ON);			// enable charge pump
+	}
+	else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485FULLDUPLEX)
+	{
+#if sns_Serial_DEBUG==1
+		printf("RS485FD\n");
+#endif
+		gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+		gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+		gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+		gpio_set_pin(sns_Serial_RXEN);			// enable RX
+		gpio_set_pin(sns_Serial_TXEN);			// enable TX
+		gpio_set_pin(sns_Serial_ON);			// enable charge pump
+	}
+	else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEX)
+	{
+#if sns_Serial_DEBUG==1
+		printf("RS485HD\n");
+#endif
+		gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
+		gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+		gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+		gpio_set_pin(sns_Serial_RXEN);			// enable RX
+	/* TODO shoud the TX really be enabled in half duplex? */
+		gpio_set_pin(sns_Serial_TXEN);			// enable TX
+		gpio_set_pin(sns_Serial_ON);			// enable charge pump
+	}
+	else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEXWITHTERMINATION)
+	{
+#if sns_Serial_DEBUG==1
+		printf("485HDT\n");
+#endif
+		gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
+		gpio_set_pin(sns_Serial_TERM_EN);		// enable termination
+		gpio_set_pin(sns_Serial_485_232);		// RS485 mode
+	/* TODO shoud the TX really be enabled in half duplex? */
+		gpio_set_pin(sns_Serial_RXEN);			// enable RX
+		gpio_set_pin(sns_Serial_TXEN);			// enable TX
+		gpio_set_pin(sns_Serial_ON);			// enable charge pump
+	}
+	else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK)
+	{
+#if sns_Serial_DEBUG==1
+		printf("LPMODE\n");
+#endif
+		gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
+		gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
+		gpio_set_pin(sns_Serial_485_232);		// RS232 mode
+		gpio_set_pin(sns_Serial_RXEN);			// enable RX
+		gpio_set_pin(sns_Serial_TXEN);			// enable TX
+		gpio_clr_pin(sns_Serial_ON);			// disable charge pump (i.e. enable loopback)
+	}
+	else
+	{
+		//invalid format
+#if sns_Serial_DEBUG==1
+		printf("ERROR!\n");
+#endif
+		//return 0, not successful
+		returnval = 0;
+	}
+	
+	return returnval;
+}
+
 void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
@@ -33,6 +113,7 @@ void sns_Serial_Init(void)
 #warning This version of AVR-libc does not have support for eeprom read dword
 #endif
 		format = eeprom_read_word(EEDATA16.format);
+//		printf("y\n");
 	}
 	else {
 		//The CRC of the EEPROM is not correct, store default values and update CRC
@@ -43,28 +124,21 @@ void sns_Serial_Init(void)
 #endif
 		eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
+//		printf("z\n");
 	}
 #endif
 	// default baudrate
 	uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
-	// configure control pins
+	
+	// configure control pins to outputs
 	gpio_set_out(sns_Serial_RXEN);
 	gpio_set_out(sns_Serial_TXEN);
 	gpio_set_out(sns_Serial_ON);
 	gpio_set_out(sns_Serial_485_232);
 	gpio_set_out(sns_Serial_TERM_EN);
 	gpio_set_out(sns_Serial_485_CONNECT);
-	//default to loopback mode until config command received
-	gpio_clr_pin(sns_Serial_ON);
-	gpio_clr_pin(sns_Serial_485_232);
-	gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
-	gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
-	gpio_set_pin(sns_Serial_485_232);		// RS232 mode
-	gpio_set_pin(sns_Serial_RXEN);			// enable RX
-	gpio_set_pin(sns_Serial_TXEN);			// enable TX
 
-	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
-	// Pcint_SetCallbackPin(sns_Serial_PCINT, EXP_C , &sns_Serial_pcint_callback);
+	sns_Serial_setSettings();
 
 #if sns_Serial_DEBUG==1
 	printf("Serial started!\n");
@@ -72,9 +146,6 @@ void sns_Serial_Init(void)
 
 	msg.Length = 0; // no data so far
 }
-
-//unsigned char sData[8];
-//uint8_t dataCnt=0;
 
 void sns_Serial_Process(void)
 {
@@ -113,7 +184,7 @@ void sns_Serial_Process(void)
 	} while (status == 0 && msg.Length < 8);
 	
 	// check if force send or send-frame full
-	if (Timer_Expired(sns_Serial_FORCE_SEND_TIMER) || msg.Length == 8 || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
+	if ((Timer_Expired(sns_Serial_FORCE_SEND_TIMER) && msg.Length>0) || msg.Length == 8 || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
 	{
 		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
@@ -146,88 +217,24 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				baudRate = 10 * (((uint32_t)rxMsg->Data[1] << 0) | ((uint32_t)rxMsg->Data[0] << 8));
 				format = (uint16_t)rxMsg->Data[2];
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
-				if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232)
-				{
-#if sns_Serial_DEBUG==1
-					printf("RS232\n");
-#endif
-					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
-					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
-					gpio_clr_pin(sns_Serial_485_232);		// RS232 mode
-					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_set_pin(sns_Serial_ON);			// enable charge pump
-				}
-				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485FULLDUPLEX)
-				{
-#if sns_Serial_DEBUG==1
-					printf("RS485FD\n");
-#endif
-					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
-					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
-					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
-					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_set_pin(sns_Serial_TXEN);			// enable TX
-					gpio_set_pin(sns_Serial_ON);			// enable charge pump
-				}
-				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEX)
-				{
-#if sns_Serial_DEBUG==1
-					printf("RS485HD\n");
-#endif
-					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
-					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
-					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
-					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-				/* TODO shoud the TX really be enabled in half duplex? */
-					gpio_set_pin(sns_Serial_TXEN);			// enable TX
-					gpio_set_pin(sns_Serial_ON);			// enable charge pump
-				}
-				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS485HALFDUPLEXWITHTERMINATION)
-				{
-#if sns_Serial_DEBUG==1
-					printf("485HDT\n");
-#endif
-					gpio_set_pin(sns_Serial_485_CONNECT);	// enable RS485_CONNECT
-					gpio_set_pin(sns_Serial_TERM_EN);		// enable termination
-					gpio_set_pin(sns_Serial_485_232);		// RS485 mode
-				/* TODO shoud the TX really be enabled in half duplex? */
-					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_set_pin(sns_Serial_TXEN);			// enable TX
-					gpio_set_pin(sns_Serial_ON);			// enable charge pump
-				}
-				else if (format == CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK)
-				{
-#if sns_Serial_DEBUG==1
-					printf("LPMODE\n");
-#endif
-					gpio_clr_pin(sns_Serial_485_CONNECT);	// disable RS485_CONNECT
-					gpio_clr_pin(sns_Serial_TERM_EN);		// disable termination
-					gpio_set_pin(sns_Serial_485_232);		// RS232 mode
-					gpio_set_pin(sns_Serial_RXEN);			// enable RX
-					gpio_set_pin(sns_Serial_TXEN);			// enable TX
-					gpio_clr_pin(sns_Serial_ON);			// disable charge pump (i.e. enable loopback)
-				}
-				else
-				{
-					//invalid format
-#if sns_Serial_DEBUG==1
-					printf("ERROR!\n");
-#endif
-					//break prematurely, to prevent data from being saved in EEPROM
-					break;
-				}
 				
+				uint8_t returnval = sns_Serial_setSettings();
+				
+				if (returnval) 
+				{
 				// update EEPROM data
 #ifdef sns_Serial_USEEEPROM
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
-				eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
+				eeprom_write_dword_crc(EEDATA32.baudRate, baudRate, WITHOUT_CRC);
 #else
 #warning This version of AVR-libc does not have support for eeprom read dword
 #endif
-				eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
+				eeprom_write_word_crc(EEDATA16.format, format, WITHOUT_CRC);
 				EEDATA_UPDATE_CRC;
-#endif
 				
+				printf("x\n");
+#endif
+				}
 				break;
 		}
 	}
