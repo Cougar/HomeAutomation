@@ -208,6 +208,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 				
 				// update EEPROM data
+#ifdef sns_Serial_USEEEPROM
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 				eeprom_write_dword_crc(EEDATA32.baudRate, 9600, WITHOUT_CRC);
 #else
@@ -215,6 +216,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 #endif
 				eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
 				EEDATA_UPDATE_CRC;
+#endif
 				
 				break;
 		}
