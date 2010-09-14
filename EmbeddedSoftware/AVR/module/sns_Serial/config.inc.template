@@ -5,7 +5,9 @@ sns_Serial_USEEEPROM=1
 
 sns_Serial_ID=<ID>
 #sns_Serial_DUMMY=1
-#sns_Serial_DUMMY_TIMER=<TIMER>
+
+sns_Serial_FORCE_SEND_TIMER=<TIMER>
+sns_Serial_FORCE_SEND_TIME_MS=2
 
 #Uncomment to use the pcint driver
 #sns_Serial_DUMMY_PCINT=<PCINT>

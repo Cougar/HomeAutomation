@@ -18,6 +18,9 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 static uint32_t baudRate = 9600;
 static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
 
+// prepare a new message, in case new data is available
+static StdCan_Msg_t msg;
+
 #define sns_Serial_DEBUG 0
 
 void sns_Serial_Init(void)
@@ -66,13 +69,15 @@ void sns_Serial_Init(void)
 #if sns_Serial_DEBUG==1
 	printf("Serial started!\n");
 #endif
+
+	msg.Length = 0; // no data so far
 }
+
+//unsigned char sData[8];
+//uint8_t dataCnt=0;
 
 void sns_Serial_Process(void)
 {
-	// prepare a new message, in case new data is available
-	StdCan_Msg_t msg;
-	msg.Length = 0; // no data so far
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(msg.Header, DIRECTIONFLAG_TO_OWNER);
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_SERIAL;
@@ -99,15 +104,18 @@ void sns_Serial_Process(void)
 			// insert it into the message
 			msg.Data[(uint8_t)msg.Length] = c;
 			msg.Length++;
+			
+			Timer_SetTimeout(sns_Serial_FORCE_SEND_TIMER, sns_Serial_FORCE_SEND_TIME_MS , TimerTypeOneShot, 0);
 		}
 	// keep going until max data length reached, or until uart RXBUF is empty
 	} while (status == 0 && msg.Length < 8);
 	
-	// did we fill any data into the message?
-	if (msg.Length > 0)
+	// check if force send or send-frame full
+	if (Timer_Expired(sns_Serial_FORCE_SEND_TIMER) || msg.Length == 8) 
 	{
 		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
+		msg.Length = 0; // no data so far
 	}
 }
 
