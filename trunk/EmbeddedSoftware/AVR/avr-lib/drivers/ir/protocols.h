@@ -36,6 +36,7 @@ typedef struct {
 #define IR_PROTOCOLS_USE_SAMSUNG	1
 #define IR_PROTOCOLS_USE_MARANTZ	1
 #define IR_PROTOCOLS_USE_PANASONIC	1
+#define IR_PROTOCOLS_USE_SKY		1
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -61,6 +62,9 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 #if (IR_PROTOCOLS_USE_PANASONIC)
 int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+#if (IR_PROTOCOLS_USE_SKY)
+int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+#endif
 /* Try to parse all above protocols until a match is found. */
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 /* The Hash protocol always succeeds and creates a one-way signature of the
@@ -80,6 +84,7 @@ int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
@@ -224,6 +229,20 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_PANA_REPS		1									//		(minimum number of times to repeat code)
 #define IR_PANA_F_MOD		38									//kHz	(modulation frequency)
 #define IR_PANA_TOL_DIV		4
+
+/* Sky Implementation
+ * Receiver: DONE
+ * Transmitter: 
+ */
+#define IR_PROTO_SKY		9
+#define IR_SKY_ST_BIT		2800*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SKY_SHORT		460*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SKY_LONG			920*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_SKY_TIMEOUT		100									//ms	(time between ir frames)
+#define IR_SKY_REPS			1									//		(minimum number of times to repeat code)
+#define IR_SKY_F_MOD		38									//kHz	(modulation frequency)
+#define IR_SKY_TOL_DIV		4
+
 
 
 #define IR_PROTO_HASH		0xfe
