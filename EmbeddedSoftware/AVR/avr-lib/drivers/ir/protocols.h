@@ -238,7 +238,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SKY_ST_BIT		2800*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SKY_SHORT		460*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SKY_LONG			920*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SKY_TIMEOUT		100									//ms	(time between ir frames)
+#define IR_SKY_TIMEOUT		150									//ms	(time between ir frames)
 #define IR_SKY_REPS			1									//		(minimum number of times to repeat code)
 #define IR_SKY_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SKY_TOL_DIV		4
