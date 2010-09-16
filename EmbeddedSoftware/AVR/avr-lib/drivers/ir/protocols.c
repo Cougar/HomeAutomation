@@ -36,6 +36,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto
 #if (IR_PROTOCOLS_USE_PANASONIC)
 	if (parsePanasonic(buf, len, proto)==IR_OK) return IR_OK;
 #endif
+#if (IR_PROTOCOLS_USE_SKY)
+	if (parseSky(buf, len, proto)==IR_OK) return IR_OK;
+#endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
@@ -67,6 +70,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		return expandMarantz(buf, len, proto);
 	case IR_PROTO_PANASONIC:
 		return expandPanasonic(buf, len, proto);
+	case IR_PROTO_SKY:
+		return expandSky(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
 	return IR_NOT_CORRECT_DATA;
