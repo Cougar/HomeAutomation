@@ -793,3 +793,123 @@ int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	proto->repeats=IR_PANA_REPS;
 	return IR_OK;
 }
+
+#if (IR_PROTOCOLS_USE_SKY)
+/**
+ * Test data on Sky protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	/* parse buf[], max is len */
+
+	/* check startbit */
+	if (buf[0] > IR_SKY_ST_BIT + IR_SKY_ST_BIT/IR_SKY_TOL_DIV || buf[0] < IR_SKY_ST_BIT - IR_SKY_ST_BIT/IR_SKY_TOL_DIV) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	uint32_t rawbits=0;
+	uint8_t current=0;
+	uint8_t previous=0;
+	uint8_t cnt=0;
+#define SKYLONG 0
+#define SKYSHORT 1
+	for (uint8_t i = 1; i < len; i++) 
+	{
+		if (buf[i] > IR_SKY_SHORT - IR_SKY_SHORT/IR_SKY_TOL_DIV && buf[i] < IR_SKY_SHORT + IR_SKY_SHORT/IR_SKY_TOL_DIV) {
+			current = SKYSHORT;
+		}
+		else if (buf[i] > IR_SKY_LONG - IR_SKY_LONG/IR_SKY_TOL_DIV && buf[i] < IR_SKY_LONG + IR_SKY_LONG/IR_SKY_TOL_DIV) {
+			current = SKYLONG;
+		}
+		else {
+			return IR_NOT_CORRECT_DATA;
+		}
+		
+		/* if level is low */
+		if ((rawbits&1)==0) {
+			/* and there is a long pulse */
+			if (current == SKYLONG) {
+				/* push a one */
+				rawbits = rawbits<<1;
+				rawbits |= 1;
+				cnt = 0;
+			}
+			else if (cnt == 0) {
+				cnt=1;
+				/* push a zero */
+				rawbits = rawbits<<1;
+				
+			} 
+			else {
+				cnt = 0;
+			}
+		}
+		
+		/* if level is high */
+		if ((rawbits&1)==1) {
+			/* and there is a long pulse */
+			if (current == SKYLONG) {
+				/* push a zero */
+				rawbits = rawbits<<1;
+				
+				if (previous == SKYLONG) {
+					cnt = 1;
+				}
+				else {
+					cnt = 0;
+				}
+			}
+			else if (cnt == 0) {
+				cnt=1;
+				/* push a one */
+				rawbits = rawbits<<1;
+				rawbits |= 1;
+			} 
+			else {
+				cnt = 0;
+			}
+		}
+		
+		previous=current;
+		
+	}
+	
+	proto->protocol = IR_PROTO_SKY;
+	proto->timeout = IR_SKY_TIMEOUT;
+	proto->data = rawbits; 
+	
+	return IR_OK;
+}
+#endif
+
+/**
+ * Expand data from Sky protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	//TODO: Implement this function.
+	buf[0] = IR_SKY_ST_BIT;
+	buf[1] = IR_SKY_LONG;	//
+	
+	
+	return IR_NOT_CORRECT_DATA;
+}
+
