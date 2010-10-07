@@ -760,6 +760,9 @@
     <module id="49" name="protectedOutput" class="sns"/>
     <module id="50" name="inputAnalog" class="sns"/>
     <module id="51" name="LM335" class="sns"/>
+    <module id="52" name="SH11" class="sns"/>
+    <module id="53" name="Radio433Transmit" class="sns"/>
+    <module id="54" name="Radio433Receive" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
