@@ -147,6 +147,7 @@ void act_hwPWM_Init(void)
 	{
 		TCCR1A|=(act_hwPWM_CH2_COM<<COM1A0);
 	}
+	ICR1 = 0xffff;
 	#endif
 
 	/* enable timer 1 */
@@ -208,28 +209,24 @@ void act_hwPWM_Process(void)
 	if (Timer_Expired(act_hwPWM_SEND_STATUS_TIMEOUT))
 	{
 		if (channel_to_send >4) {
-			channel_to_send=1;
+		  #if act_hwPWM_CH1_COM==0
+		  channel_to_send = 2;
+		      #if act_hwPWM_CH2_COM==0
+			  channel_to_send = 3;
+			  #if act_hwPWM_CH3_COM==0
+			      channel_to_send = 4;
+			  #else
+				  channel_to_send=3;
+			    #endif	
+		      #else
+			      channel_to_send=2;
+			#endif		
+		 	  
+		  #else
+		  	channel_to_send=1;
+		  #endif		
+		
 		}
-/*		while (0 
-#if act_hwPWM_CH1_COM>0
-		  || channel_to_send != 1
-#endif
-#if act_hwPWM_CH2_COM>0
-		  || channel_to_send != 2
-#endif
-#if act_hwPWM_CH3_COM>0
-		  || channel_to_send != 3
-#endif
-#if act_hwPWM_CH4_COM>0
-		  || channel_to_send != 4
-#endif
-		) {
-			channel_to_send++;
-			if (channel_to_send >4) {
-				  channel_to_send=1;
-			}
-		}
-		*/
 		sendInfo[channel_to_send-1] = 1;
 		channel_to_send++;
 #if act_hwPWM_CH1_COM==0
@@ -311,9 +308,9 @@ void act_hwPWM_Process(void)
 	}
 #endif
 #if act_hwPWM_CH2_COM>0
-	if (OCR_2 != (uint16_t)(pwmValue[1]*act_hwPWM_CH2_FACT)>>8) {
+	if (OCR_2 != (uint16_t)((uint32_t)pwmValue[1]*act_hwPWM_CH2_FACT)>>8) {
 		cli();	
-		OCR_2=(uint16_t)(pwmValue[1]*act_hwPWM_CH2_FACT)>>8;
+		OCR_2=(uint16_t)((uint32_t)pwmValue[1]*act_hwPWM_CH2_FACT)>>8;
 		if (OCR_2==0)
 		{
 			TCCR1A&=~((1<<COM1A0)|(1<<COM1A1));
@@ -498,7 +495,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 						}
 					}
 				}
-				printf("abs fade %d %d %d!\n",fadeTarget[channel], endValue ,pwmValue[channel] );
+				//printf("abs fade %d %d %d!\n",fadeTarget[channel], endValue ,pwmValue[channel] );
 			}
 		break;
 
