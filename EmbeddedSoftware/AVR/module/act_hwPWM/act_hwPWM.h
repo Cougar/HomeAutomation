@@ -23,7 +23,7 @@ void act_hwPWM_Process(void);
 void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 
-#if act_hwPWM_CH1_COM>0 && act_hwPWM_CH2_COM>0
+#if act_hwPWM_CH1_COM>0 || act_hwPWM_CH2_COM>0
 #if act_hwPWM_CH1_CS != act_hwPWM_CH2_CS
 #error Cannot have different Clock Prescaler Select values, act_hwPWM_CH1_CS != act_hwPWM_CH2_CS
 #endif
@@ -32,7 +32,7 @@ void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 #endif
 #endif
 
-#if act_hwPWM_CH3_COM>0 && act_hwPWM_CH4_COM>0
+#if act_hwPWM_CH3_COM>0 || act_hwPWM_CH4_COM>0
 #if act_hwPWM_CH3_CS != act_hwPWM_CH4_CS
 #error Cannot have different Clock Prescaler Select values, act_hwPWM_CH3_CS != act_hwPWM_CH4_CS
 #endif
