@@ -761,7 +761,7 @@
     <module id="50" name="inputAnalog" class="sns"/>
     <module id="51" name="LM335" class="sns"/>
     <module id="52" name="SH11" class="sns"/>
-    <module id="53" name="Radio433Transmit" class="sns"/>
+    <module id="53" name="Radio433Transmit" class="act"/>
     <module id="54" name="Radio433Receive" class="sns"/>
   </modules>
   <defines>
