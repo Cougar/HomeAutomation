@@ -390,7 +390,7 @@ void sns_inputAnalog_Process(void)
 				/* The channel should be transmitted in byte 0 */
 				txMsg.Data[0] = i;
 				/* If status was low but voltage is above high theshold */
-				if (sns_inputAnalog_Sensor[i].Status == LOW && AdValue > sns_inputAnalog_Config[i].HighTh)
+				if (sns_inputAnalog_Sensor[i].Status != HIGH && AdValue > sns_inputAnalog_Config[i].HighTh)
 				{
 					/* Consider status to be high */
 					sns_inputAnalog_Sensor[i].Status = HIGH;
@@ -400,7 +400,7 @@ void sns_inputAnalog_Process(void)
 					while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 				}
 				/* If status was high but voltage is below low theshold */
-				else if (sns_inputAnalog_Sensor[i].Status == HIGH && AdValue < sns_inputAnalog_Config[i].LowTh)
+				else if (sns_inputAnalog_Sensor[i].Status != LOW && AdValue < sns_inputAnalog_Config[i].LowTh)
 				{
 					/* Consider status to be low */
 					sns_inputAnalog_Sensor[i].Status = LOW;
@@ -442,27 +442,27 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 				switch (index)
 				{
 					case 0:
-						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog0Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog0Scale-6);
 						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog0Factor;
-						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog0Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog0Scale-6);
 						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog0Factor;
 						break;
 					case 1:
-						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog1Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog1Scale-6);
 						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog1Factor;
-						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog1Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog1Scale-6);
 						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog1Factor;
 						break;
 					case 2:
-						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog2Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog2Scale-6);
 						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog2Factor;
-						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog2Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog2Scale-6);
 						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog2Factor;
 						break;
 					case 3:
-						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog3Scale-8);
+						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh<<(sns_inputAnalog3Scale-6);
 						sns_inputAnalog_Config[index].LowTh = sns_inputAnalog_Config[index].LowTh / sns_inputAnalog3Factor;
-						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog3Scale-8);
+						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh<<(sns_inputAnalog3Scale-6);
 						sns_inputAnalog_Config[index].HighTh = sns_inputAnalog_Config[index].HighTh / sns_inputAnalog3Factor;
 						break;
 				}
