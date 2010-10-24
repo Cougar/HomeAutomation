@@ -1,4 +1,4 @@
-// Built on Wed Aug 11 15:39:35 2010 by makeCanId.pl
+// Built on Sat Oct 23 19:44:13 2010 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -245,6 +245,9 @@
 #define CAN_MODULE_TYPE_SNS_PROTECTEDOUTPUT 49
 #define CAN_MODULE_TYPE_SNS_INPUTANALOG 50
 #define CAN_MODULE_TYPE_SNS_LM335 51
+#define CAN_MODULE_TYPE_SNS_SH11 52
+#define CAN_MODULE_TYPE_ACT_RADIO433TRANSMIT 53
+#define CAN_MODULE_TYPE_SNS_RADIO433RECEIVE 54
 
 //----------------- //
 // Misc definitions //
