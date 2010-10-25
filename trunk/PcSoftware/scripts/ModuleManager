@@ -48,6 +48,7 @@ def getModuleIdsFromFile(moduleName):
 	for applicationName in os.listdir("../"):	
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
 			takenIds = parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
+
 	return takenIds
 	
 
@@ -136,7 +137,7 @@ def updateConfigFile():
 	modules = getLocalModules()
 	moduleSections = {}
 	applicationSection = []
-	
+	moduleName="none"
 	if not os.path.exists("config.inc"):
 		applicationSection = readConfigSection("src/config.inc.template", "application")
 		
@@ -155,7 +156,6 @@ def updateConfigFile():
 	pcints = 0
 	
 	moduleIds = getModuleIdsFromFile(moduleName)
-	
 	
 	for moduleName, moduleSection in moduleSections.iteritems():
 		c = 0
