@@ -29,6 +29,10 @@ void sns_power_List(uint8_t ModuleSequenceNumber);
 		uint8_t reportInterval;
 		uint16_t EnergyCounterUpper;
 		uint16_t EnergyCounterLower;
+#ifdef POWER_SNS_PIN_ch2
+		uint16_t EnergyCounterUpper_ch2;
+		uint16_t EnergyCounterLower_ch2;
+#endif
 	};	
 #endif
 

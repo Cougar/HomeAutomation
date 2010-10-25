@@ -31,41 +31,41 @@ def parseModuleIdFromFile(moduleName, fileName):
 	config_inc = open(fileName, 'r') 
 	config_inc_lines = config_inc.readlines()
 	config_inc.close()
-	
+	takenIds = []
 	for line in config_inc_lines:
 		line = line.strip("\n").strip(" ")
 		
 		if line.find(moduleName + "_ID") != -1:
 			parts = line.split("=")
-			return parts[1].strip(" ")
-	
-	return -1;
+			if parts[1].strip(" ") != -1 and parts[1].strip(" ") != "<ID>":
+				takenIds.append(int(parts[1].strip(" "), 16))
+				print "hittade: "+parts[1].strip(" ")+" in file: "+fileName
+	return takenIds
 
 
-def getFreeModuleId(moduleName):
+def getModuleIdsFromFile(moduleName):
 	takenIds = []
-
-	for applicationName in os.listdir("../"):
-		
+	for applicationName in os.listdir("../"):	
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
-			takenId = parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
-			if takenId != -1 and takenId != "<ID>":
-				takenIds.append(int(takenId, 16))
+			takenIds = parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
+	return takenIds
+	
 
+def getFreeModuleId(takenIds):
 	if len(takenIds) == 0:
-		return "0x01"
-
+		return 1
 	takenIds.sort()
 
 	lastId = 0
 
 	for takenId in takenIds:
 		if takenId != lastId+1:
-			return hex(lastId+1)
+			return lastId+1
 		lastId = takenId
 
-	return hex(lastId+1)
-	
+	return lastId+1
+
+
 
 def compileMainFile():
 	print "Compiling new main.c..."
@@ -133,7 +133,6 @@ def readConfigSection(fileName, sectionName):
 
 def updateConfigFile():
 	print "Updating config.inc..."
-	
 	modules = getLocalModules()
 	moduleSections = {}
 	applicationSection = []
@@ -154,14 +153,20 @@ def updateConfigFile():
 	
 	timers = 0
 	pcints = 0
-		
+	
+	moduleIds = getModuleIdsFromFile(moduleName)
+	
+	
 	for moduleName, moduleSection in moduleSections.iteritems():
 		c = 0
 		for line in moduleSection:
 			if len(line) > 0:
 				if line[0] != '#':
 					if line.find("<ID>") != -1:
-						line = line.replace("<ID>", getFreeModuleId(moduleName))
+						new_ID = getFreeModuleId(moduleIds)
+						print "id = "+hex(new_ID)
+						moduleIds.append(new_ID)
+						line = line.replace("<ID>", hex(new_ID))
 					elif line.find("<TIMER>") != -1:
 						line = line[:line.find("=")+1] + hex(timers) + " /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */"
 						timers += 1
