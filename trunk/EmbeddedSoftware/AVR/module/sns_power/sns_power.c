@@ -191,10 +191,13 @@ void sns_power_Process(void)
 	if (StoreInEEPROM == 1)
 	{
 		StoreInEEPROM = 0;
+		
 		eeprom_write_word_crc(EEDATA16.EnergyCounterUpper, (uint16_t)((EnergyCounter>>16) & 0xffff), WITHOUT_CRC);
-		eeprom_write_word_crc(EEDATA16.EnergyCounterLower, (uint16_t)(EnergyCounter & 0xffff), WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.EnergyCounterLower, (uint16_t)(EnergyCounter & 0xffff), WITH_CRC);
+	#ifdef POWER_SNS_PIN_ch2
 		eeprom_write_word_crc(EEDATA16.EnergyCounterUpper_ch2, (uint16_t)((EnergyCounter_ch2>>16) & 0xffff), WITHOUT_CRC);
 		eeprom_write_word_crc(EEDATA16.EnergyCounterLower_ch2, (uint16_t)(EnergyCounter_ch2 & 0xffff), WITH_CRC);
+	#endif
 	}
 	StdCan_Msg_t txMsg;
 	///TODO: Stuff that needs doing is done here
