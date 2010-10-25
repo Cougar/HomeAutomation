@@ -4,7 +4,7 @@
 sns_power_USEEEPROM=1
 
 sns_power_ID=<ID>
-
+sns_power_ID_ch2=<ID>
 sns_power_SEND_TIMER=<TIMER>
 
 sns_power_PCINT=<PCINT>
@@ -20,5 +20,10 @@ sns_power_SEND_1_MIN_AVG=1
 sns_power_SEND_TIMER_1_MIN_AVG=<TIMER>
 
 POWER_SNS_PIN=EXP_C
+
+#uncomment lines below if 2 channels shall be used
+#POWER_SNS_PIN_ch2=EXP_F
+#sns_power_PCINT_ch2=<PCINT>
+
 
 ## End section sns_power -- Do not edit this line
