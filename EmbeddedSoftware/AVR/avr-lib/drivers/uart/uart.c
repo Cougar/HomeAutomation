@@ -172,6 +172,57 @@ static volatile unsigned char UART1_LastRxError;
 #endif
 
 
+static uint8_t parityEnabled = 0;
+static uint8_t parityOdd = 0;
+static uint8_t twoStopBits = 0;
+static uint8_t charSize = 8;
+
+
+static void uart_updateConfig()
+{
+	uint8_t CHARSIZE_MASK = 0;
+	if (charSize=5) {
+		CHARSIZE_MASK = (0<<UCSZ12) | (0<<UCSZ11) | (0<<UCSZ10);
+	}
+	else if (charSize=6) {
+		CHARSIZE_MASK = (0<<UCSZ12) | (0<<UCSZ11) | (1<<UCSZ10);
+	}
+	else if (charSize=7) {
+		CHARSIZE_MASK = (0<<UCSZ12) | (1<<UCSZ11) | (0<<UCSZ10);
+	}
+	else if (charSize=8) {
+		CHARSIZE_MASK = (0<<UCSZ12) | (1<<UCSZ11) | (1<<UCSZ10);
+	}
+	else if (charSize=9) {
+		CHARSIZE_MASK = (1<<UCSZ12) | (1<<UCSZ11) | (1<<UCSZ10);
+	}
+	UCSR1C = (parityEnabled<<UPM10) | (parityOdd<<UPM11) | (twoStopBits<<USBS) | CHARSIZE_MASK;
+}
+
+
+void uart_setParity(uint8_t enabled, uint8_t odd)
+{
+	parityEnabled = enabled;
+	parityOdd = odd;
+	uart_updateConfig();
+}
+
+
+void uart_setStopbits(uint8_t nrStopbits)
+{
+	twoStopBits = (nrStopbits == 2) ? 1 : 0;
+	uart_updateConfig();
+}
+
+
+void uart_setDatabits(uint8_t nrDatabits)
+{
+	if (nrDatabits >=5 && nrDatabits <=9) {
+		charSize = nrDatabits;
+	}
+	uart_updateConfig();
+}
+
 
 SIGNAL(UART0_RECEIVE_INTERRUPT)
 /*************************************************************************
@@ -488,12 +539,8 @@ void uart1_init(unsigned int baudrate)
     /* Enable USART receiver and transmitter and receive complete interrupt */
     UART1_CONTROL = _BV(RXCIE1)|(1<<RXEN1)|(1<<TXEN1);
     
-    /* Set frame format: asynchronous, 8data, no parity, 1stop bit */   
-    #ifdef URSEL1
-    UCSR1C = (1<<URSEL1)|(3<<UCSZ10);
-    #else
-    UCSR1C = (3<<UCSZ10);
-    #endif 
+    // use previously set values (or default to 8bit, no parity, 1 stopbit)
+    uart_updateConfig();
 }/* uart_init */
 
 
