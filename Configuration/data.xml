@@ -153,6 +153,18 @@
         <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
       </variables>
     </command>
+    <command id="129" name="IrConfig" type="specific" module="irTransceive" description="irTransceive config">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Which channel to configure"/>
+        <variable name="Direction" type="enum" start_bit="4" bit_length="4" unit="" description="">
+        	<value id="0" name="Auto"/>
+	    	<value id="1" name="Transmit"/>
+	    	<value id="2" name="Receive"/>
+	    </variable>
+        <variable name="Transmit power" type="uint" start_bit="8" bit_length="2" unit="" description="0 for lowest power, 3 for max"/>
+      </variables>
+    </command>
+
     <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
 	<variables>
 		<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
