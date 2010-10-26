@@ -78,6 +78,11 @@ Usage:    see Doxygen manual
 #define UART_NO_DATA          0x0100              /* no receive data available   */
 
 
+void uart_setParity(uint8_t enabled, uint8_t odd);
+void uart_setStopbits(uint8_t nrStopbits);
+void uart_setDatabits(uint8_t nrDatabits);
+
+
 /*
 ** function prototypes
 */
