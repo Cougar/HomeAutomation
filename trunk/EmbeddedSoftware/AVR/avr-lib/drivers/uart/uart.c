@@ -178,25 +178,25 @@ static uint8_t twoStopBits = 0;
 static uint8_t charSize = 8;
 
 
-static void uart_updateConfig()
+static void uart_updateConfig(void)
 {
 	uint8_t CHARSIZE_MASK = 0;
-	if (charSize=5) {
-		CHARSIZE_MASK = (0<<UCSZ12) | (0<<UCSZ11) | (0<<UCSZ10);
+	if (charSize==5) {
+		CHARSIZE_MASK = (0<<UCSZ02) | (0<<UCSZ01) | (0<<UCSZ00);
 	}
-	else if (charSize=6) {
-		CHARSIZE_MASK = (0<<UCSZ12) | (0<<UCSZ11) | (1<<UCSZ10);
+	else if (charSize==6) {
+		CHARSIZE_MASK = (0<<UCSZ02) | (0<<UCSZ01) | (1<<UCSZ00);
 	}
-	else if (charSize=7) {
-		CHARSIZE_MASK = (0<<UCSZ12) | (1<<UCSZ11) | (0<<UCSZ10);
+	else if (charSize==7) {
+		CHARSIZE_MASK = (0<<UCSZ02) | (1<<UCSZ01) | (0<<UCSZ00);
 	}
-	else if (charSize=8) {
-		CHARSIZE_MASK = (0<<UCSZ12) | (1<<UCSZ11) | (1<<UCSZ10);
+	else if (charSize==8) {
+		CHARSIZE_MASK = (0<<UCSZ02) | (1<<UCSZ01) | (1<<UCSZ00);
 	}
-	else if (charSize=9) {
-		CHARSIZE_MASK = (1<<UCSZ12) | (1<<UCSZ11) | (1<<UCSZ10);
+	else if (charSize==9) {
+		CHARSIZE_MASK = (1<<UCSZ02) | (1<<UCSZ01) | (1<<UCSZ00);
 	}
-	UCSR1C = (parityEnabled<<UPM10) | (parityOdd<<UPM11) | (twoStopBits<<USBS) | CHARSIZE_MASK;
+	UCSR0C = (parityEnabled<<UPM00) | (parityOdd<<UPM01) | (twoStopBits<<USBS0) | CHARSIZE_MASK;
 }
 
 
@@ -342,12 +342,8 @@ void uart_init(unsigned int baudrate)
     /* Enable USART receiver and transmitter and receive complete interrupt */
     UART0_CONTROL = _BV(RXCIE0)|(1<<RXEN0)|(1<<TXEN0);
     
-    /* Set frame format: asynchronous, 8data, no parity, 1stop bit */
-    #ifdef URSEL0
-    UCSR0C = (1<<URSEL0)|(3<<UCSZ00);
-    #else
-    UCSR0C = (3<<UCSZ00);
-    #endif 
+    /* Set frame format */
+	uart_updateConfig();
 
 #elif defined ( ATMEGA_UART )
     /* set baud rate */
@@ -539,8 +535,13 @@ void uart1_init(unsigned int baudrate)
     /* Enable USART receiver and transmitter and receive complete interrupt */
     UART1_CONTROL = _BV(RXCIE1)|(1<<RXEN1)|(1<<TXEN1);
     
-    // use previously set values (or default to 8bit, no parity, 1 stopbit)
-    uart_updateConfig();
+    /* Set frame format: asynchronous, 8data, no parity, 1stop bit */
+    #ifdef URSEL1
+    UCSR1C = (1<<URSEL1)|(3<<UCSZ10);
+    #else
+    UCSR1C = (3<<UCSZ10);
+    #endif 
+    
 }/* uart_init */
 
 
