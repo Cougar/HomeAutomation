@@ -113,7 +113,6 @@ void sns_Serial_Init(void)
 #warning This version of AVR-libc does not have support for eeprom read dword
 #endif
 		format = eeprom_read_word(EEDATA16.format);
-//		printf("y\n");
 	}
 	else {
 		//The CRC of the EEPROM is not correct, store default values and update CRC
@@ -124,7 +123,6 @@ void sns_Serial_Init(void)
 #endif
 		eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
-//		printf("z\n");
 	}
 #endif
 	// default baudrate
@@ -231,8 +229,6 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 #endif
 				eeprom_write_word_crc(EEDATA16.format, format, WITHOUT_CRC);
 				EEDATA_UPDATE_CRC;
-				
-				printf("x\n");
 #endif
 				}
 				break;
