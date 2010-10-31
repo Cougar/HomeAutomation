@@ -17,11 +17,32 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 // internal variables
 static uint32_t baudRate = 9600;
 static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
+static uint8_t databits = 8;
+static uint8_t stopbits = 1;
+
+static enum {
+	PARITY_NONE = 0,
+	PARITY_EVEN = 1,
+	PARITY_ODD = 2,
+} parityMode;
 
 // prepare a new message, in case new data is available
 static StdCan_Msg_t msg;
 
 #define sns_Serial_DEBUG 0
+
+
+#ifndef min
+#define min(_a,_b)		((_a)<(_b) ? (_a) : (_b))
+#endif
+
+#ifndef max
+#define max(_a,_b)		((_a)>(_b) ? (_a) : (_b))
+#endif
+
+#ifndef lim
+#define lim(_a,_minval,_maxval)		(max(min((_a),(_minval)),(_maxval)))
+#endif
 
 
 
@@ -113,6 +134,9 @@ void sns_Serial_Init(void)
 #warning This version of AVR-libc does not have support for eeprom read dword
 #endif
 		format = eeprom_read_word(EEDATA16.format);
+		databits = eeprom_read_byte(EEDATA.databits);
+		stopbits = eeprom_read_byte(EEDATA.stopbits);
+		parityMode = eeprom_read_byte(EEDATA.parityMode);
 	}
 	else {
 		//The CRC of the EEPROM is not correct, store default values and update CRC
@@ -122,9 +146,15 @@ void sns_Serial_Init(void)
 #warning This version of AVR-libc does not have support for eeprom write dword
 #endif
 		eeprom_write_word_crc(EEDATA16.format, CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.databits, 8, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.stopbits, 1, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.parityMode, PARITY_NONE, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif
+	uart_setDatabits(databits);
+	uart_setStopbits(stopbits);
+	uart_setParity(parityMode!=PARITY_NONE, parityMode==PARITY_ODD);
 	// default baudrate
 	uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 	
@@ -211,9 +241,16 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				/* TODO Cannot disable TX yet, the data has only been placed in buffer but not sent */
 //				gpio_clr_pin(sns_Serial_TXEN);			// disable TX
 				break;
+				
 			case CAN_MODULE_CMD_SERIAL_SERIALCONFIG:
 				baudRate = 10 * (((uint32_t)rxMsg->Data[1] << 0) | ((uint32_t)rxMsg->Data[0] << 8));
 				format = (uint16_t)rxMsg->Data[2];
+				databits = lim(rxMsg->Data[3], 5, 9);
+				stopbits = lim(rxMsg->Data[4], 1, 2);
+				parityMode = lim(rxMsg->Data[5], 0, 2);
+				uart_setDatabits(databits);
+				uart_setStopbits(stopbits);
+				uart_setParity(parityMode!=PARITY_NONE, parityMode==PARITY_ODD);
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 				
 				uint8_t returnval = sns_Serial_setSettings();
@@ -228,6 +265,9 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 #warning This version of AVR-libc does not have support for eeprom read dword
 #endif
 				eeprom_write_word_crc(EEDATA16.format, format, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.databits, databits, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.stopbits, stopbits, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.parityMode, parityMode, WITHOUT_CRC);
 				EEDATA_UPDATE_CRC;
 #endif
 				}
