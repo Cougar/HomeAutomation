@@ -243,7 +243,21 @@ void nmea_send_can(uint8_t timer)
 	txMsg.Data[7] = NMEA_data.lon_sec_l;
 	
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_GPSTIME;
+	txMsg.Length = 4;
+	txMsg.Data[0] = NMEA_data.time_h;
+	txMsg.Data[1] = NMEA_data.time_m;
+	txMsg.Data[2] = NMEA_data.time_s;
+	txMsg.Data[3] = 0; //Timezone diff from GMT
+
 	
-	printf("Lat: %02d %02d.%02d%02d, Lon: %03d %02d.%02d%02d\n",NMEA_data.lat_deg, NMEA_data.lat_min, NMEA_data.lat_sec_h, NMEA_data.lat_sec_l >> 1,NMEA_data.lon_deg, NMEA_data.lon_min, NMEA_data.lon_sec_h, NMEA_data.lon_sec_l >> 1);
+	
+	#if CAN_PRINTF==1
+	  //printf("Lat: %02d %02d.%02d%02d, Lon: %03d %02d.%02d%02d\n",NMEA_data.lat_deg, NMEA_data.lat_min, NMEA_data.lat_sec_h, NMEA_data.lat_sec_l >> 1,NMEA_data.lon_deg, NMEA_data.lon_min, NMEA_data.lon_sec_h, NMEA_data.lon_sec_l >> 1);
+	  printf("Fixtype: %01d\n",NMEA_data.fixtype);
+	  //printf("Fixvalid: %01d\n",NMEA_data.fixvalid);
+	  //printf("Sat: %02d\n",NMEA_data.usedsat);
+	#endif
 }
 
