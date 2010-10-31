@@ -1,0 +1,24 @@
+## Section sns_NTC -- Do not edit this line
+
+sns_NTC_ID=<ID>
+sns_NTC_TIMER=<TIMER>
+sns_NTC_SAMPLE_TIMER=<TIMER>
+# Sample period in ms
+sns_NTC_SAMPLE_PERIOD=10
+# Averaging length
+sns_NTC_FILTER_LEN=256
+sns_NTC_SEND_PERIOD=20
+sns_NTC_SEND_DELAY=500
+
+# These are the B, T_0 and R_0 parameters for the NTC thermistor
+# R_0 is nominal resistance in Ohm at temperature T_0 in deg Celsius
+sns_NTC_B=3488
+sns_NTC_T_0=25
+sns_NTC_R_0=10000
+
+# The thermistor should be connected between this AD channel and GND
+# with a R_0 pull-up to AVCC (or VREF)
+sns_NTC_AD_CH=0
+
+## End section sns_NTC -- Do not edit this line
+
