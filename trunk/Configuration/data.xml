@@ -194,6 +194,15 @@
 		<variable name="Lon_CD" type="uint" start_bit="63" bit_length="1" unit="" description="E/W"/>		
 	</variables>
     </command>
+    <command id="129" name="Heading" type="specific" module="nmea" description="Speed, heading, fix information">
+	<variables>
+		<variable name="Fixvalid" type="uint" start_bit="0" bit_length="8" unit="" description="0/1"/>
+		<variable name="Fixtype" type="uint" start_bit="8" bit_length="8" unit="" description="1=No, 2=2D, 3=3D"/>
+		<variable name="Numsat" type="uint" start_bit="16" bit_length="8" unit="" description="Number of sats in fix"/>
+		<variable name="Speed" type="uint" start_bit="24" bit_length="8" unit="Knots" description="Speed over ground"/>
+		<variable name="Course" type="uint" start_bit="32" bit_length="16" unit="Degrees" description="Course made good"/>
+	</variables>
+    </command>
     <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
      <variables>
         <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>

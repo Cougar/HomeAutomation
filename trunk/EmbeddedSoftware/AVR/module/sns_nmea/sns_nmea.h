@@ -38,9 +38,13 @@ struct {
 	uint8_t lat_min, lon_min;
 	uint8_t lat_sec_h, lat_sec_l, lon_sec_h, lon_sec_l; //Last bit contains cardinal direction
 	
-	uint8_t fixtype; //0=invalid, 1=GPS, 2=DGPS
+	uint8_t fixtype; //1=no fix, 2=2D, 3=3D
 	uint8_t fixvalid; //From GGA, 0 or 1
 	uint8_t usedsat;
+
+	uint8_t speed;
+	uint8_t cmg_h, cmg_l;
+	uint8_t date_y, date_m, date_d;
 } NMEA_data;
 
 #endif // SNS_NMEA
