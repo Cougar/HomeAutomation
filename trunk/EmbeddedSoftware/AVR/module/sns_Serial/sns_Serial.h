@@ -30,6 +30,9 @@ void sns_Serial_List(uint8_t ModuleSequenceNumber);
 	struct sns_Serial_Data{
 		uint32_t baudRate;
 		uint16_t format;
+		uint8_t databits;
+		uint8_t stopbits;
+		uint8_t parityMode;
 	};	
 #endif
 
