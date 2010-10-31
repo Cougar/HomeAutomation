@@ -252,6 +252,13 @@
 	    	<value id="3" name="RS485HalfDuplexWithTermination"/>
 	    	<value id="255" name="Loopback"/>
 	    </variable>
+	    <variable name="DataBits" type="uint" start_bit="24" bit_length="8" unit="" description="Nr of data bits (5-9)"/>
+	    <variable name="StopBits" type="uint" start_bit="32" bit_length="8" unit="" description="Nr of stop bits (1-2)"/>
+	    <variable name="Parity" type="enum" start_bit="40" bit_length="8" unit="" description="Parity mode">
+	    	<value id="0" name="ParityNone"/>
+	    	<value id="1" name="ParityEven"/>
+	    	<value id="2" name="ParityOdd"/>
+	    </variable>
       </variables>
     </command>
 
