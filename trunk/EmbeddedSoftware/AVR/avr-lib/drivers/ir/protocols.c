@@ -39,6 +39,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto
 #if (IR_PROTOCOLS_USE_SKY)
 	if (parseSky(buf, len, proto)==IR_OK) return IR_OK;
 #endif
+#if (IR_PROTOCOLS_USE_NEXA2)
+	if (parseNexa2(buf, len, proto)==IR_OK) return IR_OK;
+#endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
@@ -917,4 +920,63 @@ int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	return IR_NOT_CORRECT_DATA;
 }
+
+#if (IR_PROTOCOLS_USE_NEXA2)
+/**
+ * Test data on NEXA protocol
+ * http://elektronikforumet.com/wiki/index.php?title=RF_Protokoll_-_Nexa_sj%C3%A4lvl%C3%A4rande
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	/* parse buf[], max is len */
+
+	/* check if we have correct amount of data */ 
+	if (len != 146 || len != 130) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	uint32_t rawbits = 0;
+	uint64_t rawbitsTemp = 0;
+	if (buf[1] < IR_NEXA2_START - IR_NEXA2_START/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_START + IR_NEXA2_START/IR_NEXA2_TOL_DIV) { //check start bit
+		return IR_NOT_CORRECT_DATA;
+	}
+	  
+	  uint8_t bitCounter = 0;
+	for (uint8_t i = 2; i < len; i++) {	//Skip first bit
+		if ((i&1) == 1) {		/* if odd, ir-pause */
+			/* check length of pause between bits */
+			if (buf[1] > IR_NEXA2_LOW_ONE - IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV && buf[1] < IR_NEXA2_LOW_ONE + IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV) {
+				/* write a one */
+				rawbitsTemp |= 1<<(bitCounter++);
+			} else if (buf[1] > IR_NEXA2_LOW_ZERO - IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV && buf[1] < IR_NEXA2_LOW_ZERO + IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV) {
+				/* do nothing, a zero is already in rawbits */
+				bitCounter++;
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+			i+=2; 	// skip every other bit,implement check here in the future
+		} else {			/* if even, ir-bit */
+			if (buf[1] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) {
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	
+	rawbits = (uint32_t) (0xffff & rawbitsTemp);
+	
+	proto->protocol=IR_PROTO_NEXA2;
+	proto->timeout=IR_NEXA2_TIMEOUT;
+	proto->data=rawbits;
+	return IR_OK;
+}
+#endif
 

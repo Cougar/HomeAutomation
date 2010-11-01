@@ -37,6 +37,7 @@ typedef struct {
 #define IR_PROTOCOLS_USE_MARANTZ	1
 #define IR_PROTOCOLS_USE_PANASONIC	1
 #define IR_PROTOCOLS_USE_SKY		1
+#define IR_PROTOCOLS_USE_NEXA2		1
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -65,6 +66,11 @@ int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *prot
 #if (IR_PROTOCOLS_USE_SKY)
 int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+
+#if (IR_PROTOCOLS_USE_NEXA2)
+int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+#endif
+
 /* Try to parse all above protocols until a match is found. */
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 /* The Hash protocol always succeeds and creates a one-way signature of the
@@ -243,6 +249,19 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SKY_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SKY_TOL_DIV		4
 
+
+/* Nexa2 Implementation
+ * Receiver: 
+ * Transmitter: 
+ */
+#define IR_PROTO_NEXA2		10
+#define IR_NEXA2_START 		2500*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_NEXA2_HIGH 		320*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_NEXA2_LOW_ONE	210*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_NEXA2_LOW_ZERO	1200*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_NEXA2_TIMEOUT	10									//ms	(time between ir frames)
+#define IR_NEXA2_REPS		4									//		(minimum number of times to repeat code)
+#define IR_NEXA2_TOL_DIV	4
 
 
 #define IR_PROTO_HASH		0xfe
