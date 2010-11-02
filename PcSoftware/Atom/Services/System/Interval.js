@@ -1,8 +1,14 @@
 
-function Interval(callback, timeout)
+function Interval(callback, timeout, single)
 {
+	if (single == null)
+	{
+		single = false;
+	}
+	
 	this.myCallback = callback;
 	this.myTimeout = timeout;
+	this.mySingle = single;
 	this.myIsRunning = false;
 }
 
@@ -10,6 +16,7 @@ Interval.myIntervals = new Array();
 Interval.prototype.myIsRunning = null;
 Interval.prototype.myId = null;
 Interval.prototype.myTimeout = null;
+Interval.prototype.mySingle = null;
 Interval.prototype.myCallback = null;
 
 Interval.triggerIntervalCallback = function(id)
@@ -21,32 +28,13 @@ Interval.triggerIntervalCallback = function(id)
 	}
 	else
 	{
-		log("Interval:" + id + "> Encountered a thread that have no javascript Interval object. This is not supposed to be possible, will try to remove this thread also.\n");
-		
-		if (!stopIntervalThread(id))
-		{
-			log("Interval:" + id + "> Interval thread seems to have already been stopped.\n");
-		}
+		log("Interval:" + id + "> Encountered a thread that have no javascript Interval object. This is not supposed to be possible...\n");
 	}
 }
 
 Interval.prototype.triggerCallback = function()
 {
 	this.myCallback();
-}
-
-Interval.prototype.setTimeout = function(timeout)
-{
-	if (this.myTimeout != timeout)
-	{
-		this.myTimeout = timeout;
-		setIntervalThreadTimeout(this.myId, timeout);
-	}
-}
-
-Interval.prototype.reset = function()
-{
-	setIntervalThreadTimeout(this.myId, this.myTimeout);
 }
 
 Interval.prototype.setCallback = function(callback)
@@ -59,7 +47,7 @@ Interval.prototype.start = function()
 	if (!this.myIsRunning)
 	{
 		this.myIsRunning = true;
-		this.myId = startIntervalThread(this.myTimeout)
+		this.myId = startIntervalThread(this.myTimeout, this.mySingle)
 		Interval.myIntervals[this.myId] = this;
 	}
 }
