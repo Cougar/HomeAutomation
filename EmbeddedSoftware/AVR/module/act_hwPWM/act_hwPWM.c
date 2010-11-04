@@ -67,6 +67,9 @@ void act_hwPWM_timer_callback(uint8_t timer)
 			{
 				pwmValue[channel] = (fadeTarget[channel]);
 			}
+			if (pwmValue[channel] > 10000) {
+				pwmValue[channel] = 10000;
+			}
 			/* if targetvalue was reached then send the netinfo packet */
 			if (pwmValue[channel] == fadeTarget[channel])
 			{
@@ -98,7 +101,6 @@ void act_hwPWM_Init(void)
 	  EEDATA_UPDATE_CRC;
 	}
 #endif
-
 	TCCR1A = 0;
 	TCCR1B = 0;
 	TCCR0A = 0;
@@ -310,7 +312,7 @@ void act_hwPWM_Process(void)
 #if act_hwPWM_CH2_COM>0
 	if (OCR_2 != (uint16_t)((uint32_t)pwmValue[1]*act_hwPWM_CH2_FACT)>>8) {
 		cli();	
-		OCR_2=(uint16_t)((uint32_t)pwmValue[1]*act_hwPWM_CH2_FACT)>>8;
+		OCR_2=(uint16_t)(((uint32_t)pwmValue[1]*act_hwPWM_CH2_FACT)>>8);
 		if (OCR_2==0)
 		{
 			TCCR1A&=~((1<<COM1A0)|(1<<COM1A1));
@@ -364,11 +366,12 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_ACT_HWPWM &&
 		rxMsg->Header.ModuleId == act_hwPWM_ID)
 	{
+		uint8_t channel = 0;
 		switch (rxMsg->Header.Command)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_PWM:
 			if (rxMsg->Length == 3) {
-				uint8_t channel = rxMsg->Data[0];
+				channel = rxMsg->Data[0];
 				pwmValue[channel-1] = (rxMsg->Data[1]<<8)+(rxMsg->Data[2]);
 			}
 			
@@ -376,7 +379,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 #if act_hwPWM_ENABLE_FADE == 1
 		case CAN_MODULE_CMD_HWPWM_DEMO:		/* Demo(channel, speed, steps) */
 			if (rxMsg->Length == 4) {
-				uint8_t channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0]-1;
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t steps = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
 				
@@ -426,7 +429,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_HWPWM_START_FADE:	/* StartFade(channel, speed, direction) */
 			if (rxMsg->Length == 3) {
 				
-				uint8_t channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0]-1;
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
@@ -462,7 +465,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_HWPWM_STOP_FADE:	/* StopFade(channel) */
 			if (rxMsg->Length == 1) {
-				uint8_t channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0]-1;
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
 				fadeSpeed[channel] = 0;
 				sendInfo[channel] = 1;		/* send netinfo with the current dimmervalue*/
@@ -471,7 +474,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_HWPWM_ABS_FADE:	/* AbsFade(channel, speed, endValue) */
 			if (rxMsg->Length == 4) {
-				uint8_t channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0]-1;
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t endValue = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
@@ -502,7 +505,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_HWPWM_REL_FADE:	/* RelFade(channel, speed, direction, steps) */
 			if (rxMsg->Length == 5) {
 				
-				uint8_t channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0]-1;
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				uint16_t steps = (rxMsg->Data[3]<<8)+(rxMsg->Data[4]);
@@ -545,6 +548,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 		break;
 #endif
+
 		}
 	}
 }
