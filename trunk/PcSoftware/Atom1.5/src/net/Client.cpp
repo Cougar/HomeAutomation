@@ -31,7 +31,7 @@ namespace net {
 Client::Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id)
 {
     this->server_id_ = server_id;
-    this->id = id;
+    this->id_ = id;
 }
 
 Client::~Client()
@@ -46,7 +46,7 @@ void Client::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, 
 
 ClientId Client::GetId()
 {
-    return this->id;
+    return this->id_;
 }
 
 ServerId Client::GetServerId()
@@ -71,7 +71,7 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
     }
     else
     {
-        this->signal_on_new_data_(this->id, this->buffer_);
+        this->signal_on_new_data_(this->id_, this->server_id_, this->buffer_);
         
         this->Read();
     }
@@ -79,7 +79,7 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
 
 void Client::Disconnect()
 {
-    this->signal_on_new_state_(this->id, CLIENT_STATE_DISCONNECTED);
+    this->signal_on_new_state_(this->id_, this->server_id_, CLIENT_STATE_DISCONNECTED);
 }
     
 }; // namespace net

@@ -27,7 +27,7 @@
 
 namespace atom {
 namespace net {
-    
+
 Manager::Pointer Manager::instance_ = Manager::Pointer(new Manager());
     
 Manager::Manager() : io_service_work_(io_service_)
@@ -60,7 +60,7 @@ void Manager::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state,
     this->signal_on_new_data_.connect(slot_on_new_data);
 }
 
-void Manager::SlotOnNewState(ClientId client_id, ClientState client_state)
+void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state)
 {
     if (client_state == CLIENT_STATE_DISCONNECTED)
     {
@@ -74,14 +74,14 @@ void Manager::SlotOnNewState(ClientId client_id, ClientState client_state)
         {
             TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), it->second->GetServerId()));
             
-            client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2).track(Manager::instance_),
-                                 Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2).track(Manager::instance_));
+            client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
+                                 Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
             
             client->Accept(((TcpClient*)(it->second.get()))->ReleaseAcceptor());
             
             this->clients_[client->GetId()] = client;
             
-            this->signal_on_new_state_(client_id, CLIENT_STATE_CONNECTED);
+            this->signal_on_new_state_(client_id, server_id, CLIENT_STATE_CONNECTED);
             return;
         }
         else
@@ -90,12 +90,12 @@ void Manager::SlotOnNewState(ClientId client_id, ClientState client_state)
         }
     }
     
-    this->signal_on_new_state_(client_id, client_state);
+    this->signal_on_new_state_(client_id, server_id, client_state);
 }
 
-void Manager::SlotOnNewData(ClientId client_id, Buffer data)
+void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, Buffer data)
 {
-    this->signal_on_new_data_(client_id, data);
+    this->signal_on_new_data_(client_id, server_id, data);
 }
 
 ServerId Manager::GetFreeServerId()
@@ -137,8 +137,8 @@ ServerId Manager::StartServer(Protocol protocol, unsigned int port)
     
     TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), this->GetFreeServerId()));
     
-    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2).track(Manager::instance_),
-                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2).track(Manager::instance_));
+    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
+                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
     
     TcpClient::AcceptorPointer acceptor = TcpClient::AcceptorPointer(new boost::asio::ip::tcp::acceptor(this->io_service_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)));    
 
@@ -177,8 +177,8 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
         }
     }
     
-    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2).track(Manager::instance_),
-                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2).track(Manager::instance_));
+    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
+                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
     
     try
     {

@@ -60,7 +60,7 @@ void TcpClient::AcceptHandler(const boost::system::error_code& error)
 {
     this->Read();
     
-    this->signal_on_new_state_(this->GetId(), CLIENT_STATE_ACCEPTED);
+    this->signal_on_new_state_(this->GetId(), this->GetServerId(), CLIENT_STATE_ACCEPTED);
 }
 
 TcpClient::AcceptorPointer TcpClient::ReleaseAcceptor()
@@ -102,7 +102,19 @@ void TcpClient::Disconnect()
 
 void TcpClient::Send(Buffer data)
 {
-    this->socket_.send(boost::asio::buffer(data));
+    if (this->acceptor_.use_count() != 0)
+    {
+        return;
+    }
+    
+    if (this->socket_.is_open())
+    {
+        this->socket_.send(boost::asio::buffer(data));
+    }
+    else
+    {
+        this->Disconnect();
+    }
 }
 
 void TcpClient::Read()
