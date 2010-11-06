@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(atom)
 
-add_executable(atom src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/main.cpp src/net/Client.cpp src/net/Manager.cpp)
+add_executable(atom src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/main.cpp src/net/Client.cpp src/net/Manager.cpp)
 
 
 ## Link libraries

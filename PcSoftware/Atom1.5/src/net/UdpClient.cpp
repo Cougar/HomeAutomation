@@ -71,7 +71,14 @@ void UdpClient::Disconnect()
 
 void UdpClient::Send(Buffer data)
 {
-    this->socket_->send_to(boost::asio::buffer(data), this->endpoint_);
+    if (this->socket_->is_open())
+    {
+        this->socket_->send_to(boost::asio::buffer(data), this->endpoint_);
+    }
+    else
+    {
+        this->Disconnect();
+    }
 }
 
 void UdpClient::Read()

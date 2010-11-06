@@ -23,7 +23,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
-#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
 #include "Types.h"
@@ -36,8 +36,8 @@ class Client
 public:
     typedef boost::shared_ptr<Client> Pointer;
 
-    typedef boost::signals2::signal<void(ClientId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, Buffer data)> SignalOnNewData;
+    typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
+    typedef boost::signals2::signal<void(ClientId, ServerId, Buffer)> SignalOnNewData;
 
     Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
     virtual ~Client();
@@ -60,7 +60,7 @@ protected:
     SignalOnNewState signal_on_new_state_;
     
 private:
-    ClientId id;
+    ClientId id_;
     ServerId server_id_;
     
     SignalOnNewData signal_on_new_data_;

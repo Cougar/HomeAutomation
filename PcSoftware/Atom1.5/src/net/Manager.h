@@ -26,7 +26,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
-#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -44,8 +44,8 @@ class Manager
 public:
     typedef boost::shared_ptr<Manager> Pointer;
 
-    typedef boost::signals2::signal<void(ClientId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, Buffer data)> SignalOnNewData;
+    typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
+    typedef boost::signals2::signal<void(ClientId, ServerId, Buffer)> SignalOnNewData;
 
     virtual ~Manager();
     
@@ -80,8 +80,8 @@ private:
     
     Manager();
     
-    void SlotOnNewState(ClientId client_id, ClientState client_state);
-    void SlotOnNewData(ClientId client_id, Buffer data);
+    void SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state);
+    void SlotOnNewData(ClientId client_id, ServerId server_id, Buffer data);
     
     void StopServerHandler(ServerId server_id);
     void DisconnectHandler(ClientId client_id);
