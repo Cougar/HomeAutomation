@@ -20,10 +20,9 @@
 
 #include "Manager.h"
 
-#include <iostream>
-
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
+#include <boost/cast.hpp>
 
 namespace atom {
 namespace net {
@@ -77,7 +76,7 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
             client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
                                  Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
             
-            client->Accept(((TcpClient*)(it->second.get()))->ReleaseAcceptor());
+            client->Accept(boost::polymorphic_downcast<TcpClient*>(it->second.get())->ReleaseAcceptor());
             
             this->clients_[client->GetId()] = client;
             
