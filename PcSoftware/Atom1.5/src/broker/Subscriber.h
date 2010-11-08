@@ -18,62 +18,44 @@
  * 
  */
 
-#ifndef TIMER_MANAGER_H
-#define TIMER_MANAGER_H
+#ifndef BROKER_SUBSCRIBER_H
+#define BROKER_SUBSCRIBER_H
 
-#include <boost/asio.hpp>
-#include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
 
-#include "types.h"
-#include "Timer.h"
+#include "Message.h"
 
 namespace atom {
-namespace timer {
-    
-class Manager
+namespace broker {
+
+class Subscriber : public Origin
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Subscriber> Pointer;
     
-    typedef boost::signals2::signal<void(TimerId)> SignalOnTimeout;
+    Subscriber(bool receive_from_self);
+    virtual ~Subscriber();
     
-    virtual ~Manager();
+protected:
+    typedef boost::shared_ptr<char> TrackerPointer;
     
-    static Pointer Instance();
-    static void Delete();
+    boost::asio::io_service io_service_;
+    TrackerPointer tracker_;
     
-    void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
-    
-    TimerId Set(unsigned int timeout, bool repeat);
-    void Cancel(TimerId id);
+    virtual void SlotOnMessageHandler(Message::Pointer message) = 0;
     
 private:
-    typedef std::map<TimerId, Timer::Pointer> TimerList;
-    
-    static Pointer instance_;
-    
     boost::thread thread_;
-    boost::asio::io_service io_service_;
     boost::asio::io_service::work io_service_work_;
     
-    TimerList timers_;
-    boost::mutex mutex_timers_;
+    bool receive_from_self_;
     
-    SignalOnTimeout signal_on_timeout_;
-    
-    Manager();
-    
-    TimerId GetFreeId();
-    
-    void CancelHandler(TimerId id);
-    
-    void SlotOnTimeout(TimerId id);
+    void SlotOnMessage(Message::Pointer message);
 };
 
-}; // namespace timer
+}; // namespace broker
 }; // namespace atom
 
-#endif // TIMER_MANAGER_H
+#endif // BROKER_SUBSCRIBER_H

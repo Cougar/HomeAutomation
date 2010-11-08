@@ -26,7 +26,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
-#include "Types.h"
+#include "types.h"
 
 namespace atom {
 namespace net {

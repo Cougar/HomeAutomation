@@ -33,7 +33,9 @@ Manager::Manager() : io_service_work_(io_service_)
 
 Manager::~Manager()
 {
+    this->mutex_timers_.lock();
     this->timers_.clear();
+    this->mutex_timers_.unlock();
     
     this->thread_.interrupt();
     this->thread_.join();
@@ -56,6 +58,8 @@ void Manager::ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout)
 
 void Manager::SlotOnTimeout(TimerId id)
 {
+    this->mutex_timers_.lock();
+    
     TimerList::iterator it = this->timers_.find(id);
     
     if (it != this->timers_.end())
@@ -66,14 +70,20 @@ void Manager::SlotOnTimeout(TimerId id)
         }
     }
     
+    this->mutex_timers_.unlock();
+    
     this->signal_on_timeout_(id);
 }
 
 TimerId Manager::Set(unsigned int timeout, bool repeat)
 {
+    this->mutex_timers_.lock();
+    
     Timer::Pointer timer = Timer::Pointer(new Timer(this->io_service_, this->GetFreeId(), timeout, repeat));
 
     this->timers_[timer->GetId()] = timer;
+    
+    this->mutex_timers_.unlock();
     
     timer->ConnectSlots(Timer::SignalOnTimeout::slot_type(&Manager::SlotOnTimeout, this, _1).track(Manager::instance_));
     
@@ -89,12 +99,16 @@ void Manager::Cancel(TimerId id)
 
 void Manager::CancelHandler(TimerId id)
 {
+    this->mutex_timers_.lock();
+    
     TimerList::iterator it = this->timers_.find(id);
     
     if (it != this->timers_.end())
     {
         it->second->Cancel();
     }
+    
+    this->mutex_timers_.unlock();
 }
 
 TimerId Manager::GetFreeId()
@@ -108,7 +122,6 @@ TimerId Manager::GetFreeId()
         
     return id;
 }
-
 
 }; // namespace timer
 }; // namespace atom

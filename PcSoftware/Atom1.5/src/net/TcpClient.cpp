@@ -31,10 +31,15 @@ TcpClient::TcpClient(boost::asio::io_service& io_service, ClientId id, ServerId 
 
 TcpClient::~TcpClient()
 {
-    this->socket_.close();
+    if (this->socket_.is_open())
+    {
+        this->socket_.cancel();
+        this->socket_.close();
+    }
     
     if (this->acceptor_.use_count() != 0)
     {
+        this->acceptor_->cancel();
         this->acceptor_->close();
     }
 }
@@ -90,10 +95,15 @@ void TcpClient::Connect(std::string address, unsigned int port)
 
 void TcpClient::Disconnect()
 {
-    this->socket_.close();
+    if (this->socket_.is_open())
+    {
+        this->socket_.cancel();
+        this->socket_.close();
+    }
     
     if (this->acceptor_.use_count() != 0)
     {
+        this->acceptor_->cancel();
         this->acceptor_->close();
     }
     

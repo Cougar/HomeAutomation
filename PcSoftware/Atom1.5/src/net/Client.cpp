@@ -61,10 +61,11 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
 {
     if (error)
     {
-        this->Disconnect();
+        //std::cout << error.message() << std::endl;
     }
     else if (size == 0)
     {
+        //std::cout << "ReadHandler size 0" << std::endl;
         this->Disconnect();
     }
     else

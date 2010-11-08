@@ -7,10 +7,10 @@
 #include <boost/program_options.hpp>
 
 #include "net/Manager.h"
-#include "net/Types.h"
+#include "net/types.h"
 
 #include "timer/Manager.h"
-#include "timer/Types.h"
+#include "timer/types.h"
 
 #include "config/Manager.h"
 
@@ -39,7 +39,9 @@ void Main_SlotOnNewData(net::ClientId client_id, net::ServerId server_id, net::B
     
     strncpy(out_data.c_array(), data.data(), out_data.size());
     
-    NM->SendTo(client_id, out_data);
+    NM->Disconnect(client_id);
+    
+    std::cout << "client after disconnect" << s << std::endl;
 }
 
 void Main_SlotOnTimeout(timer::TimerId timer_id)
@@ -52,7 +54,7 @@ void Main_SlotOnTimeout(timer::TimerId timer_id)
     
     strncpy(out_data.c_array(), out_string.data(), out_data.size());
     
-    NM->SendToAll(server_id, out_data);
+   // NM->SendToAll(server_id, out_data);
 }
 
 int main(int argc, char **argv)
@@ -81,95 +83,14 @@ int main(int argc, char **argv)
         }
         
     }
-    LOG.Info("Done!");
-    
-    return 0;
-    
-    // Declare a group of options that will be
-    // allowed only on command line
-    boost::program_options::options_description generic("Generic options");
-    generic.add_options()   ("version,v", "print version string")
-    ("help", "produce help message");
-    
-    // Declare a group of options that will be
-    // allowed both on command line and in
-    // config file
-    boost::program_options::options_description config("Configuration");
-    config.add_options()
-                        ("MonitorPort", boost::program_options::value<int>()->default_value(2000), "TCP port to expose for monitoring")
-                        ("CommandPort", boost::program_options::value<int>()->default_value(2001), "TCP port to expose for monitoring")
-                        ("LogFile", boost::program_options::value<std::string>(), "File to log output to")
-                        ("ScriptsPath", boost::program_options::value<std::string>(), "File to log output to")
-                        ("ProtocolFile", boost::program_options::value<std::string>(), "File to log output to")
-                        ("DaemonMode,D", "File to log output to")
-                        ("CanNet_1", boost::program_options::value<std::vector<std::string> >(), "include path");
-    
-   LOG.Debug("a");
-    boost::program_options::options_description cmdline_options;
-    cmdline_options.add(generic).add(config);
-    
-    boost::program_options::options_description config_file_options;
-    config_file_options.add(config);
-    
-    boost::program_options::options_description visible("Allowed options");
-    visible.add(generic).add(config);
-    
-        
-    boost::program_options::variables_map vm;
-    store(boost::program_options::command_line_parser(argc, argv).options(cmdline_options).run(), vm);
-    LOG.Debug("b"); 
-    std::ifstream ifs("atom.conf");
-    store(parse_config_file(ifs, config_file_options), vm);
-    notify(vm);
-    
-    LOG.Debug("c");
-    
-    if (vm.count("help"))
-    {
-        LOG.Info("Help");
-    }
-    
-    if (vm.count("MonitorPort"))
-    {
-        LOG.Info("MonitorPort: " + boost::lexical_cast<std::string>(vm["MonitorPort"].as<int>()));
-    }
-    
-    if (vm.count("LogFile"))
-    {
-        LOG.Info("LogFile: " + vm["LogFile"].as<std::string>());
-    }
-    
-    if (vm.count("DaemonMode"))
-    {
-        LOG.Info("DaemonMode: " + vm["DaemonMode"].as<std::string>());
-    }
-  
+   
+   /* timer::Manager::Pointer TM = timer::Manager::Instance();
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    net::Manager::Delete();
-    
-    
-    
-    
-    return 0;
-    
-    LOG.Error("test sdsdsds sds ");
-    return 0;
-    timer::Manager::Pointer TM = timer::Manager::Instance();
-    
-    
-    //TM->Set(10000, true);
+    TM->Set(10000, true);
     
     TM->ConnectSlots(boost::bind(&Main_SlotOnTimeout, _1));
-    
+    */
     
     std::cout << "connect slots2" << std::endl;
     NM->ConnectSlots(boost::bind(&Main_SlotOnNewState, _1, _2, _3), boost::bind(&Main_SlotOnNewData, _1, _2, _3));
@@ -177,18 +98,20 @@ int main(int argc, char **argv)
     
     try
     {
-        server_id = NM->StartServer(net::PROTOCOL_TCP, 2000);
+       // server_id = NM->StartServer(net::PROTOCOL_SERIAL, 2000);
     
-        timer_id = TM->Set(10000, true);
+       // timer_id = TM->Set(10000, true);
        
-        /*
-        net::ClientId client_id_udp = NM->Connect(net::PROTOCOL_UDP, "192.168.1.250", 1100);
+        
+        net::ClientId client_id_udp = NM->Connect(net::PROTOCOL_SERIAL, "/dev/ttyUSB0", 57600);
         
         std::cout << "connected" << std::endl;
         
         char c[2] = { 251, 0 };
-        */
-        //NM->SendTo(client_id_udp, std::string(c));
+        
+        std::cout << "before send " << std::endl;
+        
+        NM->SendTo(client_id_udp, std::string(c));
     }
     catch (std::exception e)
     {
