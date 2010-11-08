@@ -30,7 +30,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "Types.h"
+#include "types.h"
 #include "Client.h"
 #include "TcpClient.h"
 #include "UdpClient.h"

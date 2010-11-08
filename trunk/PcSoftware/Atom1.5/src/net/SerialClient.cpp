@@ -31,7 +31,11 @@ SerialClient::SerialClient(boost::asio::io_service& io_service, ClientId id, Ser
 
 SerialClient::~SerialClient()
 {
-    this->serial_port_.close();
+    if (this->serial_port_.is_open())
+    {
+        this->serial_port_.cancel();
+        this->serial_port_.close();
+    }
 }
 
 void SerialClient::Connect(std::string address, unsigned int baud)
@@ -52,7 +56,11 @@ void SerialClient::Connect(std::string address, unsigned int baud)
 
 void SerialClient::Disconnect()
 {
-    this->serial_port_.close();
+    if (this->serial_port_.is_open())
+    {
+        this->serial_port_.cancel();
+        this->serial_port_.close();
+    }
     
     Client::Disconnect();
 }

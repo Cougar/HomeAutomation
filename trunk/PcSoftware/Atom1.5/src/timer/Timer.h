@@ -25,7 +25,7 @@
 #include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "Types.h"
+#include "types.h"
 
 namespace atom {
 namespace timer {

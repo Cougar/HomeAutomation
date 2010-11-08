@@ -18,62 +18,42 @@
  * 
  */
 
-#ifndef TIMER_MANAGER_H
-#define TIMER_MANAGER_H
+#ifndef BROKER_MANAGER_H
+#define BROKER_MANAGER_H
 
-#include <boost/asio.hpp>
-#include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
+#include <boost/signals2.hpp>
 
-#include "types.h"
-#include "Timer.h"
+#include "Message.h"
 
 namespace atom {
-namespace timer {
-    
+namespace broker {
+
 class Manager
 {
 public:
     typedef boost::shared_ptr<Manager> Pointer;
     
-    typedef boost::signals2::signal<void(TimerId)> SignalOnTimeout;
+    typedef boost::signals2::signal<void(Message::Pointer)> SignalOnMessage;
     
     virtual ~Manager();
     
     static Pointer Instance();
     static void Delete();
     
-    void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
+    void ConnectSlots(const SignalOnMessage::slot_type& slot_on_message);
     
-    TimerId Set(unsigned int timeout, bool repeat);
-    void Cancel(TimerId id);
+    void Post(Message::Pointer message);
     
 private:
-    typedef std::map<TimerId, Timer::Pointer> TimerList;
-    
     static Pointer instance_;
     
-    boost::thread thread_;
-    boost::asio::io_service io_service_;
-    boost::asio::io_service::work io_service_work_;
-    
-    TimerList timers_;
-    boost::mutex mutex_timers_;
-    
-    SignalOnTimeout signal_on_timeout_;
+    SignalOnMessage signal_on_message_;
     
     Manager();
-    
-    TimerId GetFreeId();
-    
-    void CancelHandler(TimerId id);
-    
-    void SlotOnTimeout(TimerId id);
 };
 
-}; // namespace timer
+}; // namespace broker
 }; // namespace atom
 
-#endif // TIMER_MANAGER_H
+#endif // BROKER_MANAGER_H

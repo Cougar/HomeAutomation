@@ -33,6 +33,7 @@ UdpClient::~UdpClient()
 {
     if (this->socket_.use_count() != 0)
     {
+        this->socket_->cancel();
         this->socket_->close();
         this->socket_.reset();
     }
@@ -62,6 +63,7 @@ void UdpClient::Disconnect()
 {
     if (this->socket_.use_count() != 0)
     {
+        this->socket_->cancel();
         this->socket_->close();
         this->socket_.reset();
     }
