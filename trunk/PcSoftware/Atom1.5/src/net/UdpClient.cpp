@@ -71,11 +71,11 @@ void UdpClient::Disconnect()
     Client::Disconnect();
 }
 
-void UdpClient::Send(Buffer data)
+void UdpClient::Send(type::Byteset data)
 {
     if (this->socket_->is_open())
     {
-        this->socket_->send_to(boost::asio::buffer(data), this->endpoint_);
+        this->socket_->send_to(boost::asio::buffer(data.Get(), data.GetMaxSize()), this->endpoint_);
     }
     else
     {
@@ -87,7 +87,7 @@ void UdpClient::Read()
 {
     Client::Read();
     
-    this->socket_->async_receive(boost::asio::buffer(this->buffer_),
+    this->socket_->async_receive(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
                                  boost::bind(&UdpClient::ReadHandler,
                                              this,
                                              boost::asio::placeholders::error,

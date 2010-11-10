@@ -43,8 +43,6 @@ enum Protocol
 typedef unsigned int ServerId;
 typedef unsigned int ClientId;
 
-typedef boost::array<char, 2048> Buffer;
-
 }; // namespace net
 }; // namespace atom
 

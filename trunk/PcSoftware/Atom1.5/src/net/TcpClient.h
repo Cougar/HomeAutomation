@@ -38,7 +38,7 @@ public:
     void Accept(AcceptorPointer acceptor);
     void Connect(std::string address, unsigned int port);
     void Disconnect();
-    void Send(Buffer data);
+    void Send(type::Byteset data);
     
     AcceptorPointer ReleaseAcceptor();
     

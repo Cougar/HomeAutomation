@@ -46,7 +46,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     ("LogLevel",    boost::program_options::value<std::string>(),              "Level of logging")
     ("ScriptsPath", boost::program_options::value<std::string>(),              "Path to where the scripts")
     ("ProtocolFile",boost::program_options::value<std::string>(),              "File to read the protocol form")
-    ("CanNet",      boost::program_options::value<std::vector<std::string> >(),"Information on where to locate the CAN networks");
+    ("CanNet",      boost::program_options::value<type::StringList>(),         "Information on where to locate the CAN networks");
 
     this->command_line_.add_options()
     ("version,v", "print version string")
@@ -142,9 +142,9 @@ std::string Manager::GetAsString(std::string name)
     return this->variable_map_[name].as<std::string>();
 }
 
-std::vector<std::string> Manager::GetAsStringVector(std::string name)
+type::StringList Manager::GetAsStringVector(std::string name)
 {
-    return this->variable_map_[name].as<std::vector<std::string> >();
+    return this->variable_map_[name].as<type::StringList>();
 }
 
 

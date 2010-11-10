@@ -18,50 +18,44 @@
  * 
  */
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
+#ifndef CAN_MONITOR_H
+#define CAN_MONITOR_H
 
 #include <string>
-#include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/program_options.hpp>
 
-#include "type/common.h"
+#include "logging/Logger.h"
+#include "broker/Subscriber.h"
+#include "net/types.h"
+#include "type/Byteset.h"
 
 namespace atom {
-namespace config {
+namespace can {
 
-class Manager
+class Monitor : public broker::Subscriber
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Monitor> Pointer;
     
-    virtual ~Manager();
-    
-    static Pointer Instance();
-    static void Delete();
-    
-    bool Set(int argument_count, char **argument_vector);
-    
-    bool Exist(std::string name);
-    
-    std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
+    Monitor(unsigned int port);
+    virtual ~Monitor();
     
 private:
-    static Pointer instance_;
+    net::ServerId server_id_;
     
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
+    void SlotOnMessageHandler(broker::Message::Pointer message);
     
-    Manager();
+    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    
+    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    
+    logging::Logger LOG;
 };
 
-}; // namespace config
+}; // namespace can
 }; // namespace atom
 
-#endif // CONFIG_MANAGER_H
+#endif // CAN_MONITOR_H

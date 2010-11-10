@@ -26,7 +26,7 @@
 namespace atom {
 namespace net {
 
-Client::Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id)
+Client::Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : buffer_(2048)
 {
     this->server_id_ = server_id;
     this->id_ = id;
@@ -54,7 +54,7 @@ ServerId Client::GetServerId()
 
 void Client::Read()
 {
-    this->buffer_.assign(0);
+    this->buffer_.Clear();
 }
 
 void Client::ReadHandler(const boost::system::error_code& error, size_t size)
@@ -70,6 +70,8 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
     }
     else
     {
+        this->buffer_.SetSize(size);
+        
         this->signal_on_new_data_(this->id_, this->server_id_, this->buffer_);
         
         this->Read();

@@ -20,6 +20,8 @@
 
 #include "Manager.h"
 
+#include <iostream>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/cast.hpp>
@@ -98,7 +100,7 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
     this->signal_on_new_state_(client_id, server_id, client_state);
 }
 
-void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, Buffer data)
+void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, type::Byteset data)
 {
     this->signal_on_new_data_(client_id, server_id, data);
 }
@@ -117,7 +119,7 @@ ServerId Manager::GetFreeServerId()
         server_id++;
     }
     
-    return 0;
+    return server_id;
 }
 
 ClientId Manager::GetFreeClientId()
@@ -209,12 +211,12 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     return client->GetId();
 }
 
-void Manager::SendToAll(ServerId server_id, Buffer data)
+void Manager::SendToAll(ServerId server_id, type::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToAllHandler, this, server_id, data));
 }
 
-void Manager::SendTo(ClientId client_id, Buffer data)
+void Manager::SendTo(ClientId client_id, type::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
 }
@@ -229,7 +231,7 @@ void Manager::Disconnect(ClientId client_id)
     this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
 }
 
-void Manager::SendToAllHandler(ServerId server_id, Buffer data)
+void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
 {
     this->mutex_clients_.lock();
     
@@ -244,7 +246,7 @@ void Manager::SendToAllHandler(ServerId server_id, Buffer data)
     this->mutex_clients_.unlock();
 }
 
-void Manager::SendToHandler(ClientId client_id, Buffer data)
+void Manager::SendToHandler(ClientId client_id, type::Byteset data)
 {
     this->mutex_clients_.lock();
     

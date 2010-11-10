@@ -18,50 +18,40 @@
  * 
  */
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
-
-#include <string>
-#include <vector>
+#ifndef TYPE_BITSET_H
+#define TYPE_BITSET_H
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/program_options.hpp>
 
-#include "type/common.h"
+#include "common.h"
+#include "Byteset.h"
 
 namespace atom {
-namespace config {
-
-class Manager
+namespace type {
+        
+class Bitset
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Bitset> Pointer;
     
-    virtual ~Manager();
+    Bitset(unsigned int count);
+    Bitset(const Byteset& set);
+    virtual ~Bitset();
     
-    static Pointer Instance();
-    static void Delete();
+    int Set(unsigned int position);
+    int Unset(unsigned int position);
+    int Get(unsigned int position);
     
-    bool Set(int argument_count, char **argument_vector);
+    unsigned long Read(unsigned int position, unsigned int length);
     
-    bool Exist(std::string name);
-    
-    std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
+    unsigned int GetCount();
     
 private:
-    static Pointer instance_;
-    
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
-    
-    Manager();
+    unsigned char *bytes_;
+    unsigned int count_;
 };
 
-}; // namespace config
+}; // namespace type
 }; // namespace atom
 
-#endif // CONFIG_MANAGER_H
+#endif // TYPE_BITSET_H

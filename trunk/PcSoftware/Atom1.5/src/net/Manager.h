@@ -45,7 +45,7 @@ public:
     typedef boost::shared_ptr<Manager> Pointer;
 
     typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, ServerId, Buffer)> SignalOnNewData;
+    typedef boost::signals2::signal<void(ClientId, ServerId, type::Byteset)> SignalOnNewData;
 
     virtual ~Manager();
     
@@ -60,8 +60,8 @@ public:
     void StopServer(ServerId server_id);
     void Disconnect(ClientId client_id);
     
-    void SendToAll(ServerId server_id, Buffer data);
-    void SendTo(ClientId client_id, Buffer data);
+    void SendToAll(ServerId server_id, type::Byteset data);
+    void SendTo(ClientId client_id, type::Byteset data);
 
 private:
     typedef std::map<ClientId, Client::Pointer> ClientList;
@@ -81,13 +81,13 @@ private:
     Manager();
     
     void SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state);
-    void SlotOnNewData(ClientId client_id, ServerId server_id, Buffer data);
+    void SlotOnNewData(ClientId client_id, ServerId server_id, type::Byteset data);
     
     void StopServerHandler(ServerId server_id);
     void DisconnectHandler(ClientId client_id);
     
-    void SendToAllHandler(ServerId server_id, Buffer data);
-    void SendToHandler(ClientId client_id, Buffer data);
+    void SendToAllHandler(ServerId server_id, type::Byteset data);
+    void SendToHandler(ClientId client_id, type::Byteset data);
     
     ClientId GetFreeClientId();
     ServerId GetFreeServerId();
