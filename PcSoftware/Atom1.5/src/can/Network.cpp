@@ -27,10 +27,24 @@
 
 #include "net/Manager.h"
 
+#include "broker/Manager.h"
+
+#include "Protocol.h"
+#include "Message.h"
+
+#include "type/Bitset.h"
+
 namespace atom {
 namespace can {
 
-Network::Network(std::string address): Subscriber(false), LOG("can::Network")
+enum
+{
+    PACKET_START = 253,
+    PACKET_END   = 250,
+    PACKET_PING  = 251
+};
+    
+Network::Network(std::string address): Subscriber(false), LOG("can::Network"), buffer_(2048)
 {
     this->address_ = address;
     this->client_id_ = 0;
@@ -73,9 +87,14 @@ Network::Network(std::string address): Subscriber(false), LOG("can::Network")
     try
     {
         this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
-        LOG.Info("Connected to CAN network at " + address);
+        LOG.Info("Connected to " + address);
         
-        // TODO: Send ping
+        LOG.Info("Sending ping.");
+        type::Byteset buffer(1);
+        
+        buffer[0] = PACKET_PING;
+        
+        net::Manager::Instance()->SendTo(this->client_id_, buffer);
     }
     catch (std::exception e)
     {
@@ -88,11 +107,12 @@ Network::~Network()
     net::Manager::Instance()->Disconnect(this->client_id_);
 }
 
-void Network::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, net::Buffer data)
+void Network::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
 {
     if (client_id == this->client_id_)
     {
-        this->io_service_.post(boost::bind(&Network::SlotOnNewDataHandler, this, client_id, server_id, data));
+        type::Byteset temp_buffer = data;
+        this->io_service_.post(boost::bind(&Network::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
     }
 }
 
@@ -104,38 +124,208 @@ void Network::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
     }
 }
 
-void Network::SlotOnMessageHandler(broker::Message::Pointer message)
+void Network::SlotOnTimeout(timer::TimerId timer_id)
 {
-    // TODO: Send to network
+    if (timer_id == this->timer_id_)
+    {
+        this->io_service_.post(boost::bind(&Network::SlotOnTimeoutHandler, this, timer_id));
+    }
 }
 
-void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, net::Buffer data)
+void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 {
-    // TODO: Send to broker
+    if (message->GetType() == broker::Message::CAN_MESSAGE)
+    {
+        Message* payload = static_cast<Message*>(message->GetPayload().get());
+        
+        
+        
+    }
+}
+
+void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+{
+    static bool have_start = false;
+    
+    for (unsigned int n = 0; n < data.GetSize(); n++)
+    {
+        if (have_start)
+        {
+            if (data[n] == PACKET_END && this->buffer_.GetSize() == 15)
+            {
+                //LOG.Debug("Received packet end and size is 15.");
+                this->ProcessBuffer();
+                have_start = false;
+            }
+            else
+            {
+                this->buffer_.Append(data[n]);
+            }
+        }
+        else if (data[n] == PACKET_START)
+        {
+            //LOG.Debug("Received packet start.");
+            this->buffer_.Clear();
+            have_start = true;
+        }
+        else if (data[n] == PACKET_PING)
+        {
+            LOG.Info("Received pong.");
+        }
+    }
 }
 
 void Network::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
-        LOG.Warning("Got disconnected from CAN network, will try to reconnect...");
-     
+        LOG.Warning("Got disconnected, setting reconnect timer...");
+       
+        this->timer_id_ = timer::Manager::Instance()->Set(10000, true);
         this->client_id_ = 0;
-        
-        try
-        {
-            this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
-            LOG.Info("Connected to CAN network again.");
-        }
-        catch (std::exception e)
-        {
-            LOG.Error(e.what());
-        }
     }
     else
     {
         LOG.Debug("Got state: " + boost::lexical_cast<std::string>((int)client_state));
     }
+}
+
+void Network::SlotOnTimeoutHandler(timer::TimerId timer_id)
+{
+    try
+    {
+        this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
+        LOG.Info("Connected again.");
+        
+        timer::Manager::Instance()->Cancel(timer_id);
+        this->timer_id_ = 0;
+    }
+    catch (std::exception e)
+    {
+        LOG.Error(e.what());
+        LOG.Warning("Will try again soon...");
+    }
+}
+
+void Network::ProcessBuffer()
+{
+    try
+    {
+        std::string class_name = "";
+        std::string direction_name = "";
+        std::string module_name = "";
+        unsigned int id = 0;
+        std::string command_name = "";
+        
+        unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
+        
+        //LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id) + ", byte[3] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[3]));
+        
+        class_name = Protocol::Instance()->LookupClassName(class_id);
+        
+        //LOG.Debug("class_name=" + class_name);
+        
+        if (class_name == "nmt")
+        {
+            unsigned int command_id = this->buffer_[2];
+            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id) + ", byte[2] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[2]));
+            
+            command_name = Protocol::Instance()->LookupNMTCommandName(command_id);
+            //LOG.Debug("command_name=" + command_name);
+        }
+        else
+        {
+            unsigned int direction_flag = this->buffer_[3] & 0x01;
+            //LOG.Debug("direction_flag=" + boost::lexical_cast<std::string>(direction_flag) + ", byte[3] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[3]));
+            
+            direction_name = Protocol::Instance()->LookupDirectionFlag(direction_flag);
+            //LOG.Debug("direction_name=" + direction_name);
+            
+            unsigned int module_id = this->buffer_[2];
+            //LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id) + ", byte[2] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[2]));
+            
+            module_name = Protocol::Instance()->LookupModuleName(module_id);
+            //LOG.Debug("module_name=" + module_name);
+            
+            id = this->buffer_[1];
+            //LOG.Debug("id=" + boost::lexical_cast<std::string>(id) + ", byte[1] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[1]));
+            
+            unsigned int command_id = this->buffer_[0];
+            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id) + ", byte[0] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[0]));
+            
+            command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
+            //LOG.Debug("command_name=" + command_name);
+        }
+
+        Message* payload = new Message(class_name, direction_name, module_name, id, command_name);
+
+        unsigned int length = this->buffer_[6];
+        //LOG.Debug("Data length = " + boost::lexical_cast<std::string>(length));
+        
+        type::Byteset data_set(length);
+        
+        for (unsigned int n = 0; n < length; n++)
+        {
+            //LOG.Debug("add byte[" + boost::lexical_cast<std::string>(n + 7) + "] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[n + 7]));
+            data_set.Append(this->buffer_[n + 7]);
+        }
+        
+        /*for (unsigned int n = 0; n < this->buffer_.GetSize(); n++)
+        {
+            LOG.Debug("byte[" + boost::lexical_cast<std::string>(n) + "] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[n]));
+        }*/
+        
+        type::Bitset databits(data_set);
+        
+        
+        std::string temp = "";
+        for (unsigned int n = 0; n < databits.GetCount(); n ++)
+        {
+            temp += boost::lexical_cast<std::string>(databits.Get(n));
+        }
+        
+        //LOG.Debug("databits = " + temp);
+        
+        xml::Node::NodeList variable_nodes;
+        
+        if (class_name == "nmt")
+        {
+            variable_nodes = Protocol::Instance()->GetNMTCommandVariables(command_name);
+        }
+        else
+        {
+            variable_nodes = Protocol::Instance()->GetCommandVariables(command_name, module_name);
+        }
+        
+        for (unsigned int n = 0; n < variable_nodes.size(); n++)
+        {
+            unsigned int start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
+            unsigned int bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
+            std::string type = variable_nodes[n].GetAttributeValue("type");
+            
+            std::string value = boost::lexical_cast<std::string>(databits.Read(start_bit, bit_length));
+
+            if (type == "enum")
+            {
+                value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
+            }
+            
+            // TODO handle all datatypes!
+            
+            //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ",bit_length=" + boost::lexical_cast<std::string>(bit_length));
+            
+            payload->SetVariable(variable_nodes[n].GetAttributeValue("name"), value);
+            //LOG.Debug("Variable:" + variable_nodes[n].GetAttributeValue("name") + " = " + value);
+        }
+        
+        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
+    }
+    catch (std::runtime_error& e)
+    {
+        LOG.Error("Malformed message received, " + std::string(e.what()));
+    }
+    
+    this->buffer_.Clear();
 }
     
 }; // namespace can

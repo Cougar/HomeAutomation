@@ -18,50 +18,49 @@
  * 
  */
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
+#ifndef TYPE_BUFFER_H
+#define TYPE_BUFFER_H
 
 #include <string>
-#include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/program_options.hpp>
 
-#include "type/common.h"
+#include "common.h"
 
 namespace atom {
-namespace config {
+namespace type {
 
-class Manager
+class Byteset
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Byteset> Pointer;
     
-    virtual ~Manager();
+    Byteset(unsigned int max_size);
+    Byteset(const Byteset& set);
+    Byteset(std::string str);
+    virtual ~Byteset();
     
-    static Pointer Instance();
-    static void Delete();
+    unsigned int GetMaxSize() const;
+    unsigned char* Get() const;
     
-    bool Set(int argument_count, char **argument_vector);
+    unsigned char& operator[](unsigned int index);
+
+    unsigned int GetSize() const;
+    void SetSize(unsigned int size);
     
-    bool Exist(std::string name);
+    void Append(unsigned char byte);
     
-    std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
+    void Clear();
     
 private:
-    static Pointer instance_;
+    unsigned char* bytes_;
+    unsigned int max_size_;
     
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
+    unsigned int size_;
     
-    Manager();
 };
 
-}; // namespace config
+}; // namespace type
 }; // namespace atom
 
-#endif // CONFIG_MANAGER_H
+#endif // TYPE_BUFFER_H

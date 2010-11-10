@@ -110,7 +110,7 @@ void TcpClient::Disconnect()
     Client::Disconnect();
 }
 
-void TcpClient::Send(Buffer data)
+void TcpClient::Send(type::Byteset data)
 {
     if (this->acceptor_.use_count() != 0)
     {
@@ -119,7 +119,7 @@ void TcpClient::Send(Buffer data)
     
     if (this->socket_.is_open())
     {
-        this->socket_.send(boost::asio::buffer(data));
+        this->socket_.send(boost::asio::buffer(data.Get(), data.GetMaxSize()));
     }
     else
     {
@@ -131,7 +131,7 @@ void TcpClient::Read()
 {
     Client::Read();
     
-    this->socket_.async_read_some(boost::asio::buffer(this->buffer_),
+    this->socket_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
                                   boost::bind(&TcpClient::ReadHandler,
                                               this,
                                               boost::asio::placeholders::error,

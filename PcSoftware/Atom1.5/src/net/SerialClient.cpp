@@ -65,11 +65,11 @@ void SerialClient::Disconnect()
     Client::Disconnect();
 }
 
-void SerialClient::Send(Buffer data)
+void SerialClient::Send(type::Byteset data)
 {
     if (this->serial_port_.is_open())
     {
-        this->serial_port_.write_some(boost::asio::buffer(data));
+        this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
     }
     else
     {
@@ -81,7 +81,7 @@ void SerialClient::Read()
 {
     Client::Read();
     
-    this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_),
+    this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
                                        boost::bind(&SerialClient::ReadHandler,
                                                    this,
                                                    boost::asio::placeholders::error,

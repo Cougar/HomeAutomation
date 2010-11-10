@@ -18,50 +18,40 @@
  * 
  */
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
+#ifndef TYPE_COMMON_H
+#define TYPE_COMMON_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/program_options.hpp>
-
-#include "type/common.h"
 
 namespace atom {
-namespace config {
+namespace type {
 
-class Manager
+typedef boost::shared_ptr<unsigned char> BytePointer;
+typedef std::vector<std::string> StringList;
+
+template <typename T>
+struct HexTo
 {
-public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    T value;
     
-    virtual ~Manager();
+    operator T() const
+    {
+        return value;
+    }
     
-    static Pointer Instance();
-    static void Delete();
-    
-    bool Set(int argument_count, char **argument_vector);
-    
-    bool Exist(std::string name);
-    
-    std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
-    
-private:
-    static Pointer instance_;
-    
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
-    
-    Manager();
+    friend std::istream& operator>>(std::istream& in, HexTo& out)
+    {
+        in >> std::hex >> out.value;
+        return in;
+    }
 };
 
-}; // namespace config
+    
+}; // namespace type
 }; // namespace atom
 
-#endif // CONFIG_MANAGER_H
+#endif // TYPE_COMMON_H

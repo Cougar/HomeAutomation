@@ -28,6 +28,8 @@
 #include "logging/Logger.h"
 #include "broker/Subscriber.h"
 #include "net/types.h"
+#include "type/Byteset.h"
+#include "timer/Manager.h"
 
 namespace atom {
 namespace can {
@@ -45,14 +47,20 @@ private:
     net::Protocol protocol_;
     std::string address_;
     unsigned int port_or_baud_;
+    type::Byteset buffer_;    
+    timer::TimerId timer_id_;
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
     
     void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, net::Buffer data);
+    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    void SlotOnTimeout(timer::TimerId timer_id);
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, net::Buffer data);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    void SlotOnTimeoutHandler(timer::TimerId timer_id);
+    
+    void ProcessBuffer();
     
     logging::Logger LOG;    
 };

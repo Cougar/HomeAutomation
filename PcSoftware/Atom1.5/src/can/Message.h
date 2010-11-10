@@ -18,50 +18,47 @@
  * 
  */
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
+#ifndef CAN_MESSAGE_H
+#define CAN_MESSAGE_H
 
 #include <string>
-#include <vector>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/program_options.hpp>
-
-#include "type/common.h"
 
 namespace atom {
-namespace config {
+namespace can {
 
-class Manager
+class Message
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Message> Pointer;
+    typedef std::map<std::string, std::string> VariableList;
     
-    virtual ~Manager();
+    Message(std::string class_name, std::string direction_name, std::string module_name, unsigned int id, std::string command_name);
+    virtual ~Message();
     
-    static Pointer Instance();
-    static void Delete();
+    std::string GetClassName();
+    std::string GetDirectionName();
+    std::string GetModuleName();
+    unsigned int GetId();
+    std::string GetCommandName();
     
-    bool Set(int argument_count, char **argument_vector);
+    std::string GetVariable(std::string name);
+    void SetVariable(std::string name, std::string value);
     
-    bool Exist(std::string name);
-    
-    std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
+    VariableList& GetVariables();
     
 private:
-    static Pointer instance_;
-    
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
-    
-    Manager();
+    std::string class_name_;
+    std::string direction_name_;
+    std::string module_name_;
+    unsigned int id_;
+    std::string command_name_;
+    VariableList variables_;
 };
-
-}; // namespace config
+        
+}; // namespace can
 }; // namespace atom
 
-#endif // CONFIG_MANAGER_H
+#endif // CAN_MESSAGE_H
