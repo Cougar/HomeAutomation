@@ -45,9 +45,9 @@ public:
     unsigned long Read(unsigned int position, unsigned int length);
     
     unsigned int GetCount();
-    
-private:
     unsigned char *bytes_;
+private:
+    
     unsigned int count_;
 };
 

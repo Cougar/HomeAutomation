@@ -69,7 +69,10 @@ int Bitset::Set(unsigned int position)
         return -1;
     }
     
-    this->bytes_[position / 8] |= (0x00000001 << (7 - position));
+    unsigned int byte_position = position / 8;
+    unsigned int bit_position = 7 - (position - (byte_position * 8));
+    
+    this->bytes_[byte_position] |= (0x00000001 << (bit_position));
 
     return 0;
 }
@@ -81,7 +84,10 @@ int Bitset::Unset(unsigned int position)
         return -1;
     }
     
-    this->bytes_[position / 8] &= ~(0x00000001 << (7 - position));
+    unsigned int byte_position = position / 8;
+    unsigned int bit_position = 7 - (position - (byte_position * 8));
+    
+    this->bytes_[byte_position] &= ~(0x00000001 << (bit_position));
     
     return 0;
 }
@@ -93,7 +99,10 @@ int Bitset::Get(unsigned int position)
         return -1;
     }
     
-    return (this->bytes_[position / 8] & (0x00000001 << (7 - position)) ? 1 : 0);
+    unsigned int byte_position = position / 8;
+    unsigned int bit_position = 7 - (position - (byte_position * 8));
+    
+    return (this->bytes_[byte_position] & (0x00000001 << bit_position) ? 1 : 0);
 }
 
 }; // namespace type

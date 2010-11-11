@@ -119,9 +119,9 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
 
 void Monitor::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
 {
-    std::string str((char*)data.Get());
+    std::string str = data.ToCharString();
     
-    boost::algorithm::trim_if(str, boost::is_any_of("\n\r"));
+    boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
     LOG.Debug("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
     

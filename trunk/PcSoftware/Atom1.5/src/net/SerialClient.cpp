@@ -67,13 +67,17 @@ void SerialClient::Disconnect()
 
 void SerialClient::Send(type::Byteset data)
 {
-    if (this->serial_port_.is_open())
+    try
     {
-        this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
+        if (this->serial_port_.is_open())
+        {
+            this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
+        }
     }
-    else
+    catch (std::exception& e)
     {
         this->Disconnect();
+        //throw std::runtime_error(e.what());
     }
 }
 

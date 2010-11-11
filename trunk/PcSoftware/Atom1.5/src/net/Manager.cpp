@@ -65,13 +65,10 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
 {
     if (client_state == CLIENT_STATE_DISCONNECTED)
     {
-        this->mutex_clients_.lock();
         this->clients_.erase(client_id);
-        this->mutex_clients_.unlock();
     }
     else if (client_state == CLIENT_STATE_ACCEPTED)
     {
-        this->mutex_clients_.lock();
         ClientList::iterator it = this->clients_.find(client_id);
         
         if (it != this->clients_.end())
@@ -85,14 +82,11 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
             
             this->clients_[client->GetId()] = client;
             
-            this->mutex_clients_.unlock();
-            
             this->signal_on_new_state_(client_id, server_id, CLIENT_STATE_CONNECTED);
             return;
         }
         else
         {
-            this->mutex_clients_.unlock();
             throw std::runtime_error("Accepted unknown client!");
         }
     }
@@ -142,8 +136,6 @@ ServerId Manager::StartServer(Protocol protocol, unsigned int port)
         return 0;
     }
     
-    this->mutex_clients_.lock();
-    
     TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), this->GetFreeServerId()));
     
     client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
@@ -155,16 +147,12 @@ ServerId Manager::StartServer(Protocol protocol, unsigned int port)
     
     this->clients_[client->GetId()] = client;
     
-    this->mutex_clients_.unlock();
-    
     return client->GetServerId();
 }
 
 ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int port_or_baud)
 {
     Client::Pointer client;
-    
-    this->mutex_clients_.lock();
     
     switch (protocol)
     {
@@ -185,7 +173,6 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
         }
         default:
         {
-            this->mutex_clients_.unlock();
             throw std::runtime_error("Invalid protocol specified!");
             return 0;
         }
@@ -198,15 +185,12 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     {
         client->Connect(address, port_or_baud);
     }
-    catch (std::exception e)
+    catch (std::exception& e)
     {
-        this->mutex_clients_.unlock();
-        throw e;
+        throw std::runtime_error(e.what());
     }
     
     this->clients_[client->GetId()] = client;
-    
-    this->mutex_clients_.unlock();
     
     return client->GetId();
 }
@@ -233,8 +217,6 @@ void Manager::Disconnect(ClientId client_id)
 
 void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
 {
-    this->mutex_clients_.lock();
-    
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
         if (it->second->GetServerId() == server_id)
@@ -242,48 +224,32 @@ void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
             it->second->Send(data);
         }
     }
-    
-    this->mutex_clients_.unlock();
 }
 
 void Manager::SendToHandler(ClientId client_id, type::Byteset data)
 {
-    this->mutex_clients_.lock();
-    
     ClientList::iterator it = this->clients_.find(client_id);
     
     if (it != this->clients_.end())
     {
         it->second->Send(data);
     }
-    
-    this->mutex_clients_.unlock();
 }
 
 void Manager::StopServerHandler(ServerId server_id)
 {
-    this->mutex_clients_.lock();
-    
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
         if (it->second->GetServerId() == server_id)
         {
-            this->mutex_clients_.unlock();
             it->second->Disconnect();
-            this->mutex_clients_.lock();
         }
     }
-    
-    this->mutex_clients_.unlock();
 }
 
 void Manager::DisconnectHandler(ClientId client_id)
 {
-    this->mutex_clients_.lock();
-    
     ClientList::iterator it = this->clients_.find(client_id);
-    
-    this->mutex_clients_.unlock();
     
     if (it != this->clients_.end())
     {
