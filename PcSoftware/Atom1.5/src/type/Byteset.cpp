@@ -36,7 +36,7 @@ Byteset::Byteset(unsigned int max_size)
 
 Byteset::Byteset(const Byteset& set)
 {
-    this->max_size_ = set.max_size_;
+    this->max_size_ = set.size_;
     this->size_ = this->max_size_;
     this->bytes_ = new unsigned char[this->max_size_];
 
@@ -60,6 +60,11 @@ Byteset::~Byteset()
 unsigned char* Byteset::Get() const
 {
     return this->bytes_;
+}
+
+std::string Byteset::ToCharString()
+{
+    return std::string((char*)this->bytes_, this->size_);
 }
 
 unsigned char& Byteset::operator[](unsigned int index)

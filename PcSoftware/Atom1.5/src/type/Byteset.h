@@ -43,6 +43,8 @@ public:
     unsigned int GetMaxSize() const;
     unsigned char* Get() const;
     
+    std::string ToCharString();
+    
     unsigned char& operator[](unsigned int index);
 
     unsigned int GetSize() const;

@@ -73,13 +73,17 @@ void UdpClient::Disconnect()
 
 void UdpClient::Send(type::Byteset data)
 {
-    if (this->socket_->is_open())
+    try
     {
-        this->socket_->send_to(boost::asio::buffer(data.Get(), data.GetMaxSize()), this->endpoint_);
+        if (this->socket_->is_open())
+        {
+            this->socket_->send_to(boost::asio::buffer(data.Get(), data.GetMaxSize()), this->endpoint_);
+        }
     }
-    else
+    catch (std::exception& e)
     {
         this->Disconnect();
+        //throw std::runtime_error(e.what());
     }
 }
 

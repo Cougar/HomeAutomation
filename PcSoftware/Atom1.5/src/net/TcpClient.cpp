@@ -117,13 +117,17 @@ void TcpClient::Send(type::Byteset data)
         return;
     }
     
-    if (this->socket_.is_open())
+    try
     {
-        this->socket_.send(boost::asio::buffer(data.Get(), data.GetMaxSize()));
+        if (this->socket_.is_open())
+        {
+            this->socket_.send(boost::asio::buffer(data.Get(), data.GetMaxSize()));
+        }
     }
-    else
+    catch (std::exception& e)
     {
         this->Disconnect();
+        //throw std::runtime_error(e.what());
     }
 }
 

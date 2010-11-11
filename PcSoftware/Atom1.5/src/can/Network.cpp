@@ -33,6 +33,7 @@
 #include "Message.h"
 
 #include "type/Bitset.h"
+#include "type/common.h"
 
 namespace atom {
 namespace can {
@@ -269,22 +270,26 @@ void Network::ProcessBuffer()
             //LOG.Debug("add byte[" + boost::lexical_cast<std::string>(n + 7) + "] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[n + 7]));
             data_set.Append(this->buffer_[n + 7]);
         }
-        
-        /*for (unsigned int n = 0; n < this->buffer_.GetSize(); n++)
+        /*
+        for (unsigned int n = 0; n < data_set.GetSize(); n++)
         {
-            LOG.Debug("byte[" + boost::lexical_cast<std::string>(n) + "] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[n]));
-        }*/
-        
+            LOG.Debug("byte[" + boost::lexical_cast<std::string>(n) + "] = " + boost::lexical_cast<std::string>((unsigned int)data_set[n]));
+        }
+        */
         type::Bitset databits(data_set);
         
-        
+        /*
         std::string temp = "";
+        std::string temp2 = "";
         for (unsigned int n = 0; n < databits.GetCount(); n ++)
         {
+            
+            temp2 += boost::lexical_cast<std::string>((unsigned int)databits.bytes_[n/8]);
             temp += boost::lexical_cast<std::string>(databits.Get(n));
         }
         
-        //LOG.Debug("databits = " + temp);
+        LOG.Debug("databits1 = " + temp);
+        LOG.Debug("databits2 = " + temp2);*/
         
         xml::Node::NodeList variable_nodes;
         
@@ -303,14 +308,80 @@ void Network::ProcessBuffer()
             unsigned int bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
             std::string type = variable_nodes[n].GetAttributeValue("type");
             
-            std::string value = boost::lexical_cast<std::string>(databits.Read(start_bit, bit_length));
-
-            if (type == "enum")
+            //LOG.Debug("name=" + variable_nodes[n].GetAttributeValue("name"));
+            //LOG.Debug("type=" + type);
+            
+            std::string value = "";
+            
+            if (type == "int")
             {
+                unsigned long raw_bit_value = databits.Read(start_bit, bit_length);
+                int raw_value = 0;
+                
+                memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
+                value = boost::lexical_cast<std::string>(raw_value);
+            }
+            else if (type == "float")
+            {
+                float raw_value = 0;
+                bool negative = false;;
+                
+                if (databits.Get(start_bit))
+                {
+                    negative = true;
+                }
+                
+                for (int c = bit_length-1; c > 0; c--)
+                {
+                    if (databits.Get(start_bit + c) != negative)
+                    {
+                        raw_value += pow(2.0f, (int)(bit_length-1-c));
+                    }
+                }
+                
+                raw_value /= 64.0f;
+                
+                if (negative)
+                {
+                    raw_value = -raw_value;
+                }
+                
+                value = boost::lexical_cast<std::string>(raw_value);
+                //LOG.Debug("float:value="+value);
+            }
+            else if (type == "ascii")
+            {
+                char c = 0;
+                
+                for (unsigned int p = 0; p < bit_length; p += 8)
+                {
+                    unsigned long raw_bit_value = databits.Read(start_bit + p, 8);
+                    memcpy(&c, &raw_bit_value, sizeof(c));
+                    value += c;
+                }
+            }
+            else if (type == "hexstring")
+            {
+                for (unsigned int p = 0; p < bit_length; p += 4)
+                {
+                    unsigned long raw_bit_value = databits.Read(start_bit + p, 4);
+                    
+                    //value += boost::lexical_cast<std::string>(raw_bit_value);
+                }
+            }
+            else if (type == "enum")
+            {
+                value = boost::lexical_cast<std::string>(databits.Read(start_bit, bit_length));
                 value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
             }
-            
-            // TODO handle all datatypes!
+            else// if (type == "uint")
+            {
+                unsigned long raw_bit_value = databits.Read(start_bit, bit_length);
+                unsigned int raw_value = 0;
+                
+                memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
+                value = boost::lexical_cast<std::string>(raw_value);
+            }
             
             //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ",bit_length=" + boost::lexical_cast<std::string>(bit_length));
             
@@ -322,6 +393,15 @@ void Network::ProcessBuffer()
     }
     catch (std::runtime_error& e)
     {
+        std::string bytestring;
+        
+        for (unsigned int n = 0; n < this->buffer_.GetSize(); n++)
+        {
+            bytestring += boost::lexical_cast<std::string>((unsigned int)this->buffer_[n]) + ",";
+        }
+        
+        LOG.Debug("Bytes: " + bytestring);
+        
         LOG.Error("Malformed message received, " + std::string(e.what()));
     }
     
