@@ -28,7 +28,7 @@
 namespace atom {
 namespace can {
 
-Protocol::Pointer Protocol::instance_ = Protocol::Pointer(new Protocol());
+Protocol::Pointer Protocol::instance_;
 
 Protocol::Protocol() : LOG("can::Protocol")
 {
@@ -36,6 +36,11 @@ Protocol::Protocol() : LOG("can::Protocol")
 
 Protocol::~Protocol()
 {
+}
+
+void Protocol::Create()
+{
+    Protocol::instance_ = Protocol::Pointer(new Protocol());
 }
 
 Protocol::Pointer Protocol::Instance()
@@ -308,11 +313,11 @@ std::string Protocol::DecodeFloat(type::Bitset& bitset, unsigned int start_bit, 
         negative = true;
     }
     
-    for (int c = bit_length-1; c > 0; c--)
+    for (int c = bit_length - 1; c > 0; c--)
     {
         if (bitset.Get(start_bit + c) != negative)
         {
-            raw_value += pow(2.0f, (int)(bit_length-1-c));
+            raw_value += pow(2.0f, (int)(bit_length - 1 - c));
         }
     }
     
@@ -328,7 +333,8 @@ std::string Protocol::DecodeFloat(type::Bitset& bitset, unsigned int start_bit, 
 
 void Protocol::EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
- // TODO:
+    // TODO:
+    LOG.Error("EncodeFloat() is not implemented yet!");
 }
 
 std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
@@ -349,6 +355,7 @@ std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, 
 void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     // TODO
+    LOG.Error("EncodeAscii() is not implemented yet!");
 }
 
 std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
@@ -376,6 +383,7 @@ std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_b
 void Protocol::EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     // TODO:
+    LOG.Error("EncodeHexstring() is not implemented yet!");
 }
 
 }; // namespace can

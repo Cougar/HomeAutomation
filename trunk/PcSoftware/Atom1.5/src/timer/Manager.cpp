@@ -23,7 +23,7 @@
 namespace atom {
 namespace timer {
 
-Manager::Pointer Manager::instance_ = Manager::Pointer(new Manager());
+Manager::Pointer Manager::instance_;
 
 Manager::Manager() : io_service_work_(io_service_)
 {
@@ -37,6 +37,8 @@ Manager::~Manager()
     this->timers_.clear();
     this->mutex_timers_.unlock();
     
+    this->io_service_.stop();
+    
     this->thread_.interrupt();
     this->thread_.join();
 }
@@ -44,6 +46,11 @@ Manager::~Manager()
 Manager::Pointer Manager::Instance()
 {
     return Manager::instance_;
+}
+
+void Manager::Create()
+{
+    Manager::instance_ = Manager::Pointer(new Manager());
 }
 
 void Manager::Delete()

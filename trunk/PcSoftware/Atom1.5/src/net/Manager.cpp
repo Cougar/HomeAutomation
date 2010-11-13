@@ -29,7 +29,7 @@
 namespace atom {
 namespace net {
 
-Manager::Pointer Manager::instance_ = Manager::Pointer(new Manager());
+Manager::Pointer Manager::instance_;
     
 Manager::Manager() : io_service_work_(io_service_)
 {
@@ -41,6 +41,8 @@ Manager::~Manager()
 {
     this->clients_.clear();
     
+    this->io_service_.stop();
+    
     this->thread_.interrupt();
     this->thread_.join();
 }
@@ -48,6 +50,11 @@ Manager::~Manager()
 Manager::Pointer Manager::Instance()
 {
     return Manager::instance_;
+}
+
+void Manager::Create()
+{
+    Manager::instance_ = Manager::Pointer(new Manager());
 }
 
 void Manager::Delete()
@@ -229,7 +236,7 @@ void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
 void Manager::SendToHandler(ClientId client_id, type::Byteset data)
 {
     ClientList::iterator it = this->clients_.find(client_id);
-    
+
     if (it != this->clients_.end())
     {
         it->second->Send(data);
@@ -242,7 +249,7 @@ void Manager::StopServerHandler(ServerId server_id)
     {
         if (it->second->GetServerId() == server_id)
         {
-            it->second->Disconnect();
+            it->second->Stop();
         }
     }
 }
@@ -255,8 +262,6 @@ void Manager::DisconnectHandler(ClientId client_id)
     {
         it->second->Disconnect();
     }
-    
-    
 }
 
 }; // namespace net

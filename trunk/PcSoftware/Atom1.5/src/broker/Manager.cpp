@@ -23,7 +23,7 @@
 namespace atom {
 namespace broker {
    
-Manager::Pointer Manager::instance_ = Manager::Pointer(new Manager());
+Manager::Pointer Manager::instance_;
 
 Manager::Manager()
 {
@@ -36,6 +36,11 @@ Manager::~Manager()
 Manager::Pointer Manager::Instance()
 {
     return Manager::instance_;
+}
+
+void Manager::Create()
+{
+    Manager::instance_ = Manager::Pointer(new Manager());
 }
 
 void Manager::Delete()

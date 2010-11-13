@@ -39,6 +39,7 @@ public:
     virtual ~Manager();
     
     static Pointer Instance();
+    static void Create();
     static void Delete();
     
     void ConnectSlots(const SignalOnMessage::slot_type& slot_on_message);
