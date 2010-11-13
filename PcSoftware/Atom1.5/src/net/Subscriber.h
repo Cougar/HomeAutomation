@@ -18,36 +18,40 @@
  * 
  */
 
-#ifndef BROKER_SUBSCRIBER_H
-#define BROKER_SUBSCRIBER_H
+#ifndef NET_SUBSCRIBER_H
+#define NET_SUBSCRIBER_H
 
 #include <boost/shared_ptr.hpp>
 
 #include "common/IoService.h"
+#include "type/Byteset.h"
 
-#include "Message.h"
+#include "types.h"
 
 namespace atom {
-namespace broker {
+namespace net {
+        
 
-class Subscriber : virtual public common::IoService, public Origin
+class Subscriber :  virtual public common::IoService
 {
 public:
     typedef boost::shared_ptr<Subscriber> Pointer;
     
-    Subscriber(bool receive_from_self);
+    Subscriber();
     virtual ~Subscriber();
     
 protected:
-    virtual void SlotOnMessageHandler(Message::Pointer message) = 0;
+    virtual void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state) = 0;
+    virtual void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data) = 0;
     
 private:
-    bool receive_from_self_;
-    
-    void SlotOnMessage(Message::Pointer message);
+    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
 };
 
-}; // namespace broker
-}; // namespace atom
 
-#endif // BROKER_SUBSCRIBER_H
+        
+}; // namespace net
+}; // namespace atom
+    
+#endif // NET_SUBSCRIBER_H

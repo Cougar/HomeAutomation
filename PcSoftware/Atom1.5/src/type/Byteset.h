@@ -44,6 +44,7 @@ public:
     unsigned char* Get() const;
     
     std::string ToCharString();
+    std::string ToDebugString();
     
     unsigned char& operator[](unsigned int index);
 

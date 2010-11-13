@@ -18,51 +18,39 @@
  * 
  */
 
-#ifndef TYPE_COMMON_H
-#define TYPE_COMMON_H
+#include "Node.h"
 
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include <stdio.h>
-
-#include <boost/shared_ptr.hpp>
+#include "Message.h"
+#include "broker/Manager.h"
 
 namespace atom {
-namespace type {
-
-typedef boost::shared_ptr<unsigned char> BytePointer;
-typedef std::vector<std::string> StringList;
-
-template <typename T>
-struct HexTo
+namespace can {
+    
+Node::Node(Node::Id id)
 {
-    T value;
-    
-    operator T() const
-    {
-        return value;
-    }
-    
-    friend std::istream& operator>>(std::istream& in, HexTo& out)
-    {
-        in >> std::hex >> out.value;
-        return in;
-    }
-};
+    this->state_ = STATE_OFFLINE;
+    this->id_ = id;
+}
 
-inline std::string ToHex(unsigned int value)
+Node::~Node()
 {
-    char hex_string[11];
-    
-    snprintf(hex_string, sizeof(hex_string), "0x%08X", value);
-    
-    return std::string(hex_string);
-    
+
+}
+
+Node::Id Node::GetId()
+{
+    return this->id_;
+}
+
+Node::State Node::GetState()
+{
+    return this->state_;
+}
+
+void Node::SetState(Node::State state)
+{
+    this->state_ = state;
 }
     
-}; // namespace type
+}; // namespace can
 }; // namespace atom
-
-#endif // TYPE_COMMON_H

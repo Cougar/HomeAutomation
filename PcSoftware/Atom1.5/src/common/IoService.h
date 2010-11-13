@@ -18,51 +18,36 @@
  * 
  */
 
-#ifndef TYPE_COMMON_H
-#define TYPE_COMMON_H
-
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include <stdio.h>
+#ifndef COMMON_IOSERVICE_H
+#define COMMON_IOSERVICE_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 namespace atom {
-namespace type {
+namespace common {
 
-typedef boost::shared_ptr<unsigned char> BytePointer;
-typedef std::vector<std::string> StringList;
-
-template <typename T>
-struct HexTo
+class IoService
 {
-    T value;
+public:
+    typedef boost::shared_ptr<IoService> Pointer;
     
-    operator T() const
-    {
-        return value;
-    }
+    IoService();
+    virtual ~IoService();
     
-    friend std::istream& operator>>(std::istream& in, HexTo& out)
-    {
-        in >> std::hex >> out.value;
-        return in;
-    }
+protected:
+    typedef boost::shared_ptr<char> TrackerPointer;
+    
+    boost::asio::io_service io_service_;
+    TrackerPointer tracker_;
+    
+private:
+    boost::thread thread_;
+    boost::asio::io_service::work io_service_work_;
 };
 
-inline std::string ToHex(unsigned int value)
-{
-    char hex_string[11];
-    
-    snprintf(hex_string, sizeof(hex_string), "0x%08X", value);
-    
-    return std::string(hex_string);
-    
-}
-    
-}; // namespace type
+}; // namespace common
 }; // namespace atom
 
-#endif // TYPE_COMMON_H
+#endif // COMMON_IOSERVICE_H

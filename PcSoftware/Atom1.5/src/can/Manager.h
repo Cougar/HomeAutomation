@@ -18,36 +18,50 @@
  * 
  */
 
-#ifndef CAN_MONITOR_H
-#define CAN_MONITOR_H
+#ifndef CAN_MANAGER_H
+#define CAN_MANAGER_H
 
-#include <string>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/signals2.hpp>
 
 #include "logging/Logger.h"
 #include "broker/Subscriber.h"
-#include "net/Subscriber.h"
-#include "net/types.h"
-#include "type/Byteset.h"
+
+#include "Node.h"
+#include "Module.h"
 
 namespace atom {
 namespace can {
 
-class Monitor : public broker::Subscriber, public net::Subscriber
+class Manager : public broker::Subscriber
 {
 public:
-    typedef boost::shared_ptr<Monitor> Pointer;
+    typedef boost::shared_ptr<Manager> Pointer;
+    typedef std::map<Node::Id, Node::Pointer> NodeList;
+    typedef std::map<Module::FullId, Module::Pointer> ModuleList;
     
-    Monitor(unsigned int port);
-    virtual ~Monitor();
+    virtual ~Manager();
+    
+    static Pointer Instance();
+    static void Delete();
     
 private:
-    net::ServerId server_id_;
+    static Pointer instance_;
+    
+    NodeList nodes_;
+    ModuleList modules_;
+    
+    Manager();
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
-    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    
+    Node::Pointer GetNode(Node::Id node_id);
+    Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);
+    void RemoveModules(Node::Id node_id);
+    void RequestModules(Node::Id node_id);
+    unsigned int GetNumberOfModules(Node::Id node_id);
     
     logging::Logger LOG;
 };
@@ -55,4 +69,4 @@ private:
 }; // namespace can
 }; // namespace atom
 
-#endif // CAN_MONITOR_H
+#endif // CAN_MANAGER_H

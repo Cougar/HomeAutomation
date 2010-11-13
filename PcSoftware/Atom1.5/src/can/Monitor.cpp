@@ -30,16 +30,13 @@
 namespace atom {
 namespace can {
     
-Monitor::Monitor(unsigned int port): Subscriber(port), LOG("can::Monitor")
+Monitor::Monitor(unsigned int port): broker::Subscriber(port), LOG("can::Monitor")
 {
-    net::Manager::Instance()->ConnectSlots(net::Client::SignalOnNewState::slot_type(&Monitor::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                           net::Client::SignalOnNewData::slot_type(&Monitor::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
-    
     try
     {
         this->server_id_ = net::Manager::Instance()->StartServer(net::PROTOCOL_TCP, port);
-        LOG.Info("Started TCP server on port " + boost::lexical_cast<std::string>(port));
-        LOG.Debug("Server id is " + boost::lexical_cast<std::string>(this->server_id_));
+        LOG.Info("Started TCP server on port " + boost::lexical_cast<std::string>(port) + ".");
+        LOG.Debug("Server id is " + boost::lexical_cast<std::string>(this->server_id_) + ".");
     }
     catch (std::exception e)
     {
@@ -50,24 +47,6 @@ Monitor::Monitor(unsigned int port): Subscriber(port), LOG("can::Monitor")
 Monitor::~Monitor()
 {
     net::Manager::Instance()->StopServer(this->server_id_);
-}
-
-
-void Monitor::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
-{
-    if (server_id == this->server_id_)
-    {
-        type::Byteset temp_buffer = data;
-        this->io_service_.post(boost::bind(&Monitor::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
-    }
-}
-
-void Monitor::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
-{
-    if (server_id == this->server_id_)
-    {
-        this->io_service_.post(boost::bind(&Monitor::SlotOnNewStateHandler, this, client_id, server_id, client_state));
-    }
 }
 
 void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
@@ -119,6 +98,11 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
 
 void Monitor::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
 {
+    if (server_id != this->server_id_)
+    {
+        return;
+    }
+    
     std::string str = data.ToCharString();
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
@@ -134,6 +118,11 @@ void Monitor::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
 
 void Monitor::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
+    if (server_id != this->server_id_)
+    {
+        return;
+    }
+    
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
         LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has disconnected.");

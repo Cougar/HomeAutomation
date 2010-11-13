@@ -45,14 +45,11 @@ enum
     PACKET_PING  = 251
 };
     
-Network::Network(std::string address): Subscriber(false), LOG("can::Network"), buffer_(2048)
+Network::Network(std::string address): broker::Subscriber(false), LOG("can::Network"), buffer_(2048)
 {
     this->address_ = address;
     this->client_id_ = 0;
        
-    net::Manager::Instance()->ConnectSlots(net::Client::SignalOnNewState::slot_type(&Network::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                           net::Client::SignalOnNewData::slot_type(&Network::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
-    
     // Examples of address
     // udp:192.168.1.250:1100
     // serial:/dev/ttyUSB0:38400
@@ -108,23 +105,6 @@ Network::~Network()
     net::Manager::Instance()->Disconnect(this->client_id_);
 }
 
-void Network::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
-{
-    if (client_id == this->client_id_)
-    {
-        type::Byteset temp_buffer = data;
-        this->io_service_.post(boost::bind(&Network::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
-    }
-}
-
-void Network::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
-{
-    if (client_id == this->client_id_)
-    {
-        this->io_service_.post(boost::bind(&Network::SlotOnNewStateHandler, this, client_id, server_id, client_state));
-    }
-}
-
 void Network::SlotOnTimeout(timer::TimerId timer_id)
 {
     if (timer_id == this->timer_id_)
@@ -138,14 +118,125 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
     if (message->GetType() == broker::Message::CAN_MESSAGE)
     {
         Message* payload = static_cast<Message*>(message->GetPayload().get());
+        type::Byteset data(17);
         
+        data[0] = PACKET_START;
         
+        unsigned int class_id = Protocol::Instance()->ResolveClassId(payload->GetClassName());
+        data[4] = class_id << 1;
+
+        if (payload->GetClassName() == "nmt")
+        {
+            unsigned int command_id = Protocol::Instance()->ResolveNMTCommandId(payload->GetCommandName());
+            data[3] = command_id;
+        }
+        else
+        {
+            unsigned int direction_flag = Protocol::Instance()->ResolveDirectionFlag(payload->GetDirectionName());
+            data[4] |= (direction_flag & 0x01);
+            
+            unsigned int module_id = Protocol::Instance()->ResolveModuleId(payload->GetModuleName());
+            data[3] = module_id;
+            
+            data[2] = payload->GetId();
+            
+            unsigned int command_id = Protocol::Instance()->ResolveCommandId(payload->GetCommandName(), payload->GetModuleName());
+            data[1] = command_id;
+        }
         
+        unsigned int highest_bit = 0;
+        type::Bitset databits(64);
+        
+        xml::Node::NodeList variable_nodes;
+        unsigned int start_bit;
+        unsigned int bit_length;
+        std::string type;
+        std::string value;
+        
+        if (payload->GetClassName() == "nmt")
+        {
+            variable_nodes = Protocol::Instance()->GetNMTCommandVariables(payload->GetCommandName());
+        }
+        else
+        {
+            variable_nodes = Protocol::Instance()->GetCommandVariables(payload->GetCommandName(), payload->GetModuleName());
+        }
+        
+        for (unsigned int n = 0; n < variable_nodes.size(); n++)
+        {
+            value = payload->GetVariable(variable_nodes[n].GetAttributeValue("name"));
+            
+            if (value == "")
+            {
+                continue;
+            }
+            
+            start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
+            bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
+            type = variable_nodes[n].GetAttributeValue("type");
+            
+            if (highest_bit < start_bit + bit_length - 1)
+            {
+                highest_bit = start_bit + bit_length - 1;
+            }
+            
+            if (type == "int")
+            {
+                Protocol::Instance()->EncodeInt(databits, start_bit, bit_length, value);
+            }
+            else if (type == "float")
+            {
+                Protocol::Instance()->EncodeFloat(databits, start_bit, bit_length, value);
+            }
+            else if (type == "ascii")
+            {
+                Protocol::Instance()->EncodeAscii(databits, start_bit, bit_length, value);
+            }
+            else if (type == "hexstring")
+            {
+                Protocol::Instance()->EncodeHexstring(databits, start_bit, bit_length, value);
+            }
+            else if (type == "enum")
+            {
+                value = variable_nodes[n].SelectChild("name", value).GetAttributeValue("id");
+                Protocol::Instance()->EncodeUint(databits, start_bit, bit_length, value);
+            }
+            else// if (type == "uint")
+            {
+                Protocol::Instance()->EncodeUint(databits, start_bit, bit_length, value);
+            }
+        }
+        
+        //LOG.Debug(databits.ToDebugString());
+        
+        unsigned int length = ceil((float)highest_bit / 8.0f);
+        
+        data[5] = 1;
+        data[6] = 0;
+        
+        data[7] = length;
+        
+        for (unsigned int n = 0; n < 8; n++)
+        {
+            data[8 + n] = databits.GetBytes()[n];
+        }
+        
+        data[16] = PACKET_END;
+        
+        data.SetSize(17);
+        
+        //LOG.Debug("Bytes: " + data.ToDebugString());
+        net::Manager::Instance()->SendTo(this->client_id_, data);
     }
 }
 
 void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
 {
+    if (client_id != this->client_id_)
+    {
+            return;
+    }
+    
     static bool have_start = false;
     
     for (unsigned int n = 0; n < data.GetSize(); n++)
@@ -154,7 +245,6 @@ void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
         {
             if (data[n] == PACKET_END && this->buffer_.GetSize() == 15)
             {
-                //LOG.Debug("Received packet end and size is 15.");
                 this->ProcessBuffer();
                 have_start = false;
             }
@@ -165,7 +255,6 @@ void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
         }
         else if (data[n] == PACKET_START)
         {
-            //LOG.Debug("Received packet start.");
             this->buffer_.Clear();
             have_start = true;
         }
@@ -178,6 +267,11 @@ void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
 
 void Network::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
+    if (client_id != this->client_id_)
+    {
+        return;
+    }
+    
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
         LOG.Warning("Got disconnected, setting reconnect timer...");
@@ -219,79 +313,44 @@ void Network::ProcessBuffer()
         std::string command_name = "";
         
         unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
-        
-        //LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id) + ", byte[3] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[3]));
-        
         class_name = Protocol::Instance()->LookupClassName(class_id);
-        
-        //LOG.Debug("class_name=" + class_name);
         
         if (class_name == "nmt")
         {
             unsigned int command_id = this->buffer_[2];
-            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id) + ", byte[2] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[2]));
-            
             command_name = Protocol::Instance()->LookupNMTCommandName(command_id);
-            //LOG.Debug("command_name=" + command_name);
         }
         else
         {
             unsigned int direction_flag = this->buffer_[3] & 0x01;
-            //LOG.Debug("direction_flag=" + boost::lexical_cast<std::string>(direction_flag) + ", byte[3] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[3]));
-            
             direction_name = Protocol::Instance()->LookupDirectionFlag(direction_flag);
-            //LOG.Debug("direction_name=" + direction_name);
             
             unsigned int module_id = this->buffer_[2];
-            //LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id) + ", byte[2] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[2]));
-            
             module_name = Protocol::Instance()->LookupModuleName(module_id);
-            //LOG.Debug("module_name=" + module_name);
             
             id = this->buffer_[1];
-            //LOG.Debug("id=" + boost::lexical_cast<std::string>(id) + ", byte[1] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[1]));
             
             unsigned int command_id = this->buffer_[0];
-            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id) + ", byte[0] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[0]));
-            
             command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
-            //LOG.Debug("command_name=" + command_name);
         }
 
         Message* payload = new Message(class_name, direction_name, module_name, id, command_name);
 
         unsigned int length = this->buffer_[6];
-        //LOG.Debug("Data length = " + boost::lexical_cast<std::string>(length));
         
         type::Byteset data_set(length);
         
         for (unsigned int n = 0; n < length; n++)
         {
-            //LOG.Debug("add byte[" + boost::lexical_cast<std::string>(n + 7) + "] = " + boost::lexical_cast<std::string>((unsigned int)this->buffer_[n + 7]));
             data_set.Append(this->buffer_[n + 7]);
         }
-        /*
-        for (unsigned int n = 0; n < data_set.GetSize(); n++)
-        {
-            LOG.Debug("byte[" + boost::lexical_cast<std::string>(n) + "] = " + boost::lexical_cast<std::string>((unsigned int)data_set[n]));
-        }
-        */
+
         type::Bitset databits(data_set);
-        
-        /*
-        std::string temp = "";
-        std::string temp2 = "";
-        for (unsigned int n = 0; n < databits.GetCount(); n ++)
-        {
-            
-            temp2 += boost::lexical_cast<std::string>((unsigned int)databits.bytes_[n/8]);
-            temp += boost::lexical_cast<std::string>(databits.Get(n));
-        }
-        
-        LOG.Debug("databits1 = " + temp);
-        LOG.Debug("databits2 = " + temp2);*/
-        
         xml::Node::NodeList variable_nodes;
+        unsigned int start_bit;
+        unsigned int bit_length;
+        std::string type;
+        std::string value;
         
         if (class_name == "nmt")
         {
@@ -304,105 +363,45 @@ void Network::ProcessBuffer()
         
         for (unsigned int n = 0; n < variable_nodes.size(); n++)
         {
-            unsigned int start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
-            unsigned int bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
-            std::string type = variable_nodes[n].GetAttributeValue("type");
-            
-            //LOG.Debug("name=" + variable_nodes[n].GetAttributeValue("name"));
-            //LOG.Debug("type=" + type);
-            
-            std::string value = "";
+            start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
+            bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
+            type = variable_nodes[n].GetAttributeValue("type");
             
             if (type == "int")
             {
-                unsigned long raw_bit_value = databits.Read(start_bit, bit_length);
-                int raw_value = 0;
-                
-                memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
-                value = boost::lexical_cast<std::string>(raw_value);
+                value = Protocol::Instance()->DecodeInt(databits, start_bit, bit_length);
             }
             else if (type == "float")
             {
-                float raw_value = 0;
-                bool negative = false;;
-                
-                if (databits.Get(start_bit))
-                {
-                    negative = true;
-                }
-                
-                for (int c = bit_length-1; c > 0; c--)
-                {
-                    if (databits.Get(start_bit + c) != negative)
-                    {
-                        raw_value += pow(2.0f, (int)(bit_length-1-c));
-                    }
-                }
-                
-                raw_value /= 64.0f;
-                
-                if (negative)
-                {
-                    raw_value = -raw_value;
-                }
-                
-                value = boost::lexical_cast<std::string>(raw_value);
-                //LOG.Debug("float:value="+value);
+                value = Protocol::Instance()->DecodeFloat(databits, start_bit, bit_length);
             }
             else if (type == "ascii")
             {
-                char c = 0;
-                
-                for (unsigned int p = 0; p < bit_length; p += 8)
-                {
-                    unsigned long raw_bit_value = databits.Read(start_bit + p, 8);
-                    memcpy(&c, &raw_bit_value, sizeof(c));
-                    value += c;
-                }
+                value = Protocol::Instance()->DecodeAscii(databits, start_bit, bit_length);
             }
             else if (type == "hexstring")
             {
-                for (unsigned int p = 0; p < bit_length; p += 4)
-                {
-                    unsigned long raw_bit_value = databits.Read(start_bit + p, 4);
-                    
-                    //value += boost::lexical_cast<std::string>(raw_bit_value);
-                }
+                value = Protocol::Instance()->DecodeHexstring(databits, start_bit, bit_length);
             }
             else if (type == "enum")
             {
-                value = boost::lexical_cast<std::string>(databits.Read(start_bit, bit_length));
+                value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
                 value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
             }
             else// if (type == "uint")
             {
-                unsigned long raw_bit_value = databits.Read(start_bit, bit_length);
-                unsigned int raw_value = 0;
-                
-                memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
-                value = boost::lexical_cast<std::string>(raw_value);
+                value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
             }
             
-            //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ",bit_length=" + boost::lexical_cast<std::string>(bit_length));
-            
             payload->SetVariable(variable_nodes[n].GetAttributeValue("name"), value);
-            //LOG.Debug("Variable:" + variable_nodes[n].GetAttributeValue("name") + " = " + value);
         }
         
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
     }
     catch (std::runtime_error& e)
     {
-        std::string bytestring;
-        
-        for (unsigned int n = 0; n < this->buffer_.GetSize(); n++)
-        {
-            bytestring += boost::lexical_cast<std::string>((unsigned int)this->buffer_[n]) + ",";
-        }
-        
-        LOG.Debug("Bytes: " + bytestring);
-        
         LOG.Error("Malformed message received, " + std::string(e.what()));
+        LOG.Debug("Bytes: " + this->buffer_.ToDebugString());
     }
     
     this->buffer_.Clear();

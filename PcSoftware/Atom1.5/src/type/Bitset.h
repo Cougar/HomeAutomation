@@ -43,11 +43,15 @@ public:
     int Get(unsigned int position);
     
     unsigned long Read(unsigned int position, unsigned int length);
+    void Write(unsigned int position, unsigned int length, unsigned long value);
     
     unsigned int GetCount();
-    unsigned char *bytes_;
-private:
+    unsigned char* GetBytes() const;
     
+    std::string ToDebugString();
+    
+private:
+    unsigned char* bytes_;
     unsigned int count_;
 };
 

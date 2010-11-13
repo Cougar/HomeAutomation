@@ -7,3 +7,4 @@ add_subdirectory(can)
 add_subdirectory(type)
 
 add_subdirectory(xml)
+add_subdirectory(common)
