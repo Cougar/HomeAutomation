@@ -27,6 +27,7 @@
 
 #include "xml/Node.h"
 #include "logging/Logger.h"
+#include "type/Bitset.h"
 
 namespace atom {
 namespace can {
@@ -64,19 +65,16 @@ public:
     xml::Node::NodeList GetCommandVariables(std::string command_name, std::string module_name);
     xml::Node::NodeList GetNMTCommandVariables(std::string command_name);
     
-    
-    /*
-    
-    std::map<std::string, CanVariable> TranslateData(unsigned int command_id, std::string module_name, std::string data_hex);
-    std::string TranslateDataToHex(unsigned int command_id, std::string module_name, std::map<std::string, CanVariable> &data);
-    
-        void MakeDataValid(int command_id, std::string module_name, std::map<std::string, CanVariable> &data);
-    
-    
-        std::map<std::string, CanVariable> TranslateNMTData(unsigned int command_id, std::string raw_hex_data);
-        std::string TranslateNMTDataToHex(std::string command_name, std::map<std::string, CanVariable> &data);
-    
-        void MakeNMTDataValid(std::string command_name, std::map<std::string, CanVariable> &data);*/
+    std::string DecodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
     
 private:
     static Pointer instance_;
@@ -84,11 +82,6 @@ private:
     xml::Node root_node_;
     
     Protocol();
-    /*
-        std::string translateValidDataToHex(std::map<std::string, CanVariable> &data);
-        std::map<std::string, CanVariable> translateData(xml::Node::NodeList variable_nodes, std::string data_hex);
-    
-        void makeDataValid(xml::Node::NodeList variable_nodes, std::map<std::string, CanVariable> &data);*/
         
     logging::Logger LOG;
 };

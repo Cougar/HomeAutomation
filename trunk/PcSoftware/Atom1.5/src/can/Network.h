@@ -27,6 +27,7 @@
 
 #include "logging/Logger.h"
 #include "broker/Subscriber.h"
+#include "net/Subscriber.h"
 #include "net/types.h"
 #include "type/Byteset.h"
 #include "timer/Manager.h"
@@ -34,7 +35,7 @@
 namespace atom {
 namespace can {
 
-class Network : public broker::Subscriber
+class Network : public broker::Subscriber, public net::Subscriber
 {
 public:
     typedef boost::shared_ptr<Network> Pointer;
@@ -52,8 +53,6 @@ private:
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
     
-    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
     void SlotOnTimeout(timer::TimerId timer_id);
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);

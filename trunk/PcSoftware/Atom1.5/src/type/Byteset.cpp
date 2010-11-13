@@ -22,13 +22,14 @@
 
 #include "string.h"
 
+#include <boost/lexical_cast.hpp>
+
 namespace atom {
 namespace type {
  
 Byteset::Byteset(unsigned int max_size)
 {
     this->max_size_ = max_size;
-    this->size_ = this->max_size_;
     this->bytes_ = new unsigned char[this->max_size_];
     
     this->Clear();
@@ -65,6 +66,18 @@ unsigned char* Byteset::Get() const
 std::string Byteset::ToCharString()
 {
     return std::string((char*)this->bytes_, this->size_);
+}
+
+std::string Byteset::ToDebugString()
+{
+    std::string debug_string;
+    
+    for (unsigned int n = 0; n < this->size_; n++)
+    {
+        debug_string += boost::lexical_cast<std::string>((unsigned int)this->bytes_[n]) + ",";
+    }
+    
+    return debug_string;
 }
 
 unsigned char& Byteset::operator[](unsigned int index)

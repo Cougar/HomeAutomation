@@ -23,13 +23,19 @@
 #include <math.h>
 #include <string.h>
 
+#include <boost/lexical_cast.hpp>
+
 namespace atom {
 namespace type {
 
 Bitset::Bitset(unsigned int count)
 {
+    unsigned int byte_size = (int)ceil(count / 8);
+    
     this->count_ = count;
-    this->bytes_ = new unsigned char[(int)ceil(count / 8)];
+    this->bytes_ = new unsigned char[byte_size];
+    
+    memset(this->bytes_, 0, byte_size);
 }
 
 Bitset::Bitset(const Byteset& set)
@@ -50,6 +56,11 @@ unsigned int Bitset::GetCount()
     return this->count_;
 }
 
+unsigned char* Bitset::GetBytes() const
+{
+    return this->bytes_;
+}
+
 unsigned long Bitset::Read(unsigned int position, unsigned int length)
 {
     unsigned long value = 0;
@@ -62,6 +73,23 @@ unsigned long Bitset::Read(unsigned int position, unsigned int length)
     return value;
 }
 
+void Bitset::Write(unsigned int position, unsigned int length, long unsigned value)
+{
+    for (unsigned int index = 0; index < length; index++)
+    {
+        if (value & 0x01)
+        {
+            this->Set(position + (length - index - 1));
+        }
+        else
+        {
+            this->Unset(position + (length - index - 1));
+        }
+        
+        value = (value >> 1);
+    }
+}
+
 int Bitset::Set(unsigned int position)
 {
     if (position >= this->count_)
@@ -69,10 +97,7 @@ int Bitset::Set(unsigned int position)
         return -1;
     }
     
-    unsigned int byte_position = position / 8;
-    unsigned int bit_position = 7 - (position - (byte_position * 8));
-    
-    this->bytes_[byte_position] |= (0x00000001 << (bit_position));
+    this->bytes_[position / 8] |= (0x00000001 << (7 - (position % 8)));
 
     return 0;
 }
@@ -84,10 +109,7 @@ int Bitset::Unset(unsigned int position)
         return -1;
     }
     
-    unsigned int byte_position = position / 8;
-    unsigned int bit_position = 7 - (position - (byte_position * 8));
-    
-    this->bytes_[byte_position] &= ~(0x00000001 << (bit_position));
+    this->bytes_[position / 8] &= ~(0x00000001 << (7 - (position % 8)));
     
     return 0;
 }
@@ -99,10 +121,19 @@ int Bitset::Get(unsigned int position)
         return -1;
     }
     
-    unsigned int byte_position = position / 8;
-    unsigned int bit_position = 7 - (position - (byte_position * 8));
+    return (this->bytes_[position / 8] & (0x00000001 << (7 - (position % 8))) ? 1 : 0);
+}
+
+std::string Bitset::ToDebugString()
+{
+    std::string debug_string;
     
-    return (this->bytes_[byte_position] & (0x00000001 << bit_position) ? 1 : 0);
+    for (unsigned int n = 0; n < this->count_; n++)
+    {
+        debug_string += boost::lexical_cast<std::string>(this->Get(n));
+    }
+    
+    return debug_string;
 }
 
 }; // namespace type

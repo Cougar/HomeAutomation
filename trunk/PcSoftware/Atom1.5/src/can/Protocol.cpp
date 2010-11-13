@@ -21,6 +21,7 @@
 #include "Protocol.h"
 
 #include <stdexcept>
+#include <string.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -59,7 +60,7 @@ bool Protocol::Load(std::string filename)
         return false;
     }
     
-    LOG.Info("Protocol loaded successfully");
+    LOG.Info("Protocol loaded successfully.");
     return true;
 }
 
@@ -195,6 +196,11 @@ unsigned int Protocol::ResolveDirectionFlag(std::string direction_name)
 
 std::string Protocol::LookupModuleName(unsigned int module_id)
 {
+    if (module_id == 0)
+    {
+        return "";
+    }
+    
     try
     {
         return this->root_node_.FindChild("modules").SelectChild("id", boost::lexical_cast<std::string>(module_id)).GetAttributeValue("name");
@@ -208,6 +214,11 @@ std::string Protocol::LookupModuleName(unsigned int module_id)
 
 unsigned int Protocol::ResolveModuleId(std::string module_name)
 {
+    if (module_name == "")
+    {
+        return 0;
+    }
+    
     try
     {
         return boost::lexical_cast<unsigned int>(this->root_node_.FindChild("modules").SelectChild("name", module_name).GetAttributeValue("id"));
@@ -253,395 +264,119 @@ xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-void Protocol::makeNMTDataValid(std::string commandName, map<std::string, CanVariable> &data)
+std::string Protocol::DecodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
-    std::vector<Node> commandNodes = xmlNode.findChild("nmt_messages").getChildren();
+    unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
+    int raw_value = 0;
     
-    for (int n = 0; n < commandNodes.size(); n++)
+    memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
+    
+    return boost::lexical_cast<std::string>(raw_value);
+}
+
+void Protocol::EncodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+{
+    unsigned long raw_bit_value = 0;
+    int raw_value = boost::lexical_cast<int>(value);
+    
+    memcpy(&raw_bit_value, &raw_value, sizeof(raw_value));
+    
+    bitset.Write(start_bit, bit_length, raw_bit_value);
+}
+
+std::string Protocol::DecodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+{
+    unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
+    
+    return boost::lexical_cast<std::string>((unsigned int)raw_bit_value);
+}
+
+void Protocol::EncodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+{
+    unsigned long raw_bit_value = boost::lexical_cast<unsigned int>(value);
+    
+    bitset.Write(start_bit, bit_length, raw_bit_value);
+}
+
+std::string Protocol::DecodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+{
+    float raw_value = 0;
+    bool negative = false;;
+    
+    if (bitset.Get(start_bit))
     {
-        map<std::string, std::string> attributes = commandNodes[n].getAttributes();
-        
-        if (attributes["name"] == commandName)
-        {
-            Node varablesNode = commandNodes[n].findChild("variables");
-            
-            makeDataValid(varablesNode.getChildren(), data);
-            
-            return;
-        }
+        negative = true;
     }
-}
-
-void Protocol::makeDataValid(int commandId, std::string moduleName, map<std::string, CanVariable> &data)
-{
-    std::vector<Node> commandNodes = xmlNode.findChild("commands").getChildren();
     
-    for (int n = 0; n < commandNodes.size(); n++)
+    for (int c = bit_length-1; c > 0; c--)
     {
-        map<std::string, std::string> attributes = commandNodes[n].getAttributes();
-        
-        bool correct = false;
-        
-        if (commandId >= 128)
+        if (bitset.Get(start_bit + c) != negative)
         {
-            if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
-            {
-                correct = true;
-            }
-        }
-        else if (stoi(attributes["id"]) == commandId)
-        {
-            correct = true;
-        }
-        
-        if (correct)
-        {
-            Node varablesNode = commandNodes[n].findChild("variables");
-            
-            makeDataValid(varablesNode.getChildren(), data);
-            
-            return;
-        }
-    }
-}
-
-void Protocol::makeDataValid(std::vector<Node> variableNodes, map<std::string, CanVariable> &data)
-{
-    ///FIXME: Remove variables that do not exist in the xmlfile
-    for (int c = 0; c < variableNodes.size(); c++)
-    {
-        map<std::string, std::string> attributes = variableNodes[c].getAttributes();
-        
-        if (data.find(attributes["name"]) != data.end())
-        {
-            data[attributes["name"]].setType(attributes["type"]);
-            data[attributes["name"]].setUnit(attributes["unit"]);
-            data[attributes["name"]].setBitLength(stoi(attributes["bit_length"]));
-            data[attributes["name"]].setStartBit(stoi(attributes["start_bit"]));
-            
-            if (attributes["type"] == "enum")
-            {
-                std::vector<Node> values = variableNodes[c].getChildren();
-                
-                for (int k = 0; k < values.size(); k++)
-                {
-                    map<std::string, std::string> valueAttributes = values[k].getAttributes();
-                    data[attributes["name"]].addEnumValue(valueAttributes["id"], valueAttributes["name"]);
-                }
-            }
-        }
-    }
-}
-
-std::string Protocol::translateDataToHex(int commandId, std::string moduleName, map<std::string, CanVariable> &data)
-{
-    makeDataValid(commandId, moduleName, data);
-    
-    return translateValidDataToHex(data);
-}
-
-
-map<std::string, CanVariable> Protocol::translateData(int commandId, std::string moduleName, std::string dataHex)
-{
-    std::vector<Node> commandNodes = xmlNode.findChild("commands").getChildren();
-    
-    for (int n = 0; n < commandNodes.size(); n++)
-    {
-        map<std::string, std::string> attributes = commandNodes[n].getAttributes();
-        
-        bool correct = false;
-        
-        if (commandId >= 128)
-        {
-            if (stoi(attributes["id"]) == commandId && attributes["module"] == moduleName)
-            {
-                correct = true;
-            }
-        }
-        else if (stoi(attributes["id"]) == commandId)
-        {
-            correct = true;
-        }
-        
-        if (correct)
-        {
-            Node varablesNode = commandNodes[n].findChild("variables");
-            
-            return translateData(varablesNode.getChildren(), dataHex);
+            raw_value += pow(2.0f, (int)(bit_length-1-c));
         }
     }
     
-    map<std::string, CanVariable> variables;
-    return variables;
+    raw_value /= 64.0f;
+    
+    if (negative)
+    {
+        raw_value = -raw_value;
+    }
+    
+    return boost::lexical_cast<std::string>(raw_value);
 }
 
-map<std::string, CanVariable> Protocol::translateNMTData(int commandId, std::string dataHex)
+void Protocol::EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    std::vector<Node> commandNodes = xmlNode.findChild("nmt_messages").getChildren();
+ // TODO:
+}
+
+std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+{
+    std::string value;
+    char c = 0;
     
-    for (int n = 0; n < commandNodes.size(); n++)
+    for (unsigned int p = 0; p < bit_length; p += 8)
     {
-        map<std::string, std::string> attributes = commandNodes[n].getAttributes();
+        unsigned long raw_bit_value = bitset.Read(start_bit + p, 8);
+        memcpy(&c, &raw_bit_value, sizeof(c));
+        value += c;
+    }
+    
+    return value;
+}
+
+void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+{
+    // TODO
+}
+
+std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+{
+    std::string value;
+    char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    
+    for (unsigned int p = 0; p < bit_length; p += 4)
+    {
+        unsigned long raw_bit_value = bitset.Read(start_bit + p, 4);
         
-        if (stoi(attributes["id"]) == commandId)
+        if (raw_bit_value >= sizeof(hex))
         {
-            Node varablesNode = commandNodes[n].findChild("variables");
-            
-            return translateData(varablesNode.getChildren(), dataHex);
+            value += '-';
+        }
+        else
+        {
+            value += hex[raw_bit_value];
         }
     }
     
-    map<std::string, CanVariable> variables;
-    return variables;
+    return value;
 }
 
-std::string Protocol::translateNMTDataToHex(std::string commandName, map<std::string, CanVariable> &data)
+void Protocol::EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    makeNMTDataValid(commandName, data);
-    
-    return translateValidDataToHex(data);
+    // TODO:
 }
 
-
-template <class T>
-bool from_std::string(T& t, 
-                const std::std::string& s, 
-                std::ios_base& (*f)(std::ios_base&))
-{
-    std::istd::stringstream iss(s);
-    return !(iss >> f >> t).fail();
-}
-
-
-std::string Protocol::translateValidDataToHex(map<std::string, CanVariable> &data)
-{
-    std::string bin = "0000000000000000000000000000000000000000000000000000000000000000";
-    int highestBit = 0;
-    
-    for (map<std::string, CanVariable>::iterator iter = data.begin(); iter != data.end(); iter++)
-    {
-        if (iter->second.getType() == "uint")
-        {
-            if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
-                highestBit = iter->second.getStartBit() + iter->second.getBitLength();
-            
-            unsigned int a = stou(iter->second.getValue());
-            bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
-        }
-        else if (iter->second.getType() == "int")
-        {
-            if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
-                highestBit = iter->second.getStartBit() + iter->second.getBitLength();
-            
-            unsigned int a = stou(iter->second.getValue());
-            bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(a, iter->second.getBitLength()));
-
-        }
-        else if (iter->second.getType() == "float")
-        {
-            if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
-                highestBit = iter->second.getStartBit() + iter->second.getBitLength();
-            bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), float2bin(stof(iter->second.getValue()), iter->second.getBitLength()));
-            
-        }
-        else if (iter->second.getType() == "enum")
-        {
-            if (iter->second.getStartBit() + iter->second.getBitLength() > highestBit)
-                highestBit = iter->second.getStartBit() + iter->second.getBitLength();
-            
-            std::string value = iter->second.getEnumIdValue();
-            
-            if (value == "")
-            {
-                throw new CanMessageException("Got enum that could not be converterd to a value. value = \"" + iter->second.getValue() + "\" enumString is \"" + iter->second.getEnumsString() + "\"\n");
-            }
-            else
-            {
-                bin.replace(iter->second.getStartBit(), iter->second.getBitLength(), uint2bin(stou(value), iter->second.getBitLength()));
-            }
-        }
-        else if (iter->second.getType() == "ascii")
-        {
-            for (int n = 0; n < iter->second.getValue().length(); n++)
-            {
-                if (iter->second.getStartBit()+n*8 + 8 > highestBit)
-                    highestBit = iter->second.getStartBit()+n*8 + 8;
-                
-                //bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin((unsigned int)iter->second.getValue()[n], 8));
-                    unsigned int temp = iter->second.getValue()[n];
-                    if (temp > 0xff)
-                    {
-                        temp &= 0xff;
-                    }
-                    bin.replace(iter->second.getStartBit()+n*8, 8, uint2bin(temp, 8));
-            }
-        }
-        else if (iter->second.getType() == "hexstd::string")
-        {
-            for (int n = 0; n < iter->second.getValue().length(); n++)
-            {
-                if (iter->second.getStartBit()+n*4 + 4 > highestBit)
-                    highestBit = iter->second.getStartBit()+n*4 + 4;
-                
-                std::string character;
-                character += iter->second.getValue()[n];
-                
-                bin.replace(iter->second.getStartBit()+n*4, 4, hex2bin(character));
-            }
-        }
-    }
-    
-    try
-    {
-        while (highestBit%8 != 0)
-        {
-            highestBit++;
-        }
-        bin = bin.substr(0, highestBit);
-    }
-    catch (std::out_of_range& e)
-    {
-        cout << "DEBUG: translateValidDataToHex exception: " << e.what() << "\n";
-        cout << "DEBUG: A bin=" << bin << " :: highestBit=" << highestBit << endl;
-    }
-    
-    return bin2hex(bin);
-}
-
-map<std::string, CanVariable> Protocol::translateData(std::vector<Node> variableNodes, std::string dataHex)
-{
-    map<std::string, CanVariable> variables;
-    std::string dataBin = hex2bin(dataHex);
-    //dataBin = rpad(dataBin, 64, '0');
-    
-    for (int c = 0; c < variableNodes.size(); c++)
-    {
-        map<std::string, std::string> attributes = variableNodes[c].getAttributes();
-        
-        int bitStart = stoi(attributes["start_bit"]);
-        int bitLength = stoi(attributes["bit_length"]);
-        std::string bits;
-        
-        try
-        {
-            bits = dataBin.substr(bitStart, bitLength);
-        }
-        catch (std::out_of_range& e)
-        {
-            return variables;
-        }
-        
-        CanVariable variable;
-        
-        variable.setName(attributes["name"]);
-        variable.setType(attributes["type"]);
-        variable.setUnit(attributes["unit"]);
-        variable.setStartBit(bitStart);
-        variable.setBitLength(bitLength);
-        
-        if (attributes["type"] == "uint")
-        {
-            variable.setValue(utos(bin2uint(bits)));
-        }
-        else if (attributes["type"] == "int")
-        {
-            variable.setValue(itos(bin2int(bits)));
-        }
-        else if (attributes["type"] == "float")
-        {
-            variable.setValue(ftos(bin2float(bits)));
-        }
-        else if (attributes["type"] == "enum")
-        {
-            std::vector<Node> values = variableNodes[c].getChildren();
-            
-            std::string value = utos(bin2uint(bits));
-            
-            for (int k = 0; k < values.size(); k++)
-            {
-                map<std::string, std::string> valueAttributes = values[k].getAttributes();
-                variable.addEnumValue(valueAttributes["id"], valueAttributes["name"]);
-                
-                if (valueAttributes["id"] == value)
-                {
-                    variable.setValue(valueAttributes["name"]);
-                }
-            }
-        }
-        else if (attributes["type"] == "ascii")
-        {
-            std::string str;
-            
-            for (int k = 0; k < bits.length(); k += 8)
-            {
-                try
-                {
-                    str += (char)bin2uint(bits.substr(k, 8));
-                }
-                catch (std::out_of_range& e)
-                {
-                    cout << "DEBUG: TranslateData exception: " << e.what() << "\n";
-                    cout << "DEBUG: B bits=" << bits << " :: k=" << k << endl;
-                    continue;
-                }
-            }
-            
-            variable.setValue(str);
-        }
-        else if (attributes["type"] == "hexstd::string")
-        {
-            std::string str;
-            
-            for (int k = 0; k < bits.length(); k += 4)
-            {
-                try
-                {
-                    str += bin2hex(bits.substr(k, 4));
-                }
-                catch (std::out_of_range& e)
-                {
-                    cout << "DEBUG: TranslateData exception: " << e.what() << "\n";
-                    cout << "DEBUG: C bits=" << bits << " :: k=" << k << endl;
-                    continue;
-                }
-            }
-            
-            variable.setValue(str);
-        }
-        
-        variables[attributes["name"]] = variable;
-    }
-    
-    return variables;
-}
-   
-   
-   */
-   
-   
-   
-   
-   
-   
-   
-   
-   
 }; // namespace can
 }; // namespace atom

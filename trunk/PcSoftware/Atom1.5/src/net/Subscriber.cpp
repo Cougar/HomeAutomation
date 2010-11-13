@@ -25,26 +25,28 @@
 #include "Manager.h"
 
 namespace atom {
-namespace broker {
-   
-Subscriber::Subscriber(bool receive_from_self)
+namespace net {
+
+Subscriber::Subscriber()
 {
-    this->receive_from_self_ = receive_from_self;
-    
-    Manager::Instance()->ConnectSlots(Manager::SignalOnMessage::slot_type(&Subscriber::SlotOnMessage, this, _1).track(this->tracker_));
+    Manager::Instance()->ConnectSlots(Manager::SignalOnNewState::slot_type(&Subscriber::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
+                                      Manager::SignalOnNewData::slot_type(&Subscriber::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
 }
 
 Subscriber::~Subscriber()
 {
 }
 
-void Subscriber::SlotOnMessage(Message::Pointer message)
+void Subscriber::SlotOnNewData(ClientId client_id, ServerId server_id, type::Byteset data)
 {
-    if (this->receive_from_self_ || !message->TestIfOrigin(this))
-    {
-        this->io_service_.post(boost::bind(&Subscriber::SlotOnMessageHandler, this, message));
-    }
+    type::Byteset temp_buffer = data;
+    this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
 }
-    
-}; // namespace broker
+
+void Subscriber::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state)
+{
+    this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+}
+
+}; // namespace net
 }; // namespace atom

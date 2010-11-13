@@ -73,7 +73,6 @@ private:
     boost::asio::io_service::work io_service_work_;
     
     ClientList clients_;
-    boost::mutex mutex_clients_;
     
     SignalOnNewState signal_on_new_state_;
     SignalOnNewData signal_on_new_data_;
