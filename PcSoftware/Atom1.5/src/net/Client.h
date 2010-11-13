@@ -47,7 +47,8 @@ public:
     void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
     
     virtual void Connect(std::string address, unsigned int port_or_baud) = 0;
-    virtual void Disconnect();
+    void Disconnect();
+    virtual void Stop();
     virtual void Send(type::Byteset data) = 0;
 
     ServerId GetServerId();

@@ -35,11 +35,11 @@ public:
     virtual ~SerialClient();
     
     void Connect(std::string address, unsigned int baud);
-    void Disconnect();
     void Send(type::Byteset data);
     
 protected:
     void Read();
+    void Stop();
     
 private:
     boost::asio::serial_port serial_port_;

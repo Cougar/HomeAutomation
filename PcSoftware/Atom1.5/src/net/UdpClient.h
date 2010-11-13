@@ -35,11 +35,11 @@ public:
     virtual ~UdpClient();
     
     void Connect(std::string address, unsigned int port);
-    void Disconnect();
     void Send(type::Byteset data);
 
 protected:
     void Read();
+    void Stop();
     
 private:
     typedef  boost::shared_ptr<boost::asio::ip::udp::socket> SocketPointer;

@@ -31,12 +31,6 @@ UdpClient::UdpClient(boost::asio::io_service& io_service, ClientId id, ServerId 
 
 UdpClient::~UdpClient()
 {
-    if (this->socket_.use_count() != 0)
-    {
-        this->socket_->cancel();
-        this->socket_->close();
-        this->socket_.reset();
-    }
 }
 
 void UdpClient::Connect(std::string address, unsigned int port)
@@ -59,7 +53,7 @@ void UdpClient::Connect(std::string address, unsigned int port)
     this->Read();
 }
 
-void UdpClient::Disconnect()
+void UdpClient::Stop()
 {
     if (this->socket_.use_count() != 0)
     {
@@ -67,8 +61,6 @@ void UdpClient::Disconnect()
         this->socket_->close();
         this->socket_.reset();
     }
-    
-    Client::Disconnect();
 }
 
 void UdpClient::Send(type::Byteset data)
@@ -90,14 +82,13 @@ void UdpClient::Send(type::Byteset data)
 void UdpClient::Read()
 {
     Client::Read();
-    
+
     this->socket_->async_receive(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
                                  boost::bind(&UdpClient::ReadHandler,
                                              this,
                                              boost::asio::placeholders::error,
                                              boost::asio::placeholders::bytes_transferred));
 }
-
 
 }; // namespace net
 }; // namespace atom

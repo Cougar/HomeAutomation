@@ -37,13 +37,13 @@ public:
     
     void Accept(AcceptorPointer acceptor);
     void Connect(std::string address, unsigned int port);
-    void Disconnect();
     void Send(type::Byteset data);
     
     AcceptorPointer ReleaseAcceptor();
     
 protected:
     void Read();
+    void Stop();
     
 private:
     boost::asio::ip::tcp::socket socket_;

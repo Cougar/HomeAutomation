@@ -45,6 +45,7 @@ public:
     virtual ~Manager();
     
     static Pointer Instance();
+    static void Create();
     static void Delete();
     
 private:

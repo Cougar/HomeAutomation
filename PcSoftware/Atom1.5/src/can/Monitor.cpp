@@ -47,6 +47,7 @@ Monitor::Monitor(unsigned int port): broker::Subscriber(port), LOG("can::Monitor
 Monitor::~Monitor()
 {
     net::Manager::Instance()->StopServer(this->server_id_);
+    this->server_id_ = 0;
 }
 
 void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)

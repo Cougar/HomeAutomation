@@ -18,39 +18,83 @@
  * 
  */
 
+#include <signal.h>
+
 #include <boost/program_options.hpp>
-
-#include "net/Manager.h"
-#include "net/types.h"
-
-#include "timer/Manager.h"
-#include "timer/types.h"
-
-#include "config/Manager.h"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
+#include <boost/thread/locks.hpp>
 
 #include "logging/Logger.h"
-
+#include "net/Manager.h"
+#include "timer/Manager.h"
+#include "config/Manager.h"
+#include "can/Protocol.h"
+#include "broker/Manager.h"
+#include "can/Manager.h"
 #include "can/Network.h"
 #include "can/Monitor.h"
-#include "can/Manager.h"
-#include "can/Protocol.h"
 
 using namespace atom;
  
 logging::Logger LOG("Main");
+std::vector<broker::Subscriber::Pointer> subscribers;
+boost::condition on_message_condition;
+boost::mutex guard_mutex;
 
+void Handler(int status);
 void CleanUp();
 
 int main(int argc, char **argv)
 {
-    std::vector<broker::Subscriber::Pointer> subscribers;
- 
+    LOG.Info("Atom version 1.5.0 starting...");
+    LOG.Info("Written by Mattias Runge 2010.");
+    LOG.Info("Released under GPL version 2.");
+    
+    signal(SIGTERM, Handler);
+    signal(SIGINT, Handler);
+    signal(SIGQUIT, Handler);
+    signal(SIGABRT, Handler);
+    signal(SIGPIPE, Handler);
+    
+    config::Manager::Create();
+    
     if (!config::Manager::Instance()->Set(argc, argv))
     {
         CleanUp();
         return EXIT_SUCCESS;
     }
     
+    if (config::Manager::Instance()->Exist("LogFile"))
+    {
+        logging::Logger::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
+    }
+    
+    if (config::Manager::Instance()->Exist("LogLevel"))
+    {
+        logging::Logger::SetLevel((logging::Logger::Level)config::Manager::Instance()->GetAsInt("LogLevel"));
+    }
+    
+    if (config::Manager::Instance()->Exist("daemon"))
+    {
+        LOG.Info("Entering daemon mode...");
+        
+        if (daemon(0, 0) == -1)
+        {
+            LOG.Error("Could not enter daemon mode. Exiting...");
+            CleanUp();
+            return EXIT_FAILURE;
+        }
+        
+        LOG.Info("Deamon mode entered successfully!");
+    }
+
+    timer::Manager::Create();
+    broker::Manager::Create();
+    net::Manager::Create();
+    can::Protocol::Create();
+    can::Manager::Create();
+
     if (config::Manager::Instance()->Exist("ProtocolFile"))
     {
         can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
@@ -71,22 +115,70 @@ int main(int argc, char **argv)
         {
             subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));            
         }
-        
     }
     
-    sleep(100000000);
+    LOG.Info("Initialization complete.");
     
-    subscribers.clear();
+    boost::mutex::scoped_lock guard(guard_mutex);
+    on_message_condition.wait(guard);
+    
+    LOG.Info("Cleaning up...");
     
     CleanUp();
+    
+    LOG.Info("Thank you for using Atom. Goodbye!");
     
     return EXIT_SUCCESS;
 }
 
 void CleanUp()
 {
+    subscribers.clear();
     config::Manager::Delete();
-    net::Manager::Delete();
-    can::Manager::Delete();
     timer::Manager::Delete();
+    can::Manager::Delete();
+    can::Protocol::Delete();
+    broker::Manager::Delete();
+    net::Manager::Delete();
+}
+
+void Handler(int status)
+{
+    std::string signal_name = "Unknown";
+    
+    switch (status)
+    {
+        case SIGTERM:
+            signal_name = "Terminate";
+            break;
+            
+        case SIGINT:
+            signal_name = "Interupt";
+            break;
+            
+        case SIGQUIT:
+            signal_name = "Quit";
+            break;
+            
+        case SIGABRT:
+            signal_name = "Abort";
+            break;
+            
+        case SIGIO:
+            signal_name = "I/O";
+            break;
+            
+        case SIGPIPE:
+            signal_name = "Pipe";
+            break;
+    }
+    
+    LOG.Debug("Received signal " + signal_name + "(" + boost::lexical_cast<std::string>(status) + ").");
+    
+    if (status == SIGPIPE)
+    {
+        return;
+    }
+
+    on_message_condition.notify_all();
 }

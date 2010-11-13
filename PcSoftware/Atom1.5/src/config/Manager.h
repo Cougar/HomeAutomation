@@ -41,6 +41,7 @@ public:
     virtual ~Manager();
     
     static Pointer Instance();
+    static void Create();
     static void Delete();
     
     bool Set(int argument_count, char **argument_vector);

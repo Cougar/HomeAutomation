@@ -40,6 +40,7 @@ public:
     virtual ~Protocol();
     
     static Pointer Instance();
+    static void Create();
     static void Delete();
     
     bool Load(std::string filename);

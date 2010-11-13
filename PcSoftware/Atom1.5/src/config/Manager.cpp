@@ -28,7 +28,7 @@
 namespace atom {
 namespace config {
 
-Manager::Pointer Manager::instance_ = Manager::Pointer(new Manager());
+Manager::Pointer Manager::instance_;
 
 Manager::Manager() : command_line_("Command line options"), configuration_file_("Configuration file options")
 {
@@ -43,7 +43,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     ("MonitorPort", boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
     ("CommandPort", boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
     ("LogFile",     boost::program_options::value<std::string>(),              "File to log output to")
-    ("LogLevel",    boost::program_options::value<std::string>(),              "Level of logging")
+    ("LogLevel",    boost::program_options::value<int>()->default_value(4),    "Level of logging")
     ("ScriptsPath", boost::program_options::value<std::string>(),              "Path to where the scripts")
     ("ProtocolFile",boost::program_options::value<std::string>(),              "File to read the protocol form")
     ("CanNet",      boost::program_options::value<type::StringList>(),         "Information on where to locate the CAN networks");
@@ -64,6 +64,11 @@ Manager::~Manager()
 Manager::Pointer Manager::Instance()
 {
     return Manager::instance_;
+}
+
+void Manager::Create()
+{
+    Manager::instance_ = Manager::Pointer(new Manager());
 }
 
 void Manager::Delete()

@@ -35,6 +35,8 @@ IoService::~IoService()
 {
     this->tracker_.reset();
     
+    this->io_service_.stop();
+    
     this->thread_.interrupt();
     this->thread_.join();
 }

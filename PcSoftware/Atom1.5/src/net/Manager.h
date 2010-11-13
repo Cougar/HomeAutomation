@@ -48,8 +48,9 @@ public:
     typedef boost::signals2::signal<void(ClientId, ServerId, type::Byteset)> SignalOnNewData;
 
     virtual ~Manager();
-    
+
     static Pointer Instance();
+    static void Create();
     static void Delete();
     
     void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);

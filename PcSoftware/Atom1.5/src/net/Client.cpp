@@ -34,6 +34,7 @@ Client::Client(boost::asio::io_service& io_service, ClientId id, ServerId server
 
 Client::~Client()
 {
+    this->Stop();
 }
 
 void Client::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data)
@@ -65,7 +66,6 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
     }
     else if (size == 0)
     {
-        //std::cout << "ReadHandler size 0" << std::endl;
         this->Disconnect();
     }
     else
@@ -78,8 +78,13 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
     }
 }
 
+void Client::Stop()
+{
+}
+
 void Client::Disconnect()
 {
+    this->Stop();
     this->signal_on_new_state_(this->id_, this->server_id_, CLIENT_STATE_DISCONNECTED);
 }
     

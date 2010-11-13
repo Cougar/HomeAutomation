@@ -87,9 +87,9 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
         this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
         LOG.Info("Connected to " + address);
         
-        LOG.Info("Sending ping.");
+        LOG.Info("Sending ping...");
+
         type::Byteset buffer(1);
-        
         buffer[0] = PACKET_PING;
         
         net::Manager::Instance()->SendTo(this->client_id_, buffer);
