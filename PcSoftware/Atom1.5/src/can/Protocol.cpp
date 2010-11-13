@@ -305,48 +305,26 @@ void Protocol::EncodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned
 
 std::string Protocol::DecodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
-    float raw_value = 0;
-    bool negative = false;;
+    float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length)) / 64.0f;
     
-    if (bitset.Get(start_bit))
-    {
-        negative = true;
-    }
-    
-    for (int c = bit_length - 1; c > 0; c--)
-    {
-        if (bitset.Get(start_bit + c) != negative)
-        {
-            raw_value += pow(2.0f, (int)(bit_length - 1 - c));
-        }
-    }
-    
-    raw_value /= 64.0f;
-    
-    if (negative)
-    {
-        raw_value = -raw_value;
-    }
-    
-    return boost::lexical_cast<std::string>(raw_value);
+    return boost::lexical_cast<std::string>(float_value);
 }
 
 void Protocol::EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    // TODO:
-    LOG.Error("EncodeFloat() is not implemented yet!");
+    int int_value = boost::lexical_cast<float>(value) * 64.0f;
+    
+    this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
 }
 
 std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     std::string value;
-    char c = 0;
     
-    for (unsigned int p = 0; p < bit_length; p += 8)
+    for (unsigned int n = 0; n < bit_length; n += 8)
     {
-        unsigned long raw_bit_value = bitset.Read(start_bit + p, 8);
-        memcpy(&c, &raw_bit_value, sizeof(c));
-        value += c;
+        unsigned long raw_value = bitset.Read(start_bit + n, 8);
+        value += (char)raw_value;
     }
     
     return value;
@@ -354,8 +332,10 @@ std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, 
 
 void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    // TODO
-    LOG.Error("EncodeAscii() is not implemented yet!");
+    for (unsigned int n = 0; n < bit_length; n += 8)
+    {
+        bitset.Write(start_bit + n, 8, value[n / 8]);
+    }
 }
 
 std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
@@ -363,9 +343,9 @@ std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_b
     std::string value;
     char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
     
-    for (unsigned int p = 0; p < bit_length; p += 4)
+    for (unsigned int n = 0; n < bit_length; n += 4)
     {
-        unsigned long raw_bit_value = bitset.Read(start_bit + p, 4);
+        unsigned long raw_bit_value = bitset.Read(start_bit + n, 4);
         
         if (raw_bit_value >= sizeof(hex))
         {
@@ -382,8 +362,25 @@ std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_b
 
 void Protocol::EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    // TODO:
-    LOG.Error("EncodeHexstring() is not implemented yet!");
+    int ascii_value;
+    
+    for (unsigned int n = 0; n < bit_length; n += 4)
+    {
+        ascii_value = boost::lexical_cast<int>((int)std::toupper(value[n / 4]));
+        
+        if (48 <= ascii_value && ascii_value <= 57)
+        {
+            bitset.Write(start_bit + n, 4, ascii_value - 48);
+        }
+        else if (65 <= ascii_value && ascii_value <= 70)
+        {
+            bitset.Write(start_bit + n, 4, ascii_value - 65);
+        }
+        else
+        {
+            throw std::runtime_error("This is not an hex string, " + value);
+        }
+    }
 }
 
 }; // namespace can
