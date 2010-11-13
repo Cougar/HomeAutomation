@@ -149,36 +149,41 @@ void Handler(int status)
     switch (status)
     {
         case SIGTERM:
+        {
             signal_name = "Terminate";
             break;
-            
+        }   
         case SIGINT:
+        {
             signal_name = "Interupt";
             break;
-            
+        }   
         case SIGQUIT:
+        {
             signal_name = "Quit";
             break;
-            
+        }   
         case SIGABRT:
+        {
             signal_name = "Abort";
             break;
-            
+        }   
         case SIGIO:
+        {
             signal_name = "I/O";
             break;
-            
+        }   
         case SIGPIPE:
+        {
             signal_name = "Pipe";
             break;
+        }
     }
     
     LOG.Debug("Received signal " + signal_name + "(" + boost::lexical_cast<std::string>(status) + ").");
     
-    if (status == SIGPIPE)
+    if (status != SIGPIPE)
     {
-        return;
+        on_message_condition.notify_all();
     }
-
-    on_message_condition.notify_all();
 }

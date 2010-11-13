@@ -22,7 +22,9 @@
 
 #include <iostream>
 
-#include "boost/date_time.hpp"
+#include <syslog.h>
+
+#include <boost/date_time.hpp>
 
 namespace atom {
 namespace logging {
@@ -35,11 +37,13 @@ Logger::Logger(std::string name)
 {
     this->name_ = name;
     this->name_.insert(this->name_.end(), 20 - this->name_.size(), ' ');
+    
+    openlog("Atom", LOG_ODELAY, LOG_DAEMON);
 }
 
 Logger::~Logger()
 {
-
+    closelog();
 }
 
 void Logger::SetLevel(Level level)
@@ -103,6 +107,8 @@ void Logger::Print(std::string line)
     {
         Logger::file_ << date_and_time << line << std::endl;
     }
+    
+    syslog(LOG_INFO, "%s", line.data());
     
     this->mutex_.unlock();
 }
