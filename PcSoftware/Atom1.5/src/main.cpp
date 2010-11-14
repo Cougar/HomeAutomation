@@ -38,6 +38,7 @@
 
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
+#include "vm/plugin/Module.h"
 
 using namespace atom;
  
@@ -124,6 +125,7 @@ int main(int argc, char **argv)
 
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System()));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
 
     if (config::Manager::Instance()->Exist("ScriptPath"))
     {
@@ -147,10 +149,10 @@ int main(int argc, char **argv)
 void CleanUp()
 {
     subscribers.clear();
-    vm::Manager::Delete();
     config::Manager::Delete();
     timer::Manager::Delete();
     can::Manager::Delete();
+    vm::Manager::Delete();
     can::Protocol::Delete();
     broker::Manager::Delete();
     net::Manager::Delete();

@@ -24,6 +24,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <stdio.h>
 
@@ -34,7 +35,8 @@ namespace type {
 
 typedef boost::shared_ptr<unsigned char> BytePointer;
 typedef std::vector<std::string> StringList;
-
+typedef std::map<std::string, std::string> StringMap;
+/*
 template <typename T>
 struct HexTo
 {
@@ -51,7 +53,7 @@ struct HexTo
         return in;
     }
 };
-
+*/
 inline std::string ToHex(unsigned int value)
 {
     char hex_string[11];

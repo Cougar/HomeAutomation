@@ -84,9 +84,9 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         
         line += " CMD=" + payload->GetCommandName() + " ";
         
-        Message::VariableList variables = payload->GetVariables();
+        type::StringMap variables = payload->GetVariables();
         
-        for (Message::VariableList::iterator it = variables.begin(); it != variables.end(); it++)
+        for (type::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
         {
             line += " " + it->first + "=" + it->second;
         }

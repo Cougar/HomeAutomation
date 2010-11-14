@@ -22,6 +22,7 @@
 #define CAN_MANAGER_H
 
 #include <map>
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
@@ -30,9 +31,11 @@
 #include "broker/Subscriber.h"
 
 #include "timer/Subscriber.h"
+#include "type/common.h"
 
 #include "Node.h"
 #include "Module.h"
+#include "Message.h"
 
 namespace atom {
 namespace can {
@@ -43,12 +46,18 @@ public:
     typedef boost::shared_ptr<Manager> Pointer;
     typedef std::map<Node::Id, Node::Pointer> NodeList;
     typedef std::map<Module::FullId, Module::Pointer> ModuleList;
+    typedef boost::signals2::signal<void(std::string full_id, bool available)> SignalOnModuleChange;
+    typedef boost::signals2::signal<void(std::string full_id, std::string command, type::StringMap variables)> SignalOnModuleMessage;
     
     virtual ~Manager();
     
     static Pointer Instance();
     static void Create();
     static void Delete();
+    
+    void ConnectSlots(const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message);
+    
+    void SendMessage(std::string full_id, std::string command, type::StringMap variables);
     
 private:
     static Pointer instance_;
@@ -57,6 +66,9 @@ private:
     
     NodeList nodes_;
     ModuleList modules_;
+    
+    SignalOnModuleChange signal_on_module_change_;
+    SignalOnModuleMessage signal_on_module_message_;
     
     Manager();
     

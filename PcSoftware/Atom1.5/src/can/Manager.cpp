@@ -58,6 +58,12 @@ void Manager::Delete()
     Manager::instance_.reset();
 }
 
+void Manager::ConnectSlots(const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message)
+{
+    this->signal_on_module_change_.connect(slot_on_module_change);
+    this->signal_on_module_message_.connect(slot_on_module_message);
+}
+
 void Manager::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
 {
     if (timer_id != this->timer_id_)
@@ -132,14 +138,16 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                 }
             }
         }
-        else
+        else if (payload->GetDirectionName() == "From_Owner")
         {
-            if (payload->GetCommandName() == "List" && payload->GetDirectionName() == "From_Owner")
+            Module::Pointer module = this->GetModule(boost::lexical_cast<unsigned int>(payload->GetId()), payload->GetModuleName(), payload->GetClassName());
+            
+            if (payload->GetCommandName() == "List")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
                 node->ResetTimeout();
                 
-                Module::Pointer module = this->GetModule(boost::lexical_cast<unsigned int>(payload->GetId()), payload->GetModuleName(), payload->GetClassName());
+                
                 module->SetNodeId(node->GetId());
                 
                 if (this->GetNumberOfModules(node->GetId()) == boost::lexical_cast<unsigned int>(payload->GetVariables()["NumberOfModules"]))
@@ -148,9 +156,36 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                 }
                 
                 LOG.Info("Module " + module->GetFullId() + " is available on node " + type::ToHex(node->GetId()) + ".");
-                // TODO: Notify that module is available
+                this->signal_on_module_change_(module->GetFullId(), true);
+            }
+            else
+            {
+                this->signal_on_module_message_(module->GetFullId(), payload->GetCommandName(), payload->GetVariables());
             }
         }
+    }
+}
+
+void Manager::SendMessage(std::string full_id, std::string command, type::StringMap variables)
+{
+    ModuleList::iterator it = this->modules_.find(full_id);
+    
+    if (it == this->modules_.end())
+    {
+        LOG.Warning("Can not send message to " + full_id + ", it is not available");
+        return;
+    }
+    
+    try
+    {
+        Message* payload = new Message(it->second->GetClassName(), "To_Owner", it->second->GetName(), it->second->GetId(), command);
+        payload->SetVariables(variables);
+        
+        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
+    }
+    catch (std::runtime_error& e)
+    {
+        LOG.Error("Failed to send message, " + std::string(e.what()));
     }
 }
 
@@ -197,7 +232,7 @@ void Manager::RemoveModules(Node::Id node_id)
         if (it->second->GetNodeId() == node_id)
         {
             LOG.Info("Module " + it->second->GetFullId() + " is unavailable.");
-            // TODO: Notify that module is unavailable
+            this->signal_on_module_change_(it->second->GetFullId(), false);
             
             this->modules_.erase(it);
         }
