@@ -29,7 +29,7 @@ Module::Module(Module::Id id, std::string name, std::string class_name)
 {
     this->id_ = id;
     this->name_ = name;
-    this->class_name_ = class_name_;
+    this->class_name_ = class_name;
     this->full_id_ = Module::MakeFullId(id, name);
 }
 

@@ -90,10 +90,15 @@ void Message::SetVariable(std::string name, std::string value)
     this->variables_[name] = value;
 }
 
-Message::VariableList& Message::GetVariables()
+type::StringMap& Message::GetVariables()
 {
     return this->variables_;
 }
-    
+
+void Message::SetVariables(type::StringMap variables)
+{
+    this->variables_ = variables;
+}
+
 }; // namespace can
 }; // namespace atom

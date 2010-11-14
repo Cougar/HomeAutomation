@@ -183,6 +183,8 @@ bool Manager::LoadScriptHandler(std::string scriptname)
         code += line + "\n";
     }
     
+    code += "\n";
+    
     file.close();
     
     v8::Context::Scope context_scope(this->context_);

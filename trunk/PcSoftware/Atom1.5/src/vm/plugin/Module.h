@@ -18,49 +18,48 @@
  * 
  */
 
-#ifndef CAN_MESSAGE_H
-#define CAN_MESSAGE_H
-
-#include <string>
-#include <map>
+#ifndef VM_PLUGIN_MODULE_H
+#define VM_PLUGIN_MODULE_H
 
 #include <boost/shared_ptr.hpp>
 
+#include "vm/Plugin.h"
+#include "logging/Logger.h"
+#include "timer/Subscriber.h"
+#include "can/Message.h"
 #include "type/common.h"
 
 namespace atom {
-namespace can {
+namespace vm {
+namespace plugin {
 
-class Message
+class Module : public Plugin
 {
 public:
-    typedef boost::shared_ptr<Message> Pointer;
+    typedef boost::shared_ptr<Module> Pointer;
     
-    Message(std::string class_name, std::string direction_name, std::string module_name, unsigned int id, std::string command_name);
-    virtual ~Message();
+    Module();
+    virtual ~Module();
     
-    std::string GetClassName();
-    std::string GetDirectionName();
-    std::string GetModuleName();
-    unsigned int GetId();
-    std::string GetCommandName();
-    
-    std::string GetVariable(std::string name);
-    void SetVariable(std::string name, std::string value);
-    
-    type::StringMap& GetVariables();
-    void SetVariables(type::StringMap variables);
+    void InitializeDone();
     
 private:
-    std::string class_name_;
-    std::string direction_name_;
-    std::string module_name_;
-    unsigned int id_;
-    std::string command_name_;
-    type::StringMap variables_;
+    typedef boost::shared_ptr<char> TrackerPointer;
+    
+    static logging::Logger LOG;
+
+    TrackerPointer tracker_;
+    
+    void SlotOnModuleChange(std::string full_id, bool available);
+    void SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables);
+    
+    static Value Export_SendModuleMessage(const v8::Arguments& args);
+    
+    
 };
-        
-}; // namespace can
+
+}; // namespace plugin
+}; // namespace vm
 }; // namespace atom
 
-#endif // CAN_MESSAGE_H
+#endif // VM_PLUGIN_MODULE_H
