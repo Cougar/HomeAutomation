@@ -18,57 +18,28 @@
  * 
  */
 
-#include "Node.h"
+#include "Subscriber.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/bind.hpp>
 
-#include "Message.h"
-#include "broker/Manager.h"
+#include "Manager.h"
 
 namespace atom {
-namespace can {
-    
-Node::Node(Node::Id id)
+namespace timer {
+   
+Subscriber::Subscriber()
 {
-    this->state_ = STATE_OFFLINE;
-    this->id_ = id;
+    Manager::Instance()->ConnectSlots(Manager::SignalOnTimeout::slot_type(&Subscriber::SlotOnTimeout, this, _1, _2).track(this->tracker_));
 }
 
-Node::~Node()
+Subscriber::~Subscriber()
 {
-
 }
 
-Node::Id Node::GetId()
+void Subscriber::SlotOnTimeout(TimerId timer_id, bool repeat)
 {
-    return this->id_;
-}
-
-Node::State Node::GetState()
-{
-    return this->state_;
-}
-
-void Node::SetState(Node::State state)
-{
-    this->state_ = state;
-}
-
-bool Node::CheckTimeout()
-{
-    if (this->last_active_ + 10 < time(NULL))
-    {
-        this->state_ = STATE_OFFLINE;
-        return false;
-    }
-    
-    return true;
-}
-
-void Node::ResetTimeout()
-{
-    this->last_active_ = time(NULL);
+    this->io_service_.post(boost::bind(&Subscriber::SlotOnTimeoutHandler, this, timer_id, repeat));
 }
     
-}; // namespace can
+}; // namespace timer
 }; // namespace atom

@@ -18,49 +18,38 @@
 
 */
 
-#ifndef CAN_NODE_H
-#define CAN_NODE_H
-
-#include <string>
+#ifndef VM_PLUGIN_TIMER_H
+#define VM_PLUGIN_TIMER_H
 
 #include <boost/shared_ptr.hpp>
 
-#include <time.h>
+#include "vm/Plugin.h"
+#include "logging/Logger.h"
+#include "timer/Subscriber.h"
 
 namespace atom {
-namespace can {
+namespace vm {
+namespace plugin {
 
-class Node
+class Timer : public Plugin, public timer::Subscriber
 {
 public:
-    typedef boost::shared_ptr<Node> Pointer;
-    typedef unsigned int Id;
+    typedef boost::shared_ptr<Timer> Pointer;
     
-    typedef enum
-    {
-        STATE_OFFLINE,
-        STATE_ONLINE,
-        STATE_PENDING,
-        STATE_INITIALIZED
-    } State;
-    
-    Node(Id id);
-    virtual ~Node();
-    
-    Id GetId();
-    State GetState();
-    void SetState(State state);
-    
-    bool CheckTimeout();
-    void ResetTimeout();
+    Timer();
+    virtual ~Timer();
     
 private:
-    Id id_;
-    State state_;
-    time_t last_active_;
+    static logging::Logger LOG;
+    
+    void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
+    
+    static Value Export_StartTimer(const v8::Arguments& args);
+    static Value Export_ClearTimer(const v8::Arguments& args);
 };
 
-}; // namespace can
+}; // namespace plugin
+}; // namespace vm
 }; // namespace atom
 
-#endif // CAN_NODE_H
+#endif // VM_PLUGIN_TIMER_H

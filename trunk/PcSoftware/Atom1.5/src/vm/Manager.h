@@ -18,26 +18,30 @@
  * 
  */
 
-#ifndef TIMER_MANAGER_H
-#define TIMER_MANAGER_H
+#ifndef VM_MANAGER_H
+#define VM_MANAGER_H
 
-#include <boost/signals2.hpp>
+#include <string>
+#include <map>
+
 #include <boost/shared_ptr.hpp>
+#include <v8.h>
 
+#include "logging/Logger.h"
 #include "common/IoService.h"
 
+#include "Plugin.h"
 #include "types.h"
-#include "Timer.h"
 
 namespace atom {
-namespace timer {
-    
-class Manager : public virtual common::IoService
+namespace vm {
+
+class Manager : public common::IoService
 {
+    friend class Plugin;
+
 public:
     typedef boost::shared_ptr<Manager> Pointer;
-    
-    typedef boost::signals2::signal<void(TimerId, bool)> SignalOnTimeout;
     
     virtual ~Manager();
     
@@ -45,31 +49,38 @@ public:
     static void Create();
     static void Delete();
     
-    void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
+    void AddPlugin(Plugin::Pointer plugin);
     
-    TimerId Set(unsigned int timeout, bool repeat);
-    void Cancel(TimerId id);
+    void Start(std::string script_path);
+    void Call(std::string name, ArgumentListPointer arguments);
+    bool LoadScript(std::string scriptname);
     
 private:
-    typedef std::map<TimerId, Timer::Pointer> TimerList;
+    typedef std::map<std::string, Plugin::Pointer> PluginList;
     
     static Pointer instance_;
     
-    TimerList timers_;
-    boost::mutex mutex_timers_;
+    std::string script_path_;
     
-    SignalOnTimeout signal_on_timeout_;
+    v8::Persistent<v8::Context> context_;
+    v8::HandleScope handle_scope_;
+    v8::Persistent<v8::ObjectTemplate> object_template_;
+    
+    PluginList plugins_;
+    ImportFunctionList functions_;
     
     Manager();
     
-    TimerId GetFreeId();
+    void StartHandler();
+    void CallHandler(std::string name, ArgumentListPointer arguments);
+    bool LoadScriptHandler(std::string scriptname);
     
-    void CancelHandler(TimerId id);
+    std::string FormatException(v8::TryCatch& try_catch);
     
-    void SlotOnTimeout(TimerId id);
+    logging::Logger LOG;
 };
 
-}; // namespace timer
+}; // namespace vm
 }; // namespace atom
 
-#endif // TIMER_MANAGER_H
+#endif // VM_MANAGER_H

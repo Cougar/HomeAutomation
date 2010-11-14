@@ -18,57 +18,39 @@
  * 
  */
 
-#include "Node.h"
+#ifndef VM_PLUGIN_SYSTEM_H
+#define VM_PLUGIN_SYSTEM_H
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/shared_ptr.hpp>
 
-#include "Message.h"
-#include "broker/Manager.h"
+#include "vm/Plugin.h"
+#include "logging/Logger.h"
 
 namespace atom {
-namespace can {
+namespace vm {
+namespace plugin {
+
+class System : public Plugin
+{
+public:
+    typedef boost::shared_ptr<Plugin> Pointer;
     
-Node::Node(Node::Id id)
-{
-    this->state_ = STATE_OFFLINE;
-    this->id_ = id;
-}
-
-Node::~Node()
-{
-
-}
-
-Node::Id Node::GetId()
-{
-    return this->id_;
-}
-
-Node::State Node::GetState()
-{
-    return this->state_;
-}
-
-void Node::SetState(Node::State state)
-{
-    this->state_ = state;
-}
-
-bool Node::CheckTimeout()
-{
-    if (this->last_active_ + 10 < time(NULL))
-    {
-        this->state_ = STATE_OFFLINE;
-        return false;
-    }
+    System();
+    virtual ~System();
     
-    return true;
-}
-
-void Node::ResetTimeout()
-{
-    this->last_active_ = time(NULL);
-}
+    void InitializeDone();
     
-}; // namespace can
+private:
+    static logging::Logger LOG;
+    
+    static Value Export_Log(const v8::Arguments& args);
+    static Value Export_LoadScript(const v8::Arguments& args);
+    static Value Export_Execute(const v8::Arguments& args);
+    
+};
+
+}; // namespace plugin
+}; // namespace vm
 }; // namespace atom
+
+#endif // VM_PLUGIN_SYSTEM_H

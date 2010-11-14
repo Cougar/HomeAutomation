@@ -10,5 +10,23 @@ CurrentBuildType=Debug
 CurrentInstallDir=
 ProjectRootRelative=./
 
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=New Native Application Configuration
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=default
+Executable=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build/atom
+Working Directory=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5
+isExecutable=true
+
 [Project]
 VersionControlSupport=kdevsubversion

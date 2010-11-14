@@ -5,6 +5,6 @@ add_subdirectory(config)
 add_subdirectory(broker)
 add_subdirectory(can)
 add_subdirectory(type)
-
 add_subdirectory(xml)
 add_subdirectory(common)
+add_subdirectory(vm)

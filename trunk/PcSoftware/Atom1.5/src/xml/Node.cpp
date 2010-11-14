@@ -43,7 +43,7 @@ Node::~Node()
 
 void Node::LoadFile(std::string filename)
 {
-    std::ifstream srcfile(filename.c_str());
+    std::ifstream srcfile(filename.data());
         
     if (!srcfile.is_open())
     {

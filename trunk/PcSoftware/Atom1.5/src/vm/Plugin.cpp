@@ -18,57 +18,57 @@
  * 
  */
 
-#include "Node.h"
+#include "Plugin.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "Message.h"
-#include "broker/Manager.h"
+#include "Manager.h"
 
 namespace atom {
-namespace can {
+namespace vm {
     
-Node::Node(Node::Id id)
-{
-    this->state_ = STATE_OFFLINE;
-    this->id_ = id;
-}
-
-Node::~Node()
+Plugin::Plugin()
 {
 
 }
 
-Node::Id Node::GetId()
+Plugin::~Plugin()
 {
-    return this->id_;
+
 }
 
-Node::State Node::GetState()
+std::string Plugin::GetName()
 {
-    return this->state_;
+    return this->name_;
 }
 
-void Node::SetState(Node::State state)
+ExportFunctionList& Plugin::GetExportFunctions()
 {
-    this->state_ = state;
+    return this->export_functions_;
 }
 
-bool Node::CheckTimeout()
+FunctionNameList& Plugin::GetImportFunctionNames()
 {
-    if (this->last_active_ + 10 < time(NULL))
-    {
-        this->state_ = STATE_OFFLINE;
-        return false;
-    }
+    return this->import_function_names_;
+}
+
+void Plugin::InitializeDone()
+{
+
+}
+
+void Plugin::Call(std::string name, ArgumentListPointer arguments)
+{
+    Manager::Instance()->Call(name, arguments);
+}
+
+void Plugin::ExportFunction(std::string name, v8::InvocationCallback function)
+{
+    this->export_functions_[name] = function;
+}
+
+void Plugin::ImportFunction(std::string name)
+{
+    this->import_function_names_.push_back(name);
+}
     
-    return true;
-}
-
-void Node::ResetTimeout()
-{
-    this->last_active_ = time(NULL);
-}
-    
-}; // namespace can
+}; // namespace vm
 }; // namespace atom

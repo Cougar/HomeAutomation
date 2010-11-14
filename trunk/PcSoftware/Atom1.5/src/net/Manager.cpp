@@ -31,20 +31,13 @@ namespace net {
 
 Manager::Pointer Manager::instance_;
     
-Manager::Manager() : io_service_work_(io_service_)
+Manager::Manager()
 {
-    boost::thread thread(boost::bind(&boost::asio::io_service::run, &this->io_service_));
-    this->thread_ = thread.move();
 }
 
 Manager::~Manager()
 {
     this->clients_.clear();
-    
-    this->io_service_.stop();
-    
-    this->thread_.interrupt();
-    this->thread_.join();
 }
 
 Manager::Pointer Manager::Instance()
