@@ -64,7 +64,7 @@ void Manager::Delete()
 
 void Manager::AddPlugin(Plugin::Pointer plugin)
 {
-    this->plugins_[plugin->GetName()] = plugin;
+    this->plugins_.push_back(plugin);
 }
 
 void Manager::Start(std::string script_path)
@@ -106,9 +106,9 @@ void Manager::StartHandler()
 {
     v8::Handle<v8::ObjectTemplate> raw_template = v8::ObjectTemplate::New();
     
-    for (PluginList::iterator it = this->plugins_.begin(); it != this->plugins_.end(); it++)
+    for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
-        ExportFunctionList export_functions = it->second->GetExportFunctions();
+        ExportFunctionList export_functions = this->plugins_[c]->GetExportFunctions();
         
         for (ExportFunctionList::iterator it = export_functions.begin(); it != export_functions.end(); it++)
         {
@@ -120,13 +120,13 @@ void Manager::StartHandler()
     
     v8::Context::Scope context_scope(this->context_);
     
-    for (PluginList::iterator it = this->plugins_.begin(); it != this->plugins_.end(); it++)
+    for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
-        std::string scriptname = "plugin/" + it->first + ".js";
+        std::string scriptname = "plugin/" + this->plugins_[c]->GetName() + ".js";
         
         if (this->LoadScriptHandler(scriptname))
         {
-            FunctionNameList import_functions = it->second->GetImportFunctionNames();
+            FunctionNameList import_functions = this->plugins_[c]->GetImportFunctionNames();
             
             for (unsigned int n = 0; n < import_functions.size(); n++)
             {
@@ -150,9 +150,9 @@ void Manager::StartHandler()
     
     LOG.Info("VM initialized.");
     
-    for (PluginList::iterator it = this->plugins_.begin(); it != this->plugins_.end(); it++)
+    for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
-        it->second->InitializeDone();
+        this->plugins_[c]->InitializeDone();
     }
 }
 
@@ -210,7 +210,7 @@ bool Manager::LoadScriptHandler(std::string scriptname)
         }
     }
     
-    LOG.Info("Loaded " + scriptname + " successfully!");
+    LOG.Info("Loaded " + scriptname + " successfully.");
     return true;
 }
 
