@@ -67,7 +67,7 @@ Value System::Export_LoadScript(const v8::Arguments& args)
 {
     v8::String::AsciiValue str(args[0]);
     
-    return v8::Boolean::New(Manager::Instance()->LoadScript(*str));
+    return v8::Boolean::New(Manager::Instance()->LoadScriptHandler(*str));
 }
 
 Value System::Export_Execute(const v8::Arguments& args)

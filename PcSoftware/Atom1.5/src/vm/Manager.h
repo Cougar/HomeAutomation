@@ -22,7 +22,7 @@
 #define VM_MANAGER_H
 
 #include <string>
-#include <map>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 #include <v8.h>
@@ -38,8 +38,6 @@ namespace vm {
 
 class Manager : public common::IoService
 {
-    friend class Plugin;
-
 public:
     typedef boost::shared_ptr<Manager> Pointer;
     
@@ -54,9 +52,10 @@ public:
     void Start(std::string script_path);
     void Call(std::string name, ArgumentListPointer arguments);
     bool LoadScript(std::string scriptname);
+    bool LoadScriptHandler(std::string scriptname);
     
 private:
-    typedef std::map<std::string, Plugin::Pointer> PluginList;
+    typedef std::vector<Plugin::Pointer> PluginList;
     
     static Pointer instance_;
     
@@ -73,7 +72,6 @@ private:
     
     void StartHandler();
     void CallHandler(std::string name, ArgumentListPointer arguments);
-    bool LoadScriptHandler(std::string scriptname);
     
     std::string FormatException(v8::TryCatch& try_catch);
     

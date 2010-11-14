@@ -36,7 +36,7 @@ boost::mutex Logger::mutex_;
 Logger::Logger(std::string name)
 {
     this->name_ = name;
-    this->name_.insert(this->name_.end(), 20 - this->name_.size(), ' ');
+    this->name_.insert(this->name_.end(), 25 - this->name_.size(), ' ');
     
     openlog("Atom", LOG_ODELAY, LOG_DAEMON);
 }

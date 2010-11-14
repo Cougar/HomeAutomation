@@ -88,7 +88,10 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         
         for (type::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
         {
-            line += " " + it->first + "=" + it->second;
+            if (it->second != "")
+            {
+                line += " " + it->first + "=" + it->second;
+            }
         }
         
         line += "\n";
