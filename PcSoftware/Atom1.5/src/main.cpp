@@ -34,6 +34,10 @@
 #include "can/Manager.h"
 #include "can/Network.h"
 #include "can/Monitor.h"
+#include "vm/Manager.h"
+
+#include "vm/plugin/System.h"
+#include "vm/plugin/Timer.h"
 
 using namespace atom;
  
@@ -94,7 +98,8 @@ int main(int argc, char **argv)
     net::Manager::Create();
     can::Protocol::Create();
     can::Manager::Create();
-
+    vm::Manager::Create();
+    
     if (config::Manager::Instance()->Exist("ProtocolFile"))
     {
         can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
@@ -116,6 +121,14 @@ int main(int argc, char **argv)
             subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));            
         }
     }
+
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System()));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
+
+    if (config::Manager::Instance()->Exist("ScriptPath"))
+    {
+        vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
+    }
     
     LOG.Info("Initialization complete.");
     
@@ -134,6 +147,7 @@ int main(int argc, char **argv)
 void CleanUp()
 {
     subscribers.clear();
+    vm::Manager::Delete();
     config::Manager::Delete();
     timer::Manager::Delete();
     can::Manager::Delete();

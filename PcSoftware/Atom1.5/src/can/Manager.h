@@ -29,13 +29,15 @@
 #include "logging/Logger.h"
 #include "broker/Subscriber.h"
 
+#include "timer/Subscriber.h"
+
 #include "Node.h"
 #include "Module.h"
 
 namespace atom {
 namespace can {
 
-class Manager : public broker::Subscriber
+class Manager : public broker::Subscriber, public timer::Subscriber
 {
 public:
     typedef boost::shared_ptr<Manager> Pointer;
@@ -51,12 +53,15 @@ public:
 private:
     static Pointer instance_;
     
+    timer::TimerId timer_id_;
+    
     NodeList nodes_;
     ModuleList modules_;
     
     Manager();
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
+    void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
     
     Node::Pointer GetNode(Node::Id node_id);
     Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);

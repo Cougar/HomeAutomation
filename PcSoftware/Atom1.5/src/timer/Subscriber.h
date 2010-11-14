@@ -18,58 +18,34 @@
  * 
  */
 
-#ifndef TIMER_MANAGER_H
-#define TIMER_MANAGER_H
+#ifndef TIMER_SUBSCRIBER_H
+#define TIMER_SUBSCRIBER_H
 
-#include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "common/IoService.h"
-
 #include "types.h"
-#include "Timer.h"
 
 namespace atom {
 namespace timer {
-    
-class Manager : public virtual common::IoService
+
+class Subscriber : virtual public common::IoService
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+    typedef boost::shared_ptr<Subscriber> Pointer;
     
-    typedef boost::signals2::signal<void(TimerId, bool)> SignalOnTimeout;
+    Subscriber();
+    virtual ~Subscriber();
     
-    virtual ~Manager();
-    
-    static Pointer Instance();
-    static void Create();
-    static void Delete();
-    
-    void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
-    
-    TimerId Set(unsigned int timeout, bool repeat);
-    void Cancel(TimerId id);
+protected:
+    virtual void SlotOnTimeoutHandler(TimerId timer_id, bool repeat) = 0;
     
 private:
-    typedef std::map<TimerId, Timer::Pointer> TimerList;
-    
-    static Pointer instance_;
-    
-    TimerList timers_;
-    boost::mutex mutex_timers_;
-    
-    SignalOnTimeout signal_on_timeout_;
-    
-    Manager();
-    
-    TimerId GetFreeId();
-    
-    void CancelHandler(TimerId id);
-    
-    void SlotOnTimeout(TimerId id);
+
+    void SlotOnTimeout(TimerId timer_id, bool repeat);
 };
 
 }; // namespace timer
 }; // namespace atom
 
-#endif // TIMER_MANAGER_H
+#endif // TIMER_SUBSCRIBER_H

@@ -44,7 +44,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     ("CommandPort", boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
     ("LogFile",     boost::program_options::value<std::string>(),              "File to log output to")
     ("LogLevel",    boost::program_options::value<int>()->default_value(4),    "Level of logging")
-    ("ScriptsPath", boost::program_options::value<std::string>(),              "Path to where the scripts")
+    ("ScriptPath",  boost::program_options::value<std::string>(),              "Path to where the scripts are")
     ("ProtocolFile",boost::program_options::value<std::string>(),              "File to read the protocol form")
     ("CanNet",      boost::program_options::value<type::StringList>(),         "Information on where to locate the CAN networks");
 

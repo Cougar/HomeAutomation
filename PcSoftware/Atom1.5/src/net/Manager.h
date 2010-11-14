@@ -24,11 +24,10 @@
 #include <string>
 #include <map>
 
-#include <boost/asio.hpp>
 #include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
+
+#include "common/IoService.h"
 
 #include "types.h"
 #include "Client.h"
@@ -39,7 +38,7 @@
 namespace atom {
 namespace net {
 
-class Manager
+class Manager : virtual common::IoService
 {
 public:
     typedef boost::shared_ptr<Manager> Pointer;
@@ -68,10 +67,6 @@ private:
     typedef std::map<ClientId, Client::Pointer> ClientList;
 
     static Pointer instance_;
-    
-    boost::thread thread_;
-    boost::asio::io_service io_service_;
-    boost::asio::io_service::work io_service_work_;
     
     ClientList clients_;
     

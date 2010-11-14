@@ -24,18 +24,19 @@
 
 #include "broker/Manager.h"
 #include "broker/Message.h"
+#include "type/common.h"
+#include "timer/Manager.h"
+
 #include "Message.h"
-#include <type/common.h>
 
 namespace atom {
 namespace can {
-  
     
 Manager::Pointer Manager::instance_;
 
 Manager::Manager() : broker::Subscriber(false), LOG("can::Manager")
 {
-    // TODO: Set offline timer
+    this->timer_id_ = timer::Manager::Instance()->Set(10000, true);
 }
 
 Manager::~Manager()
@@ -57,6 +58,23 @@ void Manager::Delete()
     Manager::instance_.reset();
 }
 
+void Manager::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
+{
+    if (timer_id != this->timer_id_)
+    {
+        return;
+    }
+    
+    for (NodeList::iterator it = this->nodes_.begin(); it != this->nodes_.end(); it++)
+    {
+        if (!it->second->CheckTimeout())
+        {
+            LOG.Info("Node " + type::ToHex(it->second->GetId()) + " has not sent anything in a long time, setting offline.");
+            this->RemoveModules(it->second->GetId());
+        }
+    }
+}
+
 void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
 {
     if (message->GetType() == broker::Message::CAN_MESSAGE)
@@ -69,6 +87,8 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             if (payload->GetCommandName() == "Bios_Start")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node->ResetTimeout();
+                
                 this->RemoveModules(node->GetId());
                 node->SetState(Node::STATE_ONLINE);
                 LOG.Info("Node " + type::ToHex(node->GetId()) + " went online.");
@@ -76,13 +96,16 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             else if (payload->GetCommandName() == "Reset")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+
                 this->RemoveModules(node->GetId());
                 node->SetState(Node::STATE_OFFLINE);
                 LOG.Info("Node " + type::ToHex(node->GetId()) + " went offline.");
             }
-            else if (payload->GetCommandName() == "App_start")
+            else if (payload->GetCommandName() == "App_Start")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node->ResetTimeout();
+                
                 this->RequestModules(node->GetId());
                 node->SetState(Node::STATE_PENDING);
                 LOG.Info("Node " + type::ToHex(node->GetId()) + " started, requesting modules...");
@@ -90,6 +113,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             else if (payload->GetCommandName() == "Heartbeat")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node->ResetTimeout();
                 
                 if (node->GetState() == Node::STATE_OFFLINE || node->GetState() == Node::STATE_ONLINE)
                 {
@@ -113,6 +137,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             if (payload->GetCommandName() == "List" && payload->GetDirectionName() == "From_Owner")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node->ResetTimeout();
                 
                 Module::Pointer module = this->GetModule(boost::lexical_cast<unsigned int>(payload->GetId()), payload->GetModuleName(), payload->GetClassName());
                 module->SetNodeId(node->GetId());
@@ -187,8 +212,6 @@ void Manager::RequestModules(Node::Id node_id)
     payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(node_id));
     
     broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
-    
-    // TODO: Set timeout if no response
 }
 
 unsigned int Manager::GetNumberOfModules(Node::Id node_id)

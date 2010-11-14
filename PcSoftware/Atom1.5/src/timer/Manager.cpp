@@ -25,22 +25,15 @@ namespace timer {
 
 Manager::Pointer Manager::instance_;
 
-Manager::Manager() : io_service_work_(io_service_)
+Manager::Manager()
 {
-    boost::thread thread(boost::bind(&boost::asio::io_service::run, &this->io_service_));
-    this->thread_ = thread.move();
 }
 
 Manager::~Manager()
 {
-    this->mutex_timers_.lock();
-    this->timers_.clear();
-    this->mutex_timers_.unlock();
-    
     this->io_service_.stop();
     
-    this->thread_.interrupt();
-    this->thread_.join();
+    this->timers_.clear();
 }
 
 Manager::Pointer Manager::Instance()
@@ -65,13 +58,17 @@ void Manager::ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout)
 
 void Manager::SlotOnTimeout(TimerId id)
 {
+    bool repeat = false;
+    
     this->mutex_timers_.lock();
     
     TimerList::iterator it = this->timers_.find(id);
     
     if (it != this->timers_.end())
     {
-        if (!it->second->GetRepeat())
+        repeat = it->second->GetRepeat();
+        
+        if (!repeat)
         {
             this->timers_.erase(id);
         }
@@ -79,7 +76,7 @@ void Manager::SlotOnTimeout(TimerId id)
     
     this->mutex_timers_.unlock();
     
-    this->signal_on_timeout_(id);
+    this->signal_on_timeout_(id, repeat);
 }
 
 TimerId Manager::Set(unsigned int timeout, bool repeat)
