@@ -39,7 +39,7 @@ Subscriber::~Subscriber()
 
 void Subscriber::SlotOnNewData(ClientId client_id, ServerId server_id, type::Byteset data)
 {
-    type::Byteset temp_buffer = data;
+    type::Byteset temp_buffer(data);
     this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
 }
 

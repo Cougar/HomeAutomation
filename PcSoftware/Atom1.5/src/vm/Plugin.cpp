@@ -27,12 +27,12 @@ namespace vm {
     
 Plugin::Plugin()
 {
-
+    this->tracker_ = TrackerPointer(new char);
 }
 
 Plugin::~Plugin()
 {
-
+    this->tracker_.reset();
 }
 
 std::string Plugin::GetName()

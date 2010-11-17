@@ -44,16 +44,13 @@ public:
     void InitializeDone();
     
 private:
-    typedef boost::shared_ptr<char> TrackerPointer;
-    
     static logging::Logger LOG;
-
-    TrackerPointer tracker_;
     
     void SlotOnModuleChange(std::string full_id, bool available);
     void SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables);
     
     static Value Export_SendModuleMessage(const v8::Arguments& args);
+    static Value Export_IsModuleAvailable(const v8::Arguments& args);
     
     
 };

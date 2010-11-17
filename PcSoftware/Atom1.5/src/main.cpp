@@ -113,6 +113,15 @@ int main(int argc, char **argv)
     
     subscribers.push_back(can::Manager::Instance());  
     
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System()));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
+
+    if (config::Manager::Instance()->Exist("ScriptPath"))
+    {
+        vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
+    }
+
     if (config::Manager::Instance()->Exist("CanNet"))
     {
         type::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
@@ -123,15 +132,6 @@ int main(int argc, char **argv)
         }
     }
 
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System()));
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
-
-    if (config::Manager::Instance()->Exist("ScriptPath"))
-    {
-        vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
-    }
-    
     LOG.Info("Initialization complete.");
     
     boost::mutex::scoped_lock guard(guard_mutex);

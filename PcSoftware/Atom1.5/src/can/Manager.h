@@ -58,6 +58,7 @@ public:
     void ConnectSlots(const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message);
     
     void SendMessage(std::string full_id, std::string command, type::StringMap variables);
+    bool IsModuleAvailable(std::string full_id);
     
 private:
     static Pointer instance_;
@@ -74,6 +75,8 @@ private:
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
     void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
+    
+    void SendMessageHandler(std::string full_id, std::string command, type::StringMap variables);
     
     Node::Pointer GetNode(Node::Id node_id);
     Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);

@@ -93,7 +93,7 @@ void Manager::CallHandler(std::string name, ArgumentListPointer arguments)
         LOG.Error("No such function found, " + name);
         return;
     }
-    
+
     Value result = this->functions_[name]->Call(this->context_->Global(), arguments->size(), arguments->data());
     
     if (result.IsEmpty())

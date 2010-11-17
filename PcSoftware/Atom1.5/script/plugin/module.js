@@ -23,6 +23,12 @@ function Module_OnChange(full_id, available)
 {
 	var parts = full_id.split(":", 2);
 	
+	if (legacy)
+	{
+		legacyOnState(full_id, parts[1], parts[0], available);
+		return;
+	}
+	
 	var module = GetModule(parts[0]);
 	
 	if (module)
@@ -47,6 +53,13 @@ function Module_OnMessage()
 	variables.length = number_of_variables;
 	
 	var parts = full_id.split(":", 2);
+	
+	if (legacy)
+	{
+		legacyOnMessage(full_id, parts[1], parts[0], command, variables);
+		return;
+	}
+	
 	
 	var module = GetModule(parts[0]);
 	
@@ -111,7 +124,7 @@ Module.prototype.SetStatus = function(id, available)
 
 Module.prototype.ReceiveMessage = function(id, command, variables)
 {
-	
+	Log("received " + command);
 }
 
 Module.prototype.GetAvailableIds = function()

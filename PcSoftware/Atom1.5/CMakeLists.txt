@@ -17,3 +17,5 @@ target_link_libraries(atomd v8)
 
 include_directories(src)
 add_subdirectory(src)
+
+#set(CMAKE_CXX_FLAGS "--enable-checking -g -O0 -v -da -Q")

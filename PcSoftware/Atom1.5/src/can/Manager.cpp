@@ -85,6 +85,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
 {
     if (message->GetType() == broker::Message::CAN_MESSAGE)
     {
+        //LOG.Debug("Message received");
         Message* payload = static_cast<Message*>(message->GetPayload().get());
         Node::Pointer node;
         
@@ -166,7 +167,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-void Manager::SendMessage(std::string full_id, std::string command, type::StringMap variables)
+void Manager::SendMessageHandler(std::string full_id, std::string command, type::StringMap variables)
 {
     ModuleList::iterator it = this->modules_.find(full_id);
     
@@ -182,11 +183,22 @@ void Manager::SendMessage(std::string full_id, std::string command, type::String
         payload->SetVariables(variables);
         
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
+        LOG.Debug("Message sent!");
     }
     catch (std::runtime_error& e)
     {
         LOG.Error("Failed to send message, " + std::string(e.what()));
     }
+}
+
+void Manager::SendMessage(std::string full_id, std::string command, type::StringMap variables)
+{
+    this->io_service_.post(boost::bind(&Manager::SendMessageHandler, this, full_id, command, variables));
+}
+
+bool Manager::IsModuleAvailable(std::string full_id)
+{
+    return this->modules_.find(full_id) != this->modules_.end();
 }
 
 Node::Pointer Manager::GetNode(Node::Id node_id)

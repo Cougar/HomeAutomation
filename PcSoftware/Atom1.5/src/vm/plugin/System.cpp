@@ -20,7 +20,7 @@
 
 #include "System.h"
 
-#include <v8.h>
+#include <v8-debug.h>
 #include <stdio.h>
 
 #include "vm/Manager.h"
@@ -56,6 +56,11 @@ void System::InitializeDone()
 
 Value System::Export_Log(const v8::Arguments& args)
 {
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments to log.");
+    }
+    
     v8::String::AsciiValue str(args[0]);
     
     LOG.Info(*str);
@@ -65,6 +70,13 @@ Value System::Export_Log(const v8::Arguments& args)
 
 Value System::Export_LoadScript(const v8::Arguments& args)
 {
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
     v8::String::AsciiValue str(args[0]);
     
     return v8::Boolean::New(Manager::Instance()->LoadScriptHandler(*str));
@@ -72,6 +84,13 @@ Value System::Export_LoadScript(const v8::Arguments& args)
 
 Value System::Export_Execute(const v8::Arguments& args)
 {
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
     v8::String::AsciiValue command(args[0]);
     
     std::string output_buffer;
