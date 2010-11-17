@@ -181,14 +181,7 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
                          Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
     
-    try
-    {
-        client->Connect(address, port_or_baud);
-    }
-    catch (std::exception& e)
-    {
-        throw std::runtime_error(e.what());
-    }
+    client->Connect(address, port_or_baud);
     
     this->clients_[client->GetId()] = client;
     
