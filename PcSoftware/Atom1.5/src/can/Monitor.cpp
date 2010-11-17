@@ -38,7 +38,7 @@ Monitor::Monitor(unsigned int port): broker::Subscriber(port), LOG("can::Monitor
         LOG.Info("Started TCP server on port " + boost::lexical_cast<std::string>(port) + ".");
         LOG.Debug("Server id is " + boost::lexical_cast<std::string>(this->server_id_) + ".");
     }
-    catch (std::exception e)
+    catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
     }

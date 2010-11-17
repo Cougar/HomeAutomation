@@ -94,7 +94,7 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
         
         net::Manager::Instance()->SendTo(this->client_id_, buffer);
     }
-    catch (std::exception e)
+    catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
     }
@@ -295,7 +295,7 @@ void Network::SlotOnTimeoutHandler(timer::TimerId timer_id)
         timer::Manager::Instance()->Cancel(timer_id);
         this->timer_id_ = 0;
     }
-    catch (std::exception e)
+    catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
         LOG.Warning("Will try again soon...");

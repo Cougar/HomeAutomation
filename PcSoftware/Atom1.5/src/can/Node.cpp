@@ -56,6 +56,11 @@ void Node::SetState(Node::State state)
 
 bool Node::CheckTimeout()
 {
+    if (this->state_ == STATE_OFFLINE)
+    {
+        return true;
+    }
+    
     if (this->last_active_ + 10 < time(NULL))
     {
         this->state_ = STATE_OFFLINE;
