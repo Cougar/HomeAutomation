@@ -165,7 +165,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         for (unsigned int n = 0; n < variable_nodes.size(); n++)
         {
             value = payload->GetVariable(variable_nodes[n].GetAttributeValue("name"));
-            
+            //LOG.Debug(variable_nodes[n].GetAttributeValue("name") + "=" + value); 
             if (value == "")
             {
                 continue;
@@ -313,24 +313,29 @@ void Network::ProcessBuffer()
         std::string command_name = "";
         
         unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
+        //LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id));
         class_name = Protocol::Instance()->LookupClassName(class_id);
         
         if (class_name == "nmt")
         {
             unsigned int command_id = this->buffer_[2];
+            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupNMTCommandName(command_id);
         }
         else
         {
             unsigned int direction_flag = this->buffer_[3] & 0x01;
+            //LOG.Debug("direction_flag=" + boost::lexical_cast<std::string>(direction_flag));
             direction_name = Protocol::Instance()->LookupDirectionFlag(direction_flag);
             
             unsigned int module_id = this->buffer_[2];
+            //LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id));
             module_name = Protocol::Instance()->LookupModuleName(module_id);
             
             id = this->buffer_[1];
             
             unsigned int command_id = this->buffer_[0];
+            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
         }
 
@@ -348,9 +353,10 @@ void Network::ProcessBuffer()
         type::Bitset databits(data_set);
         xml::Node::NodeList variable_nodes;
         unsigned int start_bit;
-        unsigned int bit_length;
+        int bit_length;
         std::string type;
         std::string value;
+        std::string name;
         
         if (class_name == "nmt")
         {
@@ -363,8 +369,22 @@ void Network::ProcessBuffer()
         
         for (unsigned int n = 0; n < variable_nodes.size(); n++)
         {
+            name = variable_nodes[n].GetAttributeValue("name");
             start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
             bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
+            
+            if (databits.GetCount() < start_bit + bit_length)
+            {
+                bit_length = databits.GetCount() - start_bit;
+                
+                if (bit_length <= 0)
+                {
+                    LOG.Warning("Can not read variable " + name + " for command " + command_name + ", message is to short, it there a match between the module and the protocol XML file?");
+                    //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length) + ", databits.GetCount()=" + boost::lexical_cast<std::string>(databits.GetCount()));
+                    continue;
+                }
+            }
+            
             type = variable_nodes[n].GetAttributeValue("type");
             
             if (type == "int")
@@ -385,15 +405,20 @@ void Network::ProcessBuffer()
             }
             else if (type == "enum")
             {
+                //LOG.Debug("Enum: command name=" + command_name);
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
+                //LOG.Debug("Enum: value=" + boost::lexical_cast<std::string>(value));
+                //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
+                
                 value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
             }
             else// if (type == "uint")
             {
+                //LOG.Debug("type: type=" + type);
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
             }
             
-            payload->SetVariable(variable_nodes[n].GetAttributeValue("name"), value);
+            payload->SetVariable(name, value);
         }
         
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));

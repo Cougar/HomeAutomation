@@ -35,7 +35,7 @@ function Timer_OnTimeout(timer_id, repeat)
 {
 	if (timer_callbacks[timer_id])
 	{
-		timer_callbacks[timer_id]();
+		timer_callbacks[timer_id](timer_id);
 		
 		if (!repeat)
 		{

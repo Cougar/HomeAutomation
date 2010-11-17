@@ -329,6 +329,8 @@ std::string Protocol::DecodeUint(type::Bitset& bitset, unsigned int start_bit, u
 {
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
     
+    //LOG.Debug("DecodeUint: raw_bit_value=" + boost::lexical_cast<std::string>(raw_bit_value));
+    
     return boost::lexical_cast<std::string>((unsigned int)raw_bit_value);
 }
 
@@ -368,8 +370,15 @@ std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, 
 
 void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
+    //LOG.Debug("EncodeAscii: " + value + ", length =" + boost::lexical_cast<std::string>(value.size()) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
+    
     for (unsigned int n = 0; n < bit_length; n += 8)
     {
+        if (n / 8 > value.size())
+        {
+            break;
+        }
+        
         bitset.Write(start_bit + n, 8, value[n / 8]);
     }
 }

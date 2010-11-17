@@ -1,5 +1,5 @@
 
-var legacy = false;
+var legacy = true;
 
 function Start()
 {
@@ -8,6 +8,8 @@ function Start()
 		LoadScript("legacy/System/Base.js");
 		LoadScript("legacy/System/Startup.js");
 		LoadScript("legacy/Autostart.js");
+		
+		autostart();
 	}
 	else
 	{
