@@ -237,36 +237,72 @@ unsigned int Protocol::ResolveModuleId(std::string module_name)
 
 xml::Node::NodeList Protocol::GetCommandVariables(std::string command_name, std::string module_name)
 {
+    xml::Node node;
+    
     try
     {
-        return this->root_node_.FindChild("commands").SelectChild("name", command_name, "module", module_name).FindChild("variables").GetChildren();
+        node = this->root_node_.FindChild("commands").SelectChild("name", command_name, "module", module_name);
+        
+        try
+        {
+            return node.FindChild("variables").GetChildren();
+        }
+        catch (std::runtime_error& e)
+        {
+            return xml::Node::NodeList();
+        }
     }
     catch (std::runtime_error& e)
     {
     }
+  
     
     try
     {
-        return this->root_node_.FindChild("commands").SelectChild("name", command_name).FindChild("variables").GetChildren();
+        node = this->root_node_.FindChild("commands").SelectChild("name", command_name);
+        
+        try
+        {
+            return node.FindChild("variables").GetChildren();
+        }
+        catch (std::runtime_error& e)
+        {
+            return xml::Node::NodeList();
+        }
     }
     catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
-        throw std::runtime_error("No such command found, name = " + command_name + ", module = " + module_name);
+        throw std::runtime_error("Could not find variables for command, name = " + command_name + ", module = " + module_name);
     }
+    
+    return xml::Node::NodeList();
 }
 
 xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
 {
+    xml::Node node;
+    
     try
     {
-        return this->root_node_.FindChild("nmt_messages").SelectChild("name", command_name).FindChild("variables").GetChildren();
+        node = this->root_node_.FindChild("nmt_messages").SelectChild("name", command_name);
+        
+        try
+        {
+            return node.FindChild("variables").GetChildren();
+        }
+        catch (std::runtime_error& e)
+        {
+            return xml::Node::NodeList();
+        }
     }
     catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
-        throw std::runtime_error("No such nmt command found, name = " + command_name);
+        throw std::runtime_error("Could not find variables for nmt command, name = " + command_name);
     }
+    
+    return xml::Node::NodeList();
 }
 
 std::string Protocol::DecodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
