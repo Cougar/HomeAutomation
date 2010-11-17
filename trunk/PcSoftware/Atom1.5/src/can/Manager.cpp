@@ -183,7 +183,7 @@ void Manager::SendMessageHandler(std::string full_id, std::string command, type:
         payload->SetVariables(variables);
         
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
-        LOG.Debug("Message sent!");
+        //LOG.Debug("Command " + command + " sent to " + it->second->GetName());
     }
     catch (std::runtime_error& e)
     {

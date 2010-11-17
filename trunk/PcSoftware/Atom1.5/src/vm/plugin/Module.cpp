@@ -100,6 +100,8 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
         v8::String::AsciiValue name(args[n]);
         v8::String::AsciiValue value(args[n + 1]);
         
+        //LOG.Debug(std::string(*name) + "====" + std::string(*value));
+        
         variables[std::string(*name)] = std::string(*value);
     }
     
