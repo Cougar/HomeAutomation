@@ -1,7 +1,18 @@
 
+var legacy = false;
+
 function Start()
 {
-	LoadScript("user/autostart.js");
+	if (legacy)
+	{
+		LoadScript("legacy/System/Base.js");
+		LoadScript("legacy/System/Startup.js");
+		LoadScript("legacy/Autostart.js");
+	}
+	else
+	{
+		LoadScript("user/autostart.js");
+	}
 }
 
 function Extend(descendant, parent)

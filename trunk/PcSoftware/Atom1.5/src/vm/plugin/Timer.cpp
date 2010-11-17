@@ -20,7 +20,7 @@
 
 #include "Timer.h"
 
-#include <v8.h>
+#include <v8-debug.h>
 #include <stdio.h>
 
 #include <boost/concept_check.hpp>
@@ -34,6 +34,8 @@ namespace vm {
 namespace plugin {
 
 logging::Logger Timer::LOG("vm::plugin::Timer");
+
+Timer::Timers Timer::timers_;
 
 Timer::Timer()
 {
@@ -50,8 +52,25 @@ Timer::~Timer()
     
 }
 
-void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
+void Timer::InitializeDone()
 {
+    atom::vm::Plugin::InitializeDone();
+    
+    timer::Manager::Instance()->ConnectSlots(timer::Manager::SignalOnTimeout::slot_type(&Timer::SlotOnTimeout, this, _1, _2).track(this->tracker_));
+}
+
+void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
+{
+    if (!repeat)
+    {
+        Timers::iterator it = Timer::timers_.find(timer_id);
+        
+        if (it != Timer::timers_.end())
+        {
+            Timer::timers_.erase(it);
+        }
+    }
+    
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::Integer::New(timer_id));
     arguments->push_back(v8::Boolean::New(repeat));
@@ -61,11 +80,36 @@ void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
 
 Value Timer::Export_StartTimer(const v8::Arguments& args)
 {
-    return v8::Integer::New(timer::Manager::Instance()->Set(args[0]->Uint32Value(), args[1]->BooleanValue()));
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 2)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
+    timer::TimerId timer_id = timer::Manager::Instance()->Set(args[0]->Uint32Value(), args[1]->BooleanValue());
+    
+    Timer::timers_.insert(timer_id);
+    
+    return v8::Integer::New(timer_id);
 }
 
 Value Timer::Export_ClearTimer(const v8::Arguments& args)
 {
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
+    Timers::iterator it = Timer::timers_.find(args[0]->IsUint32());
+    
+    if (it != Timer::timers_.end())
+    {
+        Timer::timers_.erase(it);
+    }
+    
     timer::Manager::Instance()->Cancel(args[0]->IsUint32());
     return v8::Undefined();
 }

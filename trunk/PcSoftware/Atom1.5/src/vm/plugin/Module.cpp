@@ -33,12 +33,12 @@ logging::Logger Module::LOG("vm::plugin::module");
 Module::Module()
 {
     this->name_ = "module";
-    this->tracker_ = TrackerPointer(new char);
     
     this->ImportFunction("Module_OnChange");
     this->ImportFunction("Module_OnMessage");
     
     this->ExportFunction("Module_SendMessage", Module::Export_SendModuleMessage);
+    this->ExportFunction("Module_IsModuleAvailable", Module::Export_IsModuleAvailable);
 }
 
 Module::~Module()
@@ -80,8 +80,15 @@ void Module::SlotOnModuleMessage(std::string full_id, std::string command, type:
     this->Call("Module_OnMessage", arguments);
 }
 
-Value atom::vm::plugin::Module::Export_SendModuleMessage(const v8::Arguments& args)
+Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 3)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
     type::StringMap variables;
     
     v8::String::AsciiValue full_id(args[0]);
@@ -97,6 +104,22 @@ Value atom::vm::plugin::Module::Export_SendModuleMessage(const v8::Arguments& ar
     }
     
     can::Manager::Instance()->SendMessage(std::string(*full_id), std::string(*command), variables);
+    
+    return v8::Undefined();
+}
+
+Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
+{
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
+    v8::String::AsciiValue full_id(args[0]);
+    
+    return v8::Boolean::New(can::Manager::Instance()->IsModuleAvailable(std::string(*full_id)));
 }
     
 }; // namespace plugin

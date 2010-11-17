@@ -26,7 +26,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <v8.h>
+#include <v8-debug.h>
 
 #include "types.h"
 
@@ -48,7 +48,10 @@ public:
     virtual void InitializeDone();
     
 protected:
+    typedef boost::shared_ptr<char> TrackerPointer;
+    
     std::string name_;
+    TrackerPointer tracker_;
     
     void Call(std::string name, ArgumentListPointer arguments);
     void ExportFunction(std::string name, v8::InvocationCallback function);

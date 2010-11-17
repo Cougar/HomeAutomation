@@ -25,7 +25,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <v8.h>
+#include <v8-debug.h>
 
 #include "logging/Logger.h"
 #include "common/IoService.h"

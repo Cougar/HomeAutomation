@@ -24,6 +24,7 @@ function test_release(event, id, channel, data, protocol)
 
 function test_status(event, id, available)
 {
+	Log("status change!");
 	dimmer_module.AbsoluteFade(2, 0, 135, 0);
 }
 

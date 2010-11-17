@@ -21,17 +21,19 @@
 #ifndef VM_PLUGIN_TIMER_H
 #define VM_PLUGIN_TIMER_H
 
+#include <set>
+
 #include <boost/shared_ptr.hpp>
 
 #include "vm/Plugin.h"
 #include "logging/Logger.h"
-#include "timer/Subscriber.h"
+#include "timer/types.h"
 
 namespace atom {
 namespace vm {
 namespace plugin {
 
-class Timer : public Plugin, public timer::Subscriber
+class Timer : public Plugin
 {
 public:
     typedef boost::shared_ptr<Timer> Pointer;
@@ -39,10 +41,15 @@ public:
     Timer();
     virtual ~Timer();
     
-private:
-    static logging::Logger LOG;
+    void InitializeDone();
     
-    void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
+private:
+    typedef std::set<timer::TimerId> Timers;
+    static logging::Logger LOG;
+
+    static Timers timers_;
+    
+    void SlotOnTimeout(timer::TimerId timer_id, bool repeat);
     
     static Value Export_StartTimer(const v8::Arguments& args);
     static Value Export_ClearTimer(const v8::Arguments& args);

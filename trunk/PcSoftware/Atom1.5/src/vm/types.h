@@ -24,7 +24,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <v8.h>
+#include <v8-debug.h>
 #include <boost/shared_ptr.hpp>
 
 namespace atom {
