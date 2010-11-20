@@ -23,7 +23,7 @@ function Module_OnChange(full_id, available)
 {
 	var parts = full_id.split(":", 2);
 	
-	if (legacy)
+	if (global_legacy)
 	{
 		legacyOnState(full_id, parts[1], parts[0], available);
 		return;
@@ -54,7 +54,7 @@ function Module_OnMessage()
 	
 	var parts = full_id.split(":", 2);
 	
-	if (legacy)
+	if (global_legacy)
 	{
 		legacyOnMessage(full_id, parts[1], parts[0], command, variables);
 		return;
@@ -124,7 +124,7 @@ Module.prototype.SetStatus = function(id, available)
 
 Module.prototype.ReceiveMessage = function(id, command, variables)
 {
-	Log("received " + command);
+	//Log("received " + command);
 }
 
 Module.prototype.GetAvailableIds = function()
@@ -159,3 +159,21 @@ Module.prototype.SendMessage = function(id, command, variables)
 		SendModuleMessage(this.name_ + ":" + id, command, variables);
 	}
 }
+
+
+// Console Commands
+
+function modulelist()
+{
+	var result = "";
+	
+	for (var name in modules)
+	{
+		result += name + ":  " + modules[name].GetAvailableIds().toString() + "\n";
+	}
+	
+	return result;
+}
+
+RegisterConsoleCommand("modulelist");
+

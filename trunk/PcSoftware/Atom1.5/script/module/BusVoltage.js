@@ -2,9 +2,12 @@
 function BusVoltage(name)
 {
 	this.Module(name);
+	BusVoltage.instance_ = this;
 }
 
 Extend(BusVoltage, Module);
+
+BusVoltage.instance_ = null;
 
 BusVoltage.prototype.ReceiveMessage = function(id, command, variables)
 {
@@ -25,10 +28,12 @@ BusVoltage.prototype.ReceiveMessage = function(id, command, variables)
 	this.Module.prototype.ReceiveMessage.call(this, id, command, variables);
 }
 
-BusVoltage.prototype.SetReportInterval = function(id, time)
+BusVoltage_SetReportInterval = function(id, time)
 {
 	var variables = [
 	{ "Time"  : time } ];
 	
-	this.Module.prototype.SendMessage.call(this, id, "Report_Interval", variables);
+	BusVoltage.instance_.Module.prototype.SendMessage.call(BusVoltage.instance_, id, "Report_Interval", variables);
+	return "OK";
 }
+RegisterConsoleCommand("BusVoltage_SetReportInterval");

@@ -31,9 +31,11 @@ namespace plugin {
 
 logging::Logger System::LOG("vm::plugin::System");
     
-System::System()
+System::System(bool legacy)
 {
     this->name_ = "system";
+    
+    this->legacy_ = legacy;
                  
     this->ExportFunction("Log",        System::Export_Log);
     this->ExportFunction("LoadScript", System::Export_LoadScript);
@@ -51,7 +53,11 @@ void System::InitializeDone()
     
     this->ImportFunction("Start");
     
-    this->Call(0, "Start", ArgumentListPointer(new ArgumentList));
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
+    
+    arguments->push_back(v8::Boolean::New(this->legacy_));
+    
+    this->Call(0, "Start", arguments);
 }
 
 Value System::Export_Log(const v8::Arguments& args)
@@ -70,7 +76,7 @@ Value System::Export_Log(const v8::Arguments& args)
 
 Value System::Export_LoadScript(const v8::Arguments& args)
 {
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
@@ -84,7 +90,7 @@ Value System::Export_LoadScript(const v8::Arguments& args)
 
 Value System::Export_Execute(const v8::Arguments& args)
 {
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {

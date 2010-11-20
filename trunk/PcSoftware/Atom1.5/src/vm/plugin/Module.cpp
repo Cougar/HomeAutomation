@@ -65,6 +65,8 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
 
 void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
 {
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     arguments->push_back(v8::String::New(full_id.data()));
@@ -82,7 +84,7 @@ void Module::SlotOnModuleMessage(std::string full_id, std::string command, type:
 
 Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {

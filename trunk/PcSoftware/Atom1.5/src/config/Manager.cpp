@@ -46,7 +46,8 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     ("LogLevel",    boost::program_options::value<int>()->default_value(4),    "Level of logging")
     ("ScriptPath",  boost::program_options::value<std::string>(),              "Path to where the scripts are")
     ("ProtocolFile",boost::program_options::value<std::string>(),              "File to read the protocol form")
-    ("CanNet",      boost::program_options::value<type::StringList>(),         "Information on where to locate the CAN networks");
+    ("CanNet",      boost::program_options::value<type::StringList>(),         "Information on where to locate the CAN networks")
+    ("Legacy",                                                                 "Start legacy VM environment");
 
     this->command_line_.add_options()
     ("version,v", "print version string")
