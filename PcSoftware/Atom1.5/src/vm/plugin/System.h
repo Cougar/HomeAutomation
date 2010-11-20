@@ -35,13 +35,14 @@ class System : public Plugin
 public:
     typedef boost::shared_ptr<Plugin> Pointer;
     
-    System();
+    System(bool legacy);
     virtual ~System();
     
     void InitializeDone();
     
 private:
     static logging::Logger LOG;
+    bool legacy_;
     
     static Value Export_Log(const v8::Arguments& args);
     static Value Export_LoadScript(const v8::Arguments& args);

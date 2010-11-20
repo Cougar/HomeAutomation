@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pwd.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/mutex.hpp>
@@ -96,7 +97,7 @@ private:
             printf("\nDisconnected!\n");
             this->client_id_ = 0;
            
-            kill(getpid(), SIGABRT);
+            kill(getpid(), SIGTERM);
         }
     }
     
@@ -107,7 +108,14 @@ private:
         if (waiting_for_autocomplete)
         {
             autocomplete_list.clear();
-            boost::algorithm::split(autocomplete_list, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
+            
+            boost::algorithm::trim_if(s, boost::is_any_of("\n"));
+            boost::algorithm::trim_if(s, boost::is_any_of(" "));
+            
+            if (s != "")
+            {
+                boost::algorithm::split(autocomplete_list, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
+            }
         }
         else
         {
@@ -125,6 +133,7 @@ private:
 
 ConsoleClient::Pointer cc;
 struct termios original_flags;
+std::string history_filename;
 
 int main(int argc, char **argv)
 {
@@ -163,7 +172,12 @@ int main(int argc, char **argv)
     
     std::string prompt = address + ":" + boost::lexical_cast<std::string>(port) + "] ";
     
-   
+    
+    passwd* user_struct = getpwuid(getuid());
+    
+    history_filename = std::string(user_struct->pw_dir) + "/.atomic_history";
+    
+    read_history(history_filename.data());
     
     rl_attempted_completion_function = AutoComplete;
     
@@ -198,22 +212,31 @@ static char** AutoComplete(const char* text, int start, int end)
 {
     unsigned int count = 0;
     
+    //printf("\nAutoComplete:start=%d, end=%d\n", start, end);
+    
     for (unsigned int n = 0; n < start; n++)
     {
-        if (text[n] == ' ')
+        if (rl_line_buffer[n] == ' ')
         {
             count++;
         }
     }
     
     waiting_for_autocomplete = true;
+   
+
+    std::string request = "A;"+ boost::lexical_cast<std::string>(count) + ";" + std::string(rl_line_buffer);
+    //printf("\nSending request:%s\n", request.data());
     
-    //printf("Sending request\n");
-    
-    cc->Send("A;"+ boost::lexical_cast<std::string>(count) + ";" + std::string(text));
+    cc->Send(request);
     
     boost::mutex::scoped_lock guard(guard_mutex);
     on_message_condition.wait(guard);    
+    
+    if (autocomplete_list.size() == 0)
+    {
+        return NULL;
+    }
     
     //printf("processing response\n");
     
@@ -255,6 +278,8 @@ char* AutoCompleteGet(const char* text, int state)
 void CleanUp()
 {
     printf("Cleaning up...\n");
+ 
+    write_history(history_filename.data());
     
     cc.reset();
     

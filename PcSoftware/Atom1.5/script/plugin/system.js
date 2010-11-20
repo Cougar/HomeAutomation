@@ -1,9 +1,11 @@
 
-var legacy = false;
+var global_legacy = false;
 
-function Start()
+function Start(legacy)
 {
-	if (legacy)
+	global_legacy = legacy;
+	
+	if (global_legacy)
 	{
 		LoadScript("legacy/System/Base.js");
 		LoadScript("legacy/System/Startup.js");

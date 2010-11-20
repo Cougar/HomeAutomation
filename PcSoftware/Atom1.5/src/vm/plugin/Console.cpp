@@ -63,6 +63,8 @@ Console::~Console()
 void Console::InitializeDone()
 {
     Plugin::InitializeDone();
+    
+    this->ImportFunction("Console_DoAutocomplete");
 }
 
 void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
@@ -93,7 +95,7 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
         {
             for (unsigned int n = 0; n < this->commands_.size(); n++)
             {
-                LOG.Debug(this->commands_[n]);
+                //LOG.Debug(this->commands_[n]);
                 result += this->commands_[n] + "\n";
             }
             
@@ -101,7 +103,17 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
         }
         else
         {
-            net::Manager::Instance()->SendTo(client_id, result);
+            ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
+            type::StringList arguments;
+            
+            boost::algorithm::split(arguments, parts[2], boost::is_any_of(" "), boost::algorithm::token_compress_on);
+            
+            for (unsigned int n = 0; n < arguments.size() && n <= arg_index; n++)
+            {
+                call_arguments->push_back(v8::String::New(arguments[n].data()));
+            }
+            
+            this->Call(client_id, "Console_DoAutocomplete", call_arguments);
         }
     }
     else if (parts[0] == "E")
@@ -113,11 +125,8 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
         
         std::string command = arguments[0];
         
-        LOG.Debug("Command:" + command);
-        
         for (unsigned int n = 1; n < arguments.size(); n++)
         {
-            LOG.Debug("arg:" + arguments[n]);
             call_arguments->push_back(v8::String::New(arguments[n].data()));
         }
         
@@ -148,7 +157,7 @@ void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
 
 void Console::ExecutionResult(std::string response, unsigned int request_id)
 {
-    LOG.Debug("ExecutionResult: response=" + response + ", request_id=" + boost::lexical_cast<std::string>(request_id));
+    //LOG.Debug("ExecutionResult: response=" + response + ", request_id=" + boost::lexical_cast<std::string>(request_id));
     net::Manager::Instance()->SendTo(request_id, response);
 }
 
@@ -163,7 +172,7 @@ Value Console::Export_RegisterConsoleCommand(const v8::Arguments& args)
     
     if (Console::ImportFunction(std::string(*command)))
     {
-        LOG.Debug(std::string(*command) + " registered correctly");
+        LOG.Debug(std::string(*command) + " registered successfully.");
         Console::commands_.push_back(std::string(*command));
         return v8::Boolean::New(true);
     }
