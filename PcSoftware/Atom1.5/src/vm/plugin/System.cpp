@@ -35,8 +35,6 @@ System::System()
 {
     this->name_ = "system";
                  
-    this->ImportFunction("Start");
-    
     this->ExportFunction("Log",        System::Export_Log);
     this->ExportFunction("LoadScript", System::Export_LoadScript);
     this->ExportFunction("Execute",    System::Export_Execute);
@@ -51,7 +49,9 @@ void System::InitializeDone()
 {
     Plugin::InitializeDone();
     
-    this->Call("Start", ArgumentListPointer(new ArgumentList));
+    this->ImportFunction("Start");
+    
+    this->Call(0, "Start", ArgumentListPointer(new ArgumentList));
 }
 
 Value System::Export_Log(const v8::Arguments& args)
@@ -79,7 +79,7 @@ Value System::Export_LoadScript(const v8::Arguments& args)
     
     v8::String::AsciiValue str(args[0]);
     
-    return v8::Boolean::New(Manager::Instance()->LoadScriptHandler(*str));
+    return v8::Boolean::New(Manager::Instance()->LoadScript(*str));
 }
 
 Value System::Export_Execute(const v8::Arguments& args)

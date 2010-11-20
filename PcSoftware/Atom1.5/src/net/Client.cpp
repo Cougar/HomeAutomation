@@ -20,6 +20,8 @@
 
 #include "Client.h"
 
+#include <iostream>
+
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -62,7 +64,7 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
 {
     if (error)
     {
-        //std::cout << error.message() << std::endl;
+        this->Disconnect();
     }
     else if (size == 0)
     {
@@ -84,8 +86,13 @@ void Client::Stop()
 
 void Client::Disconnect()
 {
-    this->Stop();
-    this->signal_on_new_state_(this->id_, this->server_id_, CLIENT_STATE_DISCONNECTED);
+    if (this->id_ != 0)
+    {
+        this->Stop();
+        this->signal_on_new_state_(this->id_, this->server_id_, CLIENT_STATE_DISCONNECTED);
+
+        this->id_ = 0;
+    }
 }
     
 }; // namespace net

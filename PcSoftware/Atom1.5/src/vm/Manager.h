@@ -30,6 +30,8 @@
 #include "logging/Logger.h"
 #include "common/IoService.h"
 
+#include "net/types.h"
+
 #include "Plugin.h"
 #include "types.h"
 
@@ -48,11 +50,13 @@ public:
     static void Delete();
     
     void AddPlugin(Plugin::Pointer plugin);
-    
     void Start(std::string script_path);
-    void Call(std::string name, ArgumentListPointer arguments);
+    
+    void Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
+    void Execute(std::string plugin_name, unsigned int request_id, std::string code);
+    
     bool LoadScript(std::string scriptname);
-    bool LoadScriptHandler(std::string scriptname);
+    bool ImportFunction(std::string functionname);
     
 private:
     typedef std::vector<Plugin::Pointer> PluginList;
@@ -71,7 +75,11 @@ private:
     Manager();
     
     void StartHandler();
-    void CallHandler(std::string name, ArgumentListPointer arguments);
+    
+    void CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
+    void ExecuteHandler(std::string plugin_name, unsigned int request_id, std::string code);
+    
+    void SendResponse(std::string plugin_name, unsigned int request_id, std::string response);
     
     std::string FormatException(v8::TryCatch& try_catch);
     

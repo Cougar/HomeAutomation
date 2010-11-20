@@ -54,7 +54,7 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
     // udp:192.168.1.250:1100
     // serial:/dev/ttyUSB0:38400
     
-    std::vector<std::string> parts;
+    type::StringList parts;
     boost::algorithm::split(parts, address, boost::is_any_of(":"), boost::algorithm::token_compress_off);
     
     if (parts.size() < 3)

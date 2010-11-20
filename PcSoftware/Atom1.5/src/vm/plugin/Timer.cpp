@@ -41,8 +41,6 @@ Timer::Timer()
 {
     this->name_ = "timer";
     
-    this->ImportFunction("Timer_OnTimeout");
-    
     this->ExportFunction("StartTimer",      Timer::Export_StartTimer);
     this->ExportFunction("ClearTimer",      Timer::Export_ClearTimer);
 }
@@ -54,7 +52,9 @@ Timer::~Timer()
 
 void Timer::InitializeDone()
 {
-    atom::vm::Plugin::InitializeDone();
+    Plugin::InitializeDone();
+    
+    this->ImportFunction("Timer_OnTimeout");
     
     timer::Manager::Instance()->ConnectSlots(timer::Manager::SignalOnTimeout::slot_type(&Timer::SlotOnTimeout, this, _1, _2).track(this->tracker_));
 }
@@ -75,7 +75,7 @@ void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
     arguments->push_back(v8::Integer::New(timer_id));
     arguments->push_back(v8::Boolean::New(repeat));
     
-    this->Call("Timer_OnTimeout", arguments);
+    this->Call( timer_id, "Timer_OnTimeout",arguments);
 }
 
 Value Timer::Export_StartTimer(const v8::Arguments& args)

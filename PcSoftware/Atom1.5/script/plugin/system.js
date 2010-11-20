@@ -1,5 +1,5 @@
 
-var legacy = true;
+var legacy = false;
 
 function Start()
 {

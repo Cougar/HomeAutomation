@@ -39,6 +39,7 @@
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
 #include "vm/plugin/Module.h"
+#include "vm/plugin/Console.h"
 
 using namespace atom;
  
@@ -52,7 +53,7 @@ void CleanUp();
 
 int main(int argc, char **argv)
 {
-    LOG.Info("Atom version 1.5.0 starting...");
+    LOG.Info("Atom Daemon, version 1.5.0 starting...");
     LOG.Info("Written by Mattias Runge 2010.");
     LOG.Info("Released under GPL version 2.");
     
@@ -116,7 +117,12 @@ int main(int argc, char **argv)
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System()));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
-
+    
+    if (config::Manager::Instance()->Exist("CommandPort"))
+    {
+        vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(config::Manager::Instance()->GetAsInt("CommandPort"))));
+    }
+    
     if (config::Manager::Instance()->Exist("ScriptPath"))
     {
         vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
@@ -131,8 +137,6 @@ int main(int argc, char **argv)
             subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));            
         }
     }
-
-    LOG.Info("Initialization complete.");
     
     boost::mutex::scoped_lock guard(guard_mutex);
     on_message_condition.wait(guard);
