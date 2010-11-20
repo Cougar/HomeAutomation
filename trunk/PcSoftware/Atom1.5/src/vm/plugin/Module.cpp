@@ -34,9 +34,6 @@ Module::Module()
 {
     this->name_ = "module";
     
-    this->ImportFunction("Module_OnChange");
-    this->ImportFunction("Module_OnMessage");
-    
     this->ExportFunction("Module_SendMessage", Module::Export_SendModuleMessage);
     this->ExportFunction("Module_IsModuleAvailable", Module::Export_IsModuleAvailable);
 }
@@ -50,6 +47,9 @@ void Module::InitializeDone()
 {
     Plugin::InitializeDone();
     
+    this->ImportFunction("Module_OnChange");
+    this->ImportFunction("Module_OnMessage");
+    
     can::Manager::Instance()->ConnectSlots(can::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
                                            can::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
 }
@@ -60,7 +60,7 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
     arguments->push_back(v8::String::New(full_id.data()));
     arguments->push_back(v8::Boolean::New(available));
     
-    this->Call("Module_OnChange", arguments);
+    this->Call(0, "Module_OnChange", arguments);
 }
 
 void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
@@ -77,7 +77,7 @@ void Module::SlotOnModuleMessage(std::string full_id, std::string command, type:
         arguments->push_back(v8::String::New(it->second.data()));
     }
     
-    this->Call("Module_OnMessage", arguments);
+    this->Call(0, "Module_OnMessage", arguments);
 }
 
 Value Module::Export_SendModuleMessage(const v8::Arguments& args)

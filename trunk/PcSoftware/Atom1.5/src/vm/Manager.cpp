@@ -73,24 +73,36 @@ void Manager::Start(std::string script_path)
     this->io_service_.post(boost::bind(&Manager::StartHandler, this));
 }
 
-void Manager::Call(std::string name, ArgumentListPointer arguments)
+void Manager::SendResponse(std::string plugin_name, unsigned int request_id, std::string response)
 {
-    this->io_service_.post(boost::bind(&Manager::CallHandler, this, name, arguments));
+    for (unsigned int n = 0; n < this->plugins_.size(); n++)
+    {
+        if (this->plugins_[n]->GetName() == plugin_name)
+        {
+            this->plugins_[n]->ExecutionResult(response, request_id);
+            return;
+        }
+    }
 }
 
-bool Manager::LoadScript(std::string scriptname)
+void Manager::Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
-    this->io_service_.post(boost::bind(&Manager::LoadScriptHandler, this, scriptname));
+    this->io_service_.post(boost::bind(&Manager::CallHandler, this, plugin_name, request_id, name, arguments));
 }
 
-void Manager::CallHandler(std::string name, ArgumentListPointer arguments)
+void Manager::Execute(std::string plugin_name, unsigned int request_id, std::string code)
+{
+    this->io_service_.post(boost::bind(&Manager::ExecuteHandler, this, plugin_name, request_id, code));
+}
+
+void Manager::CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
     v8::Context::Scope context_scope(this->context_);
     v8::TryCatch try_catch;
     
     if (this->functions_.find(name) == this->functions_.end())
     {
-        LOG.Error("No such function found, " + name);
+        this->SendResponse(plugin_name, request_id, "No such function found, " + name);
         return;
     }
 
@@ -98,8 +110,13 @@ void Manager::CallHandler(std::string name, ArgumentListPointer arguments)
     
     if (result.IsEmpty())
     {
-        LOG.Error(this->FormatException(try_catch));
+        this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
+        return;
     }
+    
+    v8::String::AsciiValue response(result->ToString());
+    
+    this->SendResponse(plugin_name, request_id, std::string(*response));
 }
 
 void Manager::StartHandler()
@@ -122,41 +139,42 @@ void Manager::StartHandler()
     
     for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
-        std::string scriptname = "plugin/" + this->plugins_[c]->GetName() + ".js";
-        
-        if (this->LoadScriptHandler(scriptname))
-        {
-            FunctionNameList import_functions = this->plugins_[c]->GetImportFunctionNames();
-            
-            for (unsigned int n = 0; n < import_functions.size(); n++)
-            {
-                v8::Handle<v8::String> process_name = v8::String::New(import_functions[n].data());
-                v8::Handle<v8::Value> process_val = this->context_->Global()->Get(process_name);
-                
-                if (!process_val->IsFunction())
-                {
-                    LOG.Error(import_functions[n] + " was not found to be a function!");
-                    continue;
-                }
-                
-                v8::Handle<v8::Function> process_fun = v8::Handle<v8::Function>::Cast(process_val);
-                
-                this->functions_[import_functions[n]] = v8::Persistent<v8::Function>::New(process_fun);
-            }
-        }
+        this->LoadScript("plugin/" + this->plugins_[c]->GetName() + ".js");
     }
     
     this->object_template_ = v8::Persistent<v8::ObjectTemplate>::New(raw_template);
-    
-    LOG.Info("VM initialized.");
     
     for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
         this->plugins_[c]->InitializeDone();
     }
+    
+    LOG.Info("VM initialized.");
 }
 
-bool Manager::LoadScriptHandler(std::string scriptname)
+bool Manager::ImportFunction(std::string functionname)
+{
+    v8::Context::Scope context_scope(this->context_);
+    
+    v8::TryCatch try_catch;
+    
+    v8::Handle<v8::String> process_name = v8::String::New(functionname.data());
+    v8::Handle<v8::Value> process_val = this->context_->Global()->Get(process_name);
+    
+    if (!process_val->IsFunction())
+    {
+        LOG.Error(functionname + " was not found to be a function!");
+        return false;
+    }
+    
+    v8::Handle<v8::Function> process_fun = v8::Handle<v8::Function>::Cast(process_val);
+    
+    this->functions_[functionname] = v8::Persistent<v8::Function>::New(process_fun);
+    
+    return true;
+}
+
+bool Manager::LoadScript(std::string scriptname)
 {
     std::string path = this->script_path_ + scriptname;
     std::ifstream file(path.data());
@@ -197,7 +215,7 @@ bool Manager::LoadScriptHandler(std::string scriptname)
     if (script.IsEmpty())
     {
         LOG.Error(this->FormatException(try_catch));
-        false;
+        return false;
     }
     else
     {
@@ -206,12 +224,44 @@ bool Manager::LoadScriptHandler(std::string scriptname)
         if (result.IsEmpty())
         {
             LOG.Error(this->FormatException(try_catch));
-            false;
+            return false;
         }
     }
     
     LOG.Info("Loaded " + scriptname + " successfully.");
     return true;
+}
+
+void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, std::string code)
+{
+    std::string scriptname = "execute_" + plugin_name + ".js";
+    
+    v8::Context::Scope context_scope(this->context_);
+    
+    v8::TryCatch try_catch;
+    
+    v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(code.data(), code.length()),
+                                                        v8::String::New(scriptname.data(), scriptname.length()));
+    
+    if (script.IsEmpty())
+    {
+        this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
+    }
+    else
+    {
+        Value result = script->Run();
+        
+        if (result.IsEmpty())
+        {
+            this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
+        }
+        else
+        {
+            v8::String::AsciiValue response(result->ToString());
+            
+            this->SendResponse(plugin_name, request_id, std::string(*response));
+        }
+    }
 }
 
 std::string Manager::FormatException(v8::TryCatch& try_catch)

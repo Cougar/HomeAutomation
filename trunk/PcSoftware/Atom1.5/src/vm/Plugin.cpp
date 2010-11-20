@@ -45,19 +45,24 @@ ExportFunctionList& Plugin::GetExportFunctions()
     return this->export_functions_;
 }
 
-FunctionNameList& Plugin::GetImportFunctionNames()
-{
-    return this->import_function_names_;
-}
-
 void Plugin::InitializeDone()
 {
 
 }
 
-void Plugin::Call(std::string name, ArgumentListPointer arguments)
+void Plugin::ExecutionResult(std::string response, unsigned int request_id)
 {
-    Manager::Instance()->Call(name, arguments);
+    
+}
+
+void Plugin::Call(unsigned int request_id, std::string name, ArgumentListPointer arguments)
+{
+    Manager::Instance()->Call(this->name_, request_id, name, arguments);
+}
+
+void Plugin::Execute(unsigned int request_id, std::string code)
+{
+    Manager::Instance()->Execute(this->name_, request_id, code);
 }
 
 void Plugin::ExportFunction(std::string name, v8::InvocationCallback function)
@@ -65,9 +70,9 @@ void Plugin::ExportFunction(std::string name, v8::InvocationCallback function)
     this->export_functions_[name] = function;
 }
 
-void Plugin::ImportFunction(std::string name)
+bool Plugin::ImportFunction(std::string name)
 {
-    this->import_function_names_.push_back(name);
+    return Manager::Instance()->ImportFunction(name);
 }
     
 }; // namespace vm

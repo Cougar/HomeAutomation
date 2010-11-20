@@ -76,7 +76,7 @@ void TcpClient::Connect(std::string address, unsigned int port)
     }
     catch (std::exception e)
     {
-        throw std::runtime_error("Error while connecting to " + address + ":" + boost::lexical_cast<std::string>(port) + ", " + std::string(e.what()));
+        throw std::runtime_error("Error while connecting to " + address + ":" + boost::lexical_cast<std::string>(port));
     }
     
     this->Read();

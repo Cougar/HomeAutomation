@@ -18,51 +18,47 @@
  * 
  */
 
-#ifndef VM_PLUGIN_H
-#define VM_PLUGIN_H
-
-#include <string>
-#include <map>
-#include <vector>
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
 #include <boost/shared_ptr.hpp>
-#include <v8-debug.h>
 
-#include "types.h"
+#include "logging/Logger.h"
+#include "net/Subscriber.h"
+#include "net/types.h"
+#include "type/Byteset.h"
+
+#include "vm/Plugin.h"
 
 namespace atom {
 namespace vm {
+namespace plugin {
 
-class Plugin
+class Console : public Plugin
 {
 public:
-    typedef boost::shared_ptr<Plugin> Pointer;
+    typedef boost::shared_ptr<Console> Pointer;
     
-    Plugin();
-    virtual ~Plugin();
+    Console(unsigned int port);
+    virtual ~Console();
     
-    std::string GetName();
-    ExportFunctionList& GetExportFunctions();
-    
-    virtual void InitializeDone();
-    virtual void ExecutionResult(std::string response, unsigned int request_id);
-    
-protected:
-    typedef boost::shared_ptr<char> TrackerPointer;
-    
-    std::string name_;
-    TrackerPointer tracker_;
-    
-    void Call(unsigned int request_id, std::string name, ArgumentListPointer arguments);
-    void Execute(unsigned int request_id, std::string code);
-    void ExportFunction(std::string name, v8::InvocationCallback function);
-    static bool ImportFunction(std::string name);
+    void ExecutionResult(std::string response, unsigned int request_id);
+    void InitializeDone();
     
 private:
-    ExportFunctionList export_functions_;
+    net::ServerId server_id_;
+    static type::StringList commands_;
+    
+    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    
+    static logging::Logger LOG;
+    
+    static Value Export_RegisterConsoleCommand(const v8::Arguments& args);
 };
-
+  
+}; // namespace plugin
 }; // namespace vm
 }; // namespace atom
 
-#endif // VM_PLUGIN_H
+#endif // CONSOLE_H
