@@ -175,11 +175,6 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
             bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
             type = variable_nodes[n].GetAttributeValue("type");
             
-            if (highest_bit < start_bit + bit_length - 1)
-            {
-                highest_bit = start_bit + bit_length - 1;
-            }
-            
             if (type == "int")
             {
                 Protocol::Instance()->EncodeInt(databits, start_bit, bit_length, value);
@@ -191,10 +186,12 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
             else if (type == "ascii")
             {
                 Protocol::Instance()->EncodeAscii(databits, start_bit, bit_length, value);
+                bit_length = value.length() * 8;
             }
             else if (type == "hexstring")
             {
                 Protocol::Instance()->EncodeHexstring(databits, start_bit, bit_length, value);
+                bit_length = value.length() * 4;
             }
             else if (type == "enum")
             {
@@ -204,6 +201,11 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
             else// if (type == "uint")
             {
                 Protocol::Instance()->EncodeUint(databits, start_bit, bit_length, value);
+            }
+            
+            if (highest_bit < start_bit + bit_length - 1)
+            {
+                highest_bit = start_bit + bit_length - 1;
             }
         }
         
@@ -379,7 +381,7 @@ void Network::ProcessBuffer()
                 
                 if (bit_length <= 0)
                 {
-                    LOG.Warning("Can not read variable " + name + " for command " + command_name + ", message is to short, it there a match between the module and the protocol XML file?");
+                    LOG.Warning("Can not read variable " + name + " for command " + command_name + ", message is to short, is there a match between the module and the protocol XML file?");
                     //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length) + ", databits.GetCount()=" + boost::lexical_cast<std::string>(databits.GetCount()));
                     continue;
                 }
