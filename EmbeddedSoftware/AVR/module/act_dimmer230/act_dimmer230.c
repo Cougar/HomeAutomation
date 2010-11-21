@@ -28,8 +28,7 @@ uint8_t netConnected = CAN_MODULE_ENUM_DIMMER230_NETINFO_CONNECTION_DISCONNECTED
 /*	frequency stores the evaluated frequency, 50 or 60 Hz
 	don't calculate net frequency since the internal oscillator is not to be trusted, instead check if 50Hz or 60Hz system
 	should be used for switching powerStepTable depending on frequency */
-uint8_t frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_ERROR_UNKNOWN;	
-			
+uint8_t frequency = CAN_MODULE_ENUM_DIMMER230_NETINFO_FREQUENCY_ERROR_UNKNOWN;
 /*	zero cross sync (time between pos flank of xc-detection and real zero cross) */
 uint16_t xcTimeDiff=0;
 
@@ -37,7 +36,7 @@ uint16_t xcTimeDiff=0;
 	value of 0 is zero output, value of 255 is max output (ACT_DIMMMER230_MIN_DIM, ACT_DIMMMER230_MAX_DIM)
 	stored in eeprom, and restored at startup */
 uint8_t dimmerValue = ACT_DIMMMER230_MIN_DIM;
-			
+
 uint8_t state = ACT_DIMMMER230_STATE_IDLE;
 
 /*	powerStepTable is used for stepping the output for constant increase/decrease in power, this should be a quater of a sin^2-wave (since the second quater can be calculated) */
@@ -159,6 +158,7 @@ void act_dimmer230_pcint_callback(uint8_t id, uint8_t status) //ISR (act_dimmer2
 		else if (dimmerValue == 255)
 		{
 			newTimerVal += 100;	/* almost max, to make sure we don't fire before zerocross */
+			gpio_set_pin(act_dimmer230_CHAN1_IO);
 		}
 		
 		if (newTimerVal > ACT_DIMMMER230_50HZ_PERIOD_TIME)
@@ -167,7 +167,7 @@ void act_dimmer230_pcint_callback(uint8_t id, uint8_t status) //ISR (act_dimmer2
 		}
 
 		TCNT1 = 0;				/* reset timer1 count register */
-		if (dimmerValue > 0) 	/* dont trigger the triac if dimmerValue is 0 */
+		if (dimmerValue > 0 && dimmerValue != 255 ) 	/* dont trigger the triac if dimmerValue is 0 */
 		{
 			OCR1A = newTimerVal;
 
@@ -296,6 +296,7 @@ void act_dimmer230_Process(void)
 		txMsg.Length = 2;
 		txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<5);
 		txMsg.Data[1] = dimmerValue;
+		//txMsg.Data[2] = 0;  //Channel
 		StdCan_Put(&txMsg);
 	}
 	

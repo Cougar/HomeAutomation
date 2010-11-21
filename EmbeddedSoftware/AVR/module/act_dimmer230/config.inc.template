@@ -18,7 +18,7 @@ act_dimmer230_SEND_STATUS_INTERVAL=5
 #### HW-defines ####
 #io defines for zerocross
 act_dimmer230_ZC_IO=EXP_E
-#act_dimmer230_ZC_PCINT=23                    //port PCINT, numeric 0-23
+
 #io defines for dimmer channel 1
 act_dimmer230_CHAN1_IO=EXP_H
 
