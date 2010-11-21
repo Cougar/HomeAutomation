@@ -370,14 +370,16 @@ std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, 
 
 void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    //LOG.Debug("EncodeAscii: " + value + ", length =" + boost::lexical_cast<std::string>(value.size()) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
+    //LOG.Debug("EncodeAscii: " + value + ", length=" + boost::lexical_cast<std::string>(value.length()) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
     
     for (unsigned int n = 0; n < bit_length; n += 8)
     {
-        if (n / 8 > value.size())
+        if (n / 8 >= value.length())
         {
             break;
         }
+        
+        //LOG.Debug(boost::lexical_cast<std::string>((unsigned int)value[n / 8]));
         
         bitset.Write(start_bit + n, 8, value[n / 8]);
     }

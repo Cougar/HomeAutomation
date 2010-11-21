@@ -28,7 +28,7 @@ BusVoltage.prototype.ReceiveMessage = function(id, command, variables)
 	this.Module.prototype.ReceiveMessage.call(this, id, command, variables);
 }
 
-BusVoltage_SetReportInterval = function(id, time)
+function BusVoltage_SetReportInterval(id, time)
 {
 	var variables = [
 	{ "Time"  : time } ];
@@ -36,4 +36,4 @@ BusVoltage_SetReportInterval = function(id, time)
 	BusVoltage.instance_.Module.prototype.SendMessage.call(BusVoltage.instance_, id, "Report_Interval", variables);
 	return "OK";
 }
-RegisterConsoleCommand("BusVoltage_SetReportInterval");
+RegisterConsoleCommand(BusVoltage_SetReportInterval);

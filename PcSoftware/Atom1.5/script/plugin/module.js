@@ -175,5 +175,5 @@ function modulelist()
 	return result;
 }
 
-RegisterConsoleCommand("modulelist");
+RegisterConsoleCommand(modulelist);
 

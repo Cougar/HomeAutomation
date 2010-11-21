@@ -26,7 +26,7 @@ function test_release(event, id, channel, data, protocol)
 
 function test_status(event, id, available)
 {
-	Log("status change!");
+	//Log("status change!");
 }
 
 ir_module.Bind("onStatusChange", test_status);
@@ -34,44 +34,4 @@ ir_module.Bind("onPressed", test_press);
 ir_module.Bind("onReleased", test_release);
 
 
-function dmin()
-{
-	Dimmer230_AbsoluteFade(2, 0, 135, 0);
-	Dimmer230_AbsoluteFade(1, 0, 135, 0);
-	return "Faded to 0\n";
-}
 
-function dmax()
-{
-	Dimmer230_AbsoluteFade(2, 0, 135, 255);
-	Dimmer230_AbsoluteFade(1, 0, 135, 255);
-	return "Faded to 255\n";
-}
-
-function dfade(level)
-{
-	Dimmer230_AbsoluteFade(2, 0, 135, level);
-	Dimmer230_AbsoluteFade(1, 0, 135, level);
-	return "Faded to " + level + "\n";
-}
-
-function dfade_complete(args)
-{
-	var result = new Array();
-	
-	var arg_index = args.length - 1;
-	
-	if (arg_index == 1)
-	{
-		result.push(0);
-		result.push(100);
-		result.push(200);
-		result.push(255);
-	}
-	
-	return result;
-}
-
-RegisterConsoleCommand("dmax");
-RegisterConsoleCommand("dmin");
-RegisterConsoleCommand("dfade", dfade_complete);
