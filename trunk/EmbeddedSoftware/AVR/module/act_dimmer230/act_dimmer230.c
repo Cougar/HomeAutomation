@@ -293,10 +293,10 @@ void act_dimmer230_Process(void)
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_DIMMER230;
 		txMsg.Header.ModuleId = act_dimmer230_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_DIMMER230_NETINFO;
-		txMsg.Length = 2;
+		txMsg.Length = 3;
 		txMsg.Data[0] = ((netConnected&0x1)<<7 | (frequency&0x3)<<5);
 		txMsg.Data[1] = dimmerValue;
-		//txMsg.Data[2] = 0;  //Channel
+		txMsg.Data[2] = 0;  //Channel
 		StdCan_Put(&txMsg);
 	}
 	

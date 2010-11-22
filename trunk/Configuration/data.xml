@@ -616,15 +616,16 @@
     <command id="133" name="Netinfo" type="specific" module="Dimmer230" description="Information about the connected net power">
      <variables>
         <variable name="Connection" type="enum" start_bit="0" bit_length="1" unit="" description="If the dimmer is connected to net power">
-		    <value id="0" name="Disconnected"/>
-		    <value id="1" name="Connected"/>
-		</variable>
+	    <value id="0" name="Disconnected"/>
+	    <value id="1" name="Connected"/>
+	</variable>
         <variable name="Frequency" type="enum" start_bit="1" bit_length="2" unit="" description="Frequency of the net power">
-		    <value id="0" name="Error_Unknown"/>
-		    <value id="1" name="50Hz"/>
-		    <value id="2" name="60Hz"/>
-		</variable>
-		<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
+	    <value id="0" name="Error_Unknown"/>
+	    <value id="1" name="50Hz"/>
+	    <value id="2" name="60Hz"/>
+	</variable>
+	<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="128" name="Demo" type="specific" module="hwPWM" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
