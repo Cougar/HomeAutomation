@@ -46,6 +46,7 @@ public:
 private:
     static logging::Logger LOG;
     
+    void SlotOnNodeChange(unsigned int node_id, bool available);
     void SlotOnModuleChange(std::string full_id, bool available);
     void SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables);
     

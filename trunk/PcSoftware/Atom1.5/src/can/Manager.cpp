@@ -58,8 +58,9 @@ void Manager::Delete()
     Manager::instance_.reset();
 }
 
-void Manager::ConnectSlots(const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message)
+void Manager::ConnectSlots(const SignalOnNodeChange::slot_type& signal_on_node_change_, const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message)
 {
+    this->signal_on_node_change_.connect(signal_on_node_change_);
     this->signal_on_module_change_.connect(slot_on_module_change);
     this->signal_on_module_message_.connect(slot_on_module_message);
 }
