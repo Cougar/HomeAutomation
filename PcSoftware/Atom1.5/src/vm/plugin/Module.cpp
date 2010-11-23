@@ -50,8 +50,14 @@ void Module::InitializeDone()
     this->ImportFunction("Module_OnChange");
     this->ImportFunction("Module_OnMessage");
     
-    can::Manager::Instance()->ConnectSlots(can::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
+    can::Manager::Instance()->ConnectSlots(can::Manager::SignalOnNodeChange::slot_type(&Module::SlotOnNodeChange, this, _1, _2).track(this->tracker_),
+                                           can::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
                                            can::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
+}
+
+void Module::SlotOnNodeChange(unsigned int node_id, bool available)
+{
+
 }
 
 void Module::SlotOnModuleChange(std::string full_id, bool available)

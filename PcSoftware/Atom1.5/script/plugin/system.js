@@ -35,6 +35,19 @@ function Extend(descendant, parent)
 	}
 }
 
+Array.prototype.contains = function(item)
+{
+	for (var n in this)
+	{
+		if (this[n] == item)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 String.prototype.ltrim = function(charlist)
 {
 	charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');

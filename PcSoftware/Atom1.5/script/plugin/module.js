@@ -1,5 +1,16 @@
 
 var modules = new Array();
+var module_aliases = new Array();
+
+function CreateModuleAlias(alias, module_name, module_id, extra)
+{
+	module_aliases[alias] = { "is_group" : false, "module_name" : module_name, "module_id" : module_id, "extra" : extra };
+}
+
+function CreateModuleAliasGroup(alias, aliases)
+{
+	module_aliases[alias] = { "is_group" : true, "aliases" : aliases };
+}
 
 function GetModule(name)
 {
@@ -133,13 +144,45 @@ Module.prototype.GetAvailableIds = function()
 	
 	for (var id in this.ids_)
 	{
-		if (this.ids_[id])
+		if (this.ids_[id] && typeof this.ids_[id] != 'function')
 		{
 			ids[ids.length] = id;
 		}
 	}
 	
 	return ids;
+}
+
+Module.prototype.GetAvailableNames = function()
+{
+	var result = new Array();
+	var available_ids = this.GetAvailableIds();
+	
+	for (var alias in module_aliases)
+	{
+		if (module_aliases[alias]["is_group"])
+		{
+			for (var n = 0; n < module_aliases[alias]["aliases"].length; n++)
+			{
+				var group_alias = module_aliases[alias]["aliases"][n];
+
+				if (module_aliases[group_alias]["module_name"] == this.name_ && available_ids.contains(module_aliases[group_alias]["module_id"]))
+				{
+					result.push(alias);
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (module_aliases[alias]["module_name"] == this.name_ && available_ids.contains(module_aliases[alias]["module_id"]))
+			{
+				result.push(alias);
+			}
+		}
+	}
+	
+	return result;
 }
 
 Module.prototype.IsAvailable = function(id)

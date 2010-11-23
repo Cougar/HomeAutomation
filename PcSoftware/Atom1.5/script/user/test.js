@@ -34,4 +34,41 @@ ir_module.Bind("onPressed", test_press);
 ir_module.Bind("onReleased", test_release);
 
 
+CreateModuleAlias("bardisk", "Dimmer230", 2, { "channel" : 0 });
+CreateModuleAlias("bokhylla", "Dimmer230", 1, { "channel" : 0 });
+CreateModuleAliasGroup("vardagsrum", [ "bokhylla", "bardisk" ]);
 
+
+function fadeto(alias, level, speed)
+{
+	if (typeof module_aliases[alias] == 'undefined')
+	{
+		return "No such module name found";
+	}
+	
+	if (module_aliases[alias]["is_group"])
+	{
+		var result = "";
+		
+		for (var n = 0; n < module_aliases[alias]["aliases"].length; n++)
+		{
+			result += fadeto(module_aliases[alias]["aliases"][n], level, speed) + "\n";
+		}
+		
+		return result;
+	}
+	
+	if (module_aliases[alias]["module_name"] != "Dimmer230")
+	{
+		return "Module type " + module_aliases[alias]["module_name"] + " is not valid for this action, valid are Dimmer230";
+	}
+	
+	if (!speed)
+	{
+		speed = 135;
+	}
+
+	return Dimmer230_AbsoluteFade(module_aliases[alias]["module_id"], module_aliases[alias]["extra"]["channel"], speed, level);
+}
+
+RegisterConsoleCommand(fadeto, function(args) { return StandardAutocomplete(args, Dimmer230.instance_.GetAvailableNames(), [ 0, 50, 100, 150, 200, 255 ], [ 50, 135, 200, 255 ]); });

@@ -65,6 +65,25 @@ function RegisterConsoleCommand(command, autocomplete_callback)
 	return false;
 }
 
+function StandardAutocomplete()
+{
+	// First argument is the command line split
+	var command_line_parts = arguments[0];
+	
+	// command_line_parts[0] == command name
+	var arg_index = arguments[0].length - 2;
+	
+	// Supplied parameters to complete
+	var args_to_complete = arguments.length - 1;
+	
+	if (0 <= arg_index && arg_index < args_to_complete)
+	{
+		return arguments[arg_index + 1];
+	}
+	
+	return new Array();
+}
+
 function help_complete(args)
 {
 	var result = new Array();
