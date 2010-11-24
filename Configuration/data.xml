@@ -625,7 +625,7 @@
 	    <value id="2" name="60Hz"/>
 	</variable>
 	<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
-	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Channel" type="uint" start_bit="16" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="128" name="Demo" type="specific" module="hwPWM" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
