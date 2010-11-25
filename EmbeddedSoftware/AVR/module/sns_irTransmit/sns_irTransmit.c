@@ -7,6 +7,7 @@ uint8_t sns_irTransmit_stop = 0;
 Ir_Protocol_Data_t sns_irTransmit_proto;
 uint16_t sns_irTransmit_txbuffer[MAX_NR_TIMES];
 uint8_t sns_irTransmit_length = 0;
+uint8_t sns_irTransmit_burst_mode = 0;
 
 void sns_irTransmit_Init(void)
 {
@@ -41,11 +42,19 @@ void sns_irTransmit_Process(void)
 			sns_irTransmit_state = sns_irTransmit_STATE_IDLE;
 		}
 	}
-	else if (sns_irTransmit_state == sns_irTransmit_STATE_TRANSMITTING){
+	else if (sns_irTransmit_state == sns_irTransmit_STATE_TRANSMITTING)
+	{
 		//polla om den är klar, om klar gå till sns_irTransmit_STATE_START_PAUSE
 		if (IrTransceiver_Transmit_Poll() != IR_NOT_FINISHED)
 		{
-			sns_irTransmit_state = sns_irTransmit_STATE_START_PAUSE;
+			if (sns_irTransmit_burst_mode)
+			{
+				sns_irTransmit_state = sns_irTransmit_STATE_STOP;
+			}
+			else
+			{
+				sns_irTransmit_state = sns_irTransmit_STATE_START_PAUSE;
+			}
 		}
 	}
 	else if (sns_irTransmit_state == sns_irTransmit_STATE_START_PAUSE)
@@ -79,6 +88,7 @@ void sns_irTransmit_Process(void)
 	}
 	else if (sns_irTransmit_state == sns_irTransmit_STATE_STOP)
 	{
+		sns_irTransmit_burst_mode = 0;
 		sns_irTransmit_stop = 0;
 		sns_irTransmit_proto.timeout = 0;
 		sns_irTransmit_proto.framecnt = 0;
@@ -98,8 +108,12 @@ void sns_irTransmit_HandleMessage(StdCan_Msg_t *rxMsg)
 		{
 		case CAN_MODULE_CMD_PHYSICAL_IR:
 		
-		if (sns_irTransmit_state == sns_irTransmit_STATE_IDLE && rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED)
+		if (	sns_irTransmit_state == sns_irTransmit_STATE_IDLE && 
+			(rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED ||
+			rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST))
 		{
+			sns_irTransmit_burst_mode = (uint8_t)(rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST);
+			
 			sns_irTransmit_proto.protocol = rxMsg->Data[1];
 
 			sns_irTransmit_proto.data = rxMsg->Data[2];

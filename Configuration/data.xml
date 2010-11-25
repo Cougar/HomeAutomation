@@ -95,8 +95,9 @@
       <variables>
         <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
         <variable name="Status" type="enum" start_bit="4" bit_length="4" unit="" description="State of remote button">
-          <value id="1" name="Pressed"/>
           <value id="0" name="Released"/>
+	  <value id="1" name="Pressed"/>
+	  <value id="2" name="Burst"/>
         </variable>
         <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Button protocol">
           <value id="0" name="RC5"/>
