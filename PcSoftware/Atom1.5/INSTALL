@@ -1,0 +1,11 @@
+Ubuntu dependencies:
+cmake libboost-iostreams-dev libboost-date-time-dev libboost-filesystem-dev 
+libboost-program-options-dev libboost-signals-dev libboost-thread-dev 
+libreadline-dev libv8-dev
+
+
+cmake .
+
+make
+
+
