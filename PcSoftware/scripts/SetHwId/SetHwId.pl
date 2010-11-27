@@ -38,12 +38,12 @@ open (FP, "+<".$biosfile) or die "Error: Cannot open file $biosfile\n";
 close FP;
 $foundrow = 0;
 foreach $file (@file) {
-	if ($file =~ m/^NODE_HW_ID=<GENERATE_HW>/) {
+	if ($file =~ m/^NODE_HW_ID=/) {
 		$foundrow = 1;
 	}
 }
 if ($foundrow == 0) {
-	print "Error: Did not find NODE_HW_ID=<GENERATE_HW> in file $biosfile\n";
+	print "Error: Did not find NODE_HW_ID= in file $biosfile\n";
 	exit 1;
 }
 
@@ -75,7 +75,7 @@ while ( $line = <$remote> ) {
 						close FP;
 						open (FP, ">".$biosfile) or die "Cannot open file $biosfile\n";
 						foreach $file (@file) {
-							$file =~ s/^NODE_HW_ID=<GENERATE_HW>/NODE_HW_ID=0x$hwidhex/g;
+							$file =~ s/^NODE_HW_ID=.*/NODE_HW_ID=0x$hwidhex/g;
 							print FP $file;
 						}
 						close FP;
