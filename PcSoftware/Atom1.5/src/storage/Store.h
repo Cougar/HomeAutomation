@@ -18,45 +18,40 @@
  * 
  */
 
-#ifndef VM_PLUGIN_TIMER_H
-#define VM_PLUGIN_TIMER_H
+#ifndef STORAGE_STORE_H
+#define STORAGE_STORE_H
 
-#include <set>
+#include <map>
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 
-#include "vm/Plugin.h"
-#include "logging/Logger.h"
-#include "timer/types.h"
-
 namespace atom {
-namespace vm {
-namespace plugin {
+namespace storage {
 
-class Timer : public Plugin
+class Store
 {
 public:
-    typedef boost::shared_ptr<Timer> Pointer;
+    typedef boost::shared_ptr<Store> Pointer;
+    typedef std::map<std::string, std::string> ParameterList;
     
-    Timer();
-    virtual ~Timer();
+    Store(std::string filename);
+    virtual ~Store();
     
-    void InitializeDone();
+    void Flush();
+    
+    ParameterList& GetParameters();
+    std::string GetParameter(std::string name);
+    void SetParameter(std::string name, std::string value);
     
 private:
-    typedef std::set<timer::TimerId> Timers;
-    static logging::Logger LOG;
-
-    static Timers timers_;
+    ParameterList parameters_;    
+    bool modified_;
+    std::string filename_;
     
-    void SlotOnTimeout(timer::TimerId timer_id, bool repeat);
-    
-    static Value Export_StartTimer(const v8::Arguments& args);
-    static Value Export_ClearTimer(const v8::Arguments& args);
 };
 
-}; // namespace plugin
-}; // namespace vm
+}; // namespace storage
 }; // namespace atom
 
-#endif // VM_PLUGIN_TIMER_H
+#endif // STORAGE_STORE_H

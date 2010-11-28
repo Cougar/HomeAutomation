@@ -58,6 +58,8 @@ public:
     bool LoadScript(std::string scriptname);
     bool ImportFunction(std::string functionname);
     
+    v8::Persistent<v8::Context>& GetContext();
+    
 private:
     typedef std::vector<Plugin::Pointer> PluginList;
     

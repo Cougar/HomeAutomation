@@ -1,16 +1,5 @@
 
 var modules = new Array();
-var module_aliases = new Array();
-
-function CreateModuleAlias(alias, module_name, module_id, extra)
-{
-	module_aliases[alias] = { "is_group" : false, "module_name" : module_name, "module_id" : module_id, "extra" : extra };
-}
-
-function CreateModuleAliasGroup(alias, aliases)
-{
-	module_aliases[alias] = { "is_group" : true, "aliases" : aliases };
-}
 
 function GetModule(name)
 {
@@ -52,16 +41,7 @@ function Module_OnMessage()
 {
 	var full_id = arguments[0];
 	var command = arguments[1];
-	var number_of_variables = arguments[2];
-	
-	var variables = new Array();
-	
-	for (var i = 3; i < number_of_variables * 2 + 3; i += 2)
-	{
-		variables[arguments[i]] = arguments[i + 1];
-	}
-	
-	variables.length = number_of_variables;
+	var variables = arguments[2];
 	
 	var parts = full_id.split(":", 2);
 	
@@ -70,7 +50,6 @@ function Module_OnMessage()
 		legacyOnMessage(full_id, parts[1], parts[0], command, variables);
 		return;
 	}
-	
 	
 	var module = GetModule(parts[0]);
 	
@@ -158,6 +137,8 @@ Module.prototype.GetAvailableNames = function()
 	var result = new Array();
 	var available_ids = this.GetAvailableIds();
 	
+	var module_aliases = getaliases();
+	
 	for (var alias in module_aliases)
 	{
 		if (module_aliases[alias]["is_group"])
@@ -166,7 +147,7 @@ Module.prototype.GetAvailableNames = function()
 			{
 				var group_alias = module_aliases[alias]["aliases"][n];
 
-				if (module_aliases[group_alias]["module_name"] == this.name_ && available_ids.contains(module_aliases[group_alias]["module_id"]))
+				if (module_aliases[group_alias]["module_name"] == this.name_ && ArrayContains(available_ids, module_aliases[group_alias]["module_id"]))
 				{
 					result.push(alias);
 					break;
@@ -175,7 +156,7 @@ Module.prototype.GetAvailableNames = function()
 		}
 		else
 		{
-			if (module_aliases[alias]["module_name"] == this.name_ && available_ids.contains(module_aliases[alias]["module_id"]))
+			if (module_aliases[alias]["module_name"] == this.name_ && ArrayContains(available_ids, module_aliases[alias]["module_id"]))
 			{
 				result.push(alias);
 			}

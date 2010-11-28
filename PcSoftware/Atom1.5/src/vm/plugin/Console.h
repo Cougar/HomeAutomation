@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef VM_PLUGIN_CONSOLE_H
+#define VM_PLUGIN_CONSOLE_H
 
 #include <boost/shared_ptr.hpp>
 
@@ -61,4 +61,4 @@ private:
 }; // namespace vm
 }; // namespace atom
 
-#endif // CONSOLE_H
+#endif // VM_PLUGIN_CONSOLE_H

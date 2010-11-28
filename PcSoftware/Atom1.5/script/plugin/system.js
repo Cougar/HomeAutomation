@@ -1,6 +1,8 @@
 
 var global_legacy = false;
 
+LoadScript("common/json.js");
+
 function Start(legacy)
 {
 	global_legacy = legacy;
@@ -35,11 +37,11 @@ function Extend(descendant, parent)
 	}
 }
 
-Array.prototype.contains = function(item)
+function ArrayContains(array, item)
 {
-	for (var n in this)
+	for (var n in array)
 	{
-		if (this[n] == item)
+		if (array[n] == item)
 		{
 			return true;
 		}

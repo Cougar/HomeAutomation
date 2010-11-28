@@ -62,6 +62,11 @@ void Manager::Delete()
     Manager::instance_.reset();
 }
 
+v8::Persistent<v8::Context>& Manager::GetContext()
+{
+    return this->context_;
+}
+
 void Manager::AddPlugin(Plugin::Pointer plugin)
 {
     this->plugins_.push_back(plugin);
