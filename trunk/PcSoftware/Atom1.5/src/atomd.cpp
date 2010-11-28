@@ -35,11 +35,13 @@
 #include "can/Network.h"
 #include "can/Monitor.h"
 #include "vm/Manager.h"
+#include "storage/Manager.h"
 
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
 #include "vm/plugin/Module.h"
 #include "vm/plugin/Console.h"
+#include "vm/plugin/Storage.h"
 
 using namespace atom;
  
@@ -95,12 +97,18 @@ int main(int argc, char **argv)
         LOG.Info("Deamon mode entered successfully!");
     }
 
+    storage::Manager::Create();
     timer::Manager::Create();
     broker::Manager::Create();
     net::Manager::Create();
     can::Protocol::Create();
     can::Manager::Create();
     vm::Manager::Create();
+    
+    if (config::Manager::Instance()->Exist("StoragePath"))
+    {
+        storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
+    }
     
     if (config::Manager::Instance()->Exist("ProtocolFile"))
     {
@@ -121,6 +129,7 @@ int main(int argc, char **argv)
         vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(config::Manager::Instance()->GetAsInt("CommandPort"))));
     }
     
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage()));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
     
@@ -161,6 +170,7 @@ void CleanUp()
     can::Protocol::Delete();
     broker::Manager::Delete();
     net::Manager::Delete();
+    storage::Manager::Delete();
 }
 
 void Handler(int status)

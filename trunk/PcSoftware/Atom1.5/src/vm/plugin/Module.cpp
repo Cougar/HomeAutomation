@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "can/Manager.h"
+#include "vm/Manager.h"
 
 namespace atom {
 namespace vm {
@@ -71,19 +72,23 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
 
 void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     arguments->push_back(v8::String::New(full_id.data()));
     arguments->push_back(v8::String::New(command.data()));
-    arguments->push_back(v8::Uint32::New(variables.size()));
+    
+    v8::Local<v8::Array> vars = v8::Array::New(variables.size());
     
     for (type::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
     {
-        arguments->push_back(v8::String::New(it->first.data()));
-        arguments->push_back(v8::String::New(it->second.data()));
+        vars->Set(v8::String::New(it->first.data()), v8::String::New(it->second.data()));
     }
+    
+    arguments->push_back(vars);
     
     this->Call(0, "Module_OnMessage", arguments);
 }

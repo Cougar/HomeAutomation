@@ -25,6 +25,10 @@ irReceive.prototype.ReceiveMessage = function(id, command, variables)
 			{
 				this.EventBase.prototype.Trigger.call(this, "onReleased", id, channel, data, protocol);
 			}
+			else
+			{
+				Log("Unknown status of IR signal, " + status);
+			}
 			
 			break;
 		}

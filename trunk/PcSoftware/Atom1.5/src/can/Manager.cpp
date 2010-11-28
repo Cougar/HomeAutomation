@@ -36,7 +36,8 @@ Manager::Pointer Manager::instance_;
 
 Manager::Manager() : broker::Subscriber(false), LOG("can::Manager")
 {
-    this->timer_id_ = timer::Manager::Instance()->Set(10000, true);
+    // Nyquist–Shannon sampling theorem state that we need to double the time, modules send every 10 seconds
+    this->timer_id_ = timer::Manager::Instance()->Set(20000, true);
 }
 
 Manager::~Manager()
@@ -162,6 +163,9 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             }
             else
             {
+                node = this->GetNode(module->GetNodeId());
+                node->ResetTimeout();
+                
                 this->signal_on_module_message_(module->GetFullId(), payload->GetCommandName(), payload->GetVariables());
             }
         }
