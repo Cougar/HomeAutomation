@@ -2,9 +2,12 @@
 function irReceive(name)
 {
 	this.Module(name);
+	irReceive.instance_ = this;
 }
 
 Extend(irReceive, Module);
+
+irReceive.instance_ = null;
 
 irReceive.prototype.ReceiveMessage = function(id, command, variables)
 {

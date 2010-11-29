@@ -55,6 +55,8 @@ char* buffer = NULL;
 bool waiting_for_autocomplete = false;
 boost::condition on_message_condition;
 boost::mutex guard_mutex;
+std::string prompt;
+int prompt_id = -1;
 
 class ConsoleClient : public net::Subscriber
 {
@@ -63,6 +65,7 @@ public:
     
     ConsoleClient(std::string address, unsigned int port)
     {
+        this->identifier_ = address + ":" + boost::lexical_cast<std::string>(port);
         this->client_id_ = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, address, port);
     }
     
@@ -83,8 +86,15 @@ public:
         return this->client_id_ != 0;
     }
     
+    std::string GetIdentifier()
+    {
+        return this->identifier_;
+    }
+    
 private:
     net::ClientId client_id_;
+    std::string identifier_;
+    
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
     {
@@ -103,6 +113,8 @@ private:
     
     void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
     {
+        prompt_id = -1;
+        
         std::string s(data.ToCharString());
         
         if (waiting_for_autocomplete)
@@ -119,12 +131,37 @@ private:
         }
         else
         {
-            if (s[s.length()-1] != '\n')
-            {
-                s += "\n";
-            }
+            type::StringList lines;
             
-            printf("%s", s.data());
+            boost::algorithm::split(lines, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
+            
+            for (unsigned int n = 0; n < lines.size(); n++)
+            {
+                type::StringList parts;
+                
+                boost::algorithm::split(parts, lines[n], boost::is_any_of(";"), boost::algorithm::token_compress_off);
+                
+                if (parts[0].length() == 1 && parts[0] == "P")
+                {
+                    prompt_id = boost::lexical_cast<unsigned int>(parts[1]);
+                    
+                    prompt = "";
+                    
+                    for (unsigned int c = 2; c < parts.size(); c++)
+                    {
+                        prompt += parts[c] + " ";
+                    }
+                }
+                else 
+                {
+                    boost::algorithm::trim_if(lines[n], boost::is_any_of(" "));
+                    
+                    if (lines[n] != "")
+                    {
+                        printf("%s\n", lines[n].data());
+                    }
+                }
+            }
         }
          
         on_message_condition.notify_all();
@@ -170,8 +207,7 @@ int main(int argc, char **argv)
     
     printf("success!\n");
     
-    std::string prompt = address + ":" + boost::lexical_cast<std::string>(port) + "] ";
-    
+    prompt = cc->GetIdentifier() + "] ";
     
     passwd* user_struct = getpwuid(getuid());
     
@@ -194,13 +230,21 @@ int main(int argc, char **argv)
         }
         
         waiting_for_autocomplete = false;
+        prompt = cc->GetIdentifier() + "] ";
         
-        cc->Send("E;" + std::string(buffer));
+        if (prompt_id == -1)
+        {
+            cc->Send("E;" + std::string(buffer));
+            add_history(buffer);
+        }
+        else
+        {
+            cc->Send("R;" + boost::lexical_cast<std::string>(prompt_id) + ";" + std::string(buffer));
+            prompt_id = -1;
+        }
         
         boost::mutex::scoped_lock guard(guard_mutex);
         on_message_condition.wait(guard);    
-        
-        add_history(buffer);
     }
     
     CleanUp();

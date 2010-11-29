@@ -82,7 +82,6 @@ void Store::Flush()
         if (!file.is_open())
         {
             throw std::runtime_error("Could not open " + this->filename_);
-            return;
         }
         
         for (ParameterList::iterator it = this->parameters_.begin(); it != this->parameters_.end(); it++)
@@ -107,7 +106,6 @@ std::string Store::GetParameter(std::string name)
     if (it == this->parameters_.end())
     {
         throw std::runtime_error("No such parameter");
-        return "";
     }
     
     return it->second;

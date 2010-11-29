@@ -1,0 +1,10 @@
+CHANNEL_DOWN={"protocol":"NEC","data":"4010867715"}
+CHANNEL_UP={"protocol":"NEC","data":"4077714435"}
+DISPLAY={"protocol":"NEC","data":"3910597635"}
+FULLSCREEN={"protocol":"NEC","data":"4228119555"}
+MTS={"protocol":"NEC","data":"3827039235"}
+POWER={"protocol":"NEC","data":"4278254595"}
+TV_FM={"protocol":"NEC","data":"4244831235"}
+VIDEO={"protocol":"NEC","data":"3776904195"}
+VOLUME_DOWN={"protocol":"NEC","data":"4144561155"}
+VOLUME_UP={"protocol":"NEC","data":"4211407875"}

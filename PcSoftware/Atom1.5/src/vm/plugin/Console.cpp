@@ -65,6 +65,7 @@ void Console::InitializeDone()
     Plugin::InitializeDone();
     
     this->ImportFunction("Console_DoAutocomplete");
+    this->ImportFunction("Console_PromptResponse");
 }
 
 void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
@@ -131,6 +132,15 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
         }
         
         this->Call(client_id, command, call_arguments);
+    }
+    else if (parts[0] == "R")
+    {
+        ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
+        
+        call_arguments->push_back(v8::String::New(parts[1].data()));
+        call_arguments->push_back(v8::String::New(parts[2].data()));
+        
+        this->Call(client_id, "Console_PromptResponse", call_arguments);
     }
 }
 
