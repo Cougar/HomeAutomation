@@ -260,16 +260,14 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
-ifneq (,$(filter atmega88 atmega168 atmega168p, $(MCU)))
+# GCC bug workaround:
+# The compiler driver adds '-Tdata 0x800100' to the ld command line for some
+# AVRs, making it impossible to override the .data placement with a
+# subsequent -Tdata option. Detect the broken case and re-run ld with the
+# correct .data location substituted.
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
-	@echo GCC bug workaround for ATmega88/ATmega168:
 	@eval $$($(CC) -v $(CFLAGS) -o $@ $^ $(LDFLAGS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
-else
-%.elf: $(OBJ)
-	@echo $(MSG_LINKING) $@
-	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-endif
 
 # Compile: create object files from C source files.
 %.o : %.c
