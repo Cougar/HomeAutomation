@@ -125,3 +125,37 @@ function help(command_name)
 	return "No help for " + command_name + " found\n";
 }
 RegisterConsoleCommand(help, help_complete);
+
+var prompt_requests = new Array();
+var prompt_request_counter = 0;
+
+function prompt(question, callback, text)
+{
+	var id = prompt_request_counter++;
+	prompt_requests[id] = callback;
+	
+	var prompt = "";
+	
+	if (text)
+	{
+		if (text[text.length - 1] != '\n')
+		{
+			text += "\n";
+		}
+		
+		prompt += text;
+	}
+	
+	prompt += "P;" + id + ";" + question + "\n";
+	
+	return prompt;
+}
+
+function Console_PromptResponse(id, response)
+{
+	var result = prompt_requests[id](response);
+	
+	delete prompt_requests[id];
+	
+	return result;
+}

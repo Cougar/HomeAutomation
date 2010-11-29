@@ -46,9 +46,9 @@ function test_status(event, id, available)
 	//Log("status change!");
 }
 
-ir_module.Bind("onStatusChange", test_status);
-ir_module.Bind("onPressed", test_press);
-ir_module.Bind("onReleased", test_release);
+//ir_module.Bind("onStatusChange", test_status);
+//ir_module.Bind("onPressed", test_press);
+//ir_module.Bind("onReleased", test_release);
 
 
 /*CreateModuleAlias("bardisk", "Dimmer230", 2, { "channel" : 0 });
@@ -91,3 +91,15 @@ function fadeto(alias, level, speed)
 }
 
 RegisterConsoleCommand(fadeto, function(args) { return StandardAutocomplete(args, Dimmer230.instance_.GetAvailableNames(), [ 0, 50, 100, 150, 200, 255 ], [ 50, 135, 200, 255 ]); });
+
+function prompt_test_callback(response)
+{
+	return "You answered: \"" + response + "\"\n";
+}
+
+function prompt_test()
+{
+	return prompt("How are you?", prompt_test_callback, "This is a test!\n");
+}
+RegisterConsoleCommand(prompt_test);
+
