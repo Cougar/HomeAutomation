@@ -1,4 +1,8 @@
 
+RequireModule("irReceive");
+RequireModule("irTransmit");
+RequireModule("Dimmer230");
+
 var dimmer_module = GetModule("Dimmer230");
 var ir_module = GetModule("irReceive");
 
@@ -46,9 +50,9 @@ function test_status(event, id, available)
 	//Log("status change!");
 }
 
-//ir_module.Bind("onStatusChange", test_status);
-//ir_module.Bind("onPressed", test_press);
-//ir_module.Bind("onReleased", test_release);
+ir_module.Bind("onStatusChange", test_status);
+ir_module.Bind("onPressed", test_press);
+ir_module.Bind("onReleased", test_release);
 
 
 /*CreateModuleAlias("bardisk", "Dimmer230", 2, { "channel" : 0 });
@@ -89,17 +93,86 @@ function fadeto(alias, level, speed)
 
 	return Dimmer230_AbsoluteFade(alias_data["module_id"], alias_data["extra"], speed, level);
 }
-
 RegisterConsoleCommand(fadeto, function(args) { return StandardAutocomplete(args, Dimmer230.instance_.GetAvailableNames(), [ 0, 50, 100, 150, 200, 255 ], [ 50, 135, 200, 255 ]); });
 
-function prompt_test_callback(response)
+function irsend_autocomplete(args)
 {
-	return "You answered: \"" + response + "\"\n";
+	// args[0] == command name
+	var arg_index = args.length - 2;
+	
+	if (arg_index == 0)
+	{
+		return irTransmit.instance_.GetAvailableNames();
+	}
+	else if (arg_index == 1)
+	{
+		var remotes = Storage_GetParameters("RemoteList");
+		
+		var result = new Array();
+		
+		for (var name in remotes)
+		{
+			result.push(name);
+		}
+		
+		return result;
+	}
+	else if (arg_index == 2)
+	{
+		var remote_storage_name = Storage_GetParameter("RemoteList", args[arg_index]);
+
+		var buttons = Storage_GetParameters(remote_storage_name);
+
+		var result = new Array();
+		
+		for (var name in buttons)
+		{
+			result.push(name);
+		}
+		
+		return result;
+	}
+	
+	return new Array();
 }
 
-function prompt_test()
-{
-	return prompt("How are you?", prompt_test_callback, "This is a test!\n");
-}
-RegisterConsoleCommand(prompt_test);
 
+function irsend(alias, remote, button)
+{
+	var alias_data = resolvealias(alias);
+	
+	if (alias_data == null)
+	{
+		return "No such module name found";
+	}
+	
+	if (alias_data["is_group"])
+	{
+		var result = "";
+		
+		for (var n = 0; n < alias_data["aliases"].length; n++)
+		{
+			result += irsend(alias_data["aliases"][n], remote, button) + "\n";
+		}
+		
+		return result;
+	}
+	
+	if (alias_data["module_name"] != "irTransmit")
+	{
+		return "Module type " + alias_data["module_name"] + " is not valid for this action, valid are irTransmit";
+	}
+	
+	Log(remote);
+	var remote_storage_name = Storage_GetParameter("RemoteList", remote);
+	Log(remote_storage_name);
+	var button = eval("(" + Storage_GetParameter(remote_storage_name, button) + ")");
+	Log(JSON.stringify(button));
+	Log(alias_data["module_id"]);
+	Log(alias_data["extra"]);
+	Log(button["protocol"]);
+	Log(button["data"]);
+	
+	return irTransmit_SendCode(alias_data["module_id"], alias_data["extra"], "Burst", button["protocol"], button["data"]);
+}
+RegisterConsoleCommand(irsend, irsend_autocomplete);

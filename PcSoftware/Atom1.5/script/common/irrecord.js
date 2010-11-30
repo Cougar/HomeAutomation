@@ -1,8 +1,35 @@
-GetModule("irReceive");
+
+RequireModule("irReceive");
 
 var irrecord_remote_name = null;
 var irrecord_remote_identification = null;
 var irrecord_remote_last = null;
+
+function irrecord_autocomplete(args)
+{
+	// args[0] == command name
+	var arg_index = args.length - 2;
+	
+	if (arg_index == 0)
+	{
+		return irReceive.instance_.GetAvailableNames();
+	}
+	else if (arg_index == 1)
+	{
+		var remotes = Storage_GetParameters("RemoteList");
+		
+		var result = new Array();
+		
+		for (var name in remotes)
+		{
+			result.push(name);
+		}
+		
+		return result;
+	}
+	
+	return new Array();
+}
 
 function irrecord(alias, remote_name)
 {
@@ -11,7 +38,7 @@ function irrecord(alias, remote_name)
 		return "You must supply a name for the remote to record";
 	}
 	
-	irrecord_remote_name = "Remote_" + remote_name;
+	irrecord_remote_name = remote_name;
 	irrecord_remote_identification = resolvealias(alias);
 
 	if (irrecord_remote_identification["is_group"])
@@ -21,7 +48,7 @@ function irrecord(alias, remote_name)
 
 	return prompt("What is the name of the button you just pressed?", irrecord_handle_input, "Press a key on you remote and then name it.\n");
 }
-RegisterConsoleCommand(irrecord, function(args) { return StandardAutocomplete(args, irReceive.instance_.GetAvailableNames()); });
+RegisterConsoleCommand(irrecord, irrecord_autocomplete);
 
 function irrecord_handle_input(response)
 {
@@ -35,7 +62,8 @@ function irrecord_handle_input(response)
 		return prompt("What is the name of the button you just pressed?", irrecord_handle_input, "You did not press anything on you remote, try again!\nPress a key on you remote and then name it.\n");
 	}
 	
-	Storage_SetParameter(irrecord_remote_name, response, JSON.stringify(irrecord_remote_last));
+	Storage_SetParameter("Remote_" + irrecord_remote_name, response, JSON.stringify(irrecord_remote_last));
+	Storage_SetParameter("RemoteList", irrecord_remote_name, "Remote_" + irrecord_remote_name);
 	
 	var result = prompt("What is the name of the button you just pressed?", irrecord_handle_input, "Saved " + response + " with protocol " + irrecord_remote_last["protocol"] + " and data " + irrecord_remote_last["data"] + "\nPress a key on you remote and then name it.\n");
 	
