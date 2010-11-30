@@ -2,7 +2,6 @@
 // Autoload scripts from here
 // ex: LoadScript("user/RemoteControl.js");
 
-LoadScript("user/test.js");
+LoadScript("common/nice_functions.js");
 
-//Console_RegisterConsoleCommand("dmax");
-//Console_RegisterConsoleCommand("dmin");
+LoadScript("user/test.js");
