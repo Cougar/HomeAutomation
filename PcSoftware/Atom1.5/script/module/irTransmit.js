@@ -21,4 +21,3 @@ function irTransmit_SendCode(id, channel, status, protocol, data)
 	return "OK";
 }
 RegisterConsoleCommand(irTransmit_SendCode, function(args) { return StandardAutocomplete(args, irTransmit.instance_.GetAvailableIds(), [ 0], [ "Pressed", "Released", "Burst" ], [ "RC5", "RC6", "RCMM", "SIRC", "Sharp", "NEC", "Samsung", "Marantz", "Panasonic", "Sky", "Nexa2" ]); });
-
