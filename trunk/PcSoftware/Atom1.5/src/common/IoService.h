@@ -36,6 +36,8 @@ public:
     IoService();
     virtual ~IoService();
     
+    boost::asio::io_service& GetIoService();
+    
 protected:
     typedef boost::shared_ptr<char> TrackerPointer;
     

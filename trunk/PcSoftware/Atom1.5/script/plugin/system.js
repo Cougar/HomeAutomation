@@ -7,6 +7,9 @@ function Start(legacy)
 {
 	global_legacy = legacy;
 	
+	LoadScript("common/alias.js");
+	LoadScript("common/irrecord.js");
+	
 	if (global_legacy)
 	{
 		LoadScript("legacy/System/Base.js");

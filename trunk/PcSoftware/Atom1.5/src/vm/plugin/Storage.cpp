@@ -32,7 +32,7 @@ namespace plugin {
 
 logging::Logger Storage::LOG("vm::plugin::storage");
     
-Storage::Storage()
+Storage::Storage(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "storage";
     
@@ -77,6 +77,8 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
 
 Value Storage::Export_GetParameter(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
@@ -103,6 +105,8 @@ Value Storage::Export_GetParameter(const v8::Arguments& args)
 
 Value Storage::Export_SetParameter(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)

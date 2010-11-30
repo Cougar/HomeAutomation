@@ -38,7 +38,7 @@ class Module : public Plugin
 public:
     typedef boost::shared_ptr<Module> Pointer;
     
-    Module();
+    Module(boost::asio::io_service& io_service);
     virtual ~Module();
     
     void InitializeDone();
@@ -49,6 +49,10 @@ private:
     void SlotOnNodeChange(unsigned int node_id, bool available);
     void SlotOnModuleChange(std::string full_id, bool available);
     void SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables);
+    
+    void SlotOnNodeChangeHandler(unsigned int node_id, bool available);
+    void SlotOnModuleChangeHandler(std::string full_id, bool available);
+    void SlotOnModuleMessageHandler(std::string full_id, std::string command, type::StringMap variables);
     
     static Value Export_SendModuleMessage(const v8::Arguments& args);
     static Value Export_IsModuleAvailable(const v8::Arguments& args);

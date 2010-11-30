@@ -25,6 +25,7 @@
 #include <boost/algorithm/string/split.hpp>
 
 #include "net/Manager.h"
+#include "vm/Manager.h"
 
 namespace atom {
 namespace vm {
@@ -33,7 +34,7 @@ namespace plugin {
 logging::Logger Console::LOG("vm::plugin::Console");
 type::StringList Console::commands_;
     
-Console::Console(unsigned int port)
+Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugin(io_service)
 {
     this->name_ = "console";
     
@@ -75,6 +76,25 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
         return;
     }
     
+    this->io_service_.post(boost::bind(&Console::SlotOnNewDataHandler, this, client_id, server_id, data));
+}
+
+void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+{
+    if (server_id != this->server_id_)
+    {
+        return;
+    }
+    
+    this->io_service_.post(boost::bind(&Console::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+}
+
+void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+
     std::string str(data.ToCharString());
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
@@ -144,12 +164,11 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, ty
     }
 }
 
-void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
-    if (server_id != this->server_id_)
-    {
-        return;
-    }
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+ 
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
@@ -167,12 +186,19 @@ void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
 
 void Console::ExecutionResult(std::string response, unsigned int request_id)
 {
-    //LOG.Debug("ExecutionResult: response=" + response + ", request_id=" + boost::lexical_cast<std::string>(request_id));
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug("ExecutionResult: response=" + response + ", request_id=" + boost::lexical_cast<std::string>(request_id));
+    
     net::Manager::Instance()->SendTo(request_id, response);
 }
 
 Value Console::Export_RegisterConsoleCommand(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
     if (args.Length() < 1)
     {
         LOG.Error("To few arguments.");

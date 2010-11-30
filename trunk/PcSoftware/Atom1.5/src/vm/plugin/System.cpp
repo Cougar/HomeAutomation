@@ -31,7 +31,7 @@ namespace plugin {
 
 logging::Logger System::LOG("vm::plugin::System");
     
-System::System(bool legacy)
+System::System(boost::asio::io_service& io_service, bool legacy) : Plugin(io_service)
 {
     this->name_ = "system";
     
@@ -49,6 +49,8 @@ System::~System()
 
 void System::InitializeDone()
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     Plugin::InitializeDone();
     
     this->ImportFunction("Start");
@@ -62,6 +64,10 @@ void System::InitializeDone()
 
 Value System::Export_Log(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
     if (args.Length() < 1)
     {
         LOG.Error("To few arguments to log.");
@@ -76,7 +82,9 @@ Value System::Export_Log(const v8::Arguments& args)
 
 Value System::Export_LoadScript(const v8::Arguments& args)
 {
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
@@ -90,7 +98,9 @@ Value System::Export_LoadScript(const v8::Arguments& args)
 
 Value System::Export_Execute(const v8::Arguments& args)
 {
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
