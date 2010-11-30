@@ -1,6 +1,11 @@
 
 function listparameters(store_name)
 {
+	if (!store_name)
+	{
+		return "You must specify a store name";
+	}
+	
 	var parameters = Storage_GetParameters(store_name);
 	var result = "";
 	
@@ -27,4 +32,3 @@ function setparameter(store_name, parameter_name, parameter_value)
 }
 RegisterConsoleCommand(setparameter);
 
-LoadScript("common/alias.js");

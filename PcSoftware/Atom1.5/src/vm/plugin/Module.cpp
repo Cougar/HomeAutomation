@@ -31,7 +31,7 @@ namespace plugin {
 
 logging::Logger Module::LOG("vm::plugin::module");
     
-Module::Module()
+Module::Module(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "module";
     
@@ -58,11 +58,30 @@ void Module::InitializeDone()
 
 void Module::SlotOnNodeChange(unsigned int node_id, bool available)
 {
-
+    this->io_service_.post(boost::bind(&Module::SlotOnNodeChangeHandler, this, node_id, available));
 }
 
 void Module::SlotOnModuleChange(std::string full_id, bool available)
 {
+    this->io_service_.post(boost::bind(&Module::SlotOnModuleChangeHandler, this, full_id, available));
+}
+
+void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
+{
+    this->io_service_.post(boost::bind(&Module::SlotOnModuleMessageHandler, this, full_id, command, variables));
+}
+
+void Module::SlotOnNodeChangeHandler(unsigned int node_id, bool available)
+{
+
+}
+
+void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::String::New(full_id.data()));
     arguments->push_back(v8::Boolean::New(available));
@@ -70,11 +89,11 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
     this->Call(0, "Module_OnChange", arguments);
 }
 
-void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
+void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command, type::StringMap variables)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
@@ -95,7 +114,9 @@ void Module::SlotOnModuleMessage(std::string full_id, std::string command, type:
 
 Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
@@ -125,6 +146,8 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 
 Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)

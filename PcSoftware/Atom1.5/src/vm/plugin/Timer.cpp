@@ -37,12 +37,13 @@ logging::Logger Timer::LOG("vm::plugin::Timer");
 
 Timer::Timers Timer::timers_;
 
-Timer::Timer()
+Timer::Timer(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "timer";
     
     this->ExportFunction("StartTimer",      Timer::Export_StartTimer);
     this->ExportFunction("ClearTimer",      Timer::Export_ClearTimer);
+    this->ExportFunction("sleep",           Timer::Export_Sleep);
 }
 
 Timer::~Timer()
@@ -61,6 +62,15 @@ void Timer::InitializeDone()
 
 void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
 {
+    this->io_service_.post(boost::bind(&Timer::SlotOnTimeoutHandler, this, timer_id, repeat));
+}
+
+void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+ 
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
     if (!repeat)
     {
         Timers::iterator it = Timer::timers_.find(timer_id);
@@ -80,6 +90,8 @@ void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
 
 Value Timer::Export_StartTimer(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
@@ -96,6 +108,8 @@ Value Timer::Export_StartTimer(const v8::Arguments& args)
 
 Value Timer::Export_ClearTimer(const v8::Arguments& args)
 {
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
@@ -111,6 +125,22 @@ Value Timer::Export_ClearTimer(const v8::Arguments& args)
     }
     
     timer::Manager::Instance()->Cancel(args[0]->IsUint32());
+    return v8::Undefined();
+}
+
+Value Timer::Export_Sleep(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
+    boost::this_thread::sleep(boost::posix_time::milliseconds(args[0]->Uint32Value()));
+    
     return v8::Undefined();
 }
 

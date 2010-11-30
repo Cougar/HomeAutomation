@@ -24,7 +24,7 @@ Arguments=
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
 EnvironmentGroup=default
-Executable=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build/atom
+Executable=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build/atomd
 Working Directory=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5
 isExecutable=true
 

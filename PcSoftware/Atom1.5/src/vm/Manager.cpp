@@ -111,6 +111,8 @@ void Manager::CallHandler(std::string plugin_name, unsigned int request_id, std:
         return;
     }
 
+    LOG.Debug("Call: " + name);
+
     Value result = this->functions_[name]->Call(this->context_->Global(), arguments->size(), arguments->data());
     
     if (result.IsEmpty())
@@ -271,6 +273,8 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
 
 std::string Manager::FormatException(v8::TryCatch& try_catch)
 {
+    v8::Context::Scope context_scope(this->context_);
+    
     std::string result;
     
     v8::HandleScope handle_scope;

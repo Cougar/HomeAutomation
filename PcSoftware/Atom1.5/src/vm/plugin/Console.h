@@ -39,7 +39,7 @@ class Console : public Plugin
 public:
     typedef boost::shared_ptr<Console> Pointer;
     
-    Console(unsigned int port);
+    Console(boost::asio::io_service& io_service, unsigned int port);
     virtual ~Console();
     
     void ExecutionResult(std::string response, unsigned int request_id);
@@ -51,6 +51,9 @@ private:
     
     void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
     void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    
+    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
     
     static logging::Logger LOG;
     

@@ -25,7 +25,7 @@
 namespace atom {
 namespace vm {
     
-Plugin::Plugin()
+Plugin::Plugin(boost::asio::io_service& io_service) : io_service_(io_service)
 {
     this->tracker_ = TrackerPointer(new char);
 }
@@ -57,12 +57,12 @@ void Plugin::ExecutionResult(std::string response, unsigned int request_id)
 
 void Plugin::Call(unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
-    Manager::Instance()->Call(this->name_, request_id, name, arguments);
+    Manager::Instance()->CallHandler(this->name_, request_id, name, arguments);
 }
 
 void Plugin::Execute(unsigned int request_id, std::string code)
 {
-    Manager::Instance()->Execute(this->name_, request_id, code);
+    Manager::Instance()->ExecuteHandler(this->name_, request_id, code);
 }
 
 void Plugin::ExportFunction(std::string name, v8::InvocationCallback function)

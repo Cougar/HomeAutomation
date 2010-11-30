@@ -163,10 +163,22 @@ function irsend(alias, remote, button)
 		return "Module type " + alias_data["module_name"] + " is not valid for this action, valid are irTransmit";
 	}
 	
-	Log(remote);
 	var remote_storage_name = Storage_GetParameter("RemoteList", remote);
-	Log(remote_storage_name);
-	var button = eval("(" + Storage_GetParameter(remote_storage_name, button) + ")");
+	
+	if (!remote_storage_name)
+	{
+		return "No such remote name in list, " + remote;
+	}
+	
+	var button_string = Storage_GetParameter(remote_storage_name, button);
+	
+	if (!button_string)
+	{
+		return "No such button " + button + " found on remote " + remote;
+	}
+	
+	var button = eval("(" + button_string + ")");
+	
 	Log(JSON.stringify(button));
 	Log(alias_data["module_id"]);
 	Log(alias_data["extra"]);
@@ -176,3 +188,43 @@ function irsend(alias, remote, button)
 	return irTransmit_SendCode(alias_data["module_id"], alias_data["extra"], "Burst", button["protocol"], button["data"]);
 }
 RegisterConsoleCommand(irsend, irsend_autocomplete);
+
+
+function media(mode)
+{
+	if (!mode)
+	{
+		return "You must specify a mode";
+	}
+	
+	if (mode == "movie")
+	{
+		irsend("tvbankut", "Yamaha_RAV34", "POWER");
+		
+		fadeto("bokhylla", 100, 135);
+		fadeto("bardisk", 0, 135);
+
+		sleep(1000);
+		irsend("tvbankut", "Yamaha_RAV34", "CD");
+	}
+	else if (mode == "tv")
+	{
+		irsend("tvbankut", "Yamaha_RAV34", "POWER");
+		
+		fadeto("bokhylla", 150, 135);
+		fadeto("bardisk", 150, 135);
+
+		sleep(1000);
+		irsend("tvbankut", "Yamaha_RAV34", "DTV_CBL");
+	}
+	else if (mode == "off")
+	{
+		irsend("tvbankut", "Yamaha_RAV34", "STANDBY");
+		
+		fadeto("bokhylla", 0, 135);
+		fadeto("bardisk", 0, 135);
+	}
+	
+	return "OK";
+}
+RegisterConsoleCommand(media, function(args) { return StandardAutocomplete(args, [ "off", "tv", "movie" ]); });

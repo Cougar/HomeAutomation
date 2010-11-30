@@ -35,7 +35,7 @@ class System : public Plugin
 public:
     typedef boost::shared_ptr<Plugin> Pointer;
     
-    System(bool legacy);
+    System(boost::asio::io_service& io_service, bool legacy);
     virtual ~System();
     
     void InitializeDone();

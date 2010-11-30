@@ -122,16 +122,16 @@ int main(int argc, char **argv)
     
     subscribers.push_back(can::Manager::Instance());  
     
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(config::Manager::Instance()->Exist("Legacy"))));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->Exist("Legacy"))));
     
     if (config::Manager::Instance()->Exist("CommandPort"))
     {
-        vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(config::Manager::Instance()->GetAsInt("CommandPort"))));
+        vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
     }
     
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage()));
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer()));
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module()));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
     
     if (config::Manager::Instance()->Exist("ScriptPath"))
     {

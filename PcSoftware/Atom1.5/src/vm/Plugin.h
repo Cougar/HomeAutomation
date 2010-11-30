@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 #include <v8-debug.h>
 
 #include "types.h"
@@ -38,7 +39,7 @@ class Plugin
 public:
     typedef boost::shared_ptr<Plugin> Pointer;
     
-    Plugin();
+    Plugin(boost::asio::io_service& io_service);
     virtual ~Plugin();
     
     std::string GetName();
@@ -52,6 +53,7 @@ protected:
     
     std::string name_;
     TrackerPointer tracker_;
+    boost::asio::io_service& io_service_;
     
     void Call(unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void Execute(unsigned int request_id, std::string code);

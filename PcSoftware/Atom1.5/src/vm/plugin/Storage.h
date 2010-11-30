@@ -35,7 +35,7 @@ class Storage : public Plugin
 public:
     typedef boost::shared_ptr<Storage> Pointer;
     
-    Storage();
+    Storage(boost::asio::io_service& io_service);
     virtual ~Storage();
     
     void InitializeDone();

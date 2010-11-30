@@ -40,6 +40,11 @@ IoService::~IoService()
     this->thread_.interrupt();
     this->thread_.join();
 }
+
+boost::asio::io_service& IoService::GetIoService()
+{
+    return this->io_service_;
+}
     
 }; // namespace common
 }; // namespace atom

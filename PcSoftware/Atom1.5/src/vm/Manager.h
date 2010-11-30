@@ -55,6 +55,9 @@ public:
     void Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void Execute(std::string plugin_name, unsigned int request_id, std::string code);
     
+    void CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
+    void ExecuteHandler(std::string plugin_name, unsigned int request_id, std::string code);
+    
     bool LoadScript(std::string scriptname);
     bool ImportFunction(std::string functionname);
     
@@ -77,9 +80,7 @@ private:
     Manager();
     
     void StartHandler();
-    
-    void CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
-    void ExecuteHandler(std::string plugin_name, unsigned int request_id, std::string code);
+
     
     void SendResponse(std::string plugin_name, unsigned int request_id, std::string response);
     
