@@ -1,6 +1,11 @@
 
 var modules = new Array();
 
+function RequireModule(name)
+{
+	GetModule(name);
+}
+
 function GetModule(name)
 {
 	if (typeof modules[name] == 'undefined')
