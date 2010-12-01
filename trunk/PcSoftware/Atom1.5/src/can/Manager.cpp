@@ -26,6 +26,7 @@
 #include "broker/Message.h"
 #include "type/common.h"
 #include "timer/Manager.h"
+#include "storage/Manager.h"
 
 #include "Message.h"
 
@@ -36,6 +37,8 @@ Manager::Pointer Manager::instance_;
 
 Manager::Manager() : broker::Subscriber(false), LOG("can::Manager")
 {
+    Node::SetupStateMachine();
+    
     // Nyquist–Shannon sampling theorem state that we need to double the time, modules send every 10 seconds
     this->timer_id_ = timer::Manager::Instance()->Set(20000, true);
 }
@@ -79,6 +82,9 @@ void Manager::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
         {
             LOG.Info("Node " + type::ToHex(it->second->GetId()) + " has not sent anything in a long time, setting offline.");
             this->RemoveModules(it->second->GetId());
+            
+            storage::Manager::Instance()->FlushStore("NodeList");
+            storage::Manager::Instance()->FlushStore("ModuleList");
         }
     }
 }
@@ -96,49 +102,17 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             if (payload->GetCommandName() == "Bios_Start")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
-                node->ResetTimeout();
-                
-                this->RemoveModules(node->GetId());
-                node->SetState(Node::STATE_ONLINE);
-                LOG.Info("Node " + type::ToHex(node->GetId()) + " went online.");
-            }
-            else if (payload->GetCommandName() == "Reset")
-            {
-                node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
-
-                this->RemoveModules(node->GetId());
-                node->SetState(Node::STATE_OFFLINE);
-                LOG.Info("Node " + type::ToHex(node->GetId()) + " went offline.");
+                node->Trigger(Node::EVENT_BIOS_START, payload->GetVariables());
             }
             else if (payload->GetCommandName() == "App_Start")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
-                node->ResetTimeout();
-                
-                this->RequestModules(node->GetId());
-                node->SetState(Node::STATE_PENDING);
-                LOG.Info("Node " + type::ToHex(node->GetId()) + " started, requesting modules...");
+                node->Trigger(Node::EVENT_APP_START, payload->GetVariables());
             }
             else if (payload->GetCommandName() == "Heartbeat")
             {
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
-                node->ResetTimeout();
-                
-                if (node->GetState() == Node::STATE_OFFLINE || node->GetState() == Node::STATE_ONLINE)
-                {
-                    this->RequestModules(node->GetId());
-                    node->SetState(Node::STATE_PENDING);
-                    LOG.Info("Node " + type::ToHex(node->GetId()) + " was found, requesting modules...");
-                }
-                else if (node->GetState() == Node::STATE_INITIALIZED)
-                {
-                    if (this->GetNumberOfModules(node->GetId()) != boost::lexical_cast<unsigned int>(payload->GetVariables()["NumberOfModules"]))
-                    {
-                        this->RequestModules(node->GetId());
-                        node->SetState(Node::STATE_PENDING);
-                        LOG.Info("Node " + type::ToHex(node->GetId()) + " reports a different number of modules than previously known, requesting modules...");
-                    }
-                }
+                node->Trigger(Node::EVENT_HEARTBEAT, payload->GetVariables());
             }
         }
         else if (payload->GetDirectionName() == "From_Owner")
@@ -150,12 +124,11 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
                 node->ResetTimeout();
                 
-                
                 module->SetNodeId(node->GetId());
                 
                 if (this->GetNumberOfModules(node->GetId()) == boost::lexical_cast<unsigned int>(payload->GetVariables()["NumberOfModules"]))
                 {
-                    node->SetState(Node::STATE_INITIALIZED);
+                    node->Trigger(Node::EVENT_LIST_DONE, payload->GetVariables());
                 }
                 
                 LOG.Info("Module " + module->GetFullId() + " is available on node " + type::ToHex(node->GetId()) + ".");
@@ -169,6 +142,14 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                 this->signal_on_module_message_(module->GetFullId(), payload->GetCommandName(), payload->GetVariables());
             }
         }
+    }
+}
+
+void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::State target_state)
+{
+    if (target_state != Node::STATE_NORM_INITIALIZED)
+    {
+        this->RemoveModules(node_id);
     }
 }
 
@@ -214,6 +195,7 @@ Node::Pointer Manager::GetNode(Node::Id node_id)
     if (it == this->nodes_.end())
     {
         node = Node::Pointer(new Node(node_id));
+        node->ConnectSlots(Node::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(this->tracker_));
         this->nodes_[node_id] = node;
     }
     else
@@ -254,16 +236,6 @@ void Manager::RemoveModules(Node::Id node_id)
             this->modules_.erase(it);
         }
     }
-}
-
-void Manager::RequestModules(Node::Id node_id)
-{
-    this->RemoveModules(node_id);
-    
-    Message* payload = new Message("mnmt", "To_Owner", "", 0, "List");
-    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(node_id));
-    
-    broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
 }
 
 unsigned int Manager::GetNumberOfModules(Node::Id node_id)

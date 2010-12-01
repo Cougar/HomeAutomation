@@ -45,6 +45,9 @@ public:
     
     void SetRootPath(std::string root_path);
     
+    void SetStoreFlushPolicy(std::string store_name, Store::FlushPolicy flush_policy);
+    void FlushStore(std::string store_name);
+    
     Store::ParameterList& GetParameters(std::string store_name);
     std::string GetParameter(std::string store_name, std::string parameter_name);
     void SetParameter(std::string store_name, std::string parameter_name, std::string parameter_value);

@@ -35,10 +35,17 @@ public:
     typedef boost::shared_ptr<Store> Pointer;
     typedef std::map<std::string, std::string> ParameterList;
     
+    typedef enum
+    {
+        FLUSH_INSTANT,
+        FLUSH_MANUAL
+    } FlushPolicy;
+    
     Store(std::string filename);
     virtual ~Store();
     
     void Flush();
+    void SetFlushPolicy(FlushPolicy flush_policy);
     
     ParameterList& GetParameters();
     std::string GetParameter(std::string name);
@@ -48,6 +55,7 @@ private:
     ParameterList parameters_;    
     bool modified_;
     std::string filename_;
+    FlushPolicy flush_policy;
     
 };
 

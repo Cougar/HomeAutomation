@@ -64,6 +64,32 @@ void Manager::SetRootPath(std::string root_path)
     this->root_path_ = root_path;
 }
 
+void Manager::SetStoreFlushPolicy(std::string store_name, Store::FlushPolicy flush_policy)
+{
+    StoreList::iterator it = this->stores_.find(store_name);
+    
+    if (it == this->stores_.end())
+    {
+        LOG.Info("Loading storage " + store_name + "...");
+        this->stores_[store_name] = Store::Pointer(new Store(this->root_path_ + store_name));
+    }
+    
+    this->stores_[store_name]->SetFlushPolicy(flush_policy);
+}
+
+void Manager::FlushStore(std::string store_name)
+{
+    StoreList::iterator it = this->stores_.find(store_name);
+    
+    if (it == this->stores_.end())
+    {
+        LOG.Info("Loading storage " + store_name + "...");
+        this->stores_[store_name] = Store::Pointer(new Store(this->root_path_ + store_name));
+    }
+    
+    this->stores_[store_name]->Flush();
+}
+
 Store::ParameterList& Manager::GetParameters(std::string store_name)
 {
     StoreList::iterator it = this->stores_.find(store_name);

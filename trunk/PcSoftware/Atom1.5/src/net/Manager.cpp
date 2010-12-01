@@ -33,6 +33,7 @@ Manager::Pointer Manager::instance_;
     
 Manager::Manager()
 {
+
 }
 
 Manager::~Manager()
