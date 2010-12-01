@@ -34,6 +34,7 @@ Store::Store(std::string filename)
 {
     this->filename_ = filename;
     this->modified_ = false;
+    this->flush_policy = FLUSH_INSTANT;
     
     std::ifstream file(filename.data());
     
@@ -71,6 +72,11 @@ Store::Store(std::string filename)
 Store::~Store()
 {
     
+}
+
+void Store::SetFlushPolicy(Store::FlushPolicy flush_policy)
+{
+    this->flush_policy = flush_policy;
 }
 
 void Store::Flush()
@@ -115,10 +121,21 @@ void Store::SetParameter(std::string name, std::string value)
 {
     if (this->parameters_[name] != value)
     {
-        this->parameters_[name] = value;
+        if (value == "")
+        {
+            this->parameters_.erase(name);
+        }
+        else
+        {
+            this->parameters_[name] = value;
+        }   
+            
         this->modified_ = true;
         
-        this->Flush();
+        if (this->flush_policy == FLUSH_INSTANT)
+        {
+            this->Flush();
+        }
     }
 }
    

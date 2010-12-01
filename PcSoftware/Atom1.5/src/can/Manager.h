@@ -77,13 +77,13 @@ private:
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
     void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
+    void SlotOnNewState(Node::Id node_id, Node::State current_state, Node::State target_state);
     
     void SendMessageHandler(std::string full_id, std::string command, type::StringMap variables);
     
     Node::Pointer GetNode(Node::Id node_id);
     Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);
     void RemoveModules(Node::Id node_id);
-    void RequestModules(Node::Id node_id);
     unsigned int GetNumberOfModules(Node::Id node_id);
     
     logging::Logger LOG;

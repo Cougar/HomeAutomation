@@ -41,7 +41,7 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
                                            net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
     
-    this->ExportFunction("Console_RegisterConsoleCommand",      Console::Export_RegisterConsoleCommand);
+    this->ExportFunction("Console_RegisterConsoleCommand", Console::Export_RegisterConsoleCommand);
     
     try
     {

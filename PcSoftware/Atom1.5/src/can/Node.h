@@ -22,10 +22,15 @@
 #define CAN_NODE_H
 
 #include <string>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/signals2.hpp>
 
 #include <time.h>
+
+#include "type/common.h"
+#include "logging/Logger.h"
 
 namespace atom {
 namespace can {
@@ -38,26 +43,71 @@ public:
     
     typedef enum
     {
-        STATE_OFFLINE,
-        STATE_ONLINE,
-        STATE_PENDING,
-        STATE_INITIALIZED
+        STATE_INVALID,
+        STATE_NO_CHANGE,
+        STATE_NORM_OFFLINE,
+        STATE_NORM_ONLINE,
+        STATE_NORM_LIST,
+        STATE_NORM_INITIALIZED,
+        STATE_BPGM_OFFLINE,
+        STATE_BPGM_START,
+        STATE_BPGM_DATA,
+        STATE_BPGM_END,
+        STATE_BPGM_COPY,
+        STATE_APGM_OFFLINE,
+        STATE_APGM_START,
+        STATE_APGM_DATA,
+        STATE_APGM_END,
     } State;
+
+    typedef enum
+    {
+        EVENT_BIOS_START,
+        EVENT_APP_START,
+        EVENT_HEARTBEAT,
+        EVENT_PGM_ACK,
+        EVENT_PGM_NACK,
+        EVENT_LIST_DONE,
+        EVENT_PROGRAM_BIOS,
+        EVENT_PROGRAM_APP,
+        EVENT_RESET
+    } Event;
+    
+    typedef boost::signals2::signal<void(Id, State, State)> SignalOnNewState;
+    
     
     Node(Id id);
     virtual ~Node();
     
+    static void SetupStateMachine();
+    
+    void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state);
+    
     Id GetId();
     State GetState();
-    void SetState(State state);
+
+    void Trigger(Event event, type::StringMap variables);
     
     bool CheckTimeout();
     void ResetTimeout();
     
 private:
+    typedef std::map<Event, State> Transition;
+    typedef std::map<State, Transition> TransitionList;
+    
     Id id_;
     State state_;
     time_t last_active_;
+    SignalOnNewState signal_on_new_state_;
+    logging::Logger LOG;
+    
+    static TransitionList transitions_;
+    
+    static void AddTransition(State current_state, Event event, State target_state);
+    
+    State GetTransitionTarget(Event event);
+    void SendReset();
+    void SendListRequest();
 };
 
 }; // namespace can
