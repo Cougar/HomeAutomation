@@ -28,6 +28,21 @@
 #error AVR device not supported!
 #endif
 
+/* DEVICETYPE is sent in bios start frame */
+#if defined(__AVR_ATmega8__)
+#define DEVICETYPE 0
+#elif defined(__AVR_ATmega88__) 
+#define DEVICETYPE 2
+#elif defined(__AVR_ATmega168__) 
+#define DEVICETYPE 3
+#elif defined(__AVR_ATmega168P__) 
+#define DEVICETYPE 3
+#elif defined(__AVR_ATmega328P__)
+#define DEVICETYPE 4
+#else
+#error AVR device not supported!
+#endif
+
 #if defined(AUTOSTART)
 #if AUTOSTART == 0 
 #error Please choose a higher AUTOSTART value in bios.inc, the nod will cease to work, and you can only reflash node with ISP
@@ -130,7 +145,7 @@ int main(void) {
 	tx_msg.DataLength = 8;
 	tx_msg.Data.bytes[0] = BIOS_VERSION&0xff;
 	tx_msg.Data.bytes[1] = (BIOS_VERSION>>8)&0xff;
-	tx_msg.Data.bytes[3] = 0x00;
+	tx_msg.Data.bytes[3] = DEVICETYPE;
 	tx_msg.Data.bytes[4] = hwid&0xff;
 	tx_msg.Data.bytes[5] = (hwid>>8)&0xff;
 	tx_msg.Data.bytes[6] = (hwid>>16)&0xff;
