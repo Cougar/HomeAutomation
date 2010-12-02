@@ -30,13 +30,13 @@
 
 /* DEVICETYPE is sent in bios start frame */
 #if defined(__AVR_ATmega8__)
-#define DEVICETYPE 0
+#define DEVICETYPE 1
 #elif defined(__AVR_ATmega88__) 
-#define DEVICETYPE 2
-#elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__)
 #define DEVICETYPE 3
-#elif defined(__AVR_ATmega328P__)
+#elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__)
 #define DEVICETYPE 4
+#elif defined(__AVR_ATmega328P__)
+#define DEVICETYPE 5
 #else
 #error AVR device not supported!
 #endif

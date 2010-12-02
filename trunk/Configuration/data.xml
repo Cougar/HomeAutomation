@@ -829,11 +829,12 @@
         <variable name="BiosVersion" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
         <variable name="HasApplication" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
         <variable name="DeviceType" type="enum" start_bit="24" bit_length="8" unit="" description="">
-          <value id="0" name="mega8"/>
-          <value id="1" name="mega48"/>
-          <value id="2" name="mega88"/>
-          <value id="3" name="mega168"/>
-          <value id="4" name="mega328"/>
+		  <value id="0" name="N/A"/>
+          <value id="1" name="mega8"/>
+          <value id="2" name="mega48"/>
+          <value id="3" name="mega88"/>
+          <value id="4" name="mega168"/>
+          <value id="5" name="mega328"/>
         </variable>
         <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
