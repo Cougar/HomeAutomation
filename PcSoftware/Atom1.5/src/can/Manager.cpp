@@ -39,6 +39,8 @@ Manager::Manager() : broker::Subscriber(false), LOG("can::Manager")
 {
     Node::SetupStateMachine();
     
+    this->active_programming_node_id_ = 0;
+    
     // Nyquist–Shannon sampling theorem state that we need to double the time, modules send every 10 seconds
     this->timer_id_ = timer::Manager::Instance()->Set(20000, true);
 }
@@ -150,6 +152,15 @@ void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::
     if (target_state != Node::STATE_NORM_INITIALIZED)
     {
         this->RemoveModules(node_id);
+    }
+    
+    if (target_state == Node::STATE_BPGM_OFFLINE || target_state == Node::STATE_APGM_OFFLINE)
+    {
+        this->active_programming_node_id_ = node_id;
+    }
+    else if (target_state == Node::STATE_NORM_OFFLINE)
+    {
+        this->active_programming_node_id_ = 0;
     }
 }
 
