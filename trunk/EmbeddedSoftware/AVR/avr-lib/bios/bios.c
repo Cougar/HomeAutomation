@@ -33,9 +33,7 @@
 #define DEVICETYPE 0
 #elif defined(__AVR_ATmega88__) 
 #define DEVICETYPE 2
-#elif defined(__AVR_ATmega168__) 
-#define DEVICETYPE 3
-#elif defined(__AVR_ATmega168P__) 
+#elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__)
 #define DEVICETYPE 3
 #elif defined(__AVR_ATmega328P__)
 #define DEVICETYPE 4
