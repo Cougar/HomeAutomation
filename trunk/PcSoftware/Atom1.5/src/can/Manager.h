@@ -68,6 +68,7 @@ private:
     
     NodeList nodes_;
     ModuleList modules_;
+    Node::Id active_programming_node_id_;
     
     SignalOnNodeChange signal_on_node_change_;
     SignalOnModuleChange signal_on_module_change_;
