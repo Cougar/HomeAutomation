@@ -152,7 +152,6 @@ public class CanNMT {
 							break;          
 					}
 				}
-			}
 				Console.WriteLine("Bios started on node 0x" + String.Format("{0:x2}", sender) + 
 									", bios version 0x" + String.Format("{0:x2}", data[1]) + String.Format("{0:x2}", data[0]) +
 									", " + appinfo
