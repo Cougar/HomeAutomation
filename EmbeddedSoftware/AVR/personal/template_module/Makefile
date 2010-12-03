@@ -33,10 +33,10 @@ MSG_CREATEDIR = Creating directory:
 
 
 # Default target.
-all: check_binaries $(abspath $(BUILDDIR))
+all: check_systeminc $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) all
 
-bios: check_binaries $(abspath $(BIOSDIR))
+bios: check_systeminc $(abspath $(BIOSDIR))
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) all
 
 installbios: bios
@@ -54,33 +54,33 @@ reset:
 start: 
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -s
 
-$(BUILDDIR)/$(TARGET).hex: check_binaries $(abspath $(BUILDDIR))
+$(BUILDDIR)/$(TARGET).hex: check_systeminc $(abspath $(BUILDDIR))
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) $(TARGET).hex
 
-$(abspath $(BUILDDIR) $(BIOSDIR)): check_binaries
+$(abspath $(BUILDDIR) $(BIOSDIR)): check_systeminc
 	@echo $(MSG_CREATEDIR) $@
 	@$(MKDIR) -p $@
 
 # Target: clean project.
-clean: check_binaries
+clean: check_systeminc
 	@$(MAKE) $(APPMAKEFLAGS) -C $(BUILDDIR) -f $(abspath $(SRCDIR)/Makefile) clean
 
-cleanbios: check_binaries
+cleanbios: check_systeminc
 	@$(MAKE) $(BIOSMAKEFLAGS) -C $(BIOSDIR) -f $(abspath $(BIOSSRCDIR)/Makefile) clean
 
-distclean: check_binaries
+distclean: check_systeminc
 	@echo $(MSG_CLEANING)
 	$(RM) -r $(BUILDDIR)
 	$(RM) -r $(BIOSDIR)
 
-sethwid:
-	@$(PERL) ../../../../PcSoftware/scripts/SetHwId/SetHwId.pl
+setconfig: check_systeminc
+	@$(SETCONF) $(CANULFLAGS)
 
-check_binaries:
-ifndef MKDIR
+check_systeminc:
+ifndef SETCONF
 	@echo 
-	@echo ERROR! This is because you have not defined build-binaries in system.inc
-	@echo Please update system.inc.template from SVN and then copy the build binaries definitions to your system.inc
+	@echo ERROR! This is because your system.inc is out of date
+	@echo Please update system.inc.template from SVN and then diff with your system.inc and add the appropriate settings
 	@echo 
 	@false
 endif
@@ -88,5 +88,5 @@ endif
 # Listing of phony targets.
 .PHONY : all bios installbios upgradebios \
 install reset start \
-clean cleanbios distclean check_binaries sethwid
+clean cleanbios distclean check_systeminc sethwid
 
