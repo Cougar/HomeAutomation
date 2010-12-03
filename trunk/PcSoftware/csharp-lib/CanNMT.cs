@@ -16,6 +16,12 @@ public class CanNMT {
 	private const byte CAN_NMT_APP_START 	= 0x28;
 	private const byte CAN_NMT_HEARTBEAT 	= 0x2C;
 
+	private const byte DEVICETYPE_AVR_ATmega8 	= 1;
+	private const byte DEVICETYPE_AVR_ATmega48 	= 2;
+	private const byte DEVICETYPE_AVR_ATmega88 	= 3;
+	private const byte DEVICETYPE_AVR_ATmega168	= 4;
+	private const byte DEVICETYPE_AVR_ATmega328	= 5;
+	
 	private bool HWID_INUSE=false;
 
 	CanPacket cp;
@@ -110,6 +116,12 @@ public class CanNMT {
 		return cp;
 	}
 	
+		private const byte DEVICETYPE_AVR_ATmega8 	= 1;
+	private const byte DEVICETYPE_AVR_ATmega48 	= 2;
+	private const byte DEVICETYPE_AVR_ATmega88 	= 3;
+	private const byte DEVICETYPE_AVR_ATmega168	= 4;
+	private const byte DEVICETYPE_AVR_ATmega328	= 5;
+	
 	public bool isBiosStart(CanPacket cp, byte sender, uint hwid) {
 		bool returnval = false;
 		uint id = cp.getId();
@@ -125,8 +137,28 @@ public class CanNMT {
 				   appinfo += ", device type unkown";
 				}
 				if (data[3]!=0) {
-				   appinfo += ", device type "+data[3];
+				    switch(data[3]){
+						case DEVICETYPE_AVR_ATmega8:
+							appinfo += ", device type ATmega8";
+							break;
+						case DEVICETYPE_AVR_ATmega48:
+							appinfo += ", device type ATmega48";
+							break;
+						case DEVICETYPE_AVR_ATmega88:
+							appinfo += ", device type ATmega88";
+							break;
+						case DEVICETYPE_AVR_ATmega168:
+							appinfo += ", device type ATmega168";
+							break;
+						case DEVICETYPE_AVR_ATmega328:
+							appinfo += ", device type ATmega328";
+							break;
+						default:
+							appinfo += ", device type unknown";
+							break;          
+					}
 				}
+			}
 				Console.WriteLine("Bios started on node 0x" + String.Format("{0:x2}", sender) + 
 									", bios version 0x" + String.Format("{0:x2}", data[1]) + String.Format("{0:x2}", data[0]) +
 									", " + appinfo
