@@ -117,12 +117,15 @@ public class CanNMT {
 			byte[] data = cp.getData();
 			if ((id&0x00FF0000) == (CAN_NMT_BIOS_START<<16) && data[4]==((hwid)&0xff) && data[5]==((hwid>>8)&0xff) && data[6]==((hwid>>16)&0xff) && data[7]==((hwid>>24)&0xff)) {
 				returnval = true;
-				string appinfo = "Application installed";
+				string appinfo = "application installed";
 				if (data[2] == 0) {
-					appinfo = "No application installed";
+					appinfo = "no application installed";
 				}
-				if (data[3]!=0 && data[3]!=0xff) {
-				   appinfo += ", application can-id "+data[3];
+				if (data[3]==0) {
+				   appinfo += ", device type unkown";
+				}
+				if (data[3]!=0) {
+				   appinfo += ", device type "+data[3];
 				}
 				Console.WriteLine("Bios started on node 0x" + String.Format("{0:x2}", sender) + 
 									", bios version 0x" + String.Format("{0:x2}", data[1]) + String.Format("{0:x2}", data[0]) +
