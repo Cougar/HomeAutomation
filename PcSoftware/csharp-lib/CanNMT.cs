@@ -115,13 +115,7 @@ public class CanNMT {
 		cp.setDataLength(6);
 		return cp;
 	}
-	
-		private const byte DEVICETYPE_AVR_ATmega8 	= 1;
-	private const byte DEVICETYPE_AVR_ATmega48 	= 2;
-	private const byte DEVICETYPE_AVR_ATmega88 	= 3;
-	private const byte DEVICETYPE_AVR_ATmega168	= 4;
-	private const byte DEVICETYPE_AVR_ATmega328	= 5;
-	
+		
 	public bool isBiosStart(CanPacket cp, byte sender, uint hwid) {
 		bool returnval = false;
 		uint id = cp.getId();
