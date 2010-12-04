@@ -88,5 +88,5 @@ endif
 # Listing of phony targets.
 .PHONY : all bios installbios upgradebios \
 install reset start \
-clean cleanbios distclean check_systeminc sethwid
+clean cleanbios distclean check_systeminc setconfig
 
