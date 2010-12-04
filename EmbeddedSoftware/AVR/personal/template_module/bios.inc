@@ -23,6 +23,37 @@ NODE_HW_ID=<GENERATE_HW>
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
 
+# Device parameters
+MCU=atmega168
+HIGHFUSE=0xdc
+LOWFUSE=0xe2
+EXTFUSE=0x02
+BOOT_START=0x3c00
+
+# CAN configuration (old nodes: PORTB, DDRB, PB2)
+CAN_CONTROLLER=MCP2515
+MCP_CS_PORT=PORTC
+MCP_CS_DDR=DDRC
+MCP_CS_BIT=PC3
+MCP_CAN_BITRATE_KBPS=250
+MCP_CLOCK_FREQ_MHZ=20
+MCP_CLOCK_PRESC=1
+
+
+
+################################################################################
+# Everything below is just help
+################################################################################
+
+# For 				MCP_CLOCK_FREQ_MHZ=20	MCP_CLOCK_FREQ_MHZ=16
+# MCP_CLOCK_PRESC		external clock			external clock
+# 		1 					20MHz					16MHz 
+# 		2					10MHz					8MHz
+# 		4					5MHz					4MHz
+# 		8					2.5MHz					2MHz
+# Make sure to change F_CPU accordingly if using external clock on AVR (LOWFUSE)
+
+
 #---MEGA8---
 #MCU=atmega8
 #HIGHFUSE=0xd4
@@ -37,11 +68,11 @@ F_CPU=8000000UL
 #BOOT_START=0x1e00
 
 #---MEGA168---
-MCU=atmega168
-HIGHFUSE=0xdc
-LOWFUSE=0xe2
-EXTFUSE=0x02
-BOOT_START=0x3c00
+#MCU=atmega168
+#HIGHFUSE=0xdc
+#LOWFUSE=0xe2
+#EXTFUSE=0x02
+#BOOT_START=0x3c00
 
 #---MEGA328P---
 #MCU=atmega328p
@@ -49,27 +80,6 @@ BOOT_START=0x3c00
 #LOWFUSE=0xe2
 #EXTFUSE=0x04
 #BOOT_START=0x7c00
-
-# CAN configuration (old nodes: PORTB, DDRB, PB2)
-CAN_CONTROLLER=MCP2515
-MCP_CS_PORT=PORTC
-MCP_CS_DDR=DDRC
-MCP_CS_BIT=PC3
-MCP_CAN_BITRATE_KBPS=250
-MCP_CLOCK_FREQ_MHZ=20
-MCP_CLOCK_PRESC=1
-
-
-
-# Everything below is just help
-
-# For 				MCP_CLOCK_FREQ_MHZ=20	MCP_CLOCK_FREQ_MHZ=16
-# MCP_CLOCK_PRESC		external clock			external clock
-# 		1 					20MHz					16MHz 
-# 		2					10MHz					8MHz
-# 		4					5MHz					4MHz
-# 		8					2.5MHz					2MHz
-# Make sure to change F_CPU accordingly if using external clock on AVR (LOWFUSE)
 
 
 #Some common settings of fuses
