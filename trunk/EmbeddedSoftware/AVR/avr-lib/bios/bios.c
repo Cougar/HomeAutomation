@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
- 
+
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -31,7 +31,7 @@
 /* DEVICETYPE is sent in bios start frame */
 #if defined(__AVR_ATmega8__)
 #define DEVICETYPE 1
-#elif defined(__AVR_ATmega88__) 
+#elif defined(__AVR_ATmega88__)
 #define DEVICETYPE 3
 #elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__)
 #define DEVICETYPE 4
@@ -42,7 +42,7 @@
 #endif
 
 #if defined(AUTOSTART)
-#if AUTOSTART == 0 
+#if AUTOSTART == 0
 #error Please choose a higher AUTOSTART value in bios.inc, the nod will cease to work, and you can only reflash node with ISP
 #endif
 #if AUTOSTART == 1
@@ -63,39 +63,42 @@ prog_uint32_t hwid = NODE_HW_ID;
 uint8_t autostart_cnt;
 #endif
 
-#define BIOS_APP		1
-#define BIOS_NOAPP		2
-#define BIOS_PGM		3
-#define BIOS_END_PGM	4
+#define BIOS_APP     1
+#define BIOS_NOAPP   2
+#define BIOS_PGM     3
+#define BIOS_END_PGM 4
 
 //---------------------------------------------------------------------------
 // Private functions
 
 void Can_Process(Can_Message_t* msg) {
 	if (!(msg->ExtendedFlag)) return; // We don't care about standard CAN frames.
-	
+
 	if ((msg->Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS == CAN_NMT) {
-		
+
 		if ((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE == CAN_NMT_TIME) {
 			// Reset watchdog as long as time messages from the master node
 			// are received periodically. If anything hangs the CAN communication
 			// or the master node is not up, the node will be reset.
 			wdt_reset();
-			//TODO: Don't care about time right now... Figure out what to do with it. 
+			//TODO: Don't care about time right now... Figure out what to do with it.
 #if defined(AUTOSTART)
 			autostart_cnt++;
 #endif
 		}
-		
-		if (((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE) == CAN_NMT_RESET && msg->DataLength == 4 &&
-				msg->Data.bytes[0] == (hwid&0xff) && msg->Data.bytes[1] == ((hwid>>8)&0xff) &&
-				msg->Data.bytes[2] == ((hwid>>16)&0xff) && msg->Data.bytes[3] == ((hwid>>24)&0xff) ) {
+
+		if (((msg->Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE) == CAN_NMT_RESET
+				&& msg->DataLength == 4
+				&& msg->Data.bytes[0] == (hwid&0xff)
+				&& msg->Data.bytes[1] == ((hwid>>8)&0xff)
+				&& msg->Data.bytes[2] == ((hwid>>16)&0xff)
+				&& msg->Data.bytes[3] == ((hwid>>24)&0xff)) {
 			BIOS_Reset();
 		}
 		// Copy message to bios buffer if bios is done with the previous message.
 		// This is also a check to see if bios is still running. When app is
 		// started, bios_msg_full is never reset to 0 so the check fails and all
-		// NMT communication except reset is ignored. 
+		// NMT communication except reset is ignored.
 		if (!(bios_msg_full)) {
 			memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
 			bios_msg_full = 1;
@@ -127,16 +130,16 @@ int main(void) {
 #endif
 
 	// Enable watchdog timer to protect against an application locking the
-	// node by leaving interrupts disabled. 
+	// node by leaving interrupts disabled.
 	wdt_enable(WDTO_2S);
-	
+
 	// Move interrupt vectors to start of bootloader section and enable interrupts
 	IVSEL_REG = _BV(IVCE);
 	IVSEL_REG = _BV(IVSEL);
 	sei();
-	
+
 	if (Can_Init() != CAN_OK) BIOS_Reset();
-	
+
 	tx_msg.RemoteFlag = 0;
 	tx_msg.ExtendedFlag = 1;
 	tx_msg.Id = CAN_ID_NMT_BIOS_START;
@@ -160,11 +163,11 @@ int main(void) {
 		tx_msg.Data.bytes[2] = 1;
 		bios_state = BIOS_APP;
 	}
-	
+
 	while (Can_Send(&tx_msg) != CAN_OK);
 
 	tx_msg.DataLength = 2; // All msg sent after BIOS_START are length 2 so set it once.
-	
+
 	// Main loop
 	while (1) {
 		// Wait for message
@@ -175,23 +178,29 @@ int main(void) {
 			}
 #endif
 		}
-		
+
 		nmt_type = (bios_msg.Id & CAN_MASK_NMT_TYPE)>>CAN_SHIFT_NMT_TYPE;
-		
+
 		switch (bios_state) {
 		case BIOS_APP:
 			//if (nmt_type == CAN_NMT_START_APP) {
-			if (nmt_type == CAN_NMT_START_APP && bios_msg.DataLength == 4 &&
-					bios_msg.Data.bytes[0] == (hwid&0xff) && bios_msg.Data.bytes[1] == ((hwid>>8)&0xff) &&
-					bios_msg.Data.bytes[2] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[3] == ((hwid>>24)&0xff) ) {
+			if (nmt_type == CAN_NMT_START_APP
+					&& bios_msg.DataLength == 4
+					&& bios_msg.Data.bytes[0] == (hwid&0xff)
+					&& bios_msg.Data.bytes[1] == ((hwid>>8)&0xff)
+					&& bios_msg.Data.bytes[2] == ((hwid>>16)&0xff)
+					&& bios_msg.Data.bytes[3] == ((hwid>>24)&0xff)) {
 				app_reset(); // Will never return
 			}
 			// Fall through
 		case BIOS_NOAPP:
 			//if (nmt_type == CAN_NMT_PGM_START) {
-			if (nmt_type == CAN_NMT_PGM_START && bios_msg.DataLength == 8 &&
-					bios_msg.Data.bytes[4] == (hwid&0xff) && bios_msg.Data.bytes[5] == ((hwid>>8)&0xff) &&
-					bios_msg.Data.bytes[6] == ((hwid>>16)&0xff) && bios_msg.Data.bytes[7] == ((hwid>>24)&0xff) ) {
+			if (nmt_type == CAN_NMT_PGM_START
+					&& bios_msg.DataLength == 8
+					&& bios_msg.Data.bytes[4] == (hwid&0xff)
+					&& bios_msg.Data.bytes[5] == ((hwid>>8)&0xff)
+					&& bios_msg.Data.bytes[6] == ((hwid>>16)&0xff)
+					&& bios_msg.Data.bytes[7] == ((hwid>>24)&0xff)) {
 				// Set base address
 				base_addr = bios_msg.Data.words[0];
 				flash_init(pagebuf);
@@ -205,12 +214,12 @@ int main(void) {
 		case BIOS_PGM:
 			// Default to send CAN_NMT_PGM_ACK(offset)
 			tx_msg.Id = CAN_ID_NMT_PGM_ACK;
-			
+
 			if (nmt_type == CAN_NMT_PGM_DATA) {
 				// Set address = base address + offset.
 				offset = bios_msg.Data.words[0];
 				addr = base_addr + offset;
-				
+
 				// One of ACK and NACK will be sent, both have offset as data.
 				tx_msg.Data.words[0] = offset;
 				send_msg = 1;
@@ -219,7 +228,7 @@ int main(void) {
 				len = (bios_msg.DataLength+1)/2; // Number of words in message, rounded up.
 				uint8_t i;
 				for (i=1; i<len; i++) { // Skip first word (offset).
-					
+
 					// Abort if trying to write in BIOS area.
 					if (addr >= (uint16_t)&__bios_start) {
 						// Send CAN_NMT_PGM_NACK(offset).
@@ -232,12 +241,12 @@ int main(void) {
 					addr += 2;
 				}
 				// Adjust addr if an odd number of bytes were sent, for use in crc calc.
-				addr -= bios_msg.DataLength & 1; 
+				addr -= bios_msg.DataLength & 1;
 			}
 			if (nmt_type == CAN_NMT_PGM_END) {
 				// Make sure a partly filled page will be flashed.
 				flash_flush_buffer();
-				
+
 				// Calculate crc on written data.
 				//TODO: This will not work if data is not sent sequentially without
 				// holes, starting with offset=0. We might want to send a NACK if the
@@ -246,7 +255,7 @@ int main(void) {
 				for (loc = base_addr; loc < addr; loc++) { // addr will be last location written + 2.
 					crc = _crc16_update(crc, pgm_read_byte(loc));
 				}
-				
+
 				tx_msg.Data.words[0] = crc;
 				send_msg = 1;
 				bios_state = BIOS_END_PGM;
@@ -257,13 +266,13 @@ int main(void) {
 				// For BIOS updating over CAN. Upload bios to application area,
 				// send this message with correct parameters to copy data from
 				// application to bios area and pray it will come alive again.
-				flash_copy_data(bios_msg.Data.words[0], 
-				                bios_msg.Data.words[1], 
+				flash_copy_data(bios_msg.Data.words[0],
+				                bios_msg.Data.words[1],
 				                bios_msg.Data.words[2]);
 				// flash_copy_data will never return.
 			}
 		}
-		
+
 		if (send_msg) {
 			while (Can_Send(&tx_msg) != CAN_OK);
 			send_msg = 0;
