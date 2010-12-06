@@ -305,7 +305,7 @@ xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
     return xml::Node::NodeList();
 }
 
-std::string Protocol::DecodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+std::string Protocol::DecodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
     int raw_value = 0;
@@ -315,7 +315,7 @@ std::string Protocol::DecodeInt(type::Bitset& bitset, unsigned int start_bit, un
     return boost::lexical_cast<std::string>(raw_value);
 }
 
-void Protocol::EncodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+void Protocol::EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     unsigned long raw_bit_value = 0;
     int raw_value = boost::lexical_cast<int>(value);
@@ -325,7 +325,7 @@ void Protocol::EncodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned 
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }
 
-std::string Protocol::DecodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+std::string Protocol::DecodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
     
@@ -334,28 +334,28 @@ std::string Protocol::DecodeUint(type::Bitset& bitset, unsigned int start_bit, u
     return boost::lexical_cast<std::string>((unsigned int)raw_bit_value);
 }
 
-void Protocol::EncodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     unsigned long raw_bit_value = boost::lexical_cast<unsigned int>(value);
     
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }
 
-std::string Protocol::DecodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+std::string Protocol::DecodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length)) / 64.0f;
     
     return boost::lexical_cast<std::string>(float_value);
 }
 
-void Protocol::EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+void Protocol::EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     int int_value = boost::lexical_cast<float>(value) * 64.0f;
     
     this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
 }
 
-std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+std::string Protocol::DecodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     std::string value;
     
@@ -368,7 +368,7 @@ std::string Protocol::DecodeAscii(type::Bitset& bitset, unsigned int start_bit, 
     return value;
 }
 
-void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+void Protocol::EncodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     //LOG.Debug("EncodeAscii: " + value + ", length=" + boost::lexical_cast<std::string>(value.length()) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
     
@@ -385,7 +385,7 @@ void Protocol::EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigne
     }
 }
 
-std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+std::string Protocol::DecodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     std::string value;
     char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -407,7 +407,7 @@ std::string Protocol::DecodeHexstring(type::Bitset& bitset, unsigned int start_b
     return value;
 }
 
-void Protocol::EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+void Protocol::EncodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     int ascii_value;
     

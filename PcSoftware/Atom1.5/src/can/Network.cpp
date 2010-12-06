@@ -32,8 +32,8 @@
 #include "Protocol.h"
 #include "Message.h"
 
-#include "type/Bitset.h"
-#include "type/common.h"
+#include "common/Bitset.h"
+#include "common/common.h"
 
 namespace atom {
 namespace can {
@@ -54,7 +54,7 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
     // udp:192.168.1.250:1100
     // serial:/dev/ttyUSB0:38400
     
-    type::StringList parts;
+    common::StringList parts;
     boost::algorithm::split(parts, address, boost::is_any_of(":"), boost::algorithm::token_compress_off);
     
     if (parts.size() < 3)
@@ -89,7 +89,7 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
         
         LOG.Info("Sending ping...");
 
-        type::Byteset buffer(1);
+        common::Byteset buffer(1);
         buffer[0] = PACKET_PING;
         
         net::Manager::Instance()->SendTo(this->client_id_, buffer);
@@ -118,7 +118,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
     if (message->GetType() == broker::Message::CAN_MESSAGE)
     {
         Message* payload = static_cast<Message*>(message->GetPayload().get());
-        type::Byteset data(17);
+        common::Byteset data(17);
         
         data[0] = PACKET_START;
         
@@ -145,7 +145,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         }
         
         unsigned int highest_bit = 0;
-        type::Bitset databits(64);
+        common::Bitset databits(64);
         
         xml::Node::NodeList variable_nodes;
         unsigned int start_bit;
@@ -232,7 +232,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
     if (client_id != this->client_id_)
     {
@@ -345,14 +345,14 @@ void Network::ProcessBuffer()
 
         unsigned int length = this->buffer_[6];
         
-        type::Byteset data_set(length);
+        common::Byteset data_set(length);
         
         for (unsigned int n = 0; n < length; n++)
         {
             data_set.Append(this->buffer_[n + 7]);
         }
 
-        type::Bitset databits(data_set);
+        common::Bitset databits(data_set);
         xml::Node::NodeList variable_nodes;
         unsigned int start_bit;
         int bit_length;

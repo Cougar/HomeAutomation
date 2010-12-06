@@ -97,7 +97,7 @@ void TcpClient::Stop()
     }
 }
 
-void TcpClient::Send(type::Byteset data)
+void TcpClient::Send(common::Byteset data)
 {
     if (this->acceptor_.use_count() != 0)
     {

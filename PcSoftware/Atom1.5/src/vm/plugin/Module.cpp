@@ -22,7 +22,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "can/Manager.h"
+#include "control/Manager.h"
 #include "vm/Manager.h"
 
 namespace atom {
@@ -37,6 +37,7 @@ Module::Module(boost::asio::io_service& io_service) : Plugin(io_service)
     
     this->ExportFunction("Module_SendMessage", Module::Export_SendModuleMessage);
     this->ExportFunction("Module_IsModuleAvailable", Module::Export_IsModuleAvailable);
+    this->ExportFunction("Module_ProgramNode", Module::Export_ProgramNode);
 }
 
 Module::~Module()
@@ -51,9 +52,9 @@ void Module::InitializeDone()
     this->ImportFunction("Module_OnChange");
     this->ImportFunction("Module_OnMessage");
     
-    can::Manager::Instance()->ConnectSlots(can::Manager::SignalOnNodeChange::slot_type(&Module::SlotOnNodeChange, this, _1, _2).track(this->tracker_),
-                                           can::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
-                                           can::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
+    control::Manager::Instance()->ConnectSlots(control::Manager::SignalOnNodeChange::slot_type(&Module::SlotOnNodeChange, this, _1, _2).track(this->tracker_),
+                                               control::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
+                                               control::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
 }
 
 void Module::SlotOnNodeChange(unsigned int node_id, bool available)
@@ -66,7 +67,7 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
     this->io_service_.post(boost::bind(&Module::SlotOnModuleChangeHandler, this, full_id, available));
 }
 
-void Module::SlotOnModuleMessage(std::string full_id, std::string command, type::StringMap variables)
+void Module::SlotOnModuleMessage(std::string full_id, std::string command, common::StringMap variables)
 {
     this->io_service_.post(boost::bind(&Module::SlotOnModuleMessageHandler, this, full_id, command, variables));
 }
@@ -80,7 +81,7 @@ void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::String::New(full_id.data()));
@@ -89,11 +90,11 @@ void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
     this->Call(0, "Module_OnChange", arguments);
 }
 
-void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command, type::StringMap variables)
+void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command, common::StringMap variables)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
@@ -102,7 +103,7 @@ void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command
     
     v8::Local<v8::Array> vars = v8::Array::New(variables.size());
     
-    for (type::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
+    for (common::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
     {
         vars->Set(v8::String::New(it->first.data()), v8::String::New(it->second.data()));
     }
@@ -116,14 +117,14 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
         LOG.Error("To few arguments.");
     }
     
-    type::StringMap variables;
+    common::StringMap variables;
     
     v8::String::AsciiValue full_id(args[0]);
     v8::String::AsciiValue command(args[1]);
@@ -139,7 +140,7 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
         variables[std::string(*name)] = std::string(*value);
     }
     
-    can::Manager::Instance()->SendMessage(std::string(*full_id), std::string(*command), variables);
+    control::Manager::Instance()->SendMessage(std::string(*full_id), std::string(*command), variables);
     
     return v8::Undefined();
 }
@@ -148,7 +149,7 @@ Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
@@ -157,7 +158,24 @@ Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
     
     v8::String::AsciiValue full_id(args[0]);
     
-    return v8::Boolean::New(can::Manager::Instance()->IsModuleAvailable(std::string(*full_id)));
+    return v8::Boolean::New(control::Manager::Instance()->IsModuleAvailable(std::string(*full_id)));
+}
+
+
+Value Module::Export_ProgramNode(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 3)
+    {
+        LOG.Error("To few arguments.");
+    }
+    
+    v8::String::AsciiValue filename(args[2]);
+    
+    return v8::Boolean::New(control::Manager::Instance()->ProgramNode(args[0]->Uint32Value(), args[1]->BooleanValue(), std::string(*filename)));
 }
     
 }; // namespace plugin

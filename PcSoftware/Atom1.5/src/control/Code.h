@@ -18,52 +18,54 @@
  * 
  */
 
-#ifndef TYPE_BUFFER_H
-#define TYPE_BUFFER_H
+#ifndef CONTROL_CODE_H
+#define CONTROL_CODE_H
 
 #include <string>
 
 #include <boost/shared_ptr.hpp>
 
-#include "common.h"
+#include "common/Byteset.h"
+#include "logging/Logger.h"
 
 namespace atom {
-namespace type {
+namespace control {
 
-class Byteset
+class Code
 {
 public:
-    typedef boost::shared_ptr<Byteset> Pointer;
+    typedef boost::shared_ptr<Code> Pointer;
     
-    Byteset(unsigned int max_size);
-    Byteset(const Byteset& set);
-    Byteset(std::string str);
-    virtual ~Byteset();
+    Code();
+    virtual ~Code();
     
-    unsigned int GetMaxSize() const;
-    unsigned char* Get() const;
+    bool LoadIntelHexFile(std::string filename);
+    bool ParseIntelHex(std::string data);
     
-    std::string ToCharString();
-    std::string ToDebugString();
-    
-    unsigned char& operator[](unsigned int index);
-
-    unsigned int GetSize() const;
-    void SetSize(unsigned int size);
-    
-    void Append(unsigned char byte);
-    
-    void Clear();
+    unsigned int GetAddressLower();
+    unsigned int GetAddressUpper();
+    unsigned char GetByte(unsigned int address);
+    unsigned int GetChecksum();
+    unsigned int GetLength();
+    bool IsValid();
+    void Reset();
+    void AddByte(unsigned char byte);
     
 private:
-    unsigned char* bytes_;
-    unsigned int max_size_;
+    common::Byteset data_;
+    bool is_valid_;
+    unsigned int address_lower_;
+    unsigned int address_upper_;
+    unsigned int checksum_;
     
-    unsigned int size_;
+    logging::Logger LOG;
+    
+    
+    void CalculateChecksum();
     
 };
 
-}; // namespace type
+}; // namespace control
 }; // namespace atom
 
-#endif // TYPE_BUFFER_H
+#endif // CONTROL_CODE_H

@@ -23,7 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 namespace atom {
-namespace can {
+namespace control {
 
 Module::Module(Module::Id id, std::string name, std::string class_name)
 {
@@ -73,5 +73,5 @@ std::string Module::GetClassName()
     return this->class_name_;
 }
     
-}; // namespace can
+}; // namespace control
 }; // namespace atom

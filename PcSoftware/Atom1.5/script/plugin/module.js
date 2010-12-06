@@ -206,3 +206,11 @@ function modulelist()
 
 RegisterConsoleCommand(modulelist);
 
+function programnode(node_id, is_bios, filename)
+{
+	Log("is_bios = " + is_bios);
+	return Module_ProgramNode(node_id, is_bios == 1 ? true : false, filename) ? "OK" : "Error";
+}
+
+RegisterConsoleCommand(programnode);
+

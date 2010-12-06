@@ -36,7 +36,7 @@
 #include "net/Subscriber.h"
 #include "net/types.h"
 
-#include "type/common.h"
+#include "common/common.h"
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -50,7 +50,7 @@ void CleanUp();
 char* AutoCompleteGet(const char* text, int state);
 static char** AutoComplete(const char* text, int start, int end);
 
-type::StringList autocomplete_list;
+common::StringList autocomplete_list;
 char* buffer = NULL;
 bool waiting_for_autocomplete = false;
 boost::condition on_message_condition;
@@ -111,7 +111,7 @@ private:
         }
     }
     
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
     {
         prompt_id = -1;
         
@@ -131,13 +131,13 @@ private:
         }
         else
         {
-            type::StringList lines;
+            common::StringList lines;
             
             boost::algorithm::split(lines, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
             
             for (unsigned int n = 0; n < lines.size(); n++)
             {
-                type::StringList parts;
+                common::StringList parts;
                 
                 boost::algorithm::split(parts, lines[n], boost::is_any_of(";"), boost::algorithm::token_compress_off);
                 

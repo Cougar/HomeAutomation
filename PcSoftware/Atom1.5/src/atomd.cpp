@@ -31,7 +31,7 @@
 #include "config/Manager.h"
 #include "can/Protocol.h"
 #include "broker/Manager.h"
-#include "can/Manager.h"
+#include "control/Manager.h"
 #include "can/Network.h"
 #include "can/Monitor.h"
 #include "vm/Manager.h"
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     broker::Manager::Create();
     net::Manager::Create();
     can::Protocol::Create();
-    can::Manager::Create();
+    control::Manager::Create();
     vm::Manager::Create();
     
     if (config::Manager::Instance()->Exist("StoragePath"))
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
         subscribers.push_back(can::Monitor::Pointer(new can::Monitor(config::Manager::Instance()->GetAsInt("MonitorPort"))));  
     }
     
-    subscribers.push_back(can::Manager::Instance());  
+    subscribers.push_back(control::Manager::Instance());  
     
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->Exist("Legacy"))));
     
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 
     if (config::Manager::Instance()->Exist("CanNet"))
     {
-        type::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
+        common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
         
         for (int n = 0; n < cannetworks.size(); n++)
         {
@@ -165,7 +165,7 @@ void CleanUp()
     subscribers.clear();
     config::Manager::Delete();
     timer::Manager::Delete();
-    can::Manager::Delete();
+    control::Manager::Delete();
     vm::Manager::Delete();
     can::Protocol::Delete();
     broker::Manager::Delete();

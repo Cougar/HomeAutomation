@@ -26,7 +26,7 @@
 #include <boost/lexical_cast.hpp>
 
 namespace atom {
-namespace type {
+namespace common {
 
 Bitset::Bitset(unsigned int count)
 {

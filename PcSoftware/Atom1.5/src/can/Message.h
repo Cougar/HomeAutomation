@@ -26,7 +26,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "type/common.h"
+#include "common/common.h"
 
 namespace atom {
 namespace can {
@@ -48,8 +48,8 @@ public:
     std::string GetVariable(std::string name);
     void SetVariable(std::string name, std::string value);
     
-    type::StringMap& GetVariables();
-    void SetVariables(type::StringMap variables);
+    common::StringMap& GetVariables();
+    void SetVariables(common::StringMap variables);
     
 private:
     std::string class_name_;
@@ -57,7 +57,7 @@ private:
     std::string module_name_;
     unsigned int id_;
     std::string command_name_;
-    type::StringMap variables_;
+    common::StringMap variables_;
 };
         
 }; // namespace can

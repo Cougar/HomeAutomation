@@ -66,27 +66,49 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         {
             if (payload->GetDirectionName() == "To_Owner")
             {
-                line += "RX";
+                line += "RX ";
             }
             else if (payload->GetDirectionName() == "From_Owner")
             {
-                line += "TX";
+                line += "TX ";
             }
             else
             {
                 line += "??";
             }
-            
-            line += " " + payload->GetClassName();
+        }
+        
+        line += " " + payload->GetCommandName() + " ";
+        
+        while (line.length() < 20)
+        {
+            line += " ";
+        }
+        
+        if (payload->GetClassName() == "nmt")
+        {
+            line += "-";
+        }
+        else
+        {
+            line += payload->GetClassName();
             line += "_" + payload->GetModuleName();
             line += ":" + boost::lexical_cast<std::string>(payload->GetId());
         }
         
-        line += " CMD=" + payload->GetCommandName() + " ";
+        while (line.length() < 40)
+        {
+            line += " ";
+        }
         
-        type::StringMap variables = payload->GetVariables();
+        while (line.length() < 20)
+        {
+            line += " ";
+        }
         
-        for (type::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
+        common::StringMap variables = payload->GetVariables();
+        
+        for (common::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
         {
             if (it->second != "")
             {
@@ -96,11 +118,11 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         
         line += "\n";
         
-        net::Manager::Instance()->SendToAll(this->server_id_, type::Byteset(line));
+        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line));
     }
 }
 
-void Monitor::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+void Monitor::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
     if (server_id != this->server_id_)
     {
@@ -134,7 +156,7 @@ void Monitor::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
         LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has connected.");
-        net::Manager::Instance()->SendTo(client_id, type::Byteset("Welcome to Atom CAN monitoring\n"));
+        net::Manager::Instance()->SendTo(client_id, common::Byteset("Welcome to Atom CAN monitoring\n"));
     }
     else
     {
