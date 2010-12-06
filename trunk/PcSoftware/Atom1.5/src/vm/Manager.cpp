@@ -111,7 +111,7 @@ void Manager::CallHandler(std::string plugin_name, unsigned int request_id, std:
         return;
     }
 
-    LOG.Debug("Call: " + name);
+    //LOG.Debug("Call: " + name);
 
     Value result = this->functions_[name]->Call(this->context_->Global(), arguments->size(), arguments->data());
     

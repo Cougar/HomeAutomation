@@ -24,18 +24,18 @@
 
 #include "broker/Manager.h"
 #include "broker/Message.h"
-#include "type/common.h"
+#include "common/common.h"
 #include "timer/Manager.h"
 #include "storage/Manager.h"
 
-#include "Message.h"
+#include "can/Message.h"
 
 namespace atom {
-namespace can {
+namespace control {
     
 Manager::Pointer Manager::instance_;
 
-Manager::Manager() : broker::Subscriber(false), LOG("can::Manager")
+Manager::Manager() : broker::Subscriber(false), LOG("control::Manager")
 {
     Node::SetupStateMachine();
     
@@ -82,7 +82,7 @@ void Manager::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
     {
         if (!it->second->CheckTimeout())
         {
-            LOG.Info("Node " + type::ToHex(it->second->GetId()) + " has not sent anything in a long time, setting offline.");
+            LOG.Info("Node " + common::ToHex(it->second->GetId()) + " has not sent anything in a long time, setting offline.");
             this->RemoveModules(it->second->GetId());
             
             storage::Manager::Instance()->FlushStore("NodeList");
@@ -96,7 +96,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
     if (message->GetType() == broker::Message::CAN_MESSAGE)
     {
         //LOG.Debug("Message received");
-        Message* payload = static_cast<Message*>(message->GetPayload().get());
+        can::Message* payload = static_cast<can::Message*>(message->GetPayload().get());
         Node::Pointer node;
         
         if (payload->GetClassName() == "nmt")
@@ -116,6 +116,16 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                 node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
                 node->Trigger(Node::EVENT_HEARTBEAT, payload->GetVariables());
             }
+            else if (payload->GetCommandName() == "Pgm_Ack")
+            {
+                node = this->GetNode(this->active_programming_node_id_);
+                node->Trigger(Node::EVENT_PGM_ACK, payload->GetVariables());
+            }
+            else if (payload->GetCommandName() == "Pgm_Nack")
+            {
+                node = this->GetNode(this->active_programming_node_id_);
+                node->Trigger(Node::EVENT_PGM_NACK, payload->GetVariables());
+            }
         }
         else if (payload->GetDirectionName() == "From_Owner")
         {
@@ -133,7 +143,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                     node->Trigger(Node::EVENT_LIST_DONE, payload->GetVariables());
                 }
                 
-                LOG.Info("Module " + module->GetFullId() + " is available on node " + type::ToHex(node->GetId()) + ".");
+                LOG.Info("Module " + module->GetFullId() + " is available on node " + common::ToHex(node->GetId()) + ".");
                 this->signal_on_module_change_(module->GetFullId(), true);
             }
             else
@@ -164,7 +174,7 @@ void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::
     }
 }
 
-void Manager::SendMessageHandler(std::string full_id, std::string command, type::StringMap variables)
+void Manager::SendMessageHandler(std::string full_id, std::string command, common::StringMap variables)
 {
     ModuleList::iterator it = this->modules_.find(full_id);
     
@@ -176,7 +186,7 @@ void Manager::SendMessageHandler(std::string full_id, std::string command, type:
     
     try
     {
-        Message* payload = new Message(it->second->GetClassName(), "To_Owner", it->second->GetName(), it->second->GetId(), command);
+        can::Message* payload = new can::Message(it->second->GetClassName(), "To_Owner", it->second->GetName(), it->second->GetId(), command);
         payload->SetVariables(variables);
         
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
@@ -188,7 +198,7 @@ void Manager::SendMessageHandler(std::string full_id, std::string command, type:
     }
 }
 
-void Manager::SendMessage(std::string full_id, std::string command, type::StringMap variables)
+void Manager::SendMessage(std::string full_id, std::string command, common::StringMap variables)
 {
     this->io_service_.post(boost::bind(&Manager::SendMessageHandler, this, full_id, command, variables));
 }
@@ -196,6 +206,37 @@ void Manager::SendMessage(std::string full_id, std::string command, type::String
 bool Manager::IsModuleAvailable(std::string full_id)
 {
     return this->modules_.find(full_id) != this->modules_.end();
+}
+
+bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)
+{
+    NodeList::iterator it = this->nodes_.find(node_id);
+    
+    if (it == this->nodes_.end())
+    {
+        LOG.Error("Could not find node " +  common::ToHex(node_id));
+        return false;
+    }
+    
+    Code::Pointer code = Code::Pointer(new Code());
+    if (!code->LoadIntelHexFile(filename))
+    {
+        LOG.Error("Failed to parse " + filename);
+        return false;
+    }
+    
+    if (is_bios)
+    {
+        LOG.Debug("is_bios true");
+        it->second->ProgramBios(code);
+    }
+    else
+    {
+        LOG.Debug("is_bios false");
+        it->second->ProgramApplication(code);
+    }
+    
+    return true;
 }
 
 Node::Pointer Manager::GetNode(Node::Id node_id)
@@ -264,6 +305,5 @@ unsigned int Manager::GetNumberOfModules(Node::Id node_id)
     return number_of_modules;
 }
 
-
-}; // namespace can
+}; // namespace control
 }; // namespace atom

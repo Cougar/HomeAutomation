@@ -58,7 +58,7 @@ void SerialClient::Stop()
     }
 }
 
-void SerialClient::Send(type::Byteset data)
+void SerialClient::Send(common::Byteset data)
 {
     try
     {

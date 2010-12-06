@@ -35,7 +35,7 @@ public:
     virtual ~SerialClient();
     
     void Connect(std::string address, unsigned int baud);
-    void Send(type::Byteset data);
+    void Send(common::Byteset data);
     
 protected:
     void Read();

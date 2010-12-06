@@ -90,12 +90,12 @@ void Message::SetVariable(std::string name, std::string value)
     this->variables_[name] = value;
 }
 
-type::StringMap& Message::GetVariables()
+common::StringMap& Message::GetVariables()
 {
     return this->variables_;
 }
 
-void Message::SetVariables(type::StringMap variables)
+void Message::SetVariables(common::StringMap variables)
 {
     this->variables_ = variables;
 }

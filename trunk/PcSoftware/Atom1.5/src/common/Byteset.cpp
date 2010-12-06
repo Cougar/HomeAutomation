@@ -25,7 +25,7 @@
 #include <boost/lexical_cast.hpp>
 
 namespace atom {
-namespace type {
+namespace common {
  
 Byteset::Byteset(unsigned int max_size)
 {
@@ -82,6 +82,11 @@ std::string Byteset::ToDebugString()
 
 unsigned char& Byteset::operator[](unsigned int index)
 {
+    if (this->size_ < index + 1)
+    {
+        this->size_ = index + 1;
+    }
+    
     return this->bytes_[index];
 }
 
@@ -109,6 +114,12 @@ void Byteset::Append(unsigned char byte)
 void Byteset::Clear()
 {
     memset(this->bytes_, 0, this->max_size_);
+    this->size_ = 0;
+}
+
+void Byteset::Fill(char c)
+{
+    memset(this->bytes_, c, this->max_size_);
     this->size_ = 0;
 }
     

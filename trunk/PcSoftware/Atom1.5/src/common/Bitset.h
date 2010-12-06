@@ -18,46 +18,44 @@
  * 
  */
 
-#ifndef CAN_MODULE_H
-#define CAN_MODULE_H
+#ifndef TYPE_BITSET_H
+#define TYPE_BITSET_H
 
 #include <boost/shared_ptr.hpp>
 
-#include "Node.h"
+#include "common.h"
+#include "Byteset.h"
 
 namespace atom {
-namespace can {    
-
-class Module
+namespace common {
+        
+class Bitset
 {
 public:
-    typedef boost::shared_ptr<Module> Pointer;
-    typedef std::string FullId;
-    typedef unsigned int Id;
+    typedef boost::shared_ptr<Bitset> Pointer;
     
-    Module(Id id, std::string name, std::string class_name);
-    virtual ~Module();
+    Bitset(unsigned int count);
+    Bitset(const Byteset& set);
+    virtual ~Bitset();
     
-    static std::string MakeFullId(Id id, std::string name);
+    int Set(unsigned int position);
+    int Unset(unsigned int position);
+    int Get(unsigned int position);
     
-    FullId GetFullId();
+    unsigned long Read(unsigned int position, unsigned int length);
+    void Write(unsigned int position, unsigned int length, unsigned long value);
     
-    Node::Id GetNodeId();
-    void SetNodeId(Node::Id node_id);
+    unsigned int GetCount();
+    unsigned char* GetBytes() const;
     
-    Id GetId();
-    std::string GetName();
-    std::string GetClassName();
+    std::string ToDebugString();
     
 private:
-    std::string full_id_;
-    Node::Id node_id_;
-    Id id_;
-    std::string name_;
-    std::string class_name_;
+    unsigned char* bytes_;
+    unsigned int count_;
 };
 
-}; // namespace can
+}; // namespace type
 }; // namespace atom
 
-#endif // CAN_MODULE_H
+#endif // TYPE_BITSET_H

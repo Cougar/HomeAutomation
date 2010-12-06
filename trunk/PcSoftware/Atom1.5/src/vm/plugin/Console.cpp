@@ -32,7 +32,7 @@ namespace vm {
 namespace plugin {
     
 logging::Logger Console::LOG("vm::plugin::Console");
-type::StringList Console::commands_;
+common::StringList Console::commands_;
     
 Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugin(io_service)
 {
@@ -69,7 +69,7 @@ void Console::InitializeDone()
     this->ImportFunction("Console_PromptResponse");
 }
 
-void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
     if (server_id != this->server_id_)
     {
@@ -89,7 +89,7 @@ void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
     this->io_service_.post(boost::bind(&Console::SlotOnNewStateHandler, this, client_id, server_id, client_state));
 }
 
-void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data)
+void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
 
@@ -99,7 +99,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
-    type::StringList parts;
+    common::StringList parts;
     
     boost::algorithm::split(parts, str, boost::is_any_of(";"), boost::algorithm::token_compress_off);
     
@@ -108,7 +108,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
         unsigned int arg_index = boost::lexical_cast<unsigned int>(parts[1]);
         
         std::string result;
-        type::StringList arguments;
+        common::StringList arguments;
         
         boost::algorithm::split(arguments, parts[2], boost::is_any_of(" "), boost::algorithm::token_compress_on);
         
@@ -125,7 +125,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
         else
         {
             ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
-            type::StringList arguments;
+            common::StringList arguments;
             
             boost::algorithm::split(arguments, parts[2], boost::is_any_of(" "), boost::algorithm::token_compress_on);
             
@@ -140,7 +140,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
     else if (parts[0] == "E")
     {
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
-        type::StringList arguments;
+        common::StringList arguments;
         
         boost::algorithm::split(arguments, parts[1], boost::is_any_of(" "), boost::algorithm::token_compress_on);
         

@@ -29,7 +29,7 @@
 #include "broker/Subscriber.h"
 #include "net/Subscriber.h"
 #include "net/types.h"
-#include "type/Byteset.h"
+#include "common/Byteset.h"
 #include "timer/Manager.h"
 
 namespace atom {
@@ -48,7 +48,7 @@ private:
     net::Protocol protocol_;
     std::string address_;
     unsigned int port_or_baud_;
-    type::Byteset buffer_;    
+    common::Byteset buffer_;    
     timer::TimerId timer_id_;
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
@@ -56,7 +56,7 @@ private:
     void SlotOnTimeout(timer::TimerId timer_id);
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, type::Byteset data);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
     void SlotOnTimeoutHandler(timer::TimerId timer_id);
     
     void ProcessBuffer();

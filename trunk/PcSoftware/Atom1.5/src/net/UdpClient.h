@@ -35,7 +35,7 @@ public:
     virtual ~UdpClient();
     
     void Connect(std::string address, unsigned int port);
-    void Send(type::Byteset data);
+    void Send(common::Byteset data);
 
 protected:
     void Read();

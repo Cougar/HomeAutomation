@@ -1,25 +1,25 @@
 /*
+ * 
+ *  Copyright (C) 2010  Mattias Runge
+ * 
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * 
+ */
 
-    Copyright (C) 2010  Mattias Runge
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-*/
-
-#ifndef CAN_NODE_H
-#define CAN_NODE_H
+#ifndef CONTROL_NODE_H
+#define CONTROL_NODE_H
 
 #include <string>
 #include <map>
@@ -29,11 +29,14 @@
 
 #include <time.h>
 
-#include "type/common.h"
+#include "common/common.h"
 #include "logging/Logger.h"
 
+#include "Code.h"
+#include <boost/concept_check.hpp>
+
 namespace atom {
-namespace can {
+namespace control {
 
 class Node
 {
@@ -86,10 +89,13 @@ public:
     Id GetId();
     State GetState();
 
-    void Trigger(Event event, type::StringMap variables);
+    void Trigger(Event event, common::StringMap variables);
     
     bool CheckTimeout();
     void ResetTimeout();
+    
+    void ProgramApplication(Code::Pointer code);
+    void ProgramBios(Code::Pointer code);
     
 private:
     typedef std::map<Event, State> Transition;
@@ -100,8 +106,16 @@ private:
     time_t last_active_;
     SignalOnNewState signal_on_new_state_;
     logging::Logger LOG;
+    Code::Pointer code_;
+    unsigned int start_offset_;
+    unsigned int current_offset_;
+    unsigned int expected_ack_data_;
+    time_t program_start_time_;
+    
     
     static TransitionList transitions_;
+    static std::map<State, std::string> state_names_;
+    static std::map<Event, std::string> event_names_;
     
     static void AddTransition(State current_state, Event event, State target_state);
     
@@ -110,7 +124,7 @@ private:
     void SendListRequest();
 };
 
-}; // namespace can
+}; // namespace control
 }; // namespace atom
 
-#endif // CAN_NODE_H
+#endif // CONTROL_NODE_H

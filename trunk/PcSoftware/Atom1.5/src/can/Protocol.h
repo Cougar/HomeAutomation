@@ -27,7 +27,7 @@
 
 #include "xml/Node.h"
 #include "logging/Logger.h"
-#include "type/Bitset.h"
+#include "common/Bitset.h"
 
 namespace atom {
 namespace can {
@@ -66,16 +66,16 @@ public:
     xml::Node::NodeList GetCommandVariables(std::string command_name, std::string module_name);
     xml::Node::NodeList GetNMTCommandVariables(std::string command_name);
     
-    std::string DecodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
-    void EncodeInt(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
-    std::string DecodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
-    void EncodeUint(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
-    std::string DecodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
-    void EncodeFloat(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
-    std::string DecodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
-    void EncodeAscii(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
-    std::string DecodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
-    void EncodeHexstring(type::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
     
 private:
     static Pointer instance_;

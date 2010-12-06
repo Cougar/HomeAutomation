@@ -28,7 +28,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/program_options.hpp>
 
-#include "type/common.h"
+#include "common/common.h"
 
 namespace atom {
 namespace config {
@@ -49,7 +49,7 @@ public:
     bool Exist(std::string name);
     
     std::string GetAsString(std::string name);
-    type::StringList GetAsStringVector(std::string name);
+    common::StringList GetAsStringVector(std::string name);
     int GetAsInt(std::string name);
     
 private:

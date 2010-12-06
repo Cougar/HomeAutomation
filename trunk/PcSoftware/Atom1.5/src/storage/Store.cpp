@@ -25,7 +25,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "type/common.h"
+#include "common/common.h"
 
 namespace atom {
 namespace storage {

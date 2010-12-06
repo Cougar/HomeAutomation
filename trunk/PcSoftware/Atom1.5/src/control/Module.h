@@ -18,53 +18,46 @@
  * 
  */
 
-#ifndef TYPE_COMMON_H
-#define TYPE_COMMON_H
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-
-#include <stdio.h>
+#ifndef CONTROL_MODULE_H
+#define CONTROL_MODULE_H
 
 #include <boost/shared_ptr.hpp>
 
-namespace atom {
-namespace type {
+#include "Node.h"
 
-typedef boost::shared_ptr<unsigned char> BytePointer;
-typedef std::vector<std::string> StringList;
-typedef std::map<std::string, std::string> StringMap;
-/*
-template <typename T>
-struct HexTo
+namespace atom {
+namespace control {    
+
+class Module
 {
-    T value;
+public:
+    typedef boost::shared_ptr<Module> Pointer;
+    typedef std::string FullId;
+    typedef unsigned int Id;
     
-    operator T() const
-    {
-        return value;
-    }
+    Module(Id id, std::string name, std::string class_name);
+    virtual ~Module();
     
-    friend std::istream& operator>>(std::istream& in, HexTo& out)
-    {
-        in >> std::hex >> out.value;
-        return in;
-    }
+    static std::string MakeFullId(Id id, std::string name);
+    
+    FullId GetFullId();
+    
+    Node::Id GetNodeId();
+    void SetNodeId(Node::Id node_id);
+    
+    Id GetId();
+    std::string GetName();
+    std::string GetClassName();
+    
+private:
+    std::string full_id_;
+    Node::Id node_id_;
+    Id id_;
+    std::string name_;
+    std::string class_name_;
 };
-*/
-inline std::string ToHex(unsigned int value)
-{
-    char hex_string[11];
-    
-    snprintf(hex_string, sizeof(hex_string), "0x%08X", value);
-    
-    return std::string(hex_string);
-    
-}
-    
-}; // namespace type
+
+}; // namespace control
 }; // namespace atom
 
-#endif // TYPE_COMMON_H
+#endif // CONTROL_MODULE_H

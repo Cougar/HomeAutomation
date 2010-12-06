@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef CAN_MANAGER_H
-#define CAN_MANAGER_H
+#ifndef CONTROL_MANAGER_H
+#define CONTROL_MANAGER_H
 
 #include <map>
 #include <string>
@@ -31,14 +31,14 @@
 #include "broker/Subscriber.h"
 
 #include "timer/Subscriber.h"
-#include "type/common.h"
+#include "common/common.h"
 
 #include "Node.h"
 #include "Module.h"
-#include "Message.h"
+#include "can/Message.h"
 
 namespace atom {
-namespace can {
+namespace control {
 
 class Manager : public broker::Subscriber, public timer::Subscriber
 {
@@ -48,7 +48,7 @@ public:
     typedef std::map<Module::FullId, Module::Pointer> ModuleList;
     typedef boost::signals2::signal<void(unsigned int node_id, bool available)> SignalOnNodeChange;
     typedef boost::signals2::signal<void(std::string full_id, bool available)> SignalOnModuleChange;
-    typedef boost::signals2::signal<void(std::string full_id, std::string command, type::StringMap variables)> SignalOnModuleMessage;
+    typedef boost::signals2::signal<void(std::string full_id, std::string command, common::StringMap variables)> SignalOnModuleMessage;
     
     virtual ~Manager();
     
@@ -58,8 +58,9 @@ public:
     
     void ConnectSlots(const SignalOnNodeChange::slot_type& signal_on_node_change_, const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message);
     
-    void SendMessage(std::string full_id, std::string command, type::StringMap variables);
+    void SendMessage(std::string full_id, std::string command, common::StringMap variables);
     bool IsModuleAvailable(std::string full_id);
+    bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
     
 private:
     static Pointer instance_;
@@ -80,7 +81,7 @@ private:
     void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
     void SlotOnNewState(Node::Id node_id, Node::State current_state, Node::State target_state);
     
-    void SendMessageHandler(std::string full_id, std::string command, type::StringMap variables);
+    void SendMessageHandler(std::string full_id, std::string command, common::StringMap variables);
     
     Node::Pointer GetNode(Node::Id node_id);
     Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);
@@ -90,7 +91,7 @@ private:
     logging::Logger LOG;
 };
 
-}; // namespace can
+}; // namespace control
 }; // namespace atom
 
-#endif // CAN_MANAGER_H
+#endif // CONTROL_MANAGER_H

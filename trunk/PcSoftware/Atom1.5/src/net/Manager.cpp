@@ -95,7 +95,7 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
     this->signal_on_new_state_(client_id, server_id, client_state);
 }
 
-void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, type::Byteset data)
+void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, common::Byteset data)
 {
     this->signal_on_new_data_(client_id, server_id, data);
 }
@@ -189,12 +189,12 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     return client->GetId();
 }
 
-void Manager::SendToAll(ServerId server_id, type::Byteset data)
+void Manager::SendToAll(ServerId server_id, common::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToAllHandler, this, server_id, data));
 }
 
-void Manager::SendTo(ClientId client_id, type::Byteset data)
+void Manager::SendTo(ClientId client_id, common::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
 }
@@ -209,7 +209,7 @@ void Manager::Disconnect(ClientId client_id)
     this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
 }
 
-void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
+void Manager::SendToAllHandler(ServerId server_id, common::Byteset data)
 {
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
@@ -220,7 +220,7 @@ void Manager::SendToAllHandler(ServerId server_id, type::Byteset data)
     }
 }
 
-void Manager::SendToHandler(ClientId client_id, type::Byteset data)
+void Manager::SendToHandler(ClientId client_id, common::Byteset data)
 {
     ClientList::iterator it = this->clients_.find(client_id);
 

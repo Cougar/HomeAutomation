@@ -18,44 +18,53 @@
  * 
  */
 
-#ifndef TYPE_BITSET_H
-#define TYPE_BITSET_H
+#ifndef TYPE_BUFFER_H
+#define TYPE_BUFFER_H
+
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 
 #include "common.h"
-#include "Byteset.h"
 
 namespace atom {
-namespace type {
-        
-class Bitset
+namespace common {
+
+class Byteset
 {
 public:
-    typedef boost::shared_ptr<Bitset> Pointer;
+    typedef boost::shared_ptr<Byteset> Pointer;
     
-    Bitset(unsigned int count);
-    Bitset(const Byteset& set);
-    virtual ~Bitset();
+    Byteset(unsigned int max_size);
+    Byteset(const Byteset& set);
+    Byteset(std::string str);
+    virtual ~Byteset();
     
-    int Set(unsigned int position);
-    int Unset(unsigned int position);
-    int Get(unsigned int position);
+    unsigned int GetMaxSize() const;
+    unsigned char* Get() const;
     
-    unsigned long Read(unsigned int position, unsigned int length);
-    void Write(unsigned int position, unsigned int length, unsigned long value);
-    
-    unsigned int GetCount();
-    unsigned char* GetBytes() const;
-    
+    std::string ToCharString();
     std::string ToDebugString();
+    
+    unsigned char& operator[](unsigned int index);
+
+    unsigned int GetSize() const;
+    void SetSize(unsigned int size);
+    
+    void Append(unsigned char byte);
+    
+    void Clear();
+    void Fill(char c);
     
 private:
     unsigned char* bytes_;
-    unsigned int count_;
+    unsigned int max_size_;
+    
+    unsigned int size_;
+    
 };
 
 }; // namespace type
 }; // namespace atom
 
-#endif // TYPE_BITSET_H
+#endif // TYPE_BUFFER_H

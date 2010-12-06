@@ -63,7 +63,7 @@ void UdpClient::Stop()
     }
 }
 
-void UdpClient::Send(type::Byteset data)
+void UdpClient::Send(common::Byteset data)
 {
     try
     {

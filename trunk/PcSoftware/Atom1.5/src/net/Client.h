@@ -26,7 +26,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
-#include "type/Byteset.h"
+#include "common/Byteset.h"
 
 #include "types.h"
 
@@ -39,7 +39,7 @@ public:
     typedef boost::shared_ptr<Client> Pointer;
 
     typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, ServerId, type::Byteset)> SignalOnNewData;
+    typedef boost::signals2::signal<void(ClientId, ServerId, common::Byteset)> SignalOnNewData;
 
     Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
     virtual ~Client();
@@ -49,13 +49,13 @@ public:
     virtual void Connect(std::string address, unsigned int port_or_baud) = 0;
     void Disconnect();
     virtual void Stop();
-    virtual void Send(type::Byteset data) = 0;
+    virtual void Send(common::Byteset data) = 0;
 
     ServerId GetServerId();
     ClientId GetId();
     
 protected:
-    type::Byteset buffer_;
+    common::Byteset buffer_;
     
     virtual void Read();
     void ReadHandler(const boost::system::error_code& error, size_t size);
