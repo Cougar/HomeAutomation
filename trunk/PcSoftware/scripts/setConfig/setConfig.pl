@@ -109,57 +109,63 @@ print "Abort with Ctrl+c\n";
 #read line from socket (blocking)
 while ( $line = <$remote> ) {
 #PKT 00087f00 1 0 39 13 01 20 78 56 34 12
-        if (length($line) > 12) {
-                $id = hex(substr($line, 4, 8));
-                $class = ($id & 0x1E000000)>>25;
-                if ($class == 0) {
-	                $nmttype = ($id & 0x00FF0000)>>16;
-	                if ($nmttype == 8) {
-						print $line."";
-						#print $class." ".$nmttype."\n";
-						if (length($line) < 40) {
-							print "Error: A node was started but it did not have a HWID\n";
-							exit 1;
-						}
-						$hwid = (hex(substr($line, 38, 2))<<24)+(hex(substr($line, 35, 2))<<16)+
-							(hex(substr($line, 32, 2))<<8)+(hex(substr($line, 29, 2))<<0);
-						$hwidhex = sprintf("%08x", $hwid);
-						print "Setting HWID in bios.inc to 0x".$hwidhex."\n";
-						
-						$devtype = hex(substr($line, 26, 2));
-						if ($devtype == 0) 
-						{
-							print "\nWarning: Unknown device type, will not set MCU settings\n\n";
-						}
-						elsif ($devtype < $numdevices) 
-						{
-							print "Setting device type to ".$devices[$devtype][0]."\n";
-							$devsettings = 1;
-						}
+	if (length($line) > 12) {
+		# Find can id
+		$id = hex(substr($line, 4, 8));
+		# Find can id class
+		$class = ($id & 0x1E000000)>>25;
+		# If class is nmt
+		if ($class == 0) {
+			# Find nmt type
+			$nmttype = ($id & 0x00FF0000)>>16;
+			# If nmt type is bios started
+			if ($nmttype == 8) {
+				print $line."";
+				if (length($line) < 40) {
+					print "Error: A node was started but it did not have a HWID\n";
+					exit 1;
+				}
+				
+				# Find hw id from data field
+				$hwid = (hex(substr($line, 38, 2)) << 24) + (hex(substr($line, 35, 2)) << 16) 
+					+ (hex(substr($line, 32, 2)) << 8) + (hex(substr($line, 29, 2)) << 0);
+				$hwidhex = sprintf("%08x", $hwid);
+				print "Setting HWID in bios.inc to 0x".$hwidhex."\n";
 
-						open (FP, "<".$biosfile) or die "Cannot open file $biosfile\n";
-						@file = <FP>;
-						close FP;
-						open (FP, ">".$biosfile) or die "Cannot open file $biosfile\n";
-						foreach $file (@file) {
-							$file =~ s/^NODE_HW_ID=.*/NODE_HW_ID=0x$hwidhex/g;
-							if ($devsettings==1)
-							{
-								$file =~ s/^MCU=.*/MCU=$devices[$devtype][0]/g;
-								$file =~ s/^HIGHFUSE=.*/HIGHFUSE=$devices[$devtype][1]/g;
-								$file =~ s/^LOWFUSE=.*/LOWFUSE=$devices[$devtype][2]/g;
-								$file =~ s/^EXTFUSE=.*/EXTFUSE=$devices[$devtype][3]/g;
-								$file =~ s/^BOOT_START=.*/BOOT_START=$devices[$devtype][4]/g;
-							}
-							print FP $file;
-						}
-						close FP;
-						
-						exit 0;
-						
-	                }
-                }
-                
+				# Find device type from data field
+				$devtype = hex(substr($line, 26, 2));
+				if ($devtype == 0) 
+				{
+					print "\nWarning: Unknown device type, will not set MCU settings\n\n";
+				}
+				elsif ($devtype < $numdevices) 
+				{
+					print "Setting device type to ".$devices[$devtype][0]."\n";
+					$devsettings = 1;
+				}
+
+				# Open bios.inc and replace all settings
+				open (FP, "<".$biosfile) or die "Cannot open file $biosfile\n";
+				@file = <FP>;
+				close FP;
+				open (FP, ">".$biosfile) or die "Cannot open file $biosfile\n";
+				foreach $file (@file) {
+					$file =~ s/^NODE_HW_ID=.*/NODE_HW_ID=0x$hwidhex/g;
+					if ($devsettings==1)
+					{
+						$file =~ s/^MCU=.*/MCU=$devices[$devtype][0]/g;
+						$file =~ s/^HIGHFUSE=.*/HIGHFUSE=$devices[$devtype][1]/g;
+						$file =~ s/^LOWFUSE=.*/LOWFUSE=$devices[$devtype][2]/g;
+						$file =~ s/^EXTFUSE=.*/EXTFUSE=$devices[$devtype][3]/g;
+						$file =~ s/^BOOT_START=.*/BOOT_START=$devices[$devtype][4]/g;
+					}
+					print FP $file;
+				}
+				close FP;
+
+				exit 0;
+			}
+		}
 	}
 }
 
