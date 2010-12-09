@@ -51,6 +51,11 @@ HIGHFUSE=0xdc
 LOWFUSE=0xe2
 EXTFUSE=0x01
 
+#MCU = atmega328p
+#HIGHFUSE=0xdc
+#LOWFUSE=0xe2
+#EXTFUSE=0x01
+
 
 # for using the same system.inc we use BIOSDIR and BIOSTARGET for setting the correct file to flash
 # flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
