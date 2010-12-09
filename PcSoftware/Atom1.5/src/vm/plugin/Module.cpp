@@ -35,9 +35,9 @@ Module::Module(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "module";
     
-    this->ExportFunction("Module_SendMessage", Module::Export_SendModuleMessage);
-    this->ExportFunction("Module_IsModuleAvailable", Module::Export_IsModuleAvailable);
-    this->ExportFunction("Module_ProgramNode", Module::Export_ProgramNode);
+    this->ExportFunction("ModuleExport_SendMessage",         Module::Export_SendModuleMessage);
+    this->ExportFunction("ModuleExport_GetAvailableModules", Module::Export_GetAvailableModules);
+    this->ExportFunction("ModuleExport_ProgramNode",         Module::Export_ProgramNode);
 }
 
 Module::~Module()
@@ -142,10 +142,10 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
     
     control::Manager::Instance()->SendMessage(std::string(*full_id), std::string(*command), variables);
     
-    return v8::Undefined();
+    return v8::Boolean::New(true);
 }
 
-Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
+Value Module::Export_GetAvailableModules(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
@@ -153,14 +153,20 @@ Value Module::Export_IsModuleAvailable(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
-    v8::String::AsciiValue full_id(args[0]);
+    common::StringList available_modules = control::Manager::Instance()->GetAvailableModules();
     
-    return v8::Boolean::New(control::Manager::Instance()->IsModuleAvailable(std::string(*full_id)));
+    v8::Local<v8::Array> result = v8::Array::New(available_modules.size());
+    
+    for (unsigned int n = 0; n < available_modules.size(); n++)
+    {
+        result->Set(n, v8::String::New(available_modules[n].data()));
+    }
+    
+    return result;
 }
-
 
 Value Module::Export_ProgramNode(const v8::Arguments& args)
 {
@@ -170,7 +176,7 @@ Value Module::Export_ProgramNode(const v8::Arguments& args)
     
     if (args.Length() < 3)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue filename(args[2]);

@@ -31,14 +31,12 @@ namespace plugin {
 
 logging::Logger System::LOG("vm::plugin::System");
     
-System::System(boost::asio::io_service& io_service, bool legacy) : Plugin(io_service)
+System::System(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "system";
     
-    this->legacy_ = legacy;
-                 
     this->ExportFunction("Log",        System::Export_Log);
-    this->ExportFunction("LoadScript", System::Export_LoadScript);
+    this->ExportFunction("Require",    System::Export_Require);
     this->ExportFunction("Execute",    System::Export_Execute);
 }
 
@@ -53,13 +51,7 @@ void System::InitializeDone()
     
     Plugin::InitializeDone();
     
-    this->ImportFunction("Start");
-    
-    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
-    
-    arguments->push_back(v8::Boolean::New(this->legacy_));
-    
-    this->Call(0, "Start", arguments);
+    v8::Boolean::New(Manager::Instance()->LoadScript("user/autostart.js"));
 }
 
 Value System::Export_Log(const v8::Arguments& args)
@@ -70,7 +62,7 @@ Value System::Export_Log(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments to log.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments to log.");
     }
     
     v8::String::AsciiValue str(args[0]);
@@ -80,7 +72,7 @@ Value System::Export_Log(const v8::Arguments& args)
     return v8::Undefined();
 }
 
-Value System::Export_LoadScript(const v8::Arguments& args)
+Value System::Export_Require(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
@@ -88,7 +80,7 @@ Value System::Export_LoadScript(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue str(args[0]);
@@ -104,7 +96,7 @@ Value System::Export_Execute(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue command(args[0]);

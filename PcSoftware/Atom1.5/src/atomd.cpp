@@ -105,15 +105,9 @@ int main(int argc, char **argv)
     control::Manager::Create();
     vm::Manager::Create();
     
-    if (config::Manager::Instance()->Exist("StoragePath"))
-    {
-        storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
-    }
+    storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
     
-    if (config::Manager::Instance()->Exist("ProtocolFile"))
-    {
-        can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
-    }
+    can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
     
     if (config::Manager::Instance()->Exist("MonitorPort"))
     {
@@ -122,22 +116,14 @@ int main(int argc, char **argv)
     
     subscribers.push_back(control::Manager::Instance());  
     
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->Exist("Legacy"))));
-    
-    if (config::Manager::Instance()->Exist("CommandPort"))
-    {
-        vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
-    }
-    
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
     
-    if (config::Manager::Instance()->Exist("ScriptPath"))
-    {
-        vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
-    }
-
+    vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
+    
     if (config::Manager::Instance()->Exist("CanNet"))
     {
         common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");

@@ -36,6 +36,7 @@
 #include "Node.h"
 #include "Module.h"
 #include "can/Message.h"
+#include "common/common.h"
 
 namespace atom {
 namespace control {
@@ -59,7 +60,7 @@ public:
     void ConnectSlots(const SignalOnNodeChange::slot_type& signal_on_node_change_, const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message);
     
     void SendMessage(std::string full_id, std::string command, common::StringMap variables);
-    bool IsModuleAvailable(std::string full_id);
+    common::StringList GetAvailableModules();
     bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
     
 private:

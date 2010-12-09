@@ -1,8 +1,6 @@
 
-function Console() { }
-
-Console.autocomplete_callbacks = new Array();
-Console.help_text = new Array();
+Console_AutoCompleteFunctions = {};
+Console_HelpTexts = {};
 
 function Console_DoAutocomplete()
 {
@@ -10,12 +8,12 @@ function Console_DoAutocomplete()
 
 	//Log("Console_DoAutocomplete(), name=" + name);
 	
-	var result = new Array();
+	var result = {};
 	
-	if (typeof Console.autocomplete_callbacks[name] != 'undefined')
+	if (typeof Console_AutoCompleteFunctions[name] != 'undefined')
 	{
 		//Log("calling autocomplete_callback");
-		result = Console.autocomplete_callbacks[name](arguments);
+		result = Console_AutoCompleteFunctions[name](arguments);
 	}
 	
 	var result_string = "";
@@ -28,7 +26,7 @@ function Console_DoAutocomplete()
 	return result_string;
 }
 
-function RegisterConsoleCommand(command, autocomplete_callback)
+function Console_RegisterCommand(command, autocomplete_callback)
 {
 	var command_string = command.toString();
 
@@ -49,14 +47,14 @@ function RegisterConsoleCommand(command, autocomplete_callback)
 		argument_string = "<" + argument_string.replace(/ /g, "> <") + ">";
 	}
 	
-	if (Console_RegisterConsoleCommand(name))
+	if (ConsoleExport_RegisterCommand(name))
 	{
-		Console.help_text[name] = argument_string;
+		Console_HelpTexts[name] = argument_string;
 		
 		
 		if (autocomplete_callback)
 		{
-			Console.autocomplete_callbacks[name] = autocomplete_callback;
+			Console_AutoCompleteFunctions[name] = autocomplete_callback;
 		}
 		
 		return true;
@@ -65,7 +63,7 @@ function RegisterConsoleCommand(command, autocomplete_callback)
 	return false;
 }
 
-function StandardAutocomplete()
+function Console_StandardAutocomplete()
 {
 	// First argument is the command line split
 	var command_line_parts = arguments[0];
@@ -84,15 +82,17 @@ function StandardAutocomplete()
 	return new Array();
 }
 
+
+
 function help_complete(args)
 {
-	var result = new Array();
+	var result = {};
 	
 	var arg_index = args.length - 1;
 	
 	if (arg_index == 1) // command name
 	{
-		for (var n in Console.help_text)
+		for (var n in Console_HelpTexts)
 		{
 			result.push(n);
 		}
@@ -108,25 +108,25 @@ function help(command_name)
 		command_name = "help";
 	}
 	
-	if (typeof Console.help_text[command_name] != 'undefined')
+	if (typeof Console_HelpTexts[command_name] != 'undefined')
 	{
 		var result = "";
 		
-		if (Console.autocomplete_callbacks[command_name])
+		if (Console_AutoCompleteFunctions[command_name])
 		{
 			result += "Argument autocompletion enabled for " + command_name + "\n";
 		}
 		
-		result += "Syntax: " + command_name + " " + Console.help_text[command_name] + "\n";
+		result += "Syntax: " + command_name + " " + Console_HelpTexts[command_name] + "\n";
 		
 		return result;
 	}
 	
 	return "No help for " + command_name + " found\n";
 }
-RegisterConsoleCommand(help, help_complete);
+Console_RegisterCommand(help, help_complete);
 
-var prompt_requests = new Array();
+var prompt_requests = {};
 var prompt_request_counter = 0;
 
 function prompt(question, callback, text)

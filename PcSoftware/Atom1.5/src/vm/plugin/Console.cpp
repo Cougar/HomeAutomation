@@ -41,7 +41,7 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
                                            net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
     
-    this->ExportFunction("Console_RegisterConsoleCommand", Console::Export_RegisterConsoleCommand);
+    this->ExportFunction("ConsoleExport_RegisterCommand", Console::Export_RegisterCommand);
     
     try
     {
@@ -193,7 +193,7 @@ void Console::ExecutionResult(std::string response, unsigned int request_id)
     net::Manager::Instance()->SendTo(request_id, response);
 }
 
-Value Console::Export_RegisterConsoleCommand(const v8::Arguments& args)
+Value Console::Export_RegisterCommand(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     

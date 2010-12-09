@@ -203,9 +203,16 @@ void Manager::SendMessage(std::string full_id, std::string command, common::Stri
     this->io_service_.post(boost::bind(&Manager::SendMessageHandler, this, full_id, command, variables));
 }
 
-bool Manager::IsModuleAvailable(std::string full_id)
+common::StringList Manager::GetAvailableModules()
 {
-    return this->modules_.find(full_id) != this->modules_.end();
+    common::StringList available_modules;
+    
+    for (ModuleList::iterator it = this->modules_.begin(); it != this->modules_.end(); it++)
+    {
+        available_modules.push_back(it->first);
+    }
+    
+    return available_modules;
 }
 
 bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)

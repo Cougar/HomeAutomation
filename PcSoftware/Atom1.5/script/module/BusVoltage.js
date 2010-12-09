@@ -9,7 +9,7 @@ Extend(BusVoltage, Module);
 
 BusVoltage.instance_ = null;
 
-BusVoltage.prototype.ReceiveMessage = function(id, command, variables)
+BusVoltage.ReceiveMessage = function(id, command, variables)
 {
 	switch (command)
 	{
