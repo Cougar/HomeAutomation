@@ -35,17 +35,16 @@ class System : public Plugin
 public:
     typedef boost::shared_ptr<Plugin> Pointer;
     
-    System(boost::asio::io_service& io_service, bool legacy);
+    System(boost::asio::io_service& io_service);
     virtual ~System();
     
     void InitializeDone();
     
 private:
     static logging::Logger LOG;
-    bool legacy_;
     
     static Value Export_Log(const v8::Arguments& args);
-    static Value Export_LoadScript(const v8::Arguments& args);
+    static Value Export_Require(const v8::Arguments& args);
     static Value Export_Execute(const v8::Arguments& args);
     
 };

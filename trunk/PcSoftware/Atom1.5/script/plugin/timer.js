@@ -1,45 +1,40 @@
 
-var timer_callbacks = new Array();
+var Timer_Callbacks = {};
 
-function SetTimeout(callback, milliseconds)
+function Timer_SetTimeout(callback, milliseconds)
 {
-	var timer_id = StartTimer(milliseconds, false);
+	var timer_id = TimerExport_StartTimer(milliseconds, false);
 	
-	timer_callbacks[timer_id] = callback;
+	Timer_Callbacks[timer_id] = callback;
 	
 	return timer_id;
 }
 
-function ClearTimeout(timer_id)
+function Timer_SetInterval(callback, milliseconds)
 {
-	return ClearInterval(timer_id);
-}
-
-function SetInterval(callback, milliseconds)
-{
-	var timer_id = StartTimer(milliseconds, true);
+	var timer_id = TimerExport_StartTimer(milliseconds, true);
 	
-	timer_callbacks[timer_id] = callback;
+	Timer_Callbacks[timer_id] = callback;
 	
 	return timer_id;
 }
 
-function ClearInterval(timer_id)
+function Timer_Cancel(timer_id)
 {
-	delete timer_callbacks[timer_id];
+	delete Timer_Callbacks[timer_id];
 	
-	ClearTimer(timer_id);
+	TimerExport_ClearTimer(timer_id);
 }
 
 function Timer_OnTimeout(timer_id, repeat)
 {
-	if (timer_callbacks[timer_id])
+	if (Timer_Callbacks[timer_id])
 	{
-		timer_callbacks[timer_id](timer_id);
+		Timer_Callbacks[timer_id](timer_id);
 		
 		if (!repeat)
 		{
-			delete timer_callbacks[timer_id];
+			delete Timer_Callbacks[timer_id];
 		}
 	}
 }

@@ -183,6 +183,15 @@ bool Manager::ImportFunction(std::string functionname)
 
 bool Manager::LoadScript(std::string scriptname)
 {
+    for (unsigned int n = 0; n < this->loaded_scripts_.size(); n++)
+    {
+        if (this->loaded_scripts_[n] == scriptname)
+        {
+            LOG.Info(scriptname + " is already loaded.");
+            return true;
+        }
+    }
+    
     std::string path = this->script_path_ + scriptname;
     std::ifstream file(path.data());
     
@@ -234,6 +243,8 @@ bool Manager::LoadScript(std::string scriptname)
             return false;
         }
     }
+    
+    this->loaded_scripts_.push_back(scriptname);
     
     LOG.Info("Loaded " + scriptname + " successfully.");
     return true;

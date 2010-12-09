@@ -1,216 +1,255 @@
 
-var modules = new Array();
+Require("plugin/storage.js");
 
-function RequireModule(name)
+function Module_CreateAliasGroupAutoComplete(args)
 {
-	GetModule(name);
+	// args[0] == command name
+	var arg_index = args.length - 2;
+	
+	if (arg_index == 0)
+	{
+		return Module_GetAliasNames();
+	}
+	else if (arg_index == 1)
+	{
+		return [ "Dimmer230", "irTransmit" ];
+	}
+	else if (arg_index >= 2)
+	{
+		return Module_GetAliasNames([ args[2] ])
+	}
+	
+	return [];
 }
 
-function GetModule(name)
+function Module_CreateAliasGroup(alias_group_name, module_type, alias_name1, alias_name2)
 {
-	if (typeof modules[name] == 'undefined')
+	if (arguments.length < 3)
 	{
-		LoadScript("module/" + name + ".js");
-		
-		if (eval("typeof " + name + " != 'function'"))
+		throw("Not enought parameters given");
+	}
+	
+	alias_group_name = arguments[0];
+	module_type = arguments[1];
+	var aliases = [];
+	
+	for (var n = 2; n < arguments.length; n++)
+	{
+		if (arguments[n].length > 0)
 		{
-			Log("Failed to load " + name + " module.");
-			return;
-		}
-		
-		modules[name] = eval("(new " + name + "('" + name + "'))");
-	}
-	
-	return modules[name];
-}
-
-function Module_OnChange(full_id, available)
-{
-	var parts = full_id.split(":", 2);
-	
-	if (global_legacy)
-	{
-		legacyOnState(full_id, parts[1], parts[0], available);
-		return;
-	}
-	
-	var module = GetModule(parts[0]);
-	
-	if (module)
-	{
-		module.SetStatus(parts[1], available);
-	}
-}
-
-function Module_OnMessage()
-{
-	var full_id = arguments[0];
-	var command = arguments[1];
-	var variables = arguments[2];
-	
-	var parts = full_id.split(":", 2);
-	
-	if (global_legacy)
-	{
-		legacyOnMessage(full_id, parts[1], parts[0], command, variables);
-		return;
-	}
-	
-	var module = GetModule(parts[0]);
-	
-	if (module)
-	{
-		module.ReceiveMessage(parts[1], command, variables);
-	}
-	else
-	{
-		//Log("No one to receive this message, ignoring...");
-	}
-}
-
-function SendModuleMessage(full_id, command, variables)
-{
-	var args = new Array();
-	
-	args[args.length] = full_id;
-	args[args.length] = command;
-	args[args.length] = variables.length;
-	
-	for (var i = 0; i < variables.length; i++)
-	{
-		var obj = variables[i];
-		
-		for (var key in obj)
-		{
-			args[args.length] = key;
-			args[args.length] = obj[key];
+			var aliases_data = Module_ResolveAlias(arguments[n]);
+			aliases.push(arguments[n]);
 		}
 	}
 	
-	Module_SendMessage.apply(null, Array.prototype.slice.call(args, 0));
-}
-
-
-function Module(name)
-{
-	this.name_ = name;
-	this.ids_ = new Array();
-	
-	this.EventBase();
-}
-
-Extend(Module, EventBase);
-
-Module.prototype.name_;
-Module.prototype.ids_;
-
-Module.prototype.SetStatus = function(id, available)
-{
-	if (typeof this.ids_[id] == 'undefined')
+	if (aliases.length == 0)
 	{
-		this.ids_[id] = available;
-		this.EventBase.prototype.Trigger.call(this, "onStatusChange", id, available);
+		throw("No valid aliases were found, aborting creation of group alias");
 	}
-	else if (this.ids[id] != available)
-	{
-		this.EventBase.prototype.Trigger.call(this, "onStatusChange", id, available);
-	}
-}
-
-Module.prototype.ReceiveMessage = function(id, command, variables)
-{
-	//Log("received " + command);
-}
-
-Module.prototype.GetAvailableIds = function()
-{
-	var ids = new Array();
 	
-	for (var id in this.ids_)
+	var alias_data = {
+		"group"       : true,
+		"name"        : alias_group_name,
+		"module_name" : module_type,
+		"aliases"     : aliases
+	};
+	
+	return Storage_SetParameter("alias", alias_group_name, JSON.stringify(alias_data));
+}
+Console_RegisterCommand(Module_CreateAliasGroup, Module_CreateAliasGroupAutoComplete);
+
+function Module_ResolveAlias(alias_name, filter_module_names)
+{
+	var aliases_data = {};
+	var alias_data_string = Storage_GetParameter("alias", alias_name);
+	
+	if (alias_data_string)
 	{
-		if (this.ids_[id] && typeof this.ids_[id] != 'function')
+		var alias_data = eval("(" + alias_data_string + ")");
+		
+		if (alias_data["group"])
 		{
-			ids[ids.length] = id;
-		}
-	}
-	
-	return ids;
-}
-
-Module.prototype.GetAvailableNames = function()
-{
-	var result = new Array();
-	var available_ids = this.GetAvailableIds();
-	
-	var module_aliases = getaliases();
-	
-	for (var alias in module_aliases)
-	{
-		if (module_aliases[alias]["is_group"])
-		{
-			for (var n = 0; n < module_aliases[alias]["aliases"].length; n++)
+			for (var n in alias_data["aliases"])
 			{
-				var group_alias = module_aliases[alias]["aliases"][n];
-
-				if (module_aliases[group_alias]["module_name"] == this.name_ && ArrayContains(available_ids, module_aliases[group_alias]["module_id"]))
+				var aliases_data_sub = Module_ResolveAlias(alias_data["aliases"][n]);
+				
+				for (var name in aliases_data_sub)
 				{
-					result.push(alias);
-					break;
+					aliases_data[name] = aliases_data_sub[name];
 				}
 			}
 		}
 		else
 		{
-			if (module_aliases[alias]["module_name"] == this.name_ && ArrayContains(available_ids, module_aliases[alias]["module_id"]))
+			if (in_array(filter_module_names, alias_data["module_name"]))
 			{
-				result.push(alias);
+				aliases_data[alias_name] = alias_data;
 			}
 		}
 	}
 	
-	return result;
+	return aliases_data;
 }
 
-Module.prototype.IsAvailable = function(id)
+function Module_LookupAliases(match_filter)
 {
-	if (typeof this.ids_[id] == 'undefined' || this.ids_[id] == false)
+	var aliases_data_filtered = {};
+	var aliases_data = Storage_GetParameters("alias");
+	
+	for (var name in aliases_data)
 	{
-		return false;
+		var alias_data = eval("(" + aliases_data[name] + ")");
+		
+		var valid = true;
+		
+		for (var key in match_filter)
+		{
+			if (alias_data[key] != match_filter[key])
+			{
+				valid = false;
+				break;
+			}
+		}
+		
+		if (valid)
+		{
+			aliases_data_filtered[name] = alias_data;
+		}
 	}
 	
-	return true;
+	return aliases_data_filtered;
 }
 
-Module.prototype.SendMessage = function(id, command, variables)
+function Module_GetAliasNames(filter_module_names)
 {
-	if (this.IsAvailable(id))
+	var aliases_name_filtered = [];
+	var aliases_data = Storage_GetParameters("alias");
+	
+	for (var name in aliases_data)
 	{
-		SendModuleMessage(this.name_ + ":" + id, command, variables);
+		var alias_data = eval("(" + aliases_data[name] + ")");
+		
+		if (!filter_module_names || in_array(filter_module_names, alias_data["module_name"]))
+		{
+			aliases_name_filtered.push(name)
+		}
+	}
+	
+	return aliases_name_filtered;
+}
+
+function Module_GetAvailableIds(filter_module_names)
+{
+	var result_list = [];
+	var available_modules = ModuleExport_GetAvailableModules();
+	
+	for (var n in available_modules)
+	{
+		var id_parts = available_modules[n].split(":", 2);
+		
+		if (in_array(filter_module_names, id_parts[0]))
+		{
+			result_list.push(id_parts[1]);
+		}
+	}
+	
+	return result_list;
+}
+
+function Module_SendMessage(module_name, module_id, command, variables)
+{
+	var args = [];
+	
+	args.push(module_name + ":" + module_id);
+	args.push(command);
+	
+	var length = 0;
+	for (var key in variables)
+	{
+		length++;
+	}
+	
+	Log("length=" + length);
+	
+	args.push(length);
+	
+	for (var key in variables)
+	{
+		args.push(key);
+		args.push(variables[key]);
+	}
+	
+	return ModuleExport_SendMessage.apply(null, Array.prototype.slice.call(args, 0));
+}
+
+var Module_MessageAliasLookupFunctions = {};
+var Module_OnChangeFunctions = {};
+var Module_OnMessageFunctions = {};
+
+function Module_RegisterMessageAliasLookup(module_name, callback)
+{
+	Module_MessageAliasLookupFunctions[module_name] = callback;
+}
+
+function Module_RegisterToOnChange(alias_name, callback)
+{
+	if (!Module_OnChangeFunctions[alias_name])
+	{
+		Module_OnChangeFunctions[alias_name] = [];
+	}
+	
+	Module_OnChangeFunctions[alias_name].push(callback);
+}
+
+function Module_RegisterToOnMessage(alias_name, callback)
+{
+	if (!Module_OnMessageFunctions[alias_name])
+	{
+		Module_OnMessageFunctions[alias_name] = [];
+	}
+	
+	Module_OnMessageFunctions[alias_name].push(callback);
+}
+
+function Module_OnMessage(full_id, command, variables)
+{
+	var id_parts = full_id.split(":", 2);
+	var aliases_data = {};
+	
+	if (Module_MessageAliasLookupFunctions[id_parts[0]])
+	{
+		aliases_data = Module_MessageAliasLookupFunctions[id_parts[0]](id_parts[1], command, variables);
+	}
+	
+	for (var alias_name in alias_data)
+	{
+		if (Module_OnMessageFunctions[alias_name])
+		{
+			for (var n in Module_OnMessageFunctions[alias_name])
+			{
+				Module_OnMessageFunctions[alias_name][n](alias_name, command, variables);
+			}
+		}
 	}
 }
 
-
-// Console Commands
-
-function modulelist()
+function Module_OnChange(full_id, available)
 {
-	var result = "";
+	var id_parts = full_id.split(":", 2);
 	
-	for (var name in modules)
+	var aliases_data = Module_LookupAliases({
+		"module_name" : id_parts[0],
+		"module_id"   : id_parts[1],
+	});
+	
+	for (var alias_name in alias_data)
 	{
-		result += name + ":  " + modules[name].GetAvailableIds().toString() + "\n";
+		if (Module_OnChangeFunctions[alias_name])
+		{
+			for (var n in Module_OnChangeFunctions[alias_name])
+			{
+				Module_OnChangeFunctions[alias_name][n](alias_name, available);
+			}
+		}
 	}
-	
-	return result;
 }
-
-RegisterConsoleCommand(modulelist);
-
-function programnode(node_id, is_bios, filename)
-{
-	Log("is_bios = " + is_bios);
-	return Module_ProgramNode(node_id, is_bios == 1 ? true : false, filename) ? "OK" : "Error";
-}
-
-RegisterConsoleCommand(programnode);
-

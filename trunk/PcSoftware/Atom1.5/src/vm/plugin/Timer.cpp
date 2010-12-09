@@ -41,9 +41,9 @@ Timer::Timer(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "timer";
     
-    this->ExportFunction("StartTimer",      Timer::Export_StartTimer);
-    this->ExportFunction("ClearTimer",      Timer::Export_ClearTimer);
-    this->ExportFunction("sleep",           Timer::Export_Sleep);
+    this->ExportFunction("TimerExport_StartTimer",      Timer::Export_StartTimer);
+    this->ExportFunction("TimerExport_ClearTimer",      Timer::Export_ClearTimer);
+    this->ExportFunction("TimerExport_Sleep",           Timer::Export_Sleep);
 }
 
 Timer::~Timer()
@@ -96,7 +96,7 @@ Value Timer::Export_StartTimer(const v8::Arguments& args)
     
     if (args.Length() < 2)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     timer::TimerId timer_id = timer::Manager::Instance()->Set(args[0]->Uint32Value(), args[1]->BooleanValue());
@@ -114,7 +114,7 @@ Value Timer::Export_ClearTimer(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     Timers::iterator it = Timer::timers_.find(args[0]->IsUint32());
@@ -136,7 +136,7 @@ Value Timer::Export_Sleep(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     boost::this_thread::sleep(boost::posix_time::milliseconds(args[0]->Uint32Value()));

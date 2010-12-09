@@ -29,6 +29,7 @@
 
 #include "logging/Logger.h"
 #include "common/IoService.h"
+#include "common/common.h"
 
 #include "net/types.h"
 
@@ -76,6 +77,7 @@ private:
     
     PluginList plugins_;
     ImportFunctionList functions_;
+    common::StringList loaded_scripts_;
     
     Manager();
     

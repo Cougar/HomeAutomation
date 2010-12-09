@@ -57,7 +57,7 @@ private:
     
     static logging::Logger LOG;
     
-    static Value Export_RegisterConsoleCommand(const v8::Arguments& args);
+    static Value Export_RegisterCommand(const v8::Arguments& args);
 };
   
 }; // namespace plugin

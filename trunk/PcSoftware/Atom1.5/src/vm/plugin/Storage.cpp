@@ -36,9 +36,9 @@ Storage::Storage(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "storage";
     
-    this->ExportFunction("Storage_GetParameters", Storage::Export_GetParameters);
-    this->ExportFunction("Storage_GetParameter",  Storage::Export_GetParameter);
-    this->ExportFunction("Storage_SetParameter",  Storage::Export_SetParameter);
+    this->ExportFunction("StorageExport_GetParameters", Storage::Export_GetParameters);
+    this->ExportFunction("StorageExport_GetParameter",  Storage::Export_GetParameter);
+    this->ExportFunction("StorageExport_SetParameter",  Storage::Export_SetParameter);
 }
 
 Storage::~Storage()
@@ -58,7 +58,7 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
     
     if (args.Length() < 1)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -83,7 +83,7 @@ Value Storage::Export_GetParameter(const v8::Arguments& args)
     
     if (args.Length() < 2)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -111,7 +111,7 @@ Value Storage::Export_SetParameter(const v8::Arguments& args)
     
     if (args.Length() < 3)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
     v8::String::AsciiValue store_name(args[0]);
