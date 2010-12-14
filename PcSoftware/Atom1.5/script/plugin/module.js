@@ -71,7 +71,7 @@ function Module_ResolveAlias(alias_name, filter_module_names)
 		{
 			for (var n in alias_data["aliases"])
 			{
-				var aliases_data_sub = Module_ResolveAlias(alias_data["aliases"][n]);
+				var aliases_data_sub = Module_ResolveAlias(alias_data["aliases"][n], filter_module_names);
 				
 				for (var name in aliases_data_sub)
 				{
@@ -168,8 +168,6 @@ function Module_SendMessage(module_name, module_id, command, variables)
 	{
 		length++;
 	}
-	
-	Log("length=" + length);
 	
 	args.push(length);
 	

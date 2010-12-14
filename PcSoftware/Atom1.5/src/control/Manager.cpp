@@ -42,7 +42,7 @@ Manager::Manager() : broker::Subscriber(false), LOG("control::Manager")
     this->active_programming_node_id_ = 0;
     
     // Nyquist–Shannon sampling theorem state that we need to double the time, modules send every 10 seconds
-    this->timer_id_ = timer::Manager::Instance()->Set(20000, true);
+    this->timer_id_ = timer::Manager::Instance()->SetTimer(20000, true);
 }
 
 Manager::~Manager()

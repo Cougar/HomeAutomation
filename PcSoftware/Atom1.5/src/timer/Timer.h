@@ -38,6 +38,7 @@ public:
     typedef boost::signals2::signal<void(TimerId)> SignalOnTimeout;
     
     Timer(boost::asio::io_service& io_service, TimerId id, unsigned int timeout, bool repeat);
+    Timer(boost::asio::io_service& io_service, TimerId id, std::string time);
     virtual ~Timer();
 
     void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
@@ -50,6 +51,7 @@ public:
 private:
     boost::asio::deadline_timer instance_;
     TimerId id_;
+    std::string time_;
     unsigned int timeout_;
     bool repeat_;
     

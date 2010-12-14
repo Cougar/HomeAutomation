@@ -1,4 +1,33 @@
 
+IRIn_ModuleName     = "irReceive";
+IRIn_Channels       = function() { return [ 0 ]; };
+
+function IRIr_MessageAliasLookup(module_id, command, variables)
+{
+    var aliases_data = {};
+    
+    aliases_data = Module_LookupAliases({
+        "module_name" : IRIn_ModuleName,
+        "module_id"   : module_id,
+        "channel"     : channel
+    });
+    
+    return aliases_data;
+}
+Module_RegisterMessageAliasLookup(IROut_ModuleName, IROut_MessageAliasLookup);
+
+
+
+
+
+
+
+
+
+
+
+
+
 function irReceive(name)
 {
 	this.Module(name);

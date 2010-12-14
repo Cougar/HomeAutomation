@@ -46,8 +46,9 @@ public:
     static void Delete();
     
     void ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout);
-    
-    TimerId Set(unsigned int timeout, bool repeat);
+
+    TimerId SetAlarm(std::string time);
+    TimerId SetTimer(unsigned int timeout, bool repeat);
     void Cancel(TimerId id);
     
 private:

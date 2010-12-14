@@ -201,11 +201,6 @@ unsigned int Protocol::ResolveDirectionFlag(std::string direction_name)
 
 std::string Protocol::LookupModuleName(unsigned int module_id)
 {
-    if (module_id == 0)
-    {
-        return "";
-    }
-    
     try
     {
         return this->root_node_.FindChild("modules").SelectChild("id", boost::lexical_cast<std::string>(module_id)).GetAttributeValue("name");

@@ -79,7 +79,24 @@ void Manager::SlotOnTimeout(TimerId id)
     this->signal_on_timeout_(id, repeat);
 }
 
-TimerId Manager::Set(unsigned int timeout, bool repeat)
+TimerId Manager::SetAlarm(std::string time)
+{
+    this->mutex_timers_.lock();
+    
+    Timer::Pointer timer = Timer::Pointer(new Timer(this->io_service_, this->GetFreeId(), time));
+    
+    this->timers_[timer->GetId()] = timer;
+    
+    this->mutex_timers_.unlock();
+    
+    timer->ConnectSlots(Timer::SignalOnTimeout::slot_type(&Manager::SlotOnTimeout, this, _1).track(Manager::instance_));
+    
+    timer->Start();
+    
+    return timer->GetId();
+}
+
+TimerId Manager::SetTimer(unsigned int timeout, bool repeat)
 {
     this->mutex_timers_.lock();
     

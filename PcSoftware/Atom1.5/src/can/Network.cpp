@@ -211,7 +211,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         
         //LOG.Debug(databits.ToDebugString());
         
-        unsigned int length = ceil((float)highest_bit / 8.0f);
+        unsigned int length = std::min((int)ceil((float)highest_bit / 8.0f), 8);
         
         data[5] = 1;
         data[6] = 0;
@@ -278,7 +278,7 @@ void Network::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
     {
         LOG.Warning("Got disconnected, setting reconnect timer...");
        
-        this->timer_id_ = timer::Manager::Instance()->Set(10000, true);
+        this->timer_id_ = timer::Manager::Instance()->SetTimer(10000, true);
         this->client_id_ = 0;
     }
     else
@@ -333,12 +333,13 @@ void Network::ProcessBuffer()
             unsigned int module_id = this->buffer_[2];
             //LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id));
             module_name = Protocol::Instance()->LookupModuleName(module_id);
-            
+            //LOG.Debug("module_name=" + module_name);
             id = this->buffer_[1];
             
             unsigned int command_id = this->buffer_[0];
             //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
+            //LOG.Debug("command_name=" + command_name);
         }
 
         Message* payload = new Message(class_name, direction_name, module_name, id, command_name);
