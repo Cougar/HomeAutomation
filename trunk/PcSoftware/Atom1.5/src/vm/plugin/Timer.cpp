@@ -41,9 +41,10 @@ Timer::Timer(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "timer";
     
-    this->ExportFunction("TimerExport_StartTimer",      Timer::Export_StartTimer);
-    this->ExportFunction("TimerExport_ClearTimer",      Timer::Export_ClearTimer);
-    this->ExportFunction("TimerExport_Sleep",           Timer::Export_Sleep);
+    this->ExportFunction("TimerExport_SetTimer",      Timer::Export_SetTimer);
+    this->ExportFunction("TimerExport_SetAlarm",      Timer::Export_SetAlarm);
+    this->ExportFunction("TimerExport_Cancel",        Timer::Export_Cancel);
+    this->ExportFunction("TimerExport_Sleep",         Timer::Export_Sleep);
 }
 
 Timer::~Timer()
@@ -88,7 +89,27 @@ void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
     this->Call( timer_id, "Timer_OnTimeout",arguments);
 }
 
-Value Timer::Export_StartTimer(const v8::Arguments& args)
+Value Timer::Export_SetAlarm(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+    }
+    
+    v8::String::AsciiValue time(args[0]);
+    
+    timer::TimerId timer_id = timer::Manager::Instance()->SetAlarm(*time);
+    
+    Timer::timers_.insert(timer_id);
+    
+    return v8::Integer::New(timer_id);
+}
+
+Value Timer::Export_SetTimer(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
@@ -99,14 +120,14 @@ Value Timer::Export_StartTimer(const v8::Arguments& args)
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
     }
     
-    timer::TimerId timer_id = timer::Manager::Instance()->Set(args[0]->Uint32Value(), args[1]->BooleanValue());
+    timer::TimerId timer_id = timer::Manager::Instance()->SetTimer(args[0]->Uint32Value(), args[1]->BooleanValue());
     
     Timer::timers_.insert(timer_id);
     
     return v8::Integer::New(timer_id);
 }
 
-Value Timer::Export_ClearTimer(const v8::Arguments& args)
+Value Timer::Export_Cancel(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     

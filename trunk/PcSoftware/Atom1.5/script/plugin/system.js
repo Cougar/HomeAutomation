@@ -1,4 +1,16 @@
 
+function array_length(array)
+{
+    var count = 0;
+    
+    for (var n in array)
+    {
+        count++;
+    }
+    
+    return count;
+}
+
 function in_array(array, item)
 {
 	for (var n in array)

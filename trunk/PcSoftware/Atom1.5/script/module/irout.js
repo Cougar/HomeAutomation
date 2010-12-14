@@ -36,7 +36,7 @@ Console_RegisterCommand(IROut_CreateAlias, function(args) { return Console_Stand
 
 function IROut_StopSend(alias_name)
 {
-	if (arguments.length < 4)
+	if (arguments.length < 1)
 	{
 		throw("Not enought parameters given");
 	}

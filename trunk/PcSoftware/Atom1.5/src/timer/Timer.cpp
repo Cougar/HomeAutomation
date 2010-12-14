@@ -20,6 +20,8 @@
 
 #include "Timer.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 namespace atom {
 namespace timer {
 
@@ -28,6 +30,15 @@ Timer::Timer(boost::asio::io_service& io_service, TimerId id, unsigned int timeo
     this->id_ = id;
     this->timeout_ = timeout;
     this->repeat_ = repeat;
+    this->time_ = "";
+}
+
+Timer::Timer(boost::asio::io_service& io_service, TimerId id, std::string time) : instance_(io_service)
+{
+    this->id_ = id;
+    this->timeout_ = 0;
+    this->repeat_ = false;
+    this->time_ = time;
 }
 
 Timer::~Timer()
@@ -42,7 +53,16 @@ void Timer::ConnectSlots(const SignalOnTimeout::slot_type& slot_on_timeout)
 
 void Timer::Start()
 {
-    this->instance_.expires_from_now(boost::posix_time::millisec(this->timeout_));
+    if (this->timeout_ == 0)
+    {
+        boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+        
+        this->instance_.expires_from_now(boost::posix_time::time_from_string(this->time_) - now);
+    }
+    else
+    {
+        this->instance_.expires_from_now(boost::posix_time::millisec(this->timeout_));
+    }
     
     this->instance_.async_wait(boost::bind(&Timer::TimeoutHandler,
                                            this,

@@ -53,8 +53,9 @@ private:
     
     void SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat);
     
-    static Value Export_StartTimer(const v8::Arguments& args);
-    static Value Export_ClearTimer(const v8::Arguments& args);
+    static Value Export_SetTimer(const v8::Arguments& args);
+    static Value Export_SetAlarm(const v8::Arguments& args);
+    static Value Export_Cancel(const v8::Arguments& args);
     static Value Export_Sleep(const v8::Arguments& args);
 };
 
