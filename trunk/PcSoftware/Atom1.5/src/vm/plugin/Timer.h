@@ -42,6 +42,7 @@ public:
     virtual ~Timer();
     
     void InitializeDone();
+    void CallOutput(unsigned int request_id, std::string output);
     
 private:
     typedef std::set<timer::TimerId> Timers;

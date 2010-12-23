@@ -1,13 +1,25 @@
 
+function to_array(obj)
+{
+	var result = [];
+	
+	for (var n = 0; n < obj.length; n++)
+	{
+		result.push(obj[n]);
+	}
+	
+	return result;
+}
+
 function array_length(array)
 {
     var count = 0;
-    
+
     for (var n in array)
     {
         count++;
     }
-    
+
     return count;
 }
 
@@ -35,6 +47,18 @@ function key_in_array(array, key)
 	}
 	
 	return false;
+}
+
+function get_keys(array)
+{
+	var result = [];
+	
+	for (var name in array)
+	{
+		result.push(name);
+	}
+	
+	return result;
 }
 
 String.prototype.ltrim = function(charlist)

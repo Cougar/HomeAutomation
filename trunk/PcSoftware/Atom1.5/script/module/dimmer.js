@@ -1,221 +1,210 @@
 
 Require("plugin/module.js");
 
-Dimmer_ModuleName     = "Dimmer230";
+Dimmer_ModuleNames    = [ "Dimmer230" ];
 Dimmer_SpeedLevels    = function() { return [ 50, 135, 200, 255 ]; };
 Dimmer_StrengthLevels = function() { return [ 0, 50, 100, 150, 200, 255 ]; };
 Dimmer_StepsLevels    = function() { return [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 ]; };
 Dimmer_Directions     = function() { return [ "Increase", "Decrease" ]; };
 Dimmer_Channels       = function() { return [ 0 ]; };
-Dimmer_Aliases        = function() { return Module_GetAliasNames([ Dimmer_ModuleName ]); };
-Dimmer_AvailableIds   = function() { return Module_GetAvailableIds([ Dimmer_ModuleName ]); };
-
-function Dimmer_MessageAliasLookup(module_id, command, variables)
-{
-	var aliases_data = {};
-	
-	if (command == "Netinfo")
-	{
-		aliases_data = Module_LookupAliases({
-			"module_name" : Dimmer_ModuleName,
-			"module_id"   : module_id,
-			"channel"     : channel
-		});
-	}
-	
-	return aliases_data;
-}
-Module_RegisterMessageAliasLookup(Dimmer_ModuleName, Dimmer_MessageAliasLookup);
-
-function Dimmer_CreateAlias(alias_name, module_id, channel)
-{
-	var alias_data = {
-		"group"       : false,
-		"name"        : alias_name,
-		"module_name" : Dimmer_ModuleName,
-		"module_id"   : module_id,
-		"channel"     : channel
-	};
-
-	return Storage_SetParameter("alias", alias_name, JSON.stringify(alias_data));
-}
-Console_RegisterCommand(Dimmer_CreateAlias, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases(), Dimmer_AvailableIds(), Dimmer_Channels()); });
+Dimmer_Aliases        = function() { return Module_GetAliasNames(Dimmer_ModuleNames); };
+Dimmer_AvailableIds   = function() { return Module_GetAvailableIds(Dimmer_ModuleNames); };
 
 function Dimmer_StartFade(alias_name, speed, direction)
 {
 	if (arguments.length < 3)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
-	var result_text = "";
-	var aliases_data = Module_ResolveAlias(alias_name, [ Dimmer_ModuleName ]);
+	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
+	var found = false;
 	
 	for (var name in aliases_data)
 	{
 		var variables = {
-			"Channel"   : aliases_data[name]["channel"],
+			"Channel"   : aliases_data[name]["specific"]["Channel"],
 			"Speed"     : speed,
 			"Direction" : direction };
 	
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Start_Fade", variables))
 		{
-			result_text += "StartFade sent successfully to " + name + "\n";
+			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			result_text += "StartFade failed to send to " + name + "\n";
+			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
 		}
+		
+		found = true;
 	}
 	
-	if (result_text.length == 0)
+	if (!found)
 	{
-		result_text = "No aliases by the name " + alias_name + " were applicable to StartFade.";
+		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	return true;
 }
-Console_RegisterCommand(Dimmer_StartFade, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_Directions()); });
+Console_RegisterCommand(Dimmer_StartFade, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_Directions()); });
 
 function Dimmer_StopFade(alias_name)
 {
 	if (arguments.length < 1)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
-	var result_text = "";
-	var aliases_data = Module_ResolveAlias(alias_name, [ Dimmer_ModuleName ]);
+	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
+	var found = false;
 	
 	for (var name in aliases_data)
 	{
 		var variables = {
-			"Channel" : aliases_data[name]["channel"] };
+		"Channel" : aliases_data[name]["specific"]["Channel"] };
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Stop_Fade", variables))
 		{
-			result_text += "StopFade sent successfully to " + name + "\n";
+			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			result_text += "StopFade failed to send to " + name + "\n";
+			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
 		}
+		
+		found = true;
 	}
 	
-	if (result_text.length == 0)
+	if (!found)
 	{
-		result_text = "No aliases by the name " + alias_name + " were applicable to StopFade.";
+		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	return true;
 }
-Console_RegisterCommand(Dimmer_StopFade, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases()); });
+Console_RegisterCommand(Dimmer_StopFade, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases()); });
 
 function Dimmer_AbsoluteFade(alias_name, speed, level)
 {
 	if (arguments.length < 3)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
-	var result_text = "";
-	var aliases_data = Module_ResolveAlias(alias_name, [ Dimmer_ModuleName ]);
+	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
+	var found = false;
 	
 	for (var name in aliases_data)
 	{
 		var variables = {
-			"Channel"   : aliases_data[name]["channel"],
-			"Speed"     : speed,
-			"EndValue"  : level };
+		"Channel"   : aliases_data[name]["specific"]["Channel"],
+		"Speed"     : speed,
+		"EndValue"  : level };
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Abs_Fade", variables))
 		{
-			result_text += "AbsolutFade sent successfully to " + name + "\n";
+			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			result_text += "AbsolutFade failed to send to " + name + "\n";
+			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
 		}
+		
+		found = true;
 	}
 	
-	if (result_text.length == 0)
+	if (!found)
 	{
-		result_text = "No aliases by the name " + alias_name + " were applicable to AbsolutFade.";
+		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	return true;
 }
-Console_RegisterCommand(Dimmer_AbsoluteFade, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_StrengthLevels()); });
+Console_RegisterCommand(Dimmer_AbsoluteFade, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_StrengthLevels()); });
 
 function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 {
 	if (arguments.length < 4)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
-	var result_text = "";
-	var aliases_data = Module_ResolveAlias(alias_name, [ Dimmer_ModuleName ]);
+	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
+	var found = false;
 	
 	for (var name in aliases_data)
 	{
 		var variables = {
-			"Channel"   : aliases_data[name]["channel"],
-			"Speed"     : speed,
-			"Direction" : direction,
-			"Steps"     : steps };
+		"Channel"   : aliases_data[name]["specific"]["Channel"],
+		"Speed"     : speed,
+		"Direction" : direction,
+		"Steps"     : steps };
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Rel_Fade", variables))
 		{
-			result_text += "RelativeFade sent successfully to " + name + "\n";
+			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			result_text += "RelativeFade failed to send to " + name + "\n";
+			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
 		}
+		
+		found = true;
 	}
 	
-	if (result_text.length == 0)
+	if (!found)
 	{
-		result_text = "No aliases by the name " + alias_name + " were applicable to RelativeFade.";
+		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	return true;
 }
-Console_RegisterCommand(Dimmer_RelativeFade, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_Directions(), Dimmer_StepsLevels()); });
+Console_RegisterCommand(Dimmer_RelativeFade, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_Directions(), Dimmer_StepsLevels()); });
 
 function Dimmer_Demo(alias_name, speed, steps)
 {
 	if (arguments.length < 3)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
-	var result_text = "";
-	var aliases_data = Module_ResolveAlias(alias_name, [ Dimmer_ModuleName ]);
+	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
+	var found = false;
 	
 	for (var name in aliases_data)
 	{
 		var variables = {
-			"Channel"   : aliases_data[name]["channel"],
-			"Speed"     : speed,
-			"Steps"     : steps };
+		"Channel"   : aliases_data[name]["specific"]["Channel"],
+		"Speed"     : speed,
+		"Steps"     : steps };
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Demo", variables))
 		{
-			result_text += "Demo sent successfully to " + name + "\n";
+			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			result_text += "Demo failed to send to " + name + "\n";
+			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
 		}
+		
+		found = true;
 	}
 	
-	if (result_text.length == 0)
+	if (!found)
 	{
-		result_text = "No aliases by the name " + alias_name + " were applicable to Demo.";
+		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	return true;
 }
-Console_RegisterCommand(Dimmer_Demo, function(args) { return Console_StandardAutocomplete(args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_StepsLevels()); });
+Console_RegisterCommand(Dimmer_Demo, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_StepsLevels()); });

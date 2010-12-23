@@ -53,41 +53,9 @@ struct HexTo {
     }
 };
 
-inline unsigned int FromHex(std::string hex_chars)
-{
-    int value = 0;
-    int ascii_value;
-    
-    for (int n = hex_chars.length() - 1; n >= 0; n--)
-    {
-        ascii_value = (int)hex_chars.data()[n];
-    
-        if (48 <= ascii_value && ascii_value <= 57)
-        {
-            value |= (ascii_value - 48) << n;
-        }
-        else if (65 <= ascii_value && ascii_value <= 70)
-        {
-            value |= (ascii_value - 65) << n;
-        }
-        else
-        {
-            throw std::runtime_error("This is not an hex string, hex_chars = " + hex_chars + ", ascii_value = " + boost::lexical_cast<std::string>(ascii_value) + ", n = " + boost::lexical_cast<std::string>(n) + ", length = " + boost::lexical_cast<std::string>(hex_chars.length()));
-        }
-    }
-    
-    return value;
-}
-
-inline std::string ToHex(unsigned int value)
-{
-    char hex_string[11];
-    
-    snprintf(hex_string, sizeof(hex_string), "0x%08X", value);
-    
-    return std::string(hex_string);
-    
-}
+std::string PadNumber(unsigned int number, unsigned int length);
+unsigned int FromHex(std::string hex_chars);
+std::string ToHex(unsigned int value);
     
 }; // namespace type
 }; // namespace atom

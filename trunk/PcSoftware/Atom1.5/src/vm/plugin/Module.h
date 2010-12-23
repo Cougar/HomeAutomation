@@ -42,6 +42,7 @@ public:
     virtual ~Module();
     
     void InitializeDone();
+    void CallOutput(unsigned int request_id, std::string output);
     
 private:
     static logging::Logger LOG;

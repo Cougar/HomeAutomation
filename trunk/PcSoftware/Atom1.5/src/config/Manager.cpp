@@ -51,7 +51,6 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     ("Legacy",                                                                 "Start legacy VM environment");
 
     this->command_line_.add_options()
-    ("version,v", "print version string")
     ("help,h",    "produce help message")
     ("daemon,d",  "start in daemon mode")
     ("file,f",    boost::program_options::value<std::string>()->default_value(default_config_file), "configuration file");

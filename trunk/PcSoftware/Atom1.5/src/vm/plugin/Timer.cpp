@@ -61,6 +61,11 @@ void Timer::InitializeDone()
     timer::Manager::Instance()->ConnectSlots(timer::Manager::SignalOnTimeout::slot_type(&Timer::SlotOnTimeout, this, _1, _2).track(this->tracker_));
 }
 
+void Timer::CallOutput(unsigned int request_id, std::string output)
+{
+    LOG.Info(output);
+}
+
 void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
 {
     this->io_service_.post(boost::bind(&Timer::SlotOnTimeoutHandler, this, timer_id, repeat));
@@ -98,6 +103,7 @@ Value Timer::Export_SetAlarm(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue time(args[0]);
@@ -118,6 +124,7 @@ Value Timer::Export_SetTimer(const v8::Arguments& args)
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     timer::TimerId timer_id = timer::Manager::Instance()->SetTimer(args[0]->Uint32Value(), args[1]->BooleanValue());
@@ -136,6 +143,7 @@ Value Timer::Export_Cancel(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     Timers::iterator it = Timer::timers_.find(args[0]->IsUint32());
@@ -158,6 +166,7 @@ Value Timer::Export_Sleep(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     boost::this_thread::sleep(boost::posix_time::milliseconds(args[0]->Uint32Value()));

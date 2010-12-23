@@ -1,29 +1,85 @@
 
-Console_AutoCompleteFunctions = {};
-Console_HelpTexts = {};
+Console_Functions = {};
+Console_CurrentFunction = null;
+Console_DefaultPrompt = "\033[29;1m[atomic] \033[0m";
+Console_LastClientId = null;
 
-function Console_DoAutocomplete()
+function Console_GetFunctionNames()
 {
-	var name = arguments[0];
+	return get_keys(Console_Functions);
+}
 
-	//Log("Console_DoAutocomplete(), name=" + name);
+// C++ callable functions
+
+function Console_AutocompleteRequest(client_id, arg_index, commandline)
+{
+	Console_LastClientId = client_id;
 	
-	var result = {};
+	var result = [];
+	var parts = [];
+	var name = "Console_Shell";
 	
-	if (typeof Console_AutoCompleteFunctions[name] != 'undefined')
+	if (commandline.length > 0 && arg_index != 0)
 	{
-		//Log("calling autocomplete_callback");
-		result = Console_AutoCompleteFunctions[name](arguments);
+		parts = commandline.split(" ");
+		name = parts.shift();
+		arg_index--;
+	}
+
+	if (Console_Functions[name] && Console_Functions[name]["autocomplete"])
+	{
+		//Log("calling autocomplete_callback: " + name + "\n");
+		result = Console_Functions[name]["autocomplete"](arg_index, parts);
 	}
 	
-	var result_string = "";
+	var result_string = result.join("\n");
 	
-	for (var n = 0; n < result.length; n++)
+	ConsoleExport_AutoCompleteResponse(Console_LastClientId, result_string);
+	return true;
+}
+
+function Console_PromptResponse(client_id, response)
+{
+	Console_LastClientId = client_id;
+	
+	var parts = response.split(" ");
+
+	var current_function = Console_CurrentFunction;
+	Console_CurrentFunction = Console_Shell;
+	
+	var result = current_function.apply(null, Array.prototype.slice.call(parts, 0));
+	
+	if (Console_CurrentFunction == Console_Shell)
 	{
-		result_string += result[n] + "\n";
+		Console_SetDefaultPrompt();
 	}
 	
-	return result_string;
+	return result;
+}
+
+function Console_NewConnection(client_id)
+{
+	Console_LastClientId = client_id;
+	
+	return Console_SetDefaultPrompt();
+}
+
+// User script functions
+
+function Console_PreventDefaultPrompt()
+{
+	Console_CurrentFunction = null;
+}
+
+function Console_SetDefaultPrompt()
+{
+	return Console_PromptRequest(Console_DefaultPrompt, Console_Shell);
+}
+
+function Console_PromptRequest(prompt, callback)
+{
+	Console_CurrentFunction = callback;
+	return ConsoleExport_PromptRequest(Console_LastClientId, prompt);
 }
 
 function Console_RegisterCommand(command, autocomplete_callback)
@@ -47,54 +103,50 @@ function Console_RegisterCommand(command, autocomplete_callback)
 		argument_string = "<" + argument_string.replace(/ /g, "> <") + ">";
 	}
 	
-	if (ConsoleExport_RegisterCommand(name))
-	{
-		Console_HelpTexts[name] = argument_string;
-		
-		
-		if (autocomplete_callback)
-		{
-			Console_AutoCompleteFunctions[name] = autocomplete_callback;
-		}
-		
-		return true;
-	}
-	
-	return false;
+	Console_Functions[name] = { "command" : command, "autocomplete" : autocomplete_callback, "help" : argument_string };
+	return true;
 }
 
 function Console_StandardAutocomplete()
 {
-	// First argument is the command line split
-	var command_line_parts = arguments[0];
+	var arg_index = arguments[0];
+	var args = arguments[1];
 	
-	// command_line_parts[0] == command name
-	var arg_index = arguments[0].length - 2;
-	
-	// Supplied parameters to complete
-	var args_to_complete = arguments.length - 1;
-	
-	if (0 <= arg_index && arg_index < args_to_complete)
+	if (0 <= arg_index && arg_index < arguments.length - 2)
 	{
-		return arguments[arg_index + 1];
+		return arguments[arg_index + 2];
 	}
 	
-	return new Array();
+	return [];
 }
 
+// Default call function
 
-
-function help_complete(args)
+function Console_Shell()
 {
-	var result = {};
+	var args = to_array(arguments);
+	var name = args.shift();
 	
-	var arg_index = args.length - 1;
+	if (Console_Functions[name] && Console_Functions[name]["command"])
+	{
+		return Console_Functions[name]["command"].apply(null, Array.prototype.slice.call(args, 0));
+	}
+	
+	return false;
+}
+Console_RegisterCommand(Console_Shell, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Console_GetFunctionNames()); });
+
+// Help functions
+
+function help_complete(arg_index, args)
+{
+	var result = [];
 	
 	if (arg_index == 1) // command name
 	{
-		for (var n in Console_HelpTexts)
+		for (var name in Console_Functions)
 		{
-			result.push(n);
+			result.push(name);
 		}
 	}
 	
@@ -108,54 +160,22 @@ function help(command_name)
 		command_name = "help";
 	}
 	
-	if (typeof Console_HelpTexts[command_name] != 'undefined')
+	if (Console_Functions[command_name] && Console_Functions[command_name]["help"])
 	{
 		var result = "";
 		
-		if (Console_AutoCompleteFunctions[command_name])
+		if (Console_Functions[command_name] && Console_Functions[command_name]["autocomplete"])
 		{
 			result += "Argument autocompletion enabled for " + command_name + "\n";
 		}
 		
-		result += "Syntax: " + command_name + " " + Console_HelpTexts[command_name] + "\n";
+		result += "Syntax: " + command_name + " " + Console_Functions[command_name]["help"] + "\n";
 		
-		return result;
+		Log(result);
+		return true;
 	}
 	
-	return "No help for " + command_name + " found\n";
+	Log("No help for " + command_name + " found");
+	return false;
 }
-Console_RegisterCommand(help, help_complete);
-
-var prompt_requests = {};
-var prompt_request_counter = 0;
-
-function prompt(question, callback, text)
-{
-	var id = prompt_request_counter++;
-	prompt_requests[id] = callback;
-	
-	var prompt = "";
-	
-	if (text)
-	{
-		if (text[text.length - 1] != '\n')
-		{
-			text += "\n";
-		}
-		
-		prompt += text;
-	}
-	
-	prompt += "P;" + id + ";" + question + "\n";
-	
-	return prompt;
-}
-
-function Console_PromptResponse(id, response)
-{
-	var result = prompt_requests[id](response);
-	
-	delete prompt_requests[id];
-	
-	return result;
-}
+Console_RegisterCommand(help, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Console_GetFunctionNames()); });

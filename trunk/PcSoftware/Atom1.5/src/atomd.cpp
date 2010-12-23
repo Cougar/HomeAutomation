@@ -42,6 +42,7 @@
 #include "vm/plugin/Module.h"
 #include "vm/plugin/Console.h"
 #include "vm/plugin/Storage.h"
+#include "vm/plugin/Xorg.h"
 
 using namespace atom;
  
@@ -121,6 +122,9 @@ int main(int argc, char **argv)
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Xorg(vm::Manager::Instance()->GetIoService())));
+    
+    
     
     vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
     
