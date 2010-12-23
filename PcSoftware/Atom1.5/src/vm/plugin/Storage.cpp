@@ -50,15 +50,21 @@ void Storage::InitializeDone()
     Plugin::InitializeDone();
 }
 
+void Storage::CallOutput(unsigned int request_id, std::string output)
+{
+    LOG.Info(output);
+}
+
 Value Storage::Export_GetParameters(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -79,11 +85,12 @@ Value Storage::Export_GetParameter(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -107,11 +114,12 @@ Value Storage::Export_SetParameter(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue store_name(args[0]);

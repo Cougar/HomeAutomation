@@ -39,11 +39,11 @@ public:
     virtual ~System();
     
     void InitializeDone();
+    void CallOutput(unsigned int request_id, std::string output);
     
 private:
     static logging::Logger LOG;
     
-    static Value Export_Log(const v8::Arguments& args);
     static Value Export_Require(const v8::Arguments& args);
     static Value Export_Execute(const v8::Arguments& args);
     

@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <signal.h>
 #include <stdio.h>
@@ -31,6 +32,7 @@
 #include <boost/thread/condition.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/program_options.hpp>
 
 #include "net/Manager.h"
 #include "net/Subscriber.h"
@@ -43,6 +45,12 @@
 
 using namespace atom;
 
+bool finish = false;
+common::StringList autocomplete_list;
+char* buffer = NULL;
+boost::condition on_message_condition;
+struct termios original_flags;
+std::string history_filename;
 
 void Handler(int status);
 void CleanUp();
@@ -50,13 +58,10 @@ void CleanUp();
 char* AutoCompleteGet(const char* text, int state);
 static char** AutoComplete(const char* text, int start, int end);
 
-common::StringList autocomplete_list;
-char* buffer = NULL;
-bool waiting_for_autocomplete = false;
-boost::condition on_message_condition;
-boost::mutex guard_mutex;
-std::string prompt;
-int prompt_id = -1;
+std::string GetCwd()
+{
+    return std::string(getpwuid(getuid())->pw_dir);
+}
 
 class ConsoleClient : public net::Subscriber
 {
@@ -65,7 +70,6 @@ public:
     
     ConsoleClient(std::string address, unsigned int port)
     {
-        this->identifier_ = address + ":" + boost::lexical_cast<std::string>(port);
         this->client_id_ = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, address, port);
     }
     
@@ -76,36 +80,45 @@ public:
         this->io_service_.stop();
     }
     
-    void Send(std::string data)
+    std::string GetPrompt()
     {
-        net::Manager::Instance()->SendTo(this->client_id_, data);
+        return this->prompt_;
     }
     
-    bool IsConnected()
+    void SendResponse(std::string payload)
     {
-        return this->client_id_ != 0;
+        std::string packet = "RESP";
+        packet += common::PadNumber(payload.length() + 1, 4);
+        packet += payload;
+        
+        net::Manager::Instance()->SendTo(this->client_id_, packet);
     }
     
-    std::string GetIdentifier()
+    void AutoCompleteRequest(unsigned int arg_index, std::string commandline)
     {
-        return this->identifier_;
+        std::string payload = common::PadNumber(arg_index, 4);
+        payload += commandline;
+        
+        std::string packet = "COMP";
+        packet += common::PadNumber(payload.length() + 1, 4);
+        packet += payload;
+        
+        net::Manager::Instance()->SendTo(this->client_id_, packet);
     }
     
 private:
     net::ClientId client_id_;
-    std::string identifier_;
+    std::string prompt_;
     
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
     {
-        if (client_state == net::CLIENT_STATE_CONNECTED)
+        if (client_state != net::CLIENT_STATE_CONNECTED)
         {
-            printf("Connected to Atom Daemon!\n");
-        }
-        else
-        {
-            printf("\nDisconnected!\n");
+            std::cout << "Disconnected from server" << std::endl;
+            
             this->client_id_ = 0;
+            finish = true;
            
             kill(getpid(), SIGTERM);
         }
@@ -113,138 +126,157 @@ private:
     
     void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
     {
-        prompt_id = -1;
-        
         std::string s(data.ToCharString());
-        
-        if (waiting_for_autocomplete)
+ 
+        while (s.length() > 0)
         {
-            autocomplete_list.clear();
+            std::string command = s.substr(0, 4);
+            unsigned int payload_length = boost::lexical_cast<unsigned int>(s.substr(4, 4));
             
-            boost::algorithm::trim_if(s, boost::is_any_of("\n"));
-            boost::algorithm::trim_if(s, boost::is_any_of(" "));
-            
-            if (s != "")
+            if (command == "TEXT")
             {
-                boost::algorithm::split(autocomplete_list, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
+                std::cout << s.substr(8, payload_length - 1) << std::flush;
             }
-        }
-        else
-        {
-            common::StringList lines;
-            
-            boost::algorithm::split(lines, s, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
-            
-            for (unsigned int n = 0; n < lines.size(); n++)
+            else if (command == "PROM")
             {
-                common::StringList parts;
+                this->prompt_ = s.substr(8, payload_length - 1);
+                on_message_condition.notify_all();
+            }
+            else if (command == "COMP")
+            {
+                autocomplete_list.clear();
                 
-                boost::algorithm::split(parts, lines[n], boost::is_any_of(";"), boost::algorithm::token_compress_off);
-                
-                if (parts[0].length() == 1 && parts[0] == "P")
+                if (payload_length > 0)
                 {
-                    prompt_id = boost::lexical_cast<unsigned int>(parts[1]);
+                    std::string payload = s.substr(8, payload_length - 1);
                     
-                    prompt = "";
-                    
-                    for (unsigned int c = 2; c < parts.size(); c++)
+                    if (payload.length() > 0)
                     {
-                        prompt += parts[c] + " ";
+                        boost::algorithm::split(autocomplete_list, payload, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
                     }
                 }
-                else 
-                {
-                    boost::algorithm::trim_if(lines[n], boost::is_any_of(" "));
-                    
-                    if (lines[n] != "")
-                    {
-                        printf("%s\n", lines[n].data());
-                    }
-                }
+                
+                on_message_condition.notify_all();
             }
+            else
+            {
+                std::cerr << "Unknown data received: " << s << std::endl;
+                finish = true;
+                on_message_condition.notify_all();
+                break;
+            }
+            
+            if (8 + payload_length >= s.length())
+            {
+                break;
+            }
+            
+            s = s.substr(8 + payload_length);
         }
-         
-        on_message_condition.notify_all();
     }
 };
 
 ConsoleClient::Pointer cc;
-struct termios original_flags;
-std::string history_filename;
+
 
 int main(int argc, char **argv)
 {
+    // Signal handlers
     signal(SIGTERM, Handler);
     signal(SIGINT, Handler);
     signal(SIGQUIT, Handler);
     signal(SIGABRT, Handler);
     signal(SIGPIPE, Handler);
     
-    tcgetattr(fileno(stdin), &original_flags);
-       
-    printf("Atom Interactive Console, version 1.5.0 starting...\n");
-    printf("Written by Mattias Runge 2010.\n");
-    printf("Released under GPL version 2.\n");
+    boost::mutex guard_mutex;
     
-    net::Manager::Create();
-    
-    std::string address = "localhost";
-    unsigned int port = 1202;
-    
-    printf("Connecting to %s:%d...", address.data(), port);
-    
-    try
-    {
-        cc = ConsoleClient::Pointer(new ConsoleClient(address, port));
-    }
-    catch (std::runtime_error& e)
-    {
-        printf("%s\n", e.what());
-        CleanUp();
-        
-        return EXIT_FAILURE;
-    }
-    
-    printf("success!\n");
-    
-    prompt = cc->GetIdentifier() + "] ";
-    
-    passwd* user_struct = getpwuid(getuid());
-    
-    history_filename = std::string(user_struct->pw_dir) + "/.atomic_history";
-    
+    // Setup readline
+    history_filename = GetCwd() + "/.atomic_history";
     read_history(history_filename.data());
     
     rl_attempted_completion_function = AutoComplete;
     
-    while ((buffer = readline(prompt.data())) != NULL)
+    // Save command line state
+    tcgetattr(fileno(stdin), &original_flags);
+    
+    // Parse commandline
+    boost::program_options::options_description command_line;
+    boost::program_options::variables_map variable_map;
+    
+    command_line.add_options()
+    ("help,h",    "produce help message")
+    ("server,s",  boost::program_options::value<std::string>()->default_value("localhost"), "server address")
+    ("port,p",    boost::program_options::value<unsigned int>()->default_value(1202), "server port");
+    
+    try
     {
-        if (strlen(buffer) == 0)
-        {
-            continue;
-        }
+        boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(command_line).run(), variable_map);
+    }
+    catch (boost::program_options::unknown_option e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cout << command_line << std::endl;
+        CleanUp();
+        return EXIT_FAILURE;
+    }
+    catch (boost::program_options::invalid_syntax e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cout << command_line << std::endl;
+        CleanUp();
+        return EXIT_FAILURE;
+    }
+    
+    if (variable_map.count("help") != 0)
+    {
+        std::cout << command_line << std::endl;
+        CleanUp();
+        return EXIT_SUCCESS;
+    }
+    
+    
+    std::cout << "Atom Interactive Console, version 1.5.0 starting..." << std::endl;
+    std::cout << "Written by Mattias Runge 2010." << std::endl;
+    std::cout << "Released under GPL version 2." << std::endl;
+    
+    net::Manager::Create();
+       
+    std::cout << "Connecting to " << variable_map["server"].as<std::string>().data() << ":" << variable_map["port"].as<unsigned int>() << "..." << std::endl;
+    
+    try
+    {
+        cc = ConsoleClient::Pointer(new ConsoleClient(variable_map["server"].as<std::string>(), variable_map["port"].as<unsigned int>()));
+    }
+    catch (std::runtime_error& e)
+    {
+        std::cout << "error!" << std::endl;
+        std::cerr << e.what() << std::endl;
+        CleanUp();
+        return EXIT_FAILURE;
+    }
+    
+    while (true)
+    {
+        boost::mutex::scoped_lock guard(guard_mutex);
+        on_message_condition.wait(guard);
         
-        if (strcmp(buffer, "quit") == 0)
+        if (finish)
         {
             break;
         }
         
-        waiting_for_autocomplete = false;
-        prompt = cc->GetIdentifier() + "] ";
-        
-        if (prompt_id == -1)
+        while ((buffer = readline(cc->GetPrompt().data())) != NULL)
         {
-            cc->Send("E;" + std::string(buffer));
-            add_history(buffer);
-        }
-        else
-        {
-            cc->Send("R;" + boost::lexical_cast<std::string>(prompt_id) + ";" + std::string(buffer));
-            prompt_id = -1;
+            if (strlen(buffer) == 0)
+            {
+                continue;
+            }
+            
+            break;
         }
         
-        boost::mutex::scoped_lock guard(guard_mutex);
-        on_message_condition.wait(guard);    
+        cc->SendResponse(buffer);
+        add_history(buffer);
     }
     
     CleanUp();
@@ -255,9 +287,8 @@ int main(int argc, char **argv)
 static char** AutoComplete(const char* text, int start, int end)
 {
     unsigned int count = 0;
-    
-    //printf("\nAutoComplete:start=%d, end=%d\n", start, end);
-    
+    boost::mutex guard_mutex;
+
     for (unsigned int n = 0; n < start; n++)
     {
         if (rl_line_buffer[n] == ' ')
@@ -266,23 +297,15 @@ static char** AutoComplete(const char* text, int start, int end)
         }
     }
     
-    waiting_for_autocomplete = true;
-   
-
-    std::string request = "A;"+ boost::lexical_cast<std::string>(count) + ";" + std::string(rl_line_buffer);
-    //printf("\nSending request:%s\n", request.data());
-    
-    cc->Send(request);
+    cc->AutoCompleteRequest(count, rl_line_buffer);
     
     boost::mutex::scoped_lock guard(guard_mutex);
-    on_message_condition.wait(guard);    
+    on_message_condition.wait(guard);
     
-    if (autocomplete_list.size() == 0)
+    /*if (autocomplete_list.size() == 0)
     {
         return NULL;
-    }
-    
-    //printf("processing response\n");
+    }*/
     
     return rl_completion_matches(text, &AutoCompleteGet);
 }
@@ -293,8 +316,6 @@ char* AutoCompleteGet(const char* text, int state)
     int length = strlen(text);
     std::string name;
     
-    //printf("run, %s, %d, %d\n", text, state, autocomplete_list.size());
-    
     if (!state) // First run
     {
         index = 0;
@@ -303,7 +324,6 @@ char* AutoCompleteGet(const char* text, int state)
     while (autocomplete_list.size() > index)
     {
         name = autocomplete_list[index];
-        //printf("testing name = %s\n", name.data());
         
         index++;
         
@@ -321,7 +341,7 @@ char* AutoCompleteGet(const char* text, int state)
 
 void CleanUp()
 {
-    printf("Cleaning up...\n");
+    std::cout << "Cleaning up..." << std::endl;
  
     write_history(history_filename.data());
     
@@ -334,7 +354,7 @@ void CleanUp()
         free(buffer);
     }
     
-    printf("Thank you for using Atom. Goodbye!\n");
+    std::cout << "Thank you for using Atom. Goodbye!" << std::endl;
     
     tcsetattr(fileno(stdin), TCSANOW, &original_flags); // Restore
 }
@@ -382,6 +402,5 @@ void Handler(int status)
     {
         CleanUp();
         exit(0);
-        //on_message_condition.notify_all();
     }
 }

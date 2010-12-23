@@ -56,7 +56,7 @@ public:
     void Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void Execute(std::string plugin_name, unsigned int request_id, std::string code);
     
-    void CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
+    bool CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void ExecuteHandler(std::string plugin_name, unsigned int request_id, std::string code);
     
     bool LoadScript(std::string scriptname);
@@ -78,13 +78,16 @@ private:
     PluginList plugins_;
     ImportFunctionList functions_;
     common::StringList loaded_scripts_;
+    std::string current_plugin_name_;
+    unsigned int current_request_id_;    
     
     Manager();
     
     void StartHandler();
 
+    static Value Export_Log(const v8::Arguments& args);    
     
-    void SendResponse(std::string plugin_name, unsigned int request_id, std::string response);
+    void CallOutput(std::string output);
     
     std::string FormatException(v8::TryCatch& try_catch);
     

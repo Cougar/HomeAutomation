@@ -57,6 +57,11 @@ void Module::InitializeDone()
                                                control::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
 }
 
+void Module::CallOutput(unsigned int request_id, std::string output)
+{
+    LOG.Info(output);
+}
+
 void Module::SlotOnNodeChange(unsigned int node_id, bool available)
 {
     this->io_service_.post(boost::bind(&Module::SlotOnNodeChangeHandler, this, node_id, available));
@@ -121,7 +126,8 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
     
     if (args.Length() < 3)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     common::StringMap variables;
@@ -154,6 +160,7 @@ Value Module::Export_GetAvailableModules(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     common::StringList available_modules = control::Manager::Instance()->GetAvailableModules();
@@ -177,6 +184,7 @@ Value Module::Export_ProgramNode(const v8::Arguments& args)
     if (args.Length() < 3)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue filename(args[2]);

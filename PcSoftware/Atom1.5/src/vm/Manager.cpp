@@ -78,16 +78,42 @@ void Manager::Start(std::string script_path)
     this->io_service_.post(boost::bind(&Manager::StartHandler, this));
 }
 
-void Manager::SendResponse(std::string plugin_name, unsigned int request_id, std::string response)
+void Manager::CallOutput(std::string output)
 {
-    for (unsigned int n = 0; n < this->plugins_.size(); n++)
+    if (this->current_plugin_name_ != "")
     {
-        if (this->plugins_[n]->GetName() == plugin_name)
+        for (unsigned int n = 0; n < this->plugins_.size(); n++)
         {
-            this->plugins_[n]->ExecutionResult(response, request_id);
-            return;
+            if (this->plugins_[n]->GetName() == this->current_plugin_name_)
+            {
+                this->plugins_[n]->CallOutput(this->current_request_id_, output);
+                return;
+            }
         }
     }
+    else
+    {
+        LOG.Info(output);
+    }
+}
+
+Value Manager::Export_Log(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(Manager::Instance()->GetContext());
+    
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        Manager::instance_->LOG.Error(std::string(__FUNCTION__) + ": To few arguments to log.");
+        return v8::Undefined();
+    }
+    
+    v8::String::AsciiValue str(args[0]);
+       
+    Manager::instance_->CallOutput(*str);
+    
+    return v8::Undefined();
 }
 
 void Manager::Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
@@ -100,15 +126,21 @@ void Manager::Execute(std::string plugin_name, unsigned int request_id, std::str
     this->io_service_.post(boost::bind(&Manager::ExecuteHandler, this, plugin_name, request_id, code));
 }
 
-void Manager::CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
+bool Manager::CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
     v8::Context::Scope context_scope(this->context_);
     v8::TryCatch try_catch;
     
+    this->current_plugin_name_ = plugin_name;
+    this->current_request_id_ = request_id;
+    
     if (this->functions_.find(name) == this->functions_.end())
     {
-        this->SendResponse(plugin_name, request_id, "No such function found, " + name);
-        return;
+        this->CallOutput("No such function found, " + name);
+        
+        this->current_plugin_name_ = "";
+        this->current_request_id_ = 0;
+        return false;
     }
 
     //LOG.Debug("Call: " + name);
@@ -117,18 +149,26 @@ void Manager::CallHandler(std::string plugin_name, unsigned int request_id, std:
     
     if (result.IsEmpty())
     {
-        this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
-        return;
+        this->CallOutput(this->FormatException(try_catch));
+        
+        this->current_plugin_name_ = "";
+        this->current_request_id_ = 0;
+        return false;
     }
     
-    v8::String::AsciiValue response(result->ToString());
+    //v8::String::AsciiValue response(result->ToString());
+    //this->CallOutput(plugin_name, request_id, std::string(*response));
     
-    this->SendResponse(plugin_name, request_id, std::string(*response));
+    this->current_plugin_name_ = "";
+    this->current_request_id_ = 0;
+    return true;
 }
 
 void Manager::StartHandler()
 {
     v8::Handle<v8::ObjectTemplate> raw_template = v8::ObjectTemplate::New();
+    
+    raw_template->Set(v8::String::New("Log"), v8::FunctionTemplate::New(Manager::Export_Log));
     
     for (unsigned int c = 0; c < this->plugins_.size(); c++)
     {
@@ -261,9 +301,12 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
     v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(code.data(), code.length()),
                                                         v8::String::New(scriptname.data(), scriptname.length()));
     
+    this->current_plugin_name_ = plugin_name;
+    this->current_request_id_ = request_id;
+    
     if (script.IsEmpty())
     {
-        this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
+        this->CallOutput(this->FormatException(try_catch));
     }
     else
     {
@@ -271,15 +314,17 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
         
         if (result.IsEmpty())
         {
-            this->SendResponse(plugin_name, request_id, this->FormatException(try_catch));
+            this->CallOutput(this->FormatException(try_catch));
         }
         else
         {
-            v8::String::AsciiValue response(result->ToString());
-            
-            this->SendResponse(plugin_name, request_id, std::string(*response));
+            //v8::String::AsciiValue response(result->ToString());
+            //this->CallOutput(std::string(*response));
         }
     }
+    
+    this->current_plugin_name_ = "";
+    this->current_request_id_ = 0;
 }
 
 std::string Manager::FormatException(v8::TryCatch& try_catch)

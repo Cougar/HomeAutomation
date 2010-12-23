@@ -1,6 +1,61 @@
 
 Require("plugin/storage.js");
 
+function Module_CreateAliasAutoComplete(args)
+{
+	// args[0] == command name
+	var arg_index = args.length - 2;
+	
+	if (arg_index == 0)
+	{
+		return Module_GetAliasNames();
+	}
+	else if (arg_index == 1)
+	{
+		return Module_GetNames();
+	}
+	else if (arg_index == 2)
+	{
+		return Module_GetAvailableIds([ args[2] ])
+	}
+	
+	return [];
+}
+
+function Module_CreateAlias(alias_name, module_name, module_id, specific)
+{
+	// TODO Check arguments
+	
+	var specific_list = {};
+	
+	if (specific)
+	{
+		var specific_parts = split(",", specific);
+		
+		// TODO: Check length
+		
+		for (var index in specific_parts)
+		{
+			var parts = split("=", specific_parts[index]);
+			
+			// TODO: Check length
+			
+			specific_list[parts[0]] = parts[1];
+		}
+	}
+	
+	var alias_data = {
+		"group"       : false,
+		"name"        : alias_name,
+		"module_name" : module_name,
+		"module_id"   : module_id,
+		"specific"    : specific_list
+	};
+	
+	return Storage_SetParameter("alias", alias_name, JSON.stringify(alias_data));
+}
+Console_RegisterCommand(Module_CreateAlias, Module_CreateAliasAutoComplete);
+
 function Module_CreateAliasGroupAutoComplete(args)
 {
 	// args[0] == command name
@@ -12,7 +67,7 @@ function Module_CreateAliasGroupAutoComplete(args)
 	}
 	else if (arg_index == 1)
 	{
-		return [ "Dimmer230", "irTransmit" ];
+		return Module_GetNames();
 	}
 	else if (arg_index >= 2)
 	{
@@ -156,6 +211,11 @@ function Module_GetAvailableIds(filter_module_names)
 	return result_list;
 }
 
+function Module_GetNames()
+{
+	return [ "Dimmer230", "irTransmit" ];
+}
+
 function Module_SendMessage(module_name, module_id, command, variables)
 {
 	var args = [];
@@ -180,14 +240,8 @@ function Module_SendMessage(module_name, module_id, command, variables)
 	return ModuleExport_SendMessage.apply(null, Array.prototype.slice.call(args, 0));
 }
 
-var Module_MessageAliasLookupFunctions = {};
 var Module_OnChangeFunctions = {};
 var Module_OnMessageFunctions = {};
-
-function Module_RegisterMessageAliasLookup(module_name, callback)
-{
-	Module_MessageAliasLookupFunctions[module_name] = callback;
-}
 
 function Module_RegisterToOnChange(alias_name, callback)
 {
@@ -213,15 +267,32 @@ function Module_OnMessage(full_id, command, variables)
 {
 	var id_parts = full_id.split(":", 2);
 	var aliases_data = {};
+
+	var aliases_data = Module_LookupAliases({
+		"module_name" : id_parts[0],
+		"module_id"   : id_parts[1],
+		"group"       : false
+	});
 	
-	if (Module_MessageAliasLookupFunctions[id_parts[0]])
+	for (var alias_name in aliases_data)
 	{
-		aliases_data = Module_MessageAliasLookupFunctions[id_parts[0]](id_parts[1], command, variables);
-	}
-	
-	for (var alias_name in alias_data)
-	{
-		if (Module_OnMessageFunctions[alias_name])
+		var ok = true;
+
+		if (aliases_data[alias_name]["specific"])
+		{
+			var ok = true;
+			
+			for (var name in variables)
+			{
+				if (aliases_data[alias_name]["specific"][name] && aliases_data[alias_name]["specific"][name] != variables[name])
+				{
+					ok = false;
+					break;
+				}
+			}
+		}
+		
+		if (Module_OnMessageFunctions[alias_name] && ok)
 		{
 			for (var n in Module_OnMessageFunctions[alias_name])
 			{
@@ -234,15 +305,33 @@ function Module_OnMessage(full_id, command, variables)
 function Module_OnChange(full_id, available)
 {
 	var id_parts = full_id.split(":", 2);
+	var aliases_data = {};
 	
-	var aliases_data = Module_LookupAliases({
+	var aliases_data_all = Module_LookupAliases({
 		"module_name" : id_parts[0],
 		"module_id"   : id_parts[1],
+		"group"       : false
 	});
 	
-	for (var alias_name in alias_data)
+	for (var alias_name in aliases_data)
 	{
-		if (Module_OnChangeFunctions[alias_name])
+		var ok = true;
+		
+		if (aliases_data[alias_name]["specific"])
+		{
+			var ok = true;
+			
+			for (var name in variables)
+			{
+				if (aliases_data[alias_name]["specific"][name] && aliases_data[alias_name]["specific"][name] != variables[name])
+				{
+					ok = false;
+					break;
+				}
+			}
+		}
+		
+		if (Module_OnChangeFunctions[alias_name] && ok)
 		{
 			for (var n in Module_OnChangeFunctions[alias_name])
 			{

@@ -46,7 +46,7 @@ public:
     ExportFunctionList& GetExportFunctions();
     
     virtual void InitializeDone();
-    virtual void ExecutionResult(std::string response, unsigned int request_id);
+    virtual void CallOutput(unsigned int request_id, std::string output);
     
 protected:
     typedef boost::shared_ptr<char> TrackerPointer;
@@ -55,7 +55,7 @@ protected:
     TrackerPointer tracker_;
     boost::asio::io_service& io_service_;
     
-    void Call(unsigned int request_id, std::string name, ArgumentListPointer arguments);
+    bool Call(unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void Execute(unsigned int request_id, std::string code);
     void ExportFunction(std::string name, v8::InvocationCallback function);
     static bool ImportFunction(std::string name);

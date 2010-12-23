@@ -42,12 +42,12 @@ public:
     Console(boost::asio::io_service& io_service, unsigned int port);
     virtual ~Console();
     
-    void ExecutionResult(std::string response, unsigned int request_id);
     void InitializeDone();
+    void CallOutput(unsigned int request_id, std::string output);
     
 private:
     net::ServerId server_id_;
-    static common::StringList commands_;
+    static net::ClientId current_client_id_;
     
     void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
     void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
@@ -57,7 +57,8 @@ private:
     
     static logging::Logger LOG;
     
-    static Value Export_RegisterCommand(const v8::Arguments& args);
+    static Value Export_PromptRequest(const v8::Arguments& args);
+    static Value Export_AutoCompleteResponse(const v8::Arguments& args);
 };
   
 }; // namespace plugin

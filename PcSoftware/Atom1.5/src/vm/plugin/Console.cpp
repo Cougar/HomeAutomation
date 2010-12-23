@@ -26,22 +26,25 @@
 
 #include "net/Manager.h"
 #include "vm/Manager.h"
+#include "common/common.h"
 
 namespace atom {
 namespace vm {
 namespace plugin {
     
 logging::Logger Console::LOG("vm::plugin::Console");
-common::StringList Console::commands_;
+net::ClientId Console::current_client_id_;
     
 Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugin(io_service)
 {
     this->name_ = "console";
+    Console::current_client_id_ = 0;
     
     net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
                                            net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
     
-    this->ExportFunction("ConsoleExport_RegisterCommand", Console::Export_RegisterCommand);
+    this->ExportFunction("ConsoleExport_PromptRequest", Console::Export_PromptRequest);
+    this->ExportFunction("ConsoleExport_AutoCompleteResponse", Console::Export_AutoCompleteResponse);
     
     try
     {
@@ -65,8 +68,18 @@ void Console::InitializeDone()
 {
     Plugin::InitializeDone();
     
-    this->ImportFunction("Console_DoAutocomplete");
+    this->ImportFunction("Console_AutocompleteRequest");
     this->ImportFunction("Console_PromptResponse");
+    this->ImportFunction("Console_NewConnection");
+}
+
+void Console::CallOutput(unsigned int request_id, std::string output)
+{
+    std::string packet = "TEXT";
+    packet += common::PadNumber(output.length() + 1, 4);
+    packet += output;
+    
+    net::Manager::Instance()->SendTo(request_id, packet);
 }
 
 void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
@@ -93,82 +106,53 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
 
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
 
-    std::string str(data.ToCharString());
+    std::string s(data.ToCharString());
     
-    boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
+    std::string command = s.substr(0, 4);
+    unsigned int payload_length = boost::lexical_cast<unsigned int>(s.substr(4, 4));
+
+    Console::current_client_id_ = client_id;
     
-    common::StringList parts;
-    
-    boost::algorithm::split(parts, str, boost::is_any_of(";"), boost::algorithm::token_compress_off);
-    
-    if (parts[0] == "A") // Autocomplete
-    {
-        unsigned int arg_index = boost::lexical_cast<unsigned int>(parts[1]);
-        
-        std::string result;
-        common::StringList arguments;
-        
-        boost::algorithm::split(arguments, parts[2], boost::is_any_of(" "), boost::algorithm::token_compress_on);
-        
-        if (arg_index == 0)
-        {
-            for (unsigned int n = 0; n < this->commands_.size(); n++)
-            {
-                //LOG.Debug(this->commands_[n]);
-                result += this->commands_[n] + "\n";
-            }
-            
-            net::Manager::Instance()->SendTo(client_id, result);
-        }
-        else
-        {
-            ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
-            common::StringList arguments;
-            
-            boost::algorithm::split(arguments, parts[2], boost::is_any_of(" "), boost::algorithm::token_compress_on);
-            
-            for (unsigned int n = 0; n < arguments.size() && n <= arg_index; n++)
-            {
-                call_arguments->push_back(v8::String::New(arguments[n].data()));
-            }
-            
-            this->Call(client_id, "Console_DoAutocomplete", call_arguments);
-        }
-    }
-    else if (parts[0] == "E")
-    {
-        ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
-        common::StringList arguments;
-        
-        boost::algorithm::split(arguments, parts[1], boost::is_any_of(" "), boost::algorithm::token_compress_on);
-        
-        std::string command = arguments[0];
-        
-        for (unsigned int n = 1; n < arguments.size(); n++)
-        {
-            call_arguments->push_back(v8::String::New(arguments[n].data()));
-        }
-        
-        this->Call(client_id, command, call_arguments);
-    }
-    else if (parts[0] == "R")
+    if (command == "COMP")
     {
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
         
-        call_arguments->push_back(v8::String::New(parts[1].data()));
-        call_arguments->push_back(v8::String::New(parts[2].data()));
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(s.substr(8, 4))));
+        call_arguments->push_back(v8::String::New(s.substr(12).data()));
         
-        this->Call(client_id, "Console_PromptResponse", call_arguments);
+        if (!this->Call(client_id, "Console_AutocompleteRequest", call_arguments))
+        {
+            LOG.Error("Console_AutocompleteRequest failed, we are now in an undefined state!");
+        }
     }
+    else if (command == "RESP")
+    {
+        ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
+        
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        call_arguments->push_back(v8::String::New(s.substr(8).data()));
+        
+        if (!this->Call(client_id, "Console_PromptResponse", call_arguments))
+        {
+            LOG.Error("Console_PromptResponse failed, we are now in an undefined state!");
+        }
+    }
+    else
+    {
+        LOG.Error("Unknown packat received, we are now in an undefined state!");
+    }
+    
+    Console::current_client_id_ = 0;
 }
 
 void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
  
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
@@ -177,6 +161,19 @@ void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
         LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has connected.");
+     
+        Console::current_client_id_ = client_id;
+        
+        ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
+        
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        
+        if (!this->Call(client_id, "Console_NewConnection", call_arguments))
+        {
+            LOG.Error("Console_NewConnection failed, we are now in an undefined state!");
+        }
+        
+        Console::current_client_id_ = 0;
     }
     else
     {
@@ -184,36 +181,50 @@ void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
     }
 }
 
-void Console::ExecutionResult(std::string response, unsigned int request_id)
-{
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    
-    LOG.Debug("ExecutionResult: response=" + response + ", request_id=" + boost::lexical_cast<std::string>(request_id));
-    
-    net::Manager::Instance()->SendTo(request_id, response);
-}
-
-Value Console::Export_RegisterCommand(const v8::Arguments& args)
+Value Console::Export_PromptRequest(const v8::Arguments& args)
 {
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
-    if (args.Length() < 1)
+    if (args.Length() < 2)
     {
-        LOG.Error("To few arguments.");
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
-    v8::String::AsciiValue command(args[0]);
+    v8::String::AsciiValue prompt(args[1]);
     
-    if (Console::ImportFunction(std::string(*command)))
+    std::string packet = "PROM";
+    packet += common::PadNumber(prompt.length() + 1, 4);
+    packet += *prompt;
+    
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    return v8::Boolean::New(true); 
+        
+    return v8::Boolean::New(false); 
+}
+
+Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 2)
     {
-        LOG.Debug(std::string(*command) + " registered successfully.");
-        Console::commands_.push_back(std::string(*command));
-        return v8::Boolean::New(true);
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
-    LOG.Debug("Failed to register command!");
+    v8::String::AsciiValue result(args[1]);
+    
+    std::string packet = "COMP";
+    packet += common::PadNumber(result.length() + 1, 4);
+    packet += *result;
+    
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    return v8::Boolean::New(true); 
     
     return v8::Boolean::New(false); 
 }

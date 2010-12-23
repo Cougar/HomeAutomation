@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef VM_PLUGIN_STORAGE_H
-#define VM_PLUGIN_STORAGE_H
+#ifndef VM_PLUGIN_XORG_H
+#define VM_PLUGIN_XORG_H
 
 #include <boost/shared_ptr.hpp>
 
@@ -30,13 +30,13 @@ namespace atom {
 namespace vm {
 namespace plugin {
 
-class Storage : public Plugin
+class Xorg : public Plugin
 {
 public:
-    typedef boost::shared_ptr<Storage> Pointer;
+    typedef boost::shared_ptr<Xorg> Pointer;
     
-    Storage(boost::asio::io_service& io_service);
-    virtual ~Storage();
+    Xorg(boost::asio::io_service& io_service);
+    virtual ~Xorg();
     
     void InitializeDone();
     void CallOutput(unsigned int request_id, std::string output);
@@ -44,15 +44,11 @@ public:
 private:
     static logging::Logger LOG;
     
-    static Value Export_GetParameters(const v8::Arguments& args);
-    static Value Export_GetParameter(const v8::Arguments& args);
-    static Value Export_SetParameter(const v8::Arguments& args);
-    
-    
+    static Value Export_SendKey(const v8::Arguments& args);
 };
 
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
 
-#endif // VM_PLUGIN_STORAGE_H
+#endif // VM_PLUGIN_XORG_H

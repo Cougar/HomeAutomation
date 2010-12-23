@@ -47,17 +47,15 @@ ExportFunctionList& Plugin::GetExportFunctions()
 
 void Plugin::InitializeDone()
 {
-
 }
 
-void Plugin::ExecutionResult(std::string response, unsigned int request_id)
+void Plugin::CallOutput(unsigned int request_id, std::string output)
 {
-    
 }
 
-void Plugin::Call(unsigned int request_id, std::string name, ArgumentListPointer arguments)
+bool Plugin::Call(unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
-    Manager::Instance()->CallHandler(this->name_, request_id, name, arguments);
+    return Manager::Instance()->CallHandler(this->name_, request_id, name, arguments);
 }
 
 void Plugin::Execute(unsigned int request_id, std::string code)

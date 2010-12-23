@@ -35,7 +35,6 @@ System::System(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "system";
     
-    this->ExportFunction("Log",        System::Export_Log);
     this->ExportFunction("Require",    System::Export_Require);
     this->ExportFunction("Execute",    System::Export_Execute);
 }
@@ -54,22 +53,9 @@ void System::InitializeDone()
     v8::Boolean::New(Manager::Instance()->LoadScript("user/autostart.js"));
 }
 
-Value System::Export_Log(const v8::Arguments& args)
+void System::CallOutput(unsigned int request_id, std::string output)
 {
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
-    
-    if (args.Length() < 1)
-    {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments to log.");
-    }
-    
-    v8::String::AsciiValue str(args[0]);
-    
-    LOG.Info(*str);
-    
-    return v8::Undefined();
+    LOG.Info(output);
 }
 
 Value System::Export_Require(const v8::Arguments& args)
@@ -81,6 +67,7 @@ Value System::Export_Require(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue str(args[0]);
@@ -97,6 +84,7 @@ Value System::Export_Execute(const v8::Arguments& args)
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
     }
     
     v8::String::AsciiValue command(args[0]);
