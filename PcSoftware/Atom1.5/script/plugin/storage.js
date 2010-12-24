@@ -1,9 +1,10 @@
 
 function Storage_ListParameters(store_name)
 {
-	if (!store_name)
+	if (arguments.length < 1)
 	{
-		return "You must specify a store name";
+		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		return false;
 	}
 	
 	var parameters = StorageExport_GetParameters(store_name);
@@ -17,10 +18,12 @@ function Storage_ListParameters(store_name)
 	
 	if (result_text.length == 0)
 	{
-		result_text = "No parameters found";
+		Log("033[31;1mNo parameters found.\033[0m\n");
+		return false;
 	}
 	
-	return result_text;
+	Log(result_text);
+	return true;
 }
 Console_RegisterCommand(Storage_ListParameters);
 

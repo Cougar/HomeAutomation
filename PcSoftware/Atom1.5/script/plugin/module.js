@@ -213,7 +213,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit" ];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage" ];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
