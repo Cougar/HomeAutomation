@@ -27,17 +27,13 @@ function IRIn_CodeToName(data, protocol, remote_name)
 
 		Log(buttons[button_name]);
 
-		Log(button_data);
-		Log(button_data["protocol"] + "==" + protocol);
-		Log(button_data["data"] + "==" + data);
-
 		if (button_data["data"] == (data + '') && button_data["protocol"] == protocol)
 		{
 			return button_name;
 		}
 	}
 
-	Log("Found nothing");
+	Log("Found no matching button on remote " + remote_name);
 	return "";
 }
 
@@ -105,8 +101,6 @@ function IRIn_RecordOnResponse(response)
 
 function IRIn_RecordOnIrMessage(alias_name, command, variables)
 {
-	Log("callback\n");
-	
 	if (variables["Status"] != "Pressed" || IRIn_RecordLast != null)
 	{
 		return;
