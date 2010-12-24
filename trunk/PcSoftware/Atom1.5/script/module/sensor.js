@@ -43,50 +43,6 @@ function Sensor_SetReportInterval(alias_name, interval)
 }
 Console_RegisterCommand(Sensor_SetReportInterval, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Sensor_Aliases(), Sensor_Intervals()); });
 
-function Sensor_GetLastValue(alias_name)
-{
-	if (arguments.length < 1)
-	{
-		Log("\033[31mNot enough parameters given.\033[0m\n");
-		return false;
-	}
-	
-	var aliases_data = Module_ResolveAlias(alias_name, Sensor_ModuleNames);
-	var found = false;
-	
-	for (var name in aliases_data)
-	{
-		var last_value_string = Storage_GetParameter("SensorValueList", alias_name);
-		
-		if (last_value_string)
-		{
-			var last_value = eval("(" + last_value_string + ")");
-			
-			for (var type_name in last_value)
-			{
-				var date = new Date(last_value[type_name]["timestamp"] * 1000);
-				
-				Log("\033[96m" + type_name + ": \033[0;1m" + last_value[type_name]["value"] + "\033[0m at " + date.toString() + "\n");
-			}
-		}
-		else
-		{
-			Log("\033[32mNo value is stored for " + name + ".\033[0m\n");
-		}
-		
-		found = true;
-	}
-	
-	if (!found)
-	{
-		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
-		return false;
-	}
-	
-	return true;
-}
-Console_RegisterCommand(Sensor_GetLastValue, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Sensor_Aliases()); });
-
 function Sensor_OnMessage(module_name, module_id, command, variables)
 {
 	if (in_array(Sensor_ModuleNames, module_name))
@@ -104,7 +60,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 				for (var alias_name in aliases_data)
 				{
 					var last_value = {};
-					var last_value_string = Storage_GetParameter("SensorValueList", alias_name);
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
 				
 					if (last_value_string)
 					{
@@ -113,7 +69,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 					
 					last_value[command] = { "value" : variables["Number"], "timestamp" : get_time() };
 					
-					Storage_GetParameter("SensorValueList", alias_name, JSON.stringify(last_value));
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 				
 				break;
@@ -130,7 +86,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 					}
 					
 					var last_value = {};
-					var last_value_string = Storage_GetParameter("SensorValueList", alias_name);
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
 
 					if (last_value_string)
 					{
@@ -139,7 +95,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 					
 					last_value[command] = { "value" : variables["Value"], "timestamp" : get_time() };
 					
-					Storage_SetParameter("SensorValueList", alias_name, JSON.stringify(last_value));
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 				
 				break;
