@@ -14,7 +14,7 @@ function Dimmer_StartFade(alias_name, speed, direction)
 {
 	if (arguments.length < 3)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -30,11 +30,11 @@ function Dimmer_StartFade(alias_name, speed, direction)
 	
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Start_Fade", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -42,7 +42,7 @@ function Dimmer_StartFade(alias_name, speed, direction)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -54,7 +54,7 @@ function Dimmer_StopFade(alias_name)
 {
 	if (arguments.length < 1)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -68,11 +68,11 @@ function Dimmer_StopFade(alias_name)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Stop_Fade", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -80,7 +80,7 @@ function Dimmer_StopFade(alias_name)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -92,7 +92,7 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 {
 	if (arguments.length < 3)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -108,11 +108,11 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Abs_Fade", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -120,7 +120,7 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -132,7 +132,7 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 {
 	if (arguments.length < 4)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -149,11 +149,11 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Rel_Fade", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -161,7 +161,7 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -173,7 +173,7 @@ function Dimmer_Demo(alias_name, speed, steps)
 {
 	if (arguments.length < 3)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -189,11 +189,11 @@ function Dimmer_Demo(alias_name, speed, steps)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Demo", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -201,7 +201,7 @@ function Dimmer_Demo(alias_name, speed, steps)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	

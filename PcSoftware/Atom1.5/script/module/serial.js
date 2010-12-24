@@ -7,7 +7,7 @@ function Serial_Configure(alias_name)
 {
 	if (arguments.length < 1)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -25,11 +25,11 @@ function Serial_Configure(alias_name)
 			
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "SerialConfig", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -37,7 +37,7 @@ function Serial_Configure(alias_name)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -49,7 +49,7 @@ function Serial_Send(alias_name)
 {
 	if (arguments.length < 1)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -72,11 +72,11 @@ function Serial_Send(alias_name)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "SerialData", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -84,7 +84,7 @@ function Serial_Send(alias_name)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	

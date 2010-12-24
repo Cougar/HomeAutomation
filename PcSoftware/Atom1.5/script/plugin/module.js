@@ -1,11 +1,8 @@
 
 Require("plugin/storage.js");
 
-function Module_CreateAliasAutoComplete(args)
+function Module_CreateAliasAutoComplete(arg_index, args)
 {
-	// args[0] == command name
-	var arg_index = args.length - 2;
-	
 	if (arg_index == 0)
 	{
 		return Module_GetAliasNames();
@@ -16,7 +13,7 @@ function Module_CreateAliasAutoComplete(args)
 	}
 	else if (arg_index == 2)
 	{
-		return Module_GetAvailableIds([ args[2] ])
+		return Module_GetAvailableIds([ args[1] ])
 	}
 	
 	return [];
@@ -24,19 +21,29 @@ function Module_CreateAliasAutoComplete(args)
 
 function Module_CreateAlias(alias_name, module_name, module_id, specific)
 {
-	// TODO Check arguments
+	if (arguments.length < 3)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	if (alias_name == "all")
+	{
+		Log("\033[31m\"all\" is not allowed as alias name.\033[0m\n");
+		return false;
+	}
 	
 	var specific_list = {};
 	
 	if (specific)
 	{
-		var specific_parts = split(",", specific);
+		var specific_parts = specific.split(",");
 		
 		// TODO: Check length
 		
 		for (var index in specific_parts)
 		{
-			var parts = split("=", specific_parts[index]);
+			var parts = specific_parts[index].split("=");
 			
 			// TODO: Check length
 			
@@ -56,11 +63,8 @@ function Module_CreateAlias(alias_name, module_name, module_id, specific)
 }
 Console_RegisterCommand(Module_CreateAlias, Module_CreateAliasAutoComplete);
 
-function Module_CreateAliasGroupAutoComplete(args)
+function Module_CreateAliasGroupAutoComplete(arg_index, args)
 {
-	// args[0] == command name
-	var arg_index = args.length - 2;
-	
 	if (arg_index == 0)
 	{
 		return Module_GetAliasNames();
@@ -71,7 +75,7 @@ function Module_CreateAliasGroupAutoComplete(args)
 	}
 	else if (arg_index >= 2)
 	{
-		return Module_GetAliasNames([ args[2] ])
+		return Module_GetAliasNames([ args[1] ])
 	}
 	
 	return [];
@@ -81,7 +85,14 @@ function Module_CreateAliasGroup(alias_group_name, module_type, alias_name1, ali
 {
 	if (arguments.length < 3)
 	{
-		throw("Not enought parameters given");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	if (alias_group_name == "all")
+	{
+		Log("\033[31m\"all\" is not allowed as alias name.\033[0m\n");
+		return false;
 	}
 	
 	alias_group_name = arguments[0];
@@ -99,7 +110,8 @@ function Module_CreateAliasGroup(alias_group_name, module_type, alias_name1, ali
 	
 	if (aliases.length == 0)
 	{
-		throw("No valid aliases were found, aborting creation of group alias");
+		Log("\033[31mNo valid aliases were found, aborting creation of group alias.\033[0m\n");
+		return false;
 	}
 	
 	var alias_data = {
@@ -213,7 +225,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage" ];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02" ];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
@@ -300,6 +312,14 @@ function Module_OnMessage(full_id, command, variables)
 			}
 		}
 	}
+	
+	if (Module_OnMessageFunctions["all"])
+	{
+		for (var n in Module_OnMessageFunctions["all"])
+		{
+			Module_OnMessageFunctions["all"][n](id_parts[0], id_parts[1], command, variables);
+		}
+	}
 }
 
 function Module_OnChange(full_id, available)
@@ -337,6 +357,14 @@ function Module_OnChange(full_id, available)
 			{
 				Module_OnChangeFunctions[alias_name][n](alias_name, available);
 			}
+		}
+	}
+	
+	if (Module_OnChangeFunctions["all"])
+	{
+		for (var n in Module_OnChangeFunctions["all"])
+		{
+			Module_OnChangeFunctions["all"][n](id_parts[0], id_parts[1], available);
 		}
 	}
 }

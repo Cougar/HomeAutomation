@@ -10,7 +10,7 @@ function IROut_StopSend(alias_name)
 {
 	if (arguments.length < 1)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -25,11 +25,11 @@ function IROut_StopSend(alias_name)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -37,7 +37,7 @@ function IROut_StopSend(alias_name)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
@@ -69,7 +69,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 {
 	if (arguments.length < 4)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -80,7 +80,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 	
 	if (!remote_storage_name)
 	{
-		Log("\033[31;1mNo such remote name in list, " + remote_name + ".\033[0m\n");
+		Log("\033[31mNo such remote name in list, " + remote_name + ".\033[0m\n");
 		return false;
 	}
 	
@@ -88,7 +88,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 	
 	if (!button_string)
 	{
-		Log("\033[31;1mNo such button " + button_name + " found on remote " + remote + ".\033[0m\n");
+		Log("\033[31mNo such button " + button_name + " found on remote " + remote + ".\033[0m\n");
 		return false;
 	}
 	
@@ -96,7 +96,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 	
 	if (typeof button_data["protocol"] == 'undefined' || typeof button_data["data"] == 'undefined')
 	{
-		Log("\033[31;1mButton data is corrupt.\033[0m\n");
+		Log("\033[31mButton data is corrupt.\033[0m\n");
 		return false;
 	}
 	
@@ -110,11 +110,11 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
 		{
-			Log("\033[32;1mCommand sent successfully to " + name + ".\033[0m\n");
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
-			Log("\033[31;1mFailed to send command to " + name + ".\033[0m\n");
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
 		}
 		
 		found = true;
@@ -122,7 +122,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 	
 	if (!found)
 	{
-		Log("\033[31;1mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
 		return false;
 	}
 	
