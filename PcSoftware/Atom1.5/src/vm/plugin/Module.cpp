@@ -157,12 +157,6 @@ Value Module::Export_GetAvailableModules(const v8::Arguments& args)
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
-    if (args.Length() < 1)
-    {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
-    }
-    
     common::StringList available_modules = control::Manager::Instance()->GetAvailableModules();
     
     v8::Local<v8::Array> result = v8::Array::New(available_modules.size());

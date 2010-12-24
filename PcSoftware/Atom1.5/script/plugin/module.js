@@ -148,7 +148,7 @@ function Module_ResolveAlias(alias_name, filter_module_names)
 		}
 		else
 		{
-			if (in_array(filter_module_names, alias_data["module_name"]))
+			if (!filter_module_names || in_array(filter_module_names, alias_data["module_name"]))
 			{
 				aliases_data[alias_name] = alias_data;
 			}
@@ -225,7 +225,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02" ];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789" ];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
@@ -368,3 +368,47 @@ function Module_OnChange(full_id, available)
 		}
 	}
 }
+
+function Module_GetLastValue(alias_name)
+{
+	if (arguments.length < 1)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	var aliases_data = Module_ResolveAlias(alias_name);
+	var found = false;
+	
+	for (var name in aliases_data)
+	{
+		var last_value_string = Storage_GetParameter("LastValues", alias_name);
+		
+		if (last_value_string)
+		{
+			var last_value = eval("(" + last_value_string + ")");
+			
+			for (var type_name in last_value)
+			{
+				var date = new Date(last_value[type_name]["timestamp"] * 1000);
+				
+				Log("\033[96m" + type_name + ": \033[0;1m" + last_value[type_name]["value"] + "\033[0m at " + date.toString() + "\n");
+			}
+		}
+		else
+		{
+			Log("\033[32mNo value is stored for " + name + ".\033[0m\n");
+		}
+		
+		found = true;
+	}
+	
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+	
+	return true;
+}
+Console_RegisterCommand(Module_GetLastValue, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
