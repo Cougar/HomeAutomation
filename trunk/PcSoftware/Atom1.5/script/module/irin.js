@@ -42,7 +42,7 @@ function IRIn_Record(alias_name, remote_name)
 	
 	if (arguments.length < 2)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -52,7 +52,7 @@ function IRIn_Record(alias_name, remote_name)
 	{
 		IRIn_RecordRemoteName = "Remote_" + remote_name;
 		
-		Log("\033[32;1mNo such remote name in list, " + remote_name + ", creating...\033[0m\n");
+		Log("\033[32mNo such remote name in list, " + remote_name + ", creating...\033[0m\n");
 		
 		Storage_SetParameter("RemoteList", remote_name, IRIn_RecordRemoteName);
 	}
@@ -63,21 +63,21 @@ function IRIn_Record(alias_name, remote_name)
 	{
 		if (aliases_data[name]["group"])
 		{
-			Log("\033[31;1mAlias must not be an alias group.\033[0m\n");
+			Log("\033[31mAlias must not be an alias group.\033[0m\n");
 			return false;
 		}
 		
 		IRIn_RecordAliasData = aliases_data[name];
 		Log("Enter a single dot to finish.\n");
 		
-		Log("\033[29;1mPress a button on you remote...\033[0m\n");
+		Log("\033[29mPress a button on you remote...\033[0m\n");
 		Console_PreventDefaultPrompt();
 	
 		Module_RegisterToOnMessage(alias_name, IRIn_RecordOnIrMessage);
 		return true;
 	}
 	
-	Log("\033[31;1mNo such alias name found, " + alias_name + ".\033[0m\n");
+	Log("\033[31mNo such alias name found, " + alias_name + ".\033[0m\n");
 	return false;
 	
 }
@@ -93,7 +93,7 @@ function IRIn_RecordOnResponse(response)
 	Storage_SetParameter(IRIn_RecordRemoteName, response, JSON.stringify(IRIn_RecordLast));
 	IRIn_RecordLast = null;
 	
-	Log("\033[29;1mPress a button on you remote...\033[0m\n");
+	Log("\033[29mPress a button on you remote...\033[0m\n");
 	Console_PreventDefaultPrompt();
 	
 	return true;
@@ -106,11 +106,11 @@ function IRIn_RecordOnIrMessage(alias_name, command, variables)
 		return;
 	}
 	
-	Log("\033[32;1mGot code " + variables["IRdata"] + " on protocol " + variables["Protocol"] + ".\033[0m\n");
+	Log("\033[32mGot code " + variables["IRdata"] + " on protocol " + variables["Protocol"] + ".\033[0m\n");
 	
 	IRIn_RecordLast = { "protocol" : variables["Protocol"], "data" : variables["IRdata"] };
 	
-	Console_PromptRequest("\033[29;1mEnter name: \033[0m", IRIn_RecordOnResponse);
+	Console_PromptRequest("\033[29mEnter name: \033[0m", IRIn_RecordOnResponse);
 	
 	return true;
 }

@@ -58,7 +58,7 @@ void CleanUp();
 char* AutoCompleteGet(const char* text, int state);
 static char** AutoComplete(const char* text, int start, int end);
 
-std::string GetCwd()
+std::string GetUserHomeDirectory()
 {
     return std::string(getpwuid(getuid())->pw_dir);
 }
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
     boost::mutex guard_mutex;
     
     // Setup readline
-    history_filename = GetCwd() + "/.atomic_history";
+    history_filename = GetUserHomeDirectory() + "/.atomic_history";
     read_history(history_filename.data());
     
     rl_attempted_completion_function = AutoComplete;

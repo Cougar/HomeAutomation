@@ -1,4 +1,9 @@
 
+function get_time()
+{
+	return Math.round(new Date().getTime() / 1000);
+}
+
 function to_array(obj)
 {
 	var result = [];

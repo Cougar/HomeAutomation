@@ -3,7 +3,7 @@ function Storage_ListParameters(store_name)
 {
 	if (arguments.length < 1)
 	{
-		Log("\033[31;1mNot enough parameters given.\033[0m\n");
+		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
 	
@@ -18,7 +18,7 @@ function Storage_ListParameters(store_name)
 	
 	if (result_text.length == 0)
 	{
-		Log("033[31;1mNo parameters found.\033[0m\n");
+		Log("033[31mNo parameters found.\033[0m\n");
 		return false;
 	}
 	

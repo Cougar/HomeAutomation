@@ -175,7 +175,7 @@ function help(command_name)
 		return true;
 	}
 	
-	Log("No help for " + command_name + " found");
+	Log("\033[31mNo help for " + command_name + " found.\033[0m\n");
 	return false;
 }
 Console_RegisterCommand(help, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Console_GetFunctionNames()); });
