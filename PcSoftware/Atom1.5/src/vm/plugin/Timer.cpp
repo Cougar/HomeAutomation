@@ -23,7 +23,6 @@
 #include <v8-debug.h>
 #include <stdio.h>
 
-#include <boost/concept_check.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "vm/Manager.h"
@@ -146,14 +145,14 @@ Value Timer::Export_Cancel(const v8::Arguments& args)
         return v8::Boolean::New(false);
     }
     
-    Timers::iterator it = Timer::timers_.find(args[0]->IsUint32());
+    Timers::iterator it = Timer::timers_.find(args[0]->Uint32Value());
     
     if (it != Timer::timers_.end())
     {
         Timer::timers_.erase(it);
     }
     
-    timer::Manager::Instance()->Cancel(args[0]->IsUint32());
+    timer::Manager::Instance()->Cancel(args[0]->Uint32Value());
     return v8::Undefined();
 }
 
