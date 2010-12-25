@@ -20,6 +20,8 @@
 
 #include "Xorg.h"
 
+#ifdef USE_PLUGIN_XORG
+
 #include <boost/lexical_cast.hpp>
 
 #include <X11/Xlib.h>
@@ -113,3 +115,5 @@ Value Xorg::Export_SendKey(const v8::Arguments& args)
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
+
+#endif // USE_PLUGIN_XORG

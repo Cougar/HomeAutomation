@@ -2,8 +2,8 @@
 ## Paths                                                                     ##
 ###############################################################################
 ProtocolFile = /home/migan/HomeAutomation/Configuration/data.xml
-ScriptPath = /home/migan/HomeAutomation/PcSoftware/Atom1.5/script/
-StoragePath = /home/migan/HomeAutomation/PcSoftware/Atom1.5/storage/
+ScriptPath = /usr/share/atom/script/
+StoragePath = /usr/share/atom/storage/
 
 ###############################################################################
 ## Logging                                                                   ##
@@ -23,7 +23,3 @@ CommandPort = 1202
 CanNet = udp:192.168.1.250:1100
 #CanNet = serial:/dev/ttyUSB0:38400
 
-###############################################################################
-## Other                                                                     ##
-###############################################################################
-#Legacy = 1

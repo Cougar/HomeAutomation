@@ -1,11 +1,29 @@
-Ubuntu dependencies:
+Ubuntu required dependencies:
+=============================
 cmake libboost-iostreams-dev libboost-date-time-dev libboost-filesystem-dev 
 libboost-program-options-dev libboost-signals-dev libboost-thread-dev 
 libreadline-dev libv8-dev
 
+Ubuntu optional dependencies:
+=============================
+libx11-dev
 
-cmake .
-
+Build atomd and atomic:
+=======================
+cd <atom root directory>
+mkdir build
+cd build
+cmake -DUSE_PLUGIN_XORG=true ../
 make
 
+Create and install Ubuntu package: (requires cmake 2.8.3 or higher)
+==================================
+cd <atom root directory>
+mkdir build
+cd build
+cpack -DUSE_PLUGIN_XORG=true ../
+sudo dpkg --install Atom-1.5-x86_64.deb
 
+Remove installed Ubuntu package:
+================================
+sudo dpkg --remove Atom-1.5-x86_64.deb

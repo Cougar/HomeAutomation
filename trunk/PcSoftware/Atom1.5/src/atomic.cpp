@@ -34,6 +34,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 
+#include "config.h"
+
 #include "net/Manager.h"
 #include "net/Subscriber.h"
 #include "net/types.h"
@@ -235,7 +237,7 @@ int main(int argc, char **argv)
     }
     
     
-    std::cout << "Atom Interactive Console, version 1.5.0 starting..." << std::endl;
+    std::cout << "Atom Interactive Console, version " + std::string(VERSION) + " starting..." << std::endl;
     std::cout << "Written by Mattias Runge 2010." << std::endl;
     std::cout << "Released under GPL version 2." << std::endl;
     
