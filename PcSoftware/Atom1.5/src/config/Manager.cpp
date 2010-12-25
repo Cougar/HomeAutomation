@@ -96,7 +96,7 @@ bool Manager::Set(int argument_count, char** argument_vector)
         return false;
     }
     
-    std::ifstream ifs(this->GetAsString("file").c_str());
+    std::ifstream ifs(this->GetAsString("file").data());
         
     if (!ifs.is_open())
     {

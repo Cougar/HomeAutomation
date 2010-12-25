@@ -18,43 +18,11 @@
  * 
  */
 
-#ifndef VM_PLUGIN_XORG_H
-#define VM_PLUGIN_XORG_H
+#ifndef ATOM_CONFIG_H
+#define ATOM_CONFIG_H
 
-#include "config.h"
+#cmakedefine USE_PLUGIN_XORG
 
-#ifdef USE_PLUGIN_XORG
+#define VERSION "{$VERSION}"
 
-#include <boost/shared_ptr.hpp>
-
-#include "vm/Plugin.h"
-#include "logging/Logger.h"
-
-namespace atom {
-namespace vm {
-namespace plugin {
-
-class Xorg : public Plugin
-{
-public:
-    typedef boost::shared_ptr<Xorg> Pointer;
-    
-    Xorg(boost::asio::io_service& io_service);
-    virtual ~Xorg();
-    
-    void InitializeDone();
-    void CallOutput(unsigned int request_id, std::string output);
-    
-private:
-    static logging::Logger LOG;
-    
-    static Value Export_SendKey(const v8::Arguments& args);
-};
-
-}; // namespace plugin
-}; // namespace vm
-}; // namespace atom
-
-#endif // USE_PLUGIN_XORG
-
-#endif // VM_PLUGIN_XORG_H
+#endif // ATOM_CONFIG_H

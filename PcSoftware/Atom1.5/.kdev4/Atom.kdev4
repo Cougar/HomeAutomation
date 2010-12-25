@@ -7,7 +7,7 @@ CMakeDir=/usr/share/cmake-2.8/Modules
 Current CMake Binary=file:///usr/bin/cmake
 CurrentBuildDir=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build
 CurrentBuildType=Debug
-CurrentInstallDir=
+CurrentInstallDir=file:///usr/local
 ProjectRootRelative=./
 
 [Launch]
@@ -27,6 +27,9 @@ EnvironmentGroup=default
 Executable=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build/atomd
 Working Directory=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5
 isExecutable=true
+
+[MakeBuilder]
+Number Of Jobs=1
 
 [Project]
 VersionControlSupport=kdevsubversion
