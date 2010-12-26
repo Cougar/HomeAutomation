@@ -23,6 +23,6 @@
 
 #cmakedefine USE_PLUGIN_XORG
 
-#define VERSION "{$VERSION}"
+#define VERSION "${VERSION}"
 
 #endif // ATOM_CONFIG_H

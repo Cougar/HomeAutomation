@@ -1,12 +1,10 @@
-Ubuntu required dependencies:
-=============================
-cmake libboost-iostreams-dev libboost-date-time-dev libboost-filesystem-dev 
-libboost-program-options-dev libboost-signals-dev libboost-thread-dev 
-libreadline-dev libv8-dev
+Install Ubuntu required dependencies:
+=====================================
+aptitude install cmake libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-signals-dev libboost-thread-dev libreadline-dev libv8-dev
 
-Ubuntu optional dependencies:
-=============================
-libx11-dev
+Install Ubuntu optional dependencies:
+=====================================
+aptitude install libx11-dev
 
 Build atomd and atomic:
 =======================
@@ -26,4 +24,4 @@ sudo dpkg --install Atom-1.5-x86_64.deb
 
 Remove installed Ubuntu package:
 ================================
-sudo dpkg --remove Atom-1.5-x86_64.deb
+sudo aptitude remove atom

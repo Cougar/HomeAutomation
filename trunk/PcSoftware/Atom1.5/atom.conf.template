@@ -1,7 +1,7 @@
 ###############################################################################
 ## Paths                                                                     ##
 ###############################################################################
-ProtocolFile = /home/migan/HomeAutomation/Configuration/data.xml
+ProtocolFile = /usr/share/atom/protocol/data.xml
 ScriptPath = /usr/share/atom/script/
 StoragePath = /usr/share/atom/storage/
 
