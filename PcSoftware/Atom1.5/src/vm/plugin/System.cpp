@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include "vm/Manager.h"
+#include "common/common.h"
 
 namespace atom {
 namespace vm {
@@ -37,6 +38,7 @@ System::System(boost::asio::io_service& io_service) : Plugin(io_service)
     
     this->ExportFunction("Require",    System::Export_Require);
     this->ExportFunction("Execute",    System::Export_Execute);
+    this->ExportFunction("ToHex",      System::Export_ToHex);
 }
 
 System::~System()
@@ -113,7 +115,22 @@ Value System::Export_Execute(const v8::Arguments& args)
     
     return v8::String::New(output_buffer.data());
 }
+
+Value System::Export_ToHex(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
+    }
+    
+    return v8::String::New(common::ToHex(args[0]->Uint32Value()).data());
+}
+
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom

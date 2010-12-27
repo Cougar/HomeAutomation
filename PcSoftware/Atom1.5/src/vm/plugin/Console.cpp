@@ -43,8 +43,9 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
                                            net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
     
-    this->ExportFunction("ConsoleExport_PromptRequest", Console::Export_PromptRequest);
+    this->ExportFunction("ConsoleExport_PromptRequest",        Console::Export_PromptRequest);
     this->ExportFunction("ConsoleExport_AutoCompleteResponse", Console::Export_AutoCompleteResponse);
+    this->ExportFunction("ConsoleExport_LogToClient",          Console::Export_LogToClient);
     
     try
     {
@@ -200,9 +201,7 @@ Value Console::Export_PromptRequest(const v8::Arguments& args)
     packet += *prompt;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
-    return v8::Boolean::New(true); 
-        
-    return v8::Boolean::New(false); 
+    return v8::Boolean::New(true);
 }
 
 Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
@@ -224,9 +223,31 @@ Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
     packet += *result;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
-    return v8::Boolean::New(true); 
+    return v8::Boolean::New(true);
+}
+
+Value Console::Export_LogToClient(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
-    return v8::Boolean::New(false); 
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 2)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
+    }
+    
+    v8::String::AsciiValue text(args[1]);
+    
+    std::string line = *text;
+    
+    std::string packet = "TEXT";
+    packet += common::PadNumber(line.length() + 1, 4);
+    packet += line;
+    
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    return v8::Boolean::New(true);
 }
 
 }; // namespace plugin

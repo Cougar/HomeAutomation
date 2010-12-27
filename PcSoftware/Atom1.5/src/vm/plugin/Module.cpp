@@ -37,7 +37,6 @@ Module::Module(boost::asio::io_service& io_service) : Plugin(io_service)
     
     this->ExportFunction("ModuleExport_SendMessage",         Module::Export_SendModuleMessage);
     this->ExportFunction("ModuleExport_GetAvailableModules", Module::Export_GetAvailableModules);
-    this->ExportFunction("ModuleExport_ProgramNode",         Module::Export_ProgramNode);
 }
 
 Module::~Module()
@@ -52,19 +51,13 @@ void Module::InitializeDone()
     this->ImportFunction("Module_OnChange");
     this->ImportFunction("Module_OnMessage");
     
-    control::Manager::Instance()->ConnectSlots(control::Manager::SignalOnNodeChange::slot_type(&Module::SlotOnNodeChange, this, _1, _2).track(this->tracker_),
-                                               control::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_),
-                                               control::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
+    control::Manager::Instance()->ConnectSlotModule(control::Manager::SignalOnModuleChange::slot_type(&Module::SlotOnModuleChange, this, _1, _2).track(this->tracker_));
+    control::Manager::Instance()->ConnectSlotModule(control::Manager::SignalOnModuleMessage::slot_type(&Module::SlotOnModuleMessage, this, _1, _2, _3).track(this->tracker_));
 }
 
 void Module::CallOutput(unsigned int request_id, std::string output)
 {
     LOG.Info(output);
-}
-
-void Module::SlotOnNodeChange(unsigned int node_id, bool available)
-{
-    this->io_service_.post(boost::bind(&Module::SlotOnNodeChangeHandler, this, node_id, available));
 }
 
 void Module::SlotOnModuleChange(std::string full_id, bool available)
@@ -75,11 +68,6 @@ void Module::SlotOnModuleChange(std::string full_id, bool available)
 void Module::SlotOnModuleMessage(std::string full_id, std::string command, common::StringMap variables)
 {
     this->io_service_.post(boost::bind(&Module::SlotOnModuleMessageHandler, this, full_id, command, variables));
-}
-
-void Module::SlotOnNodeChangeHandler(unsigned int node_id, bool available)
-{
-
 }
 
 void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
@@ -169,23 +157,6 @@ Value Module::Export_GetAvailableModules(const v8::Arguments& args)
     return result;
 }
 
-Value Module::Export_ProgramNode(const v8::Arguments& args)
-{
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
-    
-    if (args.Length() < 3)
-    {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
-    }
-    
-    v8::String::AsciiValue filename(args[2]);
-    
-    return v8::Boolean::New(control::Manager::Instance()->ProgramNode(args[0]->Uint32Value(), args[1]->BooleanValue(), std::string(*filename)));
-}
-    
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom

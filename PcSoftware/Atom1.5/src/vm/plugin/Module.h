@@ -47,17 +47,14 @@ public:
 private:
     static logging::Logger LOG;
     
-    void SlotOnNodeChange(unsigned int node_id, bool available);
     void SlotOnModuleChange(std::string full_id, bool available);
     void SlotOnModuleMessage(std::string full_id, std::string command, common::StringMap variables);
     
-    void SlotOnNodeChangeHandler(unsigned int node_id, bool available);
     void SlotOnModuleChangeHandler(std::string full_id, bool available);
     void SlotOnModuleMessageHandler(std::string full_id, std::string command, common::StringMap variables);
     
     static Value Export_SendModuleMessage(const v8::Arguments& args);
     static Value Export_GetAvailableModules(const v8::Arguments& args);
-    static Value Export_ProgramNode(const v8::Arguments& args);
 };
 
 }; // namespace plugin

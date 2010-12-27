@@ -8,6 +8,7 @@ IRIn_Remotes        = function() { return get_keys(Storage_GetParameters("Remote
 IRIn_RecordRemoteName = null;
 IRIn_RecordAliasData = null;
 IRIn_RecordLast = null;
+IRIn_RecordClientId = null;
 
 function IRIn_CodeToName(data, protocol, remote_name)
 {
@@ -39,7 +40,6 @@ function IRIn_CodeToName(data, protocol, remote_name)
 
 function IRIn_Record(alias_name, remote_name)
 {
-	
 	if (arguments.length < 2)
 	{
 		Log("\033[31mNot enough parameters given.\033[0m\n");
@@ -67,6 +67,8 @@ function IRIn_Record(alias_name, remote_name)
 			return false;
 		}
 		
+		IRIn_RecordClientId = Console_GetClientId();
+		
 		IRIn_RecordAliasData = aliases_data[name];
 		Log("Enter a single dot to finish.\n");
 		
@@ -87,6 +89,7 @@ function IRIn_RecordOnResponse(response)
 {
 	if (response == ".")
 	{
+		IRIn_RecordClientId = null;
 		return true;
 	}
 	
@@ -106,7 +109,7 @@ function IRIn_RecordOnIrMessage(alias_name, command, variables)
 		return;
 	}
 	
-	Log("\033[32mGot code " + variables["IRdata"] + " on protocol " + variables["Protocol"] + ".\033[0m\n");
+	ConsoleExport_LogToClient(IRIn_RecordClientId, "\033[32mGot code " + variables["IRdata"] + " on protocol " + variables["Protocol"] + ".\033[0m\n");
 	
 	IRIn_RecordLast = { "protocol" : variables["Protocol"], "data" : variables["IRdata"] };
 	
@@ -114,6 +117,3 @@ function IRIn_RecordOnIrMessage(alias_name, command, variables)
 	
 	return true;
 }
-
-
-

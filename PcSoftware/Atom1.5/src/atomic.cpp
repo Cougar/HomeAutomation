@@ -237,9 +237,10 @@ int main(int argc, char **argv)
     }
     
     
-    std::cout << "Atom Interactive Console, version " + std::string(VERSION) + " starting..." << std::endl;
+    std::cout << "\033[29;1mAtom Interactive Console, version " + std::string(VERSION) + " starting...\033[0m" << std::endl;
+    std::cout << "\033[29;1mReleased under GPL version 2.\033[0m" << std::endl;
     std::cout << "Written by Mattias Runge 2010." << std::endl;
-    std::cout << "Released under GPL version 2." << std::endl;
+    
     
     net::Manager::Create();
        

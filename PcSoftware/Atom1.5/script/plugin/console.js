@@ -66,6 +66,21 @@ function Console_NewConnection(client_id)
 
 // User script functions
 
+function Console_GetClientId()
+{
+	return Console_LastClientId;
+}
+
+function Console_LogToClient(client_id, text)
+{
+	if (client_id)
+	{
+		return ConsoleExport_LogToClient(client_id, text);
+	}
+	
+	return false;
+}
+
 function Console_PreventDefaultPrompt()
 {
 	Console_CurrentFunction = null;
@@ -130,6 +145,10 @@ function Console_Shell()
 	if (Console_Functions[name] && Console_Functions[name]["command"])
 	{
 		return Console_Functions[name]["command"].apply(null, Array.prototype.slice.call(args, 0));
+	}
+	else
+	{
+		Log("\033[31mNo such command found, " + name + ".\033[0m\n");
 	}
 	
 	return false;

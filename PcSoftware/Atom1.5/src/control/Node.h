@@ -42,7 +42,7 @@ class Node
 {
 public:
     typedef boost::shared_ptr<Node> Pointer;
-    typedef unsigned int Id;
+    typedef std::string Id;
     
     typedef enum
     {
@@ -96,6 +96,7 @@ public:
     
     void ProgramApplication(Code::Pointer code);
     void ProgramBios(Code::Pointer code);
+    void Reset();
     
 private:
     typedef std::map<Event, State> Transition;

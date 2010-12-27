@@ -39,7 +39,7 @@ Manager::Manager() : broker::Subscriber(false), LOG("control::Manager")
 {
     Node::SetupStateMachine();
     
-    this->active_programming_node_id_ = 0;
+    this->active_programming_node_id_ = "";
     
     // Nyquist–Shannon sampling theorem state that we need to double the time, modules send every 10 seconds
     this->timer_id_ = timer::Manager::Instance()->SetTimer(20000, true);
@@ -64,10 +64,18 @@ void Manager::Delete()
     Manager::instance_.reset();
 }
 
-void Manager::ConnectSlots(const SignalOnNodeChange::slot_type& signal_on_node_change_, const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message)
+void Manager::ConnectSlotNode(const SignalOnNodeChange::slot_type& signal_on_node_change_)
 {
     this->signal_on_node_change_.connect(signal_on_node_change_);
+}
+
+void Manager::ConnectSlotModule(const SignalOnModuleChange::slot_type& slot_on_module_change)
+{
     this->signal_on_module_change_.connect(slot_on_module_change);
+}
+
+void Manager::ConnectSlotModule(const SignalOnModuleMessage::slot_type& slot_on_module_message)
+{
     this->signal_on_module_message_.connect(slot_on_module_message);
 }
 
@@ -82,7 +90,7 @@ void Manager::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
     {
         if (!it->second->CheckTimeout())
         {
-            LOG.Info("Node " + common::ToHex(it->second->GetId()) + " has not sent anything in a long time, setting offline.");
+            LOG.Info("Node " +it->second->GetId() + " has not sent anything in a long time, setting offline.");
             this->RemoveModules(it->second->GetId());
             
             storage::Manager::Instance()->FlushStore("NodeList");
@@ -103,17 +111,17 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
         {
             if (payload->GetCommandName() == "Bios_Start")
             {
-                node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node = this->GetNode(common::ToHex(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"])));
                 node->Trigger(Node::EVENT_BIOS_START, payload->GetVariables());
             }
             else if (payload->GetCommandName() == "App_Start")
             {
-                node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node = this->GetNode(common::ToHex(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"])));
                 node->Trigger(Node::EVENT_APP_START, payload->GetVariables());
             }
             else if (payload->GetCommandName() == "Heartbeat")
             {
-                node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node = this->GetNode(common::ToHex(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"])));
                 node->Trigger(Node::EVENT_HEARTBEAT, payload->GetVariables());
             }
             else if (payload->GetCommandName() == "Pgm_Ack")
@@ -133,7 +141,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
             
             if (payload->GetCommandName() == "List")
             {
-                node = this->GetNode(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"]));
+                node = this->GetNode(common::ToHex(boost::lexical_cast<unsigned int>(payload->GetVariables()["HardwareId"])));
                 node->ResetTimeout();
                 
                 module->SetNodeId(node->GetId());
@@ -143,10 +151,10 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
                     node->Trigger(Node::EVENT_LIST_DONE, payload->GetVariables());
                 }
                 
-                LOG.Info("Module " + module->GetFullId() + " is available on node " + common::ToHex(node->GetId()) + ".");
+                LOG.Info("Module " + module->GetFullId() + " is available on node " + node->GetId() + ".");
                 this->signal_on_module_change_(module->GetFullId(), true);
             }
-            else
+            else if (module->GetNodeId() != "")
             {
                 node = this->GetNode(module->GetNodeId());
                 node->ResetTimeout();
@@ -162,6 +170,18 @@ void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::
     if (target_state != Node::STATE_NORM_INITIALIZED)
     {
         this->RemoveModules(node_id);
+
+        if (current_state != target_state)
+        {
+            this->signal_on_node_change_(node_id, false);
+        }
+    }
+    else
+    {
+        if (current_state != target_state)
+        {
+            this->signal_on_node_change_(node_id, true);
+        }
     }
     
     if (target_state == Node::STATE_BPGM_OFFLINE || target_state == Node::STATE_APGM_OFFLINE)
@@ -170,7 +190,7 @@ void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::
     }
     else if (target_state == Node::STATE_NORM_OFFLINE)
     {
-        this->active_programming_node_id_ = 0;
+        this->active_programming_node_id_ = "";
     }
 }
 
@@ -215,13 +235,49 @@ common::StringList Manager::GetAvailableModules()
     return available_modules;
 }
 
+common::StringList Manager::GetAvailableNodes()
+{
+    common::StringList available_nodes;
+    
+    for (NodeList::iterator it = this->nodes_.begin(); it != this->nodes_.end(); it++)
+    {
+        std::string node = it->first;
+
+        for (ModuleList::iterator it2 = this->modules_.begin(); it2 != this->modules_.end(); it2++)
+        {
+            if (it2->second->GetNodeId() == it->first)
+            {
+                node += "," + it2->first;
+            }
+        }
+        
+        available_nodes.push_back(node);
+    }
+    
+    return available_nodes;
+}
+
+bool Manager::ResetNode(Node::Id node_id)
+{
+    NodeList::iterator it = this->nodes_.find(node_id);
+    
+    if (it == this->nodes_.end())
+    {
+        LOG.Error("Could not find node " +  node_id);
+        return false;
+    }
+    
+    it->second->Reset();
+    return true;
+}
+
 bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)
 {
     NodeList::iterator it = this->nodes_.find(node_id);
     
     if (it == this->nodes_.end())
     {
-        LOG.Error("Could not find node " +  common::ToHex(node_id));
+        LOG.Error("Could not find node " +  node_id);
         return false;
     }
     

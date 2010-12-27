@@ -59,6 +59,7 @@ private:
     
     static Value Export_PromptRequest(const v8::Arguments& args);
     static Value Export_AutoCompleteResponse(const v8::Arguments& args);
+    static Value Export_LogToClient(const v8::Arguments& args);
 };
   
 }; // namespace plugin
