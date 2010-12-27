@@ -47,7 +47,7 @@ public:
     typedef boost::shared_ptr<Manager> Pointer;
     typedef std::map<Node::Id, Node::Pointer> NodeList;
     typedef std::map<Module::FullId, Module::Pointer> ModuleList;
-    typedef boost::signals2::signal<void(unsigned int node_id, bool available)> SignalOnNodeChange;
+    typedef boost::signals2::signal<void(Node::Id, bool available)> SignalOnNodeChange;
     typedef boost::signals2::signal<void(std::string full_id, bool available)> SignalOnModuleChange;
     typedef boost::signals2::signal<void(std::string full_id, std::string command, common::StringMap variables)> SignalOnModuleMessage;
     
@@ -57,11 +57,16 @@ public:
     static void Create();
     static void Delete();
     
-    void ConnectSlots(const SignalOnNodeChange::slot_type& signal_on_node_change_, const SignalOnModuleChange::slot_type& slot_on_module_change, const SignalOnModuleMessage::slot_type& slot_on_module_message);
+    void ConnectSlotNode(const SignalOnNodeChange::slot_type& signal_on_node_change_);
+    void ConnectSlotModule(const SignalOnModuleChange::slot_type& slot_on_module_change);
+    void ConnectSlotModule(const SignalOnModuleMessage::slot_type& slot_on_module_message);
     
     void SendMessage(std::string full_id, std::string command, common::StringMap variables);
     common::StringList GetAvailableModules();
+    
+    common::StringList GetAvailableNodes();
     bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
+    bool ResetNode(Node::Id node_id);
     
 private:
     static Pointer instance_;

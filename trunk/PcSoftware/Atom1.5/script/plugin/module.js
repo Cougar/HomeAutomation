@@ -412,3 +412,44 @@ function Module_GetLastValue(alias_name)
 	return true;
 }
 Console_RegisterCommand(Module_GetLastValue, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
+
+function Module_ListAvailable()
+{
+	var available_modules = ModuleExport_GetAvailableModules();
+	
+	for (var n in available_modules)
+	{
+		var id_parts = available_modules[n].split(":", 2);
+	
+		var line = id_parts[0] + ":" + id_parts[1] + " Alias: ";
+		
+		var aliases_data = Module_LookupAliases({
+			"module_name" : id_parts[0],
+			"module_id"   : id_parts[1],
+			"group"       : false
+		});
+		
+		var found = false;
+		
+		for (var alias_name in aliases_data)
+		{
+			found = true;
+			
+			line += alias_name + ",";
+		}
+		
+		if (!found)
+		{
+			line += "<none>";
+		}
+		else
+		{
+			line = line.rtrim(',');
+		}
+		
+		Log(line + "\n");
+	}
+	
+	return true;
+}
+Console_RegisterCommand(Module_ListAvailable);

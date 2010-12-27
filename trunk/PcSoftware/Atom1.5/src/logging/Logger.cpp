@@ -67,7 +67,7 @@ void Logger::Error(std::string message)
 {
     if (Logger::level_ >= Logger::LEVEL_ERROR)
     {
-        this->Print(" ERROR " + this->name_ + message);
+        this->Print(" ERROR " + this->name_ + "\033[31m" + message + "\033[0m");
     }
 }
 
@@ -75,7 +75,7 @@ void Logger::Warning(std::string message)
 {
     if (Logger::level_ >= Logger::LEVEL_WARNING)
     {
-        this->Print(" WARN  " + this->name_ + message);
+        this->Print(" WARN  " + this->name_ + "\033[33m" + message + "\033[0m");
     }
 }
 
@@ -91,7 +91,7 @@ void Logger::Debug(std::string message)
 {
     if (Logger::level_ >= Logger::LEVEL_DEBUG)
     {
-        this->Print(" DEBUG " + this->name_ + message);
+        this->Print(" DEBUG " + this->name_ + "\033[35m" + message + "\033[0m");
     }
 }
 

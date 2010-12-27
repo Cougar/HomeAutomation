@@ -18,25 +18,27 @@
  * 
  */
 
-#ifndef VM_PLUGIN_SYSTEM_H
-#define VM_PLUGIN_SYSTEM_H
+#ifndef VM_PLUGIN_NODE_H
+#define VM_PLUGIN_NODE_H
 
 #include <boost/shared_ptr.hpp>
 
 #include "vm/Plugin.h"
 #include "logging/Logger.h"
+#include "common/common.h"
+#include "control/Node.h"
 
 namespace atom {
 namespace vm {
 namespace plugin {
 
-class System : public Plugin
+class Node : public Plugin
 {
 public:
-    typedef boost::shared_ptr<Plugin> Pointer;
+    typedef boost::shared_ptr<Node> Pointer;
     
-    System(boost::asio::io_service& io_service);
-    virtual ~System();
+    Node(boost::asio::io_service& io_service);
+    virtual ~Node();
     
     void InitializeDone();
     void CallOutput(unsigned int request_id, std::string output);
@@ -44,14 +46,17 @@ public:
 private:
     static logging::Logger LOG;
     
-    static Value Export_Require(const v8::Arguments& args);
-    static Value Export_Execute(const v8::Arguments& args);
-    static Value Export_ToHex(const v8::Arguments& args);
+    void SlotOnNodeChange(control::Node::Id node_id, bool available);
     
+    void SlotOnNodeChangeHandler(control::Node::Id node_id, bool available);
+    
+    static Value Export_ResetNode(const v8::Arguments& args);
+    static Value Export_GetAvailableNodes(const v8::Arguments& args);
+    static Value Export_ProgramNode(const v8::Arguments& args);
 };
 
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
 
-#endif // VM_PLUGIN_SYSTEM_H
+#endif // VM_PLUGIN_NODE_H

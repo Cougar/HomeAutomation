@@ -18,7 +18,7 @@ function Storage_ListParameters(store_name)
 	
 	if (result_text.length == 0)
 	{
-		Log("033[31mNo parameters found.\033[0m\n");
+		Log("\033[31mNo parameters found.\033[0m\n");
 		return false;
 	}
 	

@@ -196,8 +196,6 @@ void Manager::StartHandler()
     {
         this->plugins_[c]->InitializeDone();
     }
-    
-    LOG.Info("VM initialized.");
 }
 
 bool Manager::ImportFunction(std::string functionname)
@@ -228,7 +226,7 @@ bool Manager::LoadScript(std::string scriptname)
     {
         if (this->loaded_scripts_[n] == scriptname)
         {
-            LOG.Info(scriptname + " is already loaded.");
+            LOG.Debug(scriptname + " is already loaded.");
             return true;
         }
     }
@@ -293,7 +291,7 @@ bool Manager::LoadScript(std::string scriptname)
     
     this->loaded_scripts_.push_back(scriptname);
     
-    LOG.Info("Loaded " + scriptname + " successfully.");
+    LOG.Info("\033[32mLoaded " + scriptname + " successfully.\033[0m");
     return true;
 }
 

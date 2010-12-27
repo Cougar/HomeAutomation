@@ -183,7 +183,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     
     State target_state = this->GetTransitionTarget(event);
     
-    LOG.Debug("Trigger called on " + common::ToHex(this->id_) + ", current state: " + Node::state_names_[this->state_] + ", event: " + Node::event_names_[event] + ", target state: "  + Node::state_names_[target_state]);
+    LOG.Debug("Trigger called on " + this->id_ + ", current state: " + Node::state_names_[this->state_] + ", event: " + Node::event_names_[event] + ", target state: "  + Node::state_names_[target_state]);
     
     if (target_state == STATE_INVALID)
     {
@@ -207,9 +207,9 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         {
             float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
             
-            LOG.Info("Data was successfully transferred to " + common::ToHex(this->id_) + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
+            LOG.Info("Data was successfully transferred to " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
             
-            LOG.Debug("Sending application programming copy to node " + common::ToHex(this->id_));
+            LOG.Debug("Sending application programming copy to node " + this->id_);
             can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Copy");
             
             unsigned int source0 = GET_LOW_BYTE_16(this->start_offset_);
@@ -234,7 +234,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         {
             float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
             
-            LOG.Info("Programming was completed successfully on " + common::ToHex(this->id_) + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
+            LOG.Info("Programming was completed successfully on " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
         }
     }
     
@@ -258,9 +258,9 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         }
         else
         {
-            LOG.Debug("Sending programming start to node " + common::ToHex(this->id_));
+            LOG.Debug("Sending programming start to node " + this->id_);
             can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Start");
-            payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(this->id_));
+            payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
             
             this->start_offset_ = target_state == STATE_BPGM_START ? 0 : this->code_->GetAddressLower();
             
@@ -292,7 +292,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         }
         else if (this->current_offset_ >= this->code_->GetLength())
         {
-            LOG.Debug("Sending programming end to node " + common::ToHex(this->id_));
+            LOG.Debug("Sending programming end to node " + this->id_);
             
             unsigned int checksum = this->code_->GetChecksum();
             this->expected_ack_data_ = SWAP_BYTE_ORDER_16(checksum);
@@ -304,7 +304,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         }
         else
         {
-            LOG.Debug("Sending programming data to node " + common::ToHex(this->id_));
+            LOG.Debug("Sending programming data to node " + this->id_);
             can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Data_48");
             
             unsigned int offset0 = GET_LOW_BYTE_16(this->start_offset_ + this->current_offset_);
@@ -327,7 +327,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     }
     else if (target_state == STATE_BPGM_COPY)
     {
-        LOG.Debug("Preparing to send null application to node " + common::ToHex(this->id_));
+        LOG.Debug("Preparing to send null application to node " + this->id_);
         
         this->code_->Reset();
         
@@ -369,6 +369,13 @@ void Node::ResetTimeout()
     this->last_active_ = time(NULL);
 }
 
+void Node::Reset()
+{
+    common::StringMap variables;
+    
+    this->Trigger(EVENT_RESET, variables);
+}
+
 void Node::ProgramApplication(Code::Pointer code)
 {
     this->code_ = code;
@@ -389,18 +396,18 @@ void Node::ProgramBios(Code::Pointer code)
 
 void Node::SendReset()
 {
-    LOG.Info("Sending node reset to " + common::ToHex(this->id_));
+    LOG.Info("Sending node reset to " + this->id_);
     can::Message* payload = new can::Message("nmt", "", "", 0, "Reset");
-    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(this->id_));
+    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
     
     broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
 }
 
 void Node::SendListRequest()
 {
-    LOG.Debug("Sending module listing on node " + common::ToHex(this->id_));
+    LOG.Debug("Sending module listing on node " + this->id_);
     can::Message* payload = new can::Message("mnmt", "To_Owner", "", 0, "List");
-    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(this->id_));
+    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
     
     broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
 }

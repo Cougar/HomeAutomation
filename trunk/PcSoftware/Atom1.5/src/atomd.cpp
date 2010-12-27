@@ -42,13 +42,10 @@
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
 #include "vm/plugin/Module.h"
+#include "vm/plugin/Node.h"
 #include "vm/plugin/Console.h"
 #include "vm/plugin/Storage.h"
-
-#ifdef USE_PLUGIN_XORG
 #include "vm/plugin/Xorg.h"
-#endif // USE_PLUGIN_XORG
-
 #include "vm/plugin/Socket.h"
 
 using namespace atom;
@@ -63,9 +60,9 @@ void CleanUp();
 
 int main(int argc, char **argv)
 {
-    LOG.Info("Atom Daemon, version " + std::string(VERSION) + " starting...");
+    LOG.Info("\033[29;1mAtom Daemon, version " + std::string(VERSION) + " starting...\033[0m");
+    LOG.Info("\033[29;1mReleased under GPL version 2.\033[0m");
     LOG.Info("Written by Mattias Runge 2010.");
-    LOG.Info("Released under GPL version 2.");
     
     signal(SIGTERM, Handler);
     signal(SIGINT, Handler);
@@ -129,13 +126,12 @@ int main(int argc, char **argv)
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Node(vm::Manager::Instance()->GetIoService())));
+    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Socket(vm::Manager::Instance()->GetIoService())));
     
 #ifdef USE_PLUGIN_XORG
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Xorg(vm::Manager::Instance()->GetIoService())));
 #endif // USE_PLUGIN_XORG
-    
-    vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Socket(vm::Manager::Instance()->GetIoService())));
-    
     
     vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"), config::Manager::Instance()->GetAsString("UserScriptPath"));
     
