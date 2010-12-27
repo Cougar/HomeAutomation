@@ -50,7 +50,8 @@ void System::InitializeDone()
     
     Plugin::InitializeDone();
     
-    v8::Boolean::New(Manager::Instance()->LoadScript("user/autostart.js"));
+    v8::Boolean::New(Manager::Instance()->LoadScript("interface/list.js"));
+    v8::Boolean::New(Manager::Instance()->LoadScript("autostart.js"));
 }
 
 void System::CallOutput(unsigned int request_id, std::string output)

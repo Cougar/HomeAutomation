@@ -51,7 +51,7 @@ public:
     static void Delete();
     
     void AddPlugin(Plugin::Pointer plugin);
-    void Start(std::string script_path);
+    void Start(std::string script_path, std::string user_script_path);
     
     void Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments);
     void Execute(std::string plugin_name, unsigned int request_id, std::string code);
@@ -70,6 +70,7 @@ private:
     static Pointer instance_;
     
     std::string script_path_;
+    std::string user_script_path_;
     
     v8::Persistent<v8::Context> context_;
     v8::HandleScope handle_scope_;

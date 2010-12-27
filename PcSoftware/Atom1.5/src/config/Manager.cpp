@@ -32,7 +32,7 @@ Manager::Pointer Manager::instance_;
 
 Manager::Manager() : command_line_("Command line options"), configuration_file_("Configuration file options")
 {
-    std::string default_config_file = "/etc/atom.conf";
+    std::string default_config_file = "/etc/atom/atom.conf";
     
     if (!boost::filesystem::exists(default_config_file))
     {
@@ -40,15 +40,16 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     }
 
     this->configuration_file_.add_options()
-    ("MonitorPort", boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
-    ("CommandPort", boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
-    ("LogFile",     boost::program_options::value<std::string>(),              "File to log output to")
-    ("LogLevel",    boost::program_options::value<int>()->default_value(4),    "Level of logging")
-    ("ScriptPath",  boost::program_options::value<std::string>(),              "Path to where the scripts are")
-    ("StoragePath", boost::program_options::value<std::string>(),              "Path to where the storage files are")
-    ("ProtocolFile",boost::program_options::value<std::string>(),              "File to read the protocol form")
-    ("CanNet",      boost::program_options::value<common::StringList>(),       "Information on where to locate the CAN networks")
-    ("Legacy",                                                                 "Start legacy VM environment");
+    ("MonitorPort",   boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
+    ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
+    ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")
+    ("LogLevel",      boost::program_options::value<int>()->default_value(4),    "Level of logging")
+    ("ScriptPath",    boost::program_options::value<std::string>(),              "Path to where the scripts are")
+    ("UserScriptPath",boost::program_options::value<std::string>(),              "Path to where the user scripts are")
+    ("StoragePath",   boost::program_options::value<std::string>(),              "Path to where the storage files are")
+    ("ProtocolFile",  boost::program_options::value<std::string>(),              "File to read the protocol form")
+    ("CanNet",        boost::program_options::value<common::StringList>(),       "Information on where to locate the CAN networks")
+    ("Legacy",                                                                   "Start legacy VM environment");
 
     this->command_line_.add_options()
     ("help,h",    "produce help message")

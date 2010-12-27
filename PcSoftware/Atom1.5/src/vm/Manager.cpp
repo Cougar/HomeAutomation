@@ -72,9 +72,10 @@ void Manager::AddPlugin(Plugin::Pointer plugin)
     this->plugins_.push_back(plugin);
 }
 
-void Manager::Start(std::string script_path)
+void Manager::Start(std::string script_path, std::string user_script_path)
 {
     this->script_path_ = script_path;
+    this->user_script_path_ = user_script_path;
     this->io_service_.post(boost::bind(&Manager::StartHandler, this));
 }
 
@@ -232,14 +233,20 @@ bool Manager::LoadScript(std::string scriptname)
         }
     }
     
-    std::string path = this->script_path_ + scriptname;
+    std::string path = this->user_script_path_ + scriptname;
     std::ifstream file(path.data());
     
     if (!file.is_open())
     {
-        file.close();
-        LOG.Warning("Could not load " + scriptname + ".");
-        return false;
+        path = this->script_path_ + scriptname;
+        file.open(path.data());
+        
+        if (!file.is_open())
+        {
+            file.close();
+            LOG.Warning("Could not load " + scriptname + ".");
+            return false;
+        }
     }
     
     std::string code = "";
