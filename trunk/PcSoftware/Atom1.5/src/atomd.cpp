@@ -130,14 +130,14 @@ int main(int argc, char **argv)
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
     
-    #ifdef USE_PLUGIN_XORG
+#ifdef USE_PLUGIN_XORG
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Xorg(vm::Manager::Instance()->GetIoService())));
-    #endif // USE_PLUGIN_XORG
+#endif // USE_PLUGIN_XORG
     
     vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Socket(vm::Manager::Instance()->GetIoService())));
     
     
-    vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"));
+    vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"), config::Manager::Instance()->GetAsString("UserScriptPath"));
     
     if (config::Manager::Instance()->Exist("CanNet"))
     {

@@ -43,13 +43,16 @@ include_directories(src)
 include_directories(build)
 add_subdirectory(src)
 
-install(TARGETS atomd RUNTIME DESTINATION bin)
-install(TARGETS atomic RUNTIME DESTINATION bin)
+SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/script" DESTINATION share/atom FILES_MATCHING PATTERN "*.js" PATTERN ".svn" EXCLUDE)
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/storage" DESTINATION share/atom FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE)
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Configuration/data.xml" DESTINATION share/atom/protocol)
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/atom.conf.template" DESTINATION share/atom)
+install(TARGETS atomd RUNTIME DESTINATION usr/bin)
+install(TARGETS atomic RUNTIME DESTINATION usr/bin)
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/script" DESTINATION usr/share/atom FILES_MATCHING PATTERN "*.js" PATTERN ".svn" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/uscript" DESTINATION etc/atom FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/storage" DESTINATION etc/atom FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Configuration/data.xml" DESTINATION usr/share/atom/protocol)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/atom.conf.template" DESTINATION etc/atom)
 
 
 set(CPACK_PACKAGE_DESCRIPTION "Homeautomation Control Software")

@@ -3,7 +3,8 @@
 ###############################################################################
 ProtocolFile = /usr/share/atom/protocol/data.xml
 ScriptPath = /usr/share/atom/script/
-StoragePath = /usr/share/atom/storage/
+UserScriptPath = /etc/atom/uscript/
+StoragePath = /etc/atom/storage/
 
 ###############################################################################
 ## Logging                                                                   ##
