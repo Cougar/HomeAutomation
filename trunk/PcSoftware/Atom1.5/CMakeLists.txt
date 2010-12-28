@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(atom)
 
+set(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/build)
+set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/build)
+
 FIND_PROGRAM(SVN_EXECUTABLE svn DOC "subversion command line client")
 
 MACRO(Subversion_GET_REVISION dir variable)
