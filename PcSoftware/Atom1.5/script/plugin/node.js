@@ -32,26 +32,29 @@ function Node_ListAvailable()
 {
 	var available_nodes = NodeExport_GetAvailableNodes();
 	
+	var lines = [["Id", "Modules"]];
+	
 	for (var n in available_nodes)
 	{
-		var id_parts = available_nodes[n].split(",");
-		var line = id_parts[0] + " Modules: ";
-
-		for (var c = 1; c < id_parts.length; c++)
+		var parts = available_nodes[n].split(",");
+		var id = parts.shift();
+		var modules = "<none>";
+		
+		if (parts.length > 0)
 		{
-			line += id_parts[c] += ",";
-		}
-
-		if (id_parts.length <= 1)
-		{
-			line += "<none>";
-		}
-		else
-		{
-			line = line.rtrim(',');
+			modules = parts.join(", ");
 		}
 		
-		Log(line + "\n");
+		lines.push([id, modules]);
+	}
+	
+	var table_lines = create_table(lines);
+	
+	Log("\033[29;1m" + table_lines[0] + "\033[0m\n");
+	
+	for (var n = 1; n < table_lines.length; n++)
+	{
+		Log(table_lines[n] + "\n");
 	}
 	
 	return true;

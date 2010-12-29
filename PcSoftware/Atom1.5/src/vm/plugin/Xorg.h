@@ -21,10 +21,6 @@
 #ifndef VM_PLUGIN_XORG_H
 #define VM_PLUGIN_XORG_H
 
-#include "config.h"
-
-#ifdef USE_PLUGIN_XORG
-
 #include <boost/shared_ptr.hpp>
 
 #include "vm/Plugin.h"
@@ -54,7 +50,5 @@ private:
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
-
-#endif // USE_PLUGIN_XORG
 
 #endif // VM_PLUGIN_XORG_H
