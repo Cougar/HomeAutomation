@@ -28,6 +28,21 @@ function array_length(array)
     return count;
 }
 
+function array_remove_empty(array)
+{
+	var result = [];
+	
+	for (var n in array)
+	{
+		if (array[n] && (typeof array[n] == 'string' && array[n].length > 0))
+		{
+			result.push(array[n]);
+		}
+	}
+	
+	return result;
+}
+
 function in_array(array, item)
 {
 	for (var n in array)
@@ -84,4 +99,56 @@ String.prototype.trim = function(charlist)
 {
 	var str = this.ltrim(charlist);
 	return str.rtrim(charlist);
+}
+
+String.prototype.rpad = function(char, length)
+{
+	var result = this;
+	
+	while (result.length < length)
+	{
+		result += char;
+	}
+	
+	return result;
+}
+
+function create_table(table_lines)
+{
+	var table_rows = [];
+	
+	if (table_lines.length == 0)
+	{
+		return table_rows;
+	}
+	
+	for (var col = 0; col < table_lines[0].length; col++)
+	{
+		var len = 0;
+		
+		for (var row = 0; row < table_lines.length; row++)
+		{
+			if (table_lines[row][col].length > len)
+			{
+				len = table_lines[row][col].length;
+			}
+		}
+		
+		len += 6;
+		
+		for (var row = 0; row < table_lines.length; row++)
+		{
+			if (!table_rows[row])
+			{
+				table_rows[row] = "";
+			}
+			
+			var str = table_lines[row][col] + '';
+			str = str.rpad(" ", len);
+			//Log("col=" + col + ", row=" + row + " len=" + len + ", str=\"" + str + "\", str.length=" + str.length + "\n");
+			table_rows[row] += str;
+		}
+	}
+	
+	return table_rows;
 }

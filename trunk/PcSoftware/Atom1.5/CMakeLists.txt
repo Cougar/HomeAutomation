@@ -36,10 +36,27 @@ target_link_libraries(atomd ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(atomd ${Boost_LIBRARIES})
 target_link_libraries(atomd v8)
 
+#NEEDED               libpthread.so.0
+#NEEDED               libboost_thread.so.1.42.0
+#NEEDED               libboost_system.so.1.42.0
+#NEEDED               libboost_signals.so.1.42.0
+#NEEDED               libboost_program_options.so.1.42.0
+#NEEDED               libboost_filesystem.so.1.42.0
+#NEEDED               libboost_date_time.so.1.42.0
+#NEEDED               libv8.so.2.2.18
+#NEEDED               libX11.so.6
+#NEEDED               libstdc++.so.6
+#NEEDED               libm.so.6
+#NEEDED               libgcc_s.so.1
+#NEEDED               libc.so.6
+#NEEDED               libreadline.so.6
+# objdump -p build/atomic | grep NEEDED
+# apt-file search libpthread | grep /usr/lib
+
 IF(${USE_PLUGIN_XORG})
     MESSAGE(STATUS "Building with Xorg support")
     target_link_libraries(atomd X11)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, libboost-signals-dev, libboost-thread-dev, libreadline-dev, libv8-dev, libx11-dev (>= 2:1.3)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8 (>= 2.2.18), libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, libboost-signals-dev, libboost-thread-dev, libreadline-dev, libv8-dev, libx11-dev (>= 2:1.3)")
 ENDIF(${USE_PLUGIN_XORG})
 
 IF(NOT ${USE_PLUGIN_XORG})
@@ -66,7 +83,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/atom.conf.template" DESTINATION etc/a
 
 set(CPACK_PACKAGE_DESCRIPTION "Homeautomation Control Software")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.")
-set(CPACK_PACKAGE_NAME "Atom")
+set(CPACK_PACKAGE_NAME "atom")
 
 set(CPACK_PACKAGE_CONTACT "Mattias Runge")
 set(CPACK_PACKAGE_VENDOR "project.auml.se")

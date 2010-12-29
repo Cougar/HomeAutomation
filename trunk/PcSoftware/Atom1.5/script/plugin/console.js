@@ -42,7 +42,7 @@ function Console_PromptResponse(client_id, response)
 {
 	Console_LastClientId = client_id;
 	
-	var parts = response.split(" ");
+	var parts = array_remove_empty(response.split(" "));
 
 	var current_function = Console_CurrentFunction;
 	Console_CurrentFunction = Console_Shell;

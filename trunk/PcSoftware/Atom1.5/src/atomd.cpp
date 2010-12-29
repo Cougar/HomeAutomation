@@ -45,8 +45,11 @@
 #include "vm/plugin/Node.h"
 #include "vm/plugin/Console.h"
 #include "vm/plugin/Storage.h"
-#include "vm/plugin/Xorg.h"
 #include "vm/plugin/Socket.h"
+
+#ifdef USE_PLUGIN_XORG
+#include "vm/plugin/Xorg.h"
+#endif // USE_PLUGIN_XORG
 
 using namespace atom;
  

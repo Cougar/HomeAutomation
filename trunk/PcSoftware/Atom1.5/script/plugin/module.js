@@ -417,37 +417,34 @@ function Module_ListAvailable()
 {
 	var available_modules = ModuleExport_GetAvailableModules();
 	
+	var lines = [["Id", "Name", "Aliases"]];
+	
 	for (var n in available_modules)
 	{
 		var id_parts = available_modules[n].split(":", 2);
-	
-		var line = id_parts[0] + ":" + id_parts[1] + " Alias: ";
+		var alias = "<none>";
 		
-		var aliases_data = Module_LookupAliases({
+		var alias_names = get_keys(Module_LookupAliases({
 			"module_name" : id_parts[0],
 			"module_id"   : id_parts[1],
 			"group"       : false
-		});
+		}));
 		
-		var found = false;
-		
-		for (var alias_name in aliases_data)
+		if (alias_names.length > 0)
 		{
-			found = true;
-			
-			line += alias_name + ",";
+			alias = alias_names.join(", ");
 		}
 		
-		if (!found)
-		{
-			line += "<none>";
-		}
-		else
-		{
-			line = line.rtrim(',');
-		}
-		
-		Log(line + "\n");
+		lines.push([id_parts[1], id_parts[0], alias]);
+	}
+	
+	var table_lines = create_table(lines);
+	
+	Log("\033[29;1m" + table_lines[0] + "\033[0m\n");
+	
+	for (var n = 1; n < table_lines.length; n++)
+	{
+		Log(table_lines[n] + "\n");
 	}
 	
 	return true;
