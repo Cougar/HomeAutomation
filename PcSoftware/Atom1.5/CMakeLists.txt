@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(atom)
 
+#set(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/build)
+#set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/build)
+
 FIND_PROGRAM(SVN_EXECUTABLE svn DOC "subversion command line client")
 
 MACRO(Subversion_GET_REVISION dir variable)
@@ -15,12 +18,10 @@ MESSAGE(STATUS "Revision is ${SUBVERSION_REVISION}")
 add_executable(atomic src/common/common.cpp src/atomic.cpp src/logging/Logger.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/common/Byteset.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp)
 
 IF(${USE_PLUGIN_XORG})
-   add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Xorg.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
+    add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Xorg.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
+ELSE(${USE_PLUGIN_XORG})
+    add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
 ENDIF(${USE_PLUGIN_XORG})
-
-IF(NOT ${USE_PLUGIN_XORG})
-   add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
-ENDIF(NOT ${USE_PLUGIN_XORG})
 
 set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt date_time-mt)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
@@ -50,18 +51,19 @@ target_link_libraries(atomd v8)
 # objdump -p build/atomic | grep NEEDED
 # apt-file search libpthread | grep /usr/lib
 
+# TODO: Fix dependencies
+
 IF(${USE_PLUGIN_XORG})
     MESSAGE(STATUS "Building with Xorg support")
     target_link_libraries(atomd X11)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8 (>= 2.2.18), libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, libboost-signals-dev, libboost-thread-dev, libreadline-dev, libv8-dev, libx11-dev (>= 2:1.3)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
+ELSE(${USE_PLUGIN_XORG})
+    MESSAGE(STATUS "Building without Xorg support")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
 ENDIF(${USE_PLUGIN_XORG})
 
-IF(NOT ${USE_PLUGIN_XORG})
-    MESSAGE(STATUS "Building without Xorg support")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, libboost-signals-dev, libboost-thread-dev, libreadline-dev, libv8-dev")
-ENDIF(NOT ${USE_PLUGIN_XORG})
 
-
+include_directories(.)
 include_directories(src)
 include_directories(build)
 add_subdirectory(src)
