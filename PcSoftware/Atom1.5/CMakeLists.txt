@@ -1,38 +1,41 @@
 cmake_minimum_required(VERSION 2.8)
 
-PROJECT(atom)
+project(atom)
 
-#set(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/build)
-#set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/build)
+find_program(SVN_EXECUTABLE svn DOC "subversion command line client")
+macro(GET_SVN_REVISION dir variable)
+    execute_process(COMMAND ${SVN_EXECUTABLE} info ${dir} OUTPUT_VARIABLE ${variable} OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX REPLACE "^(.*\n)?Revision: ([^\n]+).*" "\\2" ${variable} "${${variable}}")
+endmacro(GET_SVN_REVISION)
 
-FIND_PROGRAM(SVN_EXECUTABLE svn DOC "subversion command line client")
+include(FindX11)
 
-MACRO(Subversion_GET_REVISION dir variable)
-    EXECUTE_PROCESS(COMMAND ${SVN_EXECUTABLE} info ${dir} OUTPUT_VARIABLE ${variable} OUTPUT_STRIP_TRAILING_WHITESPACE)
-    STRING(REGEX REPLACE "^(.*\n)?Revision: ([^\n]+).*" "\\2" ${variable} "${${variable}}")
-ENDMACRO(Subversion_GET_REVISION)
-
-Subversion_GET_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)
-MESSAGE(STATUS "Revision is ${SUBVERSION_REVISION}")
-
-add_executable(atomic src/common/common.cpp src/atomic.cpp src/logging/Logger.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/common/Byteset.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp)
-
-IF(${USE_PLUGIN_XORG})
-    add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Xorg.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
-ELSE(${USE_PLUGIN_XORG})
-    add_executable(atomd src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
-ENDIF(${USE_PLUGIN_XORG})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(src)
+add_subdirectory(src)
 
 set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt date_time-mt)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 find_package(Threads REQUIRED)
 
-target_link_libraries(atomic ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(atomic ${Boost_LIBRARIES})
-target_link_libraries(atomic readline)
-target_link_libraries(atomd ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(atomd ${Boost_LIBRARIES})
-target_link_libraries(atomd v8)
+set(ATOMD_FILES src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
+set(ATOMD_LIBS ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} v8)
+
+set(ATOMIC_FILES src/common/common.cpp src/atomic.cpp src/logging/Logger.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/common/Byteset.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp)
+set(ATOMIC_LIBS ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} readline)
+
+if(${X11_FOUND})
+    message(STATUS "Building with Xorg support")
+    set(USE_PLUGIN_XORG ON)
+    set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/Xorg.cpp)
+    set(ATOMD_LIBS ${ATOMD_LIBS} ${X11_LIBRARIES})
+endif(${X11_FOUND})
+
+add_executable(atomd ${ATOMD_FILES})
+target_link_libraries(atomd ${ATOMD_LIBS})
+
+add_executable(atomic ${ATOMIC_FILES})
+target_link_libraries(atomic ${ATOMIC_LIBS})
 
 #NEEDED               libpthread.so.0
 #NEEDED               libboost_thread.so.1.42.0
@@ -53,50 +56,35 @@ target_link_libraries(atomd v8)
 
 # TODO: Fix dependencies
 
-IF(${USE_PLUGIN_XORG})
-    MESSAGE(STATUS "Building with Xorg support")
-    target_link_libraries(atomd X11)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
-ELSE(${USE_PLUGIN_XORG})
-    MESSAGE(STATUS "Building without Xorg support")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
-ENDIF(${USE_PLUGIN_XORG})
-
-
-include_directories(.)
-include_directories(src)
-include_directories(build)
-add_subdirectory(src)
-
-SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
+GET_SVN_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)
+message(STATUS "SVN revision is ${SUBVERSION_REVISION}")
 
 install(TARGETS atomd RUNTIME DESTINATION usr/bin)
 install(TARGETS atomic RUNTIME DESTINATION usr/bin)
-
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/script" DESTINATION usr/share/atom FILES_MATCHING PATTERN "*.js" PATTERN ".svn" EXCLUDE)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/uscript" DESTINATION etc/atom FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/storage" DESTINATION etc/atom FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Configuration/data.xml" DESTINATION usr/share/atom/protocol)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/atom.conf.template" DESTINATION etc/atom)
 
-
+SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
 set(CPACK_PACKAGE_DESCRIPTION "Homeautomation Control Software")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.")
 set(CPACK_PACKAGE_NAME "atom")
-
 set(CPACK_PACKAGE_CONTACT "Mattias Runge")
 set(CPACK_PACKAGE_VENDOR "project.auml.se")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "5")
 set(CPACK_PACKAGE_VERSION_PATCH "${SUBVERSION_REVISION}")
-set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-
 set(CPACK_GENERATOR "DEB;")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}-${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CMAKE_SYSTEM_PROCESSOR}")
 
 include(CPack)
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # To enable the Xorg plugin
 # cmake -DUSE_PLUGIN_XORG=true ../
