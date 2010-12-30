@@ -1,11 +1,9 @@
 #!/bin/bash
 
-mkdir build
 cd build
-#cmake ../
-cmake -DUSE_PLUGIN_XORG=ON ../
+mkdir build
+cmake ../
 make
-#cpack ../
-cpack -DUSE_PLUGIN_XORG=ON ../
+cpack ../
 sudo dpkg --install *.deb
 cd ..

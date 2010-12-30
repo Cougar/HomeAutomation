@@ -11,7 +11,7 @@ Build atomd and atomic:
 cd <atom root directory>
 mkdir build
 cd build
-cmake -DUSE_PLUGIN_XORG=true ../
+cmake ../
 make
 
 Create and install Ubuntu package: (requires cmake 2.8.3 or higher)
@@ -19,8 +19,8 @@ Create and install Ubuntu package: (requires cmake 2.8.3 or higher)
 cd <atom root directory>
 mkdir build
 cd build
-cpack -DUSE_PLUGIN_XORG=true ../
-sudo dpkg --install Atom-1.5-x86_64.deb
+cpack ../
+sudo dpkg --install *.deb
 
 Remove installed Ubuntu package:
 ================================
