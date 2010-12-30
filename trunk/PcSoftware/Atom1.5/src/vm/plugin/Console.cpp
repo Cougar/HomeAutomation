@@ -46,6 +46,7 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     this->ExportFunction("ConsoleExport_PromptRequest",        Console::Export_PromptRequest);
     this->ExportFunction("ConsoleExport_AutoCompleteResponse", Console::Export_AutoCompleteResponse);
     this->ExportFunction("ConsoleExport_LogToClient",          Console::Export_LogToClient);
+    this->ExportFunction("ConsoleExport_DisconnectClient",     Console::Export_DisconnectClient);
     
     try
     {
@@ -247,6 +248,21 @@ Value Console::Export_LogToClient(const v8::Arguments& args)
     packet += line;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    return v8::Boolean::New(true);
+}
+
+Value Console::Export_DisconnectClient(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
+    }
+    net::Manager::Instance()->Disconnect(args[0]->Uint32Value());
     return v8::Boolean::New(true);
 }
 

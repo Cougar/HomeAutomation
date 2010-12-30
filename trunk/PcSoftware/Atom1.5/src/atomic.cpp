@@ -117,12 +117,11 @@ private:
     {
         if (client_state != net::CLIENT_STATE_CONNECTED)
         {
-            std::cout << "Disconnected from server" << std::endl;
+            std::cout << "Disconnected from server." << std::endl;
             
             this->client_id_ = 0;
             finish = true;
-           
-            kill(getpid(), SIGTERM);
+            on_message_condition.notify_all();
         }
     }
     
@@ -207,6 +206,7 @@ int main(int argc, char **argv)
     
     command_line.add_options()
     ("help,h",    "produce help message")
+    ("command,c", boost::program_options::value<std::string>()->default_value(""), "command")
     ("server,s",  boost::program_options::value<std::string>()->default_value("localhost"), "server address")
     ("port,p",    boost::program_options::value<unsigned int>()->default_value(1202), "server port");
     
@@ -236,15 +236,16 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
     
-    
-    std::cout << "\033[29;1mAtom Interactive Console, version " + std::string(VERSION) + " starting...\033[0m" << std::endl;
-    std::cout << "\033[29;1mReleased under GPL version 2.\033[0m" << std::endl;
-    std::cout << "Written by Mattias Runge 2010." << std::endl;
-    
-    
     net::Manager::Create();
-       
-    std::cout << "Connecting to " << variable_map["server"].as<std::string>().data() << ":" << variable_map["port"].as<unsigned int>() << "..." << std::endl;
+
+    if (variable_map["command"].as<std::string>() == "")
+    {
+        std::cout << "\033[29;1mAtom Interactive Console, version " + std::string(VERSION) + " starting...\033[0m" << std::endl;
+        std::cout << "\033[29;1mReleased under GPL version 2.\033[0m" << std::endl;
+        std::cout << "Written by Mattias Runge 2010." << std::endl;
+        
+        std::cout << "Connecting to " << variable_map["server"].as<std::string>().data() << ":" << variable_map["port"].as<unsigned int>() << "..." << std::endl;
+    }
     
     try
     {
@@ -252,34 +253,51 @@ int main(int argc, char **argv)
     }
     catch (std::runtime_error& e)
     {
-        std::cout << "error!" << std::endl;
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Connection error: " << e.what() << std::endl;
         CleanUp();
         return EXIT_FAILURE;
     }
     
-    while (true)
+    if (variable_map["command"].as<std::string>() != "")
     {
         boost::mutex::scoped_lock guard(guard_mutex);
         on_message_condition.wait(guard);
         
-        if (finish)
+        if (!finish)
         {
-            break;
-        }
-        
-        while ((buffer = readline(cc->GetPrompt().data())) != NULL)
-        {
-            if (strlen(buffer) == 0)
+            cc->SendResponse(variable_map["command"].as<std::string>());
+            
+            if (!finish)
             {
-                continue;
+                on_message_condition.wait(guard);
+            }
+        }
+    }
+    else
+    {
+        while (true)
+        {
+            boost::mutex::scoped_lock guard(guard_mutex);
+            on_message_condition.wait(guard);
+            
+            if (finish)
+            {
+                break;
             }
             
-            break;
+            while ((buffer = readline(cc->GetPrompt().data())) != NULL)
+            {
+                if (strlen(buffer) == 0)
+                {
+                    continue;
+                }
+                
+                break;
+            }
+            
+            cc->SendResponse(buffer);
+            add_history(buffer);
         }
-        
-        cc->SendResponse(buffer);
-        add_history(buffer);
     }
     
     CleanUp();
@@ -344,7 +362,8 @@ char* AutoCompleteGet(const char* text, int state)
 
 void CleanUp()
 {
-    std::cout << "Cleaning up..." << std::endl;
+    std::cout << std::endl;
+    //std::cout << "Cleaning up..." << std::endl;
  
     write_history(history_filename.data());
     
@@ -357,7 +376,7 @@ void CleanUp()
         free(buffer);
     }
     
-    std::cout << "Thank you for using Atom. Goodbye!" << std::endl;
+    //std::cout << "Thank you for using Atom. Goodbye!" << std::endl;
     
     tcsetattr(fileno(stdin), TCSANOW, &original_flags); // Restore
 }

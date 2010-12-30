@@ -172,29 +172,12 @@ function help_complete(arg_index, args)
 	return result;
 }
 
-function help(command_name)
+function quit()
 {
-	if (!command_name)
-	{
-		command_name = "help";
-	}
-	
-	if (Console_Functions[command_name] && Console_Functions[command_name]["help"])
-	{
-		var result = "";
-		
-		if (Console_Functions[command_name] && Console_Functions[command_name]["autocomplete"])
-		{
-			result += "Argument autocompletion enabled for " + command_name + "\n";
-		}
-		
-		result += "Syntax: " + command_name + " " + Console_Functions[command_name]["help"] + "\n";
-		
-		Log(result);
-		return true;
-	}
-	
-	Log("\033[31mNo help for " + command_name + " found.\033[0m\n");
+    Log("Goodbye!\n");
+    
+    ConsoleExport_DisconnectClient(Console_LastClientId);
+    Console_LastClientId = null;
 	return false;
 }
-Console_RegisterCommand(help, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Console_GetFunctionNames()); });
+Console_RegisterCommand(quit);
