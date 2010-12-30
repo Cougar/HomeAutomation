@@ -2,6 +2,9 @@
 Node_ResetNodeId = null;
 Node_ResetClientId = null;
 
+Node_ProgramNodeId = null;
+Node_ProgramClientId = null;
+
 function Node_OnChange(node_id, available)
 {
 	if (node_id == Node_ResetNodeId && available)
@@ -11,6 +14,14 @@ function Node_OnChange(node_id, available)
 		Node_ResetClientId = null;
 		Console_SetDefaultPrompt();
 	}
+	
+	if (node_id == Node_ProgramNodeId && available)
+    {
+        Console_LogToClient(Node_ProgramClientId, "\033[32m" + Node_ProgramNodeId + " started okay.\033[0m\n");
+        Node_ProgramNodeId = null;
+        Node_ProgramClientId = null;
+        Console_SetDefaultPrompt();
+    }
 }
 
 function Node_GetAvailableIds()
@@ -77,13 +88,37 @@ function Node_Reset(node_id)
 		return false;
 	}
 	
-	Node_ResetClientId = Console_GetClientId();
-	Node_ResetNodeId = node_id;
+	Node_ProgramClientId = Console_GetClientId();
+	Node_ProgramNodeId = node_id;
 	Console_PreventDefaultPrompt();
 
 	return true;
 }
 Console_RegisterCommand(Node_Reset, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds()); });
+
+function Node_Program(node_id, bios, filename)
+{
+    if (arguments.length < 3)
+    {
+        Log("\033[31mNot enough parameters given.\033[0m\n");
+        return false;
+    }
+    
+    Log("Initiating programming of " + node_id + "...\n");
+    
+    if (!NodeExport_ProgramNode(node_id, bios > 0, filename))
+    {
+        Log("\033[31mFailed to start programming.\033[0m\n");
+        return false;
+    }
+    
+    Node_ResetClientId = Console_GetClientId();
+    Node_ResetNodeId = node_id;
+    Console_PreventDefaultPrompt();
+    
+    return true;
+}
+Console_RegisterCommand(Node_Program, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds(), [0, 1]); });
 
 function Node_GetInformation(node_id)
 {
