@@ -69,7 +69,7 @@ function Node_Reset(node_id)
 		return false;
 	}
 	
-	Log("Sending reset to " + node_id + ".\n");
+	Log("Sending reset to " + node_id + "...\n");
 	
 	if (!NodeExport_ResetNode(node_id))
 	{
@@ -84,3 +84,32 @@ function Node_Reset(node_id)
 	return true;
 }
 Console_RegisterCommand(Node_Reset, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds()); });
+
+function Node_GetInformation(node_id)
+{
+    if (arguments.length < 1)
+    {
+        Log("\033[31mNot enough parameters given.\033[0m\n");
+        return false;
+    }
+    
+    var result = NodeExport_GetNodeInformation(node_id);
+    
+    if (!result)
+    {
+        Log("\033[31mNo node with id " + node_id + " found.\033[0m\n");
+        return false;
+    }
+    
+    var date = new Date(result["LastActive"] * 1000);
+    
+    Log("Id: " + result["Id"] + "\n");
+    Log("Valid: " + result["Valid"] + "\n");
+    Log("BiosVersion: " + result["BiosVersion"] + "\n");
+    Log("DeviceType: " + result["DeviceType"] + "\n");
+    Log("HasApplication: " + result["HasApplication"] + "\n");
+    Log("LastActive: " + date.toString() + "\n");
+    
+    return true;
+}
+Console_RegisterCommand(Node_GetInformation, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds()); });

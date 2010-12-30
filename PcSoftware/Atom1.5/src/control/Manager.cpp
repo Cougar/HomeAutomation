@@ -302,6 +302,18 @@ bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)
     return true;
 }
 
+Node::Information Manager::GetNodeInformation(Node::Id node_id)
+{
+    NodeList::iterator it = this->nodes_.find(node_id);
+    
+    if (it == this->nodes_.end())
+    {
+        throw std::runtime_error("No such node exists, " + node_id);
+    }
+        
+    return it->second->GetInformation();
+}
+
 Node::Pointer Manager::GetNode(Node::Id node_id)
 {
     Node::Pointer node;
