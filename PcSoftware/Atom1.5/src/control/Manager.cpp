@@ -170,18 +170,11 @@ void Manager::SlotOnNewState(Node::Id node_id, Node::State current_state, Node::
     if (target_state != Node::STATE_NORM_INITIALIZED)
     {
         this->RemoveModules(node_id);
-
-        if (current_state != target_state)
-        {
-            this->signal_on_node_change_(node_id, false);
-        }
     }
-    else
+    
+    if (current_state != target_state)
     {
-        if (current_state != target_state)
-        {
-            this->signal_on_node_change_(node_id, true);
-        }
+        this->signal_on_node_change_(node_id, (target_state == Node::STATE_NORM_INITIALIZED || target_state == Node::STATE_NORM_LIST || target_state == Node::STATE_NORM_ONLINE));
     }
     
     if (target_state == Node::STATE_BPGM_OFFLINE || target_state == Node::STATE_APGM_OFFLINE)
