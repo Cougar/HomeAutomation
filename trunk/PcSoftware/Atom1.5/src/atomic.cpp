@@ -112,7 +112,6 @@ private:
     net::ClientId client_id_;
     std::string prompt_;
     
-    
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
     {
         if (client_state != net::CLIENT_STATE_CONNECTED)
@@ -287,11 +286,21 @@ int main(int argc, char **argv)
             
             while ((buffer = readline(cc->GetPrompt().data())) != NULL)
             {
+                if (finish)
+                {
+                    break;
+                }
+                
                 if (strlen(buffer) == 0)
                 {
                     continue;
                 }
                 
+                break;
+            }
+            
+            if (finish)
+            {
                 break;
             }
             

@@ -67,6 +67,7 @@ public:
     common::StringList GetAvailableNodes();
     bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
     bool ResetNode(Node::Id node_id);
+    Node::Information GetNodeInformation(Node::Id node_id);
     
 private:
     static Pointer instance_;

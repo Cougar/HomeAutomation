@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "control/Manager.h"
+#include "control/Node.h"
 #include "vm/Manager.h"
 
 namespace atom {
@@ -38,6 +39,7 @@ Node::Node(boost::asio::io_service& io_service) : Plugin(io_service)
     this->ExportFunction("NodeExport_ResetNode",         Node::Export_ResetNode);
     this->ExportFunction("NodeExport_GetAvailableNodes", Node::Export_GetAvailableNodes);
     this->ExportFunction("NodeExport_ProgramNode",       Node::Export_ProgramNode);
+    this->ExportFunction("NodeExport_GetNodeInformation",Node::Export_GetNodeInformation);
 }
 
 Node::~Node()
@@ -106,7 +108,6 @@ Value Node::Export_GetAvailableNodes(const v8::Arguments& args)
     
     for (unsigned int n = 0; n < available_nodes.size(); n++)
     {
-        LOG.Debug(boost::lexical_cast<std::string>(n) + ": " + available_nodes[n]);
         result->Set(n, v8::String::New(available_nodes[n].data()));
     }
     
@@ -130,7 +131,45 @@ Value Node::Export_ProgramNode(const v8::Arguments& args)
     
     return v8::Boolean::New(control::Manager::Instance()->ProgramNode(*node_id, args[1]->BooleanValue(), std::string(*filename)));
 }
+
+Value Node::Export_GetNodeInformation(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 1)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return v8::Boolean::New(false);
+    }
+    
+    v8::String::AsciiValue node_id(args[0]);
+    
+    control::Node::Information information;
+    
+    try
+    {
+        information = control::Manager::Instance()->GetNodeInformation(*node_id);
+    }
+    catch (std::runtime_error& e)
+    {
+        LOG.Error(e.what());
+        return v8::Undefined();
+    }
+    
+    v8::Local<v8::Array> result = v8::Array::New(6);
+    
+    result->Set(v8::String::New("Id"),            args[0]);
+    result->Set(v8::String::New("Valid"),         v8::Boolean::New(information.valid_));
+    result->Set(v8::String::New("BiosVersion"),   v8::Uint32::New(information.bios_version_));
+    result->Set(v8::String::New("DeviceType"),    v8::String::New(information.device_type_.data()));
+    result->Set(v8::String::New("HasApplication"),v8::Boolean::New(information.has_application_));
+    result->Set(v8::String::New("LastActive"),    v8::Uint32::New(information.last_active_));
+    
+    return result;
+}
+
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom

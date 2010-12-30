@@ -18,6 +18,24 @@ set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt d
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 find_package(Threads REQUIRED)
 
+GET_SVN_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)
+
+set(CMAKE_INSTALL_PREFIX / CACHE INTERNAL "")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+set(CPACK_PACKAGE_DESCRIPTION "Homeautomation Control Software")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.")
+set(CPACK_PACKAGE_NAME "atom")
+set(CPACK_PACKAGE_CONTACT "Mattias Runge")
+set(CPACK_PACKAGE_VENDOR "project.auml.se")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "5")
+set(CPACK_PACKAGE_VERSION_PATCH "${SUBVERSION_REVISION}")
+set(CPACK_GENERATOR "DEB;")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CMAKE_SYSTEM_PROCESSOR}")
+
+set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
 set(ATOMD_FILES src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
 set(ATOMD_LIBS ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} v8)
 
@@ -56,7 +74,6 @@ target_link_libraries(atomic ${ATOMIC_LIBS})
 
 # TODO: Fix dependencies
 
-GET_SVN_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)
 message(STATUS "SVN revision is ${SUBVERSION_REVISION}")
 
 install(TARGETS atomd RUNTIME DESTINATION usr/bin)
@@ -67,24 +84,6 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/storage" DESTINATION etc/atom FIL
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Configuration/data.xml" DESTINATION usr/share/atom/protocol)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/atom.conf.template" DESTINATION etc/atom)
 
-SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
-set(CPACK_PACKAGE_DESCRIPTION "Homeautomation Control Software")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.")
-set(CPACK_PACKAGE_NAME "atom")
-set(CPACK_PACKAGE_CONTACT "Mattias Runge")
-set(CPACK_PACKAGE_VENDOR "project.auml.se")
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "5")
-set(CPACK_PACKAGE_VERSION_PATCH "${SUBVERSION_REVISION}")
-set(CPACK_GENERATOR "DEB;")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.6), libgcc1 (>= 1:4.1)")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CMAKE_SYSTEM_PROCESSOR}")
-
 include(CPack)
 
-set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-# To enable the Xorg plugin
-# cmake -DUSE_PLUGIN_XORG=true ../

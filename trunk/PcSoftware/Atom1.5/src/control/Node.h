@@ -44,6 +44,15 @@ public:
     typedef boost::shared_ptr<Node> Pointer;
     typedef std::string Id;
     
+    typedef struct
+    {
+        bool valid_;
+        unsigned int bios_version_;
+        std::string device_type_;
+        bool has_application_;
+        time_t last_active_;
+    } Information;
+    
     typedef enum
     {
         STATE_INVALID,
@@ -78,7 +87,6 @@ public:
     
     typedef boost::signals2::signal<void(Id, State, State)> SignalOnNewState;
     
-    
     Node(Id id);
     virtual ~Node();
     
@@ -87,6 +95,9 @@ public:
     void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state);
     
     Id GetId();
+    Information GetInformation();
+    unsigned int GetBiosVersion();
+    bool HasApplication();
     State GetState();
 
     void Trigger(Event event, common::StringMap variables);
@@ -103,20 +114,22 @@ private:
     typedef std::map<State, Transition> TransitionList;
     
     Id id_;
+    Information information_;    
     State state_;
-    time_t last_active_;
-    SignalOnNewState signal_on_new_state_;
-    logging::Logger LOG;
+    
     Code::Pointer code_;
     unsigned int start_offset_;
     unsigned int current_offset_;
     unsigned int expected_ack_data_;
     time_t program_start_time_;
-    
+
+    logging::Logger LOG;
     
     static TransitionList transitions_;
     static std::map<State, std::string> state_names_;
     static std::map<Event, std::string> event_names_;
+    
+    SignalOnNewState signal_on_new_state_;
     
     static void AddTransition(State current_state, Event event, State target_state);
     

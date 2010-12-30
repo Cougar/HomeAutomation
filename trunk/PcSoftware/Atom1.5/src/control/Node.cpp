@@ -38,6 +38,12 @@ Node::Node(Node::Id id) : LOG("control::Node")
 {
     this->state_ = STATE_NORM_OFFLINE;
     this->id_ = id;
+    this->information_.has_application_ = false;
+    this->information_.bios_version_ = 0;
+    this->information_.device_type_ = "N/A";
+    this->information_.last_active_ = 0;
+    this->information_.valid_ = false;
+    
     this->current_offset_ = 0;
     this->expected_ack_data_ = 0;
     this->program_start_time_ = 0;
@@ -58,9 +64,9 @@ Node::Id Node::GetId()
     return this->id_;
 }
 
-Node::State Node::GetState()
+Node::Information Node::GetInformation()
 {
-    return this->state_;
+    return this->information_;
 }
 
 void Node::SetupStateMachine()
@@ -184,6 +190,14 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     State target_state = this->GetTransitionTarget(event);
     
     LOG.Debug("Trigger called on " + this->id_ + ", current state: " + Node::state_names_[this->state_] + ", event: " + Node::event_names_[event] + ", target state: "  + Node::state_names_[target_state]);
+    
+    if (event == EVENT_BIOS_START)
+    {
+        this->information_.has_application_ = boost::lexical_cast<int>(variables["HasApplication"]) > 0;
+        this->information_.bios_version_ = boost::lexical_cast<unsigned int>(variables["BiosVersion"]);
+        this->information_.device_type_ = variables["DeviceType"];
+        this->information_.valid_ = true;
+    }
     
     if (target_state == STATE_INVALID)
     {
@@ -336,6 +350,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     }
     else if (target_state == STATE_NORM_OFFLINE)
     {
+        this->information_.valid_ = false;
         this->SendReset();
     }
     
@@ -355,7 +370,7 @@ bool Node::CheckTimeout()
         return true;
     }
     
-    if (this->code_.use_count() == 0 && this->last_active_ + 10 < time(NULL))
+    if (this->code_.use_count() == 0 && this->information_.last_active_ + 10 < time(NULL))
     {
         this->state_ = STATE_NORM_OFFLINE;
         return false;
@@ -366,7 +381,7 @@ bool Node::CheckTimeout()
 
 void Node::ResetTimeout()
 {
-    this->last_active_ = time(NULL);
+    this->information_.last_active_ = time(NULL);
 }
 
 void Node::Reset()
