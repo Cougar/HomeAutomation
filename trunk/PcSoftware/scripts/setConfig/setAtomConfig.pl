@@ -126,13 +126,13 @@ foreach (@lines)
 		
 		foreach (@devices)
 		{
-			if (@{$_}[5] eq $devicename)
+			if (@{$_}[0] eq $devicename)
 			{
 				@device = @{$_};
 			}
 		}
 		
-		if ($device[0] eq "N/A") 
+		if ($device[0] eq "unknown") 
 		{
 			print "\nWarning: Unknown device type, will not set MCU settings\n\n";
 		}
@@ -155,7 +155,7 @@ close FP;
 open (FP, ">".$biosfile) or die "Cannot open file $biosfile\n";
 foreach $file (@file) {
 	$file =~ s/^NODE_HW_ID=.*/NODE_HW_ID=$hwid/g;
-	if ($device[0] ne "N/A") 
+	if ($device[0] ne "unknown") 
 	{
 		$file =~ s/^MCU=.*/MCU=$device[0]/g;
 		$file =~ s/^HIGHFUSE=.*/HIGHFUSE=$device[1]/g;
@@ -167,6 +167,6 @@ foreach $file (@file) {
 }
 close FP;
 
-exit 0;
+exit(0);
 
 
