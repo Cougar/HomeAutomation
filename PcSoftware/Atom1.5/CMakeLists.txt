@@ -14,6 +14,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(src)
 add_subdirectory(src)
 
+set(CMAKE_BUILD_TYPE Release)
+
 set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt date_time-mt)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 find_package(Threads REQUIRED)

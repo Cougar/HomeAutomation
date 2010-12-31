@@ -5,6 +5,8 @@ Node_ResetClientId = null;
 Node_ProgramNodeId = null;
 Node_ProgramClientId = null;
 
+Node_WaitClientId = null;
+
 function Node_OnChange(node_id, available)
 {
 	if (node_id == Node_ResetNodeId && available)
@@ -20,6 +22,29 @@ function Node_OnChange(node_id, available)
         Console_LogToClient(Node_ProgramClientId, "\033[32m" + Node_ProgramNodeId + " started okay.\033[0m\n");
         Node_ProgramNodeId = null;
         Node_ProgramClientId = null;
+        Console_SetDefaultPrompt();
+    }
+    
+    if (Node_WaitClientId != null && available)
+    {    
+        var result = NodeExport_GetNodeInformation(node_id);
+    
+        if (!result)
+        {
+            Console_LogToClient(Node_WaitClientId, "\033[31mNo node with id " + node_id + " found.\033[0m\n");
+            return false;
+        }
+        
+        var date = new Date(result["LastActive"] * 1000);
+        
+        Console_LogToClient(Node_WaitClientId, "Id: " + result["Id"] + "\n");
+        Console_LogToClient(Node_WaitClientId, "Valid: " + result["Valid"] + "\n");
+        Console_LogToClient(Node_WaitClientId, "Bios Version: " + result["BiosVersion"] + "\n");
+        Console_LogToClient(Node_WaitClientId, "Device Type: " + result["DeviceType"] + "\n");
+        Console_LogToClient(Node_WaitClientId, "Has Application: " + result["HasApplication"] + "\n");
+        Console_LogToClient(Node_WaitClientId, "Last Active: " + date.toString() + "\n");
+        
+        Node_WaitClientId = null;
         Console_SetDefaultPrompt();
     }
 }
@@ -140,11 +165,20 @@ function Node_GetInformation(node_id)
     
     Log("Id: " + result["Id"] + "\n");
     Log("Valid: " + result["Valid"] + "\n");
-    Log("BiosVersion: " + result["BiosVersion"] + "\n");
-    Log("DeviceType: " + result["DeviceType"] + "\n");
-    Log("HasApplication: " + result["HasApplication"] + "\n");
-    Log("LastActive: " + date.toString() + "\n");
+    Log("Bios Version: " + result["BiosVersion"] + "\n");
+    Log("Device Type: " + result["DeviceType"] + "\n");
+    Log("Has Application: " + result["HasApplication"] + "\n");
+    Log("Last Active: " + date.toString() + "\n");
     
     return true;
 }
 Console_RegisterCommand(Node_GetInformation, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds()); });
+
+function Node_WaitForInformation()
+{
+    Node_WaitClientId = Console_GetClientId();
+    Console_PreventDefaultPrompt();
+    
+    return true;
+}
+Console_RegisterCommand(Node_WaitForInformation);
