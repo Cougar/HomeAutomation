@@ -18,4 +18,4 @@ function Xorg_SendKey(key_name)
 	Log("\033[31mFailed to send code \"" + key_name + "\" (" + keycode + ").\033[0m\n");
 	return false;
 }
-Console_RegisterCommand(Xorg_SendKey, function(args) { return Console_StandardAutocomplete(args, get_keys(torage_GetParameters("Xorg_Keymap"))); });
+Console_RegisterCommand(Xorg_SendKey, function(args) { return Console_StandardAutocomplete(args, get_keys(Storage_GetParameters("Xorg_Keymap"))); });
