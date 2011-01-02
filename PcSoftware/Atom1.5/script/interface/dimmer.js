@@ -13,7 +13,7 @@ Dimmer_AvailableIds   = function() { return Module_GetAvailableIds(Dimmer_Module
 function Dimmer_StartFade(alias_name, speed, direction)
 {
 	if (arguments.length < 3)
-	{
+	{	
 		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
@@ -208,3 +208,46 @@ function Dimmer_Demo(alias_name, speed, steps)
 	return true;
 }
 Console_RegisterCommand(Dimmer_Demo, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases(), Dimmer_SpeedLevels(), Dimmer_StepsLevels()); });
+
+function Dimmer_OnMessage(module_name, module_id, command, variables)
+{
+	if (in_array(Dimmer_ModuleNames, module_name))
+	{
+		var aliases_data = Module_LookupAliases({
+			"module_name" : module_name,
+			"module_id"   : module_id,
+			"group"       : false
+		});
+		
+		switch (command)
+		{
+			case "Netinfo":
+			{
+				for (var alias_name in aliases_data)
+				{
+					if (aliases_data[alias_name]["specific"]["Channel"] != variables["Channel"])
+					{
+						continue;
+					}
+					
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					
+					last_value["Connection"] = { "value" : variables["Connection"], "timestamp" : get_time() };
+					last_value["Frequency"] = { "value" : variables["Frequency"], "timestamp" : get_time() };
+					last_value["Level"] = { "value" : variables["DimmerValue"], "timestamp" : get_time() };
+					
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+				}
+				
+				break;
+			}
+		}
+	}
+}
+Module_RegisterToOnMessage("all", Dimmer_OnMessage);

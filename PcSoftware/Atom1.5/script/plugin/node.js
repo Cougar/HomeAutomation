@@ -162,13 +162,13 @@ function Node_GetInformation(node_id)
     }
     
     var date = new Date(result["LastActive"] * 1000);
-    
-    Log("Id: " + result["Id"] + "\n");
-    Log("Valid: " + result["Valid"] + "\n");
-    Log("Bios Version: " + result["BiosVersion"] + "\n");
-    Log("Device Type: " + result["DeviceType"] + "\n");
-    Log("Has Application: " + result["HasApplication"] + "\n");
-    Log("Last Active: " + date.toString() + "\n");
+ 
+    Log("\033[96mId: \033[0;1m" + result["Id"] + "\033[0m\n");
+    Log("\033[96mValid: \033[0;1m" + result["Valid"] + "\033[0m\n");
+    Log("\033[96mBios Version: \033[0;1m" + result["BiosVersion"] + "\033[0m\n");
+    Log("\033[96mDevice Type: \033[0;1m" + result["DeviceType"] + "\033[0m\n");
+    Log("\033[96mHas Application: \033[0;1m" + result["HasApplication"] + "\033[0m\n");
+    Log("\033[96mLast Active: \033[0;1m" + date.toString() + "\033[0m\n");
     
     return true;
 }

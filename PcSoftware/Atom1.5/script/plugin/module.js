@@ -382,10 +382,11 @@ function Module_GetLastValue(alias_name)
 	
 	for (var name in aliases_data)
 	{
-		var last_value_string = Storage_GetParameter("LastValues", alias_name);
+		var last_value_string = Storage_GetParameter("LastValues", name);
 		
 		if (last_value_string)
 		{
+			Log("\033[0;1mStored values for " + name + ":\033[0m\n");
 			var last_value = eval("(" + last_value_string + ")");
 			
 			for (var type_name in last_value)
