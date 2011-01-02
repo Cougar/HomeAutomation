@@ -16,8 +16,8 @@ my $eagle = "/usr/bin/eagle";
 #where to store temporary files
 my $tmpdir = "/tmp";
 #the dpi parameter to send to eagle for generating images
-my $brdresolution = 1000;
-my $schresolution = 200;
+my $brdresolution = 800;
+my $schresolution = 150;
 #store the resulting images at the path of argument 1 or 2
 my $storeresult=2;
 
