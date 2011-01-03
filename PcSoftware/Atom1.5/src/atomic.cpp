@@ -111,6 +111,7 @@ public:
 private:
     net::ClientId client_id_;
     std::string prompt_;
+    std::vector<unsigned char> buffer_;
     
     void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
     {
@@ -126,52 +127,67 @@ private:
     
     void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
     {
-        std::string s(data.ToCharString());
- 
-        while (s.length() > 0)
+        for (unsigned int n = 0; n < data.GetSize(); n++)
         {
-            std::string command = s.substr(0, 4);
-            unsigned int payload_length = boost::lexical_cast<unsigned int>(s.substr(4, 4));
+            this->buffer_.push_back(data[n]);
+        }
+
+        while (this->buffer_.size() >= 8)
+        {
+            std::string command = "";
+            command += (char)this->buffer_[0];
+            command += (char)this->buffer_[1];
+            command += (char)this->buffer_[2];
+            command += (char)this->buffer_[3];
+
+            std::string payload_length_str = "";
+            payload_length_str += (char)this->buffer_[4];
+            payload_length_str += (char)this->buffer_[5];
+            payload_length_str += (char)this->buffer_[6];
+            payload_length_str += (char)this->buffer_[7];
+            
+            unsigned int payload_length = boost::lexical_cast<unsigned int>(payload_length_str);
+            
+            if (this->buffer_.size() - 8 < payload_length)
+            {
+                return;
+            }
+         
+            std::string payload = "";
+            for (unsigned int n = 8; n < payload_length + 8; n++)
+            {
+                payload += (char)this->buffer_[n];
+            }
+            
+            this->buffer_.erase(this->buffer_.begin(), this->buffer_.begin() + payload_length + 8);
             
             if (command == "TEXT")
             {
-                std::cout << s.substr(8, payload_length - 1) << std::flush;
+                std::cout << payload << std::flush;
             }
             else if (command == "PROM")
             {
-                this->prompt_ = s.substr(8, payload_length - 1);
+                this->prompt_ = payload;
                 on_message_condition.notify_all();
             }
             else if (command == "COMP")
             {
                 autocomplete_list.clear();
                 
-                if (payload_length > 0)
+                if (payload.length() > 0)
                 {
-                    std::string payload = s.substr(8, payload_length - 1);
-                    
-                    if (payload.length() > 0)
-                    {
-                        boost::algorithm::split(autocomplete_list, payload, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
-                    }
+                    boost::algorithm::split(autocomplete_list, payload, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
                 }
                 
                 on_message_condition.notify_all();
             }
             else
             {
-                std::cerr << "Unknown data received: " << s << std::endl;
+                std::cerr << "Could not parse package." << std::endl;
                 finish = true;
                 on_message_condition.notify_all();
                 break;
             }
-            
-            if (8 + payload_length >= s.length())
-            {
-                break;
-            }
-            
-            s = s.substr(8 + payload_length);
         }
     }
 };
