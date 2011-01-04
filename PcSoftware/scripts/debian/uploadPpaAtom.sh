@@ -102,14 +102,14 @@ cd $ATOMDIR
 tar -zcf $ORIGTAR $NOSVNDIR
 
 # Create source package with debuild
-cd $ATOMDIR/$NOSVNDIR
-debuild $DEBUILDFLG
+#cd $ATOMDIR/$NOSVNDIR
+#debuild $DEBUILDFLG
 #echo cd $ATOMDIR/$NOSVNDIR
 #echo debuild $DEBUILDFLG
 
 # Upload to launchpad with dput
-cd $ATOMDIR
-dput $DPUTFLG
+#cd $ATOMDIR
+#dput $DPUTFLG
 #echo cd $ATOMDIR
 #echo dput $DPUTFLG
 # Requires ubuntu 9.10 or newer
