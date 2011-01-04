@@ -61,3 +61,4 @@ std::string ToHex(unsigned int value);
 }; // namespace atom
 
 #endif // TYPE_COMMON_H
+
