@@ -30,4 +30,3 @@ typedef unsigned int TimerId;
 }; // namespace atom
 
 #endif // TIMER_TYPES_H
-    

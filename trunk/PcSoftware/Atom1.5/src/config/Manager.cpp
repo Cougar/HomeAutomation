@@ -157,3 +157,4 @@ common::StringList Manager::GetAsStringVector(std::string name)
 
 }; // namespace config
 }; // namespace atom
+

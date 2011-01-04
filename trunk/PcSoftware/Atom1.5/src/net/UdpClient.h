@@ -55,4 +55,4 @@ private:
 }; // namespace atom
 
 #endif // NET_UDPCLIENT_H
-    
+
