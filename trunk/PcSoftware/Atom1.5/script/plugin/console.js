@@ -1,6 +1,4 @@
 
-Require
-
 Console_Functions = {};
 Console_CurrentFunction = null;
 Console_DefaultPrompt = "\033[29;1m[atomic] \033[0m";
