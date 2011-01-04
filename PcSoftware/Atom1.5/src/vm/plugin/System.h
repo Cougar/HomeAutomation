@@ -47,7 +47,8 @@ private:
     static Value Export_Require(const v8::Arguments& args);
     static Value Export_Execute(const v8::Arguments& args);
     static Value Export_ToHex(const v8::Arguments& args);
-    
+    static Value Export_Version(const v8::Arguments& args);
+    static Value Export_License(const v8::Arguments& args);    
 };
 
 }; // namespace plugin

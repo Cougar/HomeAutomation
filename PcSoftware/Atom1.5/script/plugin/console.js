@@ -1,4 +1,6 @@
 
+Require
+
 Console_Functions = {};
 Console_CurrentFunction = null;
 Console_DefaultPrompt = "\033[29;1m[atomic] \033[0m";
@@ -199,6 +201,19 @@ function help(command_name)
 }
 Console_RegisterCommand(help, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Console_GetFunctionNames()); });
 
+function version()
+{
+    Log(SystemExport_Version() + "\n");
+    return true;
+}
+Console_RegisterCommand(version);
+
+function license()
+{
+    Log(SystemExport_License() + "\n");
+    return true;
+}
+Console_RegisterCommand(license);
 
 function quit()
 {

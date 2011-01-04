@@ -64,7 +64,7 @@ void CleanUp();
 int main(int argc, char **argv)
 {
     LOG.Info("\033[29;1mAtom Daemon, version " + std::string(VERSION) + " starting...\033[0m");
-    LOG.Info("\033[29;1mReleased under GPL version 2.\033[0m");
+    LOG.Info("\033[29;1mReleased under " + std::string(LICENSE) + ".\033[0m");
     LOG.Info("Written by Mattias Runge 2010.");
     
     signal(SIGTERM, Handler);

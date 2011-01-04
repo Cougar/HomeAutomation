@@ -24,5 +24,6 @@
 #cmakedefine USE_PLUGIN_XORG
 
 #define VERSION "${VERSION}"
+#define LICENSE "GPL version 2"
 
 #endif // ATOM_CONFIG_H

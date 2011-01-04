@@ -256,7 +256,7 @@ int main(int argc, char **argv)
     if (variable_map["command"].as<std::string>() == "")
     {
         std::cout << "\033[29;1mAtom Interactive Console, version " + std::string(VERSION) + " starting...\033[0m" << std::endl;
-        std::cout << "\033[29;1mReleased under GPL version 2.\033[0m" << std::endl;
+        std::cout << "\033[29;1mReleased under " + std::string(LICENSE) + ".\033[0m" << std::endl;
         std::cout << "Written by Mattias Runge 2010." << std::endl;
         
         std::cout << "Connecting to " << variable_map["server"].as<std::string>().data() << ":" << variable_map["port"].as<unsigned int>() << "..." << std::endl;

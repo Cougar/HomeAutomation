@@ -25,6 +25,7 @@
 
 #include "vm/Manager.h"
 #include "common/common.h"
+#include "config.h"
 
 namespace atom {
 namespace vm {
@@ -36,9 +37,11 @@ System::System(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "system";
     
-    this->ExportFunction("Require",    System::Export_Require);
-    this->ExportFunction("Execute",    System::Export_Execute);
-    this->ExportFunction("ToHex",      System::Export_ToHex);
+    this->ExportFunction("Require",              System::Export_Require);
+    this->ExportFunction("Execute",              System::Export_Execute);
+    this->ExportFunction("ToHex",                System::Export_ToHex);
+    this->ExportFunction("SystemExport_Version", System::Export_Version);
+    this->ExportFunction("SystemExport_License", System::Export_License);
 }
 
 System::~System()
@@ -48,12 +51,10 @@ System::~System()
 
 void System::InitializeDone()
 {
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    
     Plugin::InitializeDone();
     
-    v8::Boolean::New(Manager::Instance()->LoadScript("interface/list.js"));
-    v8::Boolean::New(Manager::Instance()->LoadScript("autostart.js"));
+    Manager::Instance()->LoadScript("interface/list.js");
+    Manager::Instance()->LoadScript("autostart.js");
 }
 
 void System::CallOutput(unsigned int request_id, std::string output)
@@ -129,6 +130,18 @@ Value System::Export_ToHex(const v8::Arguments& args)
     }
     
     return v8::String::New(common::ToHex(args[0]->Uint32Value()).data());
+}
+
+Value System::Export_Version(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    return v8::String::New(VERSION);
+}
+
+Value System::Export_License(const v8::Arguments& args)
+{
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    return v8::String::New(LICENSE);
 }
 
 }; // namespace plugin
