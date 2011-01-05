@@ -49,7 +49,7 @@ std::string ToHex(unsigned int value)
 
 unsigned int FromHex(std::string hex_chars)
 {
-    return static_cast<unsigned int>(strtol(hex_chars.data(), NULL, 16));
+    return static_cast<unsigned int>(strtoll(hex_chars.data(), NULL, 16));
 }
     
 }; // namespace type
