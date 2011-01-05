@@ -1,7 +1,8 @@
 #!/bin/bash
 
-cd build
 mkdir build
+cd build
+rm *.deb
 cmake ../
 make
 cpack ../

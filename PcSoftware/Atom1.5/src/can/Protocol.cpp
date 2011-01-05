@@ -302,11 +302,24 @@ xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
 
 std::string Protocol::DecodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
+    bool sign = bitset.Get(start_bit) == 1;
+    
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
-    int raw_value = 0;
+
+    int raw_value = raw_bit_value;
     
-    memcpy(&raw_value, &raw_bit_value, sizeof(raw_value));
-    
+    if (sign)
+    {
+        long mask = 0;
+        
+        for (unsigned int n = 0; n < bit_length; n++)
+        {
+            mask += (1 << n);
+        }
+        
+        raw_value = -((~raw_bit_value) & mask);
+    }
+
     return boost::lexical_cast<std::string>(raw_value);
 }
 
@@ -315,7 +328,19 @@ void Protocol::EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigne
     unsigned long raw_bit_value = 0;
     int raw_value = boost::lexical_cast<int>(value);
     
-    memcpy(&raw_bit_value, &raw_value, sizeof(raw_value));
+    raw_bit_value = raw_bit_value;
+    
+    if (raw_value < 0)
+    {
+        long mask = 0;
+        
+        for (unsigned int n = 0; n < bit_length; n++)
+        {
+            mask += (1 << n);
+        }
+        
+        raw_bit_value = (~(-raw_value)) & mask;
+    }
     
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }
@@ -338,7 +363,13 @@ void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsign
 
 std::string Protocol::DecodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
-    float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length)) / 64.0f;
+    float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length));
+    LOG.Debug("DecodeFloat::float_value1=" + boost::lexical_cast<std::string>(float_value));
+    
+    
+    float_value = float_value / 64.0f;
+    
+    LOG.Debug("DecodeFloat::float_value2=" + boost::lexical_cast<std::string>(float_value));
     
     return boost::lexical_cast<std::string>(float_value);
 }
