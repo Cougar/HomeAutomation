@@ -1,7 +1,7 @@
 
 Require("plugin/module.js");
 
-Dimmer_ModuleNames    = [ "Dimmer230" ];
+Dimmer_ModuleNames    = [ "Dimmer230", "hwPWM" ];
 Dimmer_SpeedLevels    = function() { return [ 50, 135, 200, 255 ]; };
 Dimmer_StrengthLevels = function() { return [ 0, 50, 100, 150, 200, 255 ]; };
 Dimmer_StepsLevels    = function() { return [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 ]; };
