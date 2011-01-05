@@ -308,6 +308,12 @@ int main(void) {
 								Can_Message_t cm;
 								//cm.Id = 0;
 								cm.DataLength = buf[UDP_DATA_P+7];
+								
+								if (cm.DataLength > 8)
+								{
+									cm.DataLength = 8;
+								}
+								
 								cm.RemoteFlag = buf[UDP_DATA_P+6];
 								cm.ExtendedFlag = buf[UDP_DATA_P+5];
 								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + 
@@ -321,6 +327,12 @@ int main(void) {
 								static StdCan_Msg_t cm;
 								//cm.Id = 0;
 								cm.Length = buf[UDP_DATA_P+7];
+								
+								if (cm.Length > 8)
+								{
+									cm.Length = 8;
+								}
+								
 								cm.Id = (uint32_t)buf[UDP_DATA_P+1] + ((uint32_t)buf[UDP_DATA_P+2] << 8) + 
 										((uint32_t)buf[UDP_DATA_P+3] << 16) + ((uint32_t)buf[UDP_DATA_P+4] << 24);
 								uint8_t i;
