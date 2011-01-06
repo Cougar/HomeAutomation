@@ -15,25 +15,31 @@ PKGMAINT="Anders Runeson <runeson@gmail.com>"
 RUNDIR=`dirname $0`
 CHLOGDATE=`date -R`
 REVFILE=$RUNDIR/AtomSvnRev
+TMPFILE=/tmp/atompparunning
 
-CURRREV=`svn info $SVNURL |grep '^Revision:' | sed -e 's/^Revision: //'`
+CURRREV=`svn info $SVNURL |grep '^Last Changed Rev:' | sed -e 's/^Last Changed Rev: //'`
 VERSION=1.5.$CURRREV
 NOSVNDIR=atom-$VERSION
 ORIGTAR=atom_$VERSION.orig.tar.gz
 SRCCHFILE=atom_$VERSION\_source.changes
 DPUTFLG="auml-atom-daily $SRCCHFILE"
 
-#echo $RUNDIR
-#echo $CURRREV
-
 # Run script from cron every hour
 # script will check revision of Atom in SVN and if there is a new version the script will
 # download it and create a complete debian source package and upload to launchpad as a ppa
 
+# Newline and date in log
+echo ""
+date
 
-#temporary during development of script
-rm -rf $ATOMDIR
-rm $REVFILE
+# Run next line to force, even if no new svn revision
+#rm $REVFILE
+
+# Check if script is already running
+if [ -e $TMPFILE ]; then
+  echo "Error: Already running?"
+  exit 1
+fi
 
 # Check that revision variable is set
 if [ -z $CURRREV ]; then
@@ -47,12 +53,8 @@ if [ ! $CURRREV -gt 0 ]; then
   exit 1
 fi
 
-# Check if script is already running
-if [ -d $ATOMDIR ]; then
-  echo "Error: Already running?"
-  exit 1
-fi
-
+# Set old revision, in case no file is found
+OLDREV=$CURRREV
 if [ -e $REVFILE ]; then
   # If revision file exists, check current revision
   OLDREV=`cat $REVFILE`
@@ -62,18 +64,18 @@ if [ -e $REVFILE ]; then
   fi
 fi
 
-mkdir $ATOMDIR
+# Temporary during development of script, this is needed if tmp dir is kept at the end of the script
+rm -rf $ATOMDIR
 
-# Checkout atom and configuration, not needed, can export directly instead
-#svn co $SVNURL $ATOMDIR/$SVNDIR
-#svn co $SVNURLCNF $ATOMDIR/$SVNDIRCNF
+# Now running script
+touch $TMPFILE
+
+mkdir $ATOMDIR
 
 # Export atom to get rid of .svn subfolders
 svn export $SVNURL $ATOMDIR/$NOSVNDIR
-#svn export $ATOMDIR/$SVNDIR $ATOMDIR/$NOSVNDIR
 # Export configuration folder into the exported Atom-folder
 svn export $SVNURLCNF $ATOMDIR/$NOSVNDIR/$CNFDIR
-#svn export $ATOMDIR/$SVNDIRCNF $ATOMDIR/$NOSVNDIR/$CNFDIR
 
 # Add a svn revision file, atom need the svn revision when building
 echo -n $CURRREV > $ATOMDIR/$NOSVNDIR/AtomSvnRev
@@ -81,17 +83,22 @@ echo -n $CURRREV > $ATOMDIR/$NOSVNDIR/AtomSvnRev
 # Change install-target for data.xml file in CMakeList.txt, not needed, done in CMakeList.txt
 #cat $ATOMDIR/$NOSVNDIR/CMakeLists.txt | sed -e 's/\/..\/..\/Configuration\/data.xml/\/Configuration\/data.xml/' > $ATOMDIR/$NOSVNDIR/CMakeLists.txt
 
-# Create change log file by reading log from svn
-SVNLOG=`svn log -r $CURRREV $SVNURL`
-
+# Create the debian changelog file from svn log
 echo "$PKGNAME ($VERSION) $DIST; urgency=low" > $ATOMDIR/$NOSVNDIR/debian/changelog
 echo "" >> $ATOMDIR/$NOSVNDIR/debian/changelog
 OLDIFS="$IFS"
 IFS=$'\n'
-for LOGENTRY in $SVNLOG; do 
-  if [[ ! $LOGENTRY == *--------------* ]]; then
-    echo "  * $LOGENTRY" >> $ATOMDIR/$NOSVNDIR/debian/changelog
-  fi
+REVCNT=$CURRREV
+# Loop through the revisions
+while [ $REVCNT -gt $OLDREV ]; do
+  # Add change entries by reading log from svn
+  SVNLOG=`svn log -r $REVCNT $SVNURL`
+  for LOGENTRY in $SVNLOG; do
+    if [[ ! $LOGENTRY == *--------------* ]]; then
+      echo "  * $LOGENTRY" >> $ATOMDIR/$NOSVNDIR/debian/changelog
+    fi
+  done
+  let REVCNT=REVCNT-1
 done
 IFS="$OLDIFS"
 echo "" >> $ATOMDIR/$NOSVNDIR/debian/changelog
@@ -102,20 +109,14 @@ cd $ATOMDIR
 tar -zcf $ORIGTAR $NOSVNDIR
 
 # Create source package with debuild
-#cd $ATOMDIR/$NOSVNDIR
-#debuild $DEBUILDFLG
-#echo cd $ATOMDIR/$NOSVNDIR
-#echo debuild $DEBUILDFLG
+cd $ATOMDIR/$NOSVNDIR
+debuild $DEBUILDFLG
 
 # Upload to launchpad with dput
-#cd $ATOMDIR
-#dput $DPUTFLG
-#echo cd $ATOMDIR
-#echo dput $DPUTFLG
+cd $ATOMDIR
+dput $DPUTFLG
 # Requires ubuntu 9.10 or newer
 #dput $PPA $SRCCHFILE
-
-#echo "the end $RUNDIR"
 
 # Remove all temporary files
 #rm -rf $ATOMDIR
@@ -124,3 +125,6 @@ tar -zcf $ORIGTAR $NOSVNDIR
 echo -n $CURRREV > $REVFILE
 
 cd $RUNDIR
+
+# Remove temprary running-file
+rm $TMPFILE
