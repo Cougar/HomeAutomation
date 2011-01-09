@@ -131,8 +131,8 @@ NOTES:
  #define UART0_UDRIE    UDRIE
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
  #define ATMEGA_USART0
- #define UART0_RECEIVE_INTERRUPT   SIG_USART_RECV
- #define UART0_TRANSMIT_INTERRUPT  SIG_USART_DATA
+ #define UART0_RECEIVE_INTERRUPT   USART_RX_vect
+ #define UART0_TRANSMIT_INTERRUPT  USART_UDRE_vect
  #define UART0_STATUS   UCSR0A
  #define UART0_CONTROL  UCSR0B
  #define UART0_DATA     UDR0
@@ -224,7 +224,7 @@ void uart_setDatabits(uint8_t nrDatabits)
 }
 
 
-SIGNAL(UART0_RECEIVE_INTERRUPT)
+ISR(UART0_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART Receive Complete interrupt
 Purpose:  called when the UART has received a character
@@ -267,7 +267,7 @@ Purpose:  called when the UART has received a character
 }
 
 
-SIGNAL(UART0_TRANSMIT_INTERRUPT)
+ISR(UART0_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART Data Register Empty interrupt
 Purpose:  called when the UART is ready to transmit the next byte
@@ -452,7 +452,7 @@ void uart_puts_p(const char *progmem_s )
  */
 #if defined( ATMEGA_USART1 )
 
-SIGNAL(UART1_RECEIVE_INTERRUPT)
+ISR(UART1_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART1 Receive Complete interrupt
 Purpose:  called when the UART1 has received a character
@@ -487,7 +487,7 @@ Purpose:  called when the UART1 has received a character
 }
 
 
-SIGNAL(UART1_TRANSMIT_INTERRUPT)
+ISR(UART1_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART1 Data Register Empty interrupt
 Purpose:  called when the UART1 is ready to transmit the next byte
