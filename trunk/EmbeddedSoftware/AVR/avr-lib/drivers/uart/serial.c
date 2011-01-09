@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <config.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <drivers/uart/serial.h>
 #include <drivers/uart/uart.h>
 

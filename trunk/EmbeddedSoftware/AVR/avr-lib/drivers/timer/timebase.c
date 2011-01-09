@@ -45,12 +45,12 @@ ISR(TIMER2_COMP_vect) {
 #else //!defined(TIMEBASE_NEW_IMPLEMENTATION)
 
 #if defined(TIMER2)
-ISR(SIG_OVERFLOW2) {
+ISR(TIMER2_OVF_vect) {
 	TCNT2 = TIMEBASE_RELOAD;
 	gMilliSecTick++;
 }
 #else
-ISR(SIG_OVERFLOW0) {
+ISR(TIMER0_OVF_vect) {
 	TCNT0 = TIMEBASE_RELOAD;
 	gMilliSecTick++;
 }
