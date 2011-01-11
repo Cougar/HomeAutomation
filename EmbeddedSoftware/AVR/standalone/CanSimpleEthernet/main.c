@@ -37,16 +37,9 @@
 static uint8_t mymac[6] = {ENC28J60_MAC1,ENC28J60_MAC2,ENC28J60_MAC3,ENC28J60_MAC4,ENC28J60_MAC5,ENC28J60_MAC6};
 //static uint8_t myip[4] = {192,168,0,50};
 static uint8_t myip[4] = {ENC28J60_IP1,ENC28J60_IP2,ENC28J60_IP3,ENC28J60_IP4};
-static uint16_t rmDumperPrt =1200; // remote port for dumping data
 static uint16_t rmCan2SerPrt =1100; // remote port for Can2Serial-data
-//static uint16_t locDumperPrt =1200; // listen port 
 static uint16_t locCan2SerPrt =1100; // listen port for Can2Serial-data
-static uint8_t gotdumpserver = 0;
 static uint8_t gotcan2serserver = 0;
-
-
-static uint8_t remotemac[6];
-static uint8_t remoteip[4];
 
 static uint8_t prgremotemac[6];
 static uint8_t prgremoteip[4];
@@ -54,8 +47,6 @@ static uint8_t prgremoteip[4];
 #define BUFFER_SIZE 250
 static uint8_t buf[BUFFER_SIZE+1];
 
-#define SEND_BUFFER_SIZE 20
-static char sendbuf[SEND_BUFFER_SIZE+1];
 static uint8_t buffpoint;
  
 #define C2S_START_BYTE 253
@@ -67,6 +58,16 @@ volatile Can_Message_t rxMsg; // Message storage
 volatile uint8_t rxMsgFull;   // Synchronization flag
 #endif
 
+
+/*
+#define SEND_BUFFER_SIZE 20
+static char sendbuf[SEND_BUFFER_SIZE+1];
+static uint16_t locDumperPrt =1200; // listen port 
+static uint8_t gotdumpserver = 0;
+static uint16_t rmDumperPrt =1200; // remote port for dumping data
+static uint8_t remotemac[6];
+static uint8_t remoteip[4];
+*/
 /*----------------------------------------------------------------------------
  * Putchar for udp
  * Implements a small buffer, sends packet over udp if buffer is full or 
@@ -149,7 +150,7 @@ int main(void) {
 
 	sei();
 
-    /*initialize enc28j60*/
+    /* initialize enc28j60 */
 	if (enc28j60Init(mymac) != 1) {
 		/* Great place to set an IO for debug */
 	}
@@ -168,7 +169,6 @@ int main(void) {
 	/* main loop */
 	while (1) {
 		/* service the CAN routines */
-		//Can_Service();
 		
 #if SENDTIMESTAMP == 1
 		/* send CAN message and check for CAN errors once every second */
@@ -184,7 +184,6 @@ int main(void) {
 			txMsg.Length = 0;
 			StdCan_Put(&txMsg);
 #endif
-			
 		}
 #endif
 		
@@ -195,18 +194,9 @@ int main(void) {
 		if (StdCan_Get(&rxMsg) == StdCan_Ret_OK) {
 #endif
 			uint8_t i;
-			
-			/*if (gotdumpserver != 0) {
-				printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", rxMsg.Id, (uint16_t)(rxMsg.DataLength), (uint16_t)(rxMsg.ExtendedFlag), (uint16_t)(rxMsg.RemoteFlag));
-	    		printf("data={ ");
-	    		for (i=0; i<rxMsg.DataLength; i++) {
-	    			printf("%x ", rxMsg.Data.bytes[i]);
-	    		}
-		   		printf("}\n");
-			}*/
-	   		
+			/* Do we have any ip to send the can data to yet? */
 	   		if (gotcan2serserver != 0) {
-				//skicka ocks� som udppaket till rmCan2SerPrt
+				/* Send can frame raw in an udp packet */
 				char sendbuf2[17];
 				
 				sendbuf2[0] = C2S_START_BYTE;
@@ -268,45 +258,44 @@ int main(void) {
 
         /*plen will ne unequal to zero if there is a valid 
          * packet (without crc error) */
-        if(plen!=0){
+        if (plen!=0){
 	        // arp is broadcast if unknown but a host may also
 	        // verify the mac address by sending it to 
 	        // a unicast address.
-	        if(eth_type_is_arp_and_my_ip(buf,plen)){
+	        if (eth_type_is_arp_and_my_ip(buf,plen)) {
 	                make_arp_answer_from_request(buf);
 	        } else {
-			    // check if ip packets (icmp or udp) are for us:
-			    if(eth_type_is_ip_and_my_ip(buf,plen)!=0){
+			    /* check if ip packets (icmp or udp) are for us by checking eth type and receiver ip adress: */
+			    if (eth_type_is_ip_and_my_ip(buf,plen)!=0) {
 			        
-			        if(buf[IP_PROTO_P]==IP_PROTO_ICMP_V && buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V){
-			                // a ping packet, let's send pong
+	                /* a ping packet, let's send pong */
+			        if (buf[IP_PROTO_P]==IP_PROTO_ICMP_V && buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V) {
 			                make_echo_reply_from_request(buf,plen);
-			                //txMsg.Id = 6;
-			                //Can_Send(&txMsg);
-			                
 			        }
-	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V){
+			        
+			        /* If packet is an udp packet */
+	                if (buf[IP_PROTO_P]==IP_PROTO_UDP_V) {
                         payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
 						uint8_t i = 0;
                         
-                        //om port 1100 (programmeringsporten)
+                        /* if port is can2serial-port (default 1100) */
                         if ((buf[UDP_DST_PORT_H_P]==((locCan2SerPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locCan2SerPrt & 0xff))) {
-			                while(i<6){
+			                while(i<6) {
 				                prgremotemac[i]=buf[ETH_SRC_MAC +i];
 				                i++;
 					        }
 					        i=0;
-			                while(i<4){
+			                while(i<4) {
 				                prgremoteip[i]=buf[IP_SRC_P +i];
 				                i++;
 					        }
 					        gotcan2serserver = 1;
-
+					        
+					        /* If data is a raw can packet */
 							if ((buf[UDP_DATA_P]==C2S_START_BYTE) && (buf[UDP_DATA_P+16]==C2S_END_BYTE) && (payloadlen==17)) 
 							{
 #if USE_STDCAN == 0
 								Can_Message_t cm;
-								//cm.Id = 0;
 								cm.DataLength = buf[UDP_DATA_P+7];
 								
 								if (cm.DataLength > 8)
@@ -325,7 +314,6 @@ int main(void) {
 								Can_Send(&cm);
 #else
 								static StdCan_Msg_t cm;
-								//cm.Id = 0;
 								cm.Length = buf[UDP_DATA_P+7];
 								
 								if (cm.Length > 8)
@@ -341,16 +329,9 @@ int main(void) {
 								}
 								StdCan_Put(&cm);
 #endif
-								/*if (gotdumpserver != 0) {
-									printf("MSG Received: ID=%lx, DLC=%u, EXT=%u, RTR=%u, ", cm.Id, (uint16_t)(cm.DataLength), (uint16_t)(cm.ExtendedFlag), (uint16_t)(cm.RemoteFlag));
-									printf("data={ ");
-									for (i=0; i<cm.DataLength; i++) {
-										printf("%x ", cm.Data.bytes[i]);
-									}
-	   								printf("}\n");
-								}*/
 							}
-							else if ((buf[UDP_DATA_P]==C2S_PING_BYTE) && (payloadlen==1))
+							/* of ir data is an udp ping */
+							else if ((buf[UDP_DATA_P]==C2S_PING_BYTE) && (payloadlen<=2) && (payloadlen>0))
 							{
 								char sendbuf3[1];
 								sendbuf3[0] = C2S_PING_BYTE;
@@ -363,35 +344,12 @@ int main(void) {
 								sei();
 #endif
 							}
-						//om port 1200 (dumparporten) 
-                        } /*else if ((buf[UDP_DST_PORT_H_P]==((locDumperPrt>>8) & 0xff)) && (buf[UDP_DST_PORT_L_P] == (locDumperPrt & 0xff))) {
-                	        if (gotdumpserver == 0) {
-				                while(i<6){
-					                remotemac[i]=buf[ETH_SRC_MAC +i];
-					                i++;
-						        }
-						        i=0;
-				                while(i<4){
-					                remoteip[i]=buf[IP_SRC_P +i];
-					                i++;
-						        }
-	                        	i=0;
-								
-	                        	gotdumpserver = 1;
-	                        	make_udp_reply_from_request(buf,"Got server",10,rmDumperPrt);
-                	        } else {
-                	        	make_udp_reply_from_request(buf,"Already got server",18,rmDumperPrt);
-                	        }
-                        }*/
+                        }
 	                }			            
 			    }
 	        }
         }
-        
-
-                
-		
 	}
-	
 	return 0;
 }
+
