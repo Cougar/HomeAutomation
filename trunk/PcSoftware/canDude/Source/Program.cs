@@ -24,6 +24,7 @@ class Program {
 	static bool aReset=false;		//if commandline says a reset should be sent before downloading to target
 	static bool aStart=false;		//if commandline says a start should be sent after downloading to target
 	static bool aTerminal=false;	//if commandline says we should start in interactive mode
+	static bool aDefaultBios=false;		//if commandline says it is a node with hwid 0xffffffff
 		
 	static bool sNodeid=false;		//true when a nodeid has been parsed
 	static bool sHWid=false;		//true when a hardware id has been parsed
@@ -49,6 +50,7 @@ class Program {
 			
 			//check single arguments
 			if (CommandLine["b"] == "true") { aBios = true; }
+			if (CommandLine["d"] == "true") { aDefaultBios = true; }
 			if (CommandLine["r"] == "true") { aReset = true; }
 			if (CommandLine["s"] == "true") { aStart = true; }
 			if (CommandLine["t"] == "true") { aTerminal = true; }
@@ -108,6 +110,7 @@ class Program {
 				Console.WriteLine("Host: {0}:{1}", host, port);
 				if (hexfile != null) { Console.WriteLine("Hexfile: {0}", hexfile); }
 				Console.Write("Parameters: ");
+				if (aDefaultBios) { Console.Write("Default "); }
 				if (aBios) { Console.Write("Bios "); }
 				if (aReset) { Console.Write("Reset "); }
 				if (aStart) { Console.Write("Start "); }
@@ -178,7 +181,12 @@ class Program {
 				CanNMT cpn = new CanNMT(HWID_INUSE);
 				if (aReset) {
 					//send a reset command (and wait for feedback)
-				   autosuccess = cpn.doReset(dc, nodeid, HWid);
+					if (!aDefaultBios) {
+						autosuccess = cpn.doReset(dc, nodeid, HWid);
+					} else {
+						autosuccess = cpn.doReset(dc, nodeid, 0xffffffff);
+					}
+						
 
 					if (!autosuccess) {
 						if (DEBUG_LEVEL>0) { Console.WriteLine("Target node did not respond to reset, I quit"); }
@@ -218,6 +226,7 @@ class Program {
 		Console.WriteLine("  -r             Reset node before loading target.");
 		Console.WriteLine("  -s             Start node after loading target.");
 		Console.WriteLine("  -b             Program hex as bios, use with caution.");
+		Console.WriteLine("  -d             Program hex as bios, use with caution. Initially uses hwid 0xffffffff.");
 	}
 	
 	static private void printHelp() {
