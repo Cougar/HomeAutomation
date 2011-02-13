@@ -67,7 +67,11 @@
 /*
  * Eget ditfulat av eqlazer
  */
-#define MAXSENSORS 4
+#ifdef DS18x20_MAXSENSORS
+  #define MAXSENSORS DS18x20_MAXSENSORS
+#else
+  #define MAXSENSORS	4
+#endif
 
 uint8_t gSensorIDs[MAXSENSORS][OW_ROMCODE_SIZE];
 

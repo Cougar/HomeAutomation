@@ -5,6 +5,7 @@ sns_ds18x20_TIMER=<TIMER>
 sns_ds18x20_SEND_PERIOD=20
 sns_ds18x20_SEND_DELAY=500
 sns_ds18x20_SEARCH_TIMEOUT=5
+DS18x20_MAXSENSORS=4
 
 #Only used if chn_ChnMaster is loaded to
 sns_ds18x20_CHN_CHANNEL=0
