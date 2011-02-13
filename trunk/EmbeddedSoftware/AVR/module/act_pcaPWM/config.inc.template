@@ -1,0 +1,13 @@
+## Section act_pcaPWM -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#act_pcaPWM_USEEEPROM=0
+
+act_pcaPWM_ID=<ID>
+#act_pcaPWM_DUMMY=1
+#act_pcaPWM_DUMMY_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#act_pcaPWM_DUMMY_PCINT=<PCINT>
+
+## End section act_pcaPWM -- Do not edit this line
