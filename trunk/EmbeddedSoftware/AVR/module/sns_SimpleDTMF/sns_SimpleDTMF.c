@@ -44,7 +44,16 @@ void sns_SimpleDTMF_Process(void)
 	
 	case SNS_SIMPLEDTMF_STATE_WAIT:
 		if (Timer_Expired(MT_TIMER)) {
-			state = SNS_SIMPLEDTMF_STATE_SEND;
+			if (rxlen > 1)
+			{
+				state = SNS_SIMPLEDTMF_STATE_SEND;
+			}
+			else
+			{
+				/* If we have only received one char then it's probably not an incoming number */
+				rxlen=0;
+				state = SNS_SIMPLEDTMF_STATE_IDLE;
+			}
 		}
 		
 		retval = DTMFin_Pop(pollrxbuffer, &pollrxlen);
