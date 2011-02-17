@@ -205,7 +205,7 @@ uint8_t	DS18X20_get_power_status(uint8_t id[])
    or for single sensor. then id is the rom-code */
 uint8_t DS18X20_start_meas( uint8_t with_power_extern, uint8_t id[])
 {
-	ow_reset(); //**
+	//ow_reset(); //**
 	if( ow_input_pin_state() ) { // only send if bus is "idle" = high
 		ow_command( DS18X20_CONVERT_T, id );
 		if (with_power_extern != DS18X20_POWER_EXTERN)
@@ -230,7 +230,7 @@ uint8_t DS18X20_read_meas(uint8_t id[], uint8_t *subzero,
 	uint8_t i;
 	uint8_t sp[DS18X20_SP_SIZE];
 	
-	ow_reset(); //**
+	//ow_reset(); //**
 	ow_command(DS18X20_READ, id);
 	for ( i=0 ; i< DS18X20_SP_SIZE; i++ ) sp[i]=ow_byte_rd();
 	if ( crc8( &sp[0], DS18X20_SP_SIZE ) ) 
