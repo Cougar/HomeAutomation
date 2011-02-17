@@ -11,13 +11,14 @@ void ReadTemperature_callback(uint8_t timer);
 
 uint8_t sns_ds18x20_ReportInterval = (uint8_t)sns_ds18x20_SEND_PERIOD;
 uint8_t NumberOfSensors = 0;
-uint16_t SensorIds[] = {0, 0, 0, 0};
+uint16_t SensorIds[DS18x20_MAXSENSORS];
 uint8_t FlagReadTemperature = 0, FlagConvertTemperature = 0, FlagSearchSensors = 0;
 
 void ReadTemperature_callback(uint8_t timer)
 {
 	FlagReadTemperature = 1;
 }
+
 
 void ReadTemperature(void)
 {
@@ -83,7 +84,7 @@ void ConvertTemperature_callback(uint8_t timer)
 
 void ConvertTemperature(void)
 {
-	if (DS18X20_start_meas(DS18X20_POWER_PARASITE, NULL) == DS18X20_OK)
+	if (DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL) == DS18X20_OK)
 	{
 		Timer_SetTimeout(sns_ds18x20_TIMER, DS18B20_TCONV_12BIT, TimerTypeOneShot, &ReadTemperature_callback);
 	}
@@ -94,7 +95,10 @@ void sns_ds18x20_Init(void)
 	/* Make sure there is no more then 4 sensors. */
 	FlagSearchSensors = 1;
 	NumberOfSensors = 0;
-	
+	uint8_t i;
+	for (i=0; i < DS18x20_MAXSENSORS;i++) {
+	  SensorIds[i] = 0;
+	}
 	Timer_SetTimeout(sns_ds18x20_TIMER, sns_ds18x20_ReportInterval*1000, TimerTypeFreeRunning, &ConvertTemperature_callback);
 }
 

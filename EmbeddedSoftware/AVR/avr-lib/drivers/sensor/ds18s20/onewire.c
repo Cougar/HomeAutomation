@@ -80,7 +80,7 @@ uint8_t ow_reset(void)
 	OW_OUT_LOW(); // disable internal pull-up (maybe on from parasite)
 	OW_DIR_OUT(); // pull OW-Pin low for 480us
 	
-	delay_us(480);
+	delay_us(490);
 	
 	sreg=SREG;
 	cli();
