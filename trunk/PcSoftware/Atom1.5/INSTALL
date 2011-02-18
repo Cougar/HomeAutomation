@@ -1,5 +1,5 @@
 Install Ubuntu required dependencies:
-=====================================
+===================================== 
 aptitude install cmake libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-signals-dev libboost-thread-dev libreadline-dev libv8-dev
 
 Install Ubuntu optional dependencies:
@@ -25,3 +25,16 @@ sudo dpkg --install *.deb
 Remove installed Ubuntu package:
 ================================
 sudo aptitude remove atom
+
+Instructions for Ubuntu 10.04 (Lucid)
+===================================== 
+In order to build on Ubuntu 10.04, you need a newer version of
+libv8. You can obtain one through this PPA:
+https://launchpad.net/~gezakovacs/+archive/coffeescript
+
+Issue the following commands:
+sudo add-apt-repository ppa:gezakovacs/coffeescript
+sudo apt-get update
+sudo apt-get install libv8-dev
+
+Then proceed as normal.
