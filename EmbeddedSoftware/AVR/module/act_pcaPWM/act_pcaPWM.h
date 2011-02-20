@@ -37,4 +37,12 @@ void act_pcaPWM_List(uint8_t ModuleSequenceNumber);
 	};	
 #endif
 
+#define ACT_PCAPWM_MAX_DIM				10000UL
+#define ACT_PCAPWM_MIN_DIM				0
+
+#define ACT_PCAPWM_DEMO_STATE_NOT_RUNNING	0
+#define ACT_PCAPWM_DEMO_STATE_DECREASE		1
+#define ACT_PCAPWM_DEMO_STATE_INCREASE		2
+#define ACT_PCAPWM_DEMO_STATE_GOBACK		3
+
 #endif // ACT_PCAPWM
