@@ -60,7 +60,7 @@ void pca9634_setOpMode(uint8_t id, pca9634_OpMode_t mode)
 		unsigned char msgBuf[5];
 		/*  */
 		uint8_t reg;
-		uint8_t shift = id&0b11;
+		uint8_t shift = (id&0b11)<<1;
 		uint8_t data;
 		if (id < 4)
 		{

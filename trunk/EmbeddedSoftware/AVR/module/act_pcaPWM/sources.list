@@ -2,3 +2,5 @@
 act_pcaPWM/act_pcaPWM.c
 drivers/mcu/TWI_Master.c
 drivers/io/PCA9634.c
+drivers/misc/eeprom_crc8.c
+

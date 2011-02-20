@@ -22,12 +22,18 @@ void act_pcaPWM_Process(void);
 void act_pcaPWM_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_pcaPWM_List(uint8_t ModuleSequenceNumber);
 
+#define act_pcaPWM_FACT 0xffUL/10000UL
 
 #ifdef act_pcaPWM_USEEEPROM
 	struct act_pcaPWM_Data{
-		///TODO: Define EEPROM variables needed by the module
-		uint8_t x;
-		uint16_t y;
+		uint16_t ch1;
+		uint16_t ch2;
+		uint16_t ch3;
+		uint16_t ch4;
+		uint16_t ch5;
+		uint16_t ch6;
+		uint16_t ch7;
+		uint16_t ch8;
 	};	
 #endif
 
