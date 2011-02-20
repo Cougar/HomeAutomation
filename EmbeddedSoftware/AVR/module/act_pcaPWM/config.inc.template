@@ -1,13 +1,22 @@
 ## Section act_pcaPWM -- Do not edit this line
 
 #Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
-#act_pcaPWM_USEEEPROM=0
+#act_pcaPWM_USEEEPROM=1
 
 act_pcaPWM_ID=<ID>
-#act_pcaPWM_DUMMY=1
-#act_pcaPWM_DUMMY_TIMER=<TIMER>
 
-#Uncomment to use the pcint driver
-#act_pcaPWM_DUMMY_PCINT=<PCINT>
+act_pcaPWM_STORE_VALUE_TIMEOUT=<TIMER>
+act_pcaPWM_STORE_VALUE_TIMEOUT_TIME=10
+#act_pcaPWM_SEND_STATUS_TIMEOUT=<TIMER>
+#act_pcaPWM_SEND_STATUS_INTERVAL_S=5
+#act_pcaPWM_FADE_TIMER=<TIMER>
+#act_pcaPWM_ENABLE_FADE=1
+
+act_pcaPWM_I2C_ADDRESS=0x1
+
+#Comment if not used
+act_pcaPWM_OUTPUT_ENABLE_IO=GPIO_B7
+#Comment if not used
+act_pcaPWM_LED_OVERRIDE_IO=GPIO_B1
 
 ## End section act_pcaPWM -- Do not edit this line
