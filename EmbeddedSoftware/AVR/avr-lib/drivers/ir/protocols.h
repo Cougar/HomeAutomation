@@ -161,7 +161,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SIRC_HIGH_ONE	1200*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SIRC_HIGH_ZERO	600*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SIRC_TIMEOUT		40									//ms	(time between ir frames)
-#define IR_SIRC_REPS		1									//		(minimum number of times to repeat code)
+#define IR_SIRC_REPS		3									//		(minimum number of times to repeat code)
 #define IR_SIRC_F_MOD		40									//kHz	(modulation frequency)
 #define IR_SIRC_TOL_DIV		4
 

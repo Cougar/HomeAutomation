@@ -84,6 +84,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 /**
  * Test data on SIRC protocol, 12-bit version
  * http://www.sbprojects.com/knowledge/ir/sirc.htm
+ * http://picprojects.org.uk/projects/sirc/sonysirc.pdf
  * 
  * @param buf
  * 		Pointer to buffer to where to data to parse is stored
@@ -97,8 +98,12 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 int8_t parseSIRC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
 
-	/* check if we have correct amount of data */ 
-	if (len != 25) {
+	/* check if we have correct amount of data.
+           supporting two versions of SIRC:
+           12 bit = 25, 15 bit = 31
+           there is also a 20 bit protocol, but we don't support it
+         */
+	if (len != 25 && len != 31) {
 		return IR_NOT_CORRECT_DATA;
 	}
 	
@@ -149,13 +154,32 @@ int8_t parseSIRC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  * 		IR_OK if data expanded successfully, one of several errormessages if not
  */
 int8_t expandSIRC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
-	//TODO: Implement this function.
 	buf[0] = IR_SIRC_ST_BIT;
-	buf[1] = IR_SIRC_LOW;//start pulse finished
-	
-	
-	
-	return IR_NOT_CORRECT_DATA;
+	buf[1] = IR_SIRC_LOW; //start pulse finished
+
+        /* Assume 12 bit protocol */
+        *len = 25;
+        /* If data to big, use 15 bit protocol */
+        if (proto->data > (1<<11)) { // cannot be represented by 12 bits
+          *len = 31;
+        }
+        for (uint8_t i = 0; i < *len-2; i++) {
+          if ((i&1) == 1) {		/* if odd, ir-pause */
+            buf[i+2] = IR_SIRC_LOW;
+          } else {			/* if even, ir-bit */
+            if ((proto->data>>(i>>1))&1) {
+              buf[i+2] = IR_SIRC_HIGH_ONE;
+            } else {
+              buf[i+2] = IR_SIRC_HIGH_ZERO;
+            }
+          }
+        }	
+
+	proto->modfreq=IR_SIRC_F_MOD;
+	proto->timeout=IR_SIRC_TIMEOUT;
+	proto->repeats=IR_SIRC_REPS;
+        
+	return IR_OK;
 }
 
 
