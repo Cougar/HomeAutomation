@@ -2,7 +2,7 @@
 #include "act_pcaPWM.h"
 #include "drivers/io/PCA9634.h"
 
-static uint16_t setValue[8];
+static uint16_t setValue[8]={0,0,0,0,0,0,0,0};
 static uint16_t isValue[8];
 
 #ifdef act_pcaPWM_USEEEPROM
@@ -78,10 +78,13 @@ void act_pcaPWM_Process(void)
 		{
 			isValue[i] = setValue[i];
 			pca9634_setDuty(i, isValue[i]*act_pcaPWM_FACT);
+#ifdef act_pcaPWM_USEEEPROM
 			Timer_SetTimeout(act_pcaPWM_STORE_VALUE_TIMEOUT, act_pcaPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
+#endif
 		}
 	}
 
+#ifdef act_pcaPWM_USEEEPROM
 	if (Timer_Expired(act_pcaPWM_STORE_VALUE_TIMEOUT))
 	{
 		if (isValue[0] != eeprom_read_word(EEDATA16.ch1))
@@ -117,7 +120,7 @@ void act_pcaPWM_Process(void)
 			eeprom_write_word_crc(EEDATA16.ch8, isValue[7], WITH_CRC);
 		}
 	}
-
+#endif
 }
 
 void act_pcaPWM_HandleMessage(StdCan_Msg_t *rxMsg)
@@ -135,7 +138,6 @@ void act_pcaPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				channel = rxMsg->Data[0];
 				setValue[channel] = (rxMsg->Data[1]<<8)+(rxMsg->Data[2]);
 			}
-			
 		break;
 		}
 	}
