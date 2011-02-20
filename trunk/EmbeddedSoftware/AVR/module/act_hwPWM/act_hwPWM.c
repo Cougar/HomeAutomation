@@ -372,14 +372,14 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_PHYSICAL_PWM:
 			if (rxMsg->Length == 3) {
 				channel = rxMsg->Data[0];
-				pwmValue[channel-1] = (rxMsg->Data[1]<<8)+(rxMsg->Data[2]);
+				pwmValue[channel] = (rxMsg->Data[1]<<8)+(rxMsg->Data[2]);
 			}
 			
 		break;
 #if act_hwPWM_ENABLE_FADE == 1
 		case CAN_MODULE_CMD_HWPWM_DEMO:		/* Demo(channel, speed, steps) */
 			if (rxMsg->Length == 4) {
-				channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t steps = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
 				
@@ -429,7 +429,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_HWPWM_START_FADE:	/* StartFade(channel, speed, direction) */
 			if (rxMsg->Length == 3) {
 				
-				channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
@@ -465,7 +465,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_HWPWM_STOP_FADE:	/* StopFade(channel) */
 			if (rxMsg->Length == 1) {
-				channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0];
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
 				fadeSpeed[channel] = 0;
 				sendInfo[channel] = 1;		/* send netinfo with the current dimmervalue*/
@@ -474,7 +474,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		case CAN_MODULE_CMD_HWPWM_ABS_FADE:	/* AbsFade(channel, speed, endValue) */
 			if (rxMsg->Length == 4) {
-				channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t endValue = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
 				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
@@ -505,7 +505,7 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_HWPWM_REL_FADE:	/* RelFade(channel, speed, direction, steps) */
 			if (rxMsg->Length == 5) {
 				
-				channel = rxMsg->Data[0]-1;
+				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
 				uint16_t steps = (rxMsg->Data[3]<<8)+(rxMsg->Data[4]);
