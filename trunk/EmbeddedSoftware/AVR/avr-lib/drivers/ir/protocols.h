@@ -153,7 +153,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 /* SIRC Implementation
  * Receiver: DONE
- * Transmitter: 
+ * Transmitter: DONE
  */
 #define IR_PROTO_SIRC		3
 #define IR_SIRC_ST_BIT		2400*CYCLES_PER_US/TIMER_PRESC		//us
@@ -211,7 +211,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 /* Marantz Implementation
  * Receiver: DONE (has not been tested with odd adressbits)
- * Transmitter: 
+ * Transmitter: DONE
  */
 #define IR_PROTO_MARANTZ		7
 #define IR_MARANTZ_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
