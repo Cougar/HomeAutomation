@@ -195,7 +195,7 @@ class Program {
 				
 				if (sHexfile && autosuccess) {
 					//send application
-					dl = new Downloader(hf, dc, nodeid, aBios, HWID_INUSE, HWid);
+					dl = new Downloader(hf, dc, nodeid, aBios, HWID_INUSE, HWid, aDefaultBios);
 					if (!dl.go()) { 
 						if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 						autosuccess = false;
@@ -355,7 +355,7 @@ class Program {
 			if (!error) {
 				//send application
 				dc.flushData();
-				dl = new Downloader(hf, dc, nodeid, dlBios, HWID_INUSE, HWid);
+				dl = new Downloader(hf, dc, nodeid, dlBios, HWID_INUSE, HWid, aDefaultBios);
 				if (!dl.go()) { 
 					if (DEBUG_LEVEL>0) { Console.WriteLine("Error occured during download"); }
 					error = true;

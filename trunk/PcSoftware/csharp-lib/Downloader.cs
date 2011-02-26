@@ -14,6 +14,7 @@ public class Downloader {
 	private byte receiveID;
 	private uint hwid;
 	private bool HWID_INUSE;
+	private bool defaultBios;
 	
 	private enum dState { SEND_START, WAIT_ACK_PRG, SEND_PGM_DATA, WAIT_ACK_DATA, RESEND_ADDR, WAIT_DONE, SEND_DONE, SEND_BIOS_UPDATE, SEND_RESET, DONE, DEBUG_STATE2, WAIT_BOOT, SEND_EMPTY_START, WAIT_ACK_PRG_EMPTY, SEND_EMPTY_DATA, WAIT_ACK_EMPTY_DATA, SEND_DONE_EMPTY, WAIT_DONE_EMPTY};
 	
@@ -49,13 +50,14 @@ public class Downloader {
 	
 	private long timeStart = 0;
 	
-	public Downloader(HexFile hf, DaemonConnection dc, byte receiveID, bool isBiosUpdate, bool HWID_INUSE, uint hwid) {
+	public Downloader(HexFile hf, DaemonConnection dc, byte receiveID, bool isBiosUpdate, bool HWID_INUSE, uint hwid, bool defaultBios) {
 		this.hf = hf;
 		this.dc = dc;
 		this.receiveID = receiveID;
 		this.isBiosUpdate = isBiosUpdate;
 		this.hwid = hwid;
 		this.HWID_INUSE = HWID_INUSE;
+		this.defaultBios = defaultBios;
 	}
 	
 	public int calcCRC(HexFile hf) {
@@ -130,10 +132,17 @@ public class Downloader {
 						data[ADDR2_INDEX] = (byte)(((currentAddress-dlOffset) & 0xFF0000) >> 16);
 						data[ADDR3_INDEX] = 0;
 						if (HWID_INUSE) {
-							data[HWID0_INDEX] = (byte)((hwid) & 0xFF);
-							data[HWID1_INDEX] = (byte)((hwid>>8) & 0xFF);
-							data[HWID2_INDEX] = (byte)((hwid>>16) & 0xFF);
-							data[HWID3_INDEX] = (byte)((hwid>>24) & 0xFF);
+							if (!defaultBios) {
+								data[HWID0_INDEX] = (byte)((hwid) & 0xFF);
+								data[HWID1_INDEX] = (byte)((hwid>>8) & 0xFF);
+								data[HWID2_INDEX] = (byte)((hwid>>16) & 0xFF);
+								data[HWID3_INDEX] = (byte)((hwid>>24) & 0xFF);
+							} else {
+								data[HWID0_INDEX] = 0xFF;
+								data[HWID1_INDEX] = 0xFF;
+								data[HWID2_INDEX] = 0xFF;
+								data[HWID3_INDEX] = 0xFF;
+							}
 						}
 						//outCm = new CanPacket(CAN_NMT, CAN_NMT_PGM_START, MY_ID, receiveID, 4, data);
 						outCm = cpn.getPgmStartPacket(data);
