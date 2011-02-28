@@ -50,7 +50,7 @@ class Program {
 			
 			//check single arguments
 			if (CommandLine["b"] == "true") { aBios = true; }
-			if (CommandLine["d"] == "true") { aDefaultBios = true; }
+			if (CommandLine["d"] == "true") { aDefaultBios = true; aBios = true; }
 			if (CommandLine["r"] == "true") { aReset = true; }
 			if (CommandLine["s"] == "true") { aStart = true; }
 			if (CommandLine["t"] == "true") { aTerminal = true; }
