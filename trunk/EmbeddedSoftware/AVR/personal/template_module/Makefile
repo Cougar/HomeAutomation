@@ -45,6 +45,9 @@ installbios: bios
 upgradebios: bios
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -b
 
+defaultbios: bios
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $(BIOSDIR)/$(BIOSTARGET).hex -r -d
+
 install: $(BUILDDIR)/$(TARGET).hex
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f $< -r
 
@@ -86,7 +89,7 @@ ifndef SETCONF
 endif
 
 # Listing of phony targets.
-.PHONY : all bios installbios upgradebios \
+.PHONY : all bios installbios upgradebios defaultbios \
 install reset start \
 clean cleanbios distclean check_systeminc setconfig
 
