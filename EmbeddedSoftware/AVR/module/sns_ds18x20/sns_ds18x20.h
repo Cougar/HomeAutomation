@@ -23,4 +23,8 @@ void sns_ds18x20_Process(void);
 void sns_ds18x20_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_ds18x20_List(uint8_t ModuleSequenceNumber);
 
+#ifndef DS18x20_MAXSENSORS
+	#define DS18x20_MAXSENSORS	4
+#endif
+
 #endif
