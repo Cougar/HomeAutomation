@@ -31,30 +31,47 @@ void act_hd44780_Init(void)
 
 void act_hd44780_Process(void)
 {
-  #if act_hd44780_USE_AUTO_BL == 1
-	if (autoMode == CAN_MODULE_ENUM_HD44789_LCD_BACKLIGHT_AUTOLIGHT_ON) {
-#if (act_hd44780_TYPE==0)
-		if ( OCR0A == 0) {
-#else
-		if ( OCR0B == 0) {
+#if act_hd44780_USE_AUTO_BL == 1
+  if (autoMode == CAN_MODULE_ENUM_HD44789_LCD_BACKLIGHT_AUTOLIGHT_ON) {
+    #if (act_hd44780_TYPE==0)
+      if ( OCR0A == 0) {
+    #else
+      if ( OCR0B == 0) {
+    #endif
+
+      } else {
+      uint16_t Voltage = (0x3ff & ADC_Get(act_hd44780_LIGHTSENSOR_AD));
+    #if (act_hd44780_TYPE==0)
+	OCR0A = Voltage/4;
+	if (OCR0A == 0) {
+	  OCR0A = 1;
+	}
+    #else
+	OCR0B = Voltage/4;
+	if (OCR0B == 0) {
+	  OCR0B = 1;
+	}
+    #endif
+      }
+  }
 #endif
 
-		} else {
-			uint16_t Voltage = (0x3ff & ADC_Get(act_hd44780_LIGHTSENSOR_AD));
+
 #if (act_hd44780_TYPE==0)
-			OCR0A = Voltage/4;
-			if (OCR0A == 0) {
-				OCR0A = 1;
-			}
-#else
-			OCR0B = Voltage/4;
-			if (OCR0B == 0) {
-				OCR0B = 1;
-			}
-#endif
-		}
+	if (OCR0A==0 && (TCCR0A & ((1<<COM0A1)|(1<<WGM01)|(1<<WGM00))) == ((1<<COM0A1)|(1<<WGM01)|(1<<WGM00)))
+	{
+		TCCR0A &= ~((1<<COM0A1)|(1<<WGM01)|(1<<WGM00));
 	}
-	#endif
+	if (OCR0A!=0 && (TCCR0A & ((1<<COM0A1)|(1<<WGM01)|(1<<WGM00))) != ((1<<COM0A1)|(1<<WGM01)|(1<<WGM00)))
+	{
+		TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
+	}
+#endif
+		
+		
+
+		
+		
 }
 
 void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
