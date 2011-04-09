@@ -1,0 +1,6 @@
+# List all files that needs to be compiled here
+act_sigmadelta_dimmer/act_sigmadelta_dimmer.c
+#Uncomment the line below if you want to use the PCINT driver in this module
+#drivers/mcu/pcint.c
+#Uncomment the line below if you want to use the ADC driver in this module
+#drivers/adc/adc.c
