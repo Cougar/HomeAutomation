@@ -25,6 +25,7 @@ void act_sigmadelta_dimmer_Init(void) {
 
 // CDEA GFIH JKLM
 
+    // FIXME: port constants, as a list?
     gpio_set_out( EXP_C );
     gpio_set_out( EXP_D );
     gpio_set_out( EXP_E );
@@ -53,18 +54,22 @@ void act_sigmadelta_dimmer_Init(void) {
 
 void act_sigmadelta_dimmer_Process(void) {
     int32_t delta;
+    uint32_t level;
     uint8_t i;
 
     if( Timer_Expired( act_sigmadelta_dimmer_SYS_TIMER ) ) {
     }
 
     for( i = 0; i<act_sigmadelta_dimmer_channel_count; i++) {
-        delta = dim_level[i] - ((dim_sigma[i] >= 0) ? 65536L : 0L);
+        level = dim_level[i]*dim_level[i];
+        level >>= 16;
+        delta = level - ((dim_sigma[i] >= 0) ? 0xfffeL : 0L); // 0xfffe = (0xffff ** 2) >> 16
         dim_sigma[i] += delta;
         if( dim_sigma[i] >  655360 ) dim_sigma[i] = 655360;
         if( dim_sigma[i] < -655360 ) dim_sigma[i] = -655360;
     }
 
+    // FIXME: port constants, as a list?
     gpio_set_statement( dim_sigma[ 0]>=0, EXP_C );
     gpio_set_statement( dim_sigma[ 1]>=0, EXP_D );
     gpio_set_statement( dim_sigma[ 2]>=0, EXP_E );
