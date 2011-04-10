@@ -1,4 +1,4 @@
-// Built on Sun Feb 20 16:41:21 2011 by makeCanId.pl
+// Built on Sun Apr 10 13:15:07 2011 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -272,6 +272,7 @@
 #define CAN_MODULE_TYPE_ACT_RADIO433TRANSMIT 53
 #define CAN_MODULE_TYPE_SNS_RADIO433RECEIVE 54
 #define CAN_MODULE_TYPE_SNS_NTC 55
+#define CAN_MODULE_TYPE_ACT_SIGMADELTA_DIMMER 56
 
 //----------------- //
 // Misc definitions //

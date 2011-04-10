@@ -1,8 +1,6 @@
 ## Section act_sigmadelta_dimmer -- Do not edit this line
 
 act_sigmadelta_dimmer_ID=<ID>
-act_sigmadelta_dimmer_SYS_TIMER=<TIMER>
-act_sigmadelta_dimmer_timeout=1
 
 act_sigmadelta_dimmer_channel_count=12
 act_sigmadelta_dimmer_base_channel=0x0050
