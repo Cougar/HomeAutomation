@@ -5,4 +5,6 @@ act_sigmadelta_dimmer_ID=<ID>
 act_sigmadelta_dimmer_channel_count=12
 act_sigmadelta_dimmer_base_channel=0x0050
 
+act_sigmadelta_dimmer_pins={GPIO_B2},{GPIO_B1},{GPIO_B0},{GPIO_D7},{GPIO_D6},{GPIO_D5},{GPIO_D4},{GPIO_D2},{GPIO_D1},{GPIO_D0},{GPIO_C5},{GPIO_C4}
+
 ## End section act_sigmadelta_dimmer -- Do not edit this line
