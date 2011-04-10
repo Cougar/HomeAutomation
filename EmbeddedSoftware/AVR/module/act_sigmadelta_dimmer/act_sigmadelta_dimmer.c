@@ -21,7 +21,7 @@ void act_sigmadelta_dimmer_chn_update( uint16_t channel_id, uint16_t value ) {
 }
 
 void act_sigmadelta_dimmer_Init(void) {
-    Timer_SetTimeout( act_sigmadelta_dimmer_SYS_TIMER, 1 , TimerTypeFreeRunning, 0);
+//    Timer_SetTimeout( act_sigmadelta_dimmer_SYS_TIMER, 1 , TimerTypeFreeRunning, 0);
 
 // CDEA GFIH JKLM
 
@@ -57,8 +57,8 @@ void act_sigmadelta_dimmer_Process(void) {
     uint32_t level;
     uint8_t i;
 
-    if( Timer_Expired( act_sigmadelta_dimmer_SYS_TIMER ) ) {
-    }
+//    if( Timer_Expired( act_sigmadelta_dimmer_SYS_TIMER ) ) {
+//    }
 
     for( i = 0; i<act_sigmadelta_dimmer_channel_count; i++) {
         level = dim_level[i]*dim_level[i];
@@ -95,7 +95,7 @@ void act_sigmadelta_dimmer_List(uint8_t ModuleSequenceNumber) {
 
 	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT); ///TODO: Change this to the actual class type
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_TST_DEBUG; ///TODO: Change this to the actual module type
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_SIGMADELTA_DIMMER; ///TODO: Change this to the actual module type
 	txMsg.Header.ModuleId = act_sigmadelta_dimmer_ID;
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
