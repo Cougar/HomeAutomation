@@ -10,4 +10,6 @@ chn_ChnMaster_ID=<ID>
 #Maximum number of listeners in this module.
 chn_ChnMaster_MAX_LISTENERS=4
 
+chn_ChnMaster_BUFFER_SIZE=32
+
 ## End section chn_ChnMaster -- Do not edit this line

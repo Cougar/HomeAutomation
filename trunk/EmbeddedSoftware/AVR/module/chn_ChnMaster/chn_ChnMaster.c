@@ -9,7 +9,13 @@ struct chn_ChnMaster_listener_t {
 struct chn_ChnMaster_listener_t chn_ChnMaster_listeners[ chn_ChnMaster_MAX_LISTENERS ];
 uint8_t chn_ChnMaster_listenCount = 0;
 
+struct chn_ChnMaster_buffer_t {
+    uint16_t channel_id;
+    uint16_t value;
+} chn_ChnMaster_buffer[ chn_ChnMaster_BUFFER_SIZE ];
 
+volatile uint8_t chn_ChnMaster_buf_in_pos = 0; // next to write
+volatile uint8_t chn_ChnMaster_buf_out_pos = 0; // next to read
 
 #ifdef chn_ChnMaster_USEEEPROM
 #include "chn_ChnMaster_eeprom.h"
@@ -46,50 +52,50 @@ void chn_ChnMaster_UpdateChannel( uint16_t channel_id, uint16_t value ) {
 }
 
 
-void chn_ChnMaster_Init(void)
-{
-#ifdef chn_ChnMaster_USEEEPROM
-    if (EEDATA_OK)
-    {
-      ///TODO: Use stored data to set initial values for the module
-      blablaX = eeprom_read_byte(EEDATA.x);
-      blablaY = eeprom_read_word(EEDATA.y);
-    } else
-    {    //The CRC of the EEPROM is not correct, store default values and update CRC
-      eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
-      eeprom_write_word_crc(EEDATA.y, 0x1234, WITHOUT_CRC);
-      EEDATA_UPDATE_CRC;
-    }
-#endif  
-    ///TODO: Initialize hardware etc here
-
-    // to use PCINt lib, call this function: (the callback function look as a timer callback function)
-    // Pcint_SetCallbackPin(chn_ChnMaster_PCINT, EXP_C , &chn_ChnMaster_pcint_callback);
-
+void chn_ChnMaster_Init(void) {
 }
 
 void chn_ChnMaster_Process(void)
 {
+    uint16_t value;
+    uint16_t channel_id;
+    uint8_t i;
+    while( chn_ChnMaster_buf_out_pos != chn_ChnMaster_buf_in_pos ) {
+        value      = chn_ChnMaster_buffer[chn_ChnMaster_buf_out_pos].value;
+        channel_id = chn_ChnMaster_buffer[chn_ChnMaster_buf_out_pos].channel_id;
+
+        for( i=0; i<chn_ChnMaster_listenCount; i++ ) {
+            if( chn_ChnMaster_listeners[i].channel_id == channel_id ) {
+                (*chn_ChnMaster_listeners[i].update_func)( channel_id, value );
+            }
+        }
+
+        chn_ChnMaster_buf_out_pos = (chn_ChnMaster_buf_out_pos+1)%chn_ChnMaster_BUFFER_SIZE;
+    }
     ///TODO: Stuff that needs doing is done here
 }
 
 void chn_ChnMaster_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-    uint8_t i,j;
+    uint8_t j;
     uint16_t channel_id;
     uint16_t value;
     if ( StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_CHN)
     {
+        channel_id = (rxMsg->Id >> 8) & 0xFFFF;
         if( (rxMsg->Id & (1L<<24)) == 0 ) { /* Value */
-            channel_id = (rxMsg->Id >> 8) & 0xFFFF;
-
             for( j=0; j<(rxMsg->Length&~1); j+=2 ) {
                 value      = (rxMsg->Data[j]<<8) | rxMsg->Data[j+1];
+/*
                 for( i=0; i<chn_ChnMaster_listenCount; i++ ) {
                     if( chn_ChnMaster_listeners[i].channel_id == channel_id ) {
                         (*chn_ChnMaster_listeners[i].update_func)( channel_id, value );
                     }
                 }
+                */
+                chn_ChnMaster_buffer[chn_ChnMaster_buf_in_pos].channel_id = channel_id;
+                chn_ChnMaster_buffer[chn_ChnMaster_buf_in_pos].value = value;
+                chn_ChnMaster_buf_in_pos = (chn_ChnMaster_buf_in_pos+1)%chn_ChnMaster_BUFFER_SIZE;
                 channel_id++;
             }
         } else { /* Metadata */
