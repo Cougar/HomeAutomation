@@ -1,0 +1,4 @@
+# List all files that needs to be compiled here
+sns_counter/sns_counter.c
+drivers/mcu/pcint.c
+drivers/misc/eeprom_crc8.c

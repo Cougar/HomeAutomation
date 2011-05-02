@@ -147,6 +147,12 @@
         </variable>
       </variables>
     </command>
+    <command id="76" name="Counter" type="physical" module="" description="Message with counter value">
+      <variables>
+        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
     <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
       <variables>
         <variable name="Energy" type="uint" start_bit="0" bit_length="32" unit="W/h" description=""/>
@@ -810,6 +816,12 @@
         <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
      </variables>
     </command>
+    <command id="128" name="setCounter" type="specific" module="counter" description="Set the counter value on the counter module">
+      <variables>
+        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
   </commands>
   <modules>
     <module id="0" name="Debug" class="tst"/>
@@ -854,6 +866,7 @@
     <module id="54" name="Radio433Receive" class="sns"/>
     <module id="55" name="NTC" class="sns"/>
     <module id="56" name="sigmadelta_dimmer" class="act"/>
+    <module id="57" name="counter" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
