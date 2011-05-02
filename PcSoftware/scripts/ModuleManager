@@ -120,11 +120,11 @@ def readConfigSection(fileName, sectionName):
 	
 	for line in lines:
 		if not inSection:
-			if line.find("## Section " + sectionName) != -1:
+			if line.find("## Section " + sectionName + " --") != -1:
 				inSection = True
 				sectionLines.append(line.strip("\n"))
 		else:
-			if line.find("## End section " + sectionName) != -1:
+			if line.find("## End section " + sectionName + " --") != -1:
 				inSection = False
 				
 			sectionLines.append(line.strip("\n"))
