@@ -68,3 +68,13 @@ irTransceive.prototype.sendData = function(channel, protocol, data, status)
 	canMessage.setData("IRdata", data);
 	sendMessage(canMessage);
 }
+
+irTransceive.prototype.sendConfig = function(channel, direction, power)
+{
+	var canMessage2 = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrConfig");
+	canMessage2.setData("Channel", channel);
+	canMessage2.setData("Direction", direction);
+	canMessage2.setData("Transmit power", power);
+	sendMessage(canMessage2);
+}
+
