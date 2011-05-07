@@ -23,8 +23,8 @@
  * Defines
  *---------------------------------------------------------------------------*/
 
-//#define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
-#define MAX_NR_TIMES		81
+#define MAX_NR_TIMES		101 								//max ir pulses+pauses, used for dimensioning the buffer 
+//#define MAX_NR_TIMES		81
 
 #define TRUE 1
 #define FALSE 0
