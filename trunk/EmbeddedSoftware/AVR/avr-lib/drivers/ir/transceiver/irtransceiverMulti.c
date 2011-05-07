@@ -291,7 +291,7 @@ void IrTransceiver_Store(uint8_t channel)
 
 
 /* call this function like this:
-	IrTransceiver_Init_RX_Channel(channelnumber, buffer, callback, pcint-id, GPIO_D6);
+	IrTransceiver_InitRxChannel(channelnumber, buffer, callback, pcint-id, GPIO_D6);
 	buffer is a memory location 
 	callback is a function to call when a receive/transmitt is complete
 	also call with IO port to use	
@@ -328,7 +328,7 @@ void IrTransceiver_InitRxChannel(uint8_t channel, uint16_t *buffer, irRxCallback
 }
 
 /* call this function like this:
-	IrTransceiver_DeInit_RX_Channel(channelnumber, pcint-id, GPIO_D6);
+	IrTransceiver_DeInitRxChannel(channelnumber, pcint-id, GPIO_D6);
 */
 
 void IrTransceiver_DeInitRxChannel(uint8_t channel, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint)

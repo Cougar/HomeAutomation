@@ -93,8 +93,10 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 
 void sns_irTransceive_Init(void)
 {
+/* Debug IO, PB7 */
 gpio_set_out(EXP_A);
 gpio_set_pin(EXP_A);
+
 	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
@@ -139,17 +141,13 @@ gpio_set_pin(EXP_A);
 #endif
 	
 	IrTransceiver_Init();
+	/* Configure all TX VCC pins as outputs and disable them */
 	gpio_set_out(sns_irTransceive_VCC_EN0_PIN);
 	gpio_set_out(sns_irTransceive_VCC_EN1_PIN);
 	gpio_set_out(sns_irTransceive_VCC_EN2_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
-
-#if IR_RX_ENABLE==1
-	irRxChannel[0].rxbuf = buf[0];
-	IrTransceiver_InitRxChannel(0, irRxChannel[0].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
-#endif
 
 #if IR_TX_ENABLE==1
 	gpio_set_out(sns_irTransceive_MOD_PIN);
@@ -161,15 +159,6 @@ gpio_set_pin(EXP_A);
 	gpio_set_pin(sns_irTransceive_TX1_PIN);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
 #endif
-
-	irTxChannel[0].txbuf = buf[0];
-	IrTransceiver_InitTxChannel(0, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
-
-	irTxChannel[1].txbuf = buf[1];
-	IrTransceiver_InitTxChannel(1, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
-
-	irTxChannel[2].txbuf = buf[2];
-	IrTransceiver_InitTxChannel(2, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
 #endif
 
 }
@@ -178,7 +167,7 @@ void sns_irTransceive_Process(void)
 {
 	for (uint8_t channel=0; channel < IR_SUPPORTED_NUM_CHANNELS; channel++)
 	{
-//gpio_toggle_pin(EXP_A);
+//gpio_toggle_pin(EXP_A); /* Toggle debug output PB7 */
 
 #if IR_RX_ENABLE==1
 		switch (irRxChannel[channel].state)
@@ -277,12 +266,10 @@ void sns_irTransceive_Process(void)
 			break;
 
 		case sns_irTransceive_STATE_START_TRANSMIT:
-//		printf("1\n");
 			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK)
 			{
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, irTxChannel[channel].txlen);
 				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
-//		printf("2\n");
 			}
 			else
 			{
@@ -297,7 +284,6 @@ void sns_irTransceive_Process(void)
 				irTxChannel[channel].sendComplete = FALSE;
 				sei();
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
-//		printf("3\n");
 			}
 			break;
 
@@ -321,7 +307,6 @@ void sns_irTransceive_Process(void)
 			if (Timer_Expired(irTxChannel[channel].timerNum))
 			{
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
-//		printf("4\n");
 			}
 			
 			/* transmission is stopped when such command is recevied on can */
@@ -329,7 +314,6 @@ void sns_irTransceive_Process(void)
 			{
 				//TODO maybe send message on can for status? to confirm stopped sending, ready for new command
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
-//		printf("5\n");
 			}
 			break;
 
@@ -339,7 +323,6 @@ void sns_irTransceive_Process(void)
 			irTxChannel[channel].proto.framecnt = 0;
 			
 			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-//		printf("6\n");
 			break;
 		}
 #endif
@@ -347,6 +330,7 @@ void sns_irTransceive_Process(void)
 	}
 }
 
+/* Handle incoming CAN data */
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS && 
@@ -382,6 +366,68 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				{
 					irTxChannel[channel].stopSend = TRUE;
 				}
+			}
+			break;
+		
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG:
+			channel = rxMsg->Data[0]>>4;
+			uint8_t config = rxMsg->Data[0] & 0x0f;
+			uint8_t power = rxMsg->Data[1]>>6;
+
+			if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
+			{
+#if IR_RX_ENABLE==1
+				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE)
+				{
+					irRxChannel[channel].rxbuf = buf[channel];
+					switch (channel)
+					{
+						case 0:
+							gpio_clr_pin(sns_irTransceive_VCC_EN0_PIN);
+							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
+							break;
+						case 1:
+							gpio_clr_pin(sns_irTransceive_VCC_EN1_PIN);
+							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
+							break;
+						case 2:
+							gpio_clr_pin(sns_irTransceive_VCC_EN2_PIN);
+							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
+							break;
+					}
+				}
+#endif
+
+#if IR_TX_ENABLE==1
+				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_TRANSMIT)
+				{
+					irTxChannel[channel].txbuf = buf[channel];
+					switch (channel)
+					{
+						case 0:
+#if IR_RX_ENABLE==1
+							gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
+							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
+#endif
+							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
+							break;
+						case 1:
+#if IR_RX_ENABLE==1
+							gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
+							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
+#endif
+							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
+							break;
+						case 2:
+#if IR_RX_ENABLE==1
+							gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
+							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
+#endif
+							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
+							break;
+					}
+				}
+#endif
 			}
 			break;
 		}
