@@ -867,6 +867,7 @@
     <module id="55" name="NTC" class="sns"/>
     <module id="56" name="sigmadelta_dimmer" class="act"/>
     <module id="57" name="counter" class="sns"/>
+    <module id="58" name="multiSwitch" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
