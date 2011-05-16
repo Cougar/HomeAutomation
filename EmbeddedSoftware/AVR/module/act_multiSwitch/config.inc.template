@@ -1,0 +1,34 @@
+## Section act_multiSwitch -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+act_multiSwitch_USEEEPROM=1
+
+act_multiSwitch_ID=<ID>
+#act_multiSwitch_DUMMY=1
+
+act_multiSwitch_STORE_VALUE_TIMER=<TIMER>
+act_multiSwitch_STORE_VALUE_TIMEOUT_TIME_S=10
+act_multiSwitch_PRESS_TIMER=<TIMER>
+act_multiSwitch_PRESS_TIMEOUT_TIME_MS=100
+act_multiSwitch_WAIT_TIMEOUT_TIME_MS=100
+
+#Uncomment to use the pcint driver
+#act_multiSwitch_DUMMY_PCINT=<PCINT>
+
+act_multiSwitch_switch		= EXP_A
+act_multiSwitch_Feedback_0	= EXP_C
+act_multiSwitch_Feedback_1	= EXP_D
+act_multiSwitch_Feedback_2	= EXP_E
+#act_multiSwitch_Feedback_3
+#act_multiSwitch_Feedback_4
+#act_multiSwitch_Feedback_5
+#act_multiSwitch_Feedback_6
+#act_multiSwitch_Feedback_7
+  
+#OUTPUT_ACTIVE_LOW == 1
+OUTPUT_ACTIVE_HIGH == 1
+
+INPUT_ACTIVE_LOW == 1
+#INPUT_ACTIVE_HIGH == 1
+
+## End section act_multiSwitch -- Do not edit this line

@@ -1,4 +1,4 @@
-// Built on Sun Apr 10 13:15:07 2011 by makeCanId.pl
+// Built on Mon May 16 20:27:01 2011 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -111,7 +111,7 @@
 #define CAN_MODULE_CMD_SOFTPWM_CONFIG 128
 #define CAN_MODULE_CMD_TOUCH_GESTURE 128
 #define CAN_MODULE_CMD_TOUCH_RAW 129
-#define CAN_MODULE_CMD_COUNTER_SETCOUNT 128
+#define CAN_MODULE_CMD_COUNTER_SETCOUNTER 128
 
 //------------------------------- //
 // Command enum value definitions //
@@ -276,6 +276,7 @@
 #define CAN_MODULE_TYPE_SNS_NTC 55
 #define CAN_MODULE_TYPE_ACT_SIGMADELTA_DIMMER 56
 #define CAN_MODULE_TYPE_SNS_COUNTER 57
+#define CAN_MODULE_TYPE_ACT_MULTISWITCH 58
 
 //----------------- //
 // Misc definitions //
