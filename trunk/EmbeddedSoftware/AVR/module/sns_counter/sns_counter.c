@@ -137,7 +137,7 @@ void sns_counter_HandleMessage(StdCan_Msg_t *rxMsg)
 			txMsg.Data[0] = sns_counter_ReportInterval;
 			StdCan_Put(&txMsg);
 			break;
-		case CAN_MODULE_CMD_COUNTER_SETCOUNT:
+		case CAN_MODULE_CMD_COUNTER_SETCOUNTER:
 			if (rxMsg->Length == 5 && rxMsg->Data[0] == 0)
 			{
 				Count0 = rxMsg->Data[4];
@@ -145,7 +145,7 @@ void sns_counter_HandleMessage(StdCan_Msg_t *rxMsg)
 				Count0 += ((uint32_t)rxMsg->Data[2])<<16;
 				Count0 += ((uint32_t)rxMsg->Data[1])<<24;
 			}
-			txMsg.Header.Command = CAN_MODULE_CMD_COUNTER_SETCOUNT;
+			txMsg.Header.Command = CAN_MODULE_CMD_COUNTER_SETCOUNTER;
 			txMsg.Length = 5;
 			txMsg.Data[0] = 0;	// CH0
 			txMsg.Data[4] = (uint8_t)Count0 & 0xff;
