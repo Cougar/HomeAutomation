@@ -1,0 +1,25 @@
+## Section act_linearAct -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+act_linearAct_USEEEPROM=1
+
+act_linearAct_ID=<ID>
+act_linearAct_TIMER_report=<TIMER>
+act_linearAct_TIMER_stop=<TIMER>
+act_linearAct_SEND_PERIOD=20
+# use the following line only if self-stimuli is wanted (debug):
+act_linearAct_TIMER_stimuli=<TIMER>			
+
+
+#Uncomment to use the pcint driver
+#act_linearAct_DUMMY_PCINT=<PCINT>
+
+#Set the pins that are used for relay (or transistor) control:
+RELAY_ON=EXP_E
+RELAY_DIR=EXP_F
+#PULSE_IN=EXP_G	-FIXED! It is not possible to move this pin!
+
+#STIMULI is used for simulating a linear actuator. Requires a hardware connection between EXP_G and this pin:
+STIMULI=EXP_H
+
+## End section act_linearAct -- Do not edit this line
