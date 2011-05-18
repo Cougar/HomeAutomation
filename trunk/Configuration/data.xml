@@ -816,6 +816,31 @@
         <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
      </variables>
     </command>
+    
+    <command id="128" name="Position" type="specific" module="linearAct" description="Set and get position">
+     <variables>
+        <variable name="Position" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description="">
+        	 <value id="0" name="NotMoving"/>
+		    <value id="1" name="MovingUp"/>
+		    <value id="2" name="MovingDown"/>
+		  </variable>
+      </variables>
+    </command>
+    <command id="129" name="Limits" type="specific" module="linearAct" description="Set and get limits">
+     <variables>
+        <variable name="Min" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+		  <variable name="Low" type="uint" start_bit="16" bit_length="16" unit="" description=""/>  
+	     <variable name="High" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	     <variable name="Max" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="Calibration" type="specific" module="linearAct" description="Start calibration">
+     <variables>
+        <variable name="OptionalPosition" type="uint" start_bit="0" bit_length="16" unit="" description="Option to set current value for position"/>
+      </variables>
+    </command>
+
     <command id="128" name="setCounter" type="specific" module="counter" description="Set the counter value on the counter module">
       <variables>
         <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
@@ -823,6 +848,8 @@
       </variables>
     </command>
   </commands>
+  
+  
   <modules>
     <module id="0" name="Debug" class="tst"/>
     <module id="1" name="Default" class="def"/>
@@ -868,6 +895,7 @@
     <module id="56" name="sigmadelta_dimmer" class="act"/>
     <module id="57" name="counter" class="sns"/>
     <module id="58" name="multiSwitch" class="act"/>
+    <module id="59" name="linearAct" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
