@@ -4,24 +4,24 @@
 #if IR_RX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint8_t				newData;
 	uint16_t			*rxbuf;
 	uint8_t				rxlen;
 	uint8_t				timerNum;
 	Ir_Protocol_Data_t	proto;
+	uint8_t				newData;
 } irRxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
 #if IR_TX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint8_t				sendComplete;
 	uint16_t			*txbuf;
 	uint8_t				txlen;
 	uint8_t				timerNum;
 	uint8_t				repeatCount;
-	uint8_t				stopSend;
 	Ir_Protocol_Data_t	proto;
+	uint8_t				stopSend;
+	uint8_t				sendComplete;
 } irTxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
@@ -83,6 +83,7 @@ void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 }
 #endif
 
+#if IR_TX_ENABLE==1
 void sns_irTransceive_TX_done_callback(uint8_t channel)
 {
 	if (channel < IR_SUPPORTED_NUM_CHANNELS)
@@ -90,6 +91,7 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 		irTxChannel[channel].sendComplete = TRUE;
 	}
 }
+#endif
 
 void sns_irTransceive_Init(void)
 {
@@ -107,7 +109,7 @@ gpio_set_pin(EXP_A);
 	for (uint8_t i = 0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
 #if IR_RX_ENABLE==1
-		irRxChannel[i].state = sns_irTransceive_STATE_RECEIVING;
+		irRxChannel[i].state = sns_irTransceive_STATE_DISABLED;
 		irRxChannel[i].newData = FALSE;
 		irRxChannel[i].rxlen = 0;
 		irRxChannel[i].proto.timeout=0; 
@@ -117,7 +119,7 @@ gpio_set_pin(EXP_A);
 #endif
 
 #if IR_TX_ENABLE==1
-		irTxChannel[i].state = sns_irTransceive_STATE_IDLE;
+		irTxChannel[i].state = sns_irTransceive_STATE_DISABLED;
 		irTxChannel[i].sendComplete = FALSE;
 		irTxChannel[i].repeatCount = 0;
 		irTxChannel[i].txlen = 0;
@@ -255,6 +257,9 @@ void sns_irTransceive_Process(void)
 			}
 			irRxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
+
+		default:
+			break;
 		}
 #endif
 
@@ -324,6 +329,9 @@ void sns_irTransceive_Process(void)
 			
 			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
+
+		default:
+			break;
 		}
 #endif
 
@@ -379,6 +387,9 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 #if IR_RX_ENABLE==1
 				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE)
 				{
+#if IR_TX_ENABLE==1
+					irTxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
+#endif
 					irRxChannel[channel].rxbuf = buf[channel];
 					switch (channel)
 					{
@@ -395,12 +406,16 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
 							break;
 					}
+					irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
 				}
 #endif
 
 #if IR_TX_ENABLE==1
 				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_TRANSMIT)
 				{
+#if IR_RX_ENABLE==1
+					irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
+#endif
 					irTxChannel[channel].txbuf = buf[channel];
 					switch (channel)
 					{
@@ -426,6 +441,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
 							break;
 					}
+					irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 				}
 #endif
 			}
