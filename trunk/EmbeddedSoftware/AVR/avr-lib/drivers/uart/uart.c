@@ -196,7 +196,7 @@ static void uart_updateConfig(void)
 	else if (charSize==9) {
 		CHARSIZE_MASK = (1<<UCSZ02) | (1<<UCSZ01) | (1<<UCSZ00);
 	}
-	UCSR0C = (parityEnabled<<UPM00) | (parityOdd<<UPM01) | (twoStopBits<<USBS0) | CHARSIZE_MASK;
+	UCSR0C = (parityEnabled<<UPM01) | (parityOdd<<UPM00) | (twoStopBits<<USBS0) | CHARSIZE_MASK;
 }
 
 
