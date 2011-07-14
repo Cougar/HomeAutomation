@@ -100,6 +100,7 @@ void Manager::CallOutput(std::string output)
 
 Value Manager::Export_Log(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -129,6 +130,7 @@ void Manager::Execute(std::string plugin_name, unsigned int request_id, std::str
 
 bool Manager::CallHandler(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     v8::TryCatch try_catch;
     
@@ -183,6 +185,7 @@ void Manager::StartHandler()
     
     this->context_ = v8::Context::New(NULL, raw_template);
     
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     
     for (unsigned int c = 0; c < this->plugins_.size(); c++)
@@ -200,6 +203,7 @@ void Manager::StartHandler()
 
 bool Manager::ImportFunction(std::string functionname)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     
     v8::TryCatch try_catch;
@@ -266,6 +270,7 @@ bool Manager::LoadScript(std::string scriptname)
     
     file.close();
     
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     
     v8::TryCatch try_catch;
@@ -299,6 +304,7 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
 {
     std::string scriptname = "execute_" + plugin_name + ".js";
     
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     
     v8::TryCatch try_catch;
@@ -334,6 +340,7 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
 
 std::string Manager::FormatException(v8::TryCatch& try_catch)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(this->context_);
     
     std::string result;

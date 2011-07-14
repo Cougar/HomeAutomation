@@ -64,6 +64,7 @@ void System::CallOutput(unsigned int request_id, std::string output)
 
 Value System::Export_Require(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -81,6 +82,7 @@ Value System::Export_Require(const v8::Arguments& args)
 
 Value System::Export_Execute(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -119,6 +121,7 @@ Value System::Export_Execute(const v8::Arguments& args)
 
 Value System::Export_ToHex(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -134,12 +137,14 @@ Value System::Export_ToHex(const v8::Arguments& args)
 
 Value System::Export_Version(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     return v8::String::New(VERSION);
 }
 
 Value System::Export_License(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     return v8::String::New(LICENSE);
 }

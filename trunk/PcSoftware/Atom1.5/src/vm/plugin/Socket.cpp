@@ -77,6 +77,7 @@ void Socket::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, ne
 
 void Socket::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -90,6 +91,7 @@ void Socket::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_
 
 void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -103,6 +105,7 @@ void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server
 
 Value Socket::Export_Connect(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -122,6 +125,7 @@ Value Socket::Export_Connect(const v8::Arguments& args)
 
 Value Socket::Export_Disconnect(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -139,6 +143,7 @@ Value Socket::Export_Disconnect(const v8::Arguments& args)
 
 Value Socket::Export_Send(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
