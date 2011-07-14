@@ -68,6 +68,7 @@ void Node::SlotOnNodeChange(control::Node::Id node_id, bool available)
 
 void Node::SlotOnNodeChangeHandler(control::Node::Id node_id, bool available)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -81,6 +82,7 @@ void Node::SlotOnNodeChangeHandler(control::Node::Id node_id, bool available)
 
 Value Node::Export_ResetNode(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -98,6 +100,7 @@ Value Node::Export_ResetNode(const v8::Arguments& args)
 
 Value Node::Export_GetAvailableNodes(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -116,6 +119,7 @@ Value Node::Export_GetAvailableNodes(const v8::Arguments& args)
 
 Value Node::Export_ProgramNode(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -134,6 +138,7 @@ Value Node::Export_ProgramNode(const v8::Arguments& args)
 
 Value Node::Export_GetNodeInformation(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");

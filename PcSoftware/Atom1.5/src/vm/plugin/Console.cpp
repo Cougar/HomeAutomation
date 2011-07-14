@@ -106,6 +106,7 @@ void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
 
 void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
 
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -152,6 +153,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
 
 void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
  
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -185,6 +187,7 @@ void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
 
 Value Console::Export_PromptRequest(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -207,6 +210,7 @@ Value Console::Export_PromptRequest(const v8::Arguments& args)
 
 Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -229,6 +233,7 @@ Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
 
 Value Console::Export_LogToClient(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -253,6 +258,7 @@ Value Console::Export_LogToClient(const v8::Arguments& args)
 
 Value Console::Export_DisconnectClient(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");

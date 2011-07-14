@@ -72,6 +72,7 @@ void Timer::SlotOnTimeout(timer::TimerId timer_id, bool repeat)
 
 void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
  
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -95,6 +96,7 @@ void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
 
 Value Timer::Export_SetAlarm(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -116,6 +118,7 @@ Value Timer::Export_SetAlarm(const v8::Arguments& args)
 
 Value Timer::Export_SetTimer(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -135,6 +138,7 @@ Value Timer::Export_SetTimer(const v8::Arguments& args)
 
 Value Timer::Export_Cancel(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -158,6 +162,7 @@ Value Timer::Export_Cancel(const v8::Arguments& args)
 
 Value Timer::Export_Sleep(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");

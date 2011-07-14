@@ -57,6 +57,7 @@ void Storage::CallOutput(unsigned int request_id, std::string output)
 
 Value Storage::Export_GetParameters(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -83,6 +84,7 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
 
 Value Storage::Export_GetParameter(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -112,6 +114,7 @@ Value Storage::Export_GetParameter(const v8::Arguments& args)
 
 Value Storage::Export_SetParameter(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");

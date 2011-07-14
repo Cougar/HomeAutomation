@@ -72,6 +72,7 @@ void Module::SlotOnModuleMessage(std::string full_id, std::string command, commo
 
 void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -85,6 +86,7 @@ void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
 
 void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command, common::StringMap variables)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -108,6 +110,7 @@ void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command
 
 Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
@@ -141,6 +144,7 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 
 Value Module::Export_GetAvailableModules(const v8::Arguments& args)
 {
+    v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
