@@ -66,6 +66,7 @@ Value System::Export_Require(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -77,13 +78,14 @@ Value System::Export_Require(const v8::Arguments& args)
     
     v8::String::AsciiValue str(args[0]);
     
-    return v8::Boolean::New(Manager::Instance()->LoadScript(*str));
+    return handle_scope.Close(v8::Boolean::New(Manager::Instance()->LoadScript(*str)));
 }
 
 Value System::Export_Execute(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -116,37 +118,42 @@ Value System::Export_Execute(const v8::Arguments& args)
     
     pclose(pipe);
     
-    return v8::String::New(output_buffer.data());
+    return handle_scope.Close(v8::String::New(output_buffer.data()));
 }
 
 Value System::Export_ToHex(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
-    return v8::String::New(common::ToHex(args[0]->Uint32Value()).data());
+    return handle_scope.Close(v8::String::New(common::ToHex(args[0]->Uint32Value()).data()));
 }
 
 Value System::Export_Version(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    return v8::String::New(VERSION);
+    v8::HandleScope handle_scope;
+    
+    return handle_scope.Close(v8::String::New(VERSION));
 }
 
 Value System::Export_License(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    return v8::String::New(LICENSE);
+    v8::HandleScope handle_scope;
+    
+    return handle_scope.Close(v8::String::New(LICENSE));
 }
 
 }; // namespace plugin

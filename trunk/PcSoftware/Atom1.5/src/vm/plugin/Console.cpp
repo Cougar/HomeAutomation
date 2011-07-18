@@ -108,14 +108,34 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
 
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
 
+    if (data.GetSize() == 0)
+    {
+        LOG.Error(std::string(__FUNCTION__) + " got empty data!");
+        return;
+    }
+    
     std::string s(data.ToCharString());
     
+    if (s.length() < 8)
+    {
+        LOG.Error(std::string(__FUNCTION__) + " got a packet which is to short, less then 8 bytes: \"" + s + "\"");
+        return;
+    }
+    
     std::string command = s.substr(0, 4);
+    
+    LOG.Debug(std::string(__FUNCTION__) + " parsed command: \"" + command + "\"");
+    
+    // TODO: Check cast exception!
     unsigned int payload_length = boost::lexical_cast<unsigned int>(s.substr(4, 4));
 
+    LOG.Debug(std::string(__FUNCTION__) + " parsed payload_length: \"" + boost::lexical_cast<std::string>(payload_length) + "\"");
+
+    
     Console::current_client_id_ = client_id;
     
     if (command == "COMP")
@@ -133,6 +153,8 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
     }
     else if (command == "RESP")
     {
+        LOG.Debug(std::string(__FUNCTION__) + " parsed data: \"" + s.substr(8).data() + "\"");
+        
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
         
         call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
@@ -155,6 +177,7 @@ void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId serve
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
  
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -189,13 +212,14 @@ Value Console::Export_PromptRequest(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue prompt(args[1]);
@@ -205,20 +229,21 @@ Value Console::Export_PromptRequest(const v8::Arguments& args)
     packet += *prompt;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue result(args[1]);
@@ -228,20 +253,21 @@ Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
     packet += *result;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Console::Export_LogToClient(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue text(args[1]);
@@ -253,23 +279,24 @@ Value Console::Export_LogToClient(const v8::Arguments& args)
     packet += line;
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Console::Export_DisconnectClient(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     net::Manager::Instance()->Disconnect(args[0]->Uint32Value());
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
 
 }; // namespace plugin

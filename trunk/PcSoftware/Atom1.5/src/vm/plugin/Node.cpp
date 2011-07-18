@@ -70,6 +70,7 @@ void Node::SlotOnNodeChangeHandler(control::Node::Id node_id, bool available)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -84,24 +85,26 @@ Value Node::Export_ResetNode(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue node_id(args[0]);
     
-    return v8::Boolean::New(control::Manager::Instance()->ResetNode(*node_id));
+    return handle_scope.Close(v8::Boolean::New(control::Manager::Instance()->ResetNode(*node_id)));
 }
 
 Value Node::Export_GetAvailableNodes(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -114,39 +117,41 @@ Value Node::Export_GetAvailableNodes(const v8::Arguments& args)
         result->Set(n, v8::String::New(available_nodes[n].data()));
     }
     
-    return result;
+    return handle_scope.Close(result);
 }
 
 Value Node::Export_ProgramNode(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue node_id(args[0]);
     v8::String::AsciiValue filename(args[2]);
     
-    return v8::Boolean::New(control::Manager::Instance()->ProgramNode(*node_id, args[1]->BooleanValue(), std::string(*filename)));
+    return handle_scope.Close(v8::Boolean::New(control::Manager::Instance()->ProgramNode(*node_id, args[1]->BooleanValue(), std::string(*filename))));
 }
 
 Value Node::Export_GetNodeInformation(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue node_id(args[0]);
@@ -160,7 +165,7 @@ Value Node::Export_GetNodeInformation(const v8::Arguments& args)
     catch (std::runtime_error& e)
     {
         LOG.Error(e.what());
-        return v8::Undefined();
+        return handle_scope.Close(v8::Undefined());
     }
     
     v8::Local<v8::Array> result = v8::Array::New(6);
@@ -172,7 +177,7 @@ Value Node::Export_GetNodeInformation(const v8::Arguments& args)
     result->Set(v8::String::New("HasApplication"),v8::Boolean::New(information.has_application_));
     result->Set(v8::String::New("LastActive"),    v8::Uint32::New(information.last_active_));
     
-    return result;
+    return handle_scope.Close(result);
 }
 
 }; // namespace plugin

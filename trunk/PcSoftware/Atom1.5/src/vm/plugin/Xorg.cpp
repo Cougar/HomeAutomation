@@ -57,13 +57,14 @@ Value Xorg::Export_SendKey(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     Display* display = XOpenDisplay(":0");
@@ -71,7 +72,7 @@ Value Xorg::Export_SendKey(const v8::Arguments& args)
     if (display == NULL)
     {
         LOG.Warning("Could not locate display :0");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     // Get the root window for the current display.
@@ -108,7 +109,7 @@ Value Xorg::Export_SendKey(const v8::Arguments& args)
     
     XCloseDisplay(display);
     
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
     
 }; // namespace plugin

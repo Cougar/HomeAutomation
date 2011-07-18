@@ -34,7 +34,7 @@ logging::Logger Storage::LOG("vm::plugin::storage");
     
 Storage::Storage(boost::asio::io_service& io_service) : Plugin(io_service)
 {
-    this->name_ = "storage";
+    this->name_ = "Storage";
     
     this->ExportFunction("StorageExport_GetParameters", Storage::Export_GetParameters);
     this->ExportFunction("StorageExport_GetParameter",  Storage::Export_GetParameter);
@@ -59,13 +59,14 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -76,23 +77,25 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
 
     for (storage::Store::ParameterList::iterator it = parameters.begin(); it != parameters.end(); it++)
     {
+        LOG.Debug(std::string(__FUNCTION__) + ": first=\"" + it->first.data() + "\", second=\"" + it->second.data() + "\"");
         params->Set(v8::String::New(it->first.data()), v8::String::New(it->second.data()));
     }
 
-    return params;
+    return handle_scope.Close(params);
 }
 
 Value Storage::Export_GetParameter(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -109,20 +112,21 @@ Value Storage::Export_GetParameter(const v8::Arguments& args)
         result = v8::Undefined();
     }
     
-    return result;
+    return handle_scope.Close(result);
 }
 
 Value Storage::Export_SetParameter(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue store_name(args[0]);
@@ -131,7 +135,7 @@ Value Storage::Export_SetParameter(const v8::Arguments& args)
     
     storage::Manager::Instance()->SetParameter(*store_name, *parameter_name, *parameter_value);
     
-    return v8::String::New("OK");
+    return handle_scope.Close(v8::String::New("OK"));
 }
     
 }; // namespace plugin

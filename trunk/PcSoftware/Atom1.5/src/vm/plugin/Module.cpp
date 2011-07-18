@@ -74,6 +74,7 @@ void Module::SlotOnModuleChangeHandler(std::string full_id, bool available)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -88,6 +89,7 @@ void Module::SlotOnModuleMessageHandler(std::string full_id, std::string command
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -112,13 +114,14 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 3)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     common::StringMap variables;
@@ -139,13 +142,14 @@ Value Module::Export_SendModuleMessage(const v8::Arguments& args)
     
     control::Manager::Instance()->SendMessage(std::string(*full_id), std::string(*command), variables);
     
-    return v8::Boolean::New(true);
+    return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Module::Export_GetAvailableModules(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -158,7 +162,7 @@ Value Module::Export_GetAvailableModules(const v8::Arguments& args)
         result->Set(n, v8::String::New(available_modules[n].data()));
     }
     
-    return result;
+    return handle_scope.Close(result);
 }
 
 }; // namespace plugin
