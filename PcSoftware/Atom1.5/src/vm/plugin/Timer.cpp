@@ -74,6 +74,7 @@ void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
  
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -98,13 +99,14 @@ Value Timer::Export_SetAlarm(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue time(args[0]);
@@ -113,40 +115,42 @@ Value Timer::Export_SetAlarm(const v8::Arguments& args)
     
     Timer::timers_.insert(timer_id);
     
-    return v8::Integer::New(timer_id);
+    return handle_scope.Close(v8::Integer::New(timer_id));
 }
 
 Value Timer::Export_SetTimer(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     timer::TimerId timer_id = timer::Manager::Instance()->SetTimer(args[0]->Uint32Value(), args[1]->BooleanValue());
     
     Timer::timers_.insert(timer_id);
     
-    return v8::Integer::New(timer_id);
+    return handle_scope.Close(v8::Integer::New(timer_id));
 }
 
 Value Timer::Export_Cancel(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     Timers::iterator it = Timer::timers_.find(args[0]->Uint32Value());
@@ -157,25 +161,26 @@ Value Timer::Export_Cancel(const v8::Arguments& args)
     }
     
     timer::Manager::Instance()->Cancel(args[0]->Uint32Value());
-    return v8::Undefined();
+    return handle_scope.Close(v8::Undefined());
 }
 
 Value Timer::Export_Sleep(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     boost::this_thread::sleep(boost::posix_time::milliseconds(args[0]->Uint32Value()));
     
-    return v8::Undefined();
+    return handle_scope.Close(v8::Undefined());
 }
 
 }; // namespace plugin

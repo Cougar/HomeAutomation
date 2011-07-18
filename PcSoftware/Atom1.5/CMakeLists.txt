@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(atom)
 
+set(CMAKE_CXX_FLAGS "-g -Wall -O0")
+
 find_program(SVN_EXECUTABLE svn DOC "subversion command line client")
 macro(GET_SVN_REVISION dir variable)
     execute_process(COMMAND ${SVN_EXECUTABLE} info ${dir} OUTPUT_VARIABLE ${variable} OUTPUT_STRIP_TRAILING_WHITESPACE)

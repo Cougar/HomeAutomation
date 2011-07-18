@@ -79,6 +79,7 @@ void Socket::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
      
@@ -93,6 +94,7 @@ void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
@@ -100,65 +102,68 @@ void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server
     arguments->push_back(v8::Integer::New(client_id));
     arguments->push_back(v8::Uint32::New((unsigned int)client_state));
     
-    this->Call( client_id, "Socket_OnNewState", arguments);
+    this->Call(client_id, "Socket_OnNewState", arguments);
 }
 
 Value Socket::Export_Connect(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue address(args[0]);
     
     net::ClientId client_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
     
-    return v8::Integer::New(client_id);
+    return handle_scope.Close(v8::Integer::New(client_id));
 }
 
 Value Socket::Export_Disconnect(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     net::Manager::Instance()->Disconnect(args[0]->Uint32Value());
     
-    return v8::Undefined();
+    return handle_scope.Close(v8::Undefined());
 }
 
 Value Socket::Export_Send(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
         LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return v8::Boolean::New(false);
+        return handle_scope.Close(v8::Boolean::New(false));
     }
     
     v8::String::AsciiValue data(args[1]);
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), std::string(*data));
     
-    return v8::Undefined();
+    return handle_scope.Close(v8::Undefined());
 }
 
 }; // namespace plugin

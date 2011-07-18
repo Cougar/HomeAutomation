@@ -102,7 +102,8 @@ Value Manager::Export_Log(const v8::Arguments& args)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(Manager::Instance()->GetContext());
-    
+    v8::HandleScope handle_scope;
+     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
@@ -115,7 +116,7 @@ Value Manager::Export_Log(const v8::Arguments& args)
        
     Manager::instance_->CallOutput(*str);
     
-    return v8::Undefined();
+    return handle_scope.Close(v8::Undefined());
 }
 
 void Manager::Call(std::string plugin_name, unsigned int request_id, std::string name, ArgumentListPointer arguments)
@@ -169,6 +170,8 @@ bool Manager::CallHandler(std::string plugin_name, unsigned int request_id, std:
 
 void Manager::StartHandler()
 {
+    v8::Locker lock;
+    v8::HandleScope handle_scope;
     v8::Handle<v8::ObjectTemplate> raw_template = v8::ObjectTemplate::New();
     
     raw_template->Set(v8::String::New("Log"), v8::FunctionTemplate::New(Manager::Export_Log));
@@ -185,7 +188,7 @@ void Manager::StartHandler()
     
     this->context_ = v8::Context::New(NULL, raw_template);
     
-    v8::Locker lock;
+    
     v8::Context::Scope context_scope(this->context_);
     
     for (unsigned int c = 0; c < this->plugins_.size(); c++)
