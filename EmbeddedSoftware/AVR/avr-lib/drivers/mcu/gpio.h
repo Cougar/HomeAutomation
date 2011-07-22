@@ -13,7 +13,7 @@
 
 /* Hack to fix lack of PBx, PCx defines in /usr/lib/avr/include/avr/portpins.h */
 /* http://savannah.nongnu.org/bugs/?25930 http://www.mail-archive.com/avr-libc-dev@nongnu.org/msg03306.html */
-#include <drivers/mcu/portpins.h>
+#include "portpins.h"
 
 /******************************************************************************
 * Port output functions
@@ -77,6 +77,16 @@
 #define DDR_GPIO_D2		DDRD
 #define NR_GPIO_D2		PD2
 
+//Included for completeness, be sure to check availability before using!
+
+#define GPIO_D3			&PORTD,&PIND,&DDRD,PD3,19
+#define GPIO_D3_PCINT_vect	PCINT2_vect
+#define PORT_GPIO_D3	PORTD
+#define PIN_GPIO_D3		PIND
+#define DDR_GPIO_D3		DDRD
+#define NR_GPIO_D3		PD3
+
+
 #define GPIO_D4			&PORTD,&PIND,&DDRD,PD4,20
 #define GPIO_D4_PCINT_vect	PCINT2_vect
 #define PORT_GPIO_D4	PORTD
@@ -126,6 +136,40 @@
 #define PIN_GPIO_B2		PINB
 #define DDR_GPIO_B2		DDRB
 #define NR_GPIO_B2		PB2
+
+//Included for completeness, be sure to check availability before using!
+/*
+//Note: This is the MOSI pin used for programming with ISP
+#define GPIO_B3			&PORTB,&PINB,&DDRB,PB3,3
+#define GPIO_B3_PCINT_vect	PCINT0_vect
+#define PORT_GPIO_B3	PORTB
+#define PIN_GPIO_B3		PINB
+#define DDR_GPIO_B3		DDRB
+#define NR_GPIO_B3		PB3
+
+//Note: This is the MISO pin used for programming with ISP
+#define GPIO_B4			&PORTB,&PINB,&DDRB,PB4,4
+#define GPIO_B4_PCINT_vect	PCINT0_vect
+#define PORT_GPIO_B4	PORTB
+#define PIN_GPIO_B4		PINB
+#define DDR_GPIO_B4		DDRB
+#define NR_GPIO_B4		PB4
+
+//Note: This is the SCK pin used for programming with ISP
+#define GPIO_B5			&PORTB,&PINB,&DDRB,PB5,5
+#define GPIO_B5_PCINT_vect	PCINT0_vect
+#define PORT_GPIO_B5	PORTB
+#define PIN_GPIO_B5		PINB
+#define DDR_GPIO_B5		DDRB
+#define NR_GPIO_B5		PB5
+
+#define GPIO_B6			&PORTB,&PINB,&DDRB,PB6,6
+#define GPIO_B6_PCINT_vect	PCINT0_vect
+#define PORT_GPIO_B6	PORTB
+#define PIN_GPIO_B6		PINB
+#define DDR_GPIO_B6		DDRB
+#define NR_GPIO_B6		PB6
+*/
 
 #define GPIO_B7			&PORTB,&PINB,&DDRB,PB7,7
 #define GPIO_B7_PCINT_vect	PCINT0_vect
