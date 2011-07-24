@@ -69,7 +69,6 @@
 struct {
 	uint8_t		enable;
 	uint16_t	timeout;
-	uint8_t		timeoutEnable;
 	uint16_t	*rxbuf;
 	uint8_t		rxlen;
 	uint8_t		storeEnable;
@@ -164,53 +163,26 @@ ISR(IR_COMPARE_VECTOR)
 }
 #endif
 
-#if IR_RX_ENABLE==1
-//TODO: hur hantera detta i multi receiver
-//TODO: ha en array med tider och nån enableflagga för varje kanal
-//TODO: mot slutet av ISRen laddas nästa tid in... likadant som för TX, se ovan ISR
 
+#if IR_RX_ENABLE==1
 /* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)
 {
-	/* Find which channel timed out */
-	uint16_t timeDiff = 0xffff;
-	uint8_t channel = 0;
-/*	for (uint8_t i=0; i < 3; i++)
-	{
-		if ((drvIrRxChannel[channel].timeoutEnable==TRUE) && (IR_TIMEOUT_REG-drvIrRxChannel[i].timeout < timeDiff))
-		{
-			timeDiff = IR_TIMEOUT_REG-drvIrRxChannel[i].timeout;
-			channel = i;
-		}
-	}
-*/
-	/* If more than 3 flanks was recevied */
-	if (drvIrRxChannel[channel].rxlen > 3)
-	{
-		/* Notify the application that a pulse train has been received. */
-		drvIrRxChannel[channel].callback(channel, drvIrRxChannel[channel].rxbuf, drvIrRxChannel[channel].rxlen);
-	}
-
-	drvIrRxChannel[channel].storeEnable = FALSE;
-	drvIrRxChannel[channel].timeoutEnable = FALSE;
-
-	IR_MASK_TIMEOUT();
-	
-//TODO: reset the timeout for next enabled channel
-/*
-	uint16_t nextTimeout = drvIrRxChannel[channel].timeout;
+gpio_toggle_pin(GPIO_B0); /* Toggle debug output PB0 */
 	for (uint8_t i=0; i < 3; i++)
 	{
-//TODO: hitta den med timeout härnäst (svårt med tanke på att den tiden kan ha passerat eftersom vi är under interrupt)
-//kanske inte är så noga, i värsta fall tar det 65ms extra
-		if ((drvIrRxChannel[channel].timeoutEnable) && (drvIrRxChannel[i].timeout < nextTimeout))
+		/* If more than 3 flanks was recevied */
+		if (drvIrRxChannel[i].storeEnable == TRUE && drvIrRxChannel[i].rxlen > 3)
 		{
-			nextTimeout = drvIrRxChannel[i].timeout;
+			/* Notify the application that a pulse train has been received. */
+			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].rxbuf, drvIrRxChannel[i].rxlen);
 		}
+
+		drvIrRxChannel[i].storeEnable = FALSE;
 	}
-	IR_UNMASK_TIMEOUT();
-	IR_TIMEOUT_REG = nextTimeout;
-*/
+
+	/* Disable ISR */
+	IR_MASK_TIMEOUT();
 }
 #endif
 
@@ -237,6 +209,9 @@ void IrTransceiver_Store_ch2(uint8_t id, uint8_t status)
 
 void IrTransceiver_Store(uint8_t channel)
 {
+gpio_toggle_pin(GPIO_B7); /* Toggle debug output PB7 */
+//gpio_toggle_pin(GPIO_D7); /* Toggle debug output PD7 */
+
 	static uint16_t prev_time[3];
 	uint16_t pulsewidth;
 
@@ -253,11 +228,16 @@ void IrTransceiver_Store(uint8_t channel)
 		drvIrRxChannel[channel].rxbuf[drvIrRxChannel[channel].rxlen++] = pulsewidth;
 
 		/* Disable future measurements if we've filled the buffer. */
-		//TODO: What to do in multi recevier?
 		//TODO: Report overflow to application
 		if (drvIrRxChannel[channel].rxlen == MAX_NR_TIMES)
 		{
 			drvIrRxChannel[channel].rxlen = MAX_NR_TIMES-1;
+		}
+		else
+		{
+			/* Set the timeout for detection of the end of the pulse train. */
+			drvIrRxChannel[channel].timeout = time + IR_MAX_PULSE_WIDTH;
+			IR_TIMEOUT_REG = drvIrRxChannel[channel].timeout;
 		}
 	}
 	else if (drvIrRxChannel[channel].enable == TRUE)
@@ -265,26 +245,10 @@ void IrTransceiver_Store(uint8_t channel)
 		/* The first edge of the pulse train has been detected. Enable the storage of the following pulsewidths. */
 		drvIrRxChannel[channel].storeEnable = TRUE;
 		drvIrRxChannel[channel].rxlen = 0;
-		drvIrRxChannel[channel].timeoutEnable = TRUE;
-
-		/* Set the timeout for detection of the end of the pulse train. */
-		drvIrRxChannel[channel].timeout = time + IR_MAX_PULSE_WIDTH;
-		uint16_t nextTimeout = drvIrRxChannel[channel].timeout;
-		for (uint8_t i=0; i < 3; i++)
-		{
-	//TODO: hitta den med timeout härnäst (svårt med tanke på att den tiden kan ha passerat eftersom vi är under interrupt)
-	//kanske inte är så noga, i värsta fall tar det 65ms extra
-			if ((drvIrRxChannel[channel].timeoutEnable) && (drvIrRxChannel[i].timeout < nextTimeout))
-			{
-				nextTimeout = drvIrRxChannel[i].timeout;
-			}
-		}
-		IR_TIMEOUT_REG = nextTimeout;
 
 		/* Enable timeout interrupt for detection of the end of the pulse train. */
+		IR_TIMEOUT_REG = time + IR_MAX_PULSE_WIDTH;
 		IR_UNMASK_TIMEOUT();
-
-		//TODO: if buffer resource coordinator is implemented this is where a buffer should be assinged to this channel
 	}
 }
 #endif
@@ -321,7 +285,6 @@ void IrTransceiver_InitRxChannel(uint8_t channel, uint16_t *buffer, irRxCallback
 		drvIrRxChannel[channel].rxbuf = buffer;
 		drvIrRxChannel[channel].rxlen = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
-		drvIrRxChannel[channel].timeoutEnable = FALSE;
 		drvIrRxChannel[channel].callback = callback;
 		drvIrRxChannel[channel].enable = TRUE;
 	}
@@ -342,7 +305,6 @@ void IrTransceiver_DeInitRxChannel(uint8_t channel, uint8_t pcint_id, volatile u
 		drvIrRxChannel[channel].enable = FALSE;
 		drvIrRxChannel[channel].rxlen = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
-		drvIrRxChannel[channel].timeoutEnable = FALSE;
 		drvIrRxChannel[channel].callback = 0;
 	}
 }
@@ -377,7 +339,6 @@ void IrTransceiver_ResetRx(uint8_t channel)
 		/* Reset channel */
 		drvIrRxChannel[channel].rxlen = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
-		drvIrRxChannel[channel].timeoutEnable = FALSE;
 	}
 }
 #endif
@@ -391,7 +352,6 @@ void IrTransceiver_Init(void)
 	for (uint8_t i = 0; i < 3; i++)
 	{
 		drvIrRxChannel[i].storeEnable = FALSE;
-		drvIrRxChannel[i].timeoutEnable = FALSE;
 		drvIrRxChannel[i].rxlen = 0;
 	}
 #endif
