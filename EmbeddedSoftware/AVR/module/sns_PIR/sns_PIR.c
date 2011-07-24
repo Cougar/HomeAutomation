@@ -51,8 +51,8 @@ void sns_PIR_Process(void)
 			avgValue += ABS(avgValues[i]);
 		}
 		
-		// TODO: keep motiondetect==1 true for at least one CAN send period, so detections are never lost
-		motionDetect = (avgValue >= 80);
+		/* Or to keep motiondetect==1 true for at least one CAN send period, so detections are never lost */
+		motionDetect |= (avgValue >= 80);
 		
 	}
 	else if (Timer_Expired(sns_PIR_SEND_TIMER)) {
@@ -77,7 +77,8 @@ void sns_PIR_Process(void)
 		txMsg.Data[3] = motionDetect;
 		StdCan_Put(&txMsg);
 		// also print data to debug
-		printf("M:%u,B:%d\n", motionDetect, brightness);
+		//printf("M:%u,B:%d\n", motionDetect, brightness);
+		motionDetect = 0;
 	}
 }
 
