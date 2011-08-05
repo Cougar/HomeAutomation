@@ -126,7 +126,7 @@ void Manager::CancelHandler(TimerId id)
     
     if (it != this->timers_.end())
     {
-        it->second->Cancel();
+        this->timers_.erase(id);
     }
     
     this->mutex_timers_.unlock();

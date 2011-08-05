@@ -34,8 +34,6 @@ namespace plugin {
 
 logging::Logger Timer::LOG("vm::plugin::Timer");
 
-Timer::Timers Timer::timers_;
-
 Timer::Timer(boost::asio::io_service& io_service) : Plugin(io_service)
 {
     this->name_ = "timer";
@@ -78,21 +76,11 @@ void Timer::SlotOnTimeoutHandler(timer::TimerId timer_id, bool repeat)
  
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
-    if (!repeat)
-    {
-        Timers::iterator it = Timer::timers_.find(timer_id);
-        
-        if (it != Timer::timers_.end())
-        {
-            Timer::timers_.erase(it);
-        }
-    }
-    
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::Integer::New(timer_id));
     arguments->push_back(v8::Boolean::New(repeat));
     
-    this->Call( timer_id, "Timer_OnTimeout",arguments);
+    this->Call(timer_id, "Timer_OnTimeout",arguments);
 }
 
 Value Timer::Export_SetAlarm(const v8::Arguments& args)
@@ -112,9 +100,7 @@ Value Timer::Export_SetAlarm(const v8::Arguments& args)
     v8::String::AsciiValue time(args[0]);
     
     timer::TimerId timer_id = timer::Manager::Instance()->SetAlarm(*time);
-    
-    Timer::timers_.insert(timer_id);
-    
+        
     return handle_scope.Close(v8::Integer::New(timer_id));
 }
 
@@ -134,8 +120,6 @@ Value Timer::Export_SetTimer(const v8::Arguments& args)
     
     timer::TimerId timer_id = timer::Manager::Instance()->SetTimer(args[0]->Uint32Value(), args[1]->BooleanValue());
     
-    Timer::timers_.insert(timer_id);
-    
     return handle_scope.Close(v8::Integer::New(timer_id));
 }
 
@@ -153,14 +137,8 @@ Value Timer::Export_Cancel(const v8::Arguments& args)
         return handle_scope.Close(v8::Boolean::New(false));
     }
     
-    Timers::iterator it = Timer::timers_.find(args[0]->Uint32Value());
-    
-    if (it != Timer::timers_.end())
-    {
-        Timer::timers_.erase(it);
-    }
-    
     timer::Manager::Instance()->Cancel(args[0]->Uint32Value());
+    
     return handle_scope.Close(v8::Undefined());
 }
 
