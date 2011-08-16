@@ -81,6 +81,16 @@ MCP_CLOCK_PRESC=1
 #EXTFUSE=0x04
 #BOOT_START=0x7c00
 
+#Force bios to setup ports according below
+#INITDDRB=0x0
+#INITDDRC=0x0
+#INITDDRD=0x0
+#INITPORTB=0x0
+#INITPORTC=0x0
+#INITPORTD=0x0
+#INITPINB=0x0
+#INITPINC=0x0
+#INITPIND=0x0
 
 #Some common settings of fuses
 #LOWFUSE for mega88 and mega168	
