@@ -139,6 +139,34 @@ int main(void) {
 	sei();
 
 	if (Can_Init() != CAN_OK) BIOS_Reset();
+#if defined(INITDDRB)
+	DDRB=INITDDRB;
+#endif
+#if defined(INITDDRC)
+	DDRC=INITDDRC;
+#endif
+#if defined(INITDDRD)
+	DDRD=INITDDRD;
+#endif
+#if defined(INITPORTB)
+	PORTB=INITPORTB;
+#endif
+#if defined(INITPORTC)
+	PORTC=INITPORTC;
+#endif
+#if defined(INITPORTD)
+	PORTD=INITPORTD;
+#endif
+#if defined(INITPINB)
+	PINB=INITPINB;
+#endif
+#if defined(INITPINC)
+	PINC=INITPINC;
+#endif
+#if defined(INITPIND)
+	PIND=INITPIND;
+#endif
+
 
 	tx_msg.RemoteFlag = 0;
 	tx_msg.ExtendedFlag = 1;
