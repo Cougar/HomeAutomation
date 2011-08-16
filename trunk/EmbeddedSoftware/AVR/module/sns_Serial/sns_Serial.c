@@ -41,7 +41,7 @@ static StdCan_Msg_t msg;
 #endif
 
 #ifndef lim
-#define lim(_a,_minval,_maxval)		(max(min((_a),(_minval)),(_maxval)))
+#define lim(_a,_minval,_maxval)		(max(min((_a),(_maxval)),(_minval)))
 #endif
 
 
@@ -252,6 +252,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				uart_setStopbits(stopbits);
 				uart_setParity(parityMode!=PARITY_NONE, parityMode==PARITY_ODD);
 				uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
+				printf("D:%d, S:%d, P:%d\n", databits, stopbits, parityMode);
 				
 				uint8_t returnval = sns_Serial_setSettings();
 				
