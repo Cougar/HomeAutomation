@@ -27,11 +27,14 @@ Serial.prototype.printAscii = function(text)
 	sendMessage(canMessage);
 }
 
-Serial.prototype.serialConfig = function(baudrate, phyFormat)
+Serial.prototype.serialConfig = function(baudrate, phyFormat, dataBits, stopBits, parity)
 {
 	var canMessage = new CanMessage("sns", "From_Owner", this.myName, this.myId, "SerialConfig");
 	canMessage.setData("BaudRate", baudrate/10);
 	canMessage.setData("PhysicalFormat", phyFormat);
+	canMessage.setData("DataBits", dataBits);
+	canMessage.setData("StopBits", stopBits);
+	canMessage.setData("Parity", parity);
 	sendMessage(canMessage);
 }
 
