@@ -1,6 +1,6 @@
 #include "sns_PIR.h"
 
-#define ABS(a) ((a) < 0 ? (-1*a) : (a))
+#define ABS(a) ((a) < 0 ? (-a) : (a))
 
 
 // a weighted moving avarage value is used to remove "DC offset"
@@ -8,7 +8,7 @@ static uint32_t zeroOffset = 0;
 
 // a second avarage value is used to detect changes in avarage "energy"
 #define NR_AVG_VALUES	15
-static int8_t avgValues[NR_AVG_VALUES];
+static int16_t avgValues[NR_AVG_VALUES];
 static uint8_t avgIndex = 0;
 
 
@@ -23,7 +23,7 @@ void sns_PIR_Init(void)
 
 void sns_PIR_Process(void)
 {
-	uint8_t motionDetect;
+	static uint8_t motionDetect = 0;
 	uint16_t brightness;
 	if (Timer_Expired(sns_PIR_SAMPLE_TIMER)) {
 		/**
@@ -55,7 +55,7 @@ void sns_PIR_Process(void)
 		motionDetect |= (avgValue >= 80);
 		
 	}
-	else if (Timer_Expired(sns_PIR_SEND_TIMER)) {
+	if (Timer_Expired(sns_PIR_SEND_TIMER)) {
 		/**
 		 * Read brightness sensor (via internal ADC).
 		 */
