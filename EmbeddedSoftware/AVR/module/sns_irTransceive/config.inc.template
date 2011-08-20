@@ -8,22 +8,16 @@ sns_irTransceive_SEND_DEBUG=0
 
 IR_RX_ENABLE=1
 IR_TX_ENABLE=1
-IR_TX_ACTIVE_LOW=0
+IR_TX_ACTIVE_LOW=1
 IR_RX_ACTIVE_LOW=1
-
-# Change only if you know that you have available RAM
-# usage = MAX_NR_TIMES * 2 * Number of activated rx and tx channels
-#MAX_NR_TIMES=81
 
 # chose port for modulation, however note that pwm is hard coded for OC0A
 sns_irTransceive_MOD_PIN=GPIO_D6
 
-# comment the port if not used
-#sns_irTransceive_VCC_EN0_PIN=GPIO_D0
-#sns_irTransceive_VCC_EN1_PIN=GPIO_D1
-#sns_irTransceive_VCC_EN2_PIN=GPIO_D4
+sns_irTransceive_VCC_EN0_PIN=GPIO_D0
+sns_irTransceive_VCC_EN1_PIN=GPIO_D1
+sns_irTransceive_VCC_EN2_PIN=GPIO_D4
 
-# comment the port if channel is not used, always use in order!
 sns_irTransceive_TX0_PIN=GPIO_D5
 sns_irTransceive_TX0_REPEATE_TIMER=<TIMER>
 
@@ -34,21 +28,17 @@ sns_irTransceive_TX2_PIN=GPIO_B2
 sns_irTransceive_TX2_REPEATE_TIMER=<TIMER>
 
 
-# comment the port if channel is not used, always use in order!
-#sns_irTransceive_RX0_PIN=GPIO_C0
+sns_irTransceive_RX0_PIN=GPIO_C0
 sns_irTransceive_RX0_PCINT=<PCINT>
 sns_irTransceive_RX0_REPEATE_TIMER=<TIMER>
-sns_irTransceive_RX0_NOISE_CANCELER_TIME_US=100
 
-#sns_irTransceive_RX1_PIN=GPIO_C1
+sns_irTransceive_RX1_PIN=GPIO_C1
 sns_irTransceive_RX1_PCINT=<PCINT>
 sns_irTransceive_RX1_REPEATE_TIMER=<TIMER>
-sns_irTransceive_RX1_NOISE_CANCELER_TIME_US=100
 
-#sns_irTransceive_RX2_PIN=GPIO_C2
+sns_irTransceive_RX2_PIN=GPIO_C2
 sns_irTransceive_RX2_PCINT=<PCINT>
 sns_irTransceive_RX2_REPEATE_TIMER=<TIMER>
-sns_irTransceive_RX2_NOISE_CANCELER_TIME_US=100
 
 
 sns_irTransceive_TX0_PWRl=GPIO_B0
