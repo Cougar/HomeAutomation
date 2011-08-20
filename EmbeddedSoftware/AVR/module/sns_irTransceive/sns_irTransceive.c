@@ -1,6 +1,25 @@
 
 #include "sns_irTransceive.h"
 
+#ifdef sns_irTransceive_USEEEPROM
+#include "sns_irTransceive_eeprom.h"
+struct eeprom_sns_irTransceive EEMEM eeprom_sns_irTransceive = 
+{
+	{
+		/* Define initialization values on the EEPROM variables here. 
+		This will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. 
+		Write the values in the exact same order as the struct is defined in the *.h file. */
+		CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO,
+		0,
+		CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO,
+		0,
+		CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO,
+		0,
+	},
+	0	/* crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts */
+}; 
+#endif
+
 #if IR_RX_ENABLE==1
 struct {
 	uint8_t				state;
@@ -72,6 +91,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 }
 #endif
 
+
 #if IR_RX_ENABLE==1
 void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len)
 {
@@ -83,6 +103,7 @@ void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 }
 #endif
 
+
 #if IR_TX_ENABLE==1
 void sns_irTransceive_TX_done_callback(uint8_t channel)
 {
@@ -93,16 +114,117 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 }
 #endif
 
+
+void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power)
+{
+	if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
+	{
+#if IR_RX_ENABLE==1
+		if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE)
+		{
+#if IR_TX_ENABLE==1
+			irTxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
+#endif
+			irRxChannel[channel].rxbuf = buf[channel];
+			switch (channel)
+			{
+				case 0:
+					gpio_clr_pin(sns_irTransceive_VCC_EN0_PIN);
+					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
+					break;
+				case 1:
+					gpio_clr_pin(sns_irTransceive_VCC_EN1_PIN);
+					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
+					break;
+				case 2:
+					gpio_clr_pin(sns_irTransceive_VCC_EN2_PIN);
+					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
+					break;
+			}
+			irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
+		}
+#endif
+
+#if IR_TX_ENABLE==1
+		if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_TRANSMIT)
+		{
+#if IR_RX_ENABLE==1
+			irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
+#endif
+			
+			irTxChannel[channel].txbuf = buf[channel];
+			switch (channel)
+			{
+				case 0:
+#if IR_RX_ENABLE==1
+					gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
+					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
+#endif
+					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
+
+#if sns_irTransceive_ENABLE_PCA95xx==1
+					Pca95xx_set_out(sns_irTransceive_TX0_PWRl);
+					Pca95xx_set_out(sns_irTransceive_TX0_PWRh);
+					if (power&0x1)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX0_PWRl);
+					}
+					if (power&0x2)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX0_PWRh);
+					}
+#endif
+					break;
+				case 1:
+#if IR_RX_ENABLE==1
+					gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
+					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
+#endif
+					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
+					
+#if sns_irTransceive_ENABLE_PCA95xx==1
+					Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
+					Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
+					if (power&0x1)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX1_PWRl);
+					}
+					if (power&0x2)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX1_PWRh);
+					}
+#endif
+					break;
+				case 2:
+#if IR_RX_ENABLE==1
+					gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
+					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
+#endif
+					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
+					
+#if sns_irTransceive_ENABLE_PCA95xx==1
+					Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
+					Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
+					if (power&0x1)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX2_PWRl);
+					}
+					if (power&0x2)
+					{
+						Pca95xx_set_in(sns_irTransceive_TX2_PWRh);
+					}
+#endif
+					break;
+			}
+			irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+		}
+#endif
+	}
+}
+
+
 void sns_irTransceive_Init(void)
 {
-/* Debug IO, PB7 */
-/*gpio_set_out(GPIO_D7);
-gpio_set_pin(GPIO_D7);
-gpio_set_out(GPIO_B0);
-gpio_set_pin(GPIO_B0);
-gpio_set_out(GPIO_B7);
-gpio_set_pin(GPIO_B7);
-*/
 	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
@@ -170,6 +292,7 @@ gpio_set_pin(GPIO_B7);
 	/* IR tx power pins on PCA95xx */
 #if sns_irTransceive_ENABLE_PCA95xx==1
 	Pca95xx_Init(0);
+
 	Pca95xx_clr_pin(sns_irTransceive_TX0_PWRl);
 	Pca95xx_set_out(sns_irTransceive_TX0_PWRl);
 	Pca95xx_clr_pin(sns_irTransceive_TX0_PWRh);
@@ -185,7 +308,27 @@ gpio_set_pin(GPIO_B7);
 	Pca95xx_clr_pin(sns_irTransceive_TX2_PWRh);
 	Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
 #endif 
-	
+
+#ifdef sns_irTransceive_USEEEPROM
+	if (EEDATA_OK)
+	{
+	  /* Use stored data to set initial values for the module */
+		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower));
+		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower));
+		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower));
+	}
+	else
+	{	
+	/* The CRC of the EEPROM is not correct, store default values and update CRC */
+		eeprom_write_byte_crc(EEDATA.ch0_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch0_txpower, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch1_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch1_txpower, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch2_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch2_txpower, 0, WITHOUT_CRC);
+		EEDATA_UPDATE_CRC;
+	}
+#endif	
 }
 
 void sns_irTransceive_Process(void)
@@ -360,6 +503,7 @@ void sns_irTransceive_Process(void)
 	}
 }
 
+
 /* Handle incoming CAN data */
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 {
@@ -403,120 +547,32 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			channel = rxMsg->Data[0]>>4;
 			uint8_t config = rxMsg->Data[0] & 0x0f;
 			uint8_t power = rxMsg->Data[1]>>6;
+			
+			sns_irTransceive_setConfig(channel, config, power);
 
+#ifdef sns_irTransceive_USEEEPROM
 			if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
 			{
-#if IR_RX_ENABLE==1
-				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE)
+				switch (channel)
 				{
-#if IR_TX_ENABLE==1
-					irTxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
-#endif
-					irRxChannel[channel].rxbuf = buf[channel];
-					switch (channel)
-					{
-						case 0:
-							gpio_clr_pin(sns_irTransceive_VCC_EN0_PIN);
-							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
-							break;
-						case 1:
-							gpio_clr_pin(sns_irTransceive_VCC_EN1_PIN);
-							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
-							break;
-						case 2:
-							gpio_clr_pin(sns_irTransceive_VCC_EN2_PIN);
-							IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
-							break;
-					}
-					irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
+					case 0:
+						eeprom_write_byte_crc(EEDATA.ch0_config, config, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch0_txpower, power, WITHOUT_CRC);
+						break;
+					case 1:
+						eeprom_write_byte_crc(EEDATA.ch1_config, config, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch1_txpower, power, WITHOUT_CRC);
+						break;
+					case 2:
+						eeprom_write_byte_crc(EEDATA.ch2_config, config, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch2_txpower, power, WITHOUT_CRC);
+						break;
+					default:
+						break;
 				}
-#endif
-
-
-	
-//	Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
-//	Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
-	
-//	Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
-//	Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
-
-
-
-#if IR_TX_ENABLE==1
-				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_TRANSMIT)
-				{
-#if IR_RX_ENABLE==1
-					irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
-#endif
-					
-					irTxChannel[channel].txbuf = buf[channel];
-					switch (channel)
-					{
-						case 0:
-#if IR_RX_ENABLE==1
-							gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
-							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
-#endif
-							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
-
-#if sns_irTransceive_ENABLE_PCA95xx==1
-							Pca95xx_set_out(sns_irTransceive_TX0_PWRl);
-							Pca95xx_set_out(sns_irTransceive_TX0_PWRh);
-							if (power&0x1)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX0_PWRl);
-							}
-							if (power&0x2)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX0_PWRh);
-							}
-#endif
-							break;
-						case 1:
-#if IR_RX_ENABLE==1
-							gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
-							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
-#endif
-							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
-							
-#if sns_irTransceive_ENABLE_PCA95xx==1
-							Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
-							Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
-							if (power&0x1)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX1_PWRl);
-							}
-							if (power&0x2)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX1_PWRh);
-							}
-#endif
-							break;
-						case 2:
-#if IR_RX_ENABLE==1
-							gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
-							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
-#endif
-							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
-							
-#if sns_irTransceive_ENABLE_PCA95xx==1
-							Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
-							Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
-							if (power&0x1)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX2_PWRl);
-							}
-							if (power&0x2)
-							{
-								Pca95xx_set_in(sns_irTransceive_TX2_PWRh);
-							}
-#endif
-							break;
-					}
-					irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
-				}
-#endif
+				EEDATA_UPDATE_CRC;
 			}
+#endif	
 			break;
 		}
 	}
