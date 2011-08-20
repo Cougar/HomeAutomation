@@ -394,6 +394,9 @@ void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volat
 
 void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t length)
 {
+	uint16_t diff;
+	uint8_t findchannel;
+
 	if (length > 0)
 	{
 		if (drvIrTxChannel[channel].timeoutEnable == FALSE)
@@ -401,15 +404,35 @@ void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t length)
 			drvIrTxChannel[channel].timeoutEnable = TRUE;
 			drvIrTxChannel[channel].txbuf = buffer;
 			drvIrTxChannel[channel].txlen = length;
-			/* first value will be loaded directly to timer below */
+			/* first value will be loaded directly to timer below, therefore index is set to 1 here */
 			drvIrTxChannel[channel].txindex = 1; 
-			
 			drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[0];
-			/* TODO: only modify timer reg if this channel has the lowest time left */
-			IR_COMPARE_REG = drvIrTxChannel[channel].timeout;
 
+
+			findchannel = 0;
+			diff = 0xffff;
+			uint16_t time = IR_COMPARE_REG;
+			/* go through all channels and find the one that have the next overflow */
+			for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
+			{
+				/* if channel is waiting for an overflow */
+				if (drvIrTxChannel[i].timeoutEnable==TRUE)
+				{
+					if (drvIrTxChannel[i].timeout - time < diff)	// || (timeout - time > 0xffff-IR_MAX_PULSE_WIDTH)
+					{
+						diff = drvIrTxChannel[i].timeout - time;
+						findchannel = i;
+					}
+				}		
+			}	
+
+			/* set compare value to the channel that have the next overflow */
+			IR_COMPARE_REG = drvIrTxChannel[findchannel].timeout;
+
+			/* Start send on pin */
 			IR_OUTP_HIGH();
 
+			/* enable overflow interrupt */
 			IR_UNMASK_COMPARE();
 		}
 	}
