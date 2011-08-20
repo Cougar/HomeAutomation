@@ -39,4 +39,23 @@ sns_irTransceive_RX2_PIN=GPIO_C2
 sns_irTransceive_RX2_PCINT=<PCINT>
 sns_irTransceive_RX2_REPEATE_TIMER=<TIMER>
 
+
+sns_irTransceive_TX0_PWRl=GPIO_B0
+sns_irTransceive_TX0_PWRl_PCA95xx=0
+sns_irTransceive_TX0_PWRh=GPIO_B7
+sns_irTransceive_TX0_PWRh_PCA95xx=0
+
+sns_irTransceive_TX1_PWRl=GPIO_C4
+sns_irTransceive_TX1_PWRl_PCA95xx=0
+sns_irTransceive_TX1_PWRh=GPIO_C5
+sns_irTransceive_TX1_PWRh_PCA95xx=0
+
+sns_irTransceive_TX2_PWRl=GPIO_D2
+sns_irTransceive_TX2_PWRl_PCA95xx=0
+sns_irTransceive_TX2_PWRh=GPIO_D7
+sns_irTransceive_TX2_PWRh_PCA95xx=0
+
+
+#USE_PCA95XX=1
+
 ## End section sns_irTransceive -- Do not edit this line
