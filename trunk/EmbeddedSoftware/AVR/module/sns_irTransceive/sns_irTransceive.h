@@ -20,6 +20,7 @@
 #include <drivers/mcu/gpio.h>
 #include <drivers/ir/transceiver/irtransceiverMulti.h>
 #include <drivers/ir/protocols.h>
+#include <drivers/io/PCA95xx.h>
 
 void sns_irTransceive_Init(void);
 void sns_irTransceive_Process(void);
@@ -38,6 +39,12 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_STATE_TRANSMITTING		8
 
 #define sns_irTransceive_STATE_DISABLED			0xff
+
+#if sns_irTransceive_TX0_PWRl_PCA95xx==1 | sns_irTransceive_TX0_PWRh_PCA95xx==1 | sns_irTransceive_TX1_PWRl_PCA95xx==1 | sns_irTransceive_TX1_PWRh_PCA95xx==1 | sns_irTransceive_TX2_PWRl_PCA95xx==1 | sns_irTransceive_TX2_PWRh_PCA95xx==1
+#define sns_irTransceive_ENABLE_PCA95xx 1
+#else
+#define sns_irTransceive_ENABLE_PCA95xx 0
+#endif
 
 
 #define TRUE 1

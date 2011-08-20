@@ -166,7 +166,26 @@ gpio_set_pin(GPIO_B7);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
 #endif
 #endif
-
+	
+	/* IR tx power pins on PCA95xx */
+#if sns_irTransceive_ENABLE_PCA95xx==1
+	Pca95xx_Init(0);
+	Pca95xx_clr_pin(sns_irTransceive_TX0_PWRl);
+	Pca95xx_set_out(sns_irTransceive_TX0_PWRl);
+	Pca95xx_clr_pin(sns_irTransceive_TX0_PWRh);
+	Pca95xx_set_out(sns_irTransceive_TX0_PWRh);
+	
+	Pca95xx_clr_pin(sns_irTransceive_TX1_PWRl);
+	Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
+	Pca95xx_clr_pin(sns_irTransceive_TX1_PWRh);
+	Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
+	
+	Pca95xx_clr_pin(sns_irTransceive_TX2_PWRl);
+	Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
+	Pca95xx_clr_pin(sns_irTransceive_TX2_PWRh);
+	Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
+#endif 
+	
 }
 
 void sns_irTransceive_Process(void)
@@ -413,12 +432,23 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 #endif
 
+
+	
+//	Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
+//	Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
+	
+//	Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
+//	Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
+
+
+
 #if IR_TX_ENABLE==1
 				if (config == CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_TRANSMIT)
 				{
 #if IR_RX_ENABLE==1
 					irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
 #endif
+					
 					irTxChannel[channel].txbuf = buf[channel];
 					switch (channel)
 					{
@@ -428,6 +458,19 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
 #endif
 							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
+
+#if sns_irTransceive_ENABLE_PCA95xx==1
+							Pca95xx_set_out(sns_irTransceive_TX0_PWRl);
+							Pca95xx_set_out(sns_irTransceive_TX0_PWRh);
+							if (power&0x1)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX0_PWRl);
+							}
+							if (power&0x2)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX0_PWRh);
+							}
+#endif
 							break;
 						case 1:
 #if IR_RX_ENABLE==1
@@ -435,6 +478,19 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
 #endif
 							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
+							
+#if sns_irTransceive_ENABLE_PCA95xx==1
+							Pca95xx_set_out(sns_irTransceive_TX1_PWRl);
+							Pca95xx_set_out(sns_irTransceive_TX1_PWRh);
+							if (power&0x1)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX1_PWRl);
+							}
+							if (power&0x2)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX1_PWRh);
+							}
+#endif
 							break;
 						case 2:
 #if IR_RX_ENABLE==1
@@ -442,6 +498,19 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 							IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
 #endif
 							IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
+							
+#if sns_irTransceive_ENABLE_PCA95xx==1
+							Pca95xx_set_out(sns_irTransceive_TX2_PWRl);
+							Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
+							if (power&0x1)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX2_PWRl);
+							}
+							if (power&0x2)
+							{
+								Pca95xx_set_in(sns_irTransceive_TX2_PWRh);
+							}
+#endif
 							break;
 					}
 					irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
