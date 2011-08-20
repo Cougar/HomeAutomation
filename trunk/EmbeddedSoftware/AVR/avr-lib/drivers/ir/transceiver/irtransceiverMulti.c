@@ -12,7 +12,6 @@
  *---------------------------------------------------------------------------*/
 #include <config.h>
 #include <drivers/mcu/pcint.h>
-#include <drivers/mcu/gpio.h>
 #include <drivers/ir/transceiver/irtransceiverMulti.h>
 #include <drivers/ir/protocols.h>
 #include <avr/io.h>
@@ -168,7 +167,6 @@ ISR(IR_COMPARE_VECTOR)
 /* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)
 {
-gpio_toggle_pin(GPIO_B0); /* Toggle debug output PB0 */
 	for (uint8_t i=0; i < 3; i++)
 	{
 		/* If more than 3 flanks was recevied */
@@ -209,9 +207,6 @@ void IrTransceiver_Store_ch2(uint8_t id, uint8_t status)
 
 void IrTransceiver_Store(uint8_t channel)
 {
-gpio_toggle_pin(GPIO_B7); /* Toggle debug output PB7 */
-//gpio_toggle_pin(GPIO_D7); /* Toggle debug output PD7 */
-
 	static uint16_t prev_time[3];
 	uint16_t pulsewidth;
 

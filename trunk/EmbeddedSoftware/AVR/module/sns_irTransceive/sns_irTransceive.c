@@ -96,13 +96,13 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 void sns_irTransceive_Init(void)
 {
 /* Debug IO, PB7 */
-gpio_set_out(GPIO_D7);
+/*gpio_set_out(GPIO_D7);
 gpio_set_pin(GPIO_D7);
 gpio_set_out(GPIO_B0);
 gpio_set_pin(GPIO_B0);
 gpio_set_out(GPIO_B7);
 gpio_set_pin(GPIO_B7);
-
+*/
 	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
