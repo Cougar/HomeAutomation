@@ -7,9 +7,6 @@ sns_VoltageCurrent_ID=<ID>
 sns_VoltageCurrent_TIMER=<TIMER>
 sns_VoltageCurrent_SEND_PERIOD=10
 
-#Uncomment to use the pcint driver
-#sns_VoltageCurrent_DUMMY_PCINT=<PCINT>
-
 # Use # to disable a channel
 
 ### Config first voltage/current port ###

@@ -4,7 +4,6 @@
 act_softPWM_USEEEPROM=1
 
 act_softPWM_ID=<ID>
-#act_softPWM_DUMMY=1
 act_softPWM_TIMER=<TIMER>
 act_softPWM_SEND_TIMER=<TIMER>
 
@@ -37,8 +36,5 @@ act_softPWM_PIN_7_INVERT = 0
 
 #the maximum of supported channels, must be set to x+1 when the highest PIN is PIN_x
 NUMBEROFCHANNELS = 3
-
-#Uncomment to use the pcint driver
-#act_softPWM_DUMMY_PCINT=<PCINT>
 
 ## End section act_softPWM -- Do not edit this line

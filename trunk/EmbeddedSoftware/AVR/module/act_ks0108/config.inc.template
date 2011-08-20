@@ -1,8 +1,6 @@
 ## Section act_ks0108 -- Do not edit this line
 
 act_ks0108_ID=<ID>
-#act_ks0108_DUMMY=1
-#act_ks0108_DUMMY_TIMER=<TIMER>
 
 act_ks0108_INITIAL_BACKLIGHT=0x7f
 

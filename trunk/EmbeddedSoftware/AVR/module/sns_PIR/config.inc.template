@@ -4,11 +4,7 @@
 #sns_PIR_USEEEPROM=1
 
 sns_PIR_ID=<ID>
-#sns_PIR_DUMMY=1
-#sns_PIR_DUMMY_TIMER=<TIMER>
 
-#Uncomment to use the pcint driver
-#sns_PIR_DUMMY_PCINT=<PCINT>
 sns_PIR_SEND_PERIOD=1000
 sns_PIR_SEND_TIMER=<TIMER>
 sns_PIR_SAMPLE_PERIOD=40

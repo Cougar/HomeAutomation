@@ -23,7 +23,6 @@ act_output_CH0PCA95xxIO=0
 #act_output_CH9=EXP_A
 #act_output_CH9PCA95xxIO=0
 act_output_ID=<ID>
-#act_output_DUMMY=1
 act_output_STORE_VALUE_TIMEOUT=<TIMER>
 act_output_STORE_VALUE_TIMEOUT_TIME_S=10
 

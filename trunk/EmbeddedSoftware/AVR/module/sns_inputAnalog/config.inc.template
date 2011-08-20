@@ -8,9 +8,6 @@ sns_inputAnalog_TIMER=<TIMER>
 #The resolution of sensor reading, should not be set lower than 10ms
 sns_inputAnalog_POLL_PERIOD_MS=20
 
-#Uncomment to use the pcint driver
-#sns_inputAnalog_DUMMY_PCINT=<PCINT>
-
 #Set this parameter to the number of supported sensors
 sns_inputAnalog_NUM_SUPPORTED=4
 
