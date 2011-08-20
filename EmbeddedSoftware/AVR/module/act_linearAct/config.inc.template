@@ -10,10 +10,6 @@ act_linearAct_SEND_PERIOD=20
 # use the following line only if self-stimuli is wanted (debug):
 act_linearAct_TIMER_stimuli=<TIMER>			
 
-
-#Uncomment to use the pcint driver
-#act_linearAct_DUMMY_PCINT=<PCINT>
-
 #Set the pins that are used for relay (or transistor) control:
 RELAY_ON=EXP_E
 RELAY_DIR=EXP_F

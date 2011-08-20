@@ -4,8 +4,6 @@
 act_RGBW_USEEEPROM=1
 
 act_RGBW_ID=<ID>
-#act_RGBW_DUMMY=1
-#act_RGBW_DUMMY_TIMER=<TIMER>
 act_RGBW_STORE_VALUE_TIMEOUT=<TIMER>
 act_RGBW_REGULATOR_TIMER=<TIMER>
 act_RGBW_STORE_VALUE_TIMEOUT_TIME=10
@@ -16,7 +14,5 @@ act_RGBW_SEND_STATUS_INTERVAL_S=5
 act_RGBW_FADE_TIMER=<TIMER>
 
 act_RGBW_ENABLE_FADE=1
-#Uncomment to use the pcint driver
-#act_RGBW_DUMMY_PCINT=<PCINT>
 
 ## End section act_RGBW -- Do not edit this line

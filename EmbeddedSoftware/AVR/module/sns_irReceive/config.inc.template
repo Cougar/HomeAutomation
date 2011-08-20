@@ -1,7 +1,6 @@
 ## Section sns_irReceive -- Do not edit this line
 
 sns_irReceive_ID=<ID>
-#sns_irReceive_DUMMY=1
 
 sns_irReceive_REPEATE_TIMER=<TIMER>
 sns_irReceive_SEND_DEBUG=0

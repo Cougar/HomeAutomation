@@ -8,7 +8,4 @@ sns_TCN75A_POLL_TIMER=<TIMER>
 sns_TCN75A_POLL_PERIOD=5
 sns_TCN75A_I2C_ADDRESS=0x48
 
-#Uncomment to use the pcint driver
-#sns_TCN75A_DUMMY_PCINT=<PCINT>
-
 ## End section sns_TCN75A -- Do not edit this line

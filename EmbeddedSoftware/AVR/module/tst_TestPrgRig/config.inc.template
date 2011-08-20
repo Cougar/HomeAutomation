@@ -4,13 +4,9 @@
 #tst_TestPrgRig_USEEEPROM=1
 
 tst_TestPrgRig_ID=<ID>
-#tst_TestPrgRig_DUMMY=1
 tst_TestPrgRig_REPORT_TIMER=<TIMER>
 
 tst_TestPrgRig_ReportInterval=500
-
-#Uncomment to use the pcint driver
-#tst_TestPrgRig_DUMMY_PCINT=<PCINT>
 
 tst_TestPrgRig_5VFEEDBACKAD=4
 tst_TestPrgRig_CURRFEEDBACKAD=5
