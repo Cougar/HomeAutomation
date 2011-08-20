@@ -4,4 +4,5 @@ drivers/ir/transceiver/irtransceiverMulti.c
 drivers/ir/protocols.c
 drivers/mcu/TWI_Master.c
 drivers/io/PCA95xx.c
+drivers/misc/eeprom_crc8.c
 sns_irTransceive/sns_irTransceive.c

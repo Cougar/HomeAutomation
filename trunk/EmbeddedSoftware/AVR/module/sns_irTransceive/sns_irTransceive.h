@@ -46,6 +46,17 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_ENABLE_PCA95xx 0
 #endif
 
+#ifdef sns_irTransceive_USEEEPROM
+	struct sns_irTransceive_Data{
+		uint8_t ch0_config;
+		uint8_t ch0_txpower;
+		uint8_t ch1_config;
+		uint8_t ch1_txpower;
+		uint8_t ch2_config;
+		uint8_t ch2_txpower;
+	};	
+#endif
+
 
 #define TRUE 1
 #define FALSE 0
