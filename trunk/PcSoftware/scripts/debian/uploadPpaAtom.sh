@@ -9,7 +9,7 @@ CNFDIR=Configuration
 PPA=ppa:arune/auml-atom-daily
 DEBUILDFLG="-S -sa -k7EA270B4"
 PKGNAME=atom
-DIST="maverick natty"
+DIST=natty
 PKGMAINT="Anders Runeson <runeson@gmail.com>"
 
 RUNDIR=`dirname $0`

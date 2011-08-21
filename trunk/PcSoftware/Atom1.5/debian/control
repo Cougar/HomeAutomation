@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 Homepage: http://projekt.auml.se
 
 Package: atom
-Architecture: any
+Architecture: any 
 Depends: libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.42.0, libboost-system1.42.0, libboost-signals1.42.0, libboost-filesystem1.42.0, libboost-date-time1.42.0, libv8-2.5.9.9
 Description: 
  Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.
