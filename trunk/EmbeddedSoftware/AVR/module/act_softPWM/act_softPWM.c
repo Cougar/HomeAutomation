@@ -286,8 +286,8 @@ void act_softPWM_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 		txMsg.Length = 3;
 		txMsg.Data[0] = currentSendChannelId;
-		txMsg.Data[1] = (pwmValue[currentSendChannelId]>>8)&0xff;
-		txMsg.Data[2] = (pwmValue[currentSendChannelId])&0xff;
+		txMsg.Data[1] = (pwmValueCAN[currentSendChannelId]>>8)&0xff;
+		txMsg.Data[2] = (pwmValueCAN[currentSendChannelId])&0xff;
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 //printf("sent pwm2: %d %d\n",pwmValueCAN[currentSendChannelId],currentSendChannelId); 
 #if act_softPWM_ACTIVATE_AUTOOFF != 0
@@ -325,6 +325,7 @@ void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 					pwmValueCAN[rxMsg->Data[0]] = ((uint16_t)((rxMsg->Data[1]<<8) + rxMsg->Data[2]));
 					if (pwmValueCAN[rxMsg->Data[0]] >= 10000) {
 						pwmValue[rxMsg->Data[0]] = maxTimer+1;
+						pwmValueCAN[rxMsg->Data[0]] = 10000;
 					} else {
 						pwmValue[rxMsg->Data[0]] = ((uint16_t)((((uint32_t)pwmValueCAN[rxMsg->Data[0]])*(maxTimer))/10000));
 					}
