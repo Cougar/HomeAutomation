@@ -16,7 +16,8 @@ struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 
 // internal variables
 static uint32_t baudRate = 9600;
-static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
+//static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
+static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232;
 static uint8_t databits = 8;
 static uint8_t stopbits = 1;
 
@@ -24,7 +25,18 @@ static enum {
 	PARITY_NONE = 0,
 	PARITY_EVEN = 1,
 	PARITY_ODD = 2,
-} parityMode;
+} parityMode = 1;
+
+// filter variables
+static uint8_t dataTimeout = 0;
+static uint8_t packetLength = 0;
+
+static struct __attribute__ ((packed)) {
+	uint8_t prefixLength:2;
+	uint8_t suffixLength:2;
+	uint8_t prefixPattern[3];
+	uint8_t suffixPattern[3];
+} filter;
 
 // prepare a new message, in case new data is available
 static StdCan_Msg_t msg;
@@ -127,7 +139,8 @@ uint8_t sns_Serial_setSettings(void)
 void sns_Serial_Init(void)
 {
 #ifdef sns_Serial_USEEEPROM
-	if (EEDATA_OK) {
+	//if (EEDATA_OK) {
+	if (0) {
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 		baudRate = eeprom_read_dword(EEDATA32.baudRate);
 #else
@@ -137,6 +150,16 @@ void sns_Serial_Init(void)
 		databits = eeprom_read_byte(EEDATA.databits);
 		stopbits = eeprom_read_byte(EEDATA.stopbits);
 		parityMode = eeprom_read_byte(EEDATA.parityMode);
+		dataTimeout = eeprom_read_byte(EEDATA.dataTimeout);
+		packetLength = eeprom_read_byte(EEDATA.packetLength);
+		filter.prefixLength = lim(eeprom_read_byte(EEDATA.prefixLength), 0, 3);
+		filter.suffixLength = lim(eeprom_read_byte(EEDATA.suffixLength), 0, 3);
+		filter.prefixPattern[0] = eeprom_read_byte(EEDATA.prefixPattern[0]);
+		filter.prefixPattern[1] = eeprom_read_byte(EEDATA.prefixPattern[1]);
+		filter.prefixPattern[2] = eeprom_read_byte(EEDATA.prefixPattern[2]);
+		filter.suffixPattern[0] = eeprom_read_byte(EEDATA.suffixPattern[0]);
+		filter.suffixPattern[1] = eeprom_read_byte(EEDATA.suffixPattern[1]);
+		filter.suffixPattern[2] = eeprom_read_byte(EEDATA.suffixPattern[2]);
 	}
 	else {
 		//The CRC of the EEPROM is not correct, store default values and update CRC
@@ -149,13 +172,22 @@ void sns_Serial_Init(void)
 		eeprom_write_byte_crc(EEDATA.databits, 8, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.stopbits, 1, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.parityMode, PARITY_NONE, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.dataTimeout, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.packetLength, 8, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.prefixLength, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.suffixLength, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.prefixPattern[0], 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.prefixPattern[1], 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.prefixPattern[2], 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.suffixPattern[0], 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.suffixPattern[1], 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.suffixPattern[2], 0, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif
 	uart_setDatabits(databits);
 	uart_setStopbits(stopbits);
 	uart_setParity(parityMode!=PARITY_NONE, parityMode==PARITY_ODD);
-	// default baudrate
 	uart_init(UART_BAUD_SELECT(baudRate, F_CPU));
 	
 	// configure control pins to outputs
@@ -173,6 +205,9 @@ void sns_Serial_Init(void)
 #endif
 
 	msg.Length = 0; // no data so far
+	
+	//gpio_set_pin(sns_Serial_TXEN);			// enable TX
+	//uart_putc('7');
 }
 
 void sns_Serial_Process(void)
@@ -209,10 +244,10 @@ void sns_Serial_Process(void)
 #endif
 		}
 	// keep going until max data length reached, or until uart RXBUF is empty
-	} while (status == 0 && msg.Length < 8);
+	} while (status == 0 && msg.Length < packetLength);
 	
 	// check if force send or send-frame full
-	if ((Timer_Expired(sns_Serial_FORCE_SEND_TIMER) && msg.Length>0) || msg.Length == 8 || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
+	if ((Timer_Expired(sns_Serial_FORCE_SEND_TIMER) && msg.Length>0) || msg.Length == packetLength || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
 	{
 		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
@@ -271,6 +306,33 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				EEDATA_UPDATE_CRC;
 #endif
 				}
+				break;
+				
+			case CAN_MODULE_CMD_SERIAL_SERIALFILTER:
+				dataTimeout = rxMsg->Data[0];
+				filter.prefixLength = ((rxMsg->Data[1] & 0x0F) >> 0);
+				filter.suffixLength = ((rxMsg->Data[1] & 0x30) >> 4);
+				packetLength = ((rxMsg->Data[1] & 0xC0) >> 6);
+				filter.prefixPattern[2] = rxMsg->Data[2];
+				filter.prefixPattern[1] = rxMsg->Data[3];
+				filter.prefixPattern[0] = rxMsg->Data[4];
+				filter.suffixPattern[2] = rxMsg->Data[5];
+				filter.suffixPattern[1] = rxMsg->Data[6];
+				filter.suffixPattern[0] = rxMsg->Data[7];
+				
+				// update EEPROM data
+				eeprom_write_byte_crc(EEDATA.dataTimeout, dataTimeout, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.packetLength, packetLength, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.prefixLength, filter.prefixLength, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.suffixLength, filter.suffixLength, WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.prefixPattern[0], filter.prefixPattern[0], WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.prefixPattern[1], filter.prefixPattern[1], WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.prefixPattern[2], filter.prefixPattern[2], WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.suffixPattern[0], filter.suffixPattern[0], WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.suffixPattern[1], filter.suffixPattern[1], WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.suffixPattern[2], filter.suffixPattern[2], WITHOUT_CRC);
+				EEDATA_UPDATE_CRC;
+				
 				break;
 		}
 	}
