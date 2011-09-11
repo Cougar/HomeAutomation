@@ -27,12 +27,18 @@ void sns_Serial_List(uint8_t ModuleSequenceNumber);
 
 
 #ifdef sns_Serial_USEEEPROM
-	struct sns_Serial_Data{
+	struct sns_Serial_Data {
 		uint32_t baudRate;
 		uint16_t format;
 		uint8_t databits;
 		uint8_t stopbits;
 		uint8_t parityMode;
+		uint8_t dataTimeout;
+		uint8_t packetLength;
+		uint8_t prefixLength;
+		uint8_t suffixLength;
+		uint8_t prefixPattern[3];
+		uint8_t suffixPattern[3];
 	};	
 #endif
 

@@ -287,6 +287,20 @@
 	    </variable>
       </variables>
     </command>
+    <command id="130" name="SerialFilter" type="specific" module="Serial" description="Serial Filter Config">
+      <variables>
+        <variable name="DataTimeout" type="uint" start_bit="0" bit_length="8" unit="" description="Timeout before RX data is sent via CAN"/>
+        <variable name="PrefixLength" type="uint" start_bit="8" bit_length="2" unit="" description="Length of prefix (in bytes)"/>
+        <variable name="SuffixLength" type="uint" start_bit="10" bit_length="2" unit="" description="Length of suffix (in bytes)"/>
+        <variable name="PacketLength" type="uint" start_bit="12" bit_length="4" unit="" description="Max nr of RX bytes to pack into CAN frame"/>
+        <variable name="PrefixByte2" type="uint" start_bit="16" bit_length="8" unit="" description="Prefix byte0"/>
+        <variable name="PrefixByte1" type="uint" start_bit="24" bit_length="8" unit="" description="Prefix byte1"/>
+        <variable name="PrefixByte0" type="uint" start_bit="32" bit_length="8" unit="" description="Prefix byte2"/>
+        <variable name="SuffixByte2" type="uint" start_bit="40" bit_length="8" unit="" description="Suffix byte0"/>
+        <variable name="SuffixByte1" type="uint" start_bit="48" bit_length="8" unit="" description="Suffix byte1"/>
+        <variable name="SuffixByte0" type="uint" start_bit="54" bit_length="8" unit="" description="Suffix byte2"/>
+      </variables>
+    </command>
 
     <command id="128" name="AnalogConfig" type="specific" module="inputAnalog" description="Configuration for analog input module">
       <variables>
