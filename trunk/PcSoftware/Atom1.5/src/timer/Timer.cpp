@@ -25,7 +25,7 @@
 namespace atom {
 namespace timer {
 
-Timer::Timer(boost::asio::io_service& io_service, TimerId id, unsigned int timeout, bool repeat) : instance_(io_service)
+Timer::Timer(boost::asio::io_service& io_service, TimerId id, unsigned int timeout, bool repeat) : instance_(io_service), LOG("timer::Timer")
 {
     this->id_ = id;
     this->timeout_ = timeout;
@@ -33,7 +33,7 @@ Timer::Timer(boost::asio::io_service& io_service, TimerId id, unsigned int timeo
     this->time_ = "";
 }
 
-Timer::Timer(boost::asio::io_service& io_service, TimerId id, std::string time) : instance_(io_service)
+Timer::Timer(boost::asio::io_service& io_service, TimerId id, std::string time) : instance_(io_service), LOG("timer::Timer")
 {
     this->id_ = id;
     this->timeout_ = 0;
@@ -76,6 +76,11 @@ void Timer::Cancel()
 
 void Timer::TimeoutHandler(const boost::system::error_code& error)
 {
+    if (error.value() != 0)
+    {
+        return;
+    }
+    
     if (this->repeat_)
     {
         this->Start();

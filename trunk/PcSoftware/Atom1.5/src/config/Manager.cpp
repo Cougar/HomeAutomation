@@ -131,6 +131,8 @@ bool Manager::Set(int argument_count, char** argument_vector)
         return false;
     }
     
+    std::cout << "Using " << this->GetAsString("file") << " as configuration file" << std::endl;
+    
     return true;
 }
 

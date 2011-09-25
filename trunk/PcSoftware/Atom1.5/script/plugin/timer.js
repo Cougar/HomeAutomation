@@ -23,7 +23,7 @@ function Timer_Cancel(timer_id)
 {
 	delete Timer_Callbacks[timer_id];
 	
-	//TimerExport_Cancel(timer_id);
+	TimerExport_Cancel(timer_id);
 }
 
 function Timer_OnTimeout(timer_id, repeat)
