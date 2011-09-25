@@ -23,7 +23,7 @@ function Display_Clear(alias_name)
 			
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "LCD_Clear", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -63,7 +63,7 @@ function Display_SetBacklight(alias_name, strength)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "LCD_Backlight", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -127,7 +127,7 @@ function Display_Print(alias_name, x, y, text)
 			
 			if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "LCD_TextAt", variables))
 			{
-				Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+				//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 			}
 			else
 			{

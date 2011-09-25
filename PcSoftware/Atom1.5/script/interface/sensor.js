@@ -17,10 +17,7 @@ function Sensor_SetReportInterval(alias_name, interval)
 	
 	for (var name in aliases_data)
 	{
-		var variables = {
-		"SensorId" : aliases_data[name]["specific"]["SensorId"],
-		"time"     : interval };
-		
+		var variables = {"Time"     : interval };
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Report_Interval", variables))
 		{
 			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");

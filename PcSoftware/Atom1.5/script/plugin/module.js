@@ -225,7 +225,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789" ];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789", "Rotary", "RotaryHex", "Touch", "power", "input", "output", "softPWM"];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
@@ -327,31 +327,16 @@ function Module_OnChange(full_id, available)
 	var id_parts = full_id.split(":", 2);
 	var aliases_data = {};
 	
-	var aliases_data_all = Module_LookupAliases({
+	aliases_data = Module_LookupAliases({
 		"module_name" : id_parts[0],
 		"module_id"   : id_parts[1],
 		"group"       : false
 	});
-	
 	for (var alias_name in aliases_data)
 	{
 		var ok = true;
 		
-		if (aliases_data[alias_name]["specific"])
-		{
-			var ok = true;
-			
-			for (var name in variables)
-			{
-				if (aliases_data[alias_name]["specific"][name] && aliases_data[alias_name]["specific"][name] != variables[name])
-				{
-					ok = false;
-					break;
-				}
-			}
-		}
-		
-		if (Module_OnChangeFunctions[alias_name] && ok)
+		if (Module_OnChangeFunctions[alias_name])
 		{
 			for (var n in Module_OnChangeFunctions[alias_name])
 			{
