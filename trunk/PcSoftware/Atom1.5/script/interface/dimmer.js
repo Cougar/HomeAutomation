@@ -30,7 +30,7 @@ function Dimmer_StartFade(alias_name, speed, direction)
 	
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Start_Fade", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -68,7 +68,7 @@ function Dimmer_StopFade(alias_name)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Stop_Fade", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -101,6 +101,9 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 	
 	for (var name in aliases_data)
 	{
+		if (aliases_data[name]["module_name"]=="hwPWM") {
+		  level = level*39;
+		}
 		var variables = {
 		"Channel"   : aliases_data[name]["specific"]["Channel"],
 		"Speed"     : speed,
@@ -108,7 +111,7 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Abs_Fade", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -141,6 +144,9 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 	
 	for (var name in aliases_data)
 	{
+		if (aliases_data[name]["module_name"]=="hwPWM") {
+		  steps = steps*39;
+		}
 		var variables = {
 		"Channel"   : aliases_data[name]["specific"]["Channel"],
 		"Speed"     : speed,
@@ -149,7 +155,7 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Rel_Fade", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -182,6 +188,9 @@ function Dimmer_Demo(alias_name, speed, steps)
 	
 	for (var name in aliases_data)
 	{
+		if (aliases_data[name]["module_name"]=="hwPWM") {
+		  steps = steps*39;
+		}
 		var variables = {
 		"Channel"   : aliases_data[name]["specific"]["Channel"],
 		"Speed"     : speed,
@@ -189,7 +198,7 @@ function Dimmer_Demo(alias_name, speed, steps)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "Demo", variables))
 		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}
 		else
 		{
@@ -241,6 +250,32 @@ function Dimmer_OnMessage(module_name, module_id, command, variables)
 					last_value["Connection"] = { "value" : variables["Connection"], "timestamp" : get_time() };
 					last_value["Frequency"] = { "value" : variables["Frequency"], "timestamp" : get_time() };
 					last_value["Level"] = { "value" : variables["DimmerValue"], "timestamp" : get_time() };
+					
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+				}
+				
+				break;
+			}
+			case "Pwm":
+			{
+				for (var alias_name in aliases_data)
+				{
+					if (aliases_data[alias_name]["specific"]["Channel"] != variables["Id"])
+					{
+						continue;
+					}
+					
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					var value = 0 + variables["Value"];
+					value = value / 39;
+					value = parseInt(value).toString();
+					last_value["Level"] = { "value" : value, "timestamp" : get_time() };
 					
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
