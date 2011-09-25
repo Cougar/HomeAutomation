@@ -20,12 +20,14 @@
 
 #include "Manager.h"
 
+#include <boost/lexical_cast.hpp>
+
 namespace atom {
 namespace timer {
 
 Manager::Pointer Manager::instance_;
 
-Manager::Manager()
+Manager::Manager() : LOG("timer::Manager")
 {
 }
 

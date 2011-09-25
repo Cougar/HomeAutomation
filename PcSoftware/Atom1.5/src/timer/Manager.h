@@ -25,6 +25,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "common/IoService.h"
+#include "logging/Logger.h"
 
 #include "types.h"
 #include "Timer.h"
@@ -60,6 +61,8 @@ private:
     boost::mutex mutex_timers_;
     
     SignalOnTimeout signal_on_timeout_;
+    
+    logging::Logger LOG;
     
     Manager();
     

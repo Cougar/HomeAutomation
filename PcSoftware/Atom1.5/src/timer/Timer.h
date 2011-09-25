@@ -25,6 +25,8 @@
 #include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "logging/Logger.h"
+
 #include "types.h"
 
 namespace atom {
@@ -54,6 +56,8 @@ private:
     std::string time_;
     unsigned int timeout_;
     bool repeat_;
+    
+    logging::Logger LOG;
     
     SignalOnTimeout signal_on_timeout_;
     
