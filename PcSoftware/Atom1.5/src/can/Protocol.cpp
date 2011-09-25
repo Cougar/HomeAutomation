@@ -327,8 +327,9 @@ void Protocol::EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigne
 {
     unsigned long raw_bit_value = 0;
     int raw_value = boost::lexical_cast<int>(value);
-    
-    raw_bit_value = raw_bit_value;
+    //LOG.Info("Float as int: " + raw_value);
+
+    raw_bit_value = raw_value;
     
     if (raw_value < 0)
     {
@@ -364,12 +365,12 @@ void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsign
 std::string Protocol::DecodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length));
-    LOG.Debug("DecodeFloat::float_value1=" + boost::lexical_cast<std::string>(float_value));
+    //LOG.Debug("DecodeFloat::float_value1=" + boost::lexical_cast<std::string>(float_value));
     
     
     float_value = float_value / 64.0f;
     
-    LOG.Debug("DecodeFloat::float_value2=" + boost::lexical_cast<std::string>(float_value));
+    //LOG.Debug("DecodeFloat::float_value2=" + boost::lexical_cast<std::string>(float_value));
     
     return boost::lexical_cast<std::string>(float_value);
 }
@@ -377,7 +378,8 @@ std::string Protocol::DecodeFloat(common::Bitset& bitset, unsigned int start_bit
 void Protocol::EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     int int_value = boost::lexical_cast<float>(value) * 64.0f;
-    
+    //LOG.Info("Float: " + int_value);
+
     this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
 }
 
