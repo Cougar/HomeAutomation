@@ -1,48 +1,13 @@
-
+/* ----------------------------------------------------------------------------
+ * Inclusions
+ * --------------------------------------------------------------------------*/
 #include "sns_Serial.h"
 
-#ifdef sns_Serial_USEEEPROM
-#include "sns_Serial_eeprom.h"
-struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
-{
-	{
-		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file.
-		0xAB,	// x
-		0x1234	// y
-	},
-	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
-};
-#endif
 
-// internal variables
-static uint32_t baudRate = 9600;
-//static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK;
-static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232;
-static uint8_t databits = 8;
-static uint8_t stopbits = 1;
-
-static enum {
-	PARITY_NONE = 0,
-	PARITY_EVEN = 1,
-	PARITY_ODD = 2,
-} parityMode = 1;
-
-// filter variables
-static uint8_t dataTimeout = 0;
-static uint8_t packetLength = 0;
-
-static struct __attribute__ ((packed)) {
-	uint8_t prefixLength:2;
-	uint8_t suffixLength:2;
-	uint8_t prefixPattern[3];
-	uint8_t suffixPattern[3];
-} filter;
-
-// prepare a new message, in case new data is available
-static StdCan_Msg_t msg;
-
+/* ----------------------------------------------------------------------------
+ * Definitions
+ * --------------------------------------------------------------------------*/
 #define sns_Serial_DEBUG 0
-
 
 #ifndef min
 #define min(_a,_b)		((_a)<(_b) ? (_a) : (_b))
@@ -56,7 +21,79 @@ static StdCan_Msg_t msg;
 #define lim(_a,_minval,_maxval)		(max(min((_a),(_maxval)),(_minval)))
 #endif
 
+typedef enum {
+	PARITY_NONE = 0,
+	PARITY_EVEN = 1,
+	PARITY_ODD = 2,
+} parityMode_t;
 
+
+/* ----------------------------------------------------------------------------
+ * Variables
+ * --------------------------------------------------------------------------*/
+
+static uint32_t baudRate = 9600;
+static uint16_t format = CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_RS232;
+static uint8_t databits = 8;
+static uint8_t stopbits = 1;
+static parityMode_t parityMode = PARITY_NONE;
+static uint8_t dataTimeout = 255;
+static uint8_t packetLength = 0;
+
+static struct __attribute__ ((packed)) {
+	uint8_t prefixLength:2;
+	uint8_t suffixLength:2;
+	uint8_t prefixPattern[3];
+	uint8_t suffixPattern[3];
+} filter;
+
+static StdCan_Msg_t msg;
+
+#ifdef sns_Serial_USEEEPROM
+#include "sns_Serial_eeprom.h"
+struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
+{
+	{
+		9600,	// baudRate
+		CAN_MODULE_ENUM_SERIAL_SERIALCONFIG_PHYSICALFORMAT_LOOPBACK,	// format
+		8, 		// databits
+		1,		// stopbits
+		PARITY_NONE,	// parityMode
+		255,	// dataTimeout
+		8,		// packetLength
+		0,		// prefixLength
+		0,		// suffixLength
+		{0,0,0},	// prefixPattern
+		{0,0,0},	// suffixPattern
+	},
+	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
+};
+#endif
+
+
+/* ----------------------------------------------------------------------------
+ * Internal Functions
+ * --------------------------------------------------------------------------*/
+static uint16_t getTimeoutValue(void)
+{
+	// configurations 0-250 translate directly to milliseconds (0 means DIRECT)
+	if (dataTimeout>=0 && dataTimeout<=250) {
+		return dataTimeout;		
+	}
+	// configurations 251..254 are baudrate-dependent
+	else if (dataTimeout>=251 && dataTimeout<=254) {
+		return (uint16_t)(baudRate/(uint32_t)1000UL*((uint32_t)dataTimeout-250UL));
+	}
+	// configuration 255 means use the compiled default value
+	else {
+		return sns_Serial_FORCE_SEND_TIME_MS;
+	}
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Function Implementations
+ * --------------------------------------------------------------------------*/
 
 uint8_t sns_Serial_setSettings(void)
 {
@@ -136,11 +173,12 @@ uint8_t sns_Serial_setSettings(void)
 	return returnval;
 }
 
-void sns_Serial_Init(void)
+
+void sns_Serial_Init()
 {
 #ifdef sns_Serial_USEEEPROM
-	//if (EEDATA_OK) {
-	if (0) {
+	if (EEDATA_OK) {
+	//if (0) {
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 		baudRate = eeprom_read_dword(EEDATA32.baudRate);
 #else
@@ -172,7 +210,7 @@ void sns_Serial_Init(void)
 		eeprom_write_byte_crc(EEDATA.databits, 8, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.stopbits, 1, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.parityMode, PARITY_NONE, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.dataTimeout, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.dataTimeout, 255, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.packetLength, 8, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.prefixLength, 0, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.suffixLength, 0, WITHOUT_CRC);
@@ -210,6 +248,7 @@ void sns_Serial_Init(void)
 	//uart_putc('7');
 }
 
+
 void sns_Serial_Process(void)
 {
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -226,6 +265,7 @@ void sns_Serial_Process(void)
 		unsigned int data = uart_getc();
 		// character is contained in LSB
 		unsigned char c = (unsigned char)(data & 0x00FF);
+
 		// status is contained in MSB
 		status = (unsigned char)((data & 0xFF00) >> 8);
 		
@@ -239,21 +279,23 @@ void sns_Serial_Process(void)
 			msg.Data[(uint8_t)msg.Length] = c;
 			msg.Length++;
 			
-#if sns_Serial_FORCE_SEND_TIME_MS > 0
-			Timer_SetTimeout(sns_Serial_FORCE_SEND_TIMER, sns_Serial_FORCE_SEND_TIME_MS , TimerTypeOneShot, 0);
-#endif
+			uint16_t timeout;
+			if ((timeout = getTimeoutValue()) != 0) {
+				Timer_SetTimeout(sns_Serial_FORCE_SEND_TIMER, timeout , TimerTypeOneShot, 0);
+			}
 		}
 	// keep going until max data length reached, or until uart RXBUF is empty
 	} while (status == 0 && msg.Length < packetLength);
 	
 	// check if force send or send-frame full
-	if ((Timer_Expired(sns_Serial_FORCE_SEND_TIMER) && msg.Length>0) || msg.Length == packetLength || (sns_Serial_FORCE_SEND_TIME_MS == 0 && msg.Length>0))
+	if ((Timer_Expired(sns_Serial_FORCE_SEND_TIMER) && msg.Length>0) || msg.Length==packetLength || (getTimeoutValue()==0 && msg.Length>0))
 	{
 		// transmit this chunk of data (max 8 chars)
 		while(StdCan_Put(&msg) != StdCan_Ret_OK);
 		msg.Length = 0; // no data so far
 	}
 }
+
 
 void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 {
@@ -337,6 +379,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 		}
 	}
 }
+
 
 void sns_Serial_List(uint8_t ModuleSequenceNumber)
 {
