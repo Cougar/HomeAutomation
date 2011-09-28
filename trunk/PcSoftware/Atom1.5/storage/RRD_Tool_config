@@ -1,0 +1,6 @@
+
+power={"rrd":{"file":"/var/www/CANgraph/Effektforbrukning.rrd","Period_s":"60"}, "rrdNames":{"power":{"Module":"Power","data":"Power","value":"value"},"power32":{"Module":"Power","data":"Power32","value":"value"}}}
+powerBRF={"rrd":{"file":"/var/www/CANgraph/Effektforbrukning_BRF.rrd","Period_s":"60"}, "rrdNames":{"power":{"Module":"PowerBRF","data":"Power","value":"value"},"power32":{"Module":"PowerBRF","data":"Power32","value":"value"}}}
+uteTemp= {"rrd":{"file":"/var/www/CANgraph/Yttertemperatur.rrd","Period_s":"300"}, "rrdNames":{"west":{"Module":"Vastersensor","data":"Temperature_Celsius","value":"value"},"east":{"Module":"Ostersensor","data":"Temperature_Celsius","value":"value"}}}
+inneTemp={"rrd":{"file":"/var/www/CANgraph/Innetemperatur.rrd","Period_s":"300"}, "rrdNames":{"vardagsrum":{"Module":"Vardagsrumssensor","data":"Temperature_Celsius","value":"value"},"sovrum":{"Module":"Sovrumssensor","data":"Temperature_Celsius","value":"value"},"hall":{"Module":"Hallen","data":"Temperature_Celsius","value":"value"},"badrum":{"Module":"BadrumsTemp","data":"Temperature_Celsius","value":"value"}}}
+

@@ -8,7 +8,6 @@ function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_b
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
 	var self = this;
-	
 	this.myTouch = aliasnameTouch;
 	this.myRGBLED_red = aliasnameRGBLED_red;
 	this.myRGBLED_blue = aliasnameRGBLED_blue;
