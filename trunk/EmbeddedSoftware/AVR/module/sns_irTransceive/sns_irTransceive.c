@@ -44,7 +44,7 @@ struct {
 } irTxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
-uint16_t	buf[3][MAX_NR_TIMES];
+uint16_t	buf[IR_SUPPORTED_NUM_CHANNELS][MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
@@ -257,12 +257,14 @@ void sns_irTransceive_Init(void)
 	}
 	
 #if IR_RX_ENABLE==1
+	// TODO: hardcoded to 3 channels?? /jm
 	irRxChannel[0].timerNum=sns_irTransceive_RX0_REPEATE_TIMER;
 	irRxChannel[1].timerNum=sns_irTransceive_RX1_REPEATE_TIMER;
 	irRxChannel[2].timerNum=sns_irTransceive_RX2_REPEATE_TIMER;
 #endif
 
 #if IR_TX_ENABLE==1
+	// TODO: hardcoded to 3 channels?? /jm
 	irTxChannel[0].timerNum=sns_irTransceive_TX0_REPEATE_TIMER;
 	irTxChannel[1].timerNum=sns_irTransceive_TX1_REPEATE_TIMER;
 	irTxChannel[2].timerNum=sns_irTransceive_TX2_REPEATE_TIMER;
@@ -515,6 +517,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		uint8_t channel;
 		switch (rxMsg->Header.Command)
 		{
+#if IR_TX_ENABLE==1
 		case CAN_MODULE_CMD_PHYSICAL_IR:
 			channel = rxMsg->Data[0]>>4;
 			if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED && channel < IR_SUPPORTED_NUM_CHANNELS)
@@ -542,6 +545,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 			}
 			break;
+#endif
 		
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG:
 			channel = rxMsg->Data[0]>>4;
@@ -574,6 +578,10 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 #endif	
 			break;
+			
+		default:
+			break;
+			
 		}
 	}
 }
