@@ -1,4 +1,4 @@
-// Built on Sun Sep 11 14:57:24 2011 by makeCanId.pl
+// Built on Thu Nov  3 17:29:06 2011 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -282,6 +282,7 @@
 #define CAN_MODULE_TYPE_SNS_COUNTER 57
 #define CAN_MODULE_TYPE_ACT_MULTISWITCH 58
 #define CAN_MODULE_TYPE_ACT_LINEARACT 59
+#define CAN_MODULE_TYPE_ACT_DOTMATRIX 60
 
 //----------------- //
 // Misc definitions //

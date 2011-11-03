@@ -910,6 +910,7 @@
     <module id="57" name="counter" class="sns"/>
     <module id="58" name="multiSwitch" class="act"/>
     <module id="59" name="linearAct" class="act"/>
+    <module id="60" name="DotMatrix" class="act"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
