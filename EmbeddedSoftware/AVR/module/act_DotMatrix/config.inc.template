@@ -1,0 +1,27 @@
+## Section act_DotMatrix -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#act_DotMatrix_USEEEPROM=1
+
+act_DotMatrix_ID=<ID>
+act_DotMatrix_ROW_TIMER=<TIMER>
+act_DotMatrix_ROW_TIME=5
+
+act_DotMatrix_ROW_IO1=EXP_P
+act_DotMatrix_ROW_IO2=EXP_B
+act_DotMatrix_ROW_IO3=EXP_C
+act_DotMatrix_ROW_IO4=EXP_D
+act_DotMatrix_ROW_IO5=EXP_E
+act_DotMatrix_ROW_IO6=EXP_F
+act_DotMatrix_ROW_IO7=EXP_A
+act_DotMatrix_ROW_IO8=EXP_O
+
+act_DotMatrix_LATCHCLOCK_IO=EXP_I
+
+# Can be set on CAN but keep this value low
+act_DotMatrix_INITIAL_BRIGHTNESS=0x5
+
+# Set this to 0 when your panel works as intended
+act_DotMatrix_INITIAL_ROW=0x81
+
+## End section act_DotMatrix -- Do not edit this line
