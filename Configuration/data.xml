@@ -861,6 +861,57 @@
         <variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
       </variables>
     </command>
+
+    <command id="128" name="ImageDataModule1" type="specific" module="DotMatrix" description="">
+      <variables>
+        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="129" name="ImageDataModule2" type="specific" module="DotMatrix" description="">
+      <variables>
+        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="ImageDataModule3" type="specific" module="DotMatrix" description="">
+      <variables>
+        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="ImageDataModule4" type="specific" module="DotMatrix" description="">
+      <variables>
+        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+
+
   </commands>
   
   
