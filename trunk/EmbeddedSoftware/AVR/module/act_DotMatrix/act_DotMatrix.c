@@ -169,7 +169,7 @@ void act_DotMatrix_Process(void)
 void act_DotMatrix_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_ACT &&
-		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_ACT_DOTMATRIX &&
 		rxMsg->Header.ModuleId == act_DotMatrix_ID)
 	{
@@ -180,17 +180,9 @@ void act_DotMatrix_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (rxMsg->Length == 3) {
 				act_DotMatrix_brightness = (rxMsg->Data[1]<<8)+(rxMsg->Data[2]);
 
-				if (OCR0B != (uint16_t)(act_DotMatrix_brightness*act_DotMatrix_PWM_FACT)>>8) {
+				if (OCR0B != 0xff-((uint16_t)(act_DotMatrix_brightness*act_DotMatrix_PWM_FACT)>>8)) {
 					cli();	
-					OCR0B=(uint16_t)(act_DotMatrix_brightness*act_DotMatrix_PWM_FACT)>>8;
-					if (OCR0B==0)
-					{
-						TCCR0A &= ~((1<<COM0B0)|(1<<COM0B1));
-					}
-					else
-					{
-						TCCR0A |= (1<<COM0B1);
-					}
+					OCR0B=0xff-((uint16_t)(act_DotMatrix_brightness*act_DotMatrix_PWM_FACT)>>8);
 					sei();
 				}
 			}
