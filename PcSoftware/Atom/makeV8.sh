@@ -6,9 +6,9 @@ cd src/v8
 arch=`uname -m`
 
 if [ "$arch" = "x86_64" ]; then
-	scons arch=x64 mode=debug snapshot=on
+	scons arch=x64 mode=release snapshot=on
 else
-	scons mode=debug snapshot=on
+	scons mode=release snapshot=on
 fi
 
 cd ../..
