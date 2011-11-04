@@ -31,7 +31,7 @@ echo "Done"
 echo -e "\n* ${CNT}. Compiling v8 for Atom, may take a while"
 CNT=$(expr $CNT + 1)
 cd PcSoftware/Atom/
-./makev8.sh
+./makeV8.sh
 cd ../..
 echo "Done"
 
