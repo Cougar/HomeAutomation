@@ -28,6 +28,13 @@ CNT=$(expr $CNT + 1)
 cp -v EmbeddedSoftware/AVR/personal/system.inc.template EmbeddedSoftware/AVR/personal/system.inc
 echo "Done"
 
+echo -e "\n* ${CNT}. Compiling v8 for Atom, may take a while"
+CNT=$(expr $CNT + 1)
+cd PcSoftware/Atom/
+./makev8.sh
+cd ../..
+echo "Done"
+
 echo -e "\n* ${CNT}. Compiling Atom, may take a while"
 CNT=$(expr $CNT + 1)
 cd PcSoftware/Atom/
