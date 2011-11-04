@@ -53,10 +53,10 @@ void act_DotMatrix_timer_callback(uint8_t timer)
 	gpio_clr_pin(act_DotMatrix_ROW_IO8);
 
 	/* Write one column of frame buffer to shift registers */
-	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[act_DotMatrix_row_counter][0]);
-	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[act_DotMatrix_row_counter][1]);
-	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[act_DotMatrix_row_counter][2]);
-	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[act_DotMatrix_row_counter][3]);
+	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[7-act_DotMatrix_row_counter][3]);
+	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[7-act_DotMatrix_row_counter][2]);
+	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[7-act_DotMatrix_row_counter][1]);
+	act_DotMatrix_SPIWrite(act_DotMatrix_framebuf[7-act_DotMatrix_row_counter][0]);
 	/* Add more here to support 8-module panels */
 
 	/* Toggle shift register latch */
