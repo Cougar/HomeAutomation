@@ -1,5 +1,19 @@
-306c306
-<                        '-Werror',
----
-> #                       '-Werror',
-
+*** SConstruct	2011-11-06 12:48:41.444743419 +0100
+--- SConstruct.auml	2011-11-04 14:49:08.393207232 +0100
+***************
+*** 303,309 ****
+    'gcc': {
+      'all': {
+        'WARNINGFLAGS': ['-Wall',
+!                        '-Werror',
+                         '-W',
+                         '-Wno-unused-parameter',
+                         '-Wnon-virtual-dtor']
+--- 303,309 ----
+    'gcc': {
+      'all': {
+        'WARNINGFLAGS': ['-Wall',
+! #                       '-Werror',
+                         '-W',
+                         '-Wno-unused-parameter',
+                         '-Wnon-virtual-dtor']
