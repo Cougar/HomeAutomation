@@ -38,7 +38,7 @@ echo "Done"
 echo -e "\n* ${CNT}. Compiling Atom, may take a while"
 CNT=$(expr $CNT + 1)
 cd PcSoftware/Atom/
-make
+make CONF=Release
 cd ../..
 echo "Done"
 
