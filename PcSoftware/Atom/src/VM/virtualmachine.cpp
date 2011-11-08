@@ -325,6 +325,7 @@ unsigned int VirtualMachine::startSocketThread(string address, int port, unsigne
 	SocketThread *socketThread = new SocketThread(address, port, reconnectTimeout);
 	mySocketThreads[socketThread->getId()] = socketThread;
 	mySocketThreads[socketThread->getId()]->start();
+	usleep(2000);
 	mySocketThreads[socketThread->getId()]->startSocket();
 
 	return socketThread->getId();
