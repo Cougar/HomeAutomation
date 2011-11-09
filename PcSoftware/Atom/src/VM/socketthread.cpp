@@ -72,7 +72,11 @@ void SocketThread::run()
 //cout << "SocketThread::run - start wait \n";
 	while (true)
 	{
-		mySocket->eventWait();
+		if (!mySocket->eventIsAvailable())
+		{
+			mySocket->eventWait();
+		}
+		usleep(2000);
 //cout << "SocketThread::run - eventWait over \n";
 
 		while (mySocket->eventIsAvailable())
