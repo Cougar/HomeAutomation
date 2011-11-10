@@ -26,6 +26,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <time.h>
 
