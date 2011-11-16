@@ -25,6 +25,7 @@ vpath %.c $(LIBDIR):$(SRCDIR)
 # List source files here. (C dependencies are automatically generated.)
 SOURCES =	main.c\
 			drivers/lcd/glcd/ks0108.c\
+			drivers/lcd/glcd/graphics.c\
 			drivers/timer/timer.c\
 			drivers/uart/serial.c\
 			drivers/uart/uart.c\
