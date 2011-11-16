@@ -156,11 +156,11 @@ int main(void)
 	
 	
 	
-	//Initiera utgångar
+	//Initiera utg\8Cngar
     DDRB |= (1<<7)|(1<<2)|(1<<1)|(1<<0);
     DDRC |= (1<<5)|(1<<4);   
     DDRD |= (1<<7)|(1<<6)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|(1<<0);
-	glcdPowerOn();
+	glcdInit();
 
 	glcdSetXY(0,0);
 	glcdSetXY(0,0);
@@ -194,7 +194,7 @@ int main(void)
 		if (rxMsgFull) {
 			uint16_t sns_type;
 			uint8_t snsid;
-			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_SNS){// FIXME ett jäkla herk, städa upp
+			if ( ((rxMsg.Id & CAN_MASK_CLASS)>>CAN_SHIFT_CLASS) == CAN_SNS){// FIXME ett j\8Akla herk, st\8Ada upp
 			
 				sns_type = (uint16_t)((rxMsg.Id & CAN_MASK_SNS_TYPE) >> CAN_SHIFT_SNS_TYPE);
 				snsid = (uint8_t)((rxMsg.Id & CAN_MASK_SNS_ID) >> CAN_SHIFT_SNS_ID);
@@ -244,7 +244,7 @@ glcdWriteData((uint8_t)pgm_read_byte((uint16_t)&Splash_left+ixa+jxa*128),1);
 	return 0;
 }
 
-	//á la pengi. Skall libbifieras.
+	//\87 la pengi. Skall libbifieras.
 	void numtoascii( int16_t num, char **str ) {
 		if( num==0 ) return;
 		numtoascii( num/10, str );
