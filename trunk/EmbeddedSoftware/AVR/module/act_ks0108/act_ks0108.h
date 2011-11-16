@@ -14,7 +14,7 @@
 #include <drivers/can/stdcan.h>
 #include <drivers/timer/timer.h>
 
-#include <drivers/lcd/glcd/ks0108.h>
+#include <drivers/lcd/glcd/graphics.h>
 #include <avr/pgmspace.h>
 
 #if act_ks0108_USE_EXTERNAL_EEPROM==1
