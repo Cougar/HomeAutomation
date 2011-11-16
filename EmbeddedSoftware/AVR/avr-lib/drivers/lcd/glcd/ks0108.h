@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include <config.h>
-#include <drivers/sensor/ds18s20/delay.h>
 #include <drivers/mcu/gpio.h>
+#include <drivers/sensor/ds18s20/delay.h>
 
 #ifndef LCD_CONTROL_E
 
@@ -45,42 +45,43 @@ void Delay(void);
 
 void Enable(void);
 
-void glcdWriteData(uint8_t data, uint8_t color);
+void ks0108WriteData(uint8_t data, uint8_t color);
 
-void glcdWriteDataTransparent(uint8_t inputdata, uint8_t color);
-
-void glcdWriteChar(char c, uint8_t color);
-void glcdWriteCharTransparent(char c, uint8_t color);
-
-void glcdPutStr(char *data, uint8_t color);
-void glcdPutStrTransparent(char *data, uint8_t color);
+void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color);
 
 void SetControls(uint8_t RS, uint8_t RW);
 
 void SetData(uint8_t Data);
 
-void glcdSetXY(uint8_t x, uint8_t y);
+uint8_t ks0108ReadData(void);
 
-uint8_t glcdGetX(void);
+void ks0108SetXY(uint8_t x, uint8_t y);
 
-uint8_t glcdGetY(void);
+uint8_t ks0108GetX(void);
 
-void glcdPowerOn(void);
+uint8_t ks0108GetY(void);
 
-void glcdClear(void);
+void ks0108Init(void);
 
-void glcdSetColor(uint8_t color);
+void ks0108Clear(void);
 
-uint8_t glcdGetColor(void);
+void ks0108SetColor(uint8_t color);
 
-#define glcdDrawVertLine(x, y, length, color) {glcdFillRect(x, y, 0, length, color);}
-#define glcdDrawHoriLine(x, y, length, color) {glcdFillRect(x, y, length, 0, color);}
-#define glcdDrawCircle(xCenter, yCenter, radius, color) {glcdDrawRoundRect(xCenter-radius, yCenter-radius, 2*radius, 2*radius, radius, color);}
-void glcdDrawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);
-void glcdDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
-void glcdDrawRoundRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t radius, uint8_t color);
-void glcdFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
-void glcdInvertRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-void glcdInvert(void);
-void glcdSetDot(uint8_t x, uint8_t y, uint8_t color);
+uint8_t ks0108GetColor(void);
+
+//void glcdWriteChar(char c, uint8_t color);
+//void glcdPutStrTransparent(char *data, uint8_t color);
+//void glcdWriteCharTransparent(char c, uint8_t color);
+//void glcdPutStr(char *data, uint8_t color);
+
+//#define glcdDrawVertLine(x, y, length, color) {glcdFillRect(x, y, 0, length, color);}
+//#define glcdDrawHoriLine(x, y, length, color) {glcdFillRect(x, y, length, 0, color);}
+//#define glcdDrawCircle(xCenter, yCenter, radius, color) {glcdDrawRoundRect(xCenter-radius, yCenter-radius, 2*radius, 2*radius, radius, color);}
+//void glcdDrawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);
+//void glcdDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
+//void glcdDrawRoundRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t radius, uint8_t color);
+//void glcdFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
+//void glcdInvertRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+//void glcdInvert(void);
+//void glcdSetDot(uint8_t x, uint8_t y, uint8_t color);
 

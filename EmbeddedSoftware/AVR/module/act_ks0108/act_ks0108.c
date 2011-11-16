@@ -400,7 +400,7 @@ void act_ks0108_Init(void)
 
 #endif
 
-	glcdPowerOn();
+	glcdInit();
 
 #if act_ks0108_USE_EXTERNAL_EEPROM==0
 	uint16_t ixa = 0;
