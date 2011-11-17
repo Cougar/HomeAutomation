@@ -28,7 +28,7 @@
 #define GLCD_COLOR_SET	 0
 #define GLCD_COLOR_CLEAR 1
 
-//H�r har vi n�gon slags tillst�ndsvariabel
+/* State variable */
 typedef struct struct_GrLcdStateType
 {
     unsigned char lcdXAddr;
@@ -38,20 +38,23 @@ typedef struct struct_GrLcdStateType
 } GrLcdStateType;
 
 
-//Alla funktioner
+/* Internal functions */
+
 void ks0108Disable(void);
 
 void ks0108Delay(void);
 
 void ks0108Enable(void);
 
-void ks0108WriteData(uint8_t data, uint8_t color);
-
-void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color);
-
 void ks0108SetControls(uint8_t RS, uint8_t RW);
 
 void ks0108SetData(uint8_t Data);
+
+/* Public functions */
+
+void ks0108WriteData(uint8_t data, uint8_t color);
+
+void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color);
 
 uint8_t ks0108ReadData(void);
 
@@ -69,19 +72,4 @@ void ks0108SetColor(uint8_t color);
 
 uint8_t ks0108GetColor(void);
 
-//void glcdWriteChar(char c, uint8_t color);
-//void glcdPutStrTransparent(char *data, uint8_t color);
-//void glcdWriteCharTransparent(char c, uint8_t color);
-//void glcdPutStr(char *data, uint8_t color);
-
-//#define glcdDrawVertLine(x, y, length, color) {glcdFillRect(x, y, 0, length, color);}
-//#define glcdDrawHoriLine(x, y, length, color) {glcdFillRect(x, y, length, 0, color);}
-//#define glcdDrawCircle(xCenter, yCenter, radius, color) {glcdDrawRoundRect(xCenter-radius, yCenter-radius, 2*radius, 2*radius, radius, color);}
-//void glcdDrawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);
-//void glcdDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
-//void glcdDrawRoundRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t radius, uint8_t color);
-//void glcdFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color);
-//void glcdInvertRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-//void glcdInvert(void);
-//void glcdSetDot(uint8_t x, uint8_t y, uint8_t color);
 
