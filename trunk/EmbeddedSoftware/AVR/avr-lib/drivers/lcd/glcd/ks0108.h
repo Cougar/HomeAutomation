@@ -39,19 +39,19 @@ typedef struct struct_GrLcdStateType
 
 
 //Alla funktioner
-void Disable(void);
+void ks0108Disable(void);
 
-void Delay(void);
+void ks0108Delay(void);
 
-void Enable(void);
+void ks0108Enable(void);
 
 void ks0108WriteData(uint8_t data, uint8_t color);
 
 void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color);
 
-void SetControls(uint8_t RS, uint8_t RW);
+void ks0108SetControls(uint8_t RS, uint8_t RW);
 
-void SetData(uint8_t Data);
+void ks0108SetData(uint8_t Data);
 
 uint8_t ks0108ReadData(void);
 

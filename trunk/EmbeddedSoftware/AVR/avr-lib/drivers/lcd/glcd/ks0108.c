@@ -34,12 +34,12 @@
 
 volatile GrLcdStateType GrLcdState;
 
-void SetControls(uint8_t RS, uint8_t RW){
+void ks0108SetControls(uint8_t RS, uint8_t RW){
 	if(RS) {gpio_set_pin(LCD_CONTROL_RS);} else {gpio_clr_pin(LCD_CONTROL_RS);}
 	if(RW) {gpio_set_pin(LCD_CONTROL_RW);} else {gpio_clr_pin(LCD_CONTROL_RW);}
 }
 
-void SetData(uint8_t Data){
+void ks0108SetData(uint8_t Data){
 	if(Data&0x01) {gpio_set_pin(LCD_DATA_DB0);} else {gpio_clr_pin(LCD_DATA_DB0);}
 	if(Data&0x02) {gpio_set_pin(LCD_DATA_DB1);} else {gpio_clr_pin(LCD_DATA_DB1);}
 	if(Data&0x04) {gpio_set_pin(LCD_DATA_DB2);} else {gpio_clr_pin(LCD_DATA_DB2);}
@@ -49,7 +49,7 @@ void SetData(uint8_t Data){
 	if(Data&0x40) {gpio_set_pin(LCD_DATA_DB6);} else {gpio_clr_pin(LCD_DATA_DB6);}
 	if(Data&0x80) {gpio_set_pin(LCD_DATA_DB7);} else {gpio_clr_pin(LCD_DATA_DB7);}
 }
-uint8_t GetData(void){
+uint8_t ks0108GetData(void){
 	uint8_t input = 0;
 	if (gpio_get_state(LCD_DATA_DB0)) {input += 1;}
 	if (gpio_get_state(LCD_DATA_DB1)) {input += 2;}
@@ -62,23 +62,23 @@ uint8_t GetData(void){
 	return input;
 }
 
-void Disable(){
+void ks0108Disable(){
 	gpio_clr_pin(LCD_CONTROL_E);
 }
 
-void Delay(){
+void ks0108Delay(){
 	delay_us(2);
 }
 
-void Enable(){
-	Delay();
+void ks0108Enable(){
+	ks0108Delay();
 	gpio_set_pin(LCD_CONTROL_E);
-	Delay();
-	Disable();
-	Delay();
+	ks0108Delay();
+	ks0108Disable();
+	ks0108Delay();
 }
 
-void SetDirection(uint8_t dir){
+void ks0108SetDirection(uint8_t dir){
   if (dir == OUTPUT){
     gpio_set_out(LCD_DATA_DB0);
     gpio_set_out(LCD_DATA_DB1);
@@ -106,14 +106,14 @@ uint8_t ks0108GetColor(void){
   return GrLcdState.color;
 }
 void ks0108WriteData(uint8_t data, uint8_t color){
-	SetControls(1,0);
+	ks0108SetControls(1,0);
 	if (color == GLCD_COLOR_CLEAR)
 	  data = ~data;
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
-	  SetData(data);
+	  ks0108SetData(data);
 	else
-	  SetData(~data);
-	Enable();
+	  ks0108SetData(~data);
+	ks0108Enable();
 	GrLcdState.lcdXAddr++;
 
 	if (GrLcdState.lcdXAddr == 64 ){
@@ -130,31 +130,31 @@ else if (GrLcdState.lcdXAddr == 128 ){
 }
 void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color){
 	uint8_t data = 0;
-	SetDirection(INPUT);
-	SetControls(1,1);
-	Enable();	//dummy read
-	Delay();
+	ks0108SetDirection(INPUT);
+	ks0108SetControls(1,1);
+	ks0108Enable();	//dummy read
+	ks0108Delay();
 	gpio_set_pin(LCD_CONTROL_E);
-	Delay();
+	ks0108Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
-	  data = GetData();
+	  data = ks0108GetData();
 	else
-	  data = ~GetData();
-	Disable();
-	Delay();
-	SetControls(1,0);
-	SetDirection(OUTPUT);
+	  data = ~ks0108GetData();
+	ks0108Disable();
+	ks0108Delay();
+	ks0108SetControls(1,0);
+	ks0108SetDirection(OUTPUT);
 	ks0108SetXY(GrLcdState.lcdXAddr, GrLcdState.lcdYAddr);
-	SetControls(1,0);
+	ks0108SetControls(1,0);
 	if (color == GLCD_COLOR_CLEAR) 
 	  data = data&(~inputdata);
 	else
 	  data = data|inputdata;
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
-	  SetData(data);
+	  ks0108SetData(data);
 	else
-	  SetData(~data);
-	Enable();
+	  ks0108SetData(~data);
+	ks0108Enable();
 	GrLcdState.lcdXAddr++;
 
 
@@ -173,20 +173,20 @@ void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color){
 
 uint8_t ks0108ReadData(void){
 	uint8_t data = 0;
-	SetDirection(INPUT);
-	SetControls(1,1);
-	Enable();	//dummy read
-	Delay();
+	ks0108SetDirection(INPUT);
+	ks0108SetControls(1,1);
+	ks0108Enable();	//dummy read
+	ks0108Delay();
 	gpio_set_pin(LCD_CONTROL_E);
-	Delay();
+	ks0108Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
-	  data = GetData();
+	  data = ks0108GetData();
 	else
-	  data = ~GetData();
-	Disable();
-	Delay();
-	SetControls(1,0);
-	SetDirection(OUTPUT);
+	  data = ~ks0108GetData();
+	ks0108Disable();
+	ks0108Delay();
+	ks0108SetControls(1,0);
+	ks0108SetDirection(OUTPUT);
 	ks0108SetXY(GrLcdState.lcdXAddr, GrLcdState.lcdYAddr);
 	return data;
 }
@@ -198,7 +198,7 @@ void ks0108Init(){
 	gpio_set_out(LCD_CONTROL_CS1);
 	gpio_set_out(LCD_CONTROL_CS2);
 
-	SetDirection(OUTPUT);
+	ks0108SetDirection(OUTPUT);
 	GrLcdState.color = GLCD_COLOR_WHITE;
 #if KS0108_INVERT_CS == 1
 	gpio_clr_pin(LCD_CONTROL_CS1);
@@ -207,17 +207,17 @@ void ks0108Init(){
 	gpio_set_pin(LCD_CONTROL_CS1);
 	gpio_set_pin(LCD_CONTROL_CS2);
 #endif
-	Disable();
-	Delay();
+	ks0108Disable();
+	ks0108Delay();
 	//set display on
-	SetControls(0,0);
-	SetData(0x3F);
-	Enable();
+	ks0108SetControls(0,0);
+	ks0108SetData(0x3F);
+	ks0108Enable();
 
 	//set startaddress of the first row (set to row 0)
-	SetControls(0,0);
-	SetData(0xc0);
-	Enable();
+	ks0108SetControls(0,0);
+	ks0108SetData(0xc0);
+	ks0108Enable();
 	ks0108Clear();
 }
 
@@ -229,28 +229,28 @@ void ks0108Clear(){
 	gpio_set_pin(LCD_CONTROL_CS1);
 	gpio_set_pin(LCD_CONTROL_CS2);
 #endif
-	Enable();
-	Delay();
-	Disable();
+	ks0108Enable();
+	ks0108Delay();
+	ks0108Disable();
 
 	uint8_t i;
 	uint8_t j;
 
 	for(j = 0; j < 8; j++){
-		SetControls(0,0);
-		SetData(0xB8 + j);
-		Enable();
+		ks0108SetControls(0,0);
+		ks0108SetData(0xB8 + j);
+		ks0108Enable();
 
-		SetControls(0,0);
-		SetData(0x40);
-		Enable();
+		ks0108SetControls(0,0);
+		ks0108SetData(0x40);
+		ks0108Enable();
 		for (i = 0; i < 64; i++){
-			SetControls(1,0);
+			ks0108SetControls(1,0);
 			if (GrLcdState.color == GLCD_COLOR_BLACK)
-			  SetData(0x00);
+			  ks0108SetData(0x00);
 			else
-			  SetData(0xff);
-			Enable();
+			  ks0108SetData(0xff);
+			ks0108Enable();
 		}
 	}
 
@@ -289,13 +289,13 @@ void ks0108SetXY(uint8_t x, uint8_t y){
 	}
 
 	//Steg 2: S�tt r�tt x-adress p� det aktiva chippet
-	SetControls(0,0);
-	SetData(0x40 + x%64);
-	Enable();
+	ks0108SetControls(0,0);
+	ks0108SetData(0x40 + x%64);
+	ks0108Enable();
 
 	//Steg 3: S�tt r�tt y-adress p� det aktiva chippet
-	SetData(0xB8 + GrLcdState.lcdYpage);
-	Enable();
+	ks0108SetData(0xB8 + GrLcdState.lcdYpage);
+	ks0108Enable();
 }
 uint8_t ks0108GetX(void){
 	return GrLcdState.lcdXAddr;
