@@ -6,6 +6,8 @@
 #define GLCD_COLOR_SET	 0
 #define GLCD_COLOR_CLEAR 1
 
+#define KS0108 0
+#define DOTMATRIX 1
 
 //Alla funktioner
 void glcdSetColor(uint8_t color);

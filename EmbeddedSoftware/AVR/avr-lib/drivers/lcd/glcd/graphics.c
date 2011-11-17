@@ -1,4 +1,3 @@
-#include "ks0108.h"
 #include "graphics.h"
 #include "font.h"
 #include <avr/io.h>
@@ -6,6 +5,20 @@
 #include <stdlib.h>
 
 #include <avr/pgmspace.h>
+
+#ifndef GRAPHICSDRIVER
+#define GRAPHICSDRIVER KS0108
+#warning Please define GRAPHICSDRIVER in your config.inc
+#endif
+
+#if GRAPHICSDRIVER==KS0108
+#include "ks0108.h"
+#elif GRAPHICSDRIVER==DOTMATRIX
+#include "dotmatrix.h"
+#else
+#error Non supported graphics driver
+#endif
+
 
 //Some parts of the code is from proycon avrlib written by Pascal Stang:
 //*****************************************************************************
@@ -29,44 +42,84 @@
 //*****************************************************************************
 
 void glcdSetColor(uint8_t color){
+#if GRAPHICSDRIVER==KS0108
   ks0108SetColor(color);
+#elif GRAPHICSDRIVER==DOTMATRIX
+  dotmatrixSetColor(color);
+#endif
 }
 
 uint8_t glcdGetColor(void){
+#if GRAPHICSDRIVER==KS0108
   return ks0108GetColor();
+#elif GRAPHICSDRIVER==DOTMATRIX
+  return dotmatrixGetColor();
+#endif
 }
 
 void glcdWriteData(uint8_t data, uint8_t color){
+#if GRAPHICSDRIVER==KS0108
 	ks0108WriteData(data, color);
+#elif GRAPHICSDRIVER==DOTMATRIX
+	dotmatrixWriteData(data, color);
+#endif
 }
 
 void glcdWriteDataTransparent(uint8_t inputdata, uint8_t color){
+#if GRAPHICSDRIVER==KS0108
 	ks0108WriteDataTransparent(inputdata, color);
+#elif GRAPHICSDRIVER==DOTMATRIX
+	dotmatrixWriteDataTransparent(inputdata, color);
+#endif
 }
 
 uint8_t glcdReadData(void){
+#if GRAPHICSDRIVER==KS0108
 	return ks0108ReadData();
+#elif GRAPHICSDRIVER==DOTMATRIX
+	return dotmatrixReadData();
+#endif
 }
 
 void glcdClear(){
+#if GRAPHICSDRIVER==KS0108
 	ks0108Clear();
+#elif GRAPHICSDRIVER==DOTMATRIX
+	dotmatrixClear();
+#endif
 }
 
 void glcdSetXY(uint8_t x, uint8_t y){
+#if GRAPHICSDRIVER==KS0108
 	ks0108SetXY(x, y);
+#elif GRAPHICSDRIVER==DOTMATRIX
+	dotmatrixSetXY(x, y);
+#endif
 }
 
 uint8_t glcdGetX(void){
+#if GRAPHICSDRIVER==KS0108
 	return ks0108GetX();
+#elif GRAPHICSDRIVER==DOTMATRIX
+	return dotmatrixGetX();
+#endif
 }
 
 uint8_t glcdGetY(void){
+#if GRAPHICSDRIVER==KS0108
 	return ks0108GetY();
+#elif GRAPHICSDRIVER==DOTMATRIX
+	return dotmatrixGetY();
+#endif
 }
 
 void glcdInit(void)
 {
+#if GRAPHICSDRIVER==KS0108
 	ks0108Init();
+#elif GRAPHICSDRIVER==DOTMATRIX
+	dotmatrixInit();
+#endif
 }
 
 void glcdWriteChar(char c, uint8_t color)

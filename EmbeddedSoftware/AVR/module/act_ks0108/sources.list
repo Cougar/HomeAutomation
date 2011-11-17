@@ -1,6 +1,7 @@
 # List all files that needs to be compiled here
 drivers/sensor/ds18s20/delay.c
 drivers/lcd/glcd/ks0108.c
+drivers/lcd/glcd/dotmatrix.c
 drivers/lcd/glcd/graphics.c
 act_ks0108/act_ks0108.c
 drivers/mcu/TWI_Master.c
