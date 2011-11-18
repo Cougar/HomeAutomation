@@ -6,14 +6,25 @@
 
 #include <avr/pgmspace.h>
 
-#ifndef GRAPHICSDRIVER
-#define GRAPHICSDRIVER KS0108
-#warning Please define GRAPHICSDRIVER in your config.inc
+#ifndef GRAPHICS_DRIVER
+#define GRAPHICS_DRIVER KS0108
+#error Please define GRAPHICS_DRIVER in your config.inc, see config.inc.template
 #endif
 
-#if GRAPHICSDRIVER==KS0108
+#ifndef GRAPHICS_WIDTH
+#define GRAPHICS_WIDTH KS0108_WIDTH
+#error Please define GRAPHICS_WIDTH in your config.inc, KS0108_WIDTH should be replaced
+#endif
+
+#ifndef GRAPHICS_HEIGHT
+#define GRAPHICS_HEIGHT KS0108_HIGHT
+#error Please define GRAPHICS_HEIGHT in your config.inc, KS0108_HIGHT should be replaced
+#endif
+
+
+#if GRAPHICS_DRIVER==KS0108
 #include "ks0108.h"
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 #include "dotmatrix.h"
 #else
 #error Non supported graphics driver
@@ -42,90 +53,99 @@
 //*****************************************************************************
 
 void glcdSetColor(uint8_t color){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
   ks0108SetColor(color);
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
   dotmatrixSetColor(color);
 #endif
 }
 
 uint8_t glcdGetColor(void){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
   return ks0108GetColor();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
   return dotmatrixGetColor();
 #endif
 }
 
 void glcdWriteData(uint8_t data, uint8_t color){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	ks0108WriteData(data, color);
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	dotmatrixWriteData(data, color);
 #endif
 }
 
 void glcdWriteDataTransparent(uint8_t inputdata, uint8_t color){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	ks0108WriteDataTransparent(inputdata, color);
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	dotmatrixWriteDataTransparent(inputdata, color);
 #endif
 }
 
 uint8_t glcdReadData(void){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	return ks0108ReadData();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	return dotmatrixReadData();
 #endif
 }
 
 void glcdClear(){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	ks0108Clear();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	dotmatrixClear();
 #endif
 }
 
 void glcdSetXY(uint8_t x, uint8_t y){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	ks0108SetXY(x, y);
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	dotmatrixSetXY(x, y);
 #endif
 }
 
 uint8_t glcdGetX(void){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	return ks0108GetX();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	return dotmatrixGetX();
 #endif
 }
 
 uint8_t glcdGetY(void){
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	return ks0108GetY();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	return dotmatrixGetY();
 #endif
 }
 
 void glcdInit(void)
 {
-#if GRAPHICSDRIVER==KS0108
+#if GRAPHICS_DRIVER==KS0108
 	ks0108Init();
-#elif GRAPHICSDRIVER==DOTMATRIX
+#elif GRAPHICS_DRIVER==DOTMATRIX
 	dotmatrixInit();
+#endif
+}
+
+void glcdRefresh(void)
+{
+#if GRAPHICS_DRIVER==KS0108
+	/* No refresh needed */
+#elif GRAPHICS_DRIVER==DOTMATRIX
+	dotmatrixRefresh();
 #endif
 }
 
 void glcdWriteChar(char c, uint8_t color)
 {
 	uint8_t i = 0;
-	if (glcdGetX() > (KS0108_WIDTH-5))
+	if (glcdGetX() > (GRAPHICS_WIDTH-5))
 	{
 		glcdSetXY(0, glcdGetY() + 8);
 	}
@@ -146,7 +166,7 @@ void glcdPutStr(char *data, uint8_t color){
 void glcdWriteCharTransparent(char c, uint8_t color)
 {
 	uint8_t i = 0;
-	if (glcdGetX() > (KS0108_WIDTH-5))
+	if (glcdGetX() > (GRAPHICS_WIDTH-5))
 	{
 		glcdSetXY(0, glcdGetY() + 8);
 	}
@@ -367,7 +387,7 @@ void glcdInvert(void) {
 		glcdSetColor(GLCD_COLOR_WHITE);
 	else
 		glcdSetColor(GLCD_COLOR_BLACK);
-	glcdInvertRect(0,0,KS0108_WIDTH-1,KS0108_HIGHT-1);
+	glcdInvertRect(0,0,GRAPHICS_WIDTH-1,GRAPHICS_HEIGHT-1);
 }
 
 void glcdSetDot(uint8_t x, uint8_t y, uint8_t color) {

@@ -25,8 +25,8 @@
 //		which can be found at http://www.gnu.org/licenses/gpl.txt
 //
 //*****************************************************************************
-#ifndef KS0108_WIDTH
-#error KS0108_WIDTH, KS0108_HIGHT must be defined
+#ifndef GRAPHICS_WIDTH
+#error GRAPHICS_WIDTH, GRAPHICS_HEIGHT must be defined
 #endif
 
 #define OUTPUT	0
@@ -189,6 +189,11 @@ uint8_t dotmatrixReadData(void){
 	dotmatrixSetDirection(OUTPUT);
 	dotmatrixSetXY(GrLcdState.lcdXAddr, GrLcdState.lcdYAddr);*/
 	return data;
+}
+
+void dotmatrixRefresh()
+{
+
 }
 
 void dotmatrixInit(){
