@@ -44,6 +44,8 @@ uint8_t dotmatrixGetX(void);
 
 uint8_t dotmatrixGetY(void);
 
+void dotmatrixRefresh(void);
+
 void dotmatrixInit(void);
 
 void dotmatrixClear(void);

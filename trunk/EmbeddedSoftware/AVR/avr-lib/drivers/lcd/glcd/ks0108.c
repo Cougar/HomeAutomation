@@ -25,8 +25,8 @@
 //		which can be found at http://www.gnu.org/licenses/gpl.txt
 //
 //*****************************************************************************
-#ifndef KS0108_WIDTH
-#error KS0108_WIDTH, KS0108_HIGHT must be defined
+#ifndef GRAPHICS_WIDTH
+#error GRAPHICS_WIDTH, GRAPHICS_HEIGHT must be defined
 #endif
 
 #define OUTPUT	0
@@ -119,12 +119,12 @@ void ks0108WriteData(uint8_t data, uint8_t color){
 	if (GrLcdState.lcdXAddr == 64 ){
 		ks0108SetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	} 
-#if KS0108_WIDTH > 128
+#if GRAPHICS_WIDTH > 128
 else if (GrLcdState.lcdXAddr == 128 ){
 		ks0108SetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	}
 #endif
-	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
+	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
 		ks0108SetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
@@ -161,12 +161,12 @@ void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color){
 	if (GrLcdState.lcdXAddr == 64 ){
 		ks0108SetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	} 
-#if KS0108_WIDTH > 128
+#if GRAPHICS_WIDTH > 128
 	else if (GrLcdState.lcdXAddr == 128 ){
 		ks0108SetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
 	}
 #endif
-	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
+	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
 		ks0108SetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
