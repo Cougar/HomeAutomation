@@ -33,72 +33,21 @@
 #define INPUT	1
 
 volatile GrLcdStateType GrLcdState;
+uint8_t	dotmatrixFramebuf[8][4];
+uint8_t dotmatrixRowCounter=0;
+uint16_t dotmatrixBrightness=0;
 
-void dotmatrixSetControls(uint8_t RS, uint8_t RW){
-//	if(RS) {gpio_set_pin(LCD_CONTROL_RS);} else {gpio_clr_pin(LCD_CONTROL_RS);}
-//	if(RW) {gpio_set_pin(LCD_CONTROL_RW);} else {gpio_clr_pin(LCD_CONTROL_RW);}
-}
-
-void dotmatrixSetData(uint8_t Data){
-/*	if(Data&0x01) {gpio_set_pin(LCD_DATA_DB0);} else {gpio_clr_pin(LCD_DATA_DB0);}
-	if(Data&0x02) {gpio_set_pin(LCD_DATA_DB1);} else {gpio_clr_pin(LCD_DATA_DB1);}
-	if(Data&0x04) {gpio_set_pin(LCD_DATA_DB2);} else {gpio_clr_pin(LCD_DATA_DB2);}
-	if(Data&0x08) {gpio_set_pin(LCD_DATA_DB3);} else {gpio_clr_pin(LCD_DATA_DB3);}
-	if(Data&0x10) {gpio_set_pin(LCD_DATA_DB4);} else {gpio_clr_pin(LCD_DATA_DB4);}
-	if(Data&0x20) {gpio_set_pin(LCD_DATA_DB5);} else {gpio_clr_pin(LCD_DATA_DB5);}
-	if(Data&0x40) {gpio_set_pin(LCD_DATA_DB6);} else {gpio_clr_pin(LCD_DATA_DB6);}
-	if(Data&0x80) {gpio_set_pin(LCD_DATA_DB7);} else {gpio_clr_pin(LCD_DATA_DB7);}*/
-}
-uint8_t dotmatrixGetData(void){
-	uint8_t input = 0;
-/*	if (gpio_get_state(LCD_DATA_DB0)) {input += 1;}
-	if (gpio_get_state(LCD_DATA_DB1)) {input += 2;}
-	if (gpio_get_state(LCD_DATA_DB2)) {input += 4;}
-	if (gpio_get_state(LCD_DATA_DB3)) {input += 8;}
-	if (gpio_get_state(LCD_DATA_DB4)) {input += 16;}
-	if (gpio_get_state(LCD_DATA_DB5)) {input += 32;}
-	if (gpio_get_state(LCD_DATA_DB6)) {input += 64;}
-	if (gpio_get_state(LCD_DATA_DB7)) {input += 128;}*/
-	return input;
+/* Write a byte on SPI */
+void dotmatrixSPIWrite(uint8_t data) {
+	uint8_t dummy = 0;
+	/* Wait for empty transmit buffer */
+	while ( !( UCSR0A & (1<<UDRE0)) );
+	// write data
+	dummy = UDR0;
+	UDR0 = data;
+	waitspi();
 }
 
-void dotmatrixDisable(){
-//	gpio_clr_pin(LCD_CONTROL_E);
-}
-
-void dotmatrixDelay(){
-//	delay_us(2);
-}
-
-void dotmatrixEnable(){
-/*	dotmatrixDelay();
-	gpio_set_pin(LCD_CONTROL_E);
-	dotmatrixDelay();
-	dotmatrixDisable();
-	dotmatrixDelay();*/
-}
-
-void dotmatrixSetDirection(uint8_t dir){
-/*  if (dir == OUTPUT){
-    gpio_set_out(LCD_DATA_DB0);
-    gpio_set_out(LCD_DATA_DB1);
-    gpio_set_out(LCD_DATA_DB2);
-    gpio_set_out(LCD_DATA_DB3);
-    gpio_set_out(LCD_DATA_DB4);
-    gpio_set_out(LCD_DATA_DB5);
-    gpio_set_out(LCD_DATA_DB6);
-    gpio_set_out(LCD_DATA_DB7);
-  }else if (dir == INPUT){
-    gpio_set_in(LCD_DATA_DB0);
-    gpio_set_in(LCD_DATA_DB1);
-    gpio_set_in(LCD_DATA_DB2);
-    gpio_set_in(LCD_DATA_DB3);
-    gpio_set_in(LCD_DATA_DB4);
-    gpio_set_in(LCD_DATA_DB5);
-    gpio_set_in(LCD_DATA_DB6);
-    gpio_set_in(LCD_DATA_DB7);
-  }*/
-}
 void dotmatrixSetColor(uint8_t color){
   GrLcdState.color=color;
 }
@@ -191,12 +140,106 @@ uint8_t dotmatrixReadData(void){
 	return data;
 }
 
+/* Callback run periodically to manage rows.
+   For each time callback is run, the next row is enabled and the last disabled
+ */
 void dotmatrixRefresh()
 {
+	/* Increase row counter */
+	if (dotmatrixRowCounter++ == 8) {dotmatrixRowCounter = 0;}
 
+	/* Disable all rows */
+	gpio_clr_pin(dotmatrixROW_IO1);
+	gpio_clr_pin(dotmatrixROW_IO2);
+	gpio_clr_pin(dotmatrixROW_IO3);
+	gpio_clr_pin(dotmatrixROW_IO4);
+	gpio_clr_pin(dotmatrixROW_IO5);
+	gpio_clr_pin(dotmatrixROW_IO6);
+	gpio_clr_pin(dotmatrixROW_IO7);
+	gpio_clr_pin(dotmatrixROW_IO8);
+
+	/* Write one column of frame buffer to shift registers */
+	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][3]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][2]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][1]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][0]);
+	/* Add more here to support 8-module panels */
+
+	/* Toggle shift register latch */
+	gpio_clr_pin(dotmatrixLATCHCLOCK_IO);
+	gpio_set_pin(dotmatrixLATCHCLOCK_IO);
+
+	/* Enable one row */
+	switch (dotmatrixRowCounter)
+	{
+		case 0:
+			gpio_set_pin(dotmatrixROW_IO1);
+			break;
+		case 1:
+			gpio_set_pin(dotmatrixROW_IO2);
+			break;
+		case 2:
+			gpio_set_pin(dotmatrixROW_IO3);
+			break;
+		case 3:
+			gpio_set_pin(dotmatrixROW_IO4);
+			break;
+		case 4:
+			gpio_set_pin(dotmatrixROW_IO5);
+			break;
+		case 5:
+			gpio_set_pin(dotmatrixROW_IO6);
+			break;
+		case 6:
+			gpio_set_pin(dotmatrixROW_IO7);
+			break;
+		case 7:
+			gpio_set_pin(dotmatrixROW_IO8);
+			break;
+			
+		default:
+			break;
+	}
 }
 
 void dotmatrixInit(){
+	/* Set up row driver IO as low output */
+	gpio_clr_pin(dotmatrixROW_IO1);
+	gpio_set_out(dotmatrixROW_IO1);
+	gpio_clr_pin(dotmatrixROW_IO2);
+	gpio_set_out(dotmatrixROW_IO2);
+	gpio_clr_pin(dotmatrixROW_IO3);
+	gpio_set_out(dotmatrixROW_IO3);
+	gpio_clr_pin(dotmatrixROW_IO4);
+	gpio_set_out(dotmatrixROW_IO4);
+	gpio_clr_pin(dotmatrixROW_IO5);
+	gpio_set_out(dotmatrixROW_IO5);
+	gpio_clr_pin(dotmatrixROW_IO6);
+	gpio_set_out(dotmatrixROW_IO6);
+	gpio_clr_pin(dotmatrixROW_IO7);
+	gpio_set_out(dotmatrixROW_IO7);
+	gpio_clr_pin(dotmatrixROW_IO8);
+	gpio_set_out(dotmatrixROW_IO8);
+
+	/* Set up PWM controlling brightness */
+//	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
+//	TCCR0B |= (1<<CS00);
+//	OCR0B = 0xff-act_DotMatrix_INITIAL_BRIGHTNESS;
+//	DDRD |= (1<<PD5);
+
+	/* Set up output latch clock */
+	gpio_clr_pin(dotmatrixLATCHCLOCK_IO);
+	gpio_set_out(dotmatrixLATCHCLOCK_IO);
+
+	/* Initialize USART in SPI-mode */
+	UBRR0 = 0;
+	USART_SPI_XCK_DDR |= (1<<USART_SPI_XCK); // xck (sck) output
+	UCSR0C = (1<<UMSEL01)|(1<<UMSEL00)|(0<<UCPHA0)|(0<<UCPOL0);
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+	UBRR0 = 0;
+
+	dotmatrixClear();
+	
 /*	gpio_set_out(LCD_CONTROL_RS);
 	gpio_set_out(LCD_CONTROL_RW);
 	gpio_set_out(LCD_CONTROL_E);
@@ -227,39 +270,14 @@ void dotmatrixInit(){
 }
 
 void dotmatrixClear(){
-/*
-#if KS0108_INVERT_CS == 1
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
-#else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
-#endif
-	dotmatrixEnable();
-	dotmatrixDelay();
-	dotmatrixDisable();
-
-	uint8_t i;
-	uint8_t j;
-
-	for(j = 0; j < 8; j++){
-		dotmatrixSetControls(0,0);
-		dotmatrixSetData(0xB8 + j);
-		dotmatrixEnable();
-
-		dotmatrixSetControls(0,0);
-		dotmatrixSetData(0x40);
-		dotmatrixEnable();
-		for (i = 0; i < 64; i++){
-			dotmatrixSetControls(1,0);
-			if (GrLcdState.color == GLCD_COLOR_BLACK)
-			  dotmatrixSetData(0x00);
-			else
-			  dotmatrixSetData(0xff);
-			dotmatrixEnable();
+	/* Clear buffer memory */
+	for (uint8_t i=0; i<8; i++)
+	{
+		for (uint8_t j=0; j<4; j++)
+		{
+			dotmatrixFramebuf[i][j] = dotmatrixINITIAL_ROW;
 		}
 	}
-*/
 }
 
 void dotmatrixSetXY(uint8_t x, uint8_t y){

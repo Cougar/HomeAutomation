@@ -8,6 +8,25 @@
 #define GLCD_COLOR_SET	 0
 #define GLCD_COLOR_CLEAR 1
 
+#define dotmatrixROW_IO1 EXP_P
+#define dotmatrixROW_IO2 EXP_B
+#define dotmatrixROW_IO3 EXP_C
+#define dotmatrixROW_IO4 EXP_D
+#define dotmatrixROW_IO5 EXP_E
+#define dotmatrixROW_IO6 EXP_F
+#define dotmatrixROW_IO7 EXP_A
+#define dotmatrixROW_IO8 EXP_O
+
+#define dotmatrixLATCHCLOCK_IO EXP_I
+
+#define dotmatrixINITIAL_ROW 0x81
+
+#define USART_SPI_CS_DDR	DDRC
+#define USART_SPI_CS		PC0
+#define USART_SPI_XCK_DDR	DDRD
+#define USART_SPI_XCK		PD4
+#define waitspi() while(!(UCSR0A&(1<<RXC0)))
+
 /* State variable */
 typedef struct struct_GrLcdStateType
 {
@@ -20,15 +39,7 @@ typedef struct struct_GrLcdStateType
 
 /* Internal functions */
 
-void dotmatrixDisable(void);
-
-void dotmatrixDelay(void);
-
-void dotmatrixEnable(void);
-
-void dotmatrixSetControls(uint8_t RS, uint8_t RW);
-
-void dotmatrixSetData(uint8_t Data);
+void dotmatrixSPIWrite(uint8_t data);
 
 /* Public functions */
 
