@@ -238,6 +238,7 @@ void act_output_Init(void)
 
 void act_output_Process(void)
 {
+#ifdef act_output_USEEEPROM
 	if (Timer_Expired(act_output_STORE_VALUE_TIMEOUT))
 	{
 		uint8_t index = 0;
@@ -283,6 +284,8 @@ void act_output_Process(void)
 #endif	  
 		EEDATA_UPDATE_CRC;
 	}
+#endif
+
 }
 
 void act_output_HandleMessage(StdCan_Msg_t *rxMsg)
