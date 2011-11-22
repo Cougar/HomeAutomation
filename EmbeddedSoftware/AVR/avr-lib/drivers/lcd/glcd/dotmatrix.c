@@ -51,9 +51,22 @@ void dotmatrixSPIWrite(uint8_t data) {
 void dotmatrixSetColor(uint8_t color){
   GrLcdState.color=color;
 }
+
 uint8_t dotmatrixGetColor(void){
   return GrLcdState.color;
 }
+
+void dotmatrixSetData(uint8_t Data)
+{
+//	dotmatrixFramebuf[8][4]
+}
+
+uint8_t dotmatrixGetData(void){
+	uint8_t input = 0;
+
+	return input;
+}
+
 void dotmatrixWriteData(uint8_t data, uint8_t color){
 /*	dotmatrixSetControls(1,0);
 	if (color == GLCD_COLOR_CLEAR)
@@ -239,6 +252,8 @@ void dotmatrixInit(){
 	UBRR0 = 0;
 
 	dotmatrixClear();
+
+	GrLcdState.color = GLCD_COLOR_WHITE;
 	
 /*	gpio_set_out(LCD_CONTROL_RS);
 	gpio_set_out(LCD_CONTROL_RW);
@@ -281,10 +296,11 @@ void dotmatrixClear(){
 }
 
 void dotmatrixSetXY(uint8_t x, uint8_t y){
-/*	GrLcdState.lcdXAddr = x;
+	GrLcdState.lcdXAddr = x;
 	GrLcdState.lcdYAddr = y;
 	GrLcdState.lcdYpage = y/8;
 
+/*
 	//Vi b�rjar med X. Steg 1: V�lj r�tt chip:
 	if (x > 63 && x <= 127){
 #if KS0108_INVERT_CS == 1
