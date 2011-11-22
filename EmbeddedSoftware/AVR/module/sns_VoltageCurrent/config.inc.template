@@ -53,5 +53,27 @@ sns_VoltageCurrent3Factor=0.002151
 # Choose AD scaling
 sns_VoltageCurrent3Scale=10
 
+### Config fifth voltage/current port ###
+# AD channel
+sns_VoltageCurrent4AD=2
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent4VorA=1
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent4Factor=0.002151
+# Choose AD scaling
+sns_VoltageCurrent4Scale=10
+
+### Config sixth voltage/current port ###
+# AD channel
+sns_VoltageCurrent5AD=2
+# Choose voltage (=0) or current (=1)
+sns_VoltageCurrent5VorA=1
+# Choose AD factor 
+# For a voltage port, factor=5*(R1+R2)/R2 (for def of R1 and R2 see http://en.wikipedia.org/wiki/Voltage_divider)
+sns_VoltageCurrent5Factor=0.002151
+# Choose AD scaling
+sns_VoltageCurrent5Scale=10
+
 
 ## End section sns_VoltageCurrent -- Do not edit this line

@@ -122,7 +122,43 @@ void sns_VoltageCurrent_Process(void)
 		}
 #endif
 
-		if (VoltageCurrentChannelToSend++ >=4)
+#ifdef sns_VoltageCurrent4AD
+		if (VoltageCurrentChannelToSend==4)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent4AD);
+			ADvalue = ADvalue * sns_VoltageCurrent4Factor;
+#if sns_VoltageCurrent4VorA==0
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+#else
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+#endif
+			txMsg.Data[0] = 4;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent4Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent4Scale-6))&0xff;
+
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
+#endif
+
+#ifdef sns_VoltageCurrent5AD
+		if (VoltageCurrentChannelToSend==5)
+		{
+			ADvalue = ADC_Get(sns_VoltageCurrent5AD);
+			ADvalue = ADvalue * sns_VoltageCurrent5Factor;
+#if sns_VoltageCurrent5VorA==0
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_VOLTAGE;
+#else
+			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_CURRENT;
+#endif
+			txMsg.Data[0] = 5;
+			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent5Scale-6+8))&0xff;
+			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent5Scale-6))&0xff;
+
+			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
+		}
+#endif
+
+		if (VoltageCurrentChannelToSend++ >=6)
 		{
 			VoltageCurrentChannelToSend=0;
 		}
