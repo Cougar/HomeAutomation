@@ -92,34 +92,33 @@ void dotmatrixSetData(uint8_t Data)
 
 uint8_t dotmatrixGetData(void){
 	uint8_t input = 0;
-
+/* FIXME */
 	return input;
 }
 
 void dotmatrixWriteData(uint8_t data, uint8_t color){
-/*	dotmatrixSetControls(1,0);
 	if (color == GLCD_COLOR_CLEAR)
+	{
 	  data = ~data;
+	}
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
+	{
 	  dotmatrixSetData(data);
+	}
 	else
+	{
 	  dotmatrixSetData(~data);
-	dotmatrixEnable();
+	}
+	
 	GrLcdState.lcdXAddr++;
 
-	if (GrLcdState.lcdXAddr == 64 ){
-		dotmatrixSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
-	} 
-#if KS0108_WIDTH > 128
-else if (GrLcdState.lcdXAddr == 128 ){
-		dotmatrixSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
-	}
-#endif
-	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
+	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
 		dotmatrixSetXY(0,GrLcdState.lcdYAddr+8);
-	}*/
+	}
 }
 void dotmatrixWriteDataTransparent(uint8_t inputdata, uint8_t color){
+/* FIXME */
+
 /*	uint8_t data = 0;
 	dotmatrixSetDirection(INPUT);
 	dotmatrixSetControls(1,1);
@@ -164,6 +163,8 @@ void dotmatrixWriteDataTransparent(uint8_t inputdata, uint8_t color){
 
 uint8_t dotmatrixReadData(void){
 	uint8_t data = 0;
+/* FIXME */
+
 /*	dotmatrixSetDirection(INPUT);
 	dotmatrixSetControls(1,1);
 	dotmatrixEnable();	//dummy read
