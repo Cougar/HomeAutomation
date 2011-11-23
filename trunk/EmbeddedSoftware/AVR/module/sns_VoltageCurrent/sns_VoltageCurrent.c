@@ -35,7 +35,15 @@ void sns_VoltageCurrent_Init(void)
 	// Pcint_SetCallbackPin(sns_VoltageCurrent_PCINT, EXP_C , &sns_VoltageCurrent_pcint_callback);
 
 	ADC_Init();
+#ifdef sns_VoltageCurrent_SEND_PERIOD
 	Timer_SetTimeout(sns_VoltageCurrent_TIMER, sns_VoltageCurrent_SEND_PERIOD*1000 , TimerTypeFreeRunning, 0);
+#else
+#ifdef sns_VoltageCurrent_SEND_PERIOD_MS
+	Timer_SetTimeout(sns_VoltageCurrent_TIMER, sns_VoltageCurrent_SEND_PERIOD_MS , TimerTypeFreeRunning, 0);
+#endif
+#endif
+	
+
 }
 
 uint8_t VoltageCurrentChannelToSend = 0;

@@ -5,7 +5,12 @@
 
 sns_VoltageCurrent_ID=<ID>
 sns_VoltageCurrent_TIMER=<TIMER>
+
+# Use either sns_VoltageCurrent_TIMER (resolution in seconds)
 sns_VoltageCurrent_SEND_PERIOD=10
+
+# or sns_VoltageCurrent_TIMER_MS (resolution in milliseconds)
+#sns_VoltageCurrent_SEND_PERIOD_MS=500
 
 # Use # to disable a channel
 
