@@ -17,6 +17,9 @@
 #define dotmatrixROW_IO7 EXP_A
 #define dotmatrixROW_IO8 EXP_O
 
+#define dotmatrixSIZEX 32
+#define dotmatrixSIZEY 8
+
 #define dotmatrixLATCHCLOCK_IO EXP_I
 
 #define dotmatrixINITIAL_ROW 0x81
