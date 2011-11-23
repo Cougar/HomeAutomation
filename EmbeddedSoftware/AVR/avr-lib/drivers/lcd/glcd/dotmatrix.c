@@ -92,7 +92,24 @@ void dotmatrixSetData(uint8_t Data)
 
 uint8_t dotmatrixGetData(void){
 	uint8_t input = 0;
-/* FIXME */
+	/* Which ledmodule */
+	uint8_t module = GrLcdState.lcdXAddr%8;
+	/* Which column in ledmodule */
+	uint8_t column = GrLcdState.lcdXAddr>>3;
+	/* Which row */
+	uint8_t row = GrLcdState.lcdYAddr;
+	
+	/* Repeat for each row */
+	for (uint8_t i=0; i<8; i++)
+	{
+		/* Check panel size */
+		if ((row+i < dotmatrixSIZEY) && (module < dotmatrixSIZEX/8))
+		{
+			/* Shift column and the into returndata */
+			input |= ((dotmatrixFramebuf[row+i][module]>>column)&0x1) << i;
+		}
+	}
+
 	return input;
 }
 
