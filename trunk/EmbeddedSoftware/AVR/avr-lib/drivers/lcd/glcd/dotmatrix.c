@@ -116,70 +116,50 @@ void dotmatrixWriteData(uint8_t data, uint8_t color){
 		dotmatrixSetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
-void dotmatrixWriteDataTransparent(uint8_t inputdata, uint8_t color){
-/* FIXME */
 
-/*	uint8_t data = 0;
-	dotmatrixSetDirection(INPUT);
-	dotmatrixSetControls(1,1);
-	dotmatrixEnable();	//dummy read
-	dotmatrixDelay();
-	gpio_set_pin(LCD_CONTROL_E);
-	dotmatrixDelay();
-	if (GrLcdState.color == GLCD_COLOR_BLACK)
-	  data = dotmatrixGetData();
-	else
-	  data = ~dotmatrixGetData();
-	dotmatrixDisable();
-	dotmatrixDelay();
-	dotmatrixSetControls(1,0);
-	dotmatrixSetDirection(OUTPUT);
-	dotmatrixSetXY(GrLcdState.lcdXAddr, GrLcdState.lcdYAddr);
-	dotmatrixSetControls(1,0);
+void dotmatrixWriteDataTransparent(uint8_t inputdata, uint8_t color){
+	uint8_t data = dotmatrixGetData();
+	if (GrLcdState.color != GLCD_COLOR_BLACK)
+	{
+	  data = ~data;
+	}
+
 	if (color == GLCD_COLOR_CLEAR) 
+	{
 	  data = data&(~inputdata);
+	}
 	else
+	{
 	  data = data|inputdata;
+	}
+	
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
+	{
 	  dotmatrixSetData(data);
+	}
 	else
+	{
 	  dotmatrixSetData(~data);
-	dotmatrixEnable();
+	}
+
 	GrLcdState.lcdXAddr++;
 
-
-	if (GrLcdState.lcdXAddr == 64 ){
-		dotmatrixSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
-	} 
-#if KS0108_WIDTH > 128
-	else if (GrLcdState.lcdXAddr == 128 ){
-		dotmatrixSetXY(GrLcdState.lcdXAddr,GrLcdState.lcdYAddr);
-	}
-#endif
-	if (GrLcdState.lcdXAddr > KS0108_WIDTH ){
+	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
 		dotmatrixSetXY(0,GrLcdState.lcdYAddr+8);
-	}*/
+	}
 }
 
 uint8_t dotmatrixReadData(void){
 	uint8_t data = 0;
-/* FIXME */
-
-/*	dotmatrixSetDirection(INPUT);
-	dotmatrixSetControls(1,1);
-	dotmatrixEnable();	//dummy read
-	dotmatrixDelay();
-	gpio_set_pin(LCD_CONTROL_E);
-	dotmatrixDelay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
+	{
 	  data = dotmatrixGetData();
+	}
 	else
+	{
 	  data = ~dotmatrixGetData();
-	dotmatrixDisable();
-	dotmatrixDelay();
-	dotmatrixSetControls(1,0);
-	dotmatrixSetDirection(OUTPUT);
-	dotmatrixSetXY(GrLcdState.lcdXAddr, GrLcdState.lcdYAddr);*/
+	}
+
 	return data;
 }
 
@@ -284,34 +264,6 @@ void dotmatrixInit(){
 	dotmatrixClear();
 
 	GrLcdState.color = GLCD_COLOR_WHITE;
-	
-/*	gpio_set_out(LCD_CONTROL_RS);
-	gpio_set_out(LCD_CONTROL_RW);
-	gpio_set_out(LCD_CONTROL_E);
-	gpio_set_out(LCD_CONTROL_CS1);
-	gpio_set_out(LCD_CONTROL_CS2);
-
-	dotmatrixSetDirection(OUTPUT);
-	GrLcdState.color = GLCD_COLOR_WHITE;
-#if KS0108_INVERT_CS == 1
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
-#else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
-#endif
-	dotmatrixDisable();
-	dotmatrixDelay();
-	//set display on
-	dotmatrixSetControls(0,0);
-	dotmatrixSetData(0x3F);
-	dotmatrixEnable();
-
-	//set startaddress of the first row (set to row 0)
-	dotmatrixSetControls(0,0);
-	dotmatrixSetData(0xc0);
-	dotmatrixEnable();
-	dotmatrixClear();*/
 }
 
 void dotmatrixClear(){
@@ -329,47 +281,12 @@ void dotmatrixSetXY(uint8_t x, uint8_t y){
 	GrLcdState.lcdXAddr = x;
 	GrLcdState.lcdYAddr = y;
 	GrLcdState.lcdYpage = y/8;
-
-/*
-	//Vi b�rjar med X. Steg 1: V�lj r�tt chip:
-	if (x > 63 && x <= 127){
-#if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
-#else
-	gpio_set_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
-#endif
-	} else if (x > 127){
-#if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
-#else
-	gpio_clr_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
-#endif
-	} else {
-#if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
-#else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
-#endif
-	}
-
-	//Steg 2: S�tt r�tt x-adress p� det aktiva chippet
-	dotmatrixSetControls(0,0);
-	dotmatrixSetData(0x40 + x%64);
-	dotmatrixEnable();
-
-	//Steg 3: S�tt r�tt y-adress p� det aktiva chippet
-	dotmatrixSetData(0xB8 + GrLcdState.lcdYpage);
-	dotmatrixEnable();*/
 }
+
 uint8_t dotmatrixGetX(void){
 	return GrLcdState.lcdXAddr;
 }
+
 uint8_t dotmatrixGetY(void){
 	return GrLcdState.lcdYAddr;
 }
