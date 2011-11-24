@@ -28,6 +28,7 @@ uint8_t glcdGetY(void);
 
 void glcdInit(void);
 
+void glcdRefresh(void);
 
 
 void glcdPutStr(char *data, uint8_t color);
