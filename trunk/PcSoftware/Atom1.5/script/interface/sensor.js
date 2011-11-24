@@ -67,8 +67,12 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 					last_value[command] = { "value" : variables["Number"], "timestamp" : get_time() };
 					
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+
+					var all_numbers = Storage_GetParameters("PhoneCalls");
+					var newString = "{\"number\":\"" + variables["Number"] + "\",\"module\":\"" + alias_name + "\"}";
+					Storage_SetParameter("PhoneCalls", get_time(), newString);
+					Log("New number: "+newString +"\n");				
 				}
-				
 				break;
 			}
 			case "Voltage":
