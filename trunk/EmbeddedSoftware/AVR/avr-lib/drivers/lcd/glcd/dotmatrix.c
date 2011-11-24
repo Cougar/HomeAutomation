@@ -33,7 +33,7 @@
 #define INPUT	1
 
 volatile GrLcdStateType GrLcdState;
-uint8_t	dotmatrixFramebuf[dotmatrixSIZEY][dotmatrixSIZEX/8];
+uint8_t	dotmatrixFramebuf[8][dotmatrixSIZEX/8];
 uint8_t dotmatrixRowCounter=0;
 uint16_t dotmatrixBrightness=0;
 
@@ -56,61 +56,40 @@ uint8_t dotmatrixGetColor(void){
   return GrLcdState.color;
 }
 
-/* Sets data into framebuffer, data arrives in a byte as a column and needs to be shifted into the framebuffer */
+/* Sets data into framebuffer, data arrives in a byte as a column */
 void dotmatrixSetData(uint8_t Data)
 {
 	/* Which ledmodule */
-	uint8_t module = GrLcdState.lcdXAddr%8;
+	uint8_t module = GrLcdState.lcdXAddr>>3;
 	/* Which column in ledmodule */
-	uint8_t column = GrLcdState.lcdXAddr>>3;
+	uint8_t column = GrLcdState.lcdXAddr%8;
 	/* Which row */
-	uint8_t row = GrLcdState.lcdYAddr;
-	
-	/* Repeat for each row */
-	for (uint8_t i=0; i<8; i++)
+//	uint8_t row = GrLcdState.lcdYAddr%8;
+
+	/* Check panel size */
+	if ((column < dotmatrixSIZEY) && (module < dotmatrixSIZEX/8))
 	{
-		/* Check panel size */
-		if ((row+i < dotmatrixSIZEY) && (module < dotmatrixSIZEX/8))
-		{
-			/* Shift one bit */
-			Data = Data>>1;
-			/* Mask bit */
-			uint8_t databit = Data&0x1;
-			if (databit==0)
-			{
-				/* Clear bit */
-				dotmatrixFramebuf[row+i][module] &= ~(databit<<column);
-			}
-			else
-			{
-				/* Set bit */
-				dotmatrixFramebuf[row+i][module] |= (databit<<column);
-			}
-		}
+		dotmatrixFramebuf[column][module] = Data;
 	}
 }
 
 uint8_t dotmatrixGetData(void){
-	uint8_t input = 0;
 	/* Which ledmodule */
-	uint8_t module = GrLcdState.lcdXAddr%8;
+	uint8_t module = GrLcdState.lcdXAddr>>3;
 	/* Which column in ledmodule */
-	uint8_t column = GrLcdState.lcdXAddr>>3;
+	uint8_t column = GrLcdState.lcdXAddr%8;
 	/* Which row */
-	uint8_t row = GrLcdState.lcdYAddr;
+//	uint8_t row = GrLcdState.lcdYAddr%8;
 	
-	/* Repeat for each row */
-	for (uint8_t i=0; i<8; i++)
+	/* Check panel size */
+	if ((column < dotmatrixSIZEY) && (module < dotmatrixSIZEX/8))
 	{
-		/* Check panel size */
-		if ((row+i < dotmatrixSIZEY) && (module < dotmatrixSIZEX/8))
-		{
-			/* Shift column and the into returndata */
-			input |= ((dotmatrixFramebuf[row+i][module]>>column)&0x1) << i;
-		}
+		return (dotmatrixFramebuf[column][module]);
 	}
-
-	return input;
+	else
+	{
+		return 0;
+	}
 }
 
 void dotmatrixWriteData(uint8_t data, uint8_t color){
@@ -199,10 +178,10 @@ void dotmatrixRefresh()
 	gpio_clr_pin(dotmatrixROW_IO8);
 
 	/* Write one column of frame buffer to shift registers */
-	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][3]);
-	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][2]);
-	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][1]);
-	dotmatrixSPIWrite(dotmatrixFramebuf[7-dotmatrixRowCounter][0]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[dotmatrixRowCounter][0]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[dotmatrixRowCounter][1]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[dotmatrixRowCounter][2]);
+	dotmatrixSPIWrite(dotmatrixFramebuf[dotmatrixRowCounter][3]);
 	/* Add more here to support 8-module panels */
 
 	/* Toggle shift register latch */
@@ -280,7 +259,7 @@ void dotmatrixInit(){
 
 	dotmatrixClear();
 
-	GrLcdState.color = GLCD_COLOR_WHITE;
+	GrLcdState.color = GLCD_COLOR_BLACK;
 }
 
 void dotmatrixClear(){
