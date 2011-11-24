@@ -22,7 +22,7 @@
 
 #define dotmatrixLATCHCLOCK_IO EXP_I
 
-#define dotmatrixINITIAL_ROW 0x81
+#define dotmatrixINITIAL_ROW 0x0
 
 #define USART_SPI_CS_DDR	DDRC
 #define USART_SPI_CS		PC0
