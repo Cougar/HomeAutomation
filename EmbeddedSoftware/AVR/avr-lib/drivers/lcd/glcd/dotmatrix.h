@@ -8,6 +8,8 @@
 #define GLCD_COLOR_SET	 0
 #define GLCD_COLOR_CLEAR 1
 
+#ifndef dotmatrixLATCHCLOCK_IO
+
 #define dotmatrixROW_IO1 EXP_P
 #define dotmatrixROW_IO2 EXP_B
 #define dotmatrixROW_IO3 EXP_C
@@ -17,10 +19,12 @@
 #define dotmatrixROW_IO7 EXP_A
 #define dotmatrixROW_IO8 EXP_O
 
-#define dotmatrixSIZEX 32
-#define dotmatrixSIZEY 8
-
 #define dotmatrixLATCHCLOCK_IO EXP_I
+
+#endif
+
+#define dotmatrixSIZEX GRAPHICS_WIDTH
+#define dotmatrixSIZEY GRAPHICS_HEIGHT
 
 #define dotmatrixINITIAL_ROW 0x0
 

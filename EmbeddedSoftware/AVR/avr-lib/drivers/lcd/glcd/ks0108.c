@@ -35,35 +35,35 @@
 volatile GrLcdStateType GrLcdState;
 
 void ks0108SetControls(uint8_t RS, uint8_t RW){
-	if(RS) {gpio_set_pin(LCD_CONTROL_RS);} else {gpio_clr_pin(LCD_CONTROL_RS);}
-	if(RW) {gpio_set_pin(LCD_CONTROL_RW);} else {gpio_clr_pin(LCD_CONTROL_RW);}
+	if(RS) {gpio_set_pin(KS0108_CONTROL_RS);} else {gpio_clr_pin(KS0108_CONTROL_RS);}
+	if(RW) {gpio_set_pin(KS0108_CONTROL_RW);} else {gpio_clr_pin(KS0108_CONTROL_RW);}
 }
 
 void ks0108SetData(uint8_t Data){
-	if(Data&0x01) {gpio_set_pin(LCD_DATA_DB0);} else {gpio_clr_pin(LCD_DATA_DB0);}
-	if(Data&0x02) {gpio_set_pin(LCD_DATA_DB1);} else {gpio_clr_pin(LCD_DATA_DB1);}
-	if(Data&0x04) {gpio_set_pin(LCD_DATA_DB2);} else {gpio_clr_pin(LCD_DATA_DB2);}
-	if(Data&0x08) {gpio_set_pin(LCD_DATA_DB3);} else {gpio_clr_pin(LCD_DATA_DB3);}
-	if(Data&0x10) {gpio_set_pin(LCD_DATA_DB4);} else {gpio_clr_pin(LCD_DATA_DB4);}
-	if(Data&0x20) {gpio_set_pin(LCD_DATA_DB5);} else {gpio_clr_pin(LCD_DATA_DB5);}
-	if(Data&0x40) {gpio_set_pin(LCD_DATA_DB6);} else {gpio_clr_pin(LCD_DATA_DB6);}
-	if(Data&0x80) {gpio_set_pin(LCD_DATA_DB7);} else {gpio_clr_pin(LCD_DATA_DB7);}
+	if(Data&0x01) {gpio_set_pin(KS0108_DATA_DB0);} else {gpio_clr_pin(KS0108_DATA_DB0);}
+	if(Data&0x02) {gpio_set_pin(KS0108_DATA_DB1);} else {gpio_clr_pin(KS0108_DATA_DB1);}
+	if(Data&0x04) {gpio_set_pin(KS0108_DATA_DB2);} else {gpio_clr_pin(KS0108_DATA_DB2);}
+	if(Data&0x08) {gpio_set_pin(KS0108_DATA_DB3);} else {gpio_clr_pin(KS0108_DATA_DB3);}
+	if(Data&0x10) {gpio_set_pin(KS0108_DATA_DB4);} else {gpio_clr_pin(KS0108_DATA_DB4);}
+	if(Data&0x20) {gpio_set_pin(KS0108_DATA_DB5);} else {gpio_clr_pin(KS0108_DATA_DB5);}
+	if(Data&0x40) {gpio_set_pin(KS0108_DATA_DB6);} else {gpio_clr_pin(KS0108_DATA_DB6);}
+	if(Data&0x80) {gpio_set_pin(KS0108_DATA_DB7);} else {gpio_clr_pin(KS0108_DATA_DB7);}
 }
 uint8_t ks0108GetData(void){
 	uint8_t input = 0;
-	if (gpio_get_state(LCD_DATA_DB0)) {input += 1;}
-	if (gpio_get_state(LCD_DATA_DB1)) {input += 2;}
-	if (gpio_get_state(LCD_DATA_DB2)) {input += 4;}
-	if (gpio_get_state(LCD_DATA_DB3)) {input += 8;}
-	if (gpio_get_state(LCD_DATA_DB4)) {input += 16;}
-	if (gpio_get_state(LCD_DATA_DB5)) {input += 32;}
-	if (gpio_get_state(LCD_DATA_DB6)) {input += 64;}
-	if (gpio_get_state(LCD_DATA_DB7)) {input += 128;}
+	if (gpio_get_state(KS0108_DATA_DB0)) {input += 1;}
+	if (gpio_get_state(KS0108_DATA_DB1)) {input += 2;}
+	if (gpio_get_state(KS0108_DATA_DB2)) {input += 4;}
+	if (gpio_get_state(KS0108_DATA_DB3)) {input += 8;}
+	if (gpio_get_state(KS0108_DATA_DB4)) {input += 16;}
+	if (gpio_get_state(KS0108_DATA_DB5)) {input += 32;}
+	if (gpio_get_state(KS0108_DATA_DB6)) {input += 64;}
+	if (gpio_get_state(KS0108_DATA_DB7)) {input += 128;}
 	return input;
 }
 
 void ks0108Disable(){
-	gpio_clr_pin(LCD_CONTROL_E);
+	gpio_clr_pin(KS0108_CONTROL_E);
 }
 
 void ks0108Delay(){
@@ -72,7 +72,7 @@ void ks0108Delay(){
 
 void ks0108Enable(){
 	ks0108Delay();
-	gpio_set_pin(LCD_CONTROL_E);
+	gpio_set_pin(KS0108_CONTROL_E);
 	ks0108Delay();
 	ks0108Disable();
 	ks0108Delay();
@@ -80,23 +80,23 @@ void ks0108Enable(){
 
 void ks0108SetDirection(uint8_t dir){
   if (dir == OUTPUT){
-    gpio_set_out(LCD_DATA_DB0);
-    gpio_set_out(LCD_DATA_DB1);
-    gpio_set_out(LCD_DATA_DB2);
-    gpio_set_out(LCD_DATA_DB3);
-    gpio_set_out(LCD_DATA_DB4);
-    gpio_set_out(LCD_DATA_DB5);
-    gpio_set_out(LCD_DATA_DB6);
-    gpio_set_out(LCD_DATA_DB7);
+    gpio_set_out(KS0108_DATA_DB0);
+    gpio_set_out(KS0108_DATA_DB1);
+    gpio_set_out(KS0108_DATA_DB2);
+    gpio_set_out(KS0108_DATA_DB3);
+    gpio_set_out(KS0108_DATA_DB4);
+    gpio_set_out(KS0108_DATA_DB5);
+    gpio_set_out(KS0108_DATA_DB6);
+    gpio_set_out(KS0108_DATA_DB7);
   }else if (dir == INPUT){
-    gpio_set_in(LCD_DATA_DB0);
-    gpio_set_in(LCD_DATA_DB1);
-    gpio_set_in(LCD_DATA_DB2);
-    gpio_set_in(LCD_DATA_DB3);
-    gpio_set_in(LCD_DATA_DB4);
-    gpio_set_in(LCD_DATA_DB5);
-    gpio_set_in(LCD_DATA_DB6);
-    gpio_set_in(LCD_DATA_DB7);
+    gpio_set_in(KS0108_DATA_DB0);
+    gpio_set_in(KS0108_DATA_DB1);
+    gpio_set_in(KS0108_DATA_DB2);
+    gpio_set_in(KS0108_DATA_DB3);
+    gpio_set_in(KS0108_DATA_DB4);
+    gpio_set_in(KS0108_DATA_DB5);
+    gpio_set_in(KS0108_DATA_DB6);
+    gpio_set_in(KS0108_DATA_DB7);
   }
 }
 void ks0108SetColor(uint8_t color){
@@ -134,7 +134,7 @@ void ks0108WriteDataTransparent(uint8_t inputdata, uint8_t color){
 	ks0108SetControls(1,1);
 	ks0108Enable();	//dummy read
 	ks0108Delay();
-	gpio_set_pin(LCD_CONTROL_E);
+	gpio_set_pin(KS0108_CONTROL_E);
 	ks0108Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
 	  data = ks0108GetData();
@@ -177,7 +177,7 @@ uint8_t ks0108ReadData(void){
 	ks0108SetControls(1,1);
 	ks0108Enable();	//dummy read
 	ks0108Delay();
-	gpio_set_pin(LCD_CONTROL_E);
+	gpio_set_pin(KS0108_CONTROL_E);
 	ks0108Delay();
 	if (GrLcdState.color == GLCD_COLOR_BLACK)
 	  data = ks0108GetData();
@@ -192,20 +192,20 @@ uint8_t ks0108ReadData(void){
 }
 
 void ks0108Init(){
-	gpio_set_out(LCD_CONTROL_RS);
-	gpio_set_out(LCD_CONTROL_RW);
-	gpio_set_out(LCD_CONTROL_E);
-	gpio_set_out(LCD_CONTROL_CS1);
-	gpio_set_out(LCD_CONTROL_CS2);
+	gpio_set_out(KS0108_CONTROL_RS);
+	gpio_set_out(KS0108_CONTROL_RW);
+	gpio_set_out(KS0108_CONTROL_E);
+	gpio_set_out(KS0108_CONTROL_CS1);
+	gpio_set_out(KS0108_CONTROL_CS2);
 
 	ks0108SetDirection(OUTPUT);
 	GrLcdState.color = GLCD_COLOR_WHITE;
 #if KS0108_INVERT_CS == 1
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_clr_pin(KS0108_CONTROL_CS1);
+	gpio_clr_pin(KS0108_CONTROL_CS2);
 #else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(KS0108_CONTROL_CS1);
+	gpio_set_pin(KS0108_CONTROL_CS2);
 #endif
 	ks0108Disable();
 	ks0108Delay();
@@ -223,11 +223,11 @@ void ks0108Init(){
 
 void ks0108Clear(){
 #if KS0108_INVERT_CS == 1
-	gpio_clr_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_clr_pin(KS0108_CONTROL_CS1);
+	gpio_clr_pin(KS0108_CONTROL_CS2);
 #else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(KS0108_CONTROL_CS1);
+	gpio_set_pin(KS0108_CONTROL_CS2);
 #endif
 	ks0108Enable();
 	ks0108Delay();
@@ -264,27 +264,27 @@ void ks0108SetXY(uint8_t x, uint8_t y){
 	//Vi b�rjar med X. Steg 1: V�lj r�tt chip:
 	if (x > 63 && x <= 127){
 #if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(KS0108_CONTROL_CS1);
+	gpio_clr_pin(KS0108_CONTROL_CS2);
 #else
-	gpio_set_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_set_pin(KS0108_CONTROL_CS2);
+	gpio_clr_pin(KS0108_CONTROL_CS1);
 #endif
 	} else if (x > 127){
 #if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_set_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(KS0108_CONTROL_CS1);
+	gpio_set_pin(KS0108_CONTROL_CS2);
 #else
-	gpio_clr_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_clr_pin(KS0108_CONTROL_CS2);
+	gpio_clr_pin(KS0108_CONTROL_CS1);
 #endif
 	} else {
 #if KS0108_INVERT_CS == 1
-	gpio_set_pin(LCD_CONTROL_CS2);
-	gpio_clr_pin(LCD_CONTROL_CS1);
+	gpio_set_pin(KS0108_CONTROL_CS2);
+	gpio_clr_pin(KS0108_CONTROL_CS1);
 #else
-	gpio_set_pin(LCD_CONTROL_CS1);
-	gpio_clr_pin(LCD_CONTROL_CS2);
+	gpio_set_pin(KS0108_CONTROL_CS1);
+	gpio_clr_pin(KS0108_CONTROL_CS2);
 #endif
 	}
 

@@ -3,22 +3,22 @@
 #include <drivers/mcu/gpio.h>
 #include <drivers/sensor/ds18s20/delay.h>
 
-#ifndef LCD_CONTROL_E
+#ifndef KS0108_CONTROL_E
 
-#define LCD_DATA_DB0	EXP_D
-#define LCD_DATA_DB1	EXP_E
-#define LCD_DATA_DB2	EXP_F
-#define LCD_DATA_DB3	EXP_G
-#define LCD_DATA_DB4	EXP_H
-#define LCD_DATA_DB5	EXP_I
-#define LCD_DATA_DB6	EXP_J
-#define LCD_DATA_DB7	EXP_K
+#define KS0108_DATA_DB0	EXP_D
+#define KS0108_DATA_DB1	EXP_E
+#define KS0108_DATA_DB2	EXP_F
+#define KS0108_DATA_DB3	EXP_G
+#define KS0108_DATA_DB4	EXP_H
+#define KS0108_DATA_DB5	EXP_I
+#define KS0108_DATA_DB6	EXP_J
+#define KS0108_DATA_DB7	EXP_K
 
-#define LCD_CONTROL_RS	EXP_A
-#define LCD_CONTROL_RW	EXP_B
-#define LCD_CONTROL_E	EXP_C
-#define LCD_CONTROL_CS1	EXP_N
-#define LCD_CONTROL_CS2	EXP_O
+#define KS0108_CONTROL_RS	EXP_A
+#define KS0108_CONTROL_RW	EXP_B
+#define KS0108_CONTROL_E	EXP_C
+#define KS0108_CONTROL_CS1	EXP_N
+#define KS0108_CONTROL_CS2	EXP_O
 
 #endif
 
