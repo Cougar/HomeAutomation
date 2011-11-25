@@ -35,7 +35,6 @@
 volatile GrLcdStateType GrLcdState;
 uint8_t	dotmatrixFramebuf[8][dotmatrixSIZEX/8];
 uint8_t dotmatrixRowCounter=0;
-uint16_t dotmatrixBrightness=0;
 
 /* Write a byte on SPI */
 void dotmatrixSPIWrite(uint8_t data) {
