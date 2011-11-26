@@ -324,12 +324,19 @@ void saveImageFromScreen(uint8_t id, uint8_t size_x , uint8_t size_y) {
 
 void act_ks0108_Init(void)
 {
-	///TODO: Initialize hardware etc here
-	// Backlight
+	/* Set up PWM controlling brightness */
+#if GRAPHICS_DRIVER==KS0108
 	TCCR0A |= (1<<COM0A1)|(1<<WGM01)|(1<<WGM00);
 	TCCR0B |= (1<<CS00);
 	OCR0A = act_ks0108_INITIAL_BACKLIGHT;
 	DDRD |= (1<<PD6);
+#endif
+#if GRAPHICS_DRIVER==DOTMATRIX
+	TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
+	TCCR0B |= (1<<CS00);
+	OCR0B = 0xff-act_ks0108_INITIAL_BACKLIGHT;
+	DDRD |= (1<<PD5);
+#endif
 
 
 #if act_ks0108_USE_EXTERNAL_EEPROM==1
