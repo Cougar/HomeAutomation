@@ -23,6 +23,10 @@
   #define MESSAGEBUF_SIZE       131		// Three more than the memory block length
 #endif
 
+#ifndef GRAPHICS_DRIVER
+#define GRAPHICS_DRIVER KS0108
+#endif
+
 void act_ks0108_Init(void);
 void act_ks0108_Process(void);
 void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg);
