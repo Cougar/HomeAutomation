@@ -48,6 +48,10 @@ uint16_t	buf[IR_SUPPORTED_NUM_CHANNELS][MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
+#ifndef sns_irTransceive_PRONTO_SUPPORT
+#define sns_irTransceive_PRONTO_SUPPORT 1
+#endif
+
 #if (sns_irTransceive_SEND_DEBUG==1)
 void send_debug(uint16_t *buffer, uint8_t len) {
 	StdCan_Msg_t dbgIrTxMsg;
@@ -89,6 +93,70 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 	}
 
 }
+#if sns_irTransceive_PRONTO_SUPPORT==1
+
+/* TODO configurable divider parameter */
+#define BaseFrq (4145146ULL)
+#define wFrqDiv (0x6d)
+#define divider (1000000ULL*wFrqDiv/BaseFrq)
+
+void send_pronto(uint16_t *buffer, uint8_t len) {
+	StdCan_Msg_t msg;
+
+	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(msg.Header, DIRECTIONFLAG_FROM_OWNER);
+	msg.Length = 8;
+	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
+	msg.Header.ModuleId = sns_irTransceive_ID;
+	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
+	
+	msg.Data[0] = 0x00;	/* Prontoformat 0x0000 */
+	msg.Data[1] = 0x00;
+	msg.Data[2] = 0x00;	/* Freq divider, 38kHz => 0x006d TODO: configurable */
+	msg.Data[3] = wFrqDiv;
+	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
+	msg.Data[5] = len/2;
+	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
+	msg.Data[7] = 0x00;
+	
+	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+	_delay_ms(1);
+	
+	/* TODO Add more prontodata commands -> 32 */
+	
+	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
+	for (uint8_t i = 0; i < len>>2; i++) {
+		uint8_t index = i<<2;
+
+		msg.Data[0] = ((buffer[index]/divider)>>8)&0xff;
+		msg.Data[1] = ((buffer[index]/divider)>>0)&0xff;
+		msg.Data[2] = ((buffer[index+1]/divider)>>8)&0xff;
+		msg.Data[3] = ((buffer[index+1]/divider)>>0)&0xff;
+		msg.Data[4] = ((buffer[index+2]/divider)>>8)&0xff;
+		msg.Data[5] = ((buffer[index+2]/divider)>>0)&0xff;
+		msg.Data[6] = ((buffer[index+3]/divider)>>8)&0xff;
+		msg.Data[7] = ((buffer[index+3]/divider)>>0)&0xff;
+				
+		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+		
+		msg.Header.Command++;
+	}
+	
+	uint8_t lastpacketcnt = len&0x03;
+	/* msg command kept from for loop, but increase 16 */
+	msg.Header.Command+=32;
+	msg.Length = lastpacketcnt<<1;
+	for (uint8_t i = 0; i < lastpacketcnt; i++) {
+		msg.Data[i<<1] = ((buffer[(len&0xfc)|i]/divider)>>8)&0xff;
+		msg.Data[(i<<1)+1] = ((buffer[(len&0xfc)|i]/divider)>>0)&0xff;
+	}
+	/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+	_delay_ms(1);
+}
+#endif
 #endif
 
 
@@ -377,8 +445,15 @@ void sns_irTransceive_Process(void)
 				else if (irRxChannel[channel].proto.protocol == IR_PROTO_UNKNOWN) 
 				{
 #if (sns_irTransceive_SEND_DEBUG==1)
+#if sns_irTransceive_PRONTO_SUPPORT==0
 					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 					irRxChannel[channel].proto.timeout=300;
+#endif
+#if sns_irTransceive_PRONTO_SUPPORT==1
+					send_pronto(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
+					irRxChannel[channel].proto.timeout=300;
+#endif
+
 #endif
 				}
 				

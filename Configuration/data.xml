@@ -165,18 +165,18 @@
     </command>    
     <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
      <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Millisecond" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Millisecond" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
       </variables>
     </command>
     <command id="128" name="IRraw" type="specific" module="irTransceive" description="If a protocol not could be found, then send raw data">
      <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Millisecond" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Millisecond" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Millisecond" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Millisecond" description="Second passive time"/>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
       </variables>
     </command>
     <command id="129" name="IrConfig" type="specific" module="irTransceive" description="irTransceive config">
@@ -188,6 +188,283 @@
 	    	<value id="2" name="Receive"/>
 	    </variable>
         <variable name="Transmit power" type="uint" start_bit="8" bit_length="2" unit="" description="0 for lowest power, 3 for max"/>
+      </variables>
+    </command>
+    <command id="130" name="IrProntoStart" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Format" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="wFrqDiv" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+        <variable name="OnceSeqLen" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+        <variable name="RepSeqLen" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="IrProntoTiming" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Format" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="IrProntoData1" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="132" name="IrProntoData2" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="133" name="IrProntoData3" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="134" name="IrProntoData4" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="135" name="IrProntoData5" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="136" name="IrProntoData6" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="137" name="IrProntoData7" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="138" name="IrProntoData8" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="139" name="IrProntoData9" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="140" name="IrProntoData10" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="141" name="IrProntoData11" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="142" name="IrProntoData12" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="143" name="IrProntoData13" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="144" name="IrProntoData14" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="145" name="IrProntoData15" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="146" name="IrProntoData16" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="163" name="IrProntoEnd1" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="164" name="IrProntoEnd2" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="165" name="IrProntoEnd3" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="166" name="IrProntoEnd4" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="167" name="IrProntoEnd5" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="168" name="IrProntoEnd6" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="169" name="IrProntoEnd7" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="170" name="IrProntoEnd8" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="171" name="IrProntoEnd9" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="172" name="IrProntoEnd10" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="173" name="IrProntoEnd11" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="174" name="IrProntoEnd12" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="175" name="IrProntoEnd13" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="176" name="IrProntoEnd14" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="177" name="IrProntoEnd15" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="178" name="IrProntoEnd16" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
+      </variables>
+    </command>
+    <command id="179" name="IrProntoEnd17" type="specific" module="irTransceive" description="">
+     <variables>
+        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Pulses" description="First active time"/>
+        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Pulses" description="First passive time"/>
+        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Pulses" description="Second active time"/>
+        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Pulses" description="Second passive time"/>
       </variables>
     </command>
 
