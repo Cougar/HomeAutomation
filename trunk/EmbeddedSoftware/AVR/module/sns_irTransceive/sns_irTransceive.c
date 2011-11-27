@@ -48,10 +48,6 @@ uint16_t	buf[IR_SUPPORTED_NUM_CHANNELS][MAX_NR_TIMES];
 
 StdCan_Msg_t		irTxMsg;
 
-#ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 1
-#endif
-
 #if (sns_irTransceive_SEND_DEBUG==1)
 void send_debug(uint16_t *buffer, uint8_t len) {
 	StdCan_Msg_t dbgIrTxMsg;
@@ -93,10 +89,15 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 	}
 
 }
-#if sns_irTransceive_PRONTO_SUPPORT==1
+#endif
 
-/* TODO configurable divider parameter */
+#ifndef sns_irTransceive_PRONTO_SUPPORT
+#define sns_irTransceive_PRONTO_SUPPORT 0
+#endif
+
+#if sns_irTransceive_PRONTO_SUPPORT==1
 #define BaseFrq (4145146ULL)
+/* TODO configurable divider parameter */
 #define wFrqDiv (0x6d)
 #define divider (1000000ULL*wFrqDiv/BaseFrq)
 
@@ -115,28 +116,23 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	msg.Data[2] = 0x00;	/* Freq divider, 38kHz => 0x006d TODO: configurable */
 	msg.Data[3] = wFrqDiv;
 	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
-	msg.Data[5] = len/2;
+	msg.Data[5] = len/2; /* TODO not correct if any byte overflows */
 	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
 	msg.Data[7] = 0x00;
 	
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
 	
-	/* TODO Add more prontodata commands -> 32 */
-	
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
-	for (uint8_t i = 0; i < len>>2; i++) {
-		uint8_t index = i<<2;
+	for (uint8_t i = 0; i < len>>3; i++) {
+		uint8_t index = i<<3;
 
-		msg.Data[0] = ((buffer[index]/divider)>>8)&0xff;
-		msg.Data[1] = ((buffer[index]/divider)>>0)&0xff;
-		msg.Data[2] = ((buffer[index+1]/divider)>>8)&0xff;
-		msg.Data[3] = ((buffer[index+1]/divider)>>0)&0xff;
-		msg.Data[4] = ((buffer[index+2]/divider)>>8)&0xff;
-		msg.Data[5] = ((buffer[index+2]/divider)>>0)&0xff;
-		msg.Data[6] = ((buffer[index+3]/divider)>>8)&0xff;
-		msg.Data[7] = ((buffer[index+3]/divider)>>0)&0xff;
-				
+		for (uint8_t j = 0; j < 8; j += 2) 
+		{
+			msg.Data[j] = (buffer[index+j]/divider)&0xff;
+			msg.Data[j+1] = (buffer[index+j+1]/divider)&0xff;
+		}
+
 		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
 		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
@@ -146,7 +142,7 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	
 	uint8_t lastpacketcnt = len&0x03;
 	/* msg command kept from for loop, but increase 16 */
-	msg.Header.Command+=32;
+	msg.Header.Command+=16;
 	msg.Length = lastpacketcnt<<1;
 	for (uint8_t i = 0; i < lastpacketcnt; i++) {
 		msg.Data[i<<1] = ((buffer[(len&0xfc)|i]/divider)>>8)&0xff;
@@ -156,7 +152,6 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
 }
-#endif
 #endif
 
 
