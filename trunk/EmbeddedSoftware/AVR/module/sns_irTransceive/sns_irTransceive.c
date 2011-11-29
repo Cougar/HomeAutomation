@@ -94,12 +94,12 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #ifndef sns_irTransceive_PRONTO_SUPPORT
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
-
 #if sns_irTransceive_PRONTO_SUPPORT==1
 #define BaseFrq (4145146ULL)
 /* TODO configurable divider parameter */
 #define wFrqDiv (0x6d)
 #define divider (1000000ULL*wFrqDiv/BaseFrq)
+
 
 void send_pronto(uint16_t *buffer, uint8_t len) {
 	StdCan_Msg_t msg;
@@ -116,7 +116,7 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	msg.Data[2] = 0x00;	/* Freq divider, 38kHz => 0x006d TODO: configurable */
 	msg.Data[3] = wFrqDiv;
 	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
-	msg.Data[5] = len/2; /* TODO not correct if any byte overflows */
+	msg.Data[5] = 0x00;	//len/2; /* not correct if any byte overflows */
 	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
 	msg.Data[7] = 0x00;
 	
@@ -124,30 +124,64 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	_delay_ms(1);
 	
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
-	for (uint8_t i = 0; i < len>>3; i++) {
-		uint8_t index = i<<3;
-
-		for (uint8_t j = 0; j < 8; j += 2) 
+	uint8_t i = 0;
+	uint8_t j = 0;
+	uint8_t mem = 0;
+	while (i < len)
+	{
+		if (mem > 0)
 		{
-			msg.Data[j] = (buffer[index+j]/divider)&0xff;
-			msg.Data[j+1] = (buffer[index+j+1]/divider)&0xff;
+			/* If byte was memorized then buffer it */
+			msg.Data[j] = mem;
+			/* Clear memory */
+			mem = 0;
 		}
-
-		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
-		_delay_ms(1);
+		else
+		{
+			if (buffer[i] >= (2^8))
+			{
+				/* If data does not fit into 8 bit, then split, memorize low byte */
+				mem = buffer[i]&0xff;
+				/* Buffer high byte */
+				msg.Data[j] = (buffer[i]>>8)&0xff;
+				j++;
+				if (j==8)
+				{
+					/* If send buffer is full, send frame */
+					/* can buffers will be filled when sending more than 2-3 messages, so retry until sent */
+					while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+					_delay_ms(1);
+					j=0;
+					msg.Header.Command++;
+				}
+				/* Set complementary burst pair to 0 to indicate 16bit transmission */
+				msg.Data[j] = 0;
+			}
+			else
+			{
+				msg.Data[j] = buffer[i]&0xff;
+			}
+			
+			i++;
+		}
 		
-		msg.Header.Command++;
+		j++;
+		if (j==8)
+		{
+			/* If send buffer is full, send frame */
+			/* can buffers will be filled when sending more than 2-3 messages, so retry until sent */
+			while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+			_delay_ms(1);
+			j=0;
+			msg.Header.Command++;
+		}
+		
 	}
 	
-	uint8_t lastpacketcnt = len&0x03;
-	/* msg command kept from for loop, but increase 16 */
+	/* msg command kept from for loop, but increase 16 to send ProntoEnd */
 	msg.Header.Command+=16;
-	msg.Length = lastpacketcnt<<1;
-	for (uint8_t i = 0; i < lastpacketcnt; i++) {
-		msg.Data[i<<1] = ((buffer[(len&0xfc)|i]/divider)>>8)&0xff;
-		msg.Data[(i<<1)+1] = ((buffer[(len&0xfc)|i]/divider)>>0)&0xff;
-	}
+	msg.Length = j;
+	/* data kept from loop */
 	/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
