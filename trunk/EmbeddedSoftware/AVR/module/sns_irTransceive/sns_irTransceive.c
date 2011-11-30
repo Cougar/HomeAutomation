@@ -23,6 +23,7 @@ struct eeprom_sns_irTransceive EEMEM eeprom_sns_irTransceive =
 #if IR_RX_ENABLE==1
 struct {
 	uint8_t				state;
+	uint8_t				modfreq;
 	uint16_t			*rxbuf;
 	uint8_t				rxlen;
 	uint8_t				timerNum;
@@ -34,6 +35,7 @@ struct {
 #if IR_TX_ENABLE==1
 struct {
 	uint8_t				state;
+	uint8_t				modfreq;
 	uint16_t			*txbuf;
 	uint8_t				txlen;
 	uint8_t				timerNum;
@@ -94,14 +96,10 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #ifndef sns_irTransceive_PRONTO_SUPPORT
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
+
 #if sns_irTransceive_PRONTO_SUPPORT==1
-#define BaseFrq (4145146ULL)
-/* TODO configurable divider parameter */
-#define wFrqDiv (0x6d)
-#define divider (1000000ULL*wFrqDiv/BaseFrq)
-
-
-void send_pronto(uint16_t *buffer, uint8_t len) {
+#define sns_irTransceive_BaseFrq (4145146ULL)
+void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
 	StdCan_Msg_t msg;
 
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -113,8 +111,8 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	
 	msg.Data[0] = 0x00;	/* Prontoformat 0x0000 */
 	msg.Data[1] = 0x00;
-	msg.Data[2] = 0x00;	/* Freq divider, 38kHz => 0x006d TODO: configurable */
-	msg.Data[3] = wFrqDiv;
+	msg.Data[2] = 0x00;	/* Freq divider */
+	msg.Data[3] = modfreq;
 	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
 	msg.Data[5] = 0x00;	//len/2; /* not correct if any byte overflows */
 	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
@@ -123,6 +121,7 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
 	
+	uint16_t divider = (1000000ULL*modfreq/sns_irTransceive_BaseFrq);
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
 	/* Counter for buffer */
 	uint8_t i = 0;
@@ -141,12 +140,13 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 		}
 		else
 		{
-			if (buffer[i] >= (2^8))
+			uint16_t data = buffer[i]/divider;
+			if (data >= (2^8))
 			{
 				/* If data does not fit into 8 bit, then split, memorize low byte */
-				mem = buffer[i]&0xff;
+				mem = data&0xff;
 				/* Buffer high byte */
-				msg.Data[j] = (buffer[i]>>8)&0xff;
+				msg.Data[j] = (data>>8)&0xff;
 				j++;
 				if (j==8)
 				{
@@ -162,7 +162,7 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 			}
 			else
 			{
-				msg.Data[j] = buffer[i]&0xff;
+				msg.Data[j] = data&0xff;
 			}
 			
 			i++;
@@ -215,7 +215,7 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 #endif
 
 
-void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power)
+void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power, uint8_t modfreq)
 {
 	if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
 	{
@@ -225,6 +225,7 @@ void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power)
 #if IR_TX_ENABLE==1
 			irTxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
 #endif
+			irRxChannel[channel].modfreq = modfreq;
 			irRxChannel[channel].rxbuf = buf[channel];
 			switch (channel)
 			{
@@ -251,7 +252,7 @@ void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power)
 #if IR_RX_ENABLE==1
 			irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
 #endif
-			
+			irTxChannel[channel].modfreq = modfreq;
 			irTxChannel[channel].txbuf = buf[channel];
 			switch (channel)
 			{
@@ -415,19 +416,22 @@ void sns_irTransceive_Init(void)
 	if (EEDATA_OK)
 	{
 	  /* Use stored data to set initial values for the module */
-		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower));
-		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower));
-		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower));
+		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower), eeprom_read_byte(EEDATA.ch0_modfreq));
+		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower), eeprom_read_byte(EEDATA.ch1_modfreq));
+		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower), eeprom_read_byte(EEDATA.ch2_modfreq));
 	}
 	else
 	{	
 	/* The CRC of the EEPROM is not correct, store default values and update CRC */
 		eeprom_write_byte_crc(EEDATA.ch0_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch0_txpower, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch0_modfreq, BaseFrq/38000, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_txpower, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch1_modfreq, BaseFrq/38000, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_txpower, 0, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch2_modfreq, BaseFrq/38000, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif	
@@ -482,7 +486,7 @@ void sns_irTransceive_Process(void)
 					irRxChannel[channel].proto.timeout=300;
 #endif
 #if sns_irTransceive_PRONTO_SUPPORT==1
-					send_pronto(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
+					send_pronto(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, channel, irRxChannel[channel].modfreq);
 					irRxChannel[channel].proto.timeout=300;
 #endif
 
@@ -658,8 +662,9 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			channel = rxMsg->Data[0]>>4;
 			uint8_t config = rxMsg->Data[0] & 0x0f;
 			uint8_t power = rxMsg->Data[1]>>6;
+			uint8_t modfreq = rxMsg->Data[2];
 			
-			sns_irTransceive_setConfig(channel, config, power);
+			sns_irTransceive_setConfig(channel, config, power, modfreq);
 
 #ifdef sns_irTransceive_USEEEPROM
 			if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
@@ -669,14 +674,17 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 					case 0:
 						eeprom_write_byte_crc(EEDATA.ch0_config, config, WITHOUT_CRC);
 						eeprom_write_byte_crc(EEDATA.ch0_txpower, power, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch0_modfreq, modfreq, WITHOUT_CRC);
 						break;
 					case 1:
 						eeprom_write_byte_crc(EEDATA.ch1_config, config, WITHOUT_CRC);
 						eeprom_write_byte_crc(EEDATA.ch1_txpower, power, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch1_modfreq, modfreq, WITHOUT_CRC);
 						break;
 					case 2:
 						eeprom_write_byte_crc(EEDATA.ch2_config, config, WITHOUT_CRC);
 						eeprom_write_byte_crc(EEDATA.ch2_txpower, power, WITHOUT_CRC);
+						eeprom_write_byte_crc(EEDATA.ch2_modfreq, modfreq, WITHOUT_CRC);
 						break;
 					default:
 						break;
