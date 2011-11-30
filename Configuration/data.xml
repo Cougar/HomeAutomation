@@ -188,6 +188,7 @@
 	    	<value id="2" name="Receive"/>
 	    </variable>
         <variable name="Transmit power" type="uint" start_bit="8" bit_length="2" unit="" description="0 for lowest power, 3 for max"/>
+        <variable name="Modulation frequency" type="uint" start_bit="16" bit_length="8" unit="" description="4145146/modfreq"/>
       </variables>
     </command>
     <command id="130" name="IrProntoStart" type="specific" module="irTransceive" description="">
