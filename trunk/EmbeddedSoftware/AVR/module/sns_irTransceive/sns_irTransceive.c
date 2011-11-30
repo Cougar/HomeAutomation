@@ -124,8 +124,11 @@ void send_pronto(uint16_t *buffer, uint8_t len) {
 	_delay_ms(1);
 	
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
+	/* Counter for buffer */
 	uint8_t i = 0;
+	/* Counter for filling can frame data */
 	uint8_t j = 0;
+	/* Remember byte if data does not fit 8 bit */
 	uint8_t mem = 0;
 	while (i < len)
 	{
