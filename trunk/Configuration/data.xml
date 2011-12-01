@@ -193,7 +193,8 @@
     </command>
     <command id="130" name="IrProntoStart" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Format" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+        <variable name="Format" type="uint" start_bit="4" bit_length="12" unit="" description=""/>
         <variable name="wFrqDiv" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
         <variable name="OnceSeqLen" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
         <variable name="RepSeqLen" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
@@ -201,7 +202,8 @@
     </command>
     <command id="130" name="IrProntoTiming" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Format" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Mode" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
       </variables>
     </command>
     <command id="131" name="IrProntoData1" type="specific" module="irTransceive" description="">

@@ -102,6 +102,8 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
 	StdCan_Msg_t msg;
 
+	/* TODO send timing command */
+
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(msg.Header, DIRECTIONFLAG_FROM_OWNER);
 	msg.Length = 8;
@@ -109,7 +111,7 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	msg.Header.ModuleId = sns_irTransceive_ID;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
 	
-	msg.Data[0] = 0x00;	/* Prontoformat 0x0000 */
+	msg.Data[0] = ((channel<<4)|0x0);	/* Channel and Prontoformat 0x000 */
 	msg.Data[1] = 0x00;
 	msg.Data[2] = 0x00;	/* Freq divider */
 	msg.Data[3] = modfreq;
@@ -178,16 +180,44 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 			j=0;
 			msg.Header.Command++;
 		}
-		
 	}
 	
-	/* msg command kept from for loop, but increase 16 to send ProntoEnd */
-	msg.Header.Command+=16;
-	msg.Length = j;
-	/* data kept from loop */
-	/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
-	_delay_ms(1);
+	/* End with 25ms, TODO fix uglyness */
+	msg.Data[j] = ((IR_MAX_PULSE_WIDTH/divider)>>8)&0xff;
+	j++;
+	if (j==8)
+	{
+		/* If send buffer is full, send frame */
+		/* can buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+		j=0;
+		msg.Header.Command++;
+	}
+	msg.Data[j] = 0;
+	j++;
+	msg.Data[j] = (IR_MAX_PULSE_WIDTH/divider)&0xff;
+	j++;
+	if (j==8)
+	{
+		/* If send buffer is full, send frame */
+		/* can buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+		j=0;
+		msg.Header.Command++;
+	}
+	
+	if (j>0)
+	{
+		/* msg command kept from for loop, but increase 16 to send ProntoEnd */
+		msg.Header.Command+=16;
+		msg.Length = j;
+		/* data kept from loop */
+		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+	}
 }
 #endif
 
