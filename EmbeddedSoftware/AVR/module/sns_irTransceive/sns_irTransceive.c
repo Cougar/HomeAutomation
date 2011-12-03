@@ -96,7 +96,6 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #ifndef sns_irTransceive_PRONTO_SUPPORT
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
-
 #if sns_irTransceive_PRONTO_SUPPORT==1
 #define sns_irTransceive_BaseFrq (4145146ULL)
 void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
@@ -455,13 +454,13 @@ void sns_irTransceive_Init(void)
 	/* The CRC of the EEPROM is not correct, store default values and update CRC */
 		eeprom_write_byte_crc(EEDATA.ch0_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch0_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch0_modfreq, BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch0_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch1_modfreq, BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch1_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch2_modfreq, BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_byte_crc(EEDATA.ch2_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif	
