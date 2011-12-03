@@ -200,13 +200,13 @@
         <variable name="RepSeqLen" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
       </variables>
     </command>
-    <command id="130" name="IrProntoTiming" type="specific" module="irTransceive" description="">
+    <command id="131" name="IrProntoTiming" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Mode" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
         <variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
       </variables>
     </command>
-    <command id="131" name="IrProntoData1" type="specific" module="irTransceive" description="">
+    <command id="132" name="IrProntoData1" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -218,7 +218,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="132" name="IrProntoData2" type="specific" module="irTransceive" description="">
+    <command id="133" name="IrProntoData2" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -230,7 +230,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="133" name="IrProntoData3" type="specific" module="irTransceive" description="">
+    <command id="134" name="IrProntoData3" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -242,7 +242,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="134" name="IrProntoData4" type="specific" module="irTransceive" description="">
+    <command id="135" name="IrProntoData4" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -254,7 +254,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="135" name="IrProntoData5" type="specific" module="irTransceive" description="">
+    <command id="136" name="IrProntoData5" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -266,7 +266,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="136" name="IrProntoData6" type="specific" module="irTransceive" description="">
+    <command id="137" name="IrProntoData6" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -278,7 +278,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="137" name="IrProntoData7" type="specific" module="irTransceive" description="">
+    <command id="138" name="IrProntoData7" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -290,7 +290,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="138" name="IrProntoData8" type="specific" module="irTransceive" description="">
+    <command id="139" name="IrProntoData8" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -302,7 +302,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="139" name="IrProntoData9" type="specific" module="irTransceive" description="">
+    <command id="140" name="IrProntoData9" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -314,7 +314,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="140" name="IrProntoData10" type="specific" module="irTransceive" description="">
+    <command id="141" name="IrProntoData10" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -326,7 +326,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="141" name="IrProntoData11" type="specific" module="irTransceive" description="">
+    <command id="142" name="IrProntoData11" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -338,7 +338,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="142" name="IrProntoData12" type="specific" module="irTransceive" description="">
+    <command id="143" name="IrProntoData12" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -350,7 +350,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="143" name="IrProntoData13" type="specific" module="irTransceive" description="">
+    <command id="144" name="IrProntoData13" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -362,7 +362,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="144" name="IrProntoData14" type="specific" module="irTransceive" description="">
+    <command id="145" name="IrProntoData14" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -374,7 +374,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="145" name="IrProntoData15" type="specific" module="irTransceive" description="">
+    <command id="146" name="IrProntoData15" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -386,7 +386,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="146" name="IrProntoData16" type="specific" module="irTransceive" description="">
+    <command id="147" name="IrProntoData16" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -398,7 +398,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="147" name="IrProntoEnd1" type="specific" module="irTransceive" description="">
+    <command id="148" name="IrProntoEnd1" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -410,7 +410,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="148" name="IrProntoEnd2" type="specific" module="irTransceive" description="">
+    <command id="149" name="IrProntoEnd2" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -422,7 +422,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="149" name="IrProntoEnd3" type="specific" module="irTransceive" description="">
+    <command id="150" name="IrProntoEnd3" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -434,7 +434,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="150" name="IrProntoEnd4" type="specific" module="irTransceive" description="">
+    <command id="151" name="IrProntoEnd4" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -446,7 +446,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="151" name="IrProntoEnd5" type="specific" module="irTransceive" description="">
+    <command id="152" name="IrProntoEnd5" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -458,7 +458,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="152" name="IrProntoEnd6" type="specific" module="irTransceive" description="">
+    <command id="153" name="IrProntoEnd6" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -470,7 +470,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="153" name="IrProntoEnd7" type="specific" module="irTransceive" description="">
+    <command id="154" name="IrProntoEnd7" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -482,7 +482,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="154" name="IrProntoEnd8" type="specific" module="irTransceive" description="">
+    <command id="155" name="IrProntoEnd8" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -494,7 +494,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="155" name="IrProntoEnd9" type="specific" module="irTransceive" description="">
+    <command id="156" name="IrProntoEnd9" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -506,7 +506,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="156" name="IrProntoEnd10" type="specific" module="irTransceive" description="">
+    <command id="157" name="IrProntoEnd10" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -518,7 +518,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="157" name="IrProntoEnd11" type="specific" module="irTransceive" description="">
+    <command id="158" name="IrProntoEnd11" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -530,7 +530,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="158" name="IrProntoEnd12" type="specific" module="irTransceive" description="">
+    <command id="159" name="IrProntoEnd12" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -542,7 +542,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="159" name="IrProntoEnd13" type="specific" module="irTransceive" description="">
+    <command id="160" name="IrProntoEnd13" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -554,7 +554,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="160" name="IrProntoEnd14" type="specific" module="irTransceive" description="">
+    <command id="161" name="IrProntoEnd14" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -566,7 +566,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="161" name="IrProntoEnd15" type="specific" module="irTransceive" description="">
+    <command id="162" name="IrProntoEnd15" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -578,7 +578,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="162" name="IrProntoEnd16" type="specific" module="irTransceive" description="">
+    <command id="163" name="IrProntoEnd16" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
@@ -590,7 +590,7 @@
         <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
-    <command id="163" name="IrProntoEnd17" type="specific" module="irTransceive" description="">
+    <command id="164" name="IrProntoEnd17" type="specific" module="irTransceive" description="">
      <variables>
         <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
         <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
