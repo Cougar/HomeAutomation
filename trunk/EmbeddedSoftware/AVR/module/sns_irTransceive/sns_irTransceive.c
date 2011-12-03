@@ -142,7 +142,7 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 		else
 		{
 			uint16_t data = buffer[i]/divider;
-			if (data >= (2^8))
+			if (data >= 256)
 			{
 				/* If data does not fit into 8 bit, then split, memorize low byte */
 				mem = data&0xff;
