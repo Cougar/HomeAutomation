@@ -111,7 +111,7 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	msg.Header.ModuleId = sns_irTransceive_ID;
 	
-	/* TODO send timing command */
+	/* Send timing command */
 	msg.Length = 5;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOTIMING;
 	uint32_t currentTime=Timer_GetTicks();
@@ -127,6 +127,7 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	}
 	sns_irTransceive_LastPronto=currentTime;
 
+	/* Send pronto start */
 	msg.Length = 8;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
 
@@ -135,13 +136,14 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	msg.Data[2] = 0x00;	/* Freq divider */
 	msg.Data[3] = modfreq;
 	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
-	msg.Data[5] = 0x00;	//len/2; /* not correct if any byte overflows */
+	msg.Data[5] = len/2;
 	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
 	msg.Data[7] = 0x00;
 	
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
-	
+
+	/* Send pronto data */
 	uint16_t divider = (1000000ULL*modfreq/sns_irTransceive_BaseFrq);
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
 	/* Counter for buffer */
