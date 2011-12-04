@@ -66,7 +66,6 @@ int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *prot
 #if (IR_PROTOCOLS_USE_SKY)
 int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
-
 #if (IR_PROTOCOLS_USE_NEXA2)
 int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
@@ -91,6 +90,7 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+//int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
@@ -115,7 +115,9 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define TIMER_PRESC			8
 
 #define IR_MIN_PULSE_WIDTH	5									//us
+#ifndef IR_MAX_PULSE_WIDTH
 #define IR_MAX_PULSE_WIDTH	12000								//us
+#endif
 
 /* RC5 Implementation
  * Receiver: DONE
