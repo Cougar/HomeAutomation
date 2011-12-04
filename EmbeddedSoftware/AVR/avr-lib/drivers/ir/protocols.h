@@ -124,7 +124,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_PROTO_RC5		0
 #define IR_RC5_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_RC5_BIT			889*2*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_RC5_TIMEOUT		105									//ms	(time between ir frames)
+#define IR_RC5_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_RC5_REPS			1									//		(minimum number of times to repeat code)
 #define IR_RC5_F_MOD		36									//kHz	(modulation frequency)
 #define IR_RC5_TOL_DIV		4
@@ -135,7 +135,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  */
 #define IR_PROTO_RC6		1
 #define IR_RC6_ST_BIT		1*CYCLES_PER_US/TIMER_PRESC			//us
-#define IR_RC6_TIMEOUT		1									//ms	(time between ir frames)
+#define IR_RC6_TIMEOUT		(50-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_RC6_REPS			1									//		(minimum number of times to repeat code)
 #define IR_RC6_F_MOD		36									//kHz	(modulation frequency)
 #define IR_RC6_TOL_DIV		4
@@ -146,7 +146,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  */
 #define IR_PROTO_RCMM		2
 #define IR_RCMM_ST_BIT		256*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_RCMM_TIMEOUT 	158									//ms	(time between ir frames)
+#define IR_RCMM_TIMEOUT 	(170-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_RCMM_REPS		1									//		(minimum number of times to repeat code)
 #define IR_RCMM_F_MOD		36									//kHz	(modulation frequency)
 #define IR_RCMM_TOL_DIV		4
@@ -160,7 +160,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SIRC_LOW			600*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SIRC_HIGH_ONE	1200*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SIRC_HIGH_ZERO	600*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SIRC_TIMEOUT		40									//ms	(time between ir frames)
+#define IR_SIRC_TIMEOUT		(52-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_SIRC_REPS		3									//		(minimum number of times to repeat code)
 #define IR_SIRC_F_MOD		40									//kHz	(modulation frequency)
 #define IR_SIRC_TOL_DIV		4
@@ -173,7 +173,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SHARP_HIGH		280*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SHARP_LOW_ONE	1850*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SHARP_LOW_ZERO	780*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SHARP_TIMEOUT	55									//ms	(time between ir frames)
+#define IR_SHARP_TIMEOUT	(67-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_SHARP_REPS		2									//		(minimum number of times to repeat code)
 #define IR_SHARP_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SHARP_TOL_DIV	4
@@ -188,7 +188,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEC_LOW_ONE		1690*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEC_LOW_ZERO		560*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEC_HIGH			560*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_TIMEOUT		110									//ms	(time between ir frames)
+#define IR_NEC_TIMEOUT		(122-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_NEC_ST_TIMEOUT	65									//ms	(time between first ir frames and second)
 #define IR_NEC_REPS			1									//		(minimum number of times to repeat code)
 #define IR_NEC_F_MOD		38									//kHz	(modulation frequency)
@@ -204,7 +204,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SAMS_LOW_ONE		1720*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SAMS_LOW_ZERO	650*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SAMS_HIGH		500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_TIMEOUT		50									//ms	(time between ir frames)
+#define IR_SAMS_TIMEOUT		(62-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_SAMS_REPS		1									//		(minimum number of times to repeat code)
 #define IR_SAMS_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SAMS_TOL_DIV		4
@@ -216,7 +216,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_PROTO_MARANTZ		7
 #define IR_MARANTZ_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_MARANTZ_BIT			889*2*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_MARANTZ_TIMEOUT		105									//ms	(time between ir frames)
+#define IR_MARANTZ_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_MARANTZ_REPS			1									//		(minimum number of times to repeat code)
 #define IR_MARANTZ_F_MOD		36									//kHz	(modulation frequency)
 #define IR_MARANTZ_TOL_DIV		4
@@ -231,7 +231,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_PANA_LOW_ONE		1240*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_LOW_ZERO	400*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_PANA_HIGH		495*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_TIMEOUT		80									//ms	(time between ir frames)
+#define IR_PANA_TIMEOUT		(92-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_PANA_REPS		1									//		(minimum number of times to repeat code)
 #define IR_PANA_F_MOD		38									//kHz	(modulation frequency)
 #define IR_PANA_TOL_DIV		4
@@ -244,7 +244,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SKY_ST_BIT		2800*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SKY_SHORT		460*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_SKY_LONG			920*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SKY_TIMEOUT		150									//ms	(time between ir frames)
+#define IR_SKY_TIMEOUT		(162-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_SKY_REPS			1									//		(minimum number of times to repeat code)
 #define IR_SKY_F_MOD		38									//kHz	(modulation frequency)
 #define IR_SKY_TOL_DIV		4
@@ -259,7 +259,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEXA2_HIGH 		320*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEXA2_LOW_ONE	210*CYCLES_PER_US/TIMER_PRESC		//us
 #define IR_NEXA2_LOW_ZERO	1200*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEXA2_TIMEOUT	10									//ms	(time between ir frames)
+#define IR_NEXA2_TIMEOUT	(22-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
 #define IR_NEXA2_REPS		4									//		(minimum number of times to repeat code)
 #define IR_NEXA2_TOL_DIV	4
 
