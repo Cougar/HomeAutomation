@@ -93,23 +93,43 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 }
 #endif
 
+#define sns_irTransceive_BaseFrq (4145146ULL)
+
 #ifndef sns_irTransceive_PRONTO_SUPPORT
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
+
 #if sns_irTransceive_PRONTO_SUPPORT==1
-#define sns_irTransceive_BaseFrq (4145146ULL)
+volatile uint32_t sns_irTransceive_LastPronto=0;
+#define sns_irTransceive_MAXTIMING (16*1000)
+
 void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
 	StdCan_Msg_t msg;
 
-	/* TODO send timing command */
-
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(msg.Header, DIRECTIONFLAG_FROM_OWNER);
-	msg.Length = 8;
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	msg.Header.ModuleId = sns_irTransceive_ID;
-	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
 	
+	/* TODO send timing command */
+	msg.Length = 5;
+	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOTIMING;
+	uint32_t currentTime=Timer_GetTicks();
+	if ((currentTime < sns_irTransceive_LastPronto+sns_irTransceive_MAXTIMING) && (sns_irTransceive_LastPronto != 0))
+	{
+		msg.Data[0] = 0xff;
+		msg.Data[1] = 0x10;
+		msg.Data[2] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>16)&0xff;
+		msg.Data[3] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>8)&0xff;
+		msg.Data[4] = ((currentTime-sns_irTransceive_LastPronto)*1000)&0xff;
+		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+	}
+	sns_irTransceive_LastPronto=currentTime;
+
+	msg.Length = 8;
+	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
+
 	msg.Data[0] = ((channel<<4)|0x0);	/* Channel and Prontoformat 0x000 */
 	msg.Data[1] = 0x00;
 	msg.Data[2] = 0x00;	/* Freq divider */

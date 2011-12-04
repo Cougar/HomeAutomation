@@ -202,7 +202,8 @@
     </command>
     <command id="131" name="IrProntoTiming" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Mode" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+        <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
       </variables>
     </command>
