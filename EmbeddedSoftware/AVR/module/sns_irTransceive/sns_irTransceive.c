@@ -532,21 +532,17 @@ void sns_irTransceive_Process(void)
 				else if (irRxChannel[channel].proto.protocol == IR_PROTO_UNKNOWN) 
 				{
 #if (sns_irTransceive_SEND_DEBUG==1)
-#if sns_irTransceive_PRONTO_SUPPORT==0
 					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 					irRxChannel[channel].proto.timeout=300;
-#endif
-#if sns_irTransceive_PRONTO_SUPPORT==1
+#elif sns_irTransceive_PRONTO_SUPPORT==1
 					send_pronto(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, channel, irRxChannel[channel].modfreq);
-					irRxChannel[channel].proto.timeout=300;
-#endif
-
+					irRxChannel[channel].proto.timeout=1;
 #endif
 				}
-				
+
 				/* Enable the receiver again */
 				IrTransceiver_EnableRx(channel);
-				
+
 				irRxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
 			}
 			break;
