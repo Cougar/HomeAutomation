@@ -10,6 +10,10 @@ uint8_t pinStatus[8];
 #define IO_HIGH		1
 #define IO_LOW		0
 
+#ifndef sns_input_SEND_PERIODIC
+#define sns_input_SEND_PERIODIC 0
+#endif
+
 /*
 
 Callback function that is called from pin-change driver on AVR IO
@@ -196,16 +200,17 @@ void sns_input_PCA95xx_callback(uint16_t status)
 #endif 
 
 
-#if sns_input_ENABLE_PCA95xx==1
 /*
 
-Function that initiates status variables for PCA95xx pins
+Function that initiates status variables for pins
 called at statup
 
 */
-void sns_input_setPCA95xxPinStatus(void)
+void sns_input_setPinStatus(void)
 {
+#if sns_input_ENABLE_PCA95xx==1
 	uint16_t status = Pca95xx_GetInputs();
+#endif
 #ifdef	sns_input_CH0
 #if sns_input_CH0PCA95xxIO==1
 	if (((status>>sns_input_CH0)&0x1) != IO_LOW) {
@@ -213,6 +218,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[0] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH0)) {
+		pinStatus[0] = HIGH_NOCH;
+	} else {
+		pinStatus[0] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH1
@@ -222,6 +233,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[1] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH1)) {
+		pinStatus[1] = HIGH_NOCH;
+	} else {
+		pinStatus[1] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH2
@@ -231,6 +248,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[2] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH2)) {
+		pinStatus[2] = HIGH_NOCH;
+	} else {
+		pinStatus[2] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH3
@@ -240,6 +263,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[3] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH3)) {
+		pinStatus[3] = HIGH_NOCH;
+	} else {
+		pinStatus[3] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH4
@@ -249,6 +278,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[4] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH4)) {
+		pinStatus[4] = HIGH_NOCH;
+	} else {
+		pinStatus[4] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH5
@@ -258,6 +293,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[5] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH5)) {
+		pinStatus[5] = HIGH_NOCH;
+	} else {
+		pinStatus[5] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH6
@@ -267,6 +308,12 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[6] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH6)) {
+		pinStatus[6] = HIGH_NOCH;
+	} else {
+		pinStatus[6] = LOW_NOCH;
+	}	
 #endif
 #endif
 #ifdef	sns_input_CH7
@@ -276,23 +323,18 @@ void sns_input_setPCA95xxPinStatus(void)
 	} else {
 		pinStatus[7] = LOW_NOCH;
 	}
+#else
+	if (gpio_get_state(sns_input_CH7)) {
+		pinStatus[7] = HIGH_NOCH;
+	} else {
+		pinStatus[7] = LOW_NOCH;
+	}	
 #endif
 #endif
 }
-#endif 
 
 void sns_input_Init(void)
 {
-	pinStatus[0] = NOCHANGE;
-	pinStatus[1] = NOCHANGE;
-	pinStatus[2] = NOCHANGE;
-	pinStatus[3] = NOCHANGE;
-	pinStatus[4] = NOCHANGE;
-	pinStatus[5] = NOCHANGE;
-	pinStatus[6] = NOCHANGE;
-	pinStatus[7] = NOCHANGE;
-	uint8_t index = 0;
-
 #if sns_input_ENABLE_PCA95xx==1
 	Pca95xx_SetCallback(sns_input_PCA95XX_CALLBACK_INDEX, &sns_input_PCA95xx_callback);
 	Pca95xx_Init(0);
@@ -310,7 +352,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH0);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH1
 #if sns_input_CH1PCA95xxIO==0
@@ -324,7 +365,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH1);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH2
 #if sns_input_CH2PCA95xxIO==0
@@ -338,7 +378,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH2);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH3
 #if sns_input_CH3PCA95xxIO==0
@@ -352,7 +391,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH3);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH4
 #if sns_input_CH4PCA95xxIO==0
@@ -366,7 +404,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH4);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH5
 #if sns_input_CH5PCA95xxIO==0
@@ -380,7 +417,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH5);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH6
 #if sns_input_CH6PCA95xxIO==0
@@ -394,7 +430,6 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH6);
 #endif
-		index++;
 #endif
 #ifdef	sns_input_CH7
 #if sns_input_CH7PCA95xxIO==0
@@ -408,16 +443,18 @@ void sns_input_Init(void)
 #else
 		Pca95xx_set_in(sns_input_CH7);
 #endif
-		index++;
 #endif
 
-#if sns_input_ENABLE_PCA95xx==1
-	sns_input_setPCA95xxPinStatus();
-#endif 
+
+	sns_input_setPinStatus();
 
 	Timer_SetTimeout(sns_input_DEBOUNCE_TIMER, sns_input_DEBOUNCE_TIME_MS, TimerTypeFreeRunning, 0);
+	Timer_SetTimeout(sns_input_SEND_PERIODIC_TIMER, sns_input_SEND_PERIOD_MS, TimerTypeFreeRunning, 0);
 }
 
+#if sns_input_SEND_PERIODIC==1
+uint8_t ChannelToSend = 0;
+#endif
 void sns_input_Process(void)
 {
 	if (Timer_Expired(sns_input_DEBOUNCE_TIMER))
@@ -440,10 +477,125 @@ void sns_input_Process(void)
 					txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
 					pinStatus[index] = LOW_NOCH;
 				}
-				while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+				StdCan_Put(&txMsg);
 			}
 		}
 	}
+	
+#if sns_input_SEND_PERIODIC==1
+	if (Timer_Expired(sns_input_SEND_PERIODIC_TIMER))
+	{
+		StdCan_Msg_t txMsg;
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_INPUT;
+		txMsg.Header.ModuleId = sns_input_ID;
+		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PINSTATUS;
+		txMsg.Length = 2;
+		txMsg.Data[0] = ChannelToSend;
+#ifdef sns_input_CH0
+		if (ChannelToSend==0)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH1
+		if (ChannelToSend==1)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH2
+		if (ChannelToSend==2)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH3
+		if (ChannelToSend==3)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH4
+		if (ChannelToSend==4)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH5
+		if (ChannelToSend==5)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH6
+		if (ChannelToSend==6)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+#ifdef sns_input_CH7
+		if (ChannelToSend==7)
+		{
+			if (pinStatus[ChannelToSend] == HIGH || pinStatus[ChannelToSend] == HIGH_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_HIGH;
+			} else if (pinStatus[ChannelToSend] == LOW || pinStatus[ChannelToSend] == LOW_NOCH) {
+				txMsg.Data[1] = CAN_MODULE_ENUM_PHYSICAL_PINSTATUS_STATUS_LOW;
+			}
+
+			StdCan_Put(&txMsg);
+		}
+#endif
+
+		if (ChannelToSend++ >=8)
+		{
+			ChannelToSend=0;
+		}
+	}
+#endif
 }
 
 void sns_input_HandleMessage(StdCan_Msg_t *rxMsg)
