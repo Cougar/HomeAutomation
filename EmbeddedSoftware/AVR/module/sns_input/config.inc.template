@@ -37,6 +37,10 @@ sns_input_PCINT_CH0=<PCINT>
 sns_input_DEBOUNCE_TIMER=<TIMER>
 sns_input_DEBOUNCE_TIME_MS=20
 
+#sns_input_SEND_PERIODIC=1
+sns_input_SEND_PERIODIC_TIMER=<TIMER>
+sns_input_SEND_PERIOD_MS=5000
+
 
 # Enable these lines if PCA95xx is used
 #USE_PCA95XX=1
