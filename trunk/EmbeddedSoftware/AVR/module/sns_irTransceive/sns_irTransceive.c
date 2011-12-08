@@ -229,16 +229,13 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 		msg.Header.Command++;
 	}
 	
-	if (j>0)
-	{
-		/* msg command kept from for loop, but increase 16 to send ProntoEnd */
-		msg.Header.Command+=16;
-		msg.Length = j;
-		/* data kept from loop */
-		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
-		_delay_ms(1);
-	}
+	/* Msg command kept from for loop, but increase 16 to send ProntoEnd */
+	msg.Header.Command+=16;
+	msg.Length = j;
+	/* data kept from loop, if any */
+	/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
+	_delay_ms(1);
 }
 #endif
 
