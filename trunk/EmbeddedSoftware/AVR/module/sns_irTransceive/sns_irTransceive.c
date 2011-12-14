@@ -595,7 +595,7 @@ void sns_irTransceive_Process(void)
 		case sns_irTransceive_STATE_START_TRANSMIT:
 			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK)
 			{
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, irTxChannel[channel].txlen);
+				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen);
 				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			}
 			else

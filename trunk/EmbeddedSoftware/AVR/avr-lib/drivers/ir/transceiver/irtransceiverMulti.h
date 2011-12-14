@@ -52,7 +52,7 @@
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t length);
+void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length);
 
 void IrTransceiver_Init(void);
 uint8_t IrTransceiver_GetStoreEnableRx(uint8_t channel);
