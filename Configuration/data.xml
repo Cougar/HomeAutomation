@@ -223,7 +223,15 @@
      <variables>
         <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Response" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+        <variable name="Response" type="enum" start_bit="16" bit_length="8" unit="" description="">
+        	<value id="0" name="Ok"/>
+	    	<value id="1" name="Stopped"/>
+	    	<value id="2" name="Waiting"/>
+	    	<value id="4" name="Transmitting"/>
+	    	<value id="241" name="Already stopped"/>
+	    	<value id="243" name="Aborted"/>
+	    	<value id="255" name="Error"/>
+	    </variable>
       </variables>
     </command>
     <command id="135" name="IrProntoData1" type="specific" module="irTransceive" description="">
