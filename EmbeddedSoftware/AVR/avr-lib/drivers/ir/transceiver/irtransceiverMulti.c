@@ -387,21 +387,21 @@ void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volat
 	}
 }
 
-void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t length)
+void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length)
 {
 	uint16_t diff;
 	uint8_t findchannel;
 
-	if (length > 0)
+	if (length > start)
 	{
 		if (drvIrTxChannel[channel].timeoutEnable == FALSE)
 		{
 			drvIrTxChannel[channel].timeoutEnable = TRUE;
 			drvIrTxChannel[channel].txbuf = buffer;
-			drvIrTxChannel[channel].txlen = length;
+			drvIrTxChannel[channel].txlen = start+length;
 			/* first value will be loaded directly to timer below, therefore index is set to 1 here */
-			drvIrTxChannel[channel].txindex = 1; 
-			drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[0];
+			drvIrTxChannel[channel].txindex = 1+start; 
+			drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[start];
 
 
 			findchannel = 0;
