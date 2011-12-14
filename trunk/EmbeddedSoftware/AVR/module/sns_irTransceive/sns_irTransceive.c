@@ -670,6 +670,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleId == sns_irTransceive_ID)
 	{
 		uint8_t channel;
+		uint8_t length = rxMsg->Length;
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
@@ -700,6 +701,86 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 			}
 			break;
+		
+		/* TODO: add struct which stores pronto info: 
+		channel, pronto receive state, buffer length of once burst pairs, buffer length of repeat burst pairs */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART:
+			/* TODO: check pronto state, response is different if already sending data */
+			if (((rxMsg->Data[0]&0xf) == 0) && rxMsg->Data[1] == 0)
+			{
+				uint8_t channel = (rxMsg->Data[0]>>4)&0xf;
+				/* TODO: add channel to pronto struct */
+				/* TODO: find freqdiv, number of once burst pairs, number of repeat burst pairs */
+				uint8_t modfreq;
+				uint8_t oncebursts;
+				uint8_t repeatbursts;
+				/* TODO: add to pronto struct */
+			}
+			
+			/* TODO: Send response frame */
+			break;
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTOP:
+			/* TODO: stop sending IR */
+			
+			/* TODO: Send response frame */
+			break;
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOCONTINUE:
+			/* TODO: reset timeout to continue sending repeat sequences */
+			
+			/* TODO: Send response frame */
+			break;
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA2:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA3:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA4:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA5:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA6:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA7:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA8:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA9:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA10: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA11: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA12: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA13: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA14: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA15: /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA16: /* Fall through */
+			; /* Added to avoid compilation error "a label can only be part of a statement ..." */
+			uint8_t dataindex = rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
+			for (uint8_t i=0; i<length; i++)
+			{
+				/* TODO: pack data into buffer irTxChannel[channel].txbuf */
+			}
+			break;
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND2:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND3:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND4:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND5:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND6:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND7:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND8:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND9:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND10:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND11:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND12:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND13:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND14:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND15:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND16:	 /* Fall through */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND17:	 /* Fall through */
+			; /* Added to avoid compilation error "a label can only be part of a statement ..." */
+			uint8_t endindex = rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1;
+			/* TODO: pack data, if any, into buffer irTxChannel[channel].txbuf */
+
+			/* TODO: Last byte contains once/repeat information */
+			
+			/* TODO: Send response frame */
+			
+			/* TODO: start transmitt ir! */
+			break;
+
+/* TODO: In IR state machine add sending a response frame when ir stops sending, also implement pronto repeat */
 #endif
 		
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG:
