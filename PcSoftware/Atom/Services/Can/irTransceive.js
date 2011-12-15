@@ -1,4 +1,5 @@
 
+
 function irTransceive(type, name, id)
 {
 	this.CanService(type, name, id);
@@ -79,3 +80,41 @@ irTransceive.prototype.sendConfig = function(channel, direction, power, modfreq)
 	sendMessage(canMessage2);
 }
 
+irTransceive.prototype.sendProntoTest = function(channel)
+{
+	// pronto start
+	var msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoStart");
+	msg.setData("Channel", channel);
+	msg.setData("Format", 0);
+	msg.setData("wFrqDiv", 109); // 4.145146MHz / 38kHz
+	msg.setData("OnceSeqLen", 8);
+	msg.setData("RepSeqLen", 0);
+	sendMessage(msg);
+	sleep(1);
+	
+	// pronto data
+	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoData1");
+	msg.setData("Act1", 20);
+	msg.setData("Pas1", 100);
+	msg.setData("Act2", 12);
+	msg.setData("Pas2", 25);
+	msg.setData("Act3", 1);
+	msg.setData("Pas3", 200);
+	msg.setData("Act4", 65);
+	msg.setData("Pas4", 13);
+	sendMessage(msg);
+	sleep(1);
+	
+	// pronto data/end
+	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoEnd2");
+	msg.setData("Act1", 220);
+	msg.setData("Pas1", 20);
+	msg.setData("Act2", 2);
+	msg.setData("Pas2", 75);
+	msg.setData("Act3", 19);
+	msg.setData("Pas3", 2);
+	msg.setData("Act4", 73);
+	msg.setData("Pas4", 37);
+	sendMessage(msg);
+	sleep(1);
+}
