@@ -43,6 +43,10 @@ struct {
 	Ir_Protocol_Data_t	proto;
 	uint8_t				stopSend;
 	uint8_t				sendComplete;
+	// pronto params
+	uint8_t				onceSeqLen;
+	uint8_t				repSeqLen;
+	uint8_t				numberOfRepeats;
 } irTxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
@@ -96,11 +100,12 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #define sns_irTransceive_BaseFrq (4145146ULL)
 
 #ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 0
+#define sns_irTransceive_PRONTO_SUPPORT 1
 #endif
 
 #if sns_irTransceive_PRONTO_SUPPORT==1
 volatile uint32_t sns_irTransceive_LastPronto=0;
+static uint8_t activeChannel = 0;
 #define sns_irTransceive_MAXTIMING (16*1000)
 
 void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
@@ -144,7 +149,7 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	_delay_ms(1);
 
 	/* Send pronto data */
-	uint16_t divider = (1000000ULL*modfreq/sns_irTransceive_BaseFrq);
+	uint16_t divider = ((1000000ULL*modfreq)/sns_irTransceive_BaseFrq);
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
 	/* Counter for buffer */
 	uint8_t i = 0;
@@ -603,7 +608,7 @@ void sns_irTransceive_Process(void)
 				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			}
 			break;
-		
+
 		case sns_irTransceive_STATE_TRANSMITTING:
 			if (irTxChannel[channel].sendComplete == TRUE)
 			{
@@ -669,13 +674,12 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_IRTRANSCEIVE && 
 		rxMsg->Header.ModuleId == sns_irTransceive_ID)
 	{
-		uint8_t channel;
-		uint8_t length = rxMsg->Length;
+		//printf("CMD= %u", rxMsg->Header.Command);
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
-		case CAN_MODULE_CMD_PHYSICAL_IR:
-			channel = rxMsg->Data[0]>>4;
+		case CAN_MODULE_CMD_PHYSICAL_IR: {
+			uint8_t channel = rxMsg->Data[0]>>4;
 			if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED && channel < IR_SUPPORTED_NUM_CHANNELS)
 			{
 				if (irTxChannel[channel].state == sns_irTransceive_STATE_IDLE)
@@ -701,24 +705,47 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				}
 			}
 			break;
+		}
 		
 		/* TODO: add struct which stores pronto info: 
 		channel, pronto receive state, buffer length of once burst pairs, buffer length of repeat burst pairs */
-		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART:
-			/* TODO: check pronto state, response is different if already sending data */
-			if (((rxMsg->Data[0]&0xf) == 0) && rxMsg->Data[1] == 0)
-			{
-				uint8_t channel = (rxMsg->Data[0]>>4)&0xf;
-				/* TODO: add channel to pronto struct */
-				/* TODO: find freqdiv, number of once burst pairs, number of repeat burst pairs */
-				uint8_t modfreq;
-				uint8_t oncebursts;
-				uint8_t repeatbursts;
-				/* TODO: add to pronto struct */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART: {
+
+			uint8_t channel = rxMsg->Data[0]>>4;
+			if (channel >= IR_SUPPORTED_NUM_CHANNELS) {
+				// invalid channel
+				break;
 			}
-			
+
+			if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE) {
+				// busy
+				break;
+			}
+
+			/* TODO: check pronto state, response is different if already sending data */
+			uint16_t format = (uint16_t)(rxMsg->Data[0] & 0x0F) << 8 | (uint16_t)(rxMsg->Data[1]);
+			if (format != 0) {
+				// unsupported format
+				break;
+			}
+
+			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO;
+
+			//irTxChannel[channel].modfreq = rxMsg->Data[2];
+			irTxChannel[channel].modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1); // for testing
+			irTxChannel[channel].proto.modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1);
+			irTxChannel[channel].proto.timeout = 40;
+			irTxChannel[channel].proto.repeats = 1;
+
+			irTxChannel[channel].onceSeqLen = rxMsg->Data[3];
+			irTxChannel[channel].repSeqLen = rxMsg->Data[4];
+
+			activeChannel = channel;
+
 			/* TODO: Send response frame */
 			break;
+		}
+
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTOP:
 			/* TODO: stop sending IR */
 			
@@ -729,6 +756,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			
 			/* TODO: Send response frame */
 			break;
+
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA2:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA3:	 /* Fall through */
@@ -744,14 +772,25 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA13: /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA14: /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA15: /* Fall through */
-		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA16: /* Fall through */
-			; /* Added to avoid compilation error "a label can only be part of a statement ..." */
-			uint8_t dataindex = rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
-			for (uint8_t i=0; i<length; i++)
-			{
-				/* TODO: pack data into buffer irTxChannel[channel].txbuf */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA16: {
+			if (activeChannel>=IR_SUPPORTED_NUM_CHANNELS) {
+				break;
+			}
+			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO) {
+				// invalid state
+				break;
+			}
+			if ((uint16_t)irTxChannel[activeChannel].txlen+(uint16_t)rxMsg->Length >= MAX_NR_TIMES) {
+				// too long
+				break;
+			}
+			for (uint8_t i=0; i<rxMsg->Length; i++) {
+				// TODO: (109 * 1) / (4.145146 MHz) = 27, fix formula with modfreq
+				irTxChannel[activeChannel].txbuf[irTxChannel[activeChannel].txlen++] = 27*rxMsg->Data[i];
 			}
 			break;
+		}
+
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND2:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND3:	 /* Fall through */
@@ -768,23 +807,42 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND14:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND15:	 /* Fall through */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND16:	 /* Fall through */
-		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND17:	 /* Fall through */
-			; /* Added to avoid compilation error "a label can only be part of a statement ..." */
-			uint8_t endindex = rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1;
-			/* TODO: pack data, if any, into buffer irTxChannel[channel].txbuf */
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND17: {
+			if (activeChannel>=IR_SUPPORTED_NUM_CHANNELS) {
+				break;
+			}
+			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO) {
+				// invalid state
+				break;
+			}
+			if ((uint16_t)irTxChannel[activeChannel].txlen + (uint16_t)(rxMsg->Length-1) >= MAX_NR_TIMES) {
+				// too long
+				break;
+			}
+			// end packet does not always contain data, last byte is reserved
+			for (uint8_t i=0; i<rxMsg->Length-1; i++) {
+				// TODO: (109 * 1) / (4.145146 MHz) = 27, fix formula with modfreq
+				irTxChannel[activeChannel].txbuf[irTxChannel[activeChannel].txlen++] = 27*rxMsg->Data[i];
+			}
+			// last byte tells what to do with IR data (nr of repeats)
+			irTxChannel[activeChannel].numberOfRepeats = rxMsg->Data[rxMsg->Length-1];
 
-			/* TODO: Last byte contains once/repeat information */
-			
+			// send
+			IrTransceiver_Transmit(activeChannel, irTxChannel[activeChannel].txbuf, 0, irTxChannel[activeChannel].txlen);
+			irTxChannel[activeChannel].state = sns_irTransceive_STATE_TRANSMITTING;
+
+			printf("SEND:%03u", irTxChannel[activeChannel].txlen);
+
 			/* TODO: Send response frame */
-			
-			/* TODO: start transmitt ir! */
+
 			break;
+		}
 
 /* TODO: In IR state machine add sending a response frame when ir stops sending, also implement pronto repeat */
 #endif
 		
-		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG:
-			channel = rxMsg->Data[0]>>4;
+		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG: {
+			uint8_t channel = rxMsg->Data[0]>>4;
 			uint8_t config = rxMsg->Data[0] & 0x0f;
 			uint8_t power = rxMsg->Data[1]>>6;
 			uint8_t modfreq = rxMsg->Data[2];
@@ -818,6 +876,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 #endif	
 			break;
+		}
 			
 		default:
 			break;

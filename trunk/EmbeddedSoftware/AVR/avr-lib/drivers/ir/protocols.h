@@ -29,15 +29,15 @@ typedef struct {
 
 /* Which protocols to use. These should perhaps be configuration options 
  * (config.inc). Only applies to receiver right now */
-#define IR_PROTOCOLS_USE_SIRC		1
-#define IR_PROTOCOLS_USE_RC5		1
-#define IR_PROTOCOLS_USE_SHARP		1
-#define IR_PROTOCOLS_USE_NEC		1
-#define IR_PROTOCOLS_USE_SAMSUNG	1
-#define IR_PROTOCOLS_USE_MARANTZ	1
-#define IR_PROTOCOLS_USE_PANASONIC	1
-#define IR_PROTOCOLS_USE_SKY		1
-#define IR_PROTOCOLS_USE_NEXA2		1
+#define IR_PROTOCOLS_USE_SIRC		0
+#define IR_PROTOCOLS_USE_RC5		0
+#define IR_PROTOCOLS_USE_SHARP		0
+#define IR_PROTOCOLS_USE_NEC		0
+#define IR_PROTOCOLS_USE_SAMSUNG	0
+#define IR_PROTOCOLS_USE_MARANTZ	0
+#define IR_PROTOCOLS_USE_PANASONIC	0
+#define IR_PROTOCOLS_USE_SKY		0
+#define IR_PROTOCOLS_USE_NEXA2		0
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success

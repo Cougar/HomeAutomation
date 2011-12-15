@@ -38,6 +38,8 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_STATE_START_TRANSMIT	7
 #define sns_irTransceive_STATE_TRANSMITTING		8
 
+#define sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO		9
+
 #define sns_irTransceive_STATE_DISABLED			0xff
 
 #if sns_irTransceive_TX0_PWRl_PCA95xx==1 | sns_irTransceive_TX0_PWRh_PCA95xx==1 | sns_irTransceive_TX1_PWRl_PCA95xx==1 | sns_irTransceive_TX1_PWRh_PCA95xx==1 | sns_irTransceive_TX2_PWRl_PCA95xx==1 | sns_irTransceive_TX2_PWRh_PCA95xx==1
