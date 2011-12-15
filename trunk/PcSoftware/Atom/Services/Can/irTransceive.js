@@ -94,26 +94,26 @@ irTransceive.prototype.sendProntoTest = function(channel)
 	
 	// pronto data
 	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoData1");
-	msg.setData("Act1", 20);
-	msg.setData("Pas1", 100);
-	msg.setData("Act2", 12);
-	msg.setData("Pas2", 25);
-	msg.setData("Act3", 1);
-	msg.setData("Pas3", 200);
-	msg.setData("Act4", 65);
-	msg.setData("Pas4", 13);
+	msg.setData("Act1", 80);
+	msg.setData("Pas1", 40);
+	msg.setData("Act2", 40);
+	msg.setData("Pas2", 80);
+	msg.setData("Act3", 80);
+	msg.setData("Pas3", 40);
+	msg.setData("Act4", 40);
+	msg.setData("Pas4", 80);
 	sendMessage(msg);
 	sleep(1);
 	
 	// pronto data/end
 	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoEnd2");
-	msg.setData("Act1", 220);
-	msg.setData("Pas1", 20);
-	msg.setData("Act2", 2);
-	msg.setData("Pas2", 75);
-	msg.setData("Act3", 19);
-	msg.setData("Pas3", 2);
-	msg.setData("Act4", 73);
+	msg.setData("Act1", 80);
+	msg.setData("Pas1", 40);
+	msg.setData("Act2", 40);
+	msg.setData("Pas2", 80);
+	msg.setData("Act3", 80);
+	msg.setData("Pas3", 40);
+	msg.setData("Act4", 40);
 	msg.setData("Pas4", 37);
 	sendMessage(msg);
 	sleep(1);

@@ -100,7 +100,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #define sns_irTransceive_BaseFrq (4145146ULL)
 
 #ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 1
+#define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
 
 #if sns_irTransceive_PRONTO_SUPPORT==1
@@ -609,6 +609,11 @@ void sns_irTransceive_Process(void)
 			}
 			break;
 
+		case sns_irTransceive_STATE_TRANSMIT_START_TRANSMIT_PRONTO:
+			IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen);
+			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+			break;
+			
 		case sns_irTransceive_STATE_TRANSMITTING:
 			if (irTxChannel[channel].sendComplete == TRUE)
 			{
@@ -674,7 +679,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_IRTRANSCEIVE && 
 		rxMsg->Header.ModuleId == sns_irTransceive_ID)
 	{
-		//printf("CMD= %u", rxMsg->Header.Command);
+		//printf("CMD= %u\n", rxMsg->Header.Command);
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
@@ -730,7 +735,8 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO;
-
+			irTxChannel[channel].txlen = 0;
+			
 			//irTxChannel[channel].modfreq = rxMsg->Data[2];
 			irTxChannel[channel].modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1); // for testing
 			irTxChannel[channel].proto.modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1);
@@ -828,10 +834,10 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			irTxChannel[activeChannel].numberOfRepeats = rxMsg->Data[rxMsg->Length-1];
 
 			// send
-			IrTransceiver_Transmit(activeChannel, irTxChannel[activeChannel].txbuf, 0, irTxChannel[activeChannel].txlen);
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_TRANSMITTING;
+			//IrTransceiver_Transmit(activeChannel, irTxChannel[activeChannel].txbuf, 0, irTxChannel[activeChannel].txlen);
+			irTxChannel[activeChannel].state = sns_irTransceive_STATE_TRANSMIT_START_TRANSMIT_PRONTO;
 
-			printf("SEND:%03u", irTxChannel[activeChannel].txlen);
+			//printf("SEND:%03u\n", irTxChannel[activeChannel].txlen);
 
 			/* TODO: Send response frame */
 
