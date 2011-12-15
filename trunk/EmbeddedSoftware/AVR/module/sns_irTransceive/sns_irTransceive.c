@@ -712,6 +712,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			break;
 		}
 		
+#if sns_irTransceive_PRONTO_SUPPORT==1
 		/* TODO: add struct which stores pronto info: 
 		channel, pronto receive state, buffer length of once burst pairs, buffer length of repeat burst pairs */
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART: {
@@ -845,6 +846,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		}
 
 /* TODO: In IR state machine add sending a response frame when ir stops sending, also implement pronto repeat */
+#endif
 #endif
 		
 		case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG: {
