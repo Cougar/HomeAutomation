@@ -38,8 +38,9 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_STATE_START_TRANSMIT			(7)
 #define sns_irTransceive_STATE_PREPARING_PRONTO			(8)
 #define sns_irTransceive_STATE_START_TRANSMIT_PRONTO	(9)
+#define sns_irTransceive_STATE_PRONTO_REPEAT			(10)
 
-#define sns_irTransceive_STATE_TRANSMITTING				(10)
+#define sns_irTransceive_STATE_TRANSMITTING				(11)
 
 
 
