@@ -27,19 +27,22 @@ void sns_irTransceive_Process(void);
 void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 
-#define sns_irTransceive_STATE_IDLE				0
-#define sns_irTransceive_STATE_IR_REPEAT		1
-#define sns_irTransceive_STATE_START_RECEIVE	2
-#define sns_irTransceive_STATE_RECEIVING		3
-#define sns_irTransceive_STATE_START_PAUSE		4
-#define sns_irTransceive_STATE_PAUSING			5
-#define sns_irTransceive_STATE_START_IDLE		6
+#define sns_irTransceive_STATE_IDLE						(0)
+#define sns_irTransceive_STATE_IR_REPEAT				(1)
+#define sns_irTransceive_STATE_START_RECEIVE			(2)
+#define sns_irTransceive_STATE_RECEIVING				(3)
+#define sns_irTransceive_STATE_START_PAUSE				(4)
+#define sns_irTransceive_STATE_PAUSING					(5)
+#define sns_irTransceive_STATE_START_IDLE				(6)
 
-#define sns_irTransceive_STATE_START_TRANSMIT	7
-#define sns_irTransceive_STATE_TRANSMITTING		8
+#define sns_irTransceive_STATE_START_TRANSMIT			(7)
+#define sns_irTransceive_STATE_PREPARING_PRONTO			(8)
+#define sns_irTransceive_STATE_START_TRANSMIT_PRONTO	(9)
 
-#define sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO		9
-#define sns_irTransceive_STATE_TRANSMIT_START_TRANSMIT_PRONTO		10
+#define sns_irTransceive_STATE_TRANSMITTING				(10)
+
+
+
 
 #define sns_irTransceive_STATE_DISABLED			0xff
 
