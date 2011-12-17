@@ -44,6 +44,7 @@ struct {
 	uint8_t				stopSend;
 	uint8_t				sendComplete;
 	// pronto params
+	uint8_t				sendingPronto;
 	uint8_t				onceSeqLen;
 	uint8_t				repSeqLen;
 	uint8_t				numberOfRepeats;
@@ -609,9 +610,10 @@ void sns_irTransceive_Process(void)
 			}
 			break;
 
-		case sns_irTransceive_STATE_TRANSMIT_START_TRANSMIT_PRONTO:
+		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
 			IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen);
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+			irTxChannel[channel].sendingPronto = TRUE;
 			break;
 			
 		case sns_irTransceive_STATE_TRANSMITTING:
@@ -643,7 +645,12 @@ void sns_irTransceive_Process(void)
 		case sns_irTransceive_STATE_PAUSING:
 			if (Timer_Expired(irTxChannel[channel].timerNum))
 			{
-				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+				if (irTxChannel[channel].sendingPronto) {
+					irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT_PRONTO;
+				}
+				else {
+					irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+				}
 			}
 			
 			/* transmission is stopped when such command is recevied on can */
@@ -652,13 +659,20 @@ void sns_irTransceive_Process(void)
 				//TODO maybe send message on can for status? to confirm stopped sending, ready for new command
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 			}
+
+			if (irTxChannel[channel].sendingPronto &&  irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats)
+			{
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+			}
+
 			break;
 
 		case sns_irTransceive_STATE_START_IDLE:
 			irTxChannel[channel].stopSend = FALSE;
 			irTxChannel[channel].repeatCount = 0;
 			irTxChannel[channel].proto.framecnt = 0;
-			
+			irTxChannel[channel].sendingPronto = FALSE;
+
 			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
 
@@ -679,7 +693,6 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_IRTRANSCEIVE && 
 		rxMsg->Header.ModuleId == sns_irTransceive_ID)
 	{
-		//printf("CMD= %u\n", rxMsg->Header.Command);
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
@@ -723,6 +736,8 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				break;
 			}
 
+			printf("TxSt=%03d", irTxChannel[channel].state);
+
 			if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE) {
 				// busy
 				break;
@@ -735,14 +750,14 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				break;
 			}
 
-			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO;
+			irTxChannel[channel].state = sns_irTransceive_STATE_PREPARING_PRONTO;
 			irTxChannel[channel].txlen = 0;
 			
 			//irTxChannel[channel].modfreq = rxMsg->Data[2];
 			irTxChannel[channel].modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1); // for testing
 			irTxChannel[channel].proto.modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1);
-			irTxChannel[channel].proto.timeout = 40;
-			irTxChannel[channel].proto.repeats = 1;
+			irTxChannel[channel].proto.timeout = 100;
+			irTxChannel[channel].proto.repeats = 2;
 
 			irTxChannel[channel].onceSeqLen = rxMsg->Data[3];
 			irTxChannel[channel].repSeqLen = rxMsg->Data[4];
@@ -783,7 +798,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (activeChannel>=IR_SUPPORTED_NUM_CHANNELS) {
 				break;
 			}
-			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO) {
+			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_PREPARING_PRONTO) {
 				// invalid state
 				break;
 			}
@@ -818,7 +833,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (activeChannel>=IR_SUPPORTED_NUM_CHANNELS) {
 				break;
 			}
-			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_TRANSMIT_PREPARING_PRONTO) {
+			if (irTxChannel[activeChannel].state!=sns_irTransceive_STATE_PREPARING_PRONTO) {
 				// invalid state
 				break;
 			}
@@ -835,10 +850,9 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			irTxChannel[activeChannel].numberOfRepeats = rxMsg->Data[rxMsg->Length-1];
 
 			// send
-			//IrTransceiver_Transmit(activeChannel, irTxChannel[activeChannel].txbuf, 0, irTxChannel[activeChannel].txlen);
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_TRANSMIT_START_TRANSMIT_PRONTO;
+			irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_TRANSMIT_PRONTO;
 
-			//printf("SEND:%03u\n", irTxChannel[activeChannel].txlen);
+			irTxChannel[activeChannel].sendingPronto = TRUE;
 
 			/* TODO: Send response frame */
 
