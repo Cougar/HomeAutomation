@@ -76,7 +76,7 @@ irTransceive.prototype.sendConfig = function(channel, direction, power, modfreq)
 	canMessage2.setData("Channel", channel);
 	canMessage2.setData("Direction", direction);
 	canMessage2.setData("Transmit power", power);
-	canMessage2.setData("Modulation frequency", modfreq);
+	canMessage2.setData("Modulation divider", modfreq);
 	sendMessage(canMessage2);
 }
 
@@ -87,34 +87,33 @@ irTransceive.prototype.sendProntoTest = function(channel)
 	msg.setData("Channel", channel);
 	msg.setData("Format", 0);
 	msg.setData("wFrqDiv", 109); // 4.145146MHz / 38kHz
-	msg.setData("OnceSeqLen", 8);
+	msg.setData("OnceSeqLen", 7);
 	msg.setData("RepSeqLen", 0);
 	sendMessage(msg);
-	sleep(1);
+	sleep(10);
 	
 	// pronto data
 	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoData1");
-	msg.setData("Act1", 80);
-	msg.setData("Pas1", 40);
-	msg.setData("Act2", 40);
-	msg.setData("Pas2", 80);
-	msg.setData("Act3", 80);
-	msg.setData("Pas3", 40);
-	msg.setData("Act4", 40);
-	msg.setData("Pas4", 80);
+	msg.setData("Act1", 150); // 3.9
+	msg.setData("Pas1", 45); // 1.2
+	msg.setData("Act2", 40); // 1.2
+	msg.setData("Pas2", 65); // 1.7
+	msg.setData("Act3", 37); // 0.98
+	msg.setData("Pas3", 26); // 0.7
+	msg.setData("Act4", 40); // 1.05
+	msg.setData("Pas4", 62); // 1.6
 	sendMessage(msg);
-	sleep(1);
+	sleep(10);
 	
 	// pronto data/end
 	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoEnd2");
-	msg.setData("Act1", 80);
-	msg.setData("Pas1", 40);
-	msg.setData("Act2", 40);
-	msg.setData("Pas2", 80);
-	msg.setData("Act3", 80);
-	msg.setData("Pas3", 40);
-	msg.setData("Act4", 40);
-	msg.setData("Pas4", 37);
+	msg.setData("Act1", 93); // 2.4
+	msg.setData("Pas1", 40); // 1.1
+	msg.setData("Act2", 40); // 1.1
+	msg.setData("Pas2", 80); // 2.1
+	msg.setData("Act3", 80); // 2.1
+	msg.setData("Pas3", 83);
+	msg.setData("Repeat", 0);
 	sendMessage(msg);
-	sleep(1);
+	sleep(10);
 }
