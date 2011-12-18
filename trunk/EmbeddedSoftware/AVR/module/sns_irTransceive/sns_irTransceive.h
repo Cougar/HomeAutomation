@@ -57,13 +57,13 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 	struct sns_irTransceive_Data{
 		uint8_t ch0_config;
 		uint8_t ch0_txpower;
-		uint8_t ch0_modfreq;
+		uint16_t ch0_modfreq;
 		uint8_t ch1_config;
 		uint8_t ch1_txpower;
-		uint8_t ch1_modfreq;
+		uint16_t ch1_modfreq;
 		uint8_t ch2_config;
 		uint8_t ch2_txpower;
-		uint8_t ch2_modfreq;
+		uint16_t ch2_modfreq;
 	};	
 #endif
 

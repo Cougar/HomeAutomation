@@ -318,7 +318,7 @@ int8_t expandRC5(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		buf[*len]=0;
 	}
 	
-	proto->modfreq=(((F_CPU/2000)/IR_RC5_F_MOD) -1);
+	proto->modfreq=IR_RC5_F_MOD;
 	proto->timeout=IR_RC5_TIMEOUT;
 	proto->repeats=IR_RC5_REPS;
 	return IR_OK;
@@ -491,7 +491,7 @@ int8_t expandNEC(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		proto->timeout=IR_NEC_ST_TIMEOUT;
 		*len = 3;
 	}
-	proto->modfreq=(((F_CPU/2000)/IR_NEC_F_MOD) -1);
+	proto->modfreq=IR_NEC_F_MOD;
 	proto->repeats=IR_NEC_REPS;
 	return IR_OK;
 }
@@ -590,7 +590,7 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	*len = 67;
 	
-	proto->modfreq=(((F_CPU/2000)/IR_SAMS_F_MOD) -1);
+	proto->modfreq=IR_SAMS_F_MOD;
 	proto->timeout=IR_SAMS_TIMEOUT;
 	proto->repeats=IR_SAMS_REPS;
 	return IR_OK;
@@ -709,7 +709,7 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		*len = *len - 1;
 	} 
 
-	proto->modfreq=(((F_CPU/2000)/IR_MARANTZ_F_MOD) -1);
+	proto->modfreq=IR_MARANTZ_F_MOD;
 	proto->timeout=IR_MARANTZ_TIMEOUT;
 	proto->repeats=IR_MARANTZ_REPS;
 	return IR_OK;
@@ -820,7 +820,7 @@ int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	*len = 99;
 	
-	proto->modfreq=(((F_CPU/2000)/IR_PANA_F_MOD) -1);
+	proto->modfreq=IR_PANA_F_MOD;
 	proto->timeout=IR_PANA_TIMEOUT;
 	proto->repeats=IR_PANA_REPS;
 	return IR_OK;
