@@ -202,10 +202,10 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
             {
                 Protocol::Instance()->EncodeUint(databits, start_bit, bit_length, value);
             }
-            
-            if (highest_bit < start_bit + bit_length - 1)
+
+            if (highest_bit < start_bit + bit_length)
             {
-                highest_bit = start_bit + bit_length - 1;
+                highest_bit = start_bit + bit_length;
             }
         }
         
