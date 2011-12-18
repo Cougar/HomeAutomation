@@ -120,7 +120,7 @@ static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	msg.Header.ModuleId = sns_irTransceive_ID;
 	
-	printf("LEN:%04d", len);
+	//printf("LEN:%04d", len);
 
 	/* Send timing command */
 	msg.Length = 5;
