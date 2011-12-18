@@ -23,7 +23,7 @@ struct eeprom_sns_irTransceive EEMEM eeprom_sns_irTransceive =
 #if IR_RX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint8_t				modfreq;
+	uint16_t			modfreq;
 	uint16_t			*rxbuf;
 	uint8_t				rxlen;
 	uint8_t				timerNum;
@@ -35,7 +35,7 @@ struct {
 #if IR_TX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint8_t				modfreq;
+	uint16_t			modfreq;
 	uint16_t			*txbuf;
 	uint8_t				txlen;
 	uint8_t				timerNum;
@@ -47,6 +47,7 @@ struct {
 	uint8_t				sendingPronto;
 	uint8_t				onceSeqLen;
 	uint8_t				repSeqLen;
+	uint8_t				expectedSeqNr;
 } irTxChannel[IR_SUPPORTED_NUM_CHANNELS];
 #endif
 
@@ -97,18 +98,21 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 }
 #endif
 
-#define sns_irTransceive_BaseFrq (4145146ULL)
+#define sns_irTransceive_BaseFrq (4145146UL)
 
 #ifndef sns_irTransceive_PRONTO_SUPPORT
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
 
+/*
+ * PRONTO HEX Routines
+ */
 #if sns_irTransceive_PRONTO_SUPPORT==1
 volatile uint32_t sns_irTransceive_LastPronto=0;
 static uint8_t activeChannel = 0;
 #define sns_irTransceive_MAXTIMING (16*1000)
 
-void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq) {
+static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t modfreq) {
 	StdCan_Msg_t msg;
 
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -116,6 +120,8 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	msg.Header.ModuleId = sns_irTransceive_ID;
 	
+	printf("LEN:%04d", len);
+
 	/* Send timing command */
 	msg.Length = 5;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOTIMING;
@@ -132,16 +138,19 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	}
 	sns_irTransceive_LastPronto=currentTime;
 
+	// calculate frequency divider
+	uint16_t divider = (uint16_t)(sns_irTransceive_BaseFrq / (1000*(uint32_t)modfreq));
+
 	/* Send pronto start */
 	msg.Length = 8;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTART;
 
-	msg.Data[0] = ((channel<<4)|0x0);	/* Channel and Prontoformat 0x000 */
+	msg.Data[0] = ((channel<<4)|0x0);	/* Channel and Prontoformat 0x0000 */
 	msg.Data[1] = 0x00;
-	msg.Data[2] = 0x00;	/* Freq divider */
-	msg.Data[3] = modfreq;
+	msg.Data[2] = (divider & 0xFF00) >> 8;	/* Freq divider */
+	msg.Data[3] = (divider & 0x00FF) >> 0;
 	msg.Data[4] = 0x00;	/* Once seq length, first byte always 0 */
-	msg.Data[5] = len/2;
+	msg.Data[5] = (len + 1) / 2;
 	msg.Data[6] = 0x00;	/* Repeat seq length, always 0 for ir receive */
 	msg.Data[7] = 0x00;
 	
@@ -149,8 +158,9 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 	_delay_ms(1);
 
 	/* Send pronto data */
-	uint16_t divider = ((1000000ULL*modfreq)/sns_irTransceive_BaseFrq);
+	//uint16_t divider = ((1000000ULL*modfreq)/sns_irTransceive_BaseFrq);
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1;
+	uint8_t seqNr = 0;
 	/* Counter for buffer */
 	uint8_t i = 0;
 	/* Counter for filling can frame data */
@@ -168,7 +178,10 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 		}
 		else
 		{
-			uint16_t data = buffer[i]/divider;
+			// convert us to pronto hex modulation pulses
+			uint16_t data = (uint16_t)(((uint32_t)buffer[i] * (uint32_t)modfreq) / 1000);
+
+			// protocol compression
 			if (data >= 256)
 			{
 				/* If data does not fit into 8 bit, then split, memorize low byte */
@@ -183,7 +196,8 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 					while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 					_delay_ms(1);
 					j=0;
-					msg.Header.Command++;
+					seqNr = (seqNr + 1) % 16;
+					msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1 + seqNr;
 				}
 				/* Set complementary burst pair to 0 to indicate 16bit transmission */
 				msg.Data[j] = 0;
@@ -204,12 +218,13 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 			while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 			_delay_ms(1);
 			j=0;
-			msg.Header.Command++;
+			seqNr = (seqNr + 1) % 16;
+			msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1 + seqNr;
 		}
 	}
 	
-	/* End with 25ms, TODO fix uglyness */
-	msg.Data[j] = ((IR_MAX_PULSE_WIDTH/divider)>>8)&0xff;
+	/* End with max pulse TODO fix uglyness */
+	msg.Data[j] = ((IR_MAX_PULSE_WIDTH/((1000000ULL*109)/sns_irTransceive_BaseFrq))>>8) & 0xFF;
 	j++;
 	if (j==8)
 	{
@@ -218,11 +233,12 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
 		j=0;
-		msg.Header.Command++;
+		seqNr = (seqNr + 1) % 16;
+		msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1 + seqNr;
 	}
 	msg.Data[j] = 0;
 	j++;
-	msg.Data[j] = (IR_MAX_PULSE_WIDTH/divider)&0xff;
+	msg.Data[j] = (IR_MAX_PULSE_WIDTH/((1000000ULL*109)/sns_irTransceive_BaseFrq))&0xff;
 	j++;
 	if (j==8)
 	{
@@ -231,17 +247,70 @@ void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint8_t modfreq
 		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
 		j=0;
-		msg.Header.Command++;
+		seqNr = (seqNr + 1) % 16;
+		msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1 + seqNr;
 	}
 	
 	/* Msg command kept from for loop, but increase 16 to send ProntoEnd */
-	msg.Header.Command+=16;
+	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1 + seqNr;
 	msg.Length = j;
 	/* data kept from loop, if any */
 	/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
 }
+
+
+static int decodeProntoData(int channel, uint8_t data)
+{
+	static uint8_t waitingForLSB = FALSE;
+
+	// check if done
+	if (irTxChannel[activeChannel].txlen == (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen))) {
+		return 2;
+	}
+
+	if (irTxChannel[channel].txlen >= MAX_NR_TIMES) {
+		// max length exceeded
+		return -1;
+	}
+
+	if (irTxChannel[channel].txlen == 0) {
+		waitingForLSB = FALSE;
+		if (data == 0) {
+			// cannot start with 0x00
+			return -2;
+		}
+	}
+
+	// 0x00 means that previously received time is MSB of 16bit value, and that next byte will be LSB
+	if (data == 0 && !waitingForLSB) {
+		// convert previous time to MSB of the 16bit value. next received byte will become LSB
+		irTxChannel[channel].txbuf[irTxChannel[channel].txlen - 1] <<= 8;
+
+		// flag that next received byte is LSB rather than a new timing value
+		waitingForLSB = TRUE;
+	}
+
+	// non-zero value! is this part of a 16bit-value? use the data as LSB for previously received time
+	else if (waitingForLSB) {
+		// let this byte be LSB of previous 16bit value
+		irTxChannel[channel].txbuf[irTxChannel[channel].txlen - 1] |= data;
+
+		// we've now completed reception of the 16bit value
+		waitingForLSB = FALSE;
+	}
+
+	// non-zero value! simply new 8bit value
+	else {
+		irTxChannel[channel].txbuf[irTxChannel[channel].txlen] = data;
+
+		irTxChannel[channel].txlen++;
+	}
+
+	return 1;
+}
+
 #endif
 
 
@@ -268,7 +337,7 @@ void sns_irTransceive_TX_done_callback(uint8_t channel)
 #endif
 
 
-void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power, uint8_t modfreq)
+static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t power, uint16_t modfreq)
 {
 	if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
 	{
@@ -469,22 +538,22 @@ void sns_irTransceive_Init(void)
 	if (EEDATA_OK)
 	{
 	  /* Use stored data to set initial values for the module */
-		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower), eeprom_read_byte(EEDATA.ch0_modfreq));
-		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower), eeprom_read_byte(EEDATA.ch1_modfreq));
-		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower), eeprom_read_byte(EEDATA.ch2_modfreq));
+		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower), eeprom_read_word(EEDATA.ch0_modfreq));
+		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower), eeprom_read_word(EEDATA.ch1_modfreq));
+		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower), eeprom_read_word(EEDATA.ch2_modfreq));
 	}
 	else
 	{	
 	/* The CRC of the EEPROM is not correct, store default values and update CRC */
 		eeprom_write_byte_crc(EEDATA.ch0_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch0_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch0_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA.ch0_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch1_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA.ch1_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_txpower, 0, WITHOUT_CRC);
-		eeprom_write_byte_crc(EEDATA.ch2_modfreq, sns_irTransceive_BaseFrq/38000, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA.ch2_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif	
@@ -790,19 +859,37 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE) break;
 
 		/* Check if format is supported. */
-		if ((uint16_t)(rxMsg->Data[0] & 0x0F) << 8 | (uint16_t)(rxMsg->Data[1]) != 0) break;
+		if ((((uint16_t)(rxMsg->Data[0] & 0x0F) << 8) | (uint16_t)(rxMsg->Data[1])) != 0) break;
 
 		/* Extract received data. */
-		//irTxChannel[channel].modfreq = rxMsg->Data[2];
-		irTxChannel[channel].modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1); // for testing
-		irTxChannel[channel].proto.modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1);
+
+		uint32_t divider = (rxMsg->Data[2] << 8) | (rxMsg->Data[3] << 0);
+		if (divider == 0) {
+			// invalid modfreq
+			break;
+		}
+		uint32_t freqkHz = (sns_irTransceive_BaseFrq / (divider*1000));
+		if (freqkHz == 0) {
+			// invalid modfreq
+			break;
+		}
+		irTxChannel[channel].proto.modfreq = freqkHz;
+		//printf("FRQ%05u", irTxChannel[channel].proto.modfreq);
+
+		// TODO: reconfigure with new modfreq, if no other channels sending pronto
+
+		//irTxChannel[channel].proto.modfreq = (((F_CPU/2000)/IR_NEC_F_MOD) -1);
 		// convert lenghts to bytes
 		irTxChannel[channel].onceSeqLen = 2*((((uint16_t)rxMsg->Data[4]) << 8) | (((uint16_t)rxMsg->Data[5]) << 0));
 		irTxChannel[channel].repSeqLen = 2*((((uint16_t)rxMsg->Data[6]) << 8) | (((uint16_t)rxMsg->Data[7]) << 0));
 
+		//printf("ONCE%04u", irTxChannel[channel].onceSeqLen);
+		//printf("REQL%04u", irTxChannel[channel].repSeqLen);
+
 		/* Enter prepering pronto state and clear transmit buffer. */
 		irTxChannel[channel].state = sns_irTransceive_STATE_PREPARING_PRONTO;
 		irTxChannel[channel].txlen = 0;
+		irTxChannel[channel].expectedSeqNr = 0;
 		activeChannel = channel;
 
 		/* TODO: Send response frame */
@@ -838,17 +925,27 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA16:
 	{
 		// unexpected CAN msg, out of order
-		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_PREPARING_PRONTO) break;
-
-		if ((uint16_t)irTxChannel[activeChannel].txlen + (uint16_t)rxMsg->Length >= MAX_NR_TIMES) {
-			// too long
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
+		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_PREPARING_PRONTO) {
 			break;
 		}
-		for (uint8_t i=0; i < rxMsg->Length; i++) {
-			// TODO: (109 * 1) / (4.145146 MHz) = 27, fix formula with modfreq
-			irTxChannel[activeChannel].txbuf[irTxChannel[activeChannel].txlen++] = 27 * rxMsg->Data[i];
+
+		// unexpected CAN msg, out of order
+		if ((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
+			printf("SEQERROR");
+			irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+			break;
 		}
+
+		// decode pronto data
+		for (uint8_t i = 0; i < rxMsg->Length; i++) {
+			if (decodeProntoData(activeChannel, rxMsg->Data[i]) != 1) {
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+				printf("DECERROR");
+				return;
+			}
+		}
+
+		irTxChannel[activeChannel].expectedSeqNr++;
 		break;
 	}
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1:	 /* Fall through */
@@ -871,35 +968,45 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		// unexpected CAN msg, out of order
 		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_PREPARING_PRONTO) {
-			//printf("StERR:%02d", irTxChannel[activeChannel].state);
 			break;
 		}
 
-		if ((uint16_t)irTxChannel[activeChannel].txlen + (uint16_t)(rxMsg->Length - 1) >= MAX_NR_TIMES) {
-			// too long
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
+		// unexpected CAN msg, out of order
+		if (((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1) % 16) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
+			printf("SEQERROR");
+			irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 			break;
 		}
 
-		uint16_t nrBytesRemaining = (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen)) - irTxChannel[activeChannel].txlen;
-		//printf("TXLEN:%02d", irTxChannel[activeChannel].txlen);
-		//printf("BYTES:%02d", nrBytesRemaining);
-		// end packet does not always contain data, last byte is reserved
-		for (uint8_t i=0; i < nrBytesRemaining; i++) {
-			// TODO: (109 * 1) / (4.145146 MHz) = 27, fix formula with modfreq
-			irTxChannel[activeChannel].txbuf[irTxChannel[activeChannel].txlen++] = 27 * rxMsg->Data[i];
+		// decode remaining pronto data (if any)
+		for (uint16_t i = 0; i < rxMsg->Length - 1; i++) {
+			if (decodeProntoData(activeChannel, rxMsg->Data[i]) < 0) {
+				printf("DECERROR");
+				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+				return;
+			}
 		}
 
 		// sanity check
-		if(irTxChannel[activeChannel].txlen != (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen)))
+		if (irTxChannel[activeChannel].txlen != (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen)))
 		{
 			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
 
-		// last byte tells what to do with IR data (nr of repeats)
-		irTxChannel[activeChannel].proto.repeats = rxMsg->Data[rxMsg->Length-1];
-		irTxChannel[activeChannel].proto.timeout = 1;
+		// last byte determines nr of repeats. 0xFF means INF, 0 means no repeats
+		irTxChannel[activeChannel].proto.repeats = rxMsg->Data[rxMsg->Length - 1];
+		irTxChannel[activeChannel].proto.timeout = 1; // TODO: timer is buggy and doesn't support timeout 0, so we're forced to use 1ms extra between repeats
+
+		// convert pronto data to µs
+		// TODO: calculate value
+		for (uint16_t i=0; i < irTxChannel[activeChannel].txlen; i++) {
+			uint32_t newVal = ((uint32_t)irTxChannel[activeChannel].txbuf[i]) * 27;
+			if (newVal > 0xFFFF) {
+				newVal = 0xFFFF;
+			}
+			irTxChannel[activeChannel].txbuf[i] = (uint16_t)newVal;
+		}
 
 		// send
 		irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_TRANSMIT_PRONTO;
@@ -915,8 +1022,16 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRCONFIG: {
 		uint8_t config = rxMsg->Data[0] & 0x0f;
 		uint8_t power = rxMsg->Data[1]>>6;
-		uint8_t modfreq = rxMsg->Data[2];
-		
+		uint32_t divider = ((uint16_t)rxMsg->Data[2] << 8) | ((uint16_t)rxMsg->Data[3] << 0);
+		if (divider == 0) {
+			// invalid modfreq
+			break;
+		}
+		uint32_t modfreq = (sns_irTransceive_BaseFrq / (divider*1000));
+		if (modfreq == 0) {
+			// invalid modfreq
+			break;
+		}
 		sns_irTransceive_setConfig(channel, config, power, modfreq);
 
 #ifdef sns_irTransceive_USEEEPROM
@@ -927,17 +1042,17 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				case 0:
 					eeprom_write_byte_crc(EEDATA.ch0_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch0_txpower, power, WITHOUT_CRC);
-					eeprom_write_byte_crc(EEDATA.ch0_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA.ch0_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				case 1:
 					eeprom_write_byte_crc(EEDATA.ch1_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch1_txpower, power, WITHOUT_CRC);
-					eeprom_write_byte_crc(EEDATA.ch1_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA.ch1_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				case 2:
 					eeprom_write_byte_crc(EEDATA.ch2_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch2_txpower, power, WITHOUT_CRC);
-					eeprom_write_byte_crc(EEDATA.ch2_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA.ch2_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				default:
 					break;

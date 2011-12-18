@@ -23,7 +23,7 @@ typedef struct {
 	uint32_t data;
 	uint16_t timeout;
 	uint8_t repeats;
-	uint8_t modfreq;
+	uint16_t modfreq;
 	uint8_t framecnt;
 } Ir_Protocol_Data_t;
 
@@ -111,159 +111,160 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_BUTTON_PRESSED	0x1
 
 
-#define CYCLES_PER_US       (F_CPU/1000000)
-#define TIMER_PRESC			8
+#define CYCLES_PER_US       (F_CPU/1000000UL)
+#define TIMER_PRESC			(8)
 
-#define IR_MIN_PULSE_WIDTH	5									//us
+#define IR_MIN_PULSE_WIDTH	(5)									//us
 #ifndef IR_MAX_PULSE_WIDTH
-#define IR_MAX_PULSE_WIDTH	12000								//us
+#define IR_MAX_PULSE_WIDTH	(12000UL)							//us
 #endif
 
 /* RC5 Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_RC5		0
-#define IR_RC5_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_RC5_BIT			889*2*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_RC5_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_RC5_REPS			1									//		(minimum number of times to repeat code)
-#define IR_RC5_F_MOD		36									//kHz	(modulation frequency)
-#define IR_RC5_TOL_DIV		4
+#define IR_PROTO_RC5		(0)
+#define IR_RC5_HALF_BIT		(889*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RC5_BIT			(889*2*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_RC5_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_RC5_REPS			(1)									//		(minimum number of times to repeat code)
+#define IR_RC5_F_MOD		(36)								//kHz	(modulation frequency)
+#define IR_RC5_TOL_DIV		(4)
 
 /* RC6 Implementation
  * Receiver: 
  * Transmitter: 
  */
-#define IR_PROTO_RC6		1
-#define IR_RC6_ST_BIT		1*CYCLES_PER_US/TIMER_PRESC			//us
-#define IR_RC6_TIMEOUT		(50-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_RC6_REPS			1									//		(minimum number of times to repeat code)
-#define IR_RC6_F_MOD		36									//kHz	(modulation frequency)
-#define IR_RC6_TOL_DIV		4
+#define IR_PROTO_RC6		(1)
+#define IR_RC6_ST_BIT		(1*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RC6_TIMEOUT		(50-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_RC6_REPS			(1)									//		(minimum number of times to repeat code)
+#define IR_RC6_F_MOD		(36)								//kHz	(modulation frequency)
+#define IR_RC6_TOL_DIV		(4)
 
 /* RCMM Implementation
  * Receiver: 
  * Transmitter: 
  */
-#define IR_PROTO_RCMM		2
-#define IR_RCMM_ST_BIT		256*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_RCMM_TIMEOUT 	(170-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_RCMM_REPS		1									//		(minimum number of times to repeat code)
-#define IR_RCMM_F_MOD		36									//kHz	(modulation frequency)
-#define IR_RCMM_TOL_DIV		4
+#define IR_PROTO_RCMM		(2)
+#define IR_RCMM_ST_BIT		(256*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RCMM_TIMEOUT 	(170-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_RCMM_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_RCMM_F_MOD		(36)								//kHz	(modulation frequency)
+#define IR_RCMM_TOL_DIV		(4)
 
 /* SIRC Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_SIRC		3
-#define IR_SIRC_ST_BIT		2400*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SIRC_LOW			600*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SIRC_HIGH_ONE	1200*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SIRC_HIGH_ZERO	600*CYCLES_PER_US/TIMER_PRESC		//us
+#define IR_PROTO_SIRC		(3)
+#define IR_SIRC_ST_BIT		(2400*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SIRC_LOW			(600*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SIRC_HIGH_ONE	(1200*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SIRC_HIGH_ZERO	(600*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_SIRC_TIMEOUT		(52-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_SIRC_REPS		3									//		(minimum number of times to repeat code)
-#define IR_SIRC_F_MOD		40									//kHz	(modulation frequency)
-#define IR_SIRC_TOL_DIV		4
+#define IR_SIRC_REPS		(3)									//		(minimum number of times to repeat code)
+#define IR_SIRC_F_MOD		(40)								//kHz	(modulation frequency)
+#define IR_SIRC_TOL_DIV		(4)
 
 /* Sharp Implementation
  * Receiver: DONE
  * Transmitter: 
  */
-#define IR_PROTO_SHARP		4
-#define IR_SHARP_HIGH		280*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SHARP_LOW_ONE	1850*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SHARP_LOW_ZERO	780*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SHARP_TIMEOUT	(67-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_SHARP_REPS		2									//		(minimum number of times to repeat code)
-#define IR_SHARP_F_MOD		38									//kHz	(modulation frequency)
-#define IR_SHARP_TOL_DIV	4
+#define IR_PROTO_SHARP		(4)
+#define IR_SHARP_HIGH		(280*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SHARP_LOW_ONE	(1850*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SHARP_LOW_ZERO	(780*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SHARP_TIMEOUT	(67-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_SHARP_REPS		(2)									//		(minimum number of times to repeat code)
+#define IR_SHARP_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_SHARP_TOL_DIV	(4)
 
 /* NEC Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_NEC		5
-#define IR_NEC_ST_BIT		9000*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_ST_PAUSE		4500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_LOW_ONE		1690*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_LOW_ZERO		560*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_HIGH			560*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEC_TIMEOUT		(122-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_NEC_ST_TIMEOUT	65									//ms	(time between first ir frames and second)
-#define IR_NEC_REPS			1									//		(minimum number of times to repeat code)
-#define IR_NEC_F_MOD		38									//kHz	(modulation frequency)
-#define IR_NEC_TOL_DIV		4
+#define IR_PROTO_NEC		(5)
+#define IR_NEC_ST_BIT		(9000*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEC_ST_PAUSE		(4500*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEC_LOW_ONE		(1690*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEC_LOW_ZERO		(560*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEC_HIGH			(560*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEC_TIMEOUT		(122-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_NEC_ST_TIMEOUT	(65)								//ms	(time between first ir frames and second)
+#define IR_NEC_REPS			(1)									//		(minimum number of times to repeat code)
+#define IR_NEC_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_NEC_TOL_DIV		(4)
 
 /* Samsung Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_SAMS		6
-#define IR_SAMS_ST_BIT		4500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_ST_PAUSE	4500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_LOW_ONE		1720*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_LOW_ZERO	650*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_HIGH		500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SAMS_TIMEOUT		(62-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_SAMS_REPS		1									//		(minimum number of times to repeat code)
-#define IR_SAMS_F_MOD		38									//kHz	(modulation frequency)
-#define IR_SAMS_TOL_DIV		4
+#define IR_PROTO_SAMS		(6)
+#define IR_SAMS_ST_BIT		(4500*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SAMS_ST_PAUSE	(4500*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SAMS_LOW_ONE		(1720*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SAMS_LOW_ZERO	(650*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SAMS_HIGH		(500*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SAMS_TIMEOUT		(62-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_SAMS_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_SAMS_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_SAMS_TOL_DIV		(4)
 
 /* Marantz Implementation
  * Receiver: DONE (has not been tested with odd adressbits)
  * Transmitter: DONE
  */
-#define IR_PROTO_MARANTZ		7
-#define IR_MARANTZ_HALF_BIT		889*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_MARANTZ_BIT			889*2*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_MARANTZ_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_MARANTZ_REPS			1									//		(minimum number of times to repeat code)
-#define IR_MARANTZ_F_MOD		36									//kHz	(modulation frequency)
-#define IR_MARANTZ_TOL_DIV		4
+#define IR_PROTO_MARANTZ		(7)
+#define IR_MARANTZ_HALF_BIT		(889*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_MARANTZ_BIT			(889*2*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_MARANTZ_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_MARANTZ_REPS			(1)									//		(minimum number of times to repeat code)
+#define IR_MARANTZ_F_MOD		(36)								//kHz	(modulation frequency)
+#define IR_MARANTZ_TOL_DIV		(4)
 
 /* Panasonic Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_PANASONIC	8
-#define IR_PANA_ST_BIT		3570*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_ST_PAUSE	1630*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_LOW_ONE		1240*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_LOW_ZERO	400*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_HIGH		495*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_PANA_TIMEOUT		(92-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_PANA_REPS		1									//		(minimum number of times to repeat code)
-#define IR_PANA_F_MOD		38									//kHz	(modulation frequency)
-#define IR_PANA_TOL_DIV		4
+#define IR_PROTO_PANASONIC	(8)
+#define IR_PANA_ST_BIT		(3570*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_PANA_ST_PAUSE	(1630*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_PANA_LOW_ONE		(1240*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_PANA_LOW_ZERO	(400*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_PANA_HIGH		(495*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_PANA_TIMEOUT		(92-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_PANA_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_PANA_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_PANA_TOL_DIV		(4)
 
 /* Sky Implementation
  * Receiver: DONE
  * Transmitter: 
  */
-#define IR_PROTO_SKY		9
-#define IR_SKY_ST_BIT		2800*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SKY_SHORT		460*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SKY_LONG			920*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_SKY_TIMEOUT		(162-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_SKY_REPS			1									//		(minimum number of times to repeat code)
-#define IR_SKY_F_MOD		38									//kHz	(modulation frequency)
-#define IR_SKY_TOL_DIV		4
+#define IR_PROTO_SKY		(9)
+#define IR_SKY_ST_BIT		(2800*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_SKY_SHORT		(460*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SKY_LONG			(920*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_SKY_TIMEOUT		(162-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_SKY_REPS			(1)									//		(minimum number of times to repeat code)
+#define IR_SKY_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_SKY_TOL_DIV		(4)
 
 
 /* Nexa2 Implementation
  * Receiver: 
  * Transmitter: 
  */
-#define IR_PROTO_NEXA2		10
-#define IR_NEXA2_START 		2500*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEXA2_HIGH 		320*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEXA2_LOW_ONE	210*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEXA2_LOW_ZERO	1200*CYCLES_PER_US/TIMER_PRESC		//us
-#define IR_NEXA2_TIMEOUT	(22-IR_MAX_PULSE_WIDTH/1000)									//ms	(time between ir frames)
-#define IR_NEXA2_REPS		4									//		(minimum number of times to repeat code)
-#define IR_NEXA2_TOL_DIV	4
+#define IR_PROTO_NEXA2		(10)
+#define IR_NEXA2_START 		(2500*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEXA2_HIGH 		(320*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEXA2_LOW_ONE	(210*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEXA2_LOW_ZERO	(1200*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEXA2_TIMEOUT	(22-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_NEXA2_REPS		(4)									//		(minimum number of times to repeat code)
+#define IR_NEXA2_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_NEXA2_TOL_DIV	(4)
 
 
 #define IR_PROTO_HASH		0xfe
