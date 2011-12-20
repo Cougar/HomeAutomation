@@ -392,7 +392,7 @@ void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, ui
 	uint16_t diff;
 	uint8_t findchannel;
 
-	if (length > start)
+	if (length > 0)
 	{
 		if (drvIrTxChannel[channel].timeoutEnable == FALSE)
 		{
