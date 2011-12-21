@@ -538,22 +538,22 @@ void sns_irTransceive_Init(void)
 	if (EEDATA_OK)
 	{
 	  /* Use stored data to set initial values for the module */
-		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower), eeprom_read_word(EEDATA.ch0_modfreq));
-		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower), eeprom_read_word(EEDATA.ch1_modfreq));
-		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower), eeprom_read_word(EEDATA.ch2_modfreq));
+		sns_irTransceive_setConfig(0, eeprom_read_byte(EEDATA.ch0_config), eeprom_read_byte(EEDATA.ch0_txpower), eeprom_read_word(EEDATA16.ch0_modfreq));
+		sns_irTransceive_setConfig(1, eeprom_read_byte(EEDATA.ch1_config), eeprom_read_byte(EEDATA.ch1_txpower), eeprom_read_word(EEDATA16.ch1_modfreq));
+		sns_irTransceive_setConfig(2, eeprom_read_byte(EEDATA.ch2_config), eeprom_read_byte(EEDATA.ch2_txpower), eeprom_read_word(EEDATA16.ch2_modfreq));
 	}
 	else
 	{	
 	/* The CRC of the EEPROM is not correct, store default values and update CRC */
 		eeprom_write_byte_crc(EEDATA.ch0_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch0_txpower, 0, WITHOUT_CRC);
-		eeprom_write_word_crc(EEDATA.ch0_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.ch0_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch1_txpower, 0, WITHOUT_CRC);
-		eeprom_write_word_crc(EEDATA.ch1_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.ch1_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_config, CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_AUTO, WITHOUT_CRC);
 		eeprom_write_byte_crc(EEDATA.ch2_txpower, 0, WITHOUT_CRC);
-		eeprom_write_word_crc(EEDATA.ch2_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
+		eeprom_write_word_crc(EEDATA16.ch2_modfreq, sns_irTransceive_BaseFrq/38000UL, WITHOUT_CRC);
 		EEDATA_UPDATE_CRC;
 	}
 #endif	
@@ -1042,17 +1042,17 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				case 0:
 					eeprom_write_byte_crc(EEDATA.ch0_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch0_txpower, power, WITHOUT_CRC);
-					eeprom_write_word_crc(EEDATA.ch0_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA16.ch0_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				case 1:
 					eeprom_write_byte_crc(EEDATA.ch1_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch1_txpower, power, WITHOUT_CRC);
-					eeprom_write_word_crc(EEDATA.ch1_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA16.ch1_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				case 2:
 					eeprom_write_byte_crc(EEDATA.ch2_config, config, WITHOUT_CRC);
 					eeprom_write_byte_crc(EEDATA.ch2_txpower, power, WITHOUT_CRC);
-					eeprom_write_word_crc(EEDATA.ch2_modfreq, modfreq, WITHOUT_CRC);
+					eeprom_write_word_crc(EEDATA16.ch2_modfreq, modfreq, WITHOUT_CRC);
 					break;
 				default:
 					break;
