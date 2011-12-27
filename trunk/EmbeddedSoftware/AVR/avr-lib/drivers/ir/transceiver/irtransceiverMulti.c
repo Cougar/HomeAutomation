@@ -167,10 +167,10 @@ ISR(IR_COMPARE_VECTOR)
 /* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)
 {
-	for (uint8_t i=0; i < 3; i++)
+	for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
-		/* If more than 3 flanks was recevied */
-		if (drvIrRxChannel[i].storeEnable == TRUE && drvIrRxChannel[i].rxlen > 3)
+		/* If more than 2 edges were recevied */
+		if (drvIrRxChannel[i].storeEnable == TRUE && drvIrRxChannel[i].rxlen > 2)
 		{
 			/* Notify the application that a pulse train has been received. */
 			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].rxbuf, drvIrRxChannel[i].rxlen);
