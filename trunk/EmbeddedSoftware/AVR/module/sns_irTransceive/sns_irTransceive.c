@@ -101,7 +101,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #define sns_irTransceive_BaseFrq (4145146UL)
 
 #ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 1
+#define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
 
 /*
@@ -112,7 +112,10 @@ volatile uint32_t sns_irTransceive_LastPronto=0;
 static uint8_t activeChannel = 0;
 #define sns_irTransceive_MAXTIMING (16*1000)
 
-static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t modfreq) {
+static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t modfreq)
+{
+	uint32_t currentTime = Timer_GetTicks();
+
 	StdCan_Msg_t msg;
 
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -120,23 +123,33 @@ static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t
 	msg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	msg.Header.ModuleId = sns_irTransceive_ID;
 	
-	//printf("LEN:%04d", len);
-
 	/* Send timing command */
 	msg.Length = 5;
 	msg.Header.Command = CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOTIMING;
-	uint32_t currentTime=Timer_GetTicks();
+
 	if ((currentTime < sns_irTransceive_LastPronto+sns_irTransceive_MAXTIMING) && (sns_irTransceive_LastPronto != 0))
 	{
+		/* Calculate elapsed time since last pronto packet */
+		uint32_t elapsedTime = ((currentTime - sns_irTransceive_LastPronto) * 1000) & 0x00FFFFFFUL; //24bit value
+
+		/* Remove length of the last received sequence */
+		uint32_t sequenceLength = IR_MAX_PULSE_WIDTH; // timeout value not included in buffer
+		for (uint8_t i = 0; i < len; i++) {
+			sequenceLength += (uint32_t)buffer[i];
+		}
+		if (sequenceLength <= elapsedTime) {
+			elapsedTime -= sequenceLength;
+		}
+
 		msg.Data[0] = ((channel<<4)|0xf);
 		msg.Data[1] = 0x10;
-		msg.Data[2] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>16)&0xff;
-		msg.Data[3] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>8)&0xff;
-		msg.Data[4] = ((currentTime-sns_irTransceive_LastPronto)*1000)&0xff;
+		msg.Data[2] = (uint8_t)(elapsedTime >> 16);
+		msg.Data[3] = (uint8_t)(elapsedTime >> 8);
+		msg.Data[4] = (uint8_t)(elapsedTime >> 0);
 		while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 		_delay_ms(1);
 	}
-	sns_irTransceive_LastPronto=currentTime;
+	sns_irTransceive_LastPronto = currentTime;
 
 	// calculate frequency divider
 	uint16_t divider = (uint16_t)(sns_irTransceive_BaseFrq / (1000*(uint32_t)modfreq));
