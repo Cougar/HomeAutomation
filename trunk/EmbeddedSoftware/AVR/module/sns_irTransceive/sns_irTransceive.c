@@ -101,7 +101,7 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 #define sns_irTransceive_BaseFrq (4145146UL)
 
 #ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 0
+#define sns_irTransceive_PRONTO_SUPPORT 1
 #endif
 
 /*
@@ -265,11 +265,6 @@ static int decodeProntoData(int channel, uint8_t data)
 {
 	static uint8_t waitingForLSB = FALSE;
 
-	// check if done
-	if (irTxChannel[activeChannel].txlen == (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen))) {
-		return 2;
-	}
-
 	if (irTxChannel[channel].txlen >= MAX_NR_TIMES) {
 		// max length exceeded
 		return -1;
@@ -303,6 +298,12 @@ static int decodeProntoData(int channel, uint8_t data)
 
 	// non-zero value! simply new 8bit value
 	else {
+		// check if we're already done
+		if (irTxChannel[activeChannel].txlen >= (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen))) {
+			// too much data received, not necessarily a problem in case frames are padded
+			return 2;
+		}
+
 		irTxChannel[channel].txbuf[irTxChannel[channel].txlen] = data;
 
 		irTxChannel[channel].txlen++;
@@ -668,17 +669,16 @@ void sns_irTransceive_Process(void)
 
 		case sns_irTransceive_STATE_START_TRANSMIT:
 		{
-			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK)
-			{
+			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK) {
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen);
 				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			}
-			else
-			{
+			else {
 				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			}
 			break;
 		}
+
 		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
 		{
 			/* Start IR transmission. */
@@ -689,11 +689,11 @@ void sns_irTransceive_Process(void)
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			break;
 		}
+
 		case sns_irTransceive_STATE_PRONTO_REPEAT:
 		{
 			/* Check if done. */
-			if (irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF)
-			{
+			if (irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) {
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 				break;
 			}
@@ -716,6 +716,7 @@ void sns_irTransceive_Process(void)
 			}
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 		}
+
 		case sns_irTransceive_STATE_TRANSMITTING:
 		{
 			if (irTxChannel[channel].sendComplete == TRUE)
@@ -747,6 +748,7 @@ void sns_irTransceive_Process(void)
 			}
 			break;
 		}
+
 		case sns_irTransceive_STATE_START_PAUSE:
 		{
 			if (irTxChannel[channel].repeatCount < irTxChannel[channel].proto.repeats)
@@ -764,6 +766,7 @@ void sns_irTransceive_Process(void)
 			irTxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
 			break;
 		}
+
 		case sns_irTransceive_STATE_PAUSING:
 		{
 			if (irTxChannel[channel].sendingPronto)
@@ -788,6 +791,7 @@ void sns_irTransceive_Process(void)
 			}
 			break;
 		}
+
 		case sns_irTransceive_STATE_START_IDLE:
 			irTxChannel[channel].stopSend = FALSE;
 			irTxChannel[channel].repeatCount = 0;
@@ -938,9 +942,10 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 
 		// decode pronto data
 		for (uint8_t i = 0; i < rxMsg->Length; i++) {
-			if (decodeProntoData(activeChannel, rxMsg->Data[i]) != 1) {
+			int res;
+			if ((res=decodeProntoData(activeChannel, rxMsg->Data[i])) != 1) {
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
-				printf("DECERROR");
+				printf("DE:%02d:%02d", res, i);
 				return;
 			}
 		}
