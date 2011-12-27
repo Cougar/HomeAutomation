@@ -113,8 +113,6 @@ static uint8_t activeChannel = 0;
 #define sns_irTransceive_MAXTIMING (16*1000)
 
 static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t modfreq) {
-	return;
-
 	StdCan_Msg_t msg;
 
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -700,7 +698,7 @@ void sns_irTransceive_Process(void)
 		case sns_irTransceive_STATE_PRONTO_REPEAT:
 		{
 			/* Check if done. */
-			if (irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) {
+			if ((irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) || irTxChannel[channel].stopSend) {
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 				break;
 			}
@@ -910,12 +908,20 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	}
 
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOSTOP:
-		/* TODO: stop sending IR */
+		/* Sanity check. */
+		if (channel >= IR_SUPPORTED_NUM_CHANNELS) break;
+
+		irTxChannel[channel].stopSend = TRUE;
 
 		/* TODO: Send response frame */
 		break;
+
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOCONTINUE:
-		/* TODO: reset timeout to continue sending repeat sequences */
+		/* Sanity check. */
+		if (channel >= IR_SUPPORTED_NUM_CHANNELS) break;
+
+		/* Reset repeat counter, i.e. request additional repeats. */
+		irTxChannel[channel].repeatCount = 0;
 
 		/* TODO: Send response frame */
 		break;
