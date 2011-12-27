@@ -128,7 +128,7 @@ static void send_pronto(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t
 	uint32_t currentTime=Timer_GetTicks();
 	if ((currentTime < sns_irTransceive_LastPronto+sns_irTransceive_MAXTIMING) && (sns_irTransceive_LastPronto != 0))
 	{
-		msg.Data[0] = 0xff;
+		msg.Data[0] = ((channel<<4)|0xf);
 		msg.Data[1] = 0x10;
 		msg.Data[2] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>16)&0xff;
 		msg.Data[3] = (((currentTime-sns_irTransceive_LastPronto)*1000)>>8)&0xff;
@@ -1003,7 +1003,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		irTxChannel[activeChannel].proto.repeats = rxMsg->Data[rxMsg->Length - 1];
 		irTxChannel[activeChannel].proto.timeout = 1; // TODO: timer is buggy and doesn't support timeout 0, so we're forced to use 1ms extra between repeats
 
-		// convert pronto data to µs
+		// convert pronto data to us
 		// TODO: calculate value
 		for (uint16_t i=0; i < irTxChannel[activeChannel].txlen; i++) {
 			uint32_t newVal = ((uint32_t)irTxChannel[activeChannel].txbuf[i]) * 27;
