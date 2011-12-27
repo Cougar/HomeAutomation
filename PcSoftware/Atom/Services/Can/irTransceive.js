@@ -80,44 +80,6 @@ irTransceive.prototype.sendConfig = function(channel, direction, power, modfreq)
 	sendMessage(canMessage2);
 }
 
-irTransceive.prototype.sendProntoTest = function(channel)
-{
-	// pronto start
-	var msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoStart");
-	msg.setData("Channel", channel);
-	msg.setData("Format", 0);
-	msg.setData("wFrqDiv", 109); // 4.145146MHz / 38kHz
-	msg.setData("OnceSeqLen", 7);
-	msg.setData("RepSeqLen", 0);
-	sendMessage(msg);
-	sleep(10);
-	
-	// pronto data
-	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoData1");
-	msg.setData("Act1", 150); // 3.9
-	msg.setData("Pas1", 45); // 1.2
-	msg.setData("Act2", 40); // 1.2
-	msg.setData("Pas2", 65); // 1.7
-	msg.setData("Act3", 37); // 0.98
-	msg.setData("Pas3", 26); // 0.7
-	msg.setData("Act4", 40); // 1.05
-	msg.setData("Pas4", 62); // 1.6
-	sendMessage(msg);
-	sleep(10);
-	
-	// pronto data/end
-	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoEnd2");
-	msg.setData("Act1", 93); // 2.4
-	msg.setData("Pas1", 40); // 1.1
-	msg.setData("Act2", 40); // 1.1
-	msg.setData("Pas2", 80); // 2.1
-	msg.setData("Act3", 80); // 2.1
-	msg.setData("Pas3", 83);
-	msg.setData("Repeat", 0);
-	sendMessage(msg);
-	sleep(10);
-}
-
 function hexString2NumberArray(hexString)
 {
 	var tokens = hexString.split(' ');
@@ -129,7 +91,7 @@ function hexString2NumberArray(hexString)
 }
 
 // prontoHexString is a space-separated hex string, including both the pronto header and the data
-irTransceive.prototype.sendProntoHex = function(channel, prontoHexString)
+irTransceive.prototype.sendProntoHex = function(channel, repeatCount, prontoHexString)
 {
 	var prontoNumbers = hexString2NumberArray(prontoHexString);
 	
@@ -197,7 +159,7 @@ irTransceive.prototype.sendProntoHex = function(channel, prontoHexString)
 	if (nrBytes > 4) msg.setData("Pas2", bytes[3]);
 	if (nrBytes > 5) msg.setData("Act3", bytes[4]);
 	if (nrBytes > 6) msg.setData("Pas3", bytes[5]);
-	msg.setData("Repeat", 0x00);
+	msg.setData("Repeat", repeatCount);
 	sendMessage(msg);
 	sleep(10);
 }
@@ -205,5 +167,6 @@ irTransceive.prototype.sendProntoHex = function(channel, prontoHexString)
 function sendProntoTest()
 {
 	var ir = ServiceManager.getService("Can","irTransceive",1);
-	ir.sendProntoHex(1, "0000 006d 0022 0002 0156 00ad 0016 0016 0016 0041 0016 0041 0016 0041 0016 0016 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0041 0016 0016 0016 0016 0016 0041 0016 05ed 0156 0056 0016 0e62");
+	ir.sendProntoHex(1, 255, "0000 006d 0022 0002 0156 00ad 0016 0016 0016 0041 0016 0041 0016 0041 0016 0016 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0041 0016 0016 0016 0016 0016 0041 0016 05ed 0156 0056 0016 0e62");
+	//ir.sendProntoHex(1, "0000 006d 0022 0000 0156 00A9 0015 0014 0015 003D 0016 003D 0015 003F 0015 0015 0015 003E 0015 003D 0016 003D 0016 003E 0015 003E 0016 003E 0015 0014 0016 0014 0017 0013 0017 0013 0017 003C 0016 0014 0017 003C 0017 0013 0016 003D 0017 0013 0016 0014 0017 0013 0017 0013 0016 0014 0017 003C 0017 0013 0017 0013 0016 003D 0018 003B 0017 003C 0017 003D 0017 01CD");
 }
