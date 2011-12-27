@@ -202,26 +202,30 @@
     </command>
     <command id="131" name="IrProntoTiming" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
       </variables>
     </command>
     <command id="132" name="IrProntoContinue" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="133" name="IrProntoStop" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="134" name="IrProntoResponse" type="specific" module="irTransceive" description="">
      <variables>
-        <variable name="Mode1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Response" type="enum" start_bit="16" bit_length="8" unit="" description="">
         	<value id="0" name="Ok"/>
