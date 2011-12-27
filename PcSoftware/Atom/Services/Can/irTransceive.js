@@ -117,3 +117,93 @@ irTransceive.prototype.sendProntoTest = function(channel)
 	sendMessage(msg);
 	sleep(10);
 }
+
+function hexString2NumberArray(hexString)
+{
+	var tokens = hexString.split(' ');
+	var numbers = new Array();
+	for (var i=0; i<tokens.length; i++) {
+		numbers[i] = parseInt(tokens[i], 16)
+	}
+	return numbers;
+}
+
+// prontoHexString is a space-separated hex string, including both the pronto header and the data
+irTransceive.prototype.sendProntoHex = function(channel, prontoHexString)
+{
+	var prontoNumbers = hexString2NumberArray(prontoHexString);
+	
+	// header
+	var format = prontoNumbers[0];
+	var frqDiv = prontoNumbers[1];
+	var onceSeqLen = prontoNumbers[2];
+	var repSeqLen = prontoNumbers[3];
+	
+	print("Sending START. CH=" + channel + ", fmt=" + format + ", wFrqDiv=" + frqDiv + ", onceLen=" + onceSeqLen + ", repLen=" + repSeqLen + "\n");
+	var msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoStart");
+	msg.setData("Channel", channel);
+	msg.setData("Format", format);
+	msg.setData("wFrqDiv", frqDiv);
+	msg.setData("OnceSeqLen", onceSeqLen);
+	msg.setData("RepSeqLen",  repSeqLen);
+	sendMessage(msg);
+	sleep(10);
+	
+	// data
+	var nrBytes = 0;
+	var bytes = new Array();
+	var seqNr = 0;
+	for (var i=4; i<prontoNumbers.length; i++) {
+		// 8bit value?
+		if (prontoNumbers[i] <= 255) {
+			// compress into single byte
+			bytes[nrBytes] = prontoNumbers[i];
+			nrBytes++;
+		}
+		// 16bit value?
+		else {
+			// occupy 3 bytes to describe this value
+			bytes[nrBytes] = (prontoNumbers[i] & 0xFF00) >> 8;
+			bytes[nrBytes+1] = 0x00;
+			bytes[nrBytes+2] = (prontoNumbers[i] & 0x00FF) >> 0;
+			nrBytes += 3;
+		}
+		// time to send?
+		if (nrBytes >= 8) {
+			print("Sending DATA. " + nrBytes + " bytes: " + bytes + " (SEQ NR:" + (seqNr+1) + ")\n");
+			msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoData" + (seqNr+1));
+			msg.setData("Act1", bytes[0]);
+			msg.setData("Pas1", bytes[1]);
+			msg.setData("Act2", bytes[2]);
+			msg.setData("Pas2", bytes[3]);
+			msg.setData("Act3", bytes[4]);
+			msg.setData("Pas3", bytes[5]);
+			msg.setData("Act4", bytes[6]);
+			msg.setData("Pas4", bytes[7]);
+			sendMessage(msg);
+			sleep(10);
+			
+			bytes = new Array();
+			nrBytes = 0;
+			seqNr = (seqNr + 1) % 16;
+		}
+	}
+	
+	print("Sending END. " + nrBytes + " bytes: " + bytes + " (SEQ NR:" + (seqNr+1) + ")\n");
+	msg = new CanMessage("sns", "To_Owner", this.myName, this.myId, "IrProntoEnd" + (seqNr+1));
+	if (nrBytes > 1) msg.setData("Act1", bytes[0]);
+	if (nrBytes > 2) msg.setData("Pas1", bytes[1]);
+	if (nrBytes > 3) msg.setData("Act2", bytes[2]);
+	if (nrBytes > 4) msg.setData("Pas2", bytes[3]);
+	if (nrBytes > 5) msg.setData("Act3", bytes[4]);
+	if (nrBytes > 6) msg.setData("Pas3", bytes[5]);
+	msg.setData("Repeat", 0x00);
+	sendMessage(msg);
+	sleep(10);
+}
+
+function sendProntoTest()
+{
+	var ir = ServiceManager.getService("Can","irTransceive",1);
+	ir.sendProntoHex(1, "0000 006d 0022 0002 0156 00ad 0016 0016 0016 0041 0016 0041 0016 0041 0016 0016 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0041 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0016 0041 0016 0041 0016 0016 0016 0016 0016 0041 0016 05ed 0156 0056 0016 0e62");
+}
