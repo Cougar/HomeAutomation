@@ -48,6 +48,13 @@
 #define IR_SUPPORTED_NUM_CHANNELS 3
 #endif
 
+/**
+ * @brief Type of the callback function pointer
+ * parameters: channel, buffer, length
+ */
+typedef void (*irRxCallback_t)(uint8_t, uint16_t*, uint8_t);
+typedef void (*irTxCallback_t)(uint8_t);
+
 
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
@@ -60,14 +67,11 @@ void IrTransceiver_DisableRx(uint8_t channel);
 void IrTransceiver_EnableRx(uint8_t channel);
 void IrTransceiver_ResetRx(uint8_t channel);
 
-//void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
+void IrTransceiver_InitRxChannel(uint8_t channel, uint16_t *buffer, irRxCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
+void IrTransceiver_DeInitRxChannel(uint8_t channel, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
+void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volatile uint8_t *port, volatile uint8_t *pin, volatile uint8_t *ddr,uint8_t nr, uint8_t pcint);
 
-/**
- * @brief Type of the callback function pointer
- * parameters: channel, buffer, length
- */
-typedef void (*irRxCallback_t)(uint8_t, uint16_t*, uint8_t);
-typedef void (*irTxCallback_t)(uint8_t);
+//void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
 
 
 /*-----------------------------------------------------------------------------
