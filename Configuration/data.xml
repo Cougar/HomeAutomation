@@ -606,17 +606,6 @@
        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
-    <command id="167" name="IrProntoEnd17" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
-      </variables>
-    </command>
 
     <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
 	<variables>
