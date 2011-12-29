@@ -232,7 +232,7 @@
 	    	<value id="1" name="Stopped"/>
 	    	<value id="2" name="Waiting"/>
 	    	<value id="4" name="Transmitting"/>
-	    	<value id="241" name="Already stopped"/>
+	    	<value id="241" name="AlreadyStopped"/>
 	    	<value id="243" name="Aborted"/>
 	    	<value id="255" name="Error"/>
 	    </variable>
