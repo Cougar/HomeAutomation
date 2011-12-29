@@ -107,11 +107,6 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 /*
  * PRONTO HEX Routines
  */
-#if sns_irTransceive_PRONTO_SUPPORT==1
-volatile uint32_t sns_irTransceive_LastPronto=0;
-static uint8_t activeChannel = 0;
-#define sns_irTransceive_MAXTIMING (16*1000)
-
 static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 {
 	StdCan_Msg_t msg;
@@ -128,6 +123,11 @@ static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 	while (StdCan_Put(&msg) != StdCan_Ret_OK) {}
 	_delay_ms(1);
 }
+
+#if sns_irTransceive_PRONTO_SUPPORT==1
+volatile uint32_t sns_irTransceive_LastPronto=0;
+static uint8_t activeChannel = 0;
+#define sns_irTransceive_MAXTIMING (16*1000)
 
 static void pronto_sendData(uint16_t *buffer, uint8_t len, uint8_t channel, uint16_t modfreq)
 {
