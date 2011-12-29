@@ -112,18 +112,7 @@ volatile uint32_t sns_irTransceive_LastPronto=0;
 static uint8_t activeChannel = 0;
 #define sns_irTransceive_MAXTIMING (16*1000)
 
-typedef enum {
-	PRONTO_RESPONSE_OK				= 0,
-	PRONTO_RESPONSE_STOPPED			= 1,
-	PRONTO_RESPONSE_WAITING			= 2,
-	PRONTO_RESPONSE_TRANSMITTING	= 4,
-
-	PRONTO_RESPONSE_ALREADY_STOPPED	= 241,
-	PRONTO_RESPONSE_ABORTED			= 243,
-	PRONTO_RESPONSE_ERROR			= 255,
-} prontoResponse_t;
-
-static void pronto_sendResponse(uint8_t channel, prontoResponse_t responseValue)
+static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 {
 	StdCan_Msg_t msg;
 	StdCan_Set_class(msg.Header, CAN_MODULE_CLASS_SNS);
@@ -738,6 +727,8 @@ void sns_irTransceive_Process(void)
 		{
 			/* Check if done. */
 			if ((irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) || irTxChannel[channel].stopSend) {
+				/* Pronto transmission was stopped/completed */
+				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 				break;
 			}
@@ -832,7 +823,10 @@ void sns_irTransceive_Process(void)
 			/* Transmission is stopped when such command is recevied on can */
 			if (irTxChannel[channel].stopSend == TRUE && irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats)
 			{
-				/* TODO: maybe send message on can for status? to confirm stopped sending, ready for new command */
+				/* Non-pronto transmission was stopped/completed */
+				/* TODO: Not sure we want this response when sending non-pronto data, but probably doesn't hurt? /jm */
+				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
+
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
 			}
 			break;
@@ -914,19 +908,19 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		/* Sanity check. */
 		if (channel >= IR_SUPPORTED_NUM_CHANNELS) {
 			/* Invalid channel */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 		if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE) {
 			/* We're already transmitting on this channel */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ABORTED);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
 			break;
 		}
 
 		/* Check if format is supported. */
 		if ((((uint16_t)(rxMsg->Data[0] & 0x0F) << 8) | (uint16_t)(rxMsg->Data[1])) != 0) {
 			/* Invalid pronto format */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 
@@ -935,13 +929,13 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		uint32_t divider = (rxMsg->Data[2] << 8) | (rxMsg->Data[3] << 0);
 		if (divider == 0) {
 			/* Invalid wFrqDiv value */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 		uint32_t freqkHz = (sns_irTransceive_BaseFrq / (divider*1000));
 		if (freqkHz == 0) {
 			/* Invalid wFrqDiv value */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 		irTxChannel[channel].proto.modfreq = freqkHz;
@@ -959,7 +953,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		activeChannel = channel;
 
 		/* We're now waiting for pronto data */
-		pronto_sendResponse(channel, PRONTO_RESPONSE_WAITING);
+		pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_WAITING);
 		break;
 	}
 
@@ -971,14 +965,13 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		/* Sanity check. */
 		if (channel >= IR_SUPPORTED_NUM_CHANNELS) {
 			/* Invalid channel */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 
 		irTxChannel[channel].stopSend = TRUE;
 
-		/* Pronto transmission was stopped */
-		pronto_sendResponse(channel, PRONTO_RESPONSE_STOPPED);
+		/* Response will be sent when transmission has been completed (i.e. stopped) */
 		break;
 	}
 
@@ -990,7 +983,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		/* Sanity check. */
 		if (channel >= IR_SUPPORTED_NUM_CHANNELS) {
 			/* Invalid channel */
-			pronto_sendResponse(channel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 
@@ -1003,7 +996,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			irTxChannel[activeChannel].state != sns_irTransceive_STATE_START_PAUSE)
 		{
 			/* Too late to continue! Not in TX state anymore */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ALREADY_STOPPED);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ALREADYSTOPPED);
 			break;
 		}
 
@@ -1011,7 +1004,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		irTxChannel[channel].repeatCount = 0;
 
 		/* The repeat period was extended. Still transmitting */
-		pronto_sendResponse(channel, PRONTO_RESPONSE_TRANSMITTING);
+		pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_TRANSMITTING);
 		break;
 	}
 
@@ -1034,13 +1027,13 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	{
 		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_PREPARING_PRONTO) {
 			/* Invalid state. CAN msg probably out of order */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 
 		if ((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
 			/* Unexpected CAN msg, out of order */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
 			break;
 		}
@@ -1049,7 +1042,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		for (uint8_t i = 0; i < rxMsg->Length; i++) {
 			if (decodeProntoData(activeChannel, rxMsg->Data[i]) != 1) {
 				/* Decode error */
-				pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+				pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 				irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
 				return;
 			}
@@ -1058,7 +1051,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		irTxChannel[activeChannel].expectedSeqNr++;
 
 		/* We're still waiting for more pronto data, or for pronto end */
-		pronto_sendResponse(activeChannel, PRONTO_RESPONSE_WAITING);
+		pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_WAITING);
 		break;
 	}
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1:	 /* Fall through */
@@ -1077,17 +1070,16 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND14:	 /* Fall through */
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND15:	 /* Fall through */
 	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND16:	 /* Fall through */
-	case CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND17:
 	{
 		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_PREPARING_PRONTO) {
 			/* Invalid state. CAN msg probably out of order */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			break;
 		}
 
 		if (((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1) % 16) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
 			/* Unexpected CAN msg, out of order */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
 			break;
 		}
@@ -1096,7 +1088,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		for (uint16_t i = 0; i < rxMsg->Length - 1; i++) {
 			if (decodeProntoData(activeChannel, rxMsg->Data[i]) < 0) {
 				/* Decode error */
-				pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+				pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 				irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
 				return;
 			}
@@ -1105,7 +1097,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		/* Sanity check */
 		if (irTxChannel[activeChannel].txlen != (((uint16_t)irTxChannel[activeChannel].onceSeqLen + (uint16_t)irTxChannel[activeChannel].repSeqLen))) {
 			/* Length doesn't match the expected length */
-			pronto_sendResponse(activeChannel, PRONTO_RESPONSE_ERROR);
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
 			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
@@ -1128,7 +1120,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_TRANSMIT_PRONTO;
 
 		/* We're now transmitting the pronto data */
-		pronto_sendResponse(activeChannel, PRONTO_RESPONSE_TRANSMITTING);
+		pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_TRANSMITTING);
 		break;
 	}
 
