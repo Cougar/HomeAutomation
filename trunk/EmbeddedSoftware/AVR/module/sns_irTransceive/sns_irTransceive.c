@@ -743,7 +743,7 @@ void sns_irTransceive_Process(void)
 				/* Use repeat seq */
 				uint16_t offset = ((uint16_t)irTxChannel[channel].onceSeqLen);
 				/* Don't transmit last passive. last passive handled by timer */
-				IrTransceiver_Transmit(channel, &irTxChannel[channel].txbuf[offset], 0, ((uint16_t)irTxChannel[channel].repSeqLen) - 1);
+				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, offset, ((uint16_t)irTxChannel[channel].repSeqLen) - 1);
 			}
 			else {
 				/* Use once seq */
