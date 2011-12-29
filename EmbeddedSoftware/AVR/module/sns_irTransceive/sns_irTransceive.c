@@ -23,7 +23,6 @@ struct eeprom_sns_irTransceive EEMEM eeprom_sns_irTransceive =
 #if IR_RX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint16_t			modfreq;
 	uint16_t			*rxbuf;
 	uint8_t				rxlen;
 	uint8_t				timerNum;
@@ -35,7 +34,6 @@ struct {
 #if IR_TX_ENABLE==1
 struct {
 	uint8_t				state;
-	uint16_t			modfreq;
 	uint16_t			*txbuf;
 	uint8_t				txlen;
 	uint8_t				timerNum;
@@ -383,7 +381,7 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 #if IR_TX_ENABLE==1
 			irTxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
 #endif
-			irRxChannel[channel].modfreq = modfreq;
+			irRxChannel[channel].proto.modfreq = modfreq;
 			irRxChannel[channel].rxbuf = buf[channel];
 			switch (channel)
 			{
@@ -410,7 +408,6 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 #if IR_RX_ENABLE==1
 			irRxChannel[channel].state = sns_irTransceive_STATE_DISABLED;
 #endif
-			irTxChannel[channel].modfreq = modfreq;
 			irTxChannel[channel].txbuf = buf[channel];
 			switch (channel)
 			{
@@ -475,7 +472,7 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 #endif
 					break;
 			}
-			irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 		}
 #endif
 	}
@@ -602,8 +599,22 @@ void sns_irTransceive_Process(void)
 		switch (irRxChannel[channel].state)
 		{
 		case sns_irTransceive_STATE_IDLE:
+		{
+			if (irRxChannel[channel].proto.protocol != IR_PROTO_UNKNOWN) {
+				/* Send button release command on CAN */
+				irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
+				irTxMsg.Data[0] |= channel<<4;
+				irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
+				irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
+				irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
+				irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
+				irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
+
+				StdCan_Put(&irTxMsg);
+			}
 			irRxChannel[channel].state = sns_irTransceive_STATE_START_RECEIVE;
 			break;
+		}
 
 		case sns_irTransceive_STATE_START_RECEIVE:
 			IrTransceiver_ResetRx(channel);
@@ -640,7 +651,7 @@ void sns_irTransceive_Process(void)
 					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 					irRxChannel[channel].proto.timeout=300;
 #elif sns_irTransceive_PRONTO_SUPPORT==1
-					pronto_sendData(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, channel, irRxChannel[channel].modfreq);
+					pronto_sendData(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, channel, irRxChannel[channel].proto.modfreq);
 					irRxChannel[channel].proto.timeout=1;
 #endif
 				}
@@ -668,24 +679,8 @@ void sns_irTransceive_Process(void)
 			}
 
 			if (Timer_Expired(irRxChannel[channel].timerNum)) {
-				irRxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+				irRxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			}
-			break;
-
-		case sns_irTransceive_STATE_START_IDLE:
-			if (irRxChannel[channel].proto.protocol != IR_PROTO_UNKNOWN) {
-				/* Send button release command on CAN */
-				irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
-				irTxMsg.Data[0] |= channel<<4;
-				irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
-				irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
-				irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
-				irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
-				irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
-
-				StdCan_Put(&irTxMsg);
-			}
-			irRxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
 
 		default:
@@ -697,29 +692,47 @@ void sns_irTransceive_Process(void)
 		switch (irTxChannel[channel].state)
 		{
 		case sns_irTransceive_STATE_IDLE:
+		{
 			/* transmission is started when a command is received on can */
+			irTxChannel[channel].stopSend = FALSE;
+			irTxChannel[channel].repeatCount = 0;
+			irTxChannel[channel].proto.framecnt = 0;
+			irTxChannel[channel].sendingPronto = FALSE;
 			break;
+		}
 
 		case sns_irTransceive_STATE_START_TRANSMIT:
 		{
-			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) == IR_OK) {
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen);
-				irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
-			}
-			else {
+			/* Expand protocol. */
+			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) != IR_OK) {
+				/* Failed to expand protocol -> enter idle state. */
 				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+				break;
 			}
+
+			/* Start IR transmission. */
+			/* TODO Send respone. Function call may fail when different modulation frequencies are used simultaneously. */
+			IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen, irTxChannel[channel].proto.modfreq);
+
+			/* Enter transmitting state. */
+			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			break;
 		}
 
 		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
 		{
 			/* Start IR transmission. */
-			IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1);
+			if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
+				/* Send error code. */
+				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
+
+				/* Enter idle state. */
+				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+				break;
+			}
 
 			/* Enter transmitting state. */
 			irTxChannel[channel].sendingPronto = TRUE;
-			irTxChannel[channel].stopSend = FALSE;
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			break;
 		}
@@ -730,7 +743,7 @@ void sns_irTransceive_Process(void)
 			if ((irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) || irTxChannel[channel].stopSend) {
 				/* Pronto transmission was stopped/completed */
 				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
-				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 				break;
 			}
 
@@ -743,12 +756,12 @@ void sns_irTransceive_Process(void)
 				/* Use repeat seq */
 				uint16_t offset = ((uint16_t)irTxChannel[channel].onceSeqLen);
 				/* Don't transmit last passive. last passive handled by timer */
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, offset, ((uint16_t)irTxChannel[channel].repSeqLen) - 1);
+				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, offset, ((uint16_t)irTxChannel[channel].repSeqLen) - 1, irTxChannel[channel].proto.modfreq);
 			}
 			else {
 				/* Use once seq */
 				/* Don't transmit last passive. last passive handled by timer */
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen - 1);
+				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen - 1, irTxChannel[channel].proto.modfreq);
 			}
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 		}
@@ -825,22 +838,12 @@ void sns_irTransceive_Process(void)
 			if (irTxChannel[channel].stopSend == TRUE && irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats)
 			{
 				/* Non-pronto transmission was stopped/completed */
-				/* TODO: Not sure we want this response when sending non-pronto data, but probably doesn't hurt? /jm */
 				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
 
-				irTxChannel[channel].state = sns_irTransceive_STATE_START_IDLE;
+				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			}
 			break;
 		}
-
-		case sns_irTransceive_STATE_START_IDLE:
-			irTxChannel[channel].stopSend = FALSE;
-			irTxChannel[channel].repeatCount = 0;
-			irTxChannel[channel].proto.framecnt = 0;
-			irTxChannel[channel].sendingPronto = FALSE;
-			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-			break;
-
 		default:
 			break;
 		}
@@ -867,18 +870,26 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		/* Get IR channel. */
 		uint8_t channel = rxMsg->Data[0] >> 4;
 
+		/* Get button status. */
+		uint8_t buttonStatus = rxMsg->Data[0] & 0x0F;
+
 		/* Sanity check. */
 		if (channel >= IR_SUPPORTED_NUM_CHANNELS) {
 			/* Invalid channel */
 			break;
 		}
 
-		if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED)
+		/* Check if channel is busy sending Pronto */
+		if (irTxChannel[channel].sendingPronto) {
+			/* Channel busy */
+			break;
+		}
+
+		if (buttonStatus == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED)
 		{
 			if (irTxChannel[channel].state == sns_irTransceive_STATE_IDLE)
 			{
 				irTxChannel[channel].proto.protocol = rxMsg->Data[1];
-
 				irTxChannel[channel].proto.data = rxMsg->Data[2];
 				irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
 				irTxChannel[channel].proto.data |= rxMsg->Data[3];
@@ -890,7 +901,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
 			}
 		}
-		else if ((0xf&rxMsg->Data[0]) == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED)
+		else if (buttonStatus == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED)
 		{
 			if (irTxChannel[channel].state != sns_irTransceive_STATE_IDLE)
 			{
@@ -1048,7 +1059,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		if ((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTODATA1) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
 			/* Unexpected CAN msg, out of order */
 			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
+			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
 
@@ -1057,7 +1068,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (decodeProntoData(activeChannel, rxMsg->Data[i]) != 1) {
 				/* Decode error */
 				pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
-				irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
+				irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 				return;
 			}
 		}
@@ -1094,7 +1105,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		if (((rxMsg->Header.Command - CAN_MODULE_CMD_IRTRANSCEIVE_IRPRONTOEND1) % 16) != (irTxChannel[activeChannel].expectedSeqNr % 16)) {
 			/* Unexpected CAN msg, out of order */
 			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
-			irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
+			irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
 
@@ -1103,7 +1114,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 			if (decodeProntoData(activeChannel, rxMsg->Data[i]) < 0) {
 				/* Decode error */
 				pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ERROR);
-				irTxChannel[activeChannel].state = sns_irTransceive_STATE_START_IDLE;
+				irTxChannel[activeChannel].state = sns_irTransceive_STATE_IDLE;
 				return;
 			}
 		}
@@ -1121,13 +1132,13 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		irTxChannel[activeChannel].proto.timeout = 1; /* TODO: timer is buggy and doesn't support timeout 0, so we're forced to use 1ms extra between repeats */
 
 		/* Convert pronto data to µs */
-		/* TODO: calculate actual value instead of 27 */
+		uint32_t nsPerTick = 1000000UL / ((uint32_t)irTxChannel[activeChannel].proto.modfreq);
 		for (uint16_t i = 0; i < irTxChannel[activeChannel].txlen; i++) {
-			uint32_t newVal = ((uint32_t)irTxChannel[activeChannel].txbuf[i]) * 27UL;
-			if (newVal > 0xFFFFUL) {
-				newVal = 0xFFFFUL;
+			uint32_t us = (((uint32_t)irTxChannel[activeChannel].txbuf[i]) * nsPerTick) / 1000UL;
+			if (us > 0xFFFFUL) {
+				us = 0xFFFFUL;
 			}
-			irTxChannel[activeChannel].txbuf[i] = (uint16_t)newVal;
+			irTxChannel[activeChannel].txbuf[i] = (uint16_t)us;
 		}
 
 		/* Send IR data */

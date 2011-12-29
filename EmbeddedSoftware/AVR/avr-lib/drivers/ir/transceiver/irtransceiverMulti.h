@@ -59,7 +59,7 @@ typedef void (*irTxCallback_t)(uint8_t);
 /*-----------------------------------------------------------------------------
  * Public Function Prototypes
  *---------------------------------------------------------------------------*/
-void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length);
+int IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length, uint16_t modfreqkHz);
 
 void IrTransceiver_Init(void);
 uint8_t IrTransceiver_GetStoreEnableRx(uint8_t channel);
@@ -73,6 +73,8 @@ void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volat
 
 //void IrTransceiver_Init_RX_Channel(uint8_t channel, uint16_t *buffer, irCallback_t callback, uint8_t pcint_id, volatile uint8_t* port, volatile uint8_t* pin, volatile uint8_t* ddr,uint8_t nr, uint8_t pcint);
 
+/* Active TX mod freq in kHz */
+extern uint16_t drvIrTxModFreqkHz;
 
 /*-----------------------------------------------------------------------------
  * Private Function Prototypes
