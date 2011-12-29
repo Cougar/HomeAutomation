@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 #include <config.h>
 #include <drivers/can/can.h>
 #include CAN_DRIVER_H
@@ -12,6 +13,7 @@
 void BIOS_Reset(void) {
 	// Just loop and let the watchdog reset
 	cli(); 
+	wdt_enable(WDTO_120MS);
 	while(1);
 }
 

@@ -6,7 +6,7 @@ HW_VERSION=1
 # Uncomment to make node autostart after X time-msgs has been sent to node
 # Do not choose 0 as X, also 1 is a bad choice
 # This should not be used on nodes with application under developement
-#AUTOSTART=5
+#AUTOSTART=2
 
 # Node hardware id, this number should be unique on your network
 # leave as <GENERATE_HW> at first compile, the build will then automatically set it to whatever gets generated (see config.h)
