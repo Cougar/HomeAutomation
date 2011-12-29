@@ -87,6 +87,9 @@ struct {
 	volatile uint8_t 	*port;
 	uint8_t 	pinmask;
 } drvIrTxChannel[3];
+
+uint16_t drvIrTxModFreqkHz = 38; /* Default to 38kHz */
+
 #endif
 
 
@@ -357,8 +360,8 @@ void IrTransceiver_Init(void)
 	TCCR0A = (0<<COM0A1)|(0<<COM0A0)|(1<<WGM01)|(0<<WGM00);
 	TCCR0B = (0<<WGM02)|(1<<CS00)|(0<<CS01)|(0<<CS02);
 	
-	/* set up modulation frequency to 38kHz */
-	IR_MODULATION_REG = (((F_CPU/2000)/38) -1);
+	/* Set up modulation frequency */
+	IR_MODULATION_REG = (((F_CPU / 2000) / drvIrTxModFreqkHz) - 1);
 
 	/* start pwm generator */
 	TCCR0A |= (1<<COM0A0);
@@ -387,50 +390,74 @@ void IrTransceiver_InitTxChannel(uint8_t channel, irTxCallback_t callback, volat
 	}
 }
 
-void IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length)
+int IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uint8_t length, uint16_t modfreqkHz)
 {
-	uint16_t diff;
-	uint8_t findchannel;
+	if (modfreqkHz == 0) {
+		/* Invalid frequency. */
+		return -1;
+	}
 
-	if (length > 0)
-	{
-		if (drvIrTxChannel[channel].timeoutEnable == FALSE)
-		{
-			drvIrTxChannel[channel].timeoutEnable = TRUE;
-			drvIrTxChannel[channel].txbuf = buffer;
-			drvIrTxChannel[channel].txlen = start+length;
-			/* first value will be loaded directly to timer below, therefore index is set to 1 here */
-			drvIrTxChannel[channel].txindex = 1+start; 
-			drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[start];
+	if (length == 0) {
+		/* No data. */
+		return -2;
+	}
 
+	if (drvIrTxChannel[channel].timeoutEnable == TRUE) {
+		/* Channel busy. */
+		return -3;
+	}
 
-			findchannel = 0;
-			diff = 0xffff;
-			uint16_t time = IR_COMPARE_REG;
-			/* go through all channels and find the one that have the next overflow */
-			for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
-			{
-				/* if channel is waiting for an overflow */
-				if (drvIrTxChannel[i].timeoutEnable==TRUE)
-				{
-					if (drvIrTxChannel[i].timeout - time < diff)	// || (timeout - time > 0xffff-IR_MAX_PULSE_WIDTH)
-					{
-						diff = drvIrTxChannel[i].timeout - time;
-						findchannel = i;
-					}
-				}		
-			}	
-
-			/* set compare value to the channel that have the next overflow */
-			IR_COMPARE_REG = drvIrTxChannel[findchannel].timeout;
-
-			/* Start send on pin */
-			IR_OUTP_HIGH();
-
-			/* enable overflow interrupt */
-			IR_UNMASK_COMPARE();
+	/* New modulation frequency. */
+	if (modfreqkHz != drvIrTxModFreqkHz) {
+		/* Check that no transmissions are ongoing. */
+		for (uint8_t i = 0; i < IR_SUPPORTED_NUM_CHANNELS; i++) {
+			/* Channel is waiting for an overflow. */
+			if (drvIrTxChannel[i].timeoutEnable == TRUE) {
+				/* Transmission active. */
+				return -4;
+			}
 		}
 	}
+
+	/* Update modulation frequency. */
+	drvIrTxModFreqkHz = modfreqkHz;
+
+	/* Start new transmission. */
+	drvIrTxChannel[channel].timeoutEnable = TRUE;
+	drvIrTxChannel[channel].txbuf = buffer;
+	drvIrTxChannel[channel].txlen = start + length;
+
+	/* first value will be loaded directly to timer below, therefore index is set to 1 here */
+	drvIrTxChannel[channel].txindex = 1 + start;
+	drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[start];
+
+	/* go through all channels and find the one that have the next overflow */
+	uint8_t nextChannel = 0;
+	uint16_t timeRemaining = 0xffff;
+	uint16_t timeNow = IR_COMPARE_REG;
+	for (uint8_t i = 0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
+	{
+		/* channel is not waiting for an overflow */
+		if (drvIrTxChannel[i].timeoutEnable == FALSE) continue;
+
+		if (drvIrTxChannel[i].timeout - timeNow < timeRemaining)	// || (timeout - time > 0xffff-IR_MAX_PULSE_WIDTH)
+		{
+			timeRemaining = drvIrTxChannel[i].timeout - timeNow;
+			nextChannel = i;
+		}
+	}
+
+	/* set compare value to the channel that have the next overflow */
+	IR_COMPARE_REG = drvIrTxChannel[nextChannel].timeout;
+
+	/* set up modulation frequency */
+	IR_MODULATION_REG = (((F_CPU / 2000) / drvIrTxModFreqkHz) - 1);
+
+	/* Start send on pin */
+	IR_OUTP_HIGH();
+
+	/* enable overflow interrupt */
+	IR_UNMASK_COMPARE();
 }
 #endif
 
