@@ -719,6 +719,7 @@ void sns_irTransceive_Process(void)
 
 			/* Enter transmitting state. */
 			irTxChannel[channel].sendingPronto = TRUE;
+			irTxChannel[channel].stopSend = FALSE;
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
 			break;
 		}
@@ -970,6 +971,19 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		}
 
 		irTxChannel[channel].stopSend = TRUE;
+
+		/* State check. If we're not currently transmitting anything, the STOPPED reponse will never occur. */
+		/* TODO: better way to check this? /jm */
+		if (irTxChannel[activeChannel].state != sns_irTransceive_STATE_START_TRANSMIT_PRONTO &&
+			irTxChannel[activeChannel].state != sns_irTransceive_STATE_TRANSMITTING &&
+			irTxChannel[activeChannel].state != sns_irTransceive_STATE_PRONTO_REPEAT &&
+			irTxChannel[activeChannel].state != sns_irTransceive_STATE_PAUSING &&
+			irTxChannel[activeChannel].state != sns_irTransceive_STATE_START_PAUSE)
+		{
+			/* Nothing to stop. Not in TX state. Respond that we're already stopped */
+			pronto_sendResponse(activeChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ALREADYSTOPPED);
+			break;
+		}
 
 		/* Response will be sent when transmission has been completed (i.e. stopped) */
 		break;
