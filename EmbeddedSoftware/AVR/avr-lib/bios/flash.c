@@ -78,7 +78,7 @@ void flash_init(uint8_t* buf) {
 	flash_buffer_dirty = 0;
 }
 
-extern void __flash_code_start; // Start of .flash_code from ld-script
+extern char __flash_code_start; // Start of .flash_code from ld-script
 
 void flash_copy_data(uint16_t src, uint16_t dst, uint16_t len) {
 	uint16_t data;
