@@ -76,6 +76,11 @@ distclean: check_systeminc
 setconfig: check_systeminc
 	@$(SETCONF) $(CANULFLAGS)
 
+installnoappl:
+	@$(ECHO) ":02000000FFFF00" > tmpfil
+	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f tmpfil -r
+	@$(RM) tmpfile
+
 check_systeminc:
 ifndef SETCONF
 	@echo 
@@ -88,5 +93,5 @@ endif
 # Listing of phony targets.
 .PHONY : all bios installbios upgradebios defaultbios \
 install reset start \
-clean cleanbios distclean check_systeminc setconfig
+clean cleanbios distclean check_systeminc setconfig installnoappl
 
