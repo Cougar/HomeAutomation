@@ -10,6 +10,12 @@
 #include "protocols.h"
 #include <bios.h>
 
+
+
+#include <drivers/mcu/gpio.h>
+
+
+
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->protocol=IR_PROTO_UNKNOWN;
 	proto->data=0;
@@ -963,32 +969,40 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
 
 	/* check if we have correct amount of data */ 
-	if (len != 146 || len != 130) {
+	if (len != 148 && len != 132) {
 		return IR_NOT_CORRECT_DATA;
 	}
-	
+
 	uint32_t rawbits = 0;
 	uint64_t rawbitsTemp = 0;
-	if (buf[1] < IR_NEXA2_START - IR_NEXA2_START/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_START + IR_NEXA2_START/IR_NEXA2_TOL_DIV) { //check start bit
+	if (buf[0] < IR_NEXA2_START1 - IR_NEXA2_START1/IR_NEXA2_TOL_DIV && buf[0] > IR_NEXA2_START1 + IR_NEXA2_START1/IR_NEXA2_TOL_DIV) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
-	  
-	  uint8_t bitCounter = 0;
-	for (uint8_t i = 2; i < len; i++) {	//Skip first bit
-		if ((i&1) == 1) {		/* if odd, ir-pause */
-			/* check length of pause between bits */
-			if (buf[1] > IR_NEXA2_LOW_ONE - IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV && buf[1] < IR_NEXA2_LOW_ONE + IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV) {
+	if (buf[1] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) { //check start bit
+		return IR_NOT_CORRECT_DATA;
+	}
+	if (buf[2] < IR_NEXA2_START2 - IR_NEXA2_START2/IR_NEXA2_TOL_DIV && buf[2] > IR_NEXA2_START2 + IR_NEXA2_START2/IR_NEXA2_TOL_DIV) { //check start bit
+		return IR_NOT_CORRECT_DATA;
+	}
+
+gpio_set_pin(EXP_H);
+	
+	uint8_t bitCounter = 0;
+	for (uint8_t i = 3; i < len; i++) {
+		if ((i&1) == 0) {		/* if even, transmit */
+			/* check length of transmit pulse */
+			if (buf[i] > IR_NEXA2_LOW_ONE - IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV && buf[i] < IR_NEXA2_LOW_ONE + IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV) {
 				/* write a one */
 				rawbitsTemp |= 1<<(bitCounter++);
-			} else if (buf[1] > IR_NEXA2_LOW_ZERO - IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV && buf[1] < IR_NEXA2_LOW_ZERO + IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV) {
+			} else if (buf[i] > IR_NEXA2_LOW_ZERO - IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV && buf[i] < IR_NEXA2_LOW_ZERO + IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 				bitCounter++;
 			} else {
 				return IR_NOT_CORRECT_DATA;
 			}
-			i+=2; 	// skip every other bit,implement check here in the future
-		} else {			/* if even, ir-bit */
-			if (buf[1] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) {
+			i+=2; 	// skip every other bit, implement check here in the future
+		} else {			/* if odd, no transmit */
+			if (buf[i] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[i] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		}

@@ -261,14 +261,15 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Transmitter: 
  */
 #define IR_PROTO_NEXA2		(10)
-#define IR_NEXA2_START 		(2500*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEXA2_START1 	(10000*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_NEXA2_START2 	(2500*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEXA2_HIGH 		(320*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA2_LOW_ONE	(210*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA2_LOW_ZERO	(1200*CYCLES_PER_US/TIMER_PRESC)	//us
-#define IR_NEXA2_TIMEOUT	(22-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
-#define IR_NEXA2_REPS		(4)									//		(minimum number of times to repeat code)
+#define IR_NEXA2_TIMEOUT	(5)									//ms	(time between ir frames)
+#define IR_NEXA2_REPS		(5)									//		(minimum number of times to repeat code)
 #define IR_NEXA2_F_MOD		(38)								//kHz	(modulation frequency)
-#define IR_NEXA2_TOL_DIV	(4)
+#define IR_NEXA2_TOL_DIV	(2)
 
 
 #define IR_PROTO_HASH		0xfe
