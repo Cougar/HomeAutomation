@@ -1,0 +1,10 @@
+# List all files that needs to be compiled here
+sns_DHT11/sns_DHT11.c
+#Uncomment the line below if you want to use EEPROM with this module
+#drivers/misc/eeprom_crc8.c
+#Uncomment the line below if you want to use the PCINT driver in this module
+#drivers/mcu/pcint.c
+#Uncomment the line below if you want to use the ADC driver in this module
+#drivers/adc/adc.c
+drivers/sensor/DHT11/DHT11.c
+drivers/sensor/ds18s20/delay.c
