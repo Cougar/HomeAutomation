@@ -17,6 +17,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+
+#include <drivers/mcu/gpio.h>
+
 /*-----------------------------------------------------------------------------
  * Prerequisites
  *---------------------------------------------------------------------------*/
@@ -184,6 +187,8 @@ ISR(IR_TIMEOUT_VECTOR)
 
 	/* Disable ISR */
 	IR_MASK_TIMEOUT();
+	
+//	gpio_toggle_pin(EXP_J);
 }
 #endif
 
@@ -219,6 +224,19 @@ void IrTransceiver_Store(uint8_t channel)
 	/* Subtract the current measurement from the previous to get the pulse width. */
 	pulsewidth = time - prev_time[channel];
 	prev_time[channel] = time;
+
+#if IR_MIN_STARTPULSE_WIDTH>0
+	if ((pulsewidth <= IR_MIN_STARTPULSE_WIDTH) && (drvIrRxChannel[channel].storeEnable == TRUE) && (drvIrRxChannel[channel].rxlen == 0))
+	{
+		IR_MASK_TIMEOUT();
+		return;
+	}
+	else
+	{
+		IR_UNMASK_TIMEOUT();
+	}
+#endif
+//gpio_toggle_pin(EXP_K);
 
 	if (drvIrRxChannel[channel].storeEnable)
 	{
@@ -458,6 +476,8 @@ int IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uin
 
 	/* enable overflow interrupt */
 	IR_UNMASK_COMPARE();
+	
+	return 1;
 }
 #endif
 

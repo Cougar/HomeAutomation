@@ -114,7 +114,11 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define CYCLES_PER_US       (F_CPU/1000000UL)
 #define TIMER_PRESC			(8)
 
-#define IR_MIN_PULSE_WIDTH	(5)									//us
+#define IR_MIN_PULSE_WIDTH	(0)									//us, not used in driver
+
+#ifndef IR_MIN_STARTPULSE_WIDTH
+#define IR_MIN_STARTPULSE_WIDTH	(0UL)							//us, not used when set to 0
+#endif
 #ifndef IR_MAX_PULSE_WIDTH
 #define IR_MAX_PULSE_WIDTH	(12000UL)							//us
 #endif
