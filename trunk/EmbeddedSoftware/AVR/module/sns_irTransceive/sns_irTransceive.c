@@ -588,6 +588,11 @@ void sns_irTransceive_Init(void)
 		EEDATA_UPDATE_CRC;
 	}
 #endif
+
+//gpio_clr_pin(EXP_K);
+//gpio_set_out(EXP_K);
+//gpio_clr_pin(EXP_J);
+//gpio_set_out(EXP_J);
 }
 
 void sns_irTransceive_Process(void)
@@ -648,6 +653,7 @@ void sns_irTransceive_Process(void)
 				else if (irRxChannel[channel].proto.protocol == IR_PROTO_UNKNOWN)
 				{
 #if (sns_irTransceive_SEND_DEBUG==1)
+//gpio_toggle_pin(EXP_J);
 					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 					irRxChannel[channel].proto.timeout=300;
 #elif sns_irTransceive_PRONTO_SUPPORT==1
