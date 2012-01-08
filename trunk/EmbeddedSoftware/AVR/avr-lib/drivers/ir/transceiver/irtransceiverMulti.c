@@ -18,7 +18,7 @@
 #include <avr/interrupt.h>
 
 
-#include <drivers/mcu/gpio.h>
+//#include <drivers/mcu/gpio.h>
 
 /*-----------------------------------------------------------------------------
  * Prerequisites
@@ -237,6 +237,7 @@ void IrTransceiver_Store(uint8_t channel)
 	}
 #endif
 //gpio_toggle_pin(EXP_K);
+
 
 	if (drvIrRxChannel[channel].storeEnable)
 	{
