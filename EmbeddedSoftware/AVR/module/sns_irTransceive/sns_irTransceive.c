@@ -589,10 +589,12 @@ void sns_irTransceive_Init(void)
 	}
 #endif
 
-//gpio_clr_pin(EXP_K);
-//gpio_set_out(EXP_K);
-//gpio_clr_pin(EXP_J);
-//gpio_set_out(EXP_J);
+/*gpio_clr_pin(EXP_K);
+gpio_set_out(EXP_K);
+gpio_clr_pin(EXP_J);
+gpio_set_out(EXP_J);
+gpio_clr_pin(EXP_H);
+gpio_set_out(EXP_H);*/
 }
 
 void sns_irTransceive_Process(void)
@@ -627,10 +629,12 @@ void sns_irTransceive_Process(void)
 			irRxChannel[channel].newData = FALSE;
 			sei();
 			irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
+//gpio_set_pin(EXP_J);
 			break;
 
 		case sns_irTransceive_STATE_RECEIVING:
 			if (irRxChannel[channel].newData == TRUE) {
+//printf("sRx\n");
 				/* TODO: move this line to the RX callback */
 				IrTransceiver_DisableRx(channel);
 				cli();
@@ -653,7 +657,6 @@ void sns_irTransceive_Process(void)
 				else if (irRxChannel[channel].proto.protocol == IR_PROTO_UNKNOWN)
 				{
 #if (sns_irTransceive_SEND_DEBUG==1)
-//gpio_toggle_pin(EXP_J);
 					send_debug(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen);
 					irRxChannel[channel].proto.timeout=300;
 #elif sns_irTransceive_PRONTO_SUPPORT==1
@@ -666,10 +669,13 @@ void sns_irTransceive_Process(void)
 				IrTransceiver_EnableRx(channel);
 
 				irRxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
+//gpio_clr_pin(EXP_H);
+//gpio_clr_pin(EXP_J);
 			}
 			break;
 
 		case sns_irTransceive_STATE_START_PAUSE:
+//printf("sP\n");
 			/* set a timer so we can send release button event when no new IR is arriving */
 			Timer_SetTimeout(irRxChannel[channel].timerNum, irRxChannel[channel].proto.timeout, TimerTypeOneShot, 0);
 			irRxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
@@ -678,6 +684,7 @@ void sns_irTransceive_Process(void)
 		case sns_irTransceive_STATE_PAUSING:
 			/* reset timer if new IR arrived */
 			if (irRxChannel[channel].newData == TRUE || IrTransceiver_GetStoreEnableRx(channel) == TRUE) {
+//printf("sT\n");
 				cli();
 				irRxChannel[channel].newData = FALSE;
 				sei();
@@ -685,6 +692,7 @@ void sns_irTransceive_Process(void)
 			}
 
 			if (Timer_Expired(irRxChannel[channel].timerNum)) {
+//printf("sD\n");
 				irRxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			}
 			break;

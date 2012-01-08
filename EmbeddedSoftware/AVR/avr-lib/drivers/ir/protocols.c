@@ -12,14 +12,14 @@
 
 
 
-#include <drivers/mcu/gpio.h>
+//#include <drivers/mcu/gpio.h>
 
 
 
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->protocol=IR_PROTO_UNKNOWN;
 	proto->data=0;
-	proto->timeout=100;
+	proto->timeout=1;
 	/* Try all protocols in order. */
 #if (IR_PROTOCOLS_USE_SIRC)
 	if (parseSIRC(buf, len, proto)==IR_OK) return IR_OK;
@@ -973,8 +973,6 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	uint32_t rawbits = 0;
-	uint64_t rawbitsTemp = 0;
 	if (buf[0] < IR_NEXA2_START1 - IR_NEXA2_START1/IR_NEXA2_TOL_DIV && buf[0] > IR_NEXA2_START1 + IR_NEXA2_START1/IR_NEXA2_TOL_DIV) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
@@ -985,15 +983,15 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-gpio_set_pin(EXP_H);
-	
+	/* Incoming data could actually be longer than 32bits when a dimming command is received */
+	uint32_t rawbitsTemp = 0;
 	uint8_t bitCounter = 0;
 	for (uint8_t i = 3; i < len; i++) {
-		if ((i&1) == 0) {		/* if even, transmit */
+		if ((i&1) == 0) {		/* if even, data */
 			/* check length of transmit pulse */
 			if (buf[i] > IR_NEXA2_LOW_ONE - IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV && buf[i] < IR_NEXA2_LOW_ONE + IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV) {
 				/* write a one */
-				rawbitsTemp |= 1<<(bitCounter++);
+				rawbitsTemp |= (1UL)<<(bitCounter++);
 			} else if (buf[i] > IR_NEXA2_LOW_ZERO - IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV && buf[i] < IR_NEXA2_LOW_ZERO + IR_NEXA2_LOW_ZERO/IR_NEXA2_TOL_DIV) {
 				/* do nothing, a zero is already in rawbits */
 				bitCounter++;
@@ -1001,19 +999,18 @@ gpio_set_pin(EXP_H);
 				return IR_NOT_CORRECT_DATA;
 			}
 			i+=2; 	// skip every other bit, implement check here in the future
-		} else {			/* if odd, no transmit */
+		} else {			/* if odd, no data */
 			if (buf[i] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[i] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		}
 	}
 	
-	
-	rawbits = (uint32_t) (0xffff & rawbitsTemp);
+//gpio_set_pin(EXP_H);
 	
 	proto->protocol=IR_PROTO_NEXA2;
 	proto->timeout=IR_NEXA2_TIMEOUT;
-	proto->data=rawbits;
+	proto->data=rawbitsTemp;
 	return IR_OK;
 }
 #endif
