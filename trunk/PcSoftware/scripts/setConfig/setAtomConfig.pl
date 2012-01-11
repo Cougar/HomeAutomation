@@ -95,7 +95,8 @@ my $hwid = "";
 my @device = ();
 
 print "/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"\n";
-my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_GetInformation 0xB23F54EA\"};
+#my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_GetInformation 0xB23F54EA\"};
+my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
 
 foreach (@lines)
 {
@@ -115,7 +116,7 @@ foreach (@lines)
 
 		print "Setting HWID in bios.inc to ".$hwid."\n";
 	}
-	elsif (index($line, "DeviceType") != -1)
+	elsif (index($line, "Device Type") != -1)
 	{
 		$devicename = substr($line, index($line, ":") + 1);
 	
