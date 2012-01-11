@@ -59,7 +59,7 @@ if ($hwid eq "")
 
 #0x14f90d1f to 0x1f0df914
 @hwidChars = split(//, $hwid);
-$hwid = $hwidChars[0]. $hwidChars[1]. $hwidChars[8]. $hwidChars[9]. $hwidChars[6]. $hwidChars[7]. $hwidChars[4]. $hwidChars[5]. $hwidChars[2]. $hwidChars[3];
+$hwid = $hwidChars[0]. $hwidChars[1]. uc($hwidChars[8]. $hwidChars[9]. $hwidChars[6]. $hwidChars[7]. $hwidChars[4]. $hwidChars[5]. $hwidChars[2]. $hwidChars[3]);
 
 print "atomDude settings:\n";
 print "Hardware id: " . $hwid . "\n";
