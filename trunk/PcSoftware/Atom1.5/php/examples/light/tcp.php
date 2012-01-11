@@ -83,7 +83,7 @@ function atomd_data_available($socket)
 
 function atomd_initialize($host, $port)
 {
-  $socket = atomd_connect("127.0.0.1", 1202);
+  $socket = atomd_connect($host, $port);
 
   while (atomd_data_available($socket))
   {
