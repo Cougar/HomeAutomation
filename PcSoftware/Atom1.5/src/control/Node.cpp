@@ -37,7 +37,9 @@ std::map<Node::Event, std::string> Node::event_names_;
 Node::Node(Node::Id id) : LOG("control::Node")
 {
     this->state_ = STATE_NORM_OFFLINE;
-    this->id_ = boost::algorithm::to_lower_copy((std::string)id);
+    //this->id_ = boost::algorithm::to_lower_copy((std::string)id);
+    //this->id_ = boost::algorithm::to_upper_copy((std::string)id);
+    this->id_ = (std::string)id;
     this->information_.has_application_ = false;
     this->information_.bios_version_ = 0;
     this->information_.device_type_ = "N/A";
