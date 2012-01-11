@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 function atomd_connect($host, $port)
 {
-  $socket = pfsockopen("127.0.0.1", 1202, $errno, $errstr); 
+  $socket = pfsockopen($host, $port, $errno, $errstr); 
 
   if (!$socket)
   { 
