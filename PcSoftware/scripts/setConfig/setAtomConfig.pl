@@ -171,3 +171,56 @@ close FP;
 exit(0);
 
 
+sub atomd_connect
+{
+	($host, $port) = @_;
+	
+}
+
+sub atomd_read_packet
+{
+	($socket) = @_;
+	 
+}
+
+sub atomd_write_packet
+{
+	($socket, $command, $payload) = @_;
+	
+}
+
+
+sub atomd_data_available
+{
+	($socket) = @_;
+	 
+}
+
+
+sub atomd_initialize
+{
+	($host, $port) = @_;
+	$socket = atomd_connect("127.0.0.1", 1202);
+
+	while (atomd_data_available($socket))
+	{
+		$packet = atomd_read_packet($socket); # Read initial prompt
+	}
+	
+	return $socket;
+}
+
+
+sub atomd_send_command
+{
+	($socket, $command) = @_;
+	atomd_write_packet($socket, "RESP", $command);
+}
+
+
+sub atomd_read_command_response
+{
+	($socket) = @_;
+	 
+}
+
