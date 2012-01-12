@@ -12,6 +12,9 @@ use Cwd qw(abs_path);
 use File::Basename;
 use Getopt::Long;
 
+use IO::Select;
+use Fcntl ':seek';
+
 $host = "localhost";
 $port = 1201;
 
@@ -94,14 +97,20 @@ if ($foundbootrow == 0) {
 my $hwid = "";
 my @device = ();
 
-print "/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"\n";
+#print "/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"\n";
 #my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_GetInformation 0xB23F54EA\"};
-my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
+#my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
+
+$socket = atomd_initialize($host, $port);
+atomd_send_command($socket, "Node_WaitForInformation");
+$return = atomd_read_command_response($socket);
+
+my @lines = split(/\n/, $return);
 
 foreach (@lines)
 {
 	my $line = $_;
-	print($_);
+	print($line."\n");
 	chomp($line);
 	
 	if (index($line, "Id") != -1)
@@ -124,7 +133,6 @@ foreach (@lines)
 		$devicename =~ s/\s+$//;
 	
 		@device = $devices[0];
-		
 		foreach (@devices)
 		{
 			if (@{$_}[0] eq $devicename)
@@ -171,42 +179,111 @@ close FP;
 exit(0);
 
 
+# TODO: Move all atomic-protocol functions to a separate file/lib
+
 sub atomd_connect
 {
 	($host, $port) = @_;
-	
+	$socket = IO::Socket::INET->new(
+			Proto    => "tcp",
+			PeerAddr => $host,
+			PeerPort => $port,
+			Blocking => 1,
+		)
+		or die "Error: Cannot connect to port $port at $host\n";
+
+	return $socket;
 }
 
 sub atomd_read_packet
 {
 	($socket) = @_;
-	 
+	$command="";
+	#while (length($command)<4)
+	#{
+		#sysread blocks and reads at least 1 byte before returning
+	#	$bytes = sysread($socket, $buf, 1);
+	#	$command .= $buf;
+	#}
+	read($socket, $command, 4);
+
+	$payload_length="";
+	#while (length($payload_length)<4)
+	#{
+	#	$bytes = sysread($socket, $buf, 1);
+	#	$payload_length .= $buf;
+	#}
+	read($socket, $payload_length, 4);
+
+	$payload_length = int($payload_length);
+	$payload="";
+	if ($payload_length > 0)
+	{
+		#while (length($payload) < $payload_length)
+		#{
+		#	$bytes = sysread($socket, $buf, 1);
+		#	$payload .= $buf;
+		#}
+		read($socket, $payload, $payload_length);
+	}
+	
+	$payload_length = sprintf("%04d", $payload_length);
+	
+	#print "areadpacket ".$command . $payload_length . $payload."\n";
+	return $command . $payload_length . $payload;
 }
 
 sub atomd_write_packet
 {
 	($socket, $command, $payload) = @_;
 	
+	$payload_length = sprintf("%04d", length($payload)+1);
+	$packet = $command.$payload_length.$payload.chr(0);
+
+	#print "awritepacket ".$packet."\n";
+	print $socket $packet;
 }
 
 
 sub atomd_data_available
 {
 	($socket) = @_;
-	 
+	#Get the current buffer position
+	$position = tell($socket);
+
+	#Set the current position to end of buffer
+	seek($socket, -1, SEEK_END);
+
+	#Compare end postion to stored position
+	$has_data = tell($socket) > $position;
+
+	#Restore buffer position
+	seek($socket, $position, SEEK_SET);
+
+	return $has_data;
 }
 
 
 sub atomd_initialize
 {
 	($host, $port) = @_;
-	$socket = atomd_connect("127.0.0.1", 1202);
-
-	while (atomd_data_available($socket))
-	{
-		$packet = atomd_read_packet($socket); # Read initial prompt
-	}
+	$socket = atomd_connect($host, $port);
 	
+	#while (!atomd_data_available($socket)) {}
+	
+	#while (atomd_data_available($socket))
+	#{
+	#	$packet = atomd_read_packet($socket); # Read initial prompt
+	#}
+	
+	# Read initial prompt
+	$s = IO::Select->new();
+	$s->add($socket);
+	$s->can_read(1);
+	
+	sysread($socket, $data, 9000);
+	$data="";
+	#print "ainit".$data."\n";
 	return $socket;
 }
 
@@ -221,6 +298,21 @@ sub atomd_send_command
 sub atomd_read_command_response
 {
 	($socket) = @_;
-	 
+
+	$response = "";
+
+	while (1)
+	{
+		$packet = atomd_read_packet($socket);
+
+		if (substr($packet, 0, 4) ne "TEXT")
+		{
+			last;
+		}
+
+		$response .= substr($packet, 8) . "\n";
+	}
+
+	return $response;
 }
 
