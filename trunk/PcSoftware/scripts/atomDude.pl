@@ -3,6 +3,7 @@
 # Written by Mattias Runge 2008-2010
 
 use Cwd 'abs_path';
+use File::Basename;
 
 $| = 1;
 
@@ -57,6 +58,17 @@ if ($hwid eq "")
 	exit 1;
 }
 
+my $path = dirname(abs_path($0));
+
+# Read atom functions from separate file
+if (-e $path."/setConfig/AtomLib.pl") {
+	require $path."/setConfig/AtomLib.pl";
+} else {
+	print "Error: No AtomLib.pl was found in ".$path.". \n\n";
+	exit 1;
+}
+
+
 #0x14f90d1f to 0x1f0df914
 @hwidChars = split(//, $hwid);
 $hwid = $hwidChars[0]. $hwidChars[1]. uc($hwidChars[8]. $hwidChars[9]. $hwidChars[6]. $hwidChars[7]. $hwidChars[4]. $hwidChars[5]. $hwidChars[2]. $hwidChars[3]);
@@ -69,13 +81,21 @@ print "Parameters: " . "\n";
 
 if ($reset eq "true" && $filename eq "")
 {
-	my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
-	exit($result);
+	$socket = atomd_initialize($hostname, $port);
+	atomd_send_command($socket, "Node_Reset $hwid");
+	print atomd_read_command_response($socket);
+	exit(1);
+	#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
+	#exit($result);
 }
 else
 {
-	my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
-        exit($result);
+	$socket = atomd_initialize($hostname, $port);
+	atomd_send_command($socket, "Node_Program $hwid $bios $filename");
+	print atomd_read_command_response($socket);
+	exit(1);
+	#my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
+    #    exit($result);
 }
 
 exit(0);
