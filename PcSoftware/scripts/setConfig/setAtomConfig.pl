@@ -5,7 +5,6 @@
 #
 ################################################
 
-use IO::Socket;
 use integer;
 use threads;
 use Cwd qw(abs_path);
