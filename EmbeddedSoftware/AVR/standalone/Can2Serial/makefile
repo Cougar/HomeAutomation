@@ -46,15 +46,15 @@
 #LOWFUSE=0xe2
 #EXTFUSE=0x01
 
-MCU = atmega168
-HIGHFUSE=0xdc
-LOWFUSE=0xe2
-EXTFUSE=0x01
-
-#MCU = atmega328p
-#HIGHFUSE=0xdd
+#MCU = atmega168
+#HIGHFUSE=0xdc
 #LOWFUSE=0xe2
-#EXTFUSE=0x04
+#EXTFUSE=0x01
+
+MCU = atmega328p
+HIGHFUSE=0xdd
+LOWFUSE=0xe2
+EXTFUSE=0x04
 
 # for using the same system.inc we use BIOSDIR and BIOSTARGET for setting the correct file to flash
 # flash:w:$(BIOSDIR)/$(BIOSTARGET).hex
