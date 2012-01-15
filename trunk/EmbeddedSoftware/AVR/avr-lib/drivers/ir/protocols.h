@@ -90,7 +90,7 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
-//int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
