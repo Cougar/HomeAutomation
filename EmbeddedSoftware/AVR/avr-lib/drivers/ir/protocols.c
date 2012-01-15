@@ -81,6 +81,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		return expandPanasonic(buf, len, proto);
 	case IR_PROTO_SKY:
 		return expandSky(buf, len, proto);
+	case IR_PROTO_NEXA2:
+		return expandNexa2(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
 	return IR_NOT_CORRECT_DATA;
@@ -1013,5 +1015,29 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->data=rawbitsTemp;
 	return IR_OK;
 }
+
 #endif
+
+/**
+ * Expand data from Nexa2 protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	buf[0] = IR_NEXA2_START1;
+	buf[1] = IR_NEXA2_HIGH;
+	buf[2] = IR_NEXA2_START2;
+	
+	// TODO find out if dimmer value should be send, set different length, pad different
+	
+	return IR_NOT_CORRECT_DATA;
+}
 
