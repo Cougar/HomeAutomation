@@ -58,7 +58,7 @@ sub atomd_data_available
 
 	$s = IO::Select->new();
 	$s->add($socket);
-	@handles = $s->can_read(0.01);
+	@handles = $s->can_read(0.001);
 
 	$has_data = 0;
 	if (@handles)
@@ -69,16 +69,22 @@ sub atomd_data_available
 	return $has_data;
 }
 
+sub atomd_kill_promt
+{
+	($socket) = @_;
+
+	while (atomd_data_available($socket))
+	{
+		$packet = atomd_read_packet($socket); # Read prompt
+	}
+}
 
 sub atomd_initialize
 {
 	($host, $port) = @_;
 	$socket = atomd_connect($host, $port);
 	
-	while (atomd_data_available($socket))
-	{
-		$packet = atomd_read_packet($socket); # Read initial prompt
-	}
+	atomd_kill_promt($socket);
 	
 	return $socket;
 }
