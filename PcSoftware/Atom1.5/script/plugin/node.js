@@ -175,10 +175,10 @@ Console_RegisterCommand(Node_ProgramHex, function(arg_index, args) { return Cons
 
 function Node_ClearHex()
 {
-    Log("Clearing hexdata...\n");
+//    Log("Clearing hexdata...\n");
     
     Node_HexData = "";
-    
+
     return true;
 }
 Console_RegisterCommand(Node_ClearHex);
@@ -191,10 +191,10 @@ function Node_AppendHex(hexrow)
         return false;
     }
     
-    Log("Appending hexrow...\n");
+//    Log("Appending hexrow...\n");
     
     Node_HexData = Node_HexData + hexrow + "\n";
-    
+
     return true;
 }
 Console_RegisterCommand(Node_AppendHex);
