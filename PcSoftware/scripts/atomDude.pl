@@ -4,6 +4,7 @@
 
 use Cwd 'abs_path';
 use File::Basename;
+use Time::HiRes qw( usleep );
 
 $| = 1;
 
@@ -68,7 +69,6 @@ if (-e $path."/setConfig/AtomLib.pl") {
 	exit 1;
 }
 
-
 #0x14f90d1f to 0x1f0df914
 @hwidChars = split(//, $hwid);
 $hwid = $hwidChars[0]. $hwidChars[1]. uc($hwidChars[8]. $hwidChars[9]. $hwidChars[6]. $hwidChars[7]. $hwidChars[4]. $hwidChars[5]. $hwidChars[2]. $hwidChars[3]);
@@ -84,16 +84,35 @@ if ($reset eq "true" && $filename eq "")
 	$socket = atomd_initialize($hostname, $port);
 	atomd_send_command($socket, "Node_Reset $hwid");
 	print atomd_read_command_response($socket);
-	exit(1);
+	exit(0);
 	#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
 	#exit($result);
 }
 else
 {
+	open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
+	@filecontents = <FP>;
+	close FP;
+
 	$socket = atomd_initialize($hostname, $port);
-	atomd_send_command($socket, "Node_Program $hwid $bios $filename");
+	
+	#print "Sending Node_ClearHex\n";
+	atomd_send_command($socket, "Node_ClearHex");
+	atomd_kill_promt($socket);
+		
+	foreach $filerow (@filecontents) {
+		#print "Sending Node_AppendHex $filerow \n";
+		atomd_send_command($socket, "Node_AppendHex $filerow");
+		atomd_kill_promt($socket);
+	}
+	#print "Sending Node_ProgramHex $hwid $bios \n";
+	atomd_send_command($socket, "Node_ProgramHex $hwid $bios");
+	atomd_kill_promt($socket);
+
+
+	#atomd_send_command($socket, "Node_Program $hwid $bios $filename");
 	print atomd_read_command_response($socket);
-	exit(1);
+	exit(0);
 	#my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
     #    exit($result);
 }
