@@ -78,6 +78,7 @@ setconfig: check_systeminc
 
 installnoappl:
 	@$(ECHO) ":02000000FFFF00" > tmpfil
+	@$(ECHO) ":00000001FF" >> tmpfil
 	$(CANUPLOAD) $(CANULFLAGS) -n $(NODE_ID) -i $(NODE_HW_ID) -f tmpfil -r
 	@$(RM) tmpfile
 
