@@ -7,6 +7,8 @@ Node_ProgramClientId = null;
 
 Node_WaitClientId = null;
 
+Node_HexData = "";
+
 function Node_OnChange(node_id, available)
 {
 	if (node_id == Node_ResetNodeId && available)
@@ -144,6 +146,58 @@ function Node_Program(node_id, bios, filename)
     return true;
 }
 Console_RegisterCommand(Node_Program, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds(), [0, 1]); });
+
+function Node_ProgramHex(node_id, bios)
+{
+    if (arguments.length < 2)
+    {
+        Log("\033[31mNot enough parameters given.\033[0m\n");
+        return false;
+    }
+    
+    Log("Initiating programming of " + node_id + "...\n");
+    
+    if (!NodeExport_ProgramNodeHex(node_id, bios > 0, Node_HexData))
+    {
+        Log("\033[31mFailed to start programming.\033[0m\n");
+        return false;
+    }
+    
+    Node_ResetClientId = Console_GetClientId();
+    Node_ResetNodeId = node_id;
+    Console_PreventDefaultPrompt();
+
+    Node_HexData = "";
+
+    return true;
+}
+Console_RegisterCommand(Node_ProgramHex, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds(), [0, 1]); });
+
+function Node_ClearHex()
+{
+    Log("Clearing hexdata...\n");
+    
+    Node_HexData = "";
+    
+    return true;
+}
+Console_RegisterCommand(Node_ClearHex);
+
+function Node_AppendHex(hexrow)
+{
+    if (arguments.length < 1)
+    {
+        Log("\033[31mNot enough parameters given.\033[0m\n");
+        return false;
+    }
+    
+    Log("Appending hexrow...\n");
+    
+    Node_HexData = Node_HexData + hexrow + "\n";
+    
+    return true;
+}
+Console_RegisterCommand(Node_AppendHex);
 
 function Node_GetInformation(node_id)
 {

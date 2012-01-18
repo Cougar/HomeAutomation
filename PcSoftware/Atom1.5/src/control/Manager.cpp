@@ -295,6 +295,38 @@ bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)
     return true;
 }
 
+/* Program node with hexdata as argument */
+bool Manager::ProgramNodeHex(Node::Id node_id, bool is_bios, std::string hex_data)
+{
+    NodeList::iterator it = this->nodes_.find(node_id);
+    
+    if (it == this->nodes_.end())
+    {
+        LOG.Error("Could not find node " +  node_id);
+        return false;
+    }
+    
+    Code::Pointer code = Code::Pointer(new Code());
+    if (!code->ParseIntelHex(hex_data))
+    {
+        LOG.Error("Failed to parse hexdata " + hex_data);
+        return false;
+    }
+    
+    if (is_bios)
+    {
+        LOG.Debug("is_bios true");
+        it->second->ProgramBios(code);
+    }
+    else
+    {
+        LOG.Debug("is_bios false");
+        it->second->ProgramApplication(code);
+    }
+    
+    return true;
+}
+
 Node::Information Manager::GetNodeInformation(Node::Id node_id)
 {
     NodeList::iterator it = this->nodes_.find(node_id);

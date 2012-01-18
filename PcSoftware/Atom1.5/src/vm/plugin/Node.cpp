@@ -39,6 +39,7 @@ Node::Node(boost::asio::io_service& io_service) : Plugin(io_service)
     this->ExportFunction("NodeExport_ResetNode",         Node::Export_ResetNode);
     this->ExportFunction("NodeExport_GetAvailableNodes", Node::Export_GetAvailableNodes);
     this->ExportFunction("NodeExport_ProgramNode",       Node::Export_ProgramNode);
+    this->ExportFunction("NodeExport_ProgramNodeHex",    Node::Export_ProgramNodeHex);
     this->ExportFunction("NodeExport_GetNodeInformation",Node::Export_GetNodeInformation);
 }
 
@@ -138,6 +139,26 @@ Value Node::Export_ProgramNode(const v8::Arguments& args)
     v8::String::AsciiValue filename(args[2]);
     
     return handle_scope.Close(v8::Boolean::New(control::Manager::Instance()->ProgramNode(*node_id, args[1]->BooleanValue(), std::string(*filename))));
+}
+
+Value Node::Export_ProgramNodeHex(const v8::Arguments& args)
+{
+    v8::Locker lock;
+    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
+    v8::HandleScope handle_scope;
+    
+    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    
+    if (args.Length() < 3)
+    {
+        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
+        return handle_scope.Close(v8::Boolean::New(false));
+    }
+    
+    v8::String::AsciiValue node_id(args[0]);
+    v8::String::AsciiValue hex_data(args[2]);
+    
+    return handle_scope.Close(v8::Boolean::New(control::Manager::Instance()->ProgramNodeHex(*node_id, args[1]->BooleanValue(), std::string(*hex_data))));
 }
 
 Value Node::Export_GetNodeInformation(const v8::Arguments& args)
