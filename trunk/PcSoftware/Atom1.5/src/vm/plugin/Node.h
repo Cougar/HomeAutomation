@@ -53,6 +53,7 @@ private:
     static Value Export_ResetNode(const v8::Arguments& args);
     static Value Export_GetAvailableNodes(const v8::Arguments& args);
     static Value Export_ProgramNode(const v8::Arguments& args);
+    static Value Export_ProgramNodeHex(const v8::Arguments& args);
     static Value Export_GetNodeInformation(const v8::Arguments& args);
 };
 
