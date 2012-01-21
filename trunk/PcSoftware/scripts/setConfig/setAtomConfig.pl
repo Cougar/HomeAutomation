@@ -133,11 +133,11 @@ foreach (@lines)
 	}
 	elsif (index($line, "Device Type") != -1)
 	{
-		$devicename = substr($line, index($line, ":") + 1);
+		$devicename = substr($line, index($line, ":") + 1, -1);
 	
 		$devicename =~ s/^\s+//;
 		$devicename =~ s/\s+$//;
-	
+		
 		@device = $devices[0];
 		foreach (@devices)
 		{
@@ -148,7 +148,7 @@ foreach (@lines)
 			}
 		}
 		
-		if ($device[0] eq "unknown") 
+		if ($foundDeviceType == 0) 
 		{
 			print "\nWarning: Unknown device type, will not set MCU settings\n\n";
 		}
