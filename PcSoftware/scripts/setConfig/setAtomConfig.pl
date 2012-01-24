@@ -133,7 +133,7 @@ foreach (@lines)
 	}
 	elsif (index($line, "Device Type") != -1)
 	{
-		$devicename = substr($line, index($line, ":") + 1, -1);
+		$devicename = substr($line, index($line, ":") + 1);
 	
 		$devicename =~ s/^\s+//;
 		$devicename =~ s/\s+$//;
