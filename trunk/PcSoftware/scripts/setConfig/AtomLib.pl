@@ -113,7 +113,7 @@ sub atomd_read_command_response
 		}
 
 		$packet =~ s/\n//g;
-		$response .= substr($packet, 8); 
+		$response .= substr($packet, 8, -1); 
 		$response .= "\n";
 	}
 
