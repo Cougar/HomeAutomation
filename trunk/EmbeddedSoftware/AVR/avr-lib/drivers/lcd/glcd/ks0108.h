@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include <config.h>
 #include <drivers/mcu/gpio.h>
-#include <drivers/sensor/ds18s20/delay.h>
+#include <util/delay.h>
 
 #ifndef KS0108_CONTROL_E
 

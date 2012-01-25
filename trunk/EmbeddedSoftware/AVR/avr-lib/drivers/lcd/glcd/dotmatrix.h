@@ -1,7 +1,6 @@
 #include <inttypes.h>
 #include <config.h>
 #include <drivers/mcu/gpio.h>
-#include <drivers/sensor/ds18s20/delay.h>
 
 #define GLCD_COLOR_BLACK 0
 #define GLCD_COLOR_WHITE 1
