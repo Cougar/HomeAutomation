@@ -533,7 +533,7 @@ void sns_irTransceive_Init(void)
 	gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
 
-#if IR_TX_ENABLE==1
+	/* TX-pins must be set in case transmitter is nexa */
 	gpio_set_out(sns_irTransceive_MOD_PIN);
 	gpio_set_out(sns_irTransceive_TX0_PIN);
 	gpio_set_out(sns_irTransceive_TX1_PIN);
@@ -542,7 +542,6 @@ void sns_irTransceive_Init(void)
 	gpio_set_pin(sns_irTransceive_TX0_PIN);
 	gpio_set_pin(sns_irTransceive_TX1_PIN);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
-#endif
 #endif
 
 	/* IR tx power pins on PCA95xx */
