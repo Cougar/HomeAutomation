@@ -12,7 +12,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include <drivers/sensor/ds18s20/delay.h>
+#include <util/delay.h>
 #include "DHT11.h"
 
 #include <config.h>
@@ -58,7 +58,7 @@ uint8_t dht11_readData(uint8_t* word)
 	// set Pin as input - wait for clients to pull low
 	DHT11_DIR_IN(); // input
 	
-	delay_us(80);
+	_delay_us(80);
 	if (DHT11_GET_IN())		// no presence detect
 	{
 		//printf("Fel 1\n");
@@ -68,18 +68,18 @@ uint8_t dht11_readData(uint8_t* word)
 	
 	// after a delay the clients should release the line
 	// and input-pin gets back to high due to pull-up-resistor
-	delay_us(80);
+	_delay_us(80);
 	if (!DHT11_GET_IN())		// no presence detect
 	{
 		//printf("Fel 2\n");
 		return 0;
 	}
 	while (DHT11_GET_IN());
-	delay_us(30);
+	_delay_us(30);
 	while (!DHT11_GET_IN());
 	uint8_t wordcounter = 0;
 	uint8_t bitcounter = 0;
-	delay_us(50);
+	_delay_us(50);
 	for (wordcounter = 0; wordcounter < 5; wordcounter++) {
 		for (bitcounter = 0; bitcounter < 8; bitcounter++) {
 			word[wordcounter] = word[wordcounter] << 1;
@@ -90,7 +90,7 @@ uint8_t dht11_readData(uint8_t* word)
 				word[wordcounter] &= 0xfe;
 			}
 			while (!DHT11_GET_IN());
-			delay_us(50);
+			_delay_us(50);
 		}
 	}
 	if (word[0]+word[1]+word[2]+word[3] != word[4]) {

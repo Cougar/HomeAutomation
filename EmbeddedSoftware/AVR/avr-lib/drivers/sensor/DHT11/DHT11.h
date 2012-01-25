@@ -19,7 +19,7 @@
 #ifdef DHT11_ONE_BUS
 
 #ifndef DHT11_PIN
-  #warning DHT11_PIN shall be defined in config.inc, useing DHT11_PIN=EXP_F...
+  #warning DHT11_PIN shall be defined in config.inc, using DHT11_PIN=EXP_F...
   #define DHT11_PIN  EXP_F
 #endif
 
