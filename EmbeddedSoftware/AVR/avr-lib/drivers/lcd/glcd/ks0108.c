@@ -67,7 +67,7 @@ void ks0108Disable(){
 }
 
 void ks0108Delay(){
-	delay_us(2);
+	_delay_us(2);
 }
 
 void ks0108Enable(){
