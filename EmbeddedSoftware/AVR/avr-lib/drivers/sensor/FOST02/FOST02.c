@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <drivers/sensor/ds18s20/delay.h>
+#include <util/delay.h>
 #include "FOST02.h"
 
 /*----------------------------------------------
@@ -36,21 +36,21 @@ void FOST02Init(void)
 void sendReset(void)
 {
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 }
 uint8_t sendCommand(uint8_t cmd)
 {
@@ -62,31 +62,31 @@ uint8_t sendCommand(uint8_t cmd)
 			gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
 		else
 			gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
-		delay_us(2);
+		_delay_us(2);
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		cmd = cmd << 1;
-		delay_us(2);
+		_delay_us(2);
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 	}
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
 		
-	delay_us(2);
+	_delay_us(2);
 	if ( !gpio_get_state(FOST02_DATA)) 
 	{
 		ret = 1;
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 		while (!gpio_get_state(FOST02_DATA));
-		delay_us(2);
+		_delay_us(2);
 	}
 	else
 		ret = 0;
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	return ret;
 }
 
@@ -107,35 +107,35 @@ uint16_t getFOST02Data(void)
 	for (i = 0; i<8 ; i++)
 	{
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 		data1 = data1 << 1;
 		if ( gpio_get_state(FOST02_DATA)) 
 			data1 = data1 | 0x0001;
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 	}
 	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	for (i = 0; i<8 ; i++)
 	{
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 		data2 = data2 << 1;
 		if ( gpio_get_state(FOST02_DATA)) 
 			data2 = data2 | 0x0001;
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 	}
 	//skip Ack
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	data = (uint16_t) (data1<<8);
 	data += data2;
@@ -151,35 +151,35 @@ void getFOST02DataByte(uint8_t *data1in, uint8_t *data2in)
 	for (i = 0; i<8 ; i++)
 	{
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 		data1 = data1 << 1;
 		if ( gpio_get_state(FOST02_DATA)) 
 			data1 = data1 | 0x0001;
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 	}
 	gpio_set_out(FOST02_DATA); //set 1 in DDR line Data = 0 (data line = output)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	for (i = 0; i<8 ; i++)
 	{
 		gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 		data2 = data2 << 1;
 		if ( gpio_get_state(FOST02_DATA)) 
 			data2 = data2 | 0x0001;
 		gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
-		delay_us(2);
+		_delay_us(2);
 	}
 	//skip Ack
 	gpio_set_in(FOST02_DATA); // set 0 in DDR line: Data = 1 (data line = input)
-	delay_us(2);
+	_delay_us(2);
 	gpio_set_pin(FOST02_CLK); //set 1 in FOST_CLK
-	delay_us(2);
+	_delay_us(2);
 	gpio_clr_pin(FOST02_CLK); //set 0 in FOST_CLK
 	*data1in = data1;
 	*data2in = data2;
