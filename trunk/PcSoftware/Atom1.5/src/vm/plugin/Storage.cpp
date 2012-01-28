@@ -34,7 +34,7 @@ logging::Logger Storage::LOG("vm::plugin::storage");
     
 Storage::Storage(boost::asio::io_service& io_service) : Plugin(io_service)
 {
-    this->name_ = "Storage";
+    this->name_ = "storage";
     
     this->ExportFunction("StorageExport_GetParameters", Storage::Export_GetParameters);
     this->ExportFunction("StorageExport_GetParameter",  Storage::Export_GetParameter);

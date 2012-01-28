@@ -30,7 +30,9 @@ namespace atom {
 namespace net {
 
 Manager::Pointer Manager::instance_;
-    
+   
+logging::Logger Manager::LOG("net::Manager");
+
 Manager::Manager()
 {
 

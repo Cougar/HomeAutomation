@@ -81,13 +81,13 @@ void Socket::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
      
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::Integer::New(client_id));
     arguments->push_back(v8::String::New(data.ToCharString().data()));
     
-    this->Call( client_id, "Socket_OnNewData", arguments);
+    this->Call(client_id, "Socket_OnNewData", arguments);
 }
 
 void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
@@ -96,7 +96,7 @@ void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     arguments->push_back(v8::Integer::New(client_id));
@@ -111,7 +111,7 @@ Value Socket::Export_Connect(const v8::Arguments& args)
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
@@ -132,7 +132,7 @@ Value Socket::Export_Disconnect(const v8::Arguments& args)
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 1)
     {
@@ -151,7 +151,7 @@ Value Socket::Export_Send(const v8::Arguments& args)
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
     
-    //LOG.Debug(std::string(__FUNCTION__) + " called!");
+    LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (args.Length() < 2)
     {
