@@ -266,7 +266,7 @@ void act_hwPWM_Process(void)
 			txMsg.Header.ModuleId = act_hwPWM_ID;
 			txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_PWM;
 			txMsg.Length = 3;
-			txMsg.Data[0] = index+1;
+			txMsg.Data[0] = index;
 			txMsg.Data[1] = (0xff&(pwmValue[index]>>8));
 			txMsg.Data[2] = (0xff&(pwmValue[index]));
 			StdCan_Put(&txMsg);
