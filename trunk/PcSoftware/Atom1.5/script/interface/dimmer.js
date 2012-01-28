@@ -260,7 +260,7 @@ function Dimmer_OnMessage(module_name, module_id, command, variables)
 			{
 				for (var alias_name in aliases_data)
 				{
-					if (aliases_data[alias_name]["specific"]["Channel"] != variables["Id"])
+					if (aliases_data[alias_name]["specific"]["Channel"] != variables["Channel"])
 					{
 						continue;
 					}
