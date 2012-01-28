@@ -28,6 +28,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "common/IoService.h"
+#include "logging/Logger.h"
 
 #include "types.h"
 #include "Client.h"
@@ -66,6 +67,8 @@ public:
 private:
     typedef std::map<ClientId, Client::Pointer> ClientList;
 
+    static logging::Logger LOG;
+    
     static Pointer instance_;
     
     ClientList clients_;

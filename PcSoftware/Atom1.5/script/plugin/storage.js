@@ -43,3 +43,26 @@ function Storage_GetParameters(store_name)
 {
 	return StorageExport_GetParameters(store_name);
 }
+
+function Storage_GetJsonParamter(store_name, parameter_name)
+{
+  return eval("(" + Storage_GetParameter(store_name, parameter_name) + ")");
+}
+
+function Storage_SetJsonParameter(store_name, parameter_name, parameter_value)
+{
+  Storage_SetParameter(store_name, parameter_name, JSON.stringify(parameter_value));
+}
+
+function Storage_GetJsonParamters(store_name)
+{
+  var json_parameters = {};
+  var paramaters = Storage_GetParameters(store_name);
+  
+  for(parameter in parameters)
+  {
+    json_parameters[paramater] = eval("(" + paramaters[parameter] + ")");
+  }
+  
+  return json_parameters;    
+}

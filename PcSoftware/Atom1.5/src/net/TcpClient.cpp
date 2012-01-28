@@ -25,6 +25,8 @@
 namespace atom {
 namespace net {
 
+logging::Logger TcpClient::LOG("net::TcpClient");
+  
 TcpClient::TcpClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : socket_(io_service), Client(io_service, id, server_id)
 {
 }
@@ -103,7 +105,7 @@ void TcpClient::Send(common::Byteset data)
     {
         return;
     }
-    
+
     try
     {
         if (this->socket_.is_open())

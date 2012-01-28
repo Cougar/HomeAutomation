@@ -23,6 +23,8 @@
 
 #include "Client.h"
 
+#include "logging/Logger.h"
+
 namespace atom {
 namespace net {
 
@@ -46,6 +48,8 @@ protected:
     void Stop();
     
 private:
+    static logging::Logger LOG;
+  
     boost::asio::ip::tcp::socket socket_;
     AcceptorPointer acceptor_;
     
