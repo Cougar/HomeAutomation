@@ -3,6 +3,7 @@ Display_ModuleNames    = [ "HD44789" ];
 Display_Height         = function() { return [ 0, 1, 2, 3  ]; };
 Display_Width          = function() { return [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]; };
 Display_Backlight      = function() { return [ 0, 50, 100, 150, 200, 255 ]; };
+Display_Autolight      = function() { return [ "ON", "OFF" ]; };
 Display_Aliases        = function() { return Module_GetAliasNames(Display_ModuleNames); };
 Display_AvailableIds   = function() { return Module_GetAvailableIds(Display_ModuleNames); };
 
@@ -82,6 +83,47 @@ function Display_SetBacklight(alias_name, strength)
 	return true;
 }
 Console_RegisterCommand(Display_SetBacklight, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Display_Aliases(), Display_Backlight()); });
+
+function Display_SetBacklightAuto(alias_name, strength, autolight)
+{
+	if (arguments.length < 2)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	var aliases_data = Module_ResolveAlias(alias_name, Display_ModuleNames);
+	var found = false;
+	
+	for (var name in aliases_data)
+	{
+		var variables = {
+		"Strength" : strength,
+		"AutoLight" : autolight
+		};
+		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "LCD_Backlight", variables))
+		{
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+		
+		found = true;
+	}
+	
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+	
+	return true;
+}
+Console_RegisterCommand(Display_SetBacklightAuto, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Display_Aliases(), Display_Backlight(),Display_Autolight()); });
+
 
 
 function Display_Print(alias_name, x, y, text)

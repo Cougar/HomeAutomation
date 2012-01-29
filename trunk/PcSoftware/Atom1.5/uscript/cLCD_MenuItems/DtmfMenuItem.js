@@ -37,6 +37,7 @@ DtmfMenuItem.prototype.processEvent = function (event)
 			this.parentDisplay.changeToLeft();
 		} else {
 			this.currentPhoneItem--;
+			//Log("currentPhoneItem is now-: "+ this.currentPhoneItem + "\n");
 			if (this.currentPhoneItem < 0) {
 				this.currentPhoneItem = this.numberOfItemsInPhonebook-1;
 			}
@@ -48,6 +49,7 @@ DtmfMenuItem.prototype.processEvent = function (event)
 			this.parentDisplay.changeToRight();
 		} else {
 			this.currentPhoneItem++;
+			//Log("currentPhoneItem is now+: "+ this.currentPhoneItem + "\n");
 			if (this.currentPhoneItem >= this.numberOfItemsInPhonebook) {
 				this.currentPhoneItem = 0;
 			}
@@ -83,7 +85,6 @@ DtmfMenuItem.prototype.onEnter = function ()
 	this.PhoneNumberList = Storage_GetParameters("PhoneCalls");
 	if (this.PhoneNumberList) 
 	{
-
 		for(k in this.PhoneNumberList)
 		{
      			this.PhoneNumberListKeys.push(k);
@@ -101,6 +102,10 @@ DtmfMenuItem.prototype.onEnter = function ()
 	this.numberOfItemsInPhonebook = this.PhoneNumberListKeys.length;
 	Display_Clear(this.display);
 	this.mode = 0;
+	//for(k in this.PhoneNumberList)
+	//{
+	//	Log("hittade: "+k+"\n");
+	//}
 }
 DtmfMenuItem.prototype.update = function ()
 {
@@ -110,9 +115,19 @@ DtmfMenuItem.prototype.update = function ()
 			Display_Print(this.display, 0, 0,"Senaste nummer:");
 			var numbers = {};
 			numbers  = eval("(" + this.PhoneNumberList[this.PhoneNumberListKeys[0]] + ")");
+			if (numbers["direction"]==null)
+			  Display_Print(this.display, 0, 0,"Senaste nummer:   - ");
+			else if (numbers["direction"]=="in")
+			  Display_Print(this.display, 0, 0,"Senaste nummer:   In");
+			else 
+			  Display_Print(this.display, 0, 0,"Senaste nummer:   Ut");
 			var date = new Date(parseInt(this.PhoneNumberListKeys[0])*1000);
 			Display_Print(this.display, 0, 1,""+date.getDateFormated()+" "+date.getTimeShortFormated());
 			Display_Print(this.display, 0, 2,""+numbers["number"]);
+			var phonebook = Storage_GetJsonParamter("PhoneBook",numbers["number"])
+			if (phonebook) {
+				Display_Print(this.display, 0, 3, phonebook[0]);
+			}
 		} else {
 			Display_Clear(this.display);
 			Display_Print(this.display, 0, 0,"SenAste nummer:");
@@ -124,9 +139,20 @@ DtmfMenuItem.prototype.update = function ()
 		var numbers = {};
 		numbers  = eval("(" + this.PhoneNumberList[this.PhoneNumberListKeys[this.currentPhoneItem]] + ")");
 		var date = new Date(parseInt(this.PhoneNumberListKeys[this.currentPhoneItem])*1000);
-
-		Display_Print(this.display, 0, 0,""+date.getDateFormated()+" "+date.getTimeShortFormated());
+		if (numbers["direction"]==null)
+		  Display_Print(this.display, 0, 0,""+date.getDateFormated()+" "+date.getTimeShortFormated());
+		else if (numbers["direction"]=="in")
+		  Display_Print(this.display, 0, 0,""+date.getDateFormated()+" "+date.getTimeShortFormated()+"  In");
+		else 
+		  Display_Print(this.display, 0, 0,""+date.getDateFormated()+" "+date.getTimeShortFormated()+"  Ut");
 		Display_Print(this.display, 0, 1,""+numbers["number"]);
+		var phonebook = Storage_GetJsonParamter("PhoneBook",numbers["number"])
+		if (phonebook) {
+			Display_Print(this.display, 0, 2, phonebook[0]);
+			if (phonebook.length > 1) {
+				Display_Print(this.display, 0, 3, phonebook[1]);
+			}
+		}
 	}
 }
 

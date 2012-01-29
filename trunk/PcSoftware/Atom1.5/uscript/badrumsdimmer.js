@@ -1,15 +1,16 @@
 
 
-function badrumsdimmer(aliasnameSensor, aliasnameDimmer, aliasnameRotary, aliasnameDimmer_indication, aliasnameOutput)
+function badrumsdimmer(aliasnameSensor, aliasnameDimmer1, aliasnameRotary, aliasnameDimmer2, aliasnameOutput)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
 	var self = this;
 	this.mySensor = aliasnameSensor;
-	this.myDimmer = aliasnameDimmer;
+	this.myDimmer1 = aliasnameDimmer1;
 	this.myOutput = aliasnameOutput;
-	this.myDimmerIndication = aliasnameDimmer_indication;
+	this.myDimmer2 = aliasnameDimmer2;
 	this.myRotary = aliasnameRotary;
+	this.myMode = 3;
 
 	Module_RegisterToOnMessage(aliasnameSensor, function(alias_name, command, variables) { self.sensorOnMessage(alias_name, command, variables) });
 	Module_RegisterToOnMessage(this.myRotary, function(alias_name, command, variables) { self.rotary_OnMessage(alias_name, command, variables) });
@@ -26,10 +27,11 @@ function badrumsdimmer(aliasnameSensor, aliasnameDimmer, aliasnameRotary, aliasn
 }
 
 /* Declaration of instance variables, for static variables remove prototype */
-badrumsdimmer.prototype.myDimmer = null;
+badrumsdimmer.prototype.myDimmer1 = null;
+badrumsdimmer.prototype.myDimmer2 = null;
+badrumsdimmer.prototype.myMode = 1;
 badrumsdimmer.prototype.mySensor = null;
 badrumsdimmer.prototype.myOutput = null;
-badrumsdimmer.prototype.myDimmerIndication = null;
 badrumsdimmer.prototype.myRotary = null;
 badrumsdimmer.prototype.outputStatus = "Low";
 badrumsdimmer.prototype.myInterval = null;
@@ -58,23 +60,23 @@ badrumsdimmer.prototype.sensorOnMessage = function(alias_name, command, variable
 		{
 			
 			if (variables["Status"] == "Low") {
-			  //Log("\033[33mknapp låg.\033[0m\n");
-			    Dimmer_AbsoluteFade(this.myDimmerIndication, 129, 255);
-			  //Log("\033[33mPin low.\033[0m\n");
-				var last_value_string = Storage_GetParameter("LastValues", this.myDimmer);
-				var last_value = eval("(" + last_value_string + ")");
-				if (last_value["Level"]["value"] == 0) { 
-				      //log(this.myName + ":" + this.myId + "> Light on.\n");
-					if (this.oldPwmValue == 0) {
-						this.oldPwmValue = 255;
-					}
-					Dimmer_AbsoluteFade(this.myDimmer, 129, this.oldPwmValue);
+
+				if (this.oldPwmValue == 0) {
+					this.oldPwmValue = 255;
+				}
+				if (this.myMode == 1) {
+					Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+				} else if (this.myMode == 2) {
+					Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
+				} else {
+					Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+					Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
 				}
 		  
 			} else {
 			  //Log("\033[33mknapp hög.\033[0m\n");
 			  
-			  Dimmer_AbsoluteFade(this.myDimmerIndication, 129, 0);
+//			  Dimmer_AbsoluteFade(this.myDimmerIndication, 129, 0);
 			  //Log("\033[33mPin high.\033[0m\n");
 			}
 			if (this.turnOffCnt <  MovementTimeout) {
@@ -97,11 +99,9 @@ badrumsdimmer.prototype.timerUpdate1 = function(timer)
 		if (this.turnOffCnt == 0) {
 			//Turn off light
 			//log(this.myName + ":" + this.myId + "> Light off.\n");
-			var last_value_string = Storage_GetParameter("LastValues", this.myDimmer);
-			var last_value = eval("(" + last_value_string + ")");
-			this.oldPwmValue = last_value["Level"]["value"];
 			//this.myPWM.setPWMValue(0,2);
-			Dimmer_AbsoluteFade(this.myDimmer, 129, 0);
+			Dimmer_AbsoluteFade(this.myDimmer1, 129, 0);
+			Dimmer_AbsoluteFade(this.myDimmer2, 129, 0);
 			//getDimmerService('Skohylla').absFade(2,129, 0);
 		}
 	}
@@ -113,8 +113,7 @@ badrumsdimmer.prototype.rotary_OnMessage = function(alias_name, command, variabl
 	{
 		case "Rotary_Switch":
 		{
-			Dimmer_AbsoluteFade(this.myDimmer, 129, 17*variables["Position"]);
-				
+			this.oldPwmValue = 17*variables["Position"];
 			/*for (var i = 0; i < variables["Steps"]; i++)
 			{
 					
@@ -132,7 +131,18 @@ badrumsdimmer.prototype.rotary_OnMessage = function(alias_name, command, variabl
 				}
 				
 			}*/
-
+			if (this.myMode == 1) {
+				Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+			} else if (this.myMode == 2) {
+				Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
+			} else {
+				Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+				Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
+			}
+				
+			
+			
+			
 			if (this.turnOffCnt <  AdjustTimeout) {
 				this.turnOffCnt = AdjustTimeout;
 			}
@@ -141,29 +151,32 @@ badrumsdimmer.prototype.rotary_OnMessage = function(alias_name, command, variabl
 		}
 		case "Button":
 		{
-			var last_value_string = Storage_GetParameter("LastValues", this.myDimmer);
-			var last_value = eval("(" + last_value_string + ")");
-			
 			if (variables["Status"] == "Pressed")
 			{
-				Log("\033[33mknapp pressed.\033[0m\n");
+				
 			  
-				if (last_value["Level"]["value"] == 0) { 
-					if (this.oldPwmValue == 0) {
-						this.oldPwmValue = 90;
-					}
-					Dimmer_AbsoluteFade(this.myDimmer, 129, 128);
-				}
-				if (this.turnOffCnt <  AdjustTimeout) {
-					this.turnOffCnt = AdjustTimeout;
-				}
-				last_value_string = Storage_GetParameter("LastValues", this.myOutput);
-				last_value = eval("(" + last_value_string + ")");
-				if (last_value["Status"]["value"] == "High") { 
-					Output_SetPin(this.myOutput, "Low");
+				if (this.myMode == 1) {
+					this.myMode =2;
+					Log("\033[33mknapp pressed, Mode 2\033[0m\n");
+				} else if (this.myMode == 2) {
+					this.myMode =3;
+					Log("\033[33mknapp pressed, Mode 3\033[0m\n");
 				} else {
-					Output_SetPin(this.myOutput, "High");
+					this.myMode =1;
+					Log("\033[33mknapp pressed, Mode 1\033[0m\n");
 				}
+				
+				if (this.myMode == 1) {
+					Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+					Dimmer_AbsoluteFade(this.myDimmer2, 135, 0);
+				} else if (this.myMode == 2) {
+					Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
+					Dimmer_AbsoluteFade(this.myDimmer1, 135, 0);
+				} else {
+					Dimmer_AbsoluteFade(this.myDimmer1, 135, this.oldPwmValue);
+					Dimmer_AbsoluteFade(this.myDimmer2, 135, this.oldPwmValue);
+				}
+				
 				if (this.turnOffCnt < ButtonTimeout) {
 					this.turnOffCnt = ButtonTimeout;
 				}
