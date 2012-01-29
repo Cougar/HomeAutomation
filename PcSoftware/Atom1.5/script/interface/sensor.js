@@ -61,9 +61,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 						if (variables["Number"].charAt(0) == 'A') {
 						  direction = "in";
 						  var endIndex = variables["Number"].indexOf('C');
-						  if (endIndex =! -1) {
-						      variables["Number"] = variables["Number"].subString(1,endIndex);
-						  }
+						  variables["Number"] = variables["Number"].substring(1,endIndex);
 						} else {
 						    direction = "out";
 						}
@@ -123,6 +121,9 @@ function Sensor_StoreNumberInPhonebook(number)
 {
 	var phonebook = Storage_GetJsonParamter("PhoneBook",number)
 	if (!phonebook) {
+		if (number.charAt(0) != '0') {
+			number = "031"+number;
+   		}
 		Http_Request("wap.hitta.se/default.aspx?Who=" + number + "&Where=&PageAction=White", 
 			function(socket_id, result, header, content_data) {
 				var persons = new Array();
