@@ -3,7 +3,7 @@ Require("cLCD_MenuItems/MainMenuItem.js");
 Require("cLCD_MenuItems/DimmerMenuItem.js");
 Require("cLCD_MenuItems/SensorMenuItem.js");
 Require("cLCD_MenuItems/HDMISwitchMenuItem.js");
-Require("cLCD_MenuItems/PIDMenuItem.js");
+Require("cLCD_MenuItems/DtmfMenuItem.js");
 
 function CLCD_Display(aliasnameLCD, aliasnameRotary)
 {
@@ -33,7 +33,7 @@ function CLCD_Display(aliasnameLCD, aliasnameRotary)
 	this.SensorMenuItem = new SensorMenuItem(this, this.myCLCDService);
 	this.DimmerMenuItem = new DimmerMenuItem(this, this.myCLCDService);
 	this.HdmiMenuItem = new HDMISwitchMenuItem(this, this.myCLCDService);
-	this.PIDMenuItem = new PIDMenuItem(this, this.myCLCDService);
+	this.PIDMenuItem = new DtmfMenuItem(this, this.myCLCDService);
 	
 	this.currentMenuItem = this.MainMenuItem;
 

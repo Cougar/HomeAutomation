@@ -1,6 +1,6 @@
 
 
-function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_blue, aliasnameTouch, aliasnameDimmer1, aliasnameDimmer2, aliasnameDimmer3)
+function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_blue, aliasnameTouch, aliasnameDimmer1, aliasnameDimmer2, aliasnameDimmer3, aliasnameDimmer4, aliasnameDimmer5, aliasnameDimmer6)
 {
 
 /* Declaration of instance variables, for static variables remove prototype */
@@ -15,6 +15,9 @@ function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_b
 	this.myDimmer1 = aliasnameDimmer1;
 	this.myDimmer2 = aliasnameDimmer2;
 	this.myDimmer3 = aliasnameDimmer3;
+	this.myDimmer4 = aliasnameDimmer4;
+	this.myDimmer5 = aliasnameDimmer5;
+	this.myDimmer6 = aliasnameDimmer6;
 	this.myTouchMode = "Gesture";
 	this.myTouchRawX = 0;
 	this.myTouchRawY = 0;
@@ -32,6 +35,9 @@ function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_b
 TouchPanel.prototype.myDimmer1 = null;
 TouchPanel.prototype.myDimmer2 = null;
 TouchPanel.prototype.myDimmer3 = null;
+TouchPanel.prototype.myDimmer4 = null;
+TouchPanel.prototype.myDimmer5 = null;
+TouchPanel.prototype.myDimmer6 = null;
 TouchPanel.prototype.myTouch = null;
 TouchPanel.prototype.myRGBLED_red = null;
 TouchPanel.prototype.myRGBLED_green = null;
@@ -75,6 +81,9 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					//Dimmer_AbsoluteFade(this.myDimmer1, 132, 255);
 					Dimmer_AbsoluteFade(this.myDimmer2, 132, 255);
 					Dimmer_AbsoluteFade(this.myDimmer3, 132, 255);
+					Dimmer_AbsoluteFade(this.myDimmer4, 132, 255);
+					Dimmer_AbsoluteFade(this.myDimmer5, 132, 255);
+					Dimmer_AbsoluteFade(this.myDimmer6, 132, 255);
 					this.setLED(0,255,0);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
@@ -87,6 +96,9 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					Dimmer_AbsoluteFade(this.myDimmer1, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer2, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer3, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer4, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer5, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer6, 132, 0);
 					this.setLED(0,0,255);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
@@ -108,6 +120,9 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					Dimmer_AbsoluteFade(this.myDimmer1, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer2, 117, 0);
 					Dimmer_AbsoluteFade(this.myDimmer3, 103, 0);
+					Dimmer_AbsoluteFade(this.myDimmer4, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer5, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer6, 132, 0);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
 				}
