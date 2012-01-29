@@ -78,6 +78,8 @@ void sns_SimpleDTMF_Process(void)
 			
 			if (i+1 < rxlen)
 				txMsg.Data[i>>1] |= rxbuffer[i+1];
+			else 
+			  	txMsg.Data[i>>1] |= 0x0c;
 		}
 		txMsg.Length = (rxlen>>1)+(rxlen&1);
 		
