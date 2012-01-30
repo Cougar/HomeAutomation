@@ -1041,3 +1041,53 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	return IR_NOT_CORRECT_DATA;
 }
 
+
+#if (IR_PROTOCOLS_USE_NEXA1)
+/**
+ * Test data on NEXA protocol
+ * http://www.elektronikforumet.com/wiki/index.php/RF_Protokoll_-_Nexa/Proove_(%C3%A4ldre,_ej_sj%C3%A4lvl%C3%A4rande)
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	/* parse buf[], max is len */
+
+	/* check if we have correct amount of data */ 
+	if (len != 50) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint32_t rawbitsTemp = 0;
+
+	proto->protocol=IR_PROTO_NEXA1;
+	proto->timeout=IR_NEXA1_TIMEOUT;
+	proto->data=rawbitsTemp;
+	return IR_OK;
+}
+
+#endif
+
+/**
+ * Expand data from Nexa1 protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	
+	return IR_NOT_CORRECT_DATA;
+}
+

@@ -111,6 +111,7 @@
           <value id="8" name="Panasonic"/>
           <value id="9" name="Sky"/>
           <value id="10" name="Nexa2"/>
+          <value id="11" name="Nexa"/>
           <value id="255" name="Unknown"/>
         </variable>
         <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
