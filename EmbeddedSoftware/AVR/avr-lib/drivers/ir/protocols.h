@@ -38,6 +38,7 @@ typedef struct {
 #define IR_PROTOCOLS_USE_PANASONIC	1
 #define IR_PROTOCOLS_USE_SKY		1
 #define IR_PROTOCOLS_USE_NEXA2		1
+#define IR_PROTOCOLS_USE_NEXA1		1
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -69,6 +70,9 @@ int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #if (IR_PROTOCOLS_USE_NEXA2)
 int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+#if (IR_PROTOCOLS_USE_NEXA1)
+int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+#endif
 
 /* Try to parse all above protocols until a match is found. */
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
@@ -91,6 +95,7 @@ int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
@@ -270,6 +275,19 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEXA2_REPS		(5)									//		(minimum number of times to repeat code)
 #define IR_NEXA2_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_NEXA2_TOL_DIV	(2)
+
+
+/* Nexa1 Implementation
+ * Receiver: 
+ * Transmitter: 
+ */
+#define IR_PROTO_NEXA1		(11)
+#define IR_NEXA1_SHORT 		(320*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEXA1_LONG		(210*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_NEXA1_TIMEOUT	(5)									//ms	(time between ir frames)
+#define IR_NEXA1_REPS		(5)									//		(minimum number of times to repeat code)
+#define IR_NEXA1_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_NEXA1_TOL_DIV	(2)
 
 
 #define IR_PROTO_HASH		0xfe
