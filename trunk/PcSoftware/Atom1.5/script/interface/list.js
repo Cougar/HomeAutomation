@@ -12,5 +12,6 @@ Require("interface/sensor.js");
 Require("interface/display.js");
 Require("interface/rotary.js");
 Require("interface/http.js");
+Require("interface/lgtv.js");
 
 
