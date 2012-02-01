@@ -87,7 +87,9 @@ DtmfMenuItem.prototype.onEnter = function ()
 	{
 		for(k in this.PhoneNumberList)
 		{
-     			this.PhoneNumberListKeys.push(k);
+			var tmp  = eval("(" + this.PhoneNumberList[k] + ")");
+                        if (tmp["direction"]=="in")
+	     			this.PhoneNumberListKeys.push(k);
 			//Log("hittade: "+k+"\n");
 		}
 		this.PhoneNumberListKeys.sort(function(a, b) {return b - a;});

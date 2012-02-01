@@ -58,13 +58,18 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 				{
 					if (variables["Number"].length > 6) {
 						var direction;
+						var start = 0;
 						if (variables["Number"].charAt(0) == 'A') {
 						  direction = "in";
-						  var endIndex = variables["Number"].indexOf('C');
-						  variables["Number"] = variables["Number"].substring(1,endIndex);
+						  start = 1;
 						} else {
 						    direction = "out";
 						}
+						  var endIndex = variables["Number"].indexOf('C');
+						if (endIndex == -1) {
+							endIndex = variables["Number"].length;
+						 }
+						 variables["Number"] = variables["Number"].substring(start,endIndex);
 						var last_value = {};
 						var last_value_string = Storage_GetParameter("LastValues", alias_name);
 					
