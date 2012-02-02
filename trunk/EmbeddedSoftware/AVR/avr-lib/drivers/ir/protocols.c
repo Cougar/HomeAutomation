@@ -48,6 +48,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto
 #if (IR_PROTOCOLS_USE_NEXA2)
 	if (parseNexa2(buf, len, proto)==IR_OK) return IR_OK;
 #endif
+#if (IR_PROTOCOLS_USE_NEXA1)
+	if (parseNexa1(buf, len, proto)==IR_OK) return IR_OK;
+#endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
@@ -83,6 +86,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		return expandSky(buf, len, proto);
 	case IR_PROTO_NEXA2:
 		return expandNexa2(buf, len, proto);
+	case IR_PROTO_NEXA1:
+		return expandNexa1(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
 	return IR_NOT_CORRECT_DATA;
@@ -969,7 +974,7 @@ int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
  */
 int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
-
+	
 	/* check if we have correct amount of data */ 
 	if (len != 148 && len != 132) {
 		return IR_NOT_CORRECT_DATA;
@@ -1007,8 +1012,6 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 			}
 		}
 	}
-	
-//gpio_set_pin(EXP_H);
 	
 	proto->protocol=IR_PROTO_NEXA2;
 	proto->timeout=IR_NEXA2_TIMEOUT;
@@ -1059,12 +1062,42 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
 
+//gpio_set_pin(EXP_H);
+
 	/* check if we have correct amount of data */ 
 	if (len != 50) {
 		return IR_NOT_CORRECT_DATA;
 	}
-	uint32_t rawbitsTemp = 0;
+	if (buf[0] < IR_NEXA1_START - IR_NEXA1_START/IR_NEXA1_TOL_DIV && buf[0] > IR_NEXA1_START + IR_NEXA1_START/IR_NEXA1_TOL_DIV) { //check start bit
+		return IR_NOT_CORRECT_DATA;
+	}
 
+	uint32_t rawbitsTemp = 0;
+	uint8_t bitCounter = 0;
+
+	for (uint8_t i = 1; i < len; i+=4) {
+		/* Check if '0' bit */
+		if (
+			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i+1] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+1] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+2] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+2] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i+3] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+3] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV))
+		{
+			/* write a one */
+			rawbitsTemp |= (1UL)<<(bitCounter++);
+		}
+		/* Check if 'X' bit */
+		else if (
+			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i+1] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+1] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+2] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+2] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+3] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+3] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV))
+		{
+			/* do nothing, a zero is already in rawbits */
+			bitCounter++;
+		}
+	}
+	
 	proto->protocol=IR_PROTO_NEXA1;
 	proto->timeout=IR_NEXA1_TIMEOUT;
 	proto->data=rawbitsTemp;
