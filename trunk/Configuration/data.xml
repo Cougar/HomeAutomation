@@ -1380,6 +1380,7 @@
     <module id="59" name="linearAct" class="act"/>
     <module id="60" name="DotMatrix" class="act"/>
     <module id="61" name="DHT11" class="sns"/>
+    <module id="62" name="rfTransceive" class="sns"/>
   </modules>
   <defines>
     <define id="1" group="DirectionFlag" name="From_Owner"/>
