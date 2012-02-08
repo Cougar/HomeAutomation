@@ -1,4 +1,4 @@
-// Built on Mon Jan 30 20:50:10 2012 by makeCanId.pl
+// Built on Wed Feb  8 20:57:05 2012 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -333,6 +333,7 @@
 #define CAN_MODULE_TYPE_ACT_LINEARACT 59
 #define CAN_MODULE_TYPE_ACT_DOTMATRIX 60
 #define CAN_MODULE_TYPE_SNS_DHT11 61
+#define CAN_MODULE_TYPE_SNS_RFTRANSCEIVE 62
 
 //----------------- //
 // Misc definitions //
