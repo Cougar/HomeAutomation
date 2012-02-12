@@ -21,3 +21,6 @@ Can_Return_t BIOS_CanSend(Can_Message_t* msg) {
 	return Can_Send(msg);
 }
 
+uint32_t BIOS_GetHwId(void) {
+	return NODE_HW_ID;
+}

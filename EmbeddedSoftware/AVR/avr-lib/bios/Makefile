@@ -1,5 +1,5 @@
 # $Id$
-BIOS_VERSION   = 0x1341
+BIOS_VERSION   = 0x1342
 
 # Paths: set default pathnames if they are not
 # passed on from parent Makefile.
