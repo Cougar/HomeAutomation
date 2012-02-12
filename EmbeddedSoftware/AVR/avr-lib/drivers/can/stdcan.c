@@ -116,7 +116,7 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 #endif
 
 	//TODO: Do something with the Node Descriptor.
-	//(why have constats passed as parameters? they are defined at compiletime /arune)
+	//(why have constants passed as parameters? they are defined at compiletime /arune)
 #if defined(_AVRLIB_BIOS_)
 	/* TODO: When a Tx queue is implemented, the startup message should
 	 * be sent via StdCan_Put instead of directly to lower layer.
@@ -129,10 +129,10 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	Startup.DataLength = 4;
 #ifdef MODULE_APPLICATION
 	Startup.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE);
-	Startup.Data.bytes[0] = NODE_HW_ID&0xff;
-	Startup.Data.bytes[1] = (NODE_HW_ID>>8)&0xff;
-	Startup.Data.bytes[2] = (NODE_HW_ID>>16)&0xff;
-	Startup.Data.bytes[3] = (NODE_HW_ID>>24)&0xff;
+	Startup.Data.bytes[0] = BIOS_GetHwId()&0xff;
+	Startup.Data.bytes[1] = (BIOS_GetHwId()>>8)&0xff;
+	Startup.Data.bytes[2] = (BIOS_GetHwId()>>16)&0xff;
+	Startup.Data.bytes[3] = (BIOS_GetHwId()>>24)&0xff;
 #else
 	Startup.Id = (CAN_NMT_APP_START << CAN_SHIFT_NMT_TYPE) | (NODE_ID << CAN_SHIFT_NMT_SID);
 	Startup.Data.bytes[1] = APP_TYPE&0xff;
@@ -224,10 +224,11 @@ void StdCan_SendHeartbeat(uint8_t n)
 #ifdef MODULE_APPLICATION
 	Heartbeat.DataLength = 5;
 	Heartbeat.Id = (CAN_NMT << CAN_SHIFT_CLASS) | (CAN_NMT_HEARTBEAT << CAN_SHIFT_NMT_TYPE);
-	Heartbeat.Data.bytes[0] = NODE_HW_ID_BYTE0;
-	Heartbeat.Data.bytes[1] = NODE_HW_ID_BYTE1;
-	Heartbeat.Data.bytes[2] = NODE_HW_ID_BYTE2;
-	Heartbeat.Data.bytes[3] = NODE_HW_ID_BYTE3;
+	uint32_t HwId=BIOS_GetHwId();
+	Heartbeat.Data.bytes[0] = HwId&0xff;
+	Heartbeat.Data.bytes[1] = (HwId>>8)&0xff;
+	Heartbeat.Data.bytes[2] = (HwId>>16)&0xff;
+	Heartbeat.Data.bytes[3] = (HwId>>24)&0xff;
 	Heartbeat.Data.bytes[4] = NUMBER_OF_MODULES;
 #else
 
