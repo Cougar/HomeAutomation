@@ -169,10 +169,11 @@ void sns_counter_List(uint8_t ModuleSequenceNumber)
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
-	txMsg.Data[0] = NODE_HW_ID_BYTE0;
-	txMsg.Data[1] = NODE_HW_ID_BYTE1;
-	txMsg.Data[2] = NODE_HW_ID_BYTE2;
-	txMsg.Data[3] = NODE_HW_ID_BYTE3;
+	uint32_t HwId=BIOS_GetHwId();
+	txMsg.Data[0] = HwId&0xff;
+	txMsg.Data[1] = (HwId>>8)&0xff;
+	txMsg.Data[2] = (HwId>>16)&0xff;
+	txMsg.Data[3] = (HwId>>24)&0xff;
 
 	txMsg.Data[4] = NUMBER_OF_MODULES;
 	txMsg.Data[5] = ModuleSequenceNumber;
