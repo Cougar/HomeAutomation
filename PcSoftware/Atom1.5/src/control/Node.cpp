@@ -218,6 +218,10 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
         if (this->expected_ack_data_ != checksum)
         {
             LOG.Warning("Checksum received in ACK was incorrect got " + boost::lexical_cast<std::string>(checksum) + " expected " + boost::lexical_cast<std::string>(this->expected_ack_data_) + ", aborting...");
+
+            this->SendReset();
+
+            target_state = STATE_NORM_OFFLINE;
         }
         else if (this->state_ == STATE_BPGM_END)
         {
