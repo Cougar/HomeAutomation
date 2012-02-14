@@ -81,12 +81,12 @@ print "Parameters: " . "\n";
 
 if ($reset eq "true" && $filename eq "")
 {
-	$socket = atomd_initialize($hostname, $port);
-	atomd_send_command($socket, "Node_Reset $hwid");
-	print atomd_read_command_response($socket);
-	exit(0);
-	#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
-	#exit($result);
+	#$socket = atomd_initialize($hostname, $port);
+	#atomd_send_command($socket, "Node_Reset $hwid");
+	#print atomd_read_command_response($socket);
+	#exit(0);
+	my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
+	exit($result);
 }
 else
 {
