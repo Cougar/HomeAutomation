@@ -81,40 +81,41 @@ print "Parameters: " . "\n";
 
 if ($reset eq "true" && $filename eq "")
 {
-	#$socket = atomd_initialize($hostname, $port);
-	#atomd_send_command($socket, "Node_Reset $hwid");
-	#print atomd_read_command_response($socket);
-	#exit(0);
-	my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
-	exit($result);
+	$socket = atomd_initialize($hostname, $port);
+	atomd_send_command($socket, "Node_Reset $hwid");
+	print atomd_read_command_response($socket);
+	exit(0);
+	#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
+	#exit($result);
 }
 else
 {
-	open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
-	@filecontents = <FP>;
-	close FP;
+#	open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
+#	@filecontents = <FP>;
+#	close FP;
 
-	$socket = atomd_initialize($hostname, $port);
+#	$socket = atomd_initialize($hostname, $port);
 	
 	#print "Sending Node_ClearHex\n";
-	atomd_send_command($socket, "Node_ClearHex");
-	atomd_kill_promt($socket);
+#	atomd_send_command($socket, "Node_ClearHex");
+#	atomd_kill_promt($socket);
 		
-	foreach $filerow (@filecontents) {
+#	foreach $filerow (@filecontents) {
 		#print "Sending Node_AppendHex $filerow \n";
-		atomd_send_command($socket, "Node_AppendHex $filerow");
-		atomd_kill_promt($socket);
-	}
+#		atomd_send_command($socket, "Node_AppendHex $filerow");
+#		atomd_kill_promt($socket);
+#	}
 	#print "Sending Node_ProgramHex $hwid $bios \n";
-	atomd_send_command($socket, "Node_ProgramHex $hwid $bios");
-	atomd_kill_promt($socket);
+#	atomd_send_command($socket, "Node_ProgramHex $hwid $bios");
+#	atomd_kill_promt($socket);
 
 
 	#atomd_send_command($socket, "Node_Program $hwid $bios $filename");
-	print atomd_read_command_response($socket);
-	exit(0);
-	#my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
-    #    exit($result);
+#	print atomd_read_command_response($socket);
+#	exit(0);
+
+	my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
+	exit($result);
 }
 
 exit(0);
