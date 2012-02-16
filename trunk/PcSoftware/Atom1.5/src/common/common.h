@@ -39,9 +39,9 @@ typedef boost::shared_ptr<unsigned char> BytePointer;
 typedef std::vector<std::string> StringList;
 typedef std::map<std::string, std::string> StringMap;
 
-#define SWAP_BYTE_ORDER_16(x) (((x << 8) | (x >> 8)) & 0xFFFF)
-#define GET_HIGH_BYTE_16(x)   ((x >> 8) & 0xFF);
-#define GET_LOW_BYTE_16(x)    (x & 0xFF)
+#define SWAP_BYTE_ORDER_16(x) ((((x) << 8) | ((x) >> 8)) & 0xFFFF)
+#define GET_HIGH_BYTE_16(x)   (((x) >> 8) & 0xFF);
+#define GET_LOW_BYTE_16(x)    ((x) & 0xFF)
 
 template <typename ElemT>
 struct HexTo {
@@ -56,7 +56,8 @@ struct HexTo {
 std::string PadNumber(unsigned int number, unsigned int length);
 unsigned int FromHex(std::string hex_chars);
 std::string ToHex(unsigned int value);
-    
+std::string ToHex8bit(unsigned int value);
+std::string ToHex4bit(unsigned int value);
 }; // namespace type
 }; // namespace atom
 

@@ -77,7 +77,7 @@ void Node::Parse(std::string data)
     char c;
     int position = 0;
     
-    while (position < data.length())
+    while ((unsigned int)position < data.length())
     {
         c = data.at(position);
         
@@ -133,7 +133,7 @@ int Node::ParseTag(std::string data, int position)
     char c;
     int s, e;
     
-    while (pos < tag_string.length())
+    while ((unsigned int)pos < tag_string.length())
     {
         c = tag_string.at(pos);
         
@@ -187,7 +187,7 @@ int Node::ParseTag(std::string data, int position)
     
     if (!found_end)
     {
-        while (position < data.length())
+        while ((unsigned int)position < data.length())
         {
             c = data.at(position);
             
@@ -236,7 +236,7 @@ int Node::ParseTag(std::string data, int position)
 
 Node Node::FindChild(std::string tag_name)
 {
-    for (int n = 0; n < this->children_.size(); n++)
+    for (unsigned int n = 0; n < this->children_.size(); n++)
     {
         if (this->children_[n].GetTagName().compare(tag_name) == 0)
         {
@@ -249,7 +249,7 @@ Node Node::FindChild(std::string tag_name)
 
 Node Node::SelectChild(std::string attribute_name, std::string attribute_value)
 {
-    for (int n = 0; n < this->children_.size(); n++)
+    for (unsigned int n = 0; n < this->children_.size(); n++)
     {
         if (this->children_[n].GetAttributeValue(attribute_name) == attribute_value)
         {
@@ -262,7 +262,7 @@ Node Node::SelectChild(std::string attribute_name, std::string attribute_value)
 
 Node Node::SelectChild(std::string attribute_name1, std::string attribute_value1, std::string attribute_name2, std::string attribute_value2)
 {
-    for (int n = 0; n < this->children_.size(); n++)
+    for (unsigned int n = 0; n < this->children_.size(); n++)
     {
         if (this->children_[n].GetAttributeValue(attribute_name1) == attribute_value1 && this->children_[n].GetAttributeValue(attribute_name2) == attribute_value2)
         {

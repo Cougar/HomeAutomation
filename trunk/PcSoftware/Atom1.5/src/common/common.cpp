@@ -47,6 +47,32 @@ std::string ToHex(unsigned int value)
     
 }
 
+std::string ToHex8bit(unsigned int value)
+{
+    char hex_string[3];
+    if (value > 255) {
+      snprintf(hex_string, sizeof(hex_string), "--");
+    } else {
+      snprintf(hex_string, sizeof(hex_string), "%02x", value);
+    }
+    return std::string(hex_string);
+    
+}
+
+
+std::string ToHex4bit(unsigned int value)
+{
+    char hex_string[2];
+    if (value > 15) {
+      snprintf(hex_string, sizeof(hex_string), "-");
+    } else {
+      snprintf(hex_string, sizeof(hex_string), "%01x", value);
+    }
+    
+    return std::string(hex_string);
+    
+}
+
 unsigned int FromHex(std::string hex_chars)
 {
     return static_cast<unsigned int>(strtoll(hex_chars.data(), NULL, 16));

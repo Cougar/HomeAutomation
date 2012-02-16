@@ -18,46 +18,41 @@
  * 
  */
 
-#ifndef BROKER_MESSAGE_H
-#define BROKER_MESSAGE_H
+#ifndef CAN_DAEMON_H
+#define CAN_DAEMON_H
+
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 
-namespace atom {
-namespace broker {
+#include "logging/Logger.h"
+#include "broker/Subscriber.h"
+#include "net/Subscriber.h"
+#include "net/types.h"
+#include "common/Byteset.h"
 
-class Origin
-{
-};
-    
-class Message
+namespace atom {
+namespace can {
+
+class CanDaemon : public broker::Subscriber, public net::Subscriber
 {
 public:
-    typedef boost::shared_ptr<Message> Pointer;
-    typedef boost::shared_ptr<void> PayloadPointer;
+    typedef boost::shared_ptr<CanDaemon> Pointer;
     
-    typedef enum
-    {
-        CAN_MESSAGE,
-	CAN_RAW_MESSAGE,
-        JS_COMMAND
-    } Type;
-    
-    Message(Type type, PayloadPointer payload, Origin* origin);
-    virtual ~Message();
-    
-    Type GetType();
-    PayloadPointer GetPayload();
-    bool TestIfOrigin(Origin* origin);
+    CanDaemon(unsigned int port);
+    virtual ~CanDaemon();
     
 private:
-    Type type_;
-    PayloadPointer payload_;
-    Origin* origin_;
+    net::ServerId server_id_;
     
+    void SlotOnMessageHandler(broker::Message::Pointer message);
+    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+    
+    logging::Logger LOG;
 };
 
-}; // namespace broker
+}; // namespace can
 }; // namespace atom
 
-#endif // BROKER_MESSAGE_H
+#endif // CAN_DAEMON_H
