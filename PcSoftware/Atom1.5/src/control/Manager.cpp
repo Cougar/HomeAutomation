@@ -29,6 +29,7 @@
 #include "storage/Manager.h"
 
 #include "can/Message.h"
+#include "can/CanDaemon.cpp"
 
 namespace atom {
 namespace control {

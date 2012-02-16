@@ -42,6 +42,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
     this->configuration_file_.add_options()
     ("MonitorPort",   boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
     ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
+    ("DaemonPort",   boost::program_options::value<int>()->default_value(1200), "TCP port to open for command input")
     ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")
     ("LogLevel",      boost::program_options::value<int>()->default_value(4),    "Level of logging")
     ("ScriptPath",    boost::program_options::value<std::string>(),              "Path to where the scripts are")

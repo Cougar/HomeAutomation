@@ -335,7 +335,7 @@ static char** AutoComplete(const char* text, int start, int end)
     unsigned int count = 0;
     boost::mutex guard_mutex;
 
-    for (unsigned int n = 0; n < start; n++)
+    for (unsigned int n = 0; n < (unsigned int)start; n++)
     {
         if (rl_line_buffer[n] == ' ')
         {
@@ -367,7 +367,7 @@ char* AutoCompleteGet(const char* text, int state)
         index = 0;
     }
     
-    while (autocomplete_list.size() > index)
+    while (autocomplete_list.size() > (unsigned int) index)
     {
         name = autocomplete_list[index];
         

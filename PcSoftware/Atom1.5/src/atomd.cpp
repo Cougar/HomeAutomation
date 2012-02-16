@@ -36,6 +36,7 @@
 #include "control/Manager.h"
 #include "can/Network.h"
 #include "can/Monitor.h"
+#include "can/CanDaemon.h"
 #include "vm/Manager.h"
 #include "storage/Manager.h"
 
@@ -121,6 +122,11 @@ int main(int argc, char **argv)
     {
         subscribers.push_back(can::Monitor::Pointer(new can::Monitor(config::Manager::Instance()->GetAsInt("MonitorPort"))));  
     }
+
+    if (config::Manager::Instance()->Exist("DaemonPort"))
+    {
+        subscribers.push_back(can::CanDaemon::Pointer(new can::CanDaemon(config::Manager::Instance()->GetAsInt("DaemonPort"))));  
+    }
     
     subscribers.push_back(control::Manager::Instance());  
     
@@ -142,7 +148,7 @@ int main(int argc, char **argv)
     {
         common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
         
-        for (int n = 0; n < cannetworks.size(); n++)
+        for (uint n = 0; n < cannetworks.size(); n++)
         {
             subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));            
         }
