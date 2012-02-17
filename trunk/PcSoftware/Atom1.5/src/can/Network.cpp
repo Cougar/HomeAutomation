@@ -316,17 +316,10 @@ void Network::ProcessBuffer()
         
 	std::string PKTstring = "PKT "+atom::common::ToHex8bit((unsigned int)this->buffer_[3])+atom::common::ToHex8bit((unsigned int)this->buffer_[2])+atom::common::ToHex8bit((unsigned int)this->buffer_[1])+atom::common::ToHex8bit((unsigned int)this->buffer_[0])+ " "+atom::common::ToHex4bit((unsigned int)this->buffer_[4])+ " "+atom::common::ToHex4bit((unsigned int)this->buffer_[5]);
 	for (id=7;id< 7+(unsigned int)this->buffer_[6] ;id++) {
-	  //PKTstring += "" + boost::lexical_cast<std::string>((unsigned int)this->buffer_[id]) + " ";
-	  PKTstring += " " + atom::common::ToHex8bit((unsigned int)this->buffer_[id]) ;
+	    PKTstring += " " + atom::common::ToHex8bit((unsigned int)this->buffer_[id]) ;
 	}
-	//const int length = PKTstring.length();
-	//for(int i=0; i!=length; ++i)
-	//{
-	//  PKTstring[i] = std::tolower(PKTstring[i]);
-	//}
-	//PKTstring = "PKT "+PKTstring; 
 	PKTstring += "\n";
-	LOG.Info(PKTstring);
+	//LOG.Info(PKTstring);
 	std::string* payload_str = new std::string(PKTstring);
 	broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
 	id = 0;
