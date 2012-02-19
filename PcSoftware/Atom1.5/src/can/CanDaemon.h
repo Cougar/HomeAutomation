@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef CAN_DAEMON_H
-#define CAN_DAEMON_H
+#ifndef CAN_CAN_DAEMON_H
+#define CAN_CAN_DAEMON_H
 
 #include <string>
 
@@ -55,4 +55,4 @@ private:
 }; // namespace can
 }; // namespace atom
 
-#endif // CAN_DAEMON_H
+#endif // CAN_CAN_DAEMON_H

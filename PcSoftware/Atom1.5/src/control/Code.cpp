@@ -37,7 +37,7 @@ namespace control {
 #define INTELHEX_RT_DATA 0x00
 #define INTELHEX_RT_END  0x01
     
-Code::Code() : LOG("control::code"), data_(MAX_BUFFER_SIZE)
+Code::Code() : data_(MAX_BUFFER_SIZE), LOG("control::code")
 {
     this->Reset();
 }

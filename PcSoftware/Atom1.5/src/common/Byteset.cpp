@@ -53,6 +53,15 @@ Byteset::Byteset(std::string str)
     memcpy(this->bytes_, str.data(), this->max_size_);
 }
 
+Byteset::Byteset(std::string str, bool no_null_termination)
+{
+    this->max_size_ = str.size() + (no_null_termination ? 0 : 1);
+    this->size_ = this->max_size_;
+    this->bytes_ = new unsigned char[this->max_size_];
+    
+    memcpy(this->bytes_, str.data(), this->max_size_);
+}
+
 Byteset::~Byteset()
 {
     delete [] this->bytes_;

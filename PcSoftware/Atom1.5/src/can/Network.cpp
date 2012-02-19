@@ -45,7 +45,7 @@ enum
     PACKET_PING  = 251
 };
     
-Network::Network(std::string address): broker::Subscriber(false), LOG("can::Network"), buffer_(2048)
+Network::Network(std::string address): broker::Subscriber(false), buffer_(2048), LOG("can::Network")
 {
     this->address_ = address;
     this->client_id_ = 0;
@@ -314,15 +314,28 @@ void Network::ProcessBuffer()
         unsigned int id = 0;
         std::string command_name = "";
         
-	std::string PKTstring = "PKT "+atom::common::ToHex8bit((unsigned int)this->buffer_[3])+atom::common::ToHex8bit((unsigned int)this->buffer_[2])+atom::common::ToHex8bit((unsigned int)this->buffer_[1])+atom::common::ToHex8bit((unsigned int)this->buffer_[0])+ " "+atom::common::ToHex4bit((unsigned int)this->buffer_[4])+ " "+atom::common::ToHex4bit((unsigned int)this->buffer_[5]);
-	for (id=7;id< 7+(unsigned int)this->buffer_[6] ;id++) {
-	    PKTstring += " " + atom::common::ToHex8bit((unsigned int)this->buffer_[id]) ;
+	std::string PKTstring = "PKT " + 
+				atom::common::ToHex8bit((unsigned int)this->buffer_[3]) + 
+				atom::common::ToHex8bit((unsigned int)this->buffer_[2]) +
+				atom::common::ToHex8bit((unsigned int)this->buffer_[1]) + 
+				atom::common::ToHex8bit((unsigned int)this->buffer_[0]) +
+				" " +
+				atom::common::ToHex4bit((unsigned int)this->buffer_[4]) + 
+				" " +
+				atom::common::ToHex4bit((unsigned int)this->buffer_[5]);
+	
+	for (unsigned int index = 7; index < 7 + (unsigned int)this->buffer_[6]; index++)
+	{
+	    PKTstring += " " + atom::common::ToHex8bit((unsigned int)this->buffer_[index]) ;
 	}
+	
 	PKTstring += "\n";
+	
 	//LOG.Info(PKTstring);
+	
 	std::string* payload_str = new std::string(PKTstring);
 	broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
-	id = 0;
+
 	
         unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
         //LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id));

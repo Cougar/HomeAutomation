@@ -55,12 +55,12 @@ void CanDaemon::SlotOnMessageHandler(broker::Message::Pointer message)
 {
     if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
     {
-      std::string* payload_str; 
-      payload_str = static_cast<std::string*>(message->GetPayload().get());
-      std::string line = *payload_str;
-     //std::string line2 = line.substr(0, 15)+"\n"; //line += *payload_str;
-      //line 
-        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line));
+	std::string* payload_str; 
+      
+	payload_str = static_cast<std::string*>(message->GetPayload().get());
+	std::string line = *payload_str;
+	
+        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line, true));
     }
 }
 
@@ -99,7 +99,6 @@ void CanDaemon::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId ser
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
         LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has connected.");
-        net::Manager::Instance()->SendTo(client_id, common::Byteset("Welcome to Atom canDaemon emulator\n"));
     }
     else
     {

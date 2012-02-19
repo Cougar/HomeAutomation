@@ -25,7 +25,7 @@
 namespace atom {
 namespace net {
 
-SerialClient::SerialClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : serial_port_(io_service), Client(io_service, id, server_id)
+SerialClient::SerialClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : Client(io_service, id, server_id), serial_port_(io_service)
 {
 }
 
