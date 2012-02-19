@@ -229,6 +229,56 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         
         //LOG.Debug("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
+    } else if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
+    {
+        std::string* payload_str; 
+	payload_str = static_cast<std::string*>(message->GetPayload().get());
+	std::string line = *payload_str;
+        common::Byteset data(17);
+        
+        data[0] = PACKET_START;
+        std::string value = line.substr(4,2);
+	data[1] = boost::lexical_cast<int>(value);
+	LOG.Info("id1: " + value + " data: ");//+ data[1]);
+	
+	value = line.substr(6,2);
+	data[2] = boost::lexical_cast<int>(value);
+	LOG.Info("id2: " + value + " data: ");//+ data[2]);
+	
+	value = line.substr(8,2);
+	data[3] = boost::lexical_cast<int>(value);
+	LOG.Info("id3: " + value + " data: ");//+ data[3]);
+	
+	value = line.substr(10,2);
+	data[4] = boost::lexical_cast<int>(value);
+	LOG.Info("id4: " + value + " data: ");//+ data[4]);
+	
+	value = line.substr(13,1);
+	data[5] = boost::lexical_cast<int>(value);
+	LOG.Info("1: " + value + " data: ");//+ data[5]);
+	
+	value = line.substr(15,1);
+	data[6] = boost::lexical_cast<int>(value);
+	LOG.Info("1: " + value + " data: ");//+ data[6]);
+
+        unsigned char length = 0;
+        unsigned char index = 3;
+        while (length < 8 && index + 16 < (unsigned char)line.length())
+        {
+            value = line.substr(index,2);
+	    data[8+length] = boost::lexical_cast<int>(value);
+	    LOG.Info("data: " + value + " data: ");//+ data[6]);
+	    index += 3;
+	    length++;
+        }
+        
+        data[7] = length;
+        data[16] = PACKET_END;
+        
+        data.SetSize(17);
+        
+        //LOG.Debug("Bytes: " + data.ToDebugString());
+        net::Manager::Instance()->SendTo(this->client_id_, data);
     }
 }
 
