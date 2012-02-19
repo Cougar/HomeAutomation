@@ -38,6 +38,7 @@ public:
     Byteset(unsigned int max_size);
     Byteset(const Byteset& set);
     Byteset(std::string str);
+    Byteset(std::string str, bool no_null_termination);
     virtual ~Byteset();
     
     unsigned int GetMaxSize() const;

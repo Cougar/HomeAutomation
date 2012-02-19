@@ -27,7 +27,7 @@ namespace net {
 
 logging::Logger TcpClient::LOG("net::TcpClient");
   
-TcpClient::TcpClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : socket_(io_service), Client(io_service, id, server_id)
+TcpClient::TcpClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : Client(io_service, id, server_id), socket_(io_service)
 {
 }
 
