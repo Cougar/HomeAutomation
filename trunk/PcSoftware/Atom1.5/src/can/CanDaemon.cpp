@@ -24,6 +24,7 @@
 #include <boost/algorithm/string/trim.hpp>
 
 #include "net/Manager.h"
+#include "broker/Manager.h"
 
 #include "Message.h"
 
@@ -64,7 +65,6 @@ void CanDaemon::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-
 void CanDaemon::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
 {
     if (server_id != this->server_id_)
@@ -76,7 +76,12 @@ void CanDaemon::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId serv
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
-    LOG.Debug("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
+    LOG.Info("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
+    
+    std::string* payload_str = new std::string(str);
+    broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
+    
+    LOG.Info("Sent...");
     
     if (str == "q" || str == "quit")
     {
