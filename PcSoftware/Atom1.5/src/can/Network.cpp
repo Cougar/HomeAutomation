@@ -236,32 +236,26 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 	payload_str = static_cast<std::string*>(message->GetPayload().get());
 	std::string line = *payload_str;
         common::Byteset data(17);
-        //replace(line.begin(), line.end(), 'a', 'A');
-	//replace(line.begin(), line.end(), 'b', 'B');
-	//replace(line.begin(), line.end(), 'c', 'C');
-	//replace(line.begin(), line.end(), 'd', 'D');
-	//replace(line.begin(), line.end(), 'e', 'E');
-	//replace(line.begin(), line.end(), 'f', 'F');
-	//LOG.Info("Got "+ line + "end");
+        //LOG.Info("Got "+ line + "end");
     
         data[0] = PACKET_START;
         std::string value = line.substr(4,2);
 	//LOG.Info("<"+ value + ">");
-	data[1] = common::FromHex(value);
+	data[4] = common::FromHex(value);
 	//LOG.Info("id1: " + value + " data: ");//+ data[1]);
 	
 	value = line.substr(6,2);
 	//LOG.Info("<"+ value + ">");
 	
-	data[2] = common::FromHex(value);
+	data[3] = common::FromHex(value);
 	//LOG.Info("id2: " + value + " data: ");//+ data[2]);
 	
 	value = line.substr(8,2);
-	data[3] = common::FromHex(value);
+	data[2] = common::FromHex(value);
 	//LOG.Info("id3: " + value + " data: ");//+ data[3]);
 	
 	value = line.substr(10,2);
-	data[4] = common::FromHex(value);
+	data[1] = common::FromHex(value);
 	//LOG.Info("id4: " + value + " data: ");//+ data[4]);
 	
 	value = line.substr(13,1);
@@ -273,7 +267,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 	//LOG.Info("1: " + value + " data: ");//+ data[6]);
 
         unsigned char length = 0;
-        unsigned char index = 3;
+        unsigned char index = 0;
         while (length < 8 && index + 16 < (unsigned char)line.length())
         {
             value = line.substr(index+17,2);
@@ -288,7 +282,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         
         data.SetSize(17);
         
-        //LOG.Debug("Bytes: " + data.ToDebugString());
+        //LOG.Info("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
     }
 }
