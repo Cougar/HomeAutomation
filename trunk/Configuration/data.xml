@@ -1328,6 +1328,69 @@
       </variables>
     </command>
 
+    <command id="128" name="Data start" type="specific" module="rfTransceiver" description="Data protocol encoding">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
+        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Protocol">
+          <value id="0" name="RC5"/>
+          <value id="1" name="RC6"/>
+          <value id="2" name="RCMM"/>
+          <value id="3" name="SIRC"/>
+          <value id="4" name="Sharp"/>
+          <value id="5" name="NEC"/>
+          <value id="6" name="Samsung"/>
+          <value id="7" name="Marantz"/>
+          <value id="8" name="Panasonic"/>
+          <value id="9" name="Sky"/>
+          <value id="10" name="Nexa2"/>
+          <value id="11" name="Nexa"/>
+          <value id="255" name="Unknown"/>
+        </variable>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description="Protocol unique ID"/>
+      </variables>
+    </command>
+    <command id="129" name="Data stop" type="specific" module="rfTransceiver" description="Data protocol encoding">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
+        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Protocol">
+          <value id="0" name="RC5"/>
+          <value id="1" name="RC6"/>
+          <value id="2" name="RCMM"/>
+          <value id="3" name="SIRC"/>
+          <value id="4" name="Sharp"/>
+          <value id="5" name="NEC"/>
+          <value id="6" name="Samsung"/>
+          <value id="7" name="Marantz"/>
+          <value id="8" name="Panasonic"/>
+          <value id="9" name="Sky"/>
+          <value id="10" name="Nexa2"/>
+          <value id="11" name="Nexa"/>
+          <value id="255" name="Unknown"/>
+        </variable>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description="Protocol unique ID"/>
+      </variables>
+    </command>
+    <command id="130" name="Data burst" type="specific" module="rfTransceiver" description="Data protocol encoding">
+      <variables>
+        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
+        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Protocol">
+          <value id="0" name="RC5"/>
+          <value id="1" name="RC6"/>
+          <value id="2" name="RCMM"/>
+          <value id="3" name="SIRC"/>
+          <value id="4" name="Sharp"/>
+          <value id="5" name="NEC"/>
+          <value id="6" name="Samsung"/>
+          <value id="7" name="Marantz"/>
+          <value id="8" name="Panasonic"/>
+          <value id="9" name="Sky"/>
+          <value id="10" name="Nexa2"/>
+          <value id="11" name="Nexa"/>
+          <value id="255" name="Unknown"/>
+        </variable>
+        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description="Protocol unique ID"/>
+      </variables>
+    </command>
 
   </commands>
   
