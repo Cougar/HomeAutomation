@@ -66,11 +66,15 @@ void sns_rfTransceive_Init(void)
 	gpio_clr_pin(sns_rfTransceive_TX_PIN);
 #endif
 
+#if IR_RX_ENABLE==1
 	IrTransceiver_InitRxChannel(0, rfRxChannel_rxbuf, sns_rfTransceive_RX_done_callback, sns_rfTransceive_RX_PCINT, sns_rfTransceive_RX_PIN);
 	rfRxChannel_state = sns_rfTransceive_STATE_RECEIVING;
+#endif
 	
+#if IR_TX_ENABLE==1
 	IrTransceiver_InitTxChannel(0, sns_rfTransceive_TX_done_callback, sns_rfTransceive_TX_PIN);
 	rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
+#endif
 }
 
 void sns_rfTransceive_Process(void)
