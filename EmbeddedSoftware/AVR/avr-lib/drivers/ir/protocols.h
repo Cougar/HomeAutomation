@@ -20,7 +20,7 @@
 /* Protocol data structure */
 typedef struct {
 	uint8_t protocol;
-	uint32_t data;
+	uint64_t data;
 	uint16_t timeout;
 	uint8_t repeats;
 	uint16_t modfreq;
@@ -271,7 +271,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEXA2_HIGH 		(320*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA2_LOW_ONE	(210*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA2_LOW_ZERO	(1200*CYCLES_PER_US/TIMER_PRESC)	//us
-#define IR_NEXA2_TIMEOUT	(5)									//ms	(time between ir frames)
+#define IR_NEXA2_TIMEOUT	(200)								//ms	(time between ir frames)
 #define IR_NEXA2_REPS		(5)									//		(minimum number of times to repeat code)
 #define IR_NEXA2_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_NEXA2_TOL_DIV	(2)
@@ -285,7 +285,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEXA1_START	 	(10000*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEXA1_SHORT 		(370*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA1_LONG		(1050*CYCLES_PER_US/TIMER_PRESC)	//us
-#define IR_NEXA1_TIMEOUT	(5)									//ms	(time between ir frames)
+#define IR_NEXA1_TIMEOUT	(200)								//ms	(time between ir frames)
 #define IR_NEXA1_REPS		(4)									//		(minimum number of times to repeat code)
 #define IR_NEXA1_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_NEXA1_TOL_DIV	(2)

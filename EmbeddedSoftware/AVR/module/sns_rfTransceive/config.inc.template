@@ -1,0 +1,25 @@
+## Section sns_rfTransceive -- Do not edit this line
+
+sns_rfTransceive_ID=<ID>
+sns_rfTransceive_SEND_DEBUG=0
+
+IR_RX_ENABLE=1
+IR_TX_ENABLE=1
+IR_RX_ACTIVE_LOW=1
+IR_TX_ACTIVE_LOW=0
+
+IR_SUPPORTED_NUM_CHANNELS=2
+MAX_NR_TIMES=150
+IR_MIN_STARTPULSE_WIDTH=8000
+IR_MAX_PULSE_WIDTH=4000
+
+# Transmit Nexa
+sns_rfTransceive_TX_PIN=GPIO_B1
+sns_rfTransceive_TX_REPEATE_TIMER=0x1 /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */
+
+# Receive Nexa
+sns_rfTransceive_RX_PIN=GPIO_D2
+sns_rfTransceive_RX_PCINT=0x0 /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */
+sns_rfTransceive_RX_REPEATE_TIMER=0x3 /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */
+
+## End section sns_rfTransceive -- Do not edit this line
