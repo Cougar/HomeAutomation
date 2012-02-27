@@ -13,5 +13,6 @@ Require("interface/display.js");
 Require("interface/rotary.js");
 Require("interface/http.js");
 Require("interface/lgtv.js");
+Require("interface/counter.js");
 
 
