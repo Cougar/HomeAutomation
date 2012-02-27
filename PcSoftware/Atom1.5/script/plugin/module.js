@@ -225,7 +225,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789", "Rotary", "RotaryHex", "Touch", "power", "input", "output", "softPWM"];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789", "Rotary", "RotaryHex", "Touch", "power", "input", "output", "softPWM", "counter"];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
