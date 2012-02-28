@@ -3,21 +3,13 @@
 
 StdCan_Msg_t		rfTxMsg;
 
+#if IR_RX_ENABLE==1
 uint8_t rfRxChannel_newData;
 uint8_t rfRxChannel_rxlen;
 uint8_t rfRxChannel_state;
 Ir_Protocol_Data_t	rfRxChannel_proto;
-uint16_t	rfRxChannel_rxbuf[MAX_NR_TIMES];
+uint16_t	rfRxChannel_buf[MAX_NR_TIMES];
 
-uint8_t rfTxChannel_sendComplete;
-uint8_t rfTxChannel_state;
-uint8_t rfTxChannel_txlen;
-Ir_Protocol_Data_t	rfTxChannel_proto;
-uint16_t	rfTxChannel_rxbuf[MAX_NR_TIMES];
-uint8_t rfTxChannel_repeatCount;
-
-
-#if IR_RX_ENABLE==1
 void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len)
 {
 	rfRxChannel_newData = TRUE;
@@ -27,6 +19,14 @@ void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 
 
 #if IR_TX_ENABLE==1
+uint8_t rfTxChannel_sendComplete;
+uint8_t rfTxChannel_state;
+uint8_t rfTxChannel_txlen;
+Ir_Protocol_Data_t	rfTxChannel_proto;
+uint16_t	rfTxChannel_buf[MAX_NR_TIMES];
+uint8_t rfTxChannel_repeatCount;
+uint8_t rfTxChannel_stopSend;
+
 void sns_rfTransceive_TX_done_callback(uint8_t channel)
 {
 	rfTxChannel_sendComplete = TRUE;
@@ -41,14 +41,16 @@ void sns_rfTransceive_Init(void)
 	rfTxMsg.Header.ModuleId = sns_rfTransceive_ID;
 	rfTxMsg.Length = 8;
 	
-	
+#if IR_RX_ENABLE==1
 	rfRxChannel_newData = FALSE;
 	rfRxChannel_rxlen = 0;
 	rfRxChannel_proto.timeout=0;
 	rfRxChannel_proto.data=0;
 	rfRxChannel_proto.repeats=0;
 	rfRxChannel_proto.protocol=0;
-	
+#endif
+
+#if IR_TX_ENABLE==1
 	rfTxChannel_sendComplete = FALSE;
 	rfTxChannel_txlen = 0;
 	rfTxChannel_proto.data=0;
@@ -56,6 +58,7 @@ void sns_rfTransceive_Init(void)
 	rfTxChannel_proto.framecnt=0;
 	rfTxChannel_proto.protocol=0;
 	rfTxChannel_repeatCount = 0;
+#endif
 
 	IrTransceiver_Init();
 	/* TX-pin must be set in case transmitter is nexa */
@@ -67,7 +70,7 @@ void sns_rfTransceive_Init(void)
 #endif
 
 #if IR_RX_ENABLE==1
-	IrTransceiver_InitRxChannel(0, rfRxChannel_rxbuf, sns_rfTransceive_RX_done_callback, sns_rfTransceive_RX_PCINT, sns_rfTransceive_RX_PIN);
+	IrTransceiver_InitRxChannel(0, rfRxChannel_buf, sns_rfTransceive_RX_done_callback, sns_rfTransceive_RX_PCINT, sns_rfTransceive_RX_PIN);
 	rfRxChannel_state = sns_rfTransceive_STATE_RECEIVING;
 #endif
 	
@@ -84,7 +87,7 @@ void sns_rfTransceive_Process(void)
 		{
 		case sns_rfTransceive_STATE_IDLE:
 		{
-			if (rfTxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
+			if (rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
 				/* Send button release command on CAN */
 				rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTOP;
 				rfTxMsg.Data[0] = 0;
@@ -117,7 +120,7 @@ void sns_rfTransceive_Process(void)
 				sei();
 				
 				/* Let protocol driver parse and then send on CAN */
-				uint8_t res2 = parseProtocol(rfRxChannel_rxbuf, rfRxChannel_rxlen, &rfRxChannel_proto);
+				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &rfRxChannel_proto);
 				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
 					rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART;
 					rfTxMsg.Data[0] = 0;
@@ -136,7 +139,7 @@ void sns_rfTransceive_Process(void)
 				else if (rfRxChannel_proto.protocol == IR_PROTO_UNKNOWN)
 				{
 #if (sns_rfTransceive_SEND_DEBUG==1)
-					//send_debug(rfRxChannel_rxbuf, rfRxChannel_rxlen);
+					//send_debug(rfRxChannel_buf, rfRxChannel_rxlen);
 					//rfRxChannel_proto.timeout=300;
 #endif
 					rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
@@ -159,7 +162,7 @@ void sns_rfTransceive_Process(void)
 				sei();
 
 				Ir_Protocol_Data_t	protoDummy;
-				if (parseProtocol(rfRxChannel_rxbuf, rfRxChannel_rxlen, &protoDummy) == IR_OK) {
+				if (parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &protoDummy) == IR_OK) {
 					if (protoDummy.protocol == rfRxChannel_proto.protocol) {
 						/* re-set timer so we can send release button event when no new RF is arriving */
 						Timer_SetTimeout(sns_rfTransceive_RX_REPEATE_TIMER, rfRxChannel_proto.timeout, TimerTypeOneShot, 0);
@@ -177,160 +180,77 @@ void sns_rfTransceive_Process(void)
 		}
 #endif
 
-#if 0
-//#if IR_TX_ENABLE==1
-		switch (irTxChannel[channel].state)
+#if IR_TX_ENABLE==1
+		switch (rfTxChannel_state)
 		{
-		case sns_irTransceive_STATE_IDLE:
+		case sns_rfTransceive_STATE_IDLE:
 		{
 			/* transmission is started when a command is received on can */
-			irTxChannel[channel].stopSend = FALSE;
-			irTxChannel[channel].repeatCount = 0;
-			irTxChannel[channel].proto.framecnt = 0;
-			irTxChannel[channel].sendingPronto = FALSE;
+			rfTxChannel_stopSend = FALSE;
+			rfTxChannel_repeatCount = 0;
+			rfTxChannel_proto.framecnt = 0;
 			break;
 		}
 
-		case sns_irTransceive_STATE_START_TRANSMIT:
+		case sns_rfTransceive_STATE_START_TRANSMIT:
 		{
 			/* Expand protocol. */
-			if (expandProtocol(irTxChannel[channel].txbuf, &irTxChannel[channel].txlen, &irTxChannel[channel].proto) != IR_OK) {
+			if (expandProtocol(rfTxChannel_buf, &rfTxChannel_txlen, &rfTxChannel_proto) != IR_OK) {
 				/* Failed to expand protocol -> enter idle state. */
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+				rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
 				break;
 			}
 
-			/* Start IR transmission. */
-			/* TODO Send respone. Function call may fail when different modulation frequencies are used simultaneously. */
-			IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen, irTxChannel[channel].proto.modfreq);
+			/* Start RF transmission. */
+			IrTransceiver_Transmit(0, rfTxChannel_buf, 0, rfTxChannel_txlen, rfTxChannel_proto.modfreq);
 
 			/* Enter transmitting state. */
-			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+			rfTxChannel_state = sns_rfTransceive_STATE_TRANSMITTING;
 			break;
 		}
 
-		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
+		case sns_rfTransceive_STATE_TRANSMITTING:
 		{
-			/* Start IR transmission. */
-			if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
-				/* Send error code. */
-				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
-
-				/* Enter idle state. */
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-				break;
-			}
-
-			/* Enter transmitting state. */
-			irTxChannel[channel].sendingPronto = TRUE;
-			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
-			break;
-		}
-
-		case sns_irTransceive_STATE_PRONTO_REPEAT:
-		{
-			/* Check if done. */
-			if ((irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats && irTxChannel[channel].proto.repeats != 0xFF) || irTxChannel[channel].stopSend) {
-				/* Pronto transmission was stopped/completed */
-				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-				break;
-			}
-
-			if (irTxChannel[channel].repeatCount < 255) {
-				irTxChannel[channel].repeatCount++;
-			}
-
-			/* Repeat sequence exists? */
-			if (irTxChannel[channel].repSeqLen != 0) {
-				/* Use repeat seq */
-				uint16_t offset = ((uint16_t)irTxChannel[channel].onceSeqLen);
-				/* Don't transmit last passive. last passive handled by timer */
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, offset, ((uint16_t)irTxChannel[channel].repSeqLen) - 1, irTxChannel[channel].proto.modfreq);
-			}
-			else {
-				/* Use once seq */
-				/* Don't transmit last passive. last passive handled by timer */
-				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen - 1, irTxChannel[channel].proto.modfreq);
-			}
-			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
-		}
-
-		case sns_irTransceive_STATE_TRANSMITTING:
-		{
-			if (irTxChannel[channel].sendComplete == TRUE)
+			if (rfTxChannel_sendComplete == TRUE)
 			{
 				cli();
-				irTxChannel[channel].sendComplete = FALSE;
+				rfTxChannel_sendComplete = FALSE;
 				sei();
 
-				if (irTxChannel[channel].sendingPronto)
-				{
-					/* First repeat, or no repeat sequence defined => use last passive time in once seq */
-					if(irTxChannel[channel].repeatCount == 0 || irTxChannel[channel].repSeqLen == 0)
-					{
-						/* Use last passive time as timeout */
-						uint16_t lastPasTime = irTxChannel[channel].txbuf[irTxChannel[channel].onceSeqLen - 1] / 1000;
-						Timer_SetTimeout(irTxChannel[channel].timerNum, lastPasTime==0 ? 1 : lastPasTime, TimerTypeOneShot, 0);
-					}
-					/* Second, or later repeat => use last passive time in repeat seq */
-					else
-					{
-						/* Use last passive time as timeout */
-						uint16_t lastPasTime = irTxChannel[channel].txbuf[irTxChannel[channel].txlen - 1]  / 1000;
-						Timer_SetTimeout(irTxChannel[channel].timerNum, lastPasTime==0 ? 1 : lastPasTime, TimerTypeOneShot, 0);
-					}
-					irTxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
-				}
-				else
-				{
-					irTxChannel[channel].state = sns_irTransceive_STATE_START_PAUSE;
-				}
+				rfTxChannel_state = sns_rfTransceive_STATE_START_PAUSE;
 			}
 			break;
 		}
 
-		case sns_irTransceive_STATE_START_PAUSE:
+		case sns_rfTransceive_STATE_START_PAUSE:
 		{
-			if (irTxChannel[channel].repeatCount < irTxChannel[channel].proto.repeats)
+			if (rfTxChannel_repeatCount < rfTxChannel_proto.repeats)
 			{
-				irTxChannel[channel].repeatCount++;
+				rfTxChannel_repeatCount++;
 			}
 
-			Timer_SetTimeout(irTxChannel[channel].timerNum, irTxChannel[channel].proto.timeout, TimerTypeOneShot, 0);
+			Timer_SetTimeout(sns_rfTransceive_TX_REPEATE_TIMER, rfTxChannel_proto.timeout, TimerTypeOneShot, 0);
 
-			if (irTxChannel[channel].proto.framecnt != 255)
+			if (rfTxChannel_proto.framecnt != 255)
 			{
-				irTxChannel[channel].proto.framecnt++;
+				rfTxChannel_proto.framecnt++;
 			}
 
-			irTxChannel[channel].state = sns_irTransceive_STATE_PAUSING;
+			rfTxChannel_state = sns_rfTransceive_STATE_PAUSING;
 			break;
 		}
 
-		case sns_irTransceive_STATE_PAUSING:
+		case sns_rfTransceive_STATE_PAUSING:
 		{
-			if (irTxChannel[channel].sendingPronto)
+			if (Timer_Expired(sns_rfTransceive_TX_REPEATE_TIMER))
 			{
-				if (Timer_Expired(irTxChannel[channel].timerNum))
-				{
-					irTxChannel[channel].state = sns_irTransceive_STATE_PRONTO_REPEAT;
-				}
-				break;
-			}
-
-			if (Timer_Expired(irTxChannel[channel].timerNum))
-			{
-				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
+				rfTxChannel_state = sns_rfTransceive_STATE_START_TRANSMIT;
 			}
 
 			/* Transmission is stopped when such command is recevied on can */
-			if (irTxChannel[channel].stopSend == TRUE && irTxChannel[channel].repeatCount >= irTxChannel[channel].proto.repeats)
+			if (rfTxChannel_stopSend == TRUE && rfTxChannel_repeatCount >= rfTxChannel_proto.repeats)
 			{
-				/* Non-pronto transmission was stopped/completed */
-				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_STOPPED);
-
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+				rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
 			}
 			break;
 		}
@@ -350,16 +270,37 @@ void sns_rfTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
+		case CAN_MODULE_CMD_RFTRANSCEIVE_DATABURST:
+		{
+			if (rfTxChannel_state == sns_rfTransceive_STATE_IDLE)
+			{
+				rfTxChannel_stopSend = TRUE;
+			}
+		}	/* Fall through, no break */
 		case CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART:
 		{
+			if (rfTxChannel_state == sns_rfTransceive_STATE_IDLE)
+			{
+				rfTxChannel_proto.protocol = rxMsg->Data[1];
+				rfTxChannel_proto.data = rxMsg->Data[2];
+				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+				rfTxChannel_proto.data |= rxMsg->Data[3];
+				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+				rfTxChannel_proto.data |= rxMsg->Data[4];
+				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+				rfTxChannel_proto.data |= rxMsg->Data[5];
+				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+				rfTxChannel_proto.data |= rxMsg->Data[6];
+				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+				rfTxChannel_proto.data |= rxMsg->Data[7];
+
+				rfTxChannel_state = sns_rfTransceive_STATE_START_TRANSMIT;
+			}
 		}
 		break;
 		case CAN_MODULE_CMD_RFTRANSCEIVE_DATASTOP:
 		{
-		}
-		break;
-		case CAN_MODULE_CMD_RFTRANSCEIVE_DATABURST:
-		{
+			rfTxChannel_stopSend = TRUE;
 		}
 		break;
 #endif
@@ -378,10 +319,11 @@ void sns_rfTransceive_List(uint8_t ModuleSequenceNumber)
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
 
-	txMsg.Data[0] = NODE_HW_ID_BYTE0;
-	txMsg.Data[1] = NODE_HW_ID_BYTE1;
-	txMsg.Data[2] = NODE_HW_ID_BYTE2;
-	txMsg.Data[3] = NODE_HW_ID_BYTE3;
+	uint32_t HwId=BIOS_GetHwId();
+	txMsg.Data[0] = HwId&0xff;
+	txMsg.Data[1] = (HwId>>8)&0xff;
+	txMsg.Data[2] = (HwId>>16)&0xff;
+	txMsg.Data[3] = (HwId>>24)&0xff;
 
 	txMsg.Data[4] = NUMBER_OF_MODULES;
 	txMsg.Data[5] = ModuleSequenceNumber;
