@@ -991,7 +991,7 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	}
 
 	/* Incoming data could actually be longer than 32bits when a dimming command is received */
-	uint32_t rawbitsTemp = 0;
+	uint64_t rawbitsTemp = 0;
 	uint8_t bitCounter = 0;
 	for (uint8_t i = 3; i < len; i++) {
 		if ((i&1) == 0) {		/* if even, data */
@@ -1035,18 +1035,33 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  * 		IR_OK if data expanded successfully, one of several errormessages if not
  */
 int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
-	//buf[0] = IR_NEXA2_START1;
 	buf[0] = IR_NEXA2_HIGH;
 	buf[1] = IR_NEXA2_START2;
 
 	/* Start without support for dimmer */
 	*len = 131;
 	
-	
-	
 	// TODO find out if dimmer value should be send, set different length, pad different
 	
-	return IR_NOT_CORRECT_DATA;
+	uint64_t tempshift = proto->data;
+	for (uint8_t i = 2; i < 131; i+=4)
+	{
+		buf[i] = IR_NEXA2_HIGH;
+		buf[i+2] = IR_NEXA2_HIGH;
+		if (tempshift&1) {
+			buf[i+1] = IR_NEXA2_LOW_ONE;
+			buf[i+3] = IR_NEXA2_LOW_ZERO;
+		} else {
+			buf[i+1] = IR_NEXA2_LOW_ZERO;
+			buf[i+3] = IR_NEXA2_LOW_ONE;
+		}
+		tempshift = tempshift>>1;
+	}
+	
+	proto->modfreq=IR_NEXA2_F_MOD;
+	proto->timeout=IR_NEXA2_START1/1000;
+	proto->repeats=IR_NEXA2_REPS;
+	return IR_OK;
 }
 
 
