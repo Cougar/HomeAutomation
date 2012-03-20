@@ -262,8 +262,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 
 /* Nexa2 Implementation
- * Receiver: 
- * Transmitter: 
+ * Receiver: DONE
+ * Transmitter: DONE
  */
 #define IR_PROTO_NEXA2		(10)
 #define IR_NEXA2_START1 	(10000*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -278,7 +278,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 
 /* Nexa1 Implementation
- * Receiver: 
+ * Receiver: DONE
  * Transmitter: 
  */
 #define IR_PROTO_NEXA1		(11)
