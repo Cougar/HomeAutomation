@@ -1038,12 +1038,20 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	buf[0] = IR_NEXA2_HIGH;
 	buf[1] = IR_NEXA2_START2;
 
-	/* Start without support for dimmer */
-	*len = 131;
-	
-	// TODO find out if dimmer value should be send, set different length, pad different
-	
 	uint64_t tempshift = proto->data;
+
+	/* No dimming */
+	*len = 131;
+	uint8_t dimming = 0;
+	
+	/* If most significant bit i set, then dimming should be sent */
+	if (tempshift&(1<<64))
+	{
+		/* Dimming */
+		*len = 147;
+		dimming=1;
+	}
+	
 	for (uint8_t i = 2; i < 131; i+=4)
 	{
 		buf[i] = IR_NEXA2_HIGH;
@@ -1056,6 +1064,12 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 			buf[i+3] = IR_NEXA2_LOW_ONE;
 		}
 		tempshift = tempshift>>1;
+	}
+	
+	if (dimming)
+	{
+		//TODO: find which bit to change, also find if it should be long or short
+		//buf[xyz] = IR_NEXA2_LOW_xyz;
 	}
 	
 	proto->modfreq=IR_NEXA2_F_MOD;
