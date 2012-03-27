@@ -50,6 +50,11 @@
 #define IR_SUPPORTED_NUM_CHANNELS 3
 #endif
 
+#ifndef IR_RX_CONTINUOUS_MODE
+#define IR_RX_CONTINUOUS_MODE	0
+#endif
+
+
 /**
  * @brief Type of the callback function pointer
  * parameters: channel, buffer, length

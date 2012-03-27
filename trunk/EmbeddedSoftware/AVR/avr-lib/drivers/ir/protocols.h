@@ -21,7 +21,7 @@
 typedef struct {
 	uint8_t protocol;
 	uint64_t data;
-	uint16_t timeout;
+	uint16_t timeout;		//Set to 0 to indicate burst protocol (only one pulse train is sent)
 	uint8_t repeats;
 	uint16_t modfreq;
 	uint8_t framecnt;
@@ -119,8 +119,9 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define CYCLES_PER_US       (F_CPU/1000000UL)
 #define TIMER_PRESC			(8)
 
-#define IR_MIN_PULSE_WIDTH	(0)									//us, not used in driver
-
+#ifndef IR_MIN_PULSE_WIDTH
+#define IR_MIN_PULSE_WIDTH	(0)									//us, used in continuous mode
+#endif
 #ifndef IR_MIN_STARTPULSE_WIDTH
 #define IR_MIN_STARTPULSE_WIDTH	(0UL)							//us, not used when set to 0
 #endif
@@ -289,6 +290,19 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_NEXA1_REPS		(4)									//		(minimum number of times to repeat code)
 #define IR_NEXA1_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_NEXA1_TOL_DIV	(2)
+
+
+/* Viking Temperature sensor Implementation
+ * Receiver: 
+ */
+#define IR_PROTO_VIKING		(12)
+#define IR_VIKING_LOW 		(940*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_VIKING_HIGH_ONE	(1483*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_VIKING_HIGH_ZERO	(550*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_VIKING_TIMEOUT	(0)									//ms BURST!	(time between ir frames)
+#define IR_VIKING_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_VIKING_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_VIKING_TOL_DIV	(4)
 
 
 #define IR_PROTO_HASH		0xfe
