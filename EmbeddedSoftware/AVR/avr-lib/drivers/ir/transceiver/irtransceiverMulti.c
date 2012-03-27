@@ -99,6 +99,8 @@ uint16_t drvIrTxModFreqkHz = 38; /* Default to 38kHz */
 /*-----------------------------------------------------------------------------
  * Interrupt Handlers
  *---------------------------------------------------------------------------*/
+
+ /* TRANSMIT */
 #if IR_TX_ENABLE==1
 ISR(IR_COMPARE_VECTOR)
 {
@@ -170,9 +172,11 @@ ISR(IR_COMPARE_VECTOR)
 
 
 #if IR_RX_ENABLE==1
+/* RECEIVE */
 /* When this timeout occurs a pulsetrain is complete */
 ISR(IR_TIMEOUT_VECTOR)
 {
+#if IR_RX_CONTINUOUS_MODE==0
 	for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
 		/* If more than 2 edges were recevied */
@@ -187,7 +191,7 @@ ISR(IR_TIMEOUT_VECTOR)
 
 	/* Disable ISR */
 	IR_MASK_TIMEOUT();
-	
+#endif
 //	gpio_toggle_pin(EXP_J);
 }
 #endif
@@ -238,6 +242,21 @@ void IrTransceiver_Store(uint8_t channel)
 #endif
 //gpio_toggle_pin(EXP_K);
 
+#if IR_RX_CONTINUOUS_MODE==0
+/* in continuous mode when short pulse arrives received len should be set to zero */
+//TODO
+	if ((pulsewidth <= IR_MIN_PULSE_WIDTH) && (drvIrRxChannel[channel].storeEnable == TRUE))
+	{
+		drvIrRxChannel[channel].rxlen = 0;
+		//IR_MASK_TIMEOUT();
+		return;
+	}
+	else
+	{
+		//IR_UNMASK_TIMEOUT();
+	}
+#endif
+
 
 	if (drvIrRxChannel[channel].storeEnable)
 	{
@@ -252,9 +271,15 @@ void IrTransceiver_Store(uint8_t channel)
 		}
 		else
 		{
+#if IR_RX_CONTINUOUS_MODE==0
 			/* Set the timeout for detection of the end of the pulse train. */
 			drvIrRxChannel[channel].timeout = time + IR_MAX_PULSE_WIDTH;
 			IR_TIMEOUT_REG = drvIrRxChannel[channel].timeout;
+#else			
+			/* Notify the application that a pulse has been received. */
+			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].rxbuf, drvIrRxChannel[i].rxlen);
+#endif
+
 		}
 	}
 	else if (drvIrRxChannel[channel].enable == TRUE)
@@ -263,9 +288,11 @@ void IrTransceiver_Store(uint8_t channel)
 		drvIrRxChannel[channel].storeEnable = TRUE;
 		drvIrRxChannel[channel].rxlen = 0;
 
+#if IR_RX_CONTINUOUS_MODE==0
 		/* Enable timeout interrupt for detection of the end of the pulse train. */
 		IR_TIMEOUT_REG = time + IR_MAX_PULSE_WIDTH;
 		IR_UNMASK_TIMEOUT();
+#endif
 	}
 }
 #endif

@@ -87,7 +87,8 @@ void sns_rfTransceive_Process(void)
 		{
 		case sns_rfTransceive_STATE_IDLE:
 		{
-			if (rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
+			/* If known protocol and timeout is not 0 (0 means burst) */
+			if (rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN && rfRxChannel_proto.timeout != 0) {
 				/* Send button release command on CAN */
 				rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTOP;
 				rfTxMsg.Data[0] = 0;
@@ -122,7 +123,17 @@ void sns_rfTransceive_Process(void)
 				/* Let protocol driver parse and then send on CAN */
 				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &rfRxChannel_proto);
 				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
-					rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART;
+					/* If timeout is 0, protocol is burst protocol */
+					if (rfRxChannel_proto.timeout > 0)
+					{
+						rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART;
+						rfRxChannel_state = sns_rfTransceive_STATE_START_PAUSE;
+					}
+					else
+					{
+						rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATABURST;
+						rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
+					}
 					rfTxMsg.Data[0] = 0;
 					rfTxMsg.Data[1] = rfRxChannel_proto.protocol;
 					rfTxMsg.Data[2] = (rfRxChannel_proto.data>>40)&0xff;
@@ -133,8 +144,6 @@ void sns_rfTransceive_Process(void)
 					rfTxMsg.Data[7] = rfRxChannel_proto.data&0xff;
 
 					StdCan_Put(&rfTxMsg);
-
-					rfRxChannel_state = sns_rfTransceive_STATE_START_PAUSE;
 				}
 				else if (rfRxChannel_proto.protocol == IR_PROTO_UNKNOWN)
 				{
