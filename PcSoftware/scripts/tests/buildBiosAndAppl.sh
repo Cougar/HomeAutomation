@@ -26,7 +26,7 @@ then
 fi
 
 echo "Export template to testing node"
-svn export template $TESTNODE
+svn export template_application $TESTNODE
 
 cd $TESTNODE
 
