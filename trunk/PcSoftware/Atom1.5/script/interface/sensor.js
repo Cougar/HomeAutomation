@@ -1,5 +1,5 @@
 
-Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF" ];
+Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11" ];
 Sensor_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Sensor_Aliases        = function() { return Module_GetAliasNames(Sensor_ModuleNames); };
 Sensor_AvailableIds   = function() { return Module_GetAvailableIds(Sensor_ModuleNames); };
