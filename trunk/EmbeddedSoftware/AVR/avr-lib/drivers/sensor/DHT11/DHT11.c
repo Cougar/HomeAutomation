@@ -11,11 +11,9 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
-#include <util/delay.h>
 #include "DHT11.h"
-
 #include <config.h>
+#include <util/delay.h>
 
 #ifdef DHT11_ONE_BUS
 
