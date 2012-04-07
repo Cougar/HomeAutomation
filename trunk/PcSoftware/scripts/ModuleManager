@@ -270,7 +270,12 @@ def addModule(moduleName):
 	print "Trying to add module " + moduleName
 	
 	try:
-		os.symlink(moddir + "/" + moduleName, localmoddir + "/" + moduleName)
+		# the following creates symlinks to <path to modulemanager>/../../EmbeddedSoftware/AVR/module
+		# and <path to modulemanager> is an absolute path which makes the symlink similar to this:
+		# act_dimmer230 -> /home/arune/Documents/HomeAutomation/PcSoftware/scripts/../../EmbeddedSoftware/AVR/module/act_dimmer230
+		#os.symlink(moddir + "/" + moduleName, localmoddir + "/" + moduleName)
+		# instead symlink to relative path instead
+		os.symlink("../../../module/" + moduleName, localmoddir + "/" + moduleName)
 		print "Added module successfully"
 	except OSError, (errno, strerror):
 		if errno == 17:
