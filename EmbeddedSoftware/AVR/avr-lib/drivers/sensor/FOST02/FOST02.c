@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <config.h>
 #include <util/delay.h>
 #include "FOST02.h"
 
