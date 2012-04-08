@@ -734,6 +734,15 @@ void sns_irTransceive_Process(void)
 
 		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
 		{
+			/* Invalid once seq len? */
+			if (irTxChannel[channel].onceSeqLen<=0) {
+				/* Send error code. */
+				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
+
+				/* Enter idle state. */
+				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+				break;
+			}
 			/* Start IR transmission. */
 			if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
 				/* Send error code. */
