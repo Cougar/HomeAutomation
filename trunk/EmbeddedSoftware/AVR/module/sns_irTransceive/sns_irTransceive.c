@@ -734,29 +734,48 @@ void sns_irTransceive_Process(void)
 
 		case sns_irTransceive_STATE_START_TRANSMIT_PRONTO:
 		{
-			/* Invalid once seq len? */
-			if (irTxChannel[channel].onceSeqLen<=0) {
-				/* Send error code. */
-				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
+			/* Once sequence exists? */
+			if (irTxChannel[channel].onceSeqLen>0) {
+				/* Start IR transmission of the once sequence. */
+				if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
+					/* Send error code. */
+					pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
 
-				/* Enter idle state. */
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-				break;
+					/* Enter idle state. */
+					irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+					break;
+				}
+				else {
+					/* Enter transmitting state. */
+		                        irTxChannel[channel].sendingPronto = TRUE;
+		                        irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+					break;
+				}
 			}
-			/* Start IR transmission. */
-			if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].onceSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
-				/* Send error code. */
-				pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
+			/* Repeat sequence exists? */
+			else if (irTxChannel[channel].repSeqLen>0) {
+				/* Start IR transmission of the repeat sequence. */
+      				if(IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].repSeqLen - 1, irTxChannel[channel].proto.modfreq) < 0) {
+                                        /* Send error code. */
+                                        pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
 
-				/* Enter idle state. */
-				irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
-				break;
+                                        /* Enter idle state. */
+                                        irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+                                        break;
+                                }
+				else {
+                                        /* Enter transmitting state. */
+                                        irTxChannel[channel].sendingPronto = TRUE;
+                                        irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+					break;
+                                }
 			}
-
-			/* Enter transmitting state. */
-			irTxChannel[channel].sendingPronto = TRUE;
-			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
-			break;
+			/* Neither once sequence nor repeat sequence exists! */
+			/* Send error code. */
+                        pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ABORTED);
+                        /* Enter idle state. */
+                        irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
+                        break;
 		}
 
 		case sns_irTransceive_STATE_PRONTO_REPEAT:
@@ -774,13 +793,14 @@ void sns_irTransceive_Process(void)
 			}
 
 			/* Repeat sequence exists? */
-			if (irTxChannel[channel].repSeqLen != 0) {
+			if (irTxChannel[channel].repSeqLen > 0) {
 				/* Use repeat seq */
 				uint16_t offset = ((uint16_t)irTxChannel[channel].onceSeqLen);
 				/* Don't transmit last passive. last passive handled by timer */
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, offset, ((uint16_t)irTxChannel[channel].repSeqLen) - 1, irTxChannel[channel].proto.modfreq);
 			}
-			else {
+			/* Once sequence exists? */
+			else if (irTxChannel[channel].onceSeqLen > 0) {
 				/* Use once seq */
 				/* Don't transmit last passive. last passive handled by timer */
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen - 1, irTxChannel[channel].proto.modfreq);
