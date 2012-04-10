@@ -77,7 +77,7 @@ Value Storage::Export_GetParameters(const v8::Arguments& args)
 
     for (storage::Store::ParameterList::iterator it = parameters.begin(); it != parameters.end(); it++)
     {
-        LOG.Debug(std::string(__FUNCTION__) + ": first=\"" + it->first.data() + "\", second=\"" + it->second.data() + "\"");
+        //LOG.Debug(std::string(__FUNCTION__) + ": first=\"" + it->first.data() + "\", second=\"" + it->second.data() + "\"");
         params->Set(v8::String::New(it->first.data()), v8::String::New(it->second.data()));
     }
 

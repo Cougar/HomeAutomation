@@ -20,31 +20,46 @@
 
 #include "IoService.h"
 
+#include <iostream>
+
 namespace atom {
 namespace common {
     
 IoService::IoService() : io_service_work_(io_service_)
 {
-    boost::thread thread(boost::bind(&boost::asio::io_service::run, &this->io_service_));
-    this->thread_ = thread.move();
+  boost::thread thread(boost::bind(&boost::asio::io_service::run, &this->io_service_));
+  this->thread_ = thread.move();
     
-    this->tracker_ = TrackerPointer(new char);
+  this->tracker_ = TrackerPointer(new char);
 }
 
 IoService::~IoService()
 {
-    this->tracker_.reset();
+  std::cout << "~IoService() called!" << std::endl;
+  
+  this->Stop();
     
-    this->io_service_.stop();
-    
-    this->thread_.interrupt();
-    this->thread_.join();
+  std::cout << "~IoService() called done!" << std::endl;
 }
 
 boost::asio::io_service& IoService::GetIoService()
 {
-    return this->io_service_;
+  return this->io_service_;
 }
-    
+
+void IoService::Stop()
+{
+  std::cout << "Stop() called!" << std::endl;
+  
+  this->tracker_.reset();
+  
+  this->io_service_.stop();
+  
+  //this->thread_.interrupt();
+  this->thread_.join();
+  
+  std::cout << "Stop() called done!" << std::endl;
+}
+
 }; // namespace common
 }; // namespace atom

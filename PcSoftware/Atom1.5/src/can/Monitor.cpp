@@ -110,10 +110,7 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         
         for (common::StringMap::iterator it = variables.begin(); it != variables.end(); it++)
         {
-            if (it->second != "")
-            {
-                line += " " + it->first + "=" + it->second;
-            }
+          line += " " + it->first + "=" + common::ToHexIfNumber(it->second);
         }
         
         line += "\n";

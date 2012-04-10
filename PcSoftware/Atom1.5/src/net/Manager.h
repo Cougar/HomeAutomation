@@ -39,7 +39,7 @@
 namespace atom {
 namespace net {
 
-class Manager : virtual common::IoService
+class Manager : public common::IoService
 {
 public:
     typedef boost::shared_ptr<Manager> Pointer;

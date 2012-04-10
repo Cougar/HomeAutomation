@@ -110,6 +110,8 @@ void Logger::Print(std::string line)
     
     syslog(LOG_INFO, "%s", line.data());
     
+    std::cout.imbue(std::locale::classic());
+    
     this->mutex_.unlock();
 }
 
