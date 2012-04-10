@@ -44,39 +44,76 @@ std::string ToHex(unsigned int value)
     snprintf(hex_string, sizeof(hex_string), "0x%08X", value);
     
     return std::string(hex_string);
-    
 }
 
 std::string ToHex8bit(unsigned int value)
 {
     char hex_string[3];
-    if (value > 255) {
+    
+    if (value > 255)
+    {
       snprintf(hex_string, sizeof(hex_string), "--");
-    } else {
+    }
+    else
+    {
       snprintf(hex_string, sizeof(hex_string), "%02x", value);
     }
-    return std::string(hex_string);
     
+    return std::string(hex_string);
 }
 
 
 std::string ToHex4bit(unsigned int value)
 {
     char hex_string[2];
-    if (value > 15) {
+
+    if (value > 15)
+    {
       snprintf(hex_string, sizeof(hex_string), "-");
-    } else {
+    }
+    else
+    {
       snprintf(hex_string, sizeof(hex_string), "%01x", value);
     }
     
     return std::string(hex_string);
-    
 }
 
 unsigned int FromHex(std::string hex_chars)
 {
     return static_cast<unsigned int>(strtoll(hex_chars.data(), NULL, 16));
 }
+
+std::string ToHexIfNumber(std::string data)
+{
+  bool is_number = true;
+  
+  if (data.length() == 0)
+  {
+    return data;
+  }
+  
+  for (unsigned int n = 0; n < data.length(); n++)
+  {
+    if (!isdigit(data[n]))
+    {
+      is_number = false;
+      break;
+    }
+  }
+  
+  if (is_number)
+  {
+    char *end = NULL;
+    long value;
+    
+    value = strtol(data.c_str(), &end, 10);
+    
+    return ToHex(value);
+  }
+  
+  return data;
+}   
     
 }; // namespace type
 }; // namespace atom

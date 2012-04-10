@@ -40,6 +40,8 @@ Manager::Manager()
 
 Manager::~Manager()
 {
+    this->Stop();
+  
     this->clients_.clear();
 }
 

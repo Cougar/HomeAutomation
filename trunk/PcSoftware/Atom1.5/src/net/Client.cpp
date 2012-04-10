@@ -86,13 +86,16 @@ void Client::Stop()
 
 void Client::Disconnect()
 {
-    if (this->id_ != 0)
-    {
-        this->Stop();
-        this->signal_on_new_state_(this->id_, this->server_id_, CLIENT_STATE_DISCONNECTED);
-
-        this->id_ = 0;
-    }
+  if (this->id_ != 0)
+  {
+    ClientId id = this->id_;
+      
+    this->Stop();
+        
+    this->id_ = 0;
+        
+    this->signal_on_new_state_(id, this->server_id_, CLIENT_STATE_DISCONNECTED);
+  }
 }
     
 }; // namespace net

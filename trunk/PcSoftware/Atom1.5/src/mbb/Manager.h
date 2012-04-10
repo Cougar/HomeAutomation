@@ -1,6 +1,6 @@
 /*
  * 
- *  Copyright (C) 2010  Mattias Runge
+ *  Copyright (C) 2012  Mattias Runge
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,39 +18,46 @@
  * 
  */
 
-#ifndef COMMON_IOSERVICE_H
-#define COMMON_IOSERVICE_H
+#ifndef MBB_MANAGER_H
+#define MBB_MANAGER_H
+
+#include <string>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
+
+#include "logging/Logger.h"
+#include "net/Subscriber.h"
+#include "net/types.h"
+#include "common/Byteset.h"
 
 namespace atom {
-namespace common {
+namespace mbb {
 
-class IoService
+class Manager : public net::Subscriber
 {
 public:
-    typedef boost::shared_ptr<IoService> Pointer;
-    
-    IoService();
-    virtual ~IoService();
-    
-    boost::asio::io_service& GetIoService();
-    void Stop();
-    
-protected:
-    typedef boost::shared_ptr<char> TrackerPointer;
-    
-    boost::asio::io_service io_service_;
-    TrackerPointer tracker_;
+  typedef boost::shared_ptr<Manager> Pointer;
+  
+  virtual ~Manager();
+  
+  static Pointer Instance();
+  static void Create(unsigned int port);
+  static void Delete();
     
 private:
-    boost::thread thread_;
-    boost::asio::io_service::work io_service_work_;
+  static Pointer instance_;
+  
+  static logging::Logger LOG;
+  
+  net::ServerId server_id_;
+  
+  void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
+  void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+  
+  Manager(unsigned int port);
 };
 
-}; // namespace common
+}; // namespace mbb
 }; // namespace atom
 
-#endif // COMMON_IOSERVICE_H
+#endif // MBB_MANAGER_H
