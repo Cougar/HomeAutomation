@@ -35,11 +35,7 @@ IoService::IoService() : io_service_work_(io_service_)
 
 IoService::~IoService()
 {
-  std::cout << "~IoService() called!" << std::endl;
-  
   this->Stop();
-    
-  std::cout << "~IoService() called done!" << std::endl;
 }
 
 boost::asio::io_service& IoService::GetIoService()
@@ -49,16 +45,12 @@ boost::asio::io_service& IoService::GetIoService()
 
 void IoService::Stop()
 {
-  std::cout << "Stop() called!" << std::endl;
-  
   this->tracker_.reset();
   
   this->io_service_.stop();
   
   //this->thread_.interrupt();
   this->thread_.join();
-  
-  std::cout << "Stop() called done!" << std::endl;
 }
 
 }; // namespace common

@@ -64,3 +64,4 @@ private:
 }; // namespace atom
 
 #endif // VM_PLUGIN_SOCKET_H
+
