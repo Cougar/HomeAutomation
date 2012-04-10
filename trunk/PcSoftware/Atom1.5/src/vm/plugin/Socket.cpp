@@ -107,6 +107,7 @@ void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server
 
 Value Socket::Export_Connect(const v8::Arguments& args)
 {
+    net::ClientId client_id = 0;
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
@@ -121,8 +122,14 @@ Value Socket::Export_Connect(const v8::Arguments& args)
     
     v8::String::AsciiValue address(args[0]);
     
-    net::ClientId client_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
-    
+    try
+    {
+        client_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
+    }
+    catch (std::runtime_error &e)
+    {
+    }
+
     return handle_scope.Close(v8::Integer::New(client_id));
 }
 
@@ -169,3 +176,4 @@ Value Socket::Export_Send(const v8::Arguments& args)
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
+

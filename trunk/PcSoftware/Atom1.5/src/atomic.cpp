@@ -419,7 +419,7 @@ void Handler(int status)
         }   
         case SIGINT:
         {
-            signal_name = "Interupt";
+            signal_name = "Interrupt";
             break;
         }   
         case SIGQUIT:
