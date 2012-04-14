@@ -2,12 +2,11 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [CMake]
-BuildDirs=/home/migan/HomeAutomation/PcSoftware/Atom1.5/build
+BuildDirs[$e]=$HOME/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build
 CMakeDir=/usr/share/cmake-2.8/Modules
 Current CMake Binary=file:///usr/bin/cmake
-CurrentBuildDir=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5/build
-CurrentBuildType=Debug
-CurrentInstallDir=file:///usr/local
+CurrentBuildDir=file:///home/migan/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build
+CurrentInstallDir=file:///
 ProjectRootRelative=./
 
 [Launch]
@@ -29,6 +28,7 @@ Working Directory=file:///home/migan/HomeAutomation/PcSoftware/Atom1.5
 isExecutable=true
 
 [MakeBuilder]
+Default Make Environment Profile=0
 Number Of Jobs=1
 
 [Project]

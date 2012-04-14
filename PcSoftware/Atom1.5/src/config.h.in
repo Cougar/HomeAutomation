@@ -22,6 +22,7 @@
 #define ATOM_CONFIG_H
 
 #cmakedefine USE_PLUGIN_XORG
+#cmakedefine USE_PLUGIN_MYSQL
 
 #define VERSION "${VERSION}"
 #define LICENSE "GPL version 2"

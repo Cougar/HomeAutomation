@@ -77,9 +77,9 @@ void Manager::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
   
   std::string str = data.ToCharString();
   
-  boost::algorithm::trim_if(str, boost::is_any_of("\r\n"));
+  std::cout << str << std::endl;
   
-  LOG.Info("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
+  //LOG.Info("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
   
   if (str == "q" || str == "quit")
   {

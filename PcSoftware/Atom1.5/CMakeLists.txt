@@ -2,25 +2,91 @@ cmake_minimum_required(VERSION 2.8)
 
 project(atom)
 
-set(CMAKE_CXX_FLAGS "-g -Wall -O0 -Wreorder")
+set(CMAKE_CXX_FLAGS "-g -Wall -O0 -Wno-write-strings")
 
+
+###############################################################################
+# Find Subversion client
+###############################################################################
 find_program(SVN_EXECUTABLE svn DOC "subversion command line client")
 macro(GET_SVN_REVISION dir variable)
     execute_process(COMMAND ${SVN_EXECUTABLE} info ${dir} OUTPUT_VARIABLE ${variable} OUTPUT_STRIP_TRAILING_WHITESPACE)
     string(REGEX REPLACE "^(.*\n)?Revision: ([^\n]+).*" "\\2" ${variable} "${${variable}}")
 endmacro(GET_SVN_REVISION)
 
+
+###############################################################################
+# Find X11
+###############################################################################
 include(FindX11)
 
+
+###############################################################################
+# - Find mysqlclient
+# Find the native MySQL includes and library
+#
+#  MYSQL_INCLUDE_DIR - where to find mysql.h, etc.
+#  MYSQL_LIBRARIES   - List of libraries when using MySQL.
+#  MYSQL_FOUND       - True if MySQL found.
+###############################################################################
+
+IF (MYSQL_INCLUDE_DIR)
+  # Already in cache, be silent
+  SET(MYSQL_FIND_QUIETLY TRUE)
+ENDIF (MYSQL_INCLUDE_DIR)
+
+FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
+  /usr/local/include/mysql
+  /usr/include/mysql
+)
+
+SET(MYSQL_NAMES mysqlclient mysqlclient_r)
+FIND_LIBRARY(MYSQL_LIBRARY
+  NAMES ${MYSQL_NAMES}
+  PATHS /usr/lib /usr/local/lib
+  PATH_SUFFIXES mysql
+)
+
+IF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+  SET(MYSQL_FOUND TRUE)
+  SET( MYSQL_LIBRARIES ${MYSQL_LIBRARY} )
+ELSE (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+  SET(MYSQL_FOUND FALSE)
+  SET( MYSQL_LIBRARIES )
+ENDIF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+
+IF (MYSQL_FOUND)
+  IF (NOT MYSQL_FIND_QUIETLY)
+    MESSAGE(STATUS "Found MySQL: ${MYSQL_LIBRARY}")
+  ENDIF (NOT MYSQL_FIND_QUIETLY)
+ELSE (MYSQL_FOUND)
+  IF (MYSQL_FIND_REQUIRED)
+    MESSAGE(STATUS "Looked for MySQL libraries named ${MYSQL_NAMES}.")
+    MESSAGE(FATAL_ERROR "Could NOT find MySQL library")
+  ENDIF (MYSQL_FIND_REQUIRED)
+ENDIF (MYSQL_FOUND)
+
+MARK_AS_ADVANCED(
+  MYSQL_LIBRARY
+  MYSQL_INCLUDE_DIR
+)
+
+
+  
+###############################################################################
+include_directories(${MYSQL_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(src)
 add_subdirectory(src)
 
 set(CMAKE_BUILD_TYPE Release)
 
+# Find Boost
+###############################################################################
 set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt date_time-mt)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 find_package(Threads REQUIRED)
+
 
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/AtomSvnRev")
@@ -46,7 +112,7 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR
 
 set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 
-set(ATOMD_FILES src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/CanDaemon.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/mbb/Manager.cpp src/atomd.cpp)
+set(ATOMD_FILES src/common/log.cpp src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/CanDaemon.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/mbb/Manager.cpp src/atomd.cpp)
 set(ATOMD_LIBS ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} v8)
 
 set(ATOMIC_FILES src/common/common.cpp src/atomic.cpp src/logging/Logger.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/common/Byteset.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp)
@@ -58,6 +124,13 @@ if(${X11_FOUND})
     set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/Xorg.cpp)
     set(ATOMD_LIBS ${ATOMD_LIBS} ${X11_LIBRARIES})
 endif(${X11_FOUND})
+
+if(${MYSQL_FOUND})
+    message(STATUS "Building with MySql support")
+    set(USE_PLUGIN_MYSQL ON)
+    set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/MySql.cpp)
+    set(ATOMD_LIBS ${ATOMD_LIBS} ${MYSQL_LIBRARIES})
+endif(${MYSQL_FOUND})
 
 add_executable(atomd ${ATOMD_FILES})
 target_link_libraries(atomd ${ATOMD_LIBS})

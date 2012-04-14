@@ -1,11 +1,11 @@
 /*
  *
- *  Copyright (C) 2010  Mattias Runge
+ *  Copyright(C) 2010  Mattias Runge
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,58 +53,62 @@
 #include "vm/plugin/Xorg.h"
 #endif // USE_PLUGIN_XORG
 
+#ifdef USE_PLUGIN_MYSQL
+#include "vm/plugin/MySql.h"
+#endif // USE_PLUGIN_MYSQL
+
 using namespace atom;
 
-logging::Logger LOG ("Main");
+logging::Logger LOG("Main");
 std::vector<broker::Subscriber::Pointer> subscribers;
 boost::condition on_message_condition;
 boost::mutex guard_mutex;
 
-void Handler (int status);
+void Handler(int status);
 void CleanUp();
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-  LOG.Info ("\033[29;1mAtom Daemon, version " + std::string (VERSION) + " starting...\033[0m");
-  LOG.Info ("\033[29;1mReleased under " + std::string (LICENSE) + ".\033[0m");
-  LOG.Info ("Written by Mattias Runge 2010-2012.");
+  LOG.Info("\033[29;1mAtom Daemon, version " + std::string(VERSION) + " starting...\033[0m");
+  LOG.Info("\033[29;1mReleased under " + std::string(LICENSE) + ".\033[0m");
+  LOG.Info("Written by Mattias Runge 2010-2012.");
 
-  signal (SIGTERM, Handler);
-  signal (SIGINT, Handler);
-  signal (SIGQUIT, Handler);
-  signal (SIGABRT, Handler);
-  signal (SIGPIPE, Handler);
+  signal(SIGTERM, Handler);
+  signal(SIGINT, Handler);
+  signal(SIGQUIT, Handler);
+  signal(SIGABRT, Handler);
+  signal(SIGPIPE, Handler);
 
   config::Manager::Create();
 
-  if (!config::Manager::Instance()->Set (argc, argv))
+  if (!config::Manager::Instance()->Set(argc, argv))
   {
     CleanUp();
     return EXIT_SUCCESS;
   }
 
-  if (config::Manager::Instance()->Exist ("LogFile"))
+  if (config::Manager::Instance()->Exist("LogFile"))
   {
-    logging::Logger::OpenFile (config::Manager::Instance()->GetAsString ("LogFile"));
+    logging::Logger::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
   }
 
-  if (config::Manager::Instance()->Exist ("LogLevel"))
+  if (config::Manager::Instance()->Exist("LogLevel"))
   {
-    logging::Logger::SetLevel ( (logging::Logger::Level) config::Manager::Instance()->GetAsInt ("LogLevel"));
+    logging::Logger::SetLevel((logging::Logger::Level) config::Manager::Instance()->GetAsInt("LogLevel"));
   }
 
-  if (config::Manager::Instance()->Exist ("daemon"))
+  if (config::Manager::Instance()->Exist("daemon"))
   {
-    LOG.Info ("Entering daemon mode...");
+    LOG.Info("Entering daemon mode...");
 
-    if (daemon (0, 0) == -1)
+    if (daemon(0, 0) == -1)
     {
-      LOG.Error ("Could not enter daemon mode. Exiting...");
+      LOG.Error("Could not enter daemon mode. Exiting...");
       CleanUp();
       return EXIT_FAILURE;
     }
 
-    LOG.Info ("Deamon mode entered successfully!");
+    LOG.Info("Deamon mode entered successfully!");
   }
 
   storage::Manager::Create();
@@ -116,60 +120,64 @@ int main (int argc, char **argv)
   control::Manager::Create();
   vm::Manager::Create();
 
-  if (config::Manager::Instance()->Exist ("MbbPort"))
+  if (config::Manager::Instance()->Exist("MbbPort"))
   {
-    mbb::Manager::Create (config::Manager::Instance()->GetAsInt ("MbbPort"));
+    mbb::Manager::Create(config::Manager::Instance()->GetAsInt("MbbPort"));
   }
 
-  storage::Manager::Instance()->SetRootPath (config::Manager::Instance()->GetAsString ("StoragePath"));
+  storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
 
-  can::Protocol::Instance()->Load (config::Manager::Instance()->GetAsString ("ProtocolFile"));
+  can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
 
-  if (config::Manager::Instance()->Exist ("MonitorPort"))
+  if (config::Manager::Instance()->Exist("MonitorPort"))
   {
-    subscribers.push_back (can::Monitor::Pointer (new can::Monitor (config::Manager::Instance()->GetAsInt ("MonitorPort"))));
+    subscribers.push_back(can::Monitor::Pointer(new can::Monitor(config::Manager::Instance()->GetAsInt("MonitorPort"))));
   }
 
-  if (config::Manager::Instance()->Exist ("DaemonPort"))
+  if (config::Manager::Instance()->Exist("DaemonPort"))
   {
-    subscribers.push_back (can::CanDaemon::Pointer (new can::CanDaemon (config::Manager::Instance()->GetAsInt ("DaemonPort"))));
+    subscribers.push_back(can::CanDaemon::Pointer(new can::CanDaemon(config::Manager::Instance()->GetAsInt("DaemonPort"))));
   }
 
-  subscribers.push_back (control::Manager::Instance());
+  subscribers.push_back(control::Manager::Instance());
 
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::System (vm::Manager::Instance()->GetIoService())));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Console (vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt ("CommandPort"))));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Storage (vm::Manager::Instance()->GetIoService())));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Timer (vm::Manager::Instance()->GetIoService())));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Module (vm::Manager::Instance()->GetIoService())));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Node (vm::Manager::Instance()->GetIoService())));
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Socket (vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Node(vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Socket(vm::Manager::Instance()->GetIoService())));
 
 #ifdef USE_PLUGIN_XORG
-  vm::Manager::Instance()->AddPlugin (vm::Plugin::Pointer (new vm::plugin::Xorg (vm::Manager::Instance()->GetIoService())));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Xorg(vm::Manager::Instance()->GetIoService())));
 #endif // USE_PLUGIN_XORG
+  
+#ifdef USE_PLUGIN_MYSQL
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::MySql(vm::Manager::Instance()->GetIoService())));
+#endif // USE_PLUGIN_MYSQL
 
-  vm::Manager::Instance()->Start (config::Manager::Instance()->GetAsString ("ScriptPath"), config::Manager::Instance()->GetAsString ("UserScriptPath"));
+  vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"), config::Manager::Instance()->GetAsString("UserScriptPath"));
 
-  if (config::Manager::Instance()->Exist ("CanNet"))
+  if (config::Manager::Instance()->Exist("CanNet"))
   {
-    common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector ("CanNet");
+    common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
 
     for (uint n = 0; n < cannetworks.size(); n++)
     {
-      subscribers.push_back (can::Network::Pointer (new can::Network (cannetworks[n])));
+      subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));
     }
   }
 
-  boost::mutex::scoped_lock guard (guard_mutex);
+  boost::mutex::scoped_lock guard(guard_mutex);
 
-  on_message_condition.wait (guard);
+  on_message_condition.wait(guard);
 
-  LOG.Info ("Cleaning up...");
+  LOG.Info("Cleaning up...");
 
   CleanUp();
 
-  LOG.Info ("Thank you for using Atom. Goodbye!");
+  LOG.Info("Thank you for using Atom. Goodbye!");
 
   return EXIT_SUCCESS;
 }
@@ -190,7 +198,7 @@ void CleanUp()
   storage::Manager::Delete();
 }
 
-void Handler (int status)
+void Handler(int status)
 {
   std::string signal_name = "Unknown";
 
@@ -233,7 +241,7 @@ void Handler (int status)
     }
   }
 
-  LOG.Debug ("Received signal " + signal_name + "(" + boost::lexical_cast<std::string> (status) + ").");
+  LOG.Debug("Received signal " + signal_name + "(" + boost::lexical_cast<std::string>(status) + ").");
 
   if (status != SIGPIPE)
   {
