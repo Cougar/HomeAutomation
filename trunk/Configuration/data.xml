@@ -231,11 +231,32 @@
         <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
         <variable name="Response" type="enum" start_bit="16" bit_length="8" unit="" description="">
         	<value id="0" name="Ok"/>
+	    	
+	    	<!-- Pronto transmission was stopped (either prematurely or due to completion). -->
 	    	<value id="1" name="Stopped"/>
+	    	
+	    	<!-- Waiting for next pronto data packet. -->
 	    	<value id="2" name="Waiting"/>
+	    	
+	    	<!-- Pronto data is now being transmitted. -->
 	    	<value id="4" name="Transmitting"/>
+	    	
+	    	<!-- Trying to stop or continue a pronto transmission that has already stopped. -->
 	    	<value id="241" name="AlreadyStopped"/>
-	    	<value id="243" name="Aborted"/>
+	    	
+	    	<!-- Pronto data is already being transmitted (or prepared) on another channel. Can only process pronto data at one channel at once. -->
+	    	<value id="242" name="Busy_AlreadySendingPronto"/>
+	    	
+	    	<!-- The specified channel is busy transmitting (pronto or non-pronto) data. -->
+	    	<value id="243" name="Busy_ChannelBusy"/>
+	    	
+	    	<!-- Transmission (pronto or non-pronto) with other frequency is ongoing on other channel. -->
+	    	<value id="244" name="Busy_OtherFrequencyLocked"/>
+	    	
+	    	<!-- Pronto activity is ongoing, but on a different channel than that specified in STOP/CONTINUE request. -->
+	    	<value id="245" name="Error_WrongProntoChannel"/>
+	    	
+	    	<!-- Generic error code. Bad data in packet. -->
 	    	<value id="255" name="Error"/>
 	    </variable>
       </variables>
