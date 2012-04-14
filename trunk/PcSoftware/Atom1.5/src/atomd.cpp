@@ -39,7 +39,6 @@
 #include "can/CanDaemon.h"
 #include "vm/Manager.h"
 #include "storage/Manager.h"
-#include "mbb/Manager.h"
 
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
@@ -48,6 +47,7 @@
 #include "vm/plugin/Console.h"
 #include "vm/plugin/Storage.h"
 #include "vm/plugin/Socket.h"
+#include "vm/plugin/Mbb.h"
 
 #ifdef USE_PLUGIN_XORG
 #include "vm/plugin/Xorg.h"
@@ -112,18 +112,12 @@ int main(int argc, char **argv)
   }
 
   storage::Manager::Create();
-
   timer::Manager::Create();
   broker::Manager::Create();
   net::Manager::Create();
   can::Protocol::Create();
   control::Manager::Create();
   vm::Manager::Create();
-
-  if (config::Manager::Instance()->Exist("MbbPort"))
-  {
-    mbb::Manager::Create(config::Manager::Instance()->GetAsInt("MbbPort"));
-  }
 
   storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
 
@@ -143,6 +137,7 @@ int main(int argc, char **argv)
 
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
+  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Mbb(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("MbbPort"))));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));
@@ -190,7 +185,6 @@ void CleanUp()
   config::Manager::Delete();
   timer::Manager::Delete();
   control::Manager::Delete();
-  mbb::Manager::Delete();
   can::Protocol::Delete();
   broker::Manager::Delete();
   vm::Manager::Delete();
