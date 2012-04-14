@@ -123,10 +123,11 @@ static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 	_delay_ms(1);
 }
 
+static uint8_t prontoAllocatedTxChannel = -1;
+
 #if sns_irTransceive_PRONTO_SUPPORT==1
 volatile uint32_t sns_irTransceive_LastPronto=0;
 
-static uint8_t prontoAllocatedTxChannel = -1;
 /* is any channel transmitting (or preparing to transmit) pronto? */
 static inline int8_t prontoChannelIsAllocated(void)
 {
