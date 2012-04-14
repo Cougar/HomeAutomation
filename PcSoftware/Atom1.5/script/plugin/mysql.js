@@ -23,3 +23,9 @@ function MySql_AffectedRows(resource)
 {
   return MySqlExport_AffectedRows(resource);
 }
+
+function MySql_InsertId(resource)
+{
+  return MySqlExport_InsertId(resource);
+}
+

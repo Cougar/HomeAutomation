@@ -44,6 +44,7 @@ MySql::MySql(boost::asio::io_service& io_service) : Plugin(io_service)
   this->ExportFunction("MySqlExport_Query",         MySql::Export_Query);
   this->ExportFunction("MySqlExport_SelectDb",      MySql::Export_SelectDb);
   this->ExportFunction("MySqlExport_AffectedRows",  MySql::Export_AffectedRows);
+  this->ExportFunction("MySqlExport_InsertId",      MySql::Export_InsertId);
 }
 
 MySql::~MySql()
@@ -60,13 +61,26 @@ void MySql::CallOutput(unsigned int request_id, std::string output)
   atom::log::Info(log_module_, output);
 }
 
+MySql::ResourceId MySql::GetFreeResourceId()
+{
+  ResourceId resource_id = 1;
+    
+  while (NULL != MySql::resources_[resource_id])
+  {
+    resource_id++;
+  }
+  
+  return resource_id;
+}
+
 Value MySql::Export_Connect(const v8::Arguments& args)
 {
   ATOM_VM_PLUGIN_SCOPE;
   
-  MYSQL* resource = NULL;
+  MYSQL*      resource = NULL;
+  ResourceId  resource_id;
 
-  atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
   
   try
   {
@@ -82,7 +96,7 @@ Value MySql::Export_Connect(const v8::Arguments& args)
   
     if (NULL == resource)
     {
-      throw atom::exception::initialization_failed;
+      throw atom::exception::initialization_failed();
     }
     
     
@@ -90,15 +104,16 @@ Value MySql::Export_Connect(const v8::Arguments& args)
     if (mysql_real_connect(resource, *server, *username, *password, NULL, 0, NULL, 0) == NULL)
     {
       atom::log::Error(log_module_, "Failed to connect to database %s, error code %d, error message \"%s\".", *server, mysql_errno(resource), mysql_error(resource));
-      throw atom::exception::connect_failed;
+      throw atom::exception::connect_failed();
     }
 
     
     /* Add resource to list */
-    MySql::resources_[(uintptr_t)resource] = resource;
+    resource_id = MySql::GetFreeResourceId();
+    MySql::resources_[resource_id] = resource;
   
     
-    return handle_scope.Close(v8::Uint32::New((uintptr_t)resource));
+    return handle_scope.Close(v8::Uint32::New(resource_id));
   }
   catch (std::exception& exception)
   {
@@ -118,7 +133,7 @@ Value MySql::Export_Close(const v8::Arguments& args)
 {
   ATOM_VM_PLUGIN_SCOPE;
 
-  atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
   
   try
   {
@@ -126,15 +141,15 @@ Value MySql::Export_Close(const v8::Arguments& args)
   
     
     /* Check that the resource exist */
-    if (NULL == MySql::resources_[(uintptr_t)args[0]->Uint32Value()])
+    if (NULL == MySql::resources_[(ResourceId)args[0]->Uint32Value()])
     {
-      throw atom::exception::missing_resource;
+      throw atom::exception::missing_resource();
     }
     
     
     /* Close connection */
-    mysql_close(MySql::resources_[(uintptr_t)args[0]->Uint32Value()]);
-    MySql::resources_.erase((uintptr_t)args[0]->Uint32Value());
+    mysql_close(MySql::resources_[(ResourceId)args[0]->Uint32Value()]);
+    MySql::resources_.erase((ResourceId)args[0]->Uint32Value());
     
     
     return handle_scope.Close(v8::Boolean::New(true));
@@ -153,7 +168,7 @@ Value MySql::Export_Query(const v8::Arguments& args)
   
   MYSQL_RES* result = NULL;
 
-  atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
   
   try
   {
@@ -165,27 +180,27 @@ Value MySql::Export_Query(const v8::Arguments& args)
     
     
     /* Check that the resource exist */
-    if (NULL == MySql::resources_[(uintptr_t)args[0]->Uint32Value()])
+    if (NULL == MySql::resources_[(ResourceId)args[0]->Uint32Value()])
     {
-      throw atom::exception::missing_resource;
+      throw atom::exception::missing_resource();
     }
     
     
     /* Execute the query */
-    if (0 != mysql_query(MySql::resources_[(uintptr_t)args[0]->Uint32Value()], *query))
+    if (0 != mysql_query(MySql::resources_[(ResourceId)args[0]->Uint32Value()], *query))
     {
-      throw atom::exception::action_failed; 
+      throw atom::exception::action_failed(); 
     }
     
     
     /* Get the result */
-    result = mysql_store_result(MySql::resources_[(uintptr_t)args[0]->Uint32Value()]);
+    result = mysql_store_result(MySql::resources_[(ResourceId)args[0]->Uint32Value()]);
     
     if (NULL == result)
     {
-      if (mysql_field_count(MySql::resources_[(uintptr_t)args[0]->Uint32Value()]) > 0)
+      if (mysql_field_count(MySql::resources_[(ResourceId)args[0]->Uint32Value()]) > 0)
       {
-        throw atom::exception::action_failed; 
+        throw atom::exception::action_failed(); 
       }
     }
     else
@@ -241,7 +256,7 @@ Value MySql::Export_SelectDb(const v8::Arguments& args)
 {
   ATOM_VM_PLUGIN_SCOPE;
 
-  atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
   
   try
   {
@@ -251,16 +266,16 @@ Value MySql::Export_SelectDb(const v8::Arguments& args)
     
     
     /* Check that the resource exist */
-    if (NULL == MySql::resources_[(uintptr_t)args[0]->Uint32Value()])
+    if (NULL == MySql::resources_[(ResourceId)args[0]->Uint32Value()])
     {
-      throw atom::exception::missing_resource;
+      throw atom::exception::missing_resource();
     }
     
     
     /* Select database */
-    if (0 != mysql_select_db(MySql::resources_[(uintptr_t)args[0]->Uint32Value()], *database))
+    if (0 != mysql_select_db(MySql::resources_[(ResourceId)args[0]->Uint32Value()], *database))
     {
-       throw atom::exception::action_failed;
+       throw atom::exception::action_failed();
     }
     
     
@@ -278,7 +293,7 @@ Value MySql::Export_AffectedRows(const v8::Arguments& args)
 {
   ATOM_VM_PLUGIN_SCOPE;
 
-  atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
   
   try
   {
@@ -286,14 +301,14 @@ Value MySql::Export_AffectedRows(const v8::Arguments& args)
   
     
     /* Check that the resource exist */
-    if (NULL == MySql::resources_[(uintptr_t)args[0]->Uint32Value()])
+    if (NULL == MySql::resources_[(ResourceId)args[0]->Uint32Value()])
     {
-      throw atom::exception::missing_resource;
+      throw atom::exception::missing_resource();
     }
     
     
     /* Select database */
-    uint32_t number_of_rows = mysql_affected_rows(MySql::resources_[(uintptr_t)args[0]->Uint32Value()]);
+    uint32_t number_of_rows = mysql_affected_rows(MySql::resources_[(ResourceId)args[0]->Uint32Value()]);
     
     
     return handle_scope.Close(v8::Uint32::New(number_of_rows));
@@ -306,6 +321,37 @@ Value MySql::Export_AffectedRows(const v8::Arguments& args)
   }
 }
 
+Value MySql::Export_InsertId(const v8::Arguments& args)
+{
+  ATOM_VM_PLUGIN_SCOPE;
+
+  //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  
+  try
+  {
+    ATOM_VM_PLUGIN_NUM_PARAMS(1);
+  
+    
+    /* Check that the resource exist */
+    if (NULL == MySql::resources_[(ResourceId)args[0]->Uint32Value()])
+    {
+      throw atom::exception::missing_resource();
+    }
+    
+    
+    /* Select database */
+    uint32_t insert_id = mysql_insert_id(MySql::resources_[(ResourceId)args[0]->Uint32Value()]);
+    
+    
+    return handle_scope.Close(v8::Uint32::New(insert_id));
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
+}
   
 }; // namespace plugin
 }; // namespace vm

@@ -43,15 +43,19 @@ public:
   void CallOutput(unsigned int request_id, std::string output);
   
 private:
-  typedef std::map<uintptr_t, MYSQL*> Resources;
+  typedef unsigned int ResourceId;
+  typedef std::map<ResourceId, MYSQL*> Resources;
   
   static Resources resources_;
+  
+  static ResourceId GetFreeResourceId();
   
   static Value Export_Connect(const v8::Arguments& args);
   static Value Export_Close(const v8::Arguments& args);
   static Value Export_Query(const v8::Arguments& args);
   static Value Export_SelectDb(const v8::Arguments& args);
   static Value Export_AffectedRows(const v8::Arguments& args);
+  static Value Export_InsertId(const v8::Arguments& args);
 };
   
 }; // namespace plugin

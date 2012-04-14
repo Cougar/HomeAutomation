@@ -52,33 +52,29 @@ void Print(Level level, std::string module, std::string message)
   
   
   /* Convert log level to string */
-  switch (level)
+  if (0 != (level & LOG_LEVEL_ERROR))
   {
-    case LOG_LEVEL_ERROR:
-    {
-      level_string = "ERROR";
-      break;
-    }
-    case LOG_LEVEL_INFO:
-    {
-      level_string = "INFO";
-      break;
-    }
-    case LOG_LEVEL_DEBUG:
-    {
-      level_string = "WARNING";
-      break;
-    }
-    case LOG_LEVEL_EXCEPTION:
-    {
-      level_string = "EXCEPTION";
-      break;
-    }
-    default:
-    {
-      level_string = "UNKNOWN";
-      break;
-    }
+    level_string = "ERROR";
+  }
+  else if (0 != (level & LOG_LEVEL_INFO))
+  {
+    level_string = "INFO";
+  }
+  else if (0 != (level & LOG_LEVEL_DEBUG))
+  {
+    level_string = "DEBUG";
+  }
+  else if (0 != (level & LOG_LEVEL_EXCEPTION))
+  {
+    level_string = "EXCEPTION";
+  }
+  else if (0 != (level & LOG_LEVEL_WARNING))
+  {
+    level_string = "WARNING";
+  }
+  else
+  {
+    level_string = "UNKNOWN";
   }
   
   

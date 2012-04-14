@@ -42,7 +42,7 @@ namespace vm {
 #define ATOM_VM_PLUGIN_NUM_PARAMS(number)                                     \
   if (args.Length() < number)                                                 \
   {                                                                           \
-    throw atom::exception::missing_in_param;                                  \
+    throw atom::exception::missing_in_param();                                  \
   }
   
 class Plugin
