@@ -4,7 +4,7 @@ aptitude install cmake libboost-date-time-dev libboost-filesystem-dev libboost-p
 
 Install Ubuntu optional dependencies:
 =====================================
-aptitude install libx11-dev
+aptitude install libx11-dev libmysqlclient-dev
 
 Build atomd and atomic:
 =======================

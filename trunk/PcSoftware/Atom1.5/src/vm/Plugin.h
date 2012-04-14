@@ -34,6 +34,17 @@
 namespace atom {
 namespace vm {
 
+#define ATOM_VM_PLUGIN_SCOPE                                                  \
+  v8::Locker lock;                                                            \
+  v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());    \
+  v8::HandleScope handle_scope;
+
+#define ATOM_VM_PLUGIN_NUM_PARAMS(number)                                     \
+  if (args.Length() < number)                                                 \
+  {                                                                           \
+    throw atom::exception::missing_in_param;                                  \
+  }
+  
 class Plugin
 {
 public:
