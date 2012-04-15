@@ -137,20 +137,47 @@ function _Mbb_NmeaToPosition(client_id)
     position["Datetime"]            = "20" + nmea_rmc_parts[9].substr(4, 2) + "-" + nmea_rmc_parts[9].substr(2, 2) + "-" + nmea_rmc_parts[9].substr(0, 2);
     position["Datetime"]            += " " + nmea_rmc_parts[1].substr(0, 2) + ":" + nmea_rmc_parts[1].substr(2, 2) + ":" + nmea_rmc_parts[1].substr(4, 2) + " UTC";
   
-    position["Latitude"]            = nmea_rmc_parts[3] + "," + nmea_rmc_parts[4];
-    position["Longitude"]           = nmea_rmc_parts[5] + "," + nmea_rmc_parts[6];
-    position["HorizontalDilution"]  = nmea_gga_parts[8];
     
-    position["Altitude"]            = nmea_gga_parts[9] + "," + nmea_gga_parts[10];
-    position["HeightOfGeoid"]       = nmea_gga_parts[11] + "," + nmea_gga_parts[12];
+    /* Calculate decimal latitude */
+    var degrees = parseFloat(nmea_rmc_parts[3].substr(0, 2));
+    var decimal = parseFloat(nmea_rmc_parts[3].substr(2));
     
-    position["SpeedKnots"]          = nmea_rmc_parts[7];
+    position["Latitude"] = degrees + (decimal / 60.0);
     
-    position["Angle"]               = nmea_rmc_parts[8];
+    if (nmea_rmc_parts[4] == "S")
+    {
+      position["Latitude"] = -position["Latitude"];
+    }
+
+    /* Calculate decimal longitude */
+    var degrees = parseFloat(nmea_rmc_parts[5].substr(0, 3));
+    var decimal = parseFloat(nmea_rmc_parts[5].substr(3));
+    
+    position["Longitude"] = degrees + (decimal / 60.0);
+    
+    if (nmea_rmc_parts[6] == "W")
+    {
+      position["Longitude"] = -position["Longitude"];
+    }
+    
+    position["Hdop"] = nmea_gga_parts[8];
+    
+    position["Satellites"] = nmea_gga_parts[7];
+    
+    position["Altitude"] = nmea_gga_parts[9]; // Meters
+    position["HeightOfGeoid"] = nmea_gga_parts[11] // Meters
+    
+    position["Speed"] = nmea_rmc_parts[7]; // Knots
+    position["Angle"] = nmea_rmc_parts[8];
     
     if (nmea_rmc_parts[10] != "")
     {
-      position["MagneticVariation"]   = nmea_rmc_parts[10] + "," + nmea_rmc_parts[11].substr(0, 1);
+      position["MagneticDeclination"] = parseFloat(nmea_rmc_parts[10]);
+      
+      if (nmea_rmc_parts[11].substr(0, 1) == "W")
+      {
+        position["MagneticDeclination"] = -position["MagneticDeclination"];
+      }
     }
     
     return position;

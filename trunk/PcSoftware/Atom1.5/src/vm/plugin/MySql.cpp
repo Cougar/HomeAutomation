@@ -189,6 +189,7 @@ Value MySql::Export_Query(const v8::Arguments& args)
     /* Execute the query */
     if (0 != mysql_query(MySql::resources_[(ResourceId)args[0]->Uint32Value()], *query))
     {
+      atom::log::Error(log_module_, "Failed to execute query \"%s\", error code %d, error message \"%s\".", *query, mysql_errno(MySql::resources_[(ResourceId)args[0]->Uint32Value()]), mysql_error(MySql::resources_[(ResourceId)args[0]->Uint32Value()]));
       throw atom::exception::action_failed(); 
     }
     
@@ -200,6 +201,7 @@ Value MySql::Export_Query(const v8::Arguments& args)
     {
       if (mysql_field_count(MySql::resources_[(ResourceId)args[0]->Uint32Value()]) > 0)
       {
+        atom::log::Error(log_module_, "Supposed to get data but got none!");
         throw atom::exception::action_failed(); 
       }
     }
@@ -275,7 +277,8 @@ Value MySql::Export_SelectDb(const v8::Arguments& args)
     /* Select database */
     if (0 != mysql_select_db(MySql::resources_[(ResourceId)args[0]->Uint32Value()], *database))
     {
-       throw atom::exception::action_failed();
+      atom::log::Error(log_module_, "Failed to select database \"%s\", error code %d, error message \"%s\".", *database, mysql_errno(MySql::resources_[(ResourceId)args[0]->Uint32Value()]), mysql_error(MySql::resources_[(ResourceId)args[0]->Uint32Value()]));
+      throw atom::exception::action_failed();
     }
     
     
