@@ -37,29 +37,36 @@ function Mbb_ReceivedData(client_id, data)
   
   if (json_data.method == "MBB.GpsNmeaData")
   {
-    if (json_data.params.nmea.substr(0, 6) == "$GPGGA")
+    if (Mbb_Clients[client_id])
     {
-      Mbb_Clients[client_id]["LastNmea"]["GGA"] = json_data.params.nmea;
-    }
-    else if (json_data.params.nmea.substr(0, 6) == "$GPRMC")
-    {
-      Mbb_Clients[client_id]["LastNmea"]["RMC"] = json_data.params.nmea;
-      
-      Mbb_Clients[client_id]["Position"] = _Mbb_NmeaToPosition(client_id);
-      
-      for (var n = 0; n < Mbb_Susbscribers.length; n++)
+      if (json_data.params.nmea.substr(0, 6) == "$GPGGA")
       {
-        Mbb_Susbscribers[n]("position", Mbb_Clients[client_id]);
+        Mbb_Clients[client_id]["LastNmea"]["GGA"] = json_data.params.nmea;
       }
-      
-      Mbb_Clients[client_id]["LastNmea"]["GGA"] = "";
-      Mbb_Clients[client_id]["LastNmea"]["RMC"] = "";
-      Mbb_Clients[client_id]["Position"] = false;
+      else if (json_data.params.nmea.substr(0, 6) == "$GPRMC")
+      {
+        Mbb_Clients[client_id]["LastNmea"]["RMC"] = json_data.params.nmea;
+        
+        Mbb_Clients[client_id]["Position"] = _Mbb_NmeaToPosition(client_id);
+        
+        for (var n = 0; n < Mbb_Susbscribers.length; n++)
+        {
+          Mbb_Susbscribers[n]("position", Mbb_Clients[client_id]);
+        }
+        
+        Mbb_Clients[client_id]["LastNmea"]["GGA"] = "";
+        Mbb_Clients[client_id]["LastNmea"]["RMC"] = "";
+        Mbb_Clients[client_id]["Position"] = false;
+      }
+    }
+    else
+    {
+      Log("Got data from unknown tracker!");
     }
   }
-  else /*if (json_data.method == "MBB.Connected")*/
+  else if (json_data.method == "MBB.OnConnected")
   {
-    json_data = { "params" : { "Imei" : "004401700721448" } };
+    json_data = { "params" : { "Imei" : "004401700721448" } }; // Temporary hack since we get corrupted data from the device
     
     Log("Client " + client_id + " has IMEI " + json_data.params.Imei);
     
@@ -75,10 +82,10 @@ function Mbb_ReceivedData(client_id, data)
       Mbb_Susbscribers[n]("connected", Mbb_Clients[client_id]);
     }
   }
-  /*else
+  else
   {
-    Log("Got unknown data \"" + json_data + "\" from client " + client_id);
-  }*/
+    Log("Got unknown data \"" + data + "\" from client " + client_id);
+  }
 }
 
 function Mbb_SendData(client_id, json_data)

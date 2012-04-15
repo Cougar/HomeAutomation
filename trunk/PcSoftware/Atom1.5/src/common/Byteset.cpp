@@ -74,7 +74,7 @@ unsigned char* Byteset::Get() const
 
 std::string Byteset::ToCharString()
 {
-    return std::string((char*)this->bytes_, this->size_ - 1);
+    return std::string((char*)this->bytes_, this->size_);
 }
 
 std::string Byteset::ToDebugString()
