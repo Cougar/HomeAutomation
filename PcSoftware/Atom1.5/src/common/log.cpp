@@ -30,8 +30,9 @@
 namespace atom {
 namespace log {
 
-static boost::mutex mutex_;
-static Level level_ = LOG_LEVEL_ALL;
+static boost::mutex   mutex_;
+static Level          level_ = LOG_LEVEL_ALL;
+static const uint32_t kMaxBufferSize = 4096;
 
 void SetLogLevel(Level level)
 {
@@ -94,7 +95,7 @@ void Print(Level level, std::string module, std::string message)
 
 void Info(std::string module, char* format, ...)
 {
-  char    buffer[1024];
+  char    buffer[kMaxBufferSize];
   va_list parameters;
   
   
@@ -117,7 +118,7 @@ void Info(std::string module, std::string message)
 
 void Debug(std::string module, char* format, ...)
 {
-  char    buffer[1024];
+  char    buffer[kMaxBufferSize];
   va_list parameters;
   
   
@@ -140,7 +141,7 @@ void Debug(std::string module, std::string message)
 
 void Error(std::string module, char* format, ...)
 {
-  char    buffer[1024];
+  char    buffer[kMaxBufferSize];
   va_list parameters;
   
   
@@ -163,7 +164,7 @@ void Error(std::string module, std::string message)
 
 void Warning(std::string module, char* format, ...)
 {
-  char    buffer[1024];
+  char    buffer[kMaxBufferSize];
   va_list parameters;
   
   

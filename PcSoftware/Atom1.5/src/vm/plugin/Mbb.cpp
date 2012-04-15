@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <time.h>
 
 #include "net/Manager.h"
 #include "vm/Manager.h"
@@ -105,6 +106,7 @@ void Mbb::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id,
   ATOM_VM_PLUGIN_SCOPE;
 
   //atom::log::Debug(log_module_, "%s called!", __FUNCTION__);
+  //clock_t tStart = clock();
 
   try
   {
@@ -130,6 +132,8 @@ void Mbb::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id,
   {
     atom::log::Exception(log_module_, exception);
   }
+  
+  //atom::log::Info(log_module_, "Time taken: %.2fs", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 }
 
 void Mbb::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
