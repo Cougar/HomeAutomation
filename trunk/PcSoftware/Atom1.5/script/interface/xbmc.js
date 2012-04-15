@@ -80,10 +80,10 @@ function Xbmc_Connect(host, port)
     
   }, function(socket_id, state)
   {
-    Log(state);
-    
     if (state == 0) // Connected
     {
+      Log("Got connect on socket id " + socket_id);
+      
       for (var n = 0; n < Xbmc_Susbscribers.length; n++)
       {
         Xbmc_Susbscribers[n]("connected", socket_id);
@@ -91,14 +91,16 @@ function Xbmc_Connect(host, port)
     }
     else if (state == 1) // Disconnected
     {
+      Log("Got disconnect on socket id " + socket_id);
+      
+      if (socket_id == Xbmc_Socket_Id)
+      {
+        Xbmc_Socket_Id = null;
+      }
+      
       for (var n = 0; n < Mbb_Susbscribers.length; n++)
       {
         Xbmc_Susbscribers[n]("disconnected", socket_id);
-        
-        if (socket_id == Xbmc_Socket_Id)
-        {
-          Xbmc_Socket_Id = null;
-        }
       }
     }
   });
@@ -108,6 +110,8 @@ function Xbmc_Connect(host, port)
     Log("Connected to XBMC at " + host + ":" + port + " successfully!");
     return true;
   }
+  
+  Log("Failed to connect to XBMC at " + host + ":" + port + "!");
   
   Xbmc_Socket_Id = null;
   return false;

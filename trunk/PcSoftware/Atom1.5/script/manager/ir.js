@@ -8,16 +8,11 @@ function IrManager(ir_receiver, xbmc_host, xbmc_port)
   this.xbmc_port_             = xbmc_port;
   this.xbmc_reconnect_timer_  = null;
   
-  if (!Xbmc_Connect(self.xbmc_host_, self.xbmc_port_))
-  {
-    self._SetXbmcReconnect();
-  }
-  
   Xbmc_SubscribeToConnectionStatus(function(event, connection_id, method, params)
   {
     if (event == "connected")
     {
-      Timer_CancelTimer(timer_id);
+      Timer_Cancel(timer_id);
       self.xbmc_reconnect_timer_ = null;
     }
     else if (event == "disconnected")
@@ -99,11 +94,16 @@ function IrManager(ir_receiver, xbmc_host, xbmc_port)
       {
         if (Xbmc_Connect(self.xbmc_host_, self.xbmc_port_))
         {
-          Timer_CancelTimer(timer_id);
+          Timer_Cancel(timer_id);
           self.xbmc_reconnect_timer_ = null;
         }
       }
       
-    }, 1000, true);
+    }, 5000, true);
+  }
+  
+  if (!Xbmc_Connect(self.xbmc_host_, self.xbmc_port_))
+  {
+    self._SetXbmcReconnect();
   }
 }
