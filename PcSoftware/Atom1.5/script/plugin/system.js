@@ -239,3 +239,34 @@ function create_table(table_lines)
     
     return table_rows;
 }
+
+function parse_json_rpc(data)
+{
+  var items = [];
+  var position = -1;
+  
+  //Log(data);
+  
+  while ((position = data.indexOf("}{")) != -1)
+  {
+    //Log(data.substr(0, position + 1));
+    
+    items.push(eval("(" + data.substr(0, position + 1) + ")"));
+    
+    data = data.substring(position + 1);
+    
+    //Log(data);
+  }
+  
+  items.push(eval("(" + data + ")"));
+  
+  return items;
+}
+
+
+
+
+
+
+
+

@@ -172,7 +172,7 @@ Value MySql::Export_Query(const v8::Arguments& args)
   
   try
   {
-    ArgumentListPointer result_array = ArgumentListPointer(new ArgumentList);
+    v8::Local<v8::Array> result_array = v8::Array::New();
     
     ATOM_VM_PLUGIN_NUM_PARAMS(2);
   
@@ -208,13 +208,10 @@ Value MySql::Export_Query(const v8::Arguments& args)
     else
     {
       
-      MYSQL_ROW           row;
-      uint32_t            number_of_fields = mysql_num_fields(result);
-      MYSQL_FIELD*        fields = mysql_fetch_fields(result);
-      uint32_t            row_index = 0;
-      
-      v8::Local<v8::Array> result_array = v8::Array::New();
-      
+      MYSQL_ROW     row;
+      uint32_t      number_of_fields = mysql_num_fields(result);
+      MYSQL_FIELD*  fields = mysql_fetch_fields(result);
+      uint32_t      row_index = 0;
       
       while (NULL != (row = mysql_fetch_row(result)))
       {
@@ -234,11 +231,9 @@ Value MySql::Export_Query(const v8::Arguments& args)
       
       mysql_free_result(result);
       result = NULL;
-      
-      return handle_scope.Close(v8::Handle<v8::Value>(result_array));
     }
     
-    return handle_scope.Close(v8::Boolean::New(true));
+    return handle_scope.Close(v8::Handle<v8::Value>(result_array));
   }
   catch (std::exception& exception)
   {
