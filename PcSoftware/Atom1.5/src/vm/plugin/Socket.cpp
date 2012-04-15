@@ -128,6 +128,7 @@ Value Socket::Export_Connect(const v8::Arguments& args)
     }
     catch (std::runtime_error &e)
     {
+      LOG.Error(std::string(__FUNCTION__) + " connect failed!");
     }
 
     return handle_scope.Close(v8::Integer::New(client_id));
