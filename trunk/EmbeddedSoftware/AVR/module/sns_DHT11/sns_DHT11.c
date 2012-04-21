@@ -21,14 +21,14 @@ struct eeprom_sns_DHT11 EEMEM eeprom_sns_DHT11 =
 void ConvertTemperature2_callback(uint8_t timer)
 {
 	uint8_t word[5];
-	if (dht11_readData(&word)) {
+	if (dht11_readData((uint8_t*) word)) {
 		sendNewTemp = 1;
 		temperature = word[2];
 		humidity = word[0];
 	}
 }
 
-void ConvertTemperature_callback(uint8_t timer)
+void ConvertTemperature_callback_DHT11(uint8_t timer)
 {
 	dht11_start();
 	Timer_SetTimeout(sns_DHT11_18MS_TIMER, 18, TimerTypeOneShot, &ConvertTemperature2_callback);
@@ -55,7 +55,7 @@ void sns_DHT11_Init(void)
 
 	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
 	// Pcint_SetCallbackPin(sns_DHT11_PCINT, EXP_C , &sns_DHT11_pcint_callback);
-	Timer_SetTimeout(sns_DHT11_TIMER, 5000, TimerTypeFreeRunning, &ConvertTemperature_callback);
+	Timer_SetTimeout(sns_DHT11_TIMER, 5000, TimerTypeFreeRunning, &ConvertTemperature_callback_DHT11);
 }
 
 void sns_DHT11_Process(void)
