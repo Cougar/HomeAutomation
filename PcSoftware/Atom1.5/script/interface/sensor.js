@@ -93,6 +93,13 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 			}
 			case "Voltage":
 			case "Temperature_Celsius":
+			{
+				if ((module_name == "DS18x20") && (variables["Value"] == 85))
+				{
+					Log("\033[31mDS18x20: Temperature conversion error: " + module_name + ":" + module_id + ", SensorId=" + variables["SensorId"] + "\033[0m");
+					break;
+				}
+			}
 			case "Humidity_Percent":
 			{
 				for (var alias_name in aliases_data)
