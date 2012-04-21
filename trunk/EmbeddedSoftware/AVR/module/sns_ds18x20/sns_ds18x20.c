@@ -84,7 +84,7 @@ void ConvertTemperature_callback(uint8_t timer)
 
 void ConvertTemperature(void)
 {
-	if (DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL) == DS18X20_OK)
+	if (DS18X20_start_meas(DS18X20_POWER_PARASITE, NULL) == DS18X20_OK)
 	{
 		Timer_SetTimeout(sns_ds18x20_TIMER, DS18B20_TCONV_12BIT, TimerTypeOneShot, &ReadTemperature_callback);
 	}
