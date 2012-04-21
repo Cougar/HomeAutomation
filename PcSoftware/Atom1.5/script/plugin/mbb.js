@@ -35,29 +35,22 @@ function Mbb_ReceivedData(client_id, data)
   
   //Log(JSON.stringify(json_data));
   
-  if (json_data.method == "MBB.GpsNmeaData")
+  if (json_data.method == "MBB.OnPosition")
   {
     if (Mbb_Clients[client_id])
     {
-      if (json_data.params.nmea.substr(0, 6) == "$GPGGA")
+      Mbb_Clients[client_id]["Position"] = json_data.params;
+      
+      //Log("In params: " + JSON.stringify(json_data.params));
+      
+      for (var n = 0; n < Mbb_Susbscribers.length; n++)
       {
-        Mbb_Clients[client_id]["LastNmea"]["GGA"] = json_data.params.nmea;
+        Mbb_Susbscribers[n]("position", Mbb_Clients[client_id]);
       }
-      else if (json_data.params.nmea.substr(0, 6) == "$GPRMC")
-      {
-        Mbb_Clients[client_id]["LastNmea"]["RMC"] = json_data.params.nmea;
-        
-        Mbb_Clients[client_id]["Position"] = _Mbb_NmeaToPosition(client_id);
-        
-        for (var n = 0; n < Mbb_Susbscribers.length; n++)
-        {
-          Mbb_Susbscribers[n]("position", Mbb_Clients[client_id]);
-        }
-        
-        Mbb_Clients[client_id]["LastNmea"]["GGA"] = "";
-        Mbb_Clients[client_id]["LastNmea"]["RMC"] = "";
-        Mbb_Clients[client_id]["Position"] = false;
-      }
+      
+      
+      
+      //Log("Out nmea:" + JSON.stringify(_Mbb_NmeaToPosition(json_data.params.NmeaRmc, json_data.params.NmeaGga)));
     }
     else
     {
@@ -66,16 +59,11 @@ function Mbb_ReceivedData(client_id, data)
   }
   else if (json_data.method == "MBB.OnConnected")
   {
-    json_data = { "params" : { "Imei" : "004401700721448" } }; // Temporary hack since we get corrupted data from the device
-    
     Log("Client " + client_id + " has IMEI " + json_data.params.Imei);
     
     Mbb_Clients[client_id]["Id"] = client_id;
     Mbb_Clients[client_id]["Info"] = json_data.params;
     Mbb_Clients[client_id]["Position"] = false;
-    Mbb_Clients[client_id]["LastNmea"] = {};
-    Mbb_Clients[client_id]["LastNmea"]["GGA"] = "";
-    Mbb_Clients[client_id]["LastNmea"]["RMC"] = "";
     
     for (var n = 0; n < Mbb_Susbscribers.length; n++)
     {
@@ -93,7 +81,8 @@ function Mbb_SendData(client_id, json_data)
   return MbbExport_SendData(client_id, JSON.Stringify(json_data));
 }
 
-function _Mbb_NmeaToPosition(client_id)
+
+function _Mbb_NmeaToPosition(rmc, gga)
 {
   /*
       GGA          Global Positioning System Fix Data
@@ -117,8 +106,8 @@ function _Mbb_NmeaToPosition(client_id)
   (empty field) time in seconds since last DGPS update
   (empty field) DGPS station ID number
   *47          the checksum data, always begins with *
-  
-  
+ 
+ 
   $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
 
       RMC          Recommended Minimum sentence C
@@ -132,25 +121,25 @@ function _Mbb_NmeaToPosition(client_id)
 *     003.1,W      Magnetic Variation
   *6A          The checksum data, always begins with *
 */
-  
-  
-  var nmea_rmc_parts = Mbb_Clients[client_id]["LastNmea"]["RMC"].split(",");
-  
+ 
+ 
+  var nmea_rmc_parts = rmc.split(",");
+ 
   if (nmea_rmc_parts[2] == "A")
   {
-    var nmea_gga_parts = Mbb_Clients[client_id]["LastNmea"]["GGA"].split(",");
+    var nmea_gga_parts = gga.split(",");
     var position = {};
-  
+ 
     position["Datetime"]            = "20" + nmea_rmc_parts[9].substr(4, 2) + "-" + nmea_rmc_parts[9].substr(2, 2) + "-" + nmea_rmc_parts[9].substr(0, 2);
     position["Datetime"]            += " " + nmea_rmc_parts[1].substr(0, 2) + ":" + nmea_rmc_parts[1].substr(2, 2) + ":" + nmea_rmc_parts[1].substr(4, 2) + " UTC";
-  
-    
+ 
+   
     /* Calculate decimal latitude */
     var degrees = parseFloat(nmea_rmc_parts[3].substr(0, 2));
     var decimal = parseFloat(nmea_rmc_parts[3].substr(2));
-    
+   
     position["Latitude"] = degrees + (decimal / 60.0);
-    
+   
     if (nmea_rmc_parts[4] == "S")
     {
       position["Latitude"] = -position["Latitude"];
@@ -159,36 +148,28 @@ function _Mbb_NmeaToPosition(client_id)
     /* Calculate decimal longitude */
     var degrees = parseFloat(nmea_rmc_parts[5].substr(0, 3));
     var decimal = parseFloat(nmea_rmc_parts[5].substr(3));
-    
+   
     position["Longitude"] = degrees + (decimal / 60.0);
-    
+   
     if (nmea_rmc_parts[6] == "W")
     {
       position["Longitude"] = -position["Longitude"];
     }
-    
+   
     position["Hdop"] = nmea_gga_parts[8];
-    
+   
     position["Satellites"] = nmea_gga_parts[7];
-    
+   
     position["Altitude"] = nmea_gga_parts[9]; // Meters
     position["HeightOfGeoid"] = nmea_gga_parts[11] // Meters
-    
+   
     position["Speed"] = nmea_rmc_parts[7]; // Knots
     position["Angle"] = nmea_rmc_parts[8];
-    
-    if (nmea_rmc_parts[10] != "")
-    {
-      position["MagneticDeclination"] = parseFloat(nmea_rmc_parts[10]);
-      
-      if (nmea_rmc_parts[11].substr(0, 1) == "W")
-      {
-        position["MagneticDeclination"] = -position["MagneticDeclination"];
-      }
-    }
-    
+
+   
     return position;
   }
-  
+ 
   return false;
 }
+  
