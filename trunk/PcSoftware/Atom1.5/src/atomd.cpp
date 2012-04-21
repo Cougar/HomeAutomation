@@ -19,6 +19,7 @@
  */
 
 #include <signal.h>
+#include <sys/resource.h>
 
 #include <boost/program_options.hpp>
 #include <boost/thread/mutex.hpp>
@@ -69,6 +70,10 @@ void CleanUp();
 
 int main(int argc, char **argv)
 {
+  rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
+  setrlimit( RLIMIT_CORE, &core_limit ); // enable core dumps
+      
+  
   LOG.Info("\033[29;1mAtom Daemon, version " + std::string(VERSION) + " starting...\033[0m");
   LOG.Info("\033[29;1mReleased under " + std::string(LICENSE) + ".\033[0m");
   LOG.Info("Written by Mattias Runge 2010-2012.");
