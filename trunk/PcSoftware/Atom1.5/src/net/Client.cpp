@@ -28,7 +28,7 @@
 namespace atom {
 namespace net {
 
-Client::Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id) : buffer_(2048)
+Client::Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : buffer_(2048)
 {
     this->server_id_ = server_id;
     this->id_ = id;
@@ -45,12 +45,12 @@ void Client::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, 
     this->signal_on_new_data_.connect(slot_on_new_data);
 }
 
-ClientId Client::GetId()
+SocketId Client::GetId()
 {
     return this->id_;
 }
 
-ServerId Client::GetServerId()
+SocketId Client::GetServerId()
 {
     return this->server_id_;
 }
@@ -88,7 +88,7 @@ void Client::Disconnect()
 {
   if (this->id_ != 0)
   {
-    ClientId id = this->id_;
+    SocketId id = this->id_;
       
     this->Stop();
         

@@ -41,12 +41,12 @@ public:
     virtual ~Subscriber();
     
 protected:
-    virtual void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state) = 0;
-    virtual void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data) = 0;
+    virtual void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state) = 0;
+    virtual void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data) = 0;
     
 private:
-    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+    void SlotOnNewState(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
+    void SlotOnNewData(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
 };
 
 

@@ -26,22 +26,21 @@
 namespace atom {
 namespace net {
 
-enum ClientState
+typedef enum
 {
-    CLIENT_STATE_CONNECTED,
-    CLIENT_STATE_DISCONNECTED,
-    CLIENT_STATE_ACCEPTED
-};
+  CLIENT_STATE_CONNECTED      = 0x00,
+  CLIENT_STATE_DISCONNECTED   = 0x01,
+  CLIENT_STATE_ACCEPTED       = 0x02
+} ClientState;
 
-enum Protocol
+typedef enum
 {
-    PROTOCOL_TCP,
-    PROTOCOL_UDP,
-    PROTOCOL_SERIAL
-};
+    PROTOCOL_TCP              = 0x00,
+    PROTOCOL_UDP              = 0x01,
+    PROTOCOL_SERIAL           = 0x02
+} Protocol;
 
-typedef unsigned int ServerId;
-typedef unsigned int ClientId;
+typedef unsigned int SocketId;
 
 }; // namespace net
 }; // namespace atom

@@ -44,8 +44,8 @@ class Manager : public common::IoService
 public:
     typedef boost::shared_ptr<Manager> Pointer;
 
-    typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, ServerId, common::Byteset)> SignalOnNewData;
+    typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)> SignalOnNewState;
+    typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)> SignalOnNewData;
 
     virtual ~Manager();
 
@@ -55,17 +55,17 @@ public:
     
     void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
     
-    ServerId StartServer(Protocol protocol, unsigned int port);
-    ClientId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
+    SocketId StartServer(Protocol protocol, unsigned int port);
+    SocketId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
     
-    void StopServer(ServerId server_id);
-    void Disconnect(ClientId client_id);
+    void StopServer(SocketId server_id);
+    void Disconnect(SocketId client_id);
     
-    void SendToAll(ServerId server_id, common::Byteset data);
-    void SendTo(ClientId client_id, common::Byteset data);
+    void SendToAll(SocketId server_id, common::Byteset data);
+    void SendTo(SocketId client_id, common::Byteset data);
 
 private:
-    typedef std::map<ClientId, Client::Pointer> ClientList;
+    typedef std::map<SocketId, Client::Pointer> ClientList;
 
     static logging::Logger LOG;
     
@@ -78,17 +78,16 @@ private:
     
     Manager();
     
-    void SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state);
-    void SlotOnNewData(ClientId client_id, ServerId server_id, common::Byteset data);
+    void SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state);
+    void SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data);
     
-    void StopServerHandler(ServerId server_id);
-    void DisconnectHandler(ClientId client_id);
+    void StopServerHandler(SocketId server_id);
+    void DisconnectHandler(SocketId client_id);
     
-    void SendToAllHandler(ServerId server_id, common::Byteset data);
-    void SendToHandler(ClientId client_id, common::Byteset data);
+    void SendToAllHandler(SocketId server_id, common::Byteset data);
+    void SendToHandler(SocketId client_id, common::Byteset data);
     
-    ClientId GetFreeClientId();
-    ServerId GetFreeServerId();
+    SocketId GetFreeSocketId();
 };
 
 }; // namespace net

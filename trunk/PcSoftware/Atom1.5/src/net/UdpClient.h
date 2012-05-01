@@ -31,7 +31,7 @@ class UdpClient : public Client
 public:
     typedef boost::shared_ptr<UdpClient> Pointer;
     
-    UdpClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
+    UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
     virtual ~UdpClient();
     
     void Connect(std::string address, unsigned int port);

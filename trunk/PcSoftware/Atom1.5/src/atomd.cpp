@@ -48,7 +48,6 @@
 #include "vm/plugin/Console.h"
 #include "vm/plugin/Storage.h"
 #include "vm/plugin/Socket.h"
-#include "vm/plugin/Mbb.h"
 
 #ifdef USE_PLUGIN_XORG
 #include "vm/plugin/Xorg.h"
@@ -142,7 +141,6 @@ int main(int argc, char **argv)
 
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
-  vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Mbb(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("MbbPort"))));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Timer(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Module(vm::Manager::Instance()->GetIoService())));

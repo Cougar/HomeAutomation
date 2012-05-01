@@ -34,7 +34,7 @@ public:
     typedef boost::shared_ptr<TcpClient> Pointer;
     typedef  boost::shared_ptr< boost::asio::ip::tcp::acceptor> AcceptorPointer;
     
-    TcpClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
+    TcpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
     virtual ~TcpClient();
     
     void Accept(AcceptorPointer acceptor);

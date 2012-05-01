@@ -65,7 +65,7 @@ void CanDaemon::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-void CanDaemon::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void CanDaemon::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
 {
     if (server_id != this->server_id_)
     {
@@ -90,7 +90,7 @@ void CanDaemon::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId serv
     }
 }
 
-void CanDaemon::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void CanDaemon::SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
 {
     if (server_id != this->server_id_)
     {

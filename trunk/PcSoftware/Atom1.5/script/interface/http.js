@@ -13,7 +13,7 @@ function Http_Request(url, callback)
     
   }, function(socket_id, state)
   {
-    if (state == 1)
+    if (state == SOCKET_STATE_CONNECTED)
     {
       var data = Http_Buffers[socket_id];
       

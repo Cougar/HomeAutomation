@@ -87,7 +87,7 @@ void Print(Level level, std::string module, std::string message)
   /* Print message */
   mutex_.lock();
 
-  std::cout << date_and_time << " " << level_string << " " << module << " " << message << std::endl;
+  std::cout << boost::posix_time::to_simple_string(date_and_time) << " " << level_string << " " << module << " " << message << std::endl;
   std::cout.imbue(std::locale::classic());
   
   mutex_.unlock();

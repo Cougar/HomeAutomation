@@ -287,7 +287,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void Network::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
 {
     if (client_id != this->client_id_)
     {
@@ -322,7 +322,7 @@ void Network::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
     }
 }
 
-void Network::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Network::SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
 {
     if (client_id != this->client_id_)
     {

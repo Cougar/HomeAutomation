@@ -109,11 +109,11 @@ public:
     }
     
 private:
-    net::ClientId client_id_;
+    net::SocketId client_id_;
     std::string prompt_;
     std::vector<unsigned char> buffer_;
     
-    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
     {
         if (client_state != net::CLIENT_STATE_CONNECTED)
         {
@@ -125,7 +125,7 @@ private:
         }
     }
     
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
     {
         for (unsigned int n = 0; n < data.GetSize(); n++)
         {
