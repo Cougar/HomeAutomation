@@ -25,40 +25,44 @@
 
 #include <boost/filesystem.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace config {
 
+static const std::string log_module_ = "config";
 Manager::Pointer Manager::instance_;
 
 Manager::Manager() : command_line_("Command line options"), configuration_file_("Configuration file options")
 {
-    std::string default_config_file = "/etc/atom/atom.conf";
-    
-    if (!boost::filesystem::exists(default_config_file))
-    {
-        default_config_file = "atom.conf";
-    }
+  std::string default_config_file = "/etc/atom/atom.conf";
+  
+  if (!boost::filesystem::exists(default_config_file))
+  {
+      default_config_file = "atom.conf";
+  }
 
-    this->configuration_file_.add_options()
-    ("MonitorPort",   boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
-    ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
-    ("DaemonPort",    boost::program_options::value<int>()->default_value(1200), "TCP port to open for canDaemon input/output")
-    ("MbbPort",       boost::program_options::value<int>()->default_value(1212), "TCP port to open for MBB clients")
-    ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")
-    ("LogLevel",      boost::program_options::value<int>()->default_value(4),    "Level of logging")
-    ("ScriptPath",    boost::program_options::value<std::string>(),              "Path to where the scripts are")
-    ("UserScriptPath",boost::program_options::value<std::string>(),              "Path to where the user scripts are")
-    ("StoragePath",   boost::program_options::value<std::string>(),              "Path to where the storage files are")
-    ("ProtocolFile",  boost::program_options::value<std::string>(),              "File to read the protocol form")
-    ("CanNet",        boost::program_options::value<common::StringList>(),       "Information on where to locate the CAN networks")
-    ("Legacy",                                                                   "Start legacy VM environment");
+  this->configuration_file_.add_options()
+  ("MonitorPort",   boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
+  ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
+  ("DaemonPort",    boost::program_options::value<int>()->default_value(1200), "TCP port to open for canDaemon input/output")
+  ("MbbPort",       boost::program_options::value<int>()->default_value(1212), "TCP port to open for MBB clients")
+  ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")
+  ("LogLevel",      boost::program_options::value<int>()->default_value(4),    "Level of logging")
+  ("LogLevelMask",  boost::program_options::value<std::string>(),              "Level of logging")
+  ("ScriptPath",    boost::program_options::value<std::string>(),              "Path to where the scripts are")
+  ("UserScriptPath",boost::program_options::value<std::string>(),              "Path to where the user scripts are")
+  ("StoragePath",   boost::program_options::value<std::string>(),              "Path to where the storage files are")
+  ("ProtocolFile",  boost::program_options::value<std::string>(),              "File to read the protocol form")
+  ("CanNet",        boost::program_options::value<common::StringList>(),       "Information on where to locate the CAN networks")
+  ("Legacy",                                                                   "Start legacy VM environment");
 
-    this->command_line_.add_options()
-    ("help,h",    "produce help message")
-    ("daemon,d",  "start in daemon mode")
-    ("file,f",    boost::program_options::value<std::string>()->default_value(default_config_file), "configuration file");
-    
-    this->command_line_.add(this->configuration_file_);
+  this->command_line_.add_options()
+  ("help,h",    "produce help message")
+  ("daemon,d",  "start in daemon mode")
+  ("file,f",    boost::program_options::value<std::string>()->default_value(default_config_file), "configuration file");
+  
+  this->command_line_.add(this->configuration_file_);
 }
 
 Manager::~Manager()
@@ -67,98 +71,97 @@ Manager::~Manager()
 
 Manager::Pointer Manager::Instance()
 {
-    return Manager::instance_;
+  return Manager::instance_;
 }
 
 void Manager::Create()
 {
-    Manager::instance_ = Manager::Pointer(new Manager());
+  Manager::instance_ = Manager::Pointer(new Manager());
 }
 
 void Manager::Delete()
 {
-    Manager::instance_.reset();
+  Manager::instance_.reset();
 }
 
 bool Manager::Set(int argument_count, char** argument_vector)
 {
-    try
-    {
-        boost::program_options::store(boost::program_options::command_line_parser(argument_count, argument_vector).options(this->command_line_).run(), this->variable_map_);
-    }
-    catch (boost::program_options::unknown_option e)
-    {
-        std::cerr << e.what() << std::endl;
-        std::cout << this->command_line_ << std::endl;
-        return false;
-    }
-    catch (boost::program_options::invalid_syntax e)
-    {
-        std::cerr << e.what() << std::endl;
-        std::cout << this->command_line_ << std::endl;
-        return false;
-    }
-    
-    std::ifstream ifs(this->GetAsString("file").data());
-        
-    if (!ifs.is_open())
-    {
-        std::cerr << "Error: Could not find " << this->GetAsString("file") << std::endl;
-        return false;
-    }
-    
-    try
-    {
-        boost::program_options::store(boost::program_options::parse_config_file(ifs, this->configuration_file_), this->variable_map_);
-    }
-    catch (boost::program_options::unknown_option e)
-    {
-        ifs.close();
-        std::cerr << e.what() << " found in " << this->GetAsString("file") << std::endl;
-        std::cout << this->configuration_file_ << std::endl;
-        return false;
-    }
-    catch (boost::program_options::invalid_syntax e)
-    {
-        std::cerr << e.what() << " found in " << this->GetAsString("file") << std::endl;
-        std::cout << this->command_line_ << std::endl;
-        return false;
-    }
-        
-    ifs.close();
-    
-    if (this->Exist("help"))
-    {
-        std::cout << this->command_line_ << std::endl;
-        return false;
-    }
-    
-    std::cout << "Using " << this->GetAsString("file") << " as configuration file" << std::endl;
-    
-    return true;
+  try
+  {
+    boost::program_options::store(boost::program_options::command_line_parser(argument_count, argument_vector).options(this->command_line_).run(), this->variable_map_);
+  }
+  catch (boost::program_options::unknown_option e)
+  { 
+    log::Error(log_module_, e.what());
+    std::cout << this->command_line_ << std::endl;
+    return false;
+  }
+  catch (boost::program_options::invalid_syntax e)
+  {
+    log::Error(log_module_, e.what());
+    std::cout << this->command_line_ << std::endl;
+    return false;
+  }
+  
+  std::ifstream ifs(this->GetAsString("file").data());
+      
+  if (!ifs.is_open())
+  {
+    log::Error(log_module_, "Could not find %s!", this->GetAsString("file").c_str());
+    return false;
+  }
+  
+  try
+  {
+      boost::program_options::store(boost::program_options::parse_config_file(ifs, this->configuration_file_), this->variable_map_);
+  }
+  catch (boost::program_options::unknown_option e)
+  {
+      ifs.close();
+      log::Error(log_module_, e.what());
+      std::cout << this->configuration_file_ << std::endl;
+      return false;
+  }
+  catch (boost::program_options::invalid_syntax e)
+  {
+    log::Error(log_module_, "%s found in %s!", e.what(), this->GetAsString("file").c_str());
+    std::cout << this->command_line_ << std::endl;
+    return false;
+  }
+      
+  ifs.close();
+  
+  if (this->Exist("help"))
+  {
+    std::cout << this->command_line_ << std::endl;
+    return false;
+  }
+  
+  log::Info(log_module_, "Using %s as configuraiton file.", this->GetAsString("file").c_str());
+  
+  return true;
 }
 
 bool Manager::Exist(std::string name)
 {
-    return this->variable_map_.count(name) != 0;
+  return this->variable_map_.count(name) != 0;
 }
 
 int Manager::GetAsInt(std::string name)
 {
-    return this->variable_map_[name].as<int>();
+  return this->variable_map_[name].as<int>();
 }
 
 std::string Manager::GetAsString(std::string name)
 {
-    return this->variable_map_[name].as<std::string>();
+  return this->variable_map_[name].as<std::string>();
 }
 
 common::StringList Manager::GetAsStringVector(std::string name)
 {
-    return this->variable_map_[name].as<common::StringList>();
+  return this->variable_map_[name].as<common::StringList>();
 }
 
 
 }; // namespace config
 }; // namespace atom
-
