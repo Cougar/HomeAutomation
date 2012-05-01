@@ -43,11 +43,11 @@ public:
     virtual ~Monitor();
     
 private:
-    net::ServerId server_id_;
+    net::SocketId server_id_;
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
-    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
     
     logging::Logger LOG;
 };

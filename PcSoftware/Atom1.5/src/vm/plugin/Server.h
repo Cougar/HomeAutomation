@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef VM_PLUGIN_MBB_H
-#define VM_PLUGIN_MBB_H
+#ifndef VM_PLUGIN_SERVER_H
+#define VM_PLUGIN_SERVER_H
 
 #include <boost/shared_ptr.hpp>
 
@@ -33,26 +33,23 @@ namespace atom {
 namespace vm {
 namespace plugin {
 
-class Mbb : public Plugin
+class Server : public Plugin
 {
 public:
-    typedef boost::shared_ptr<Mbb> Pointer;
+    typedef boost::shared_ptr<Server> Pointer;
     
-    Mbb(boost::asio::io_service& io_service, unsigned int port);
-    virtual ~Mbb();
+    Server(boost::asio::io_service& io_service);
+    virtual ~Server();
     
     void InitializeDone();
     void CallOutput(unsigned int request_id, std::string output);
     
 private:
-    net::ServerId server_id_;
-    static net::ClientId current_client_id_;
+    void SlotOnNewState(net::ClientId client_id, net::SocketId server_id, net::ClientState client_state);
+    void SlotOnNewData(net::ClientId client_id, net::SocketId server_id, common::Byteset data);
     
-    void SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
-    
-    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::ClientId client_id, net::SocketId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::ClientId client_id, net::SocketId server_id, common::Byteset data);
     
     static Value Export_SendData(const v8::Arguments& args);
 };
@@ -61,4 +58,4 @@ private:
 }; // namespace vm
 }; // namespace atom
 
-#endif // VM_PLUGIN_MBB_H
+#endif // VM_PLUGIN_SERVER_H

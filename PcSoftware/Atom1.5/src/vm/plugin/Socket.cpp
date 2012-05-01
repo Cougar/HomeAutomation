@@ -27,154 +27,274 @@
 
 #include "vm/Manager.h"
 #include "net/Manager.h"
+#include "common/common.h"
+#include "common/log.h"
+#include "common/exception.h"
 
 namespace atom {
 namespace vm {
 namespace plugin {
 
-logging::Logger Socket::LOG("vm::plugin::Socket");
+static const std::string log_module_ = "vm::plugin::socket";
 
 Socket::Socket(boost::asio::io_service& io_service) : Plugin(io_service)
 {
-    this->name_ = "socket";
-    
-    this->ExportFunction("SocketExport_Connect",     Socket::Export_Connect);
-    this->ExportFunction("SocketExport_Disconnect",  Socket::Export_Disconnect);
-    this->ExportFunction("SocketExport_Send",        Socket::Export_Send);
+  LOG_DEBUG_ENTER;
+  
+  this->name_ = "socket";
+  
+  this->ExportFunction("SocketExport_StartServer", Socket::Export_StartServer);
+  this->ExportFunction("SocketExport_Connect",     Socket::Export_Connect);
+  this->ExportFunction("SocketExport_StopServer",  Socket::Export_StopServer);
+  this->ExportFunction("SocketExport_Disconnect",  Socket::Export_Disconnect);
+  this->ExportFunction("SocketExport_Send",        Socket::Export_Send);
+  
+  LOG_DEBUG_EXIT;
 }
 
 Socket::~Socket()
 {
-    
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 void Socket::InitializeDone()
 {
-    Plugin::InitializeDone();
-    
-    this->ImportFunction("Socket_OnNewData");
-    this->ImportFunction("Socket_OnNewState");
-    
-    net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Socket::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                           net::Manager::SignalOnNewData::slot_type(&Socket::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  LOG_DEBUG_ENTER;
+  
+  Plugin::InitializeDone();
+  
+  this->ImportFunction("Socket_OnNewData");
+  this->ImportFunction("Socket_OnNewState");
+  
+  net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Socket::SlotOnNewState, this, _1, _2, _3).track(this->tracker_), net::Manager::SignalOnNewData::slot_type(&Socket::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Socket::CallOutput(unsigned int request_id, std::string output)
 {
-    LOG.Info(output);
+  LOG_DEBUG_ENTER;
+  
+  log::Info(log_module_, output);
+  
+  LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void Socket::SlotOnNewData(net::SocketId socket_id, net::SocketId server_id, common::Byteset data)
 {
-    common::Byteset temp_buffer(data);
-    this->io_service_.post(boost::bind(&Socket::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
+  LOG_DEBUG_ENTER;
+  
+  log::Debug(log_module_, data.ToDebugString());
+  
+  this->io_service_.post(boost::bind(&Socket::SlotOnNewDataHandler, this, socket_id, server_id, data));
+  
+  LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Socket::SlotOnNewState(net::SocketId socket_id, net::SocketId server_id, net::ClientState client_state)
 {
-    this->io_service_.post(boost::bind(&Socket::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Socket::SlotOnNewStateHandler, this, socket_id, server_id, client_state));
+  
+  LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void Socket::SlotOnNewDataHandler(net::SocketId socket_id, net::SocketId server_id, common::Byteset data)
 {
-    v8::Locker lock;
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    v8::HandleScope handle_scope;
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
-     
+  LOG_DEBUG_ENTER;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  try
+  {
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
-    arguments->push_back(v8::Integer::New(client_id));
-    arguments->push_back(v8::String::New(data.ToCharString().data()));
     
-    this->Call(client_id, "Socket_OnNewData", arguments);
+    if (data.GetSize() == 0)
+    {
+        atom::log::Error(log_module_, "Got empty data!");
+        return;
+    }
+    
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
+    arguments->push_back(v8::String::New(data.ToCharString().c_str()));
+        
+    if (!this->Call(socket_id, "Socket_OnNewData", arguments))
+    {
+      atom::log::Error(log_module_, "%s failed!", __FUNCTION__);
+    }
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Socket::SlotOnNewStateHandler(net::SocketId socket_id, net::SocketId server_id, net::ClientState client_state)
 {
-    v8::Locker lock;
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    v8::HandleScope handle_scope;
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
-    
+  LOG_DEBUG_ENTER;
+  ATOM_VM_PLUGIN_SCOPE;
+
+  try
+  {
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
-    arguments->push_back(v8::Integer::New(client_id));
+    
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
     arguments->push_back(v8::Uint32::New((unsigned int)client_state));
     
-    this->Call(client_id, "Socket_OnNewState", arguments);
+    if (!this->Call(socket_id, "Socket_OnNewState", arguments))
+    {
+      atom::log::Error(log_module_, "%s failed!", __FUNCTION__);
+    }
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+  }
+  
+  LOG_DEBUG_EXIT;
+}
+
+Value Socket::Export_StartServer(const v8::Arguments& args)
+{
+  LOG_DEBUG_ENTER
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  net::SocketId socket_id = 0;
+
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
+    
+    if (args.Length() < 1)
+    {
+      throw atom::exception::missing_in_param();
+    }
+    
+    socket_id = net::Manager::Instance()->StartServer(net::PROTOCOL_TCP, args[0]->Uint32Value());
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
+
+  LOG_DEBUG_EXIT;
+  return handle_scope.Close(v8::Integer::New(socket_id));
 }
 
 Value Socket::Export_Connect(const v8::Arguments& args)
 {
-    net::ClientId client_id = 0;
-    v8::Locker lock;
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    v8::HandleScope handle_scope;
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+  LOG_DEBUG_ENTER;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  net::SocketId socket_id = 0;
+
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     if (args.Length() < 2)
     {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return handle_scope.Close(v8::Boolean::New(false));
+      throw atom::exception::missing_in_param();
     }
     
     v8::String::AsciiValue address(args[0]);
     
-    try
-    {
-        client_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
-    }
-    catch (std::runtime_error &e)
-    {
-      LOG.Error(std::string(__FUNCTION__) + " connect failed!");
-    }
+    socket_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
 
-    return handle_scope.Close(v8::Integer::New(client_id));
+  LOG_DEBUG_EXIT;
+  return handle_scope.Close(v8::Integer::New(socket_id));
+}
+
+Value Socket::Export_StopServer(const v8::Arguments& args)
+{
+  LOG_DEBUG_EXIT;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
+    
+    if (args.Length() < 1)
+    {
+      throw atom::exception::missing_in_param();
+    }
+    
+    net::Manager::Instance()->StopServer(args[0]->Uint32Value());
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
+
+  LOG_DEBUG_EXIT;
+  return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Socket::Export_Disconnect(const v8::Arguments& args)
 {
-    v8::Locker lock;
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    v8::HandleScope handle_scope;
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+  LOG_DEBUG_EXIT;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     if (args.Length() < 1)
     {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return handle_scope.Close(v8::Boolean::New(false));
+      throw atom::exception::missing_in_param();
     }
     
     net::Manager::Instance()->Disconnect(args[0]->Uint32Value());
-    
-    return handle_scope.Close(v8::Undefined());
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
+
+  LOG_DEBUG_EXIT;
+  return handle_scope.Close(v8::Boolean::New(true));
 }
 
 Value Socket::Export_Send(const v8::Arguments& args)
 {
-    v8::Locker lock;
-    v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
-    v8::HandleScope handle_scope;
-    
-    LOG.Debug(std::string(__FUNCTION__) + " called!");
+  LOG_DEBUG_EXIT;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     if (args.Length() < 2)
     {
-        LOG.Error(std::string(__FUNCTION__) + ": To few arguments.");
-        return handle_scope.Close(v8::Boolean::New(false));
+      throw atom::exception::missing_in_param();
     }
     
     v8::String::AsciiValue data(args[1]);
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), std::string(*data));
-    
-    return handle_scope.Close(v8::Undefined());
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+    return handle_scope.Close(v8::Boolean::New(false));
+  }
+
+  LOG_DEBUG_EXIT;
+  return handle_scope.Close(v8::Boolean::New(true));
 }
 
 }; // namespace plugin
 }; // namespace vm
 }; // namespace atom
-

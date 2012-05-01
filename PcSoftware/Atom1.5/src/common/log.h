@@ -55,7 +55,10 @@ void Warning(std::string module, char* format, ...);
 void Warning(std::string module, std::string message);
   
 void Exception(std::string module, std::exception& exception);
-  
+
+#define LOG_DEBUG_ENTER log::Debug(log_module_, "%s entered!", __FUNCTION__);
+#define LOG_DEBUG_EXIT  log::Debug(log_module_, "%s exited!", __FUNCTION__);
+
 }; // namespace log
 }; // namespace atom
 

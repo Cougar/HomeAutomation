@@ -37,13 +37,13 @@ Subscriber::~Subscriber()
 {
 }
 
-void Subscriber::SlotOnNewData(ClientId client_id, ServerId server_id, common::Byteset data)
+void Subscriber::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data)
 {
     common::Byteset temp_buffer(data);
     this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
 }
 
-void Subscriber::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state)
+void Subscriber::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state)
 {
     this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, client_id, server_id, client_state));
 }

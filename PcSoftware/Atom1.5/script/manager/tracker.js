@@ -1,80 +1,67 @@
 
-function TrackerManager(host, username, password, database)
+function TrackerManager(host, username, password, database, server_port)
 {
   var self = this;
   
-  this.tracked_node_ids_ = {};
-  this.db_resource_ = null;
-
-  /* Initialize connection */
-  self.db_resource_ = MySql_Connect(host, username, password);
-
-  MySql_SelectDb(self.db_resource_, database);
-
-  MySql_Query(self.db_resource_, "SET time_zone='+0:00';");
+  this.host_              = host;
+  this.username_          = username;
+  this.password_          = password;
+  this.database_          = database;
+  this.tracked_node_ids_  = {};
+  this.db_resource_       = null;
+  this.server_port_       = server_port;
+  this.server_id_         = null;
   
-  
-  /* Subscribe to MBB tracker events */
-  Mbb_SubscribeToDeviceStatus(function(event_string, data)
+  this._StartServer = function()
   {
-    if (event_string == "connected")
+    self.server_id_ = Socket_StartServer(self.server_port_, self._HandleClientDataReceived, self._HandleConnectedTracker);
+    
+    if (self.server_id_ === false)
     {
-      self._HandleConnectedTracker(data);
+      return false;
     }
-    else if (event_string == "disconnected")
+    
+    return true;
+  }
+  
+  this._ConnectToDatabase = function()
+  {
+    if (self.db_resource_)
     {
-      delete self.tracked_node_ids_[data.Info.Imei];
+      MySql_Close(self.db_resource_);
+      self.db_resource_ = null;
     }
-    else if (event_string == "position")
+    
+    self.db_resource_ = MySql_Connect(self.host_, self.username_, self.password_);
+
+    if (self.db_resource_ === false)
     {
-      if (data.Position !== false && self.tracked_node_ids_[data.Info.Imei])
-      {
-        if (data.Position.Type != "NO")
-        {
-          var query  =  "INSERT INTO `Positions` (`node_id`, `source`, `type`, `latitude_longitude`, `datetime`, `pdop`, `hdop`, `vdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle`) VALUES (";
-          query     +=  self.tracked_node_ids_[data.Info.Imei] + ", ";
-          query     +=  "'gps', ";
-          query     +=  "'" + data.Position.Type + "', ";
-          query     +=  "GeomFromText('POINT(" + data.Position.Latitude + " " + data.Position.Longitude + ")'), ";
-          query     +=  "'" + data.Position.Datetime + "', ";
-          query     +=  data.Position.Pdop + ", ";
-          query     +=  data.Position.Hdop + ", ";
-          query     +=  data.Position.Vdop + ", ";
-          query     +=  data.Position.Satellites + ", ";
-          query     +=  data.Position.Altitude + ", ";
-          query     +=  data.Position.HeightOfGeoid + ", ";
-          query     +=  data.Position.Speed + ", ";
-          query     +=  data.Position.Angle;
-          query     +=  ");";
-          
-          MySql_Query(self.db_resource_, query);
-          
-          /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(self.db_resource_) + " LIMIT 1";
-          
-          Log("From DB:" + JSON.stringify(MySql_Query(self.db_resource_, query)));*/
-        }
-        
-        Log(JSON.stringify(data.Position));
-      }
+      return false;
     }
-  });
+    
+    MySql_SelectDb(self.db_resource_, self.database_);
+
+    MySql_Query(self.db_resource_, "SET time_zone='+0:00';");
+    
+    return true;
+  }
   
   
   /* Function for finding tracked object */
-  this._HandleConnectedTracker = function(data)
+  this._IdentifyTracker = function(data)
   {
-    var result = MySql_Query(self.db_resource_, "SELECT `Nodes`.* FROM `Nodes`, `Attributes` WHERE `Nodes`.`type` = 'tracker' AND `Nodes`.`id` = `Attributes`.`node_id` AND `Attributes`.`name` = 'Imei' AND `Attributes`.`value` = '" + data.Info.Imei + "'");
+    var result = MySql_Query(self.db_resource_, "SELECT `Nodes`.* FROM `Nodes`, `Attributes` WHERE `Nodes`.`type` = 'tracker' AND `Nodes`.`id` = `Attributes`.`node_id` AND `Attributes`.`name` = 'Imei' AND `Attributes`.`value` = '" + data.Imei + "'");
       
     if (result === false || result.length == 0)
     {
-      Log("Unable to find a tracker with IMEI " + data.Info.Imei);
+      Log("Unable to find a tracker with IMEI " + data.Imei);
     }
     else
     {
       var tracker_node_id = result[0]["id"];
       var tracker_node_name = result[0]["name"];
       
-      Log("Found tracker \"" + tracker_node_name + "\" (NodeId " + tracker_node_id + ") that corresponds to IMEI " + data.Info.Imei);
+      Log("Found tracker \"" + tracker_node_name + "\" (NodeId " + tracker_node_id + ") that corresponds to IMEI " + data.Imei);
        
       result = MySql_Query(self.db_resource_, "SELECT * FROM `Links` WHERE `node_id_down` = " + tracker_node_id + " AND `Role` = 'tracker'");
       
@@ -82,7 +69,7 @@ function TrackerManager(host, username, password, database)
       {
         Log("Unable to find an object that is being tracked with this tracker, will store positions on the tracker itself!");
         
-        self.tracked_node_ids_[data.Info.Imei] = tracker_node_id;
+        return tracker_node_id;
       }
       else
       {
@@ -96,9 +83,113 @@ function TrackerManager(host, username, password, database)
         {
           Log("Found \"" + result[0]["name"] + "\" (node_id " + result[0]["id"] + ") which is being tracked by \"" + tracker_node_name + "\".");
 
-          self.tracked_node_ids_[data.Info.Imei] = result[0]["id"];
+          return result[0]["id"];
         }
       }
     }
+    
+    return false;
   }
+  
+  /* Function for inserting new position in database */
+  this._InsertPosition = function(tracker_node_id, data)
+  {
+    if (data.Type != "NO")
+    {
+      var query  =  "INSERT INTO `Positions` (`node_id`, `source`, `type`, `latitude_longitude`, `datetime`, `pdop`, `hdop`, `vdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle`) VALUES (";
+      query     +=  tracker_node_id + ",";
+      query     +=  "'gps',";
+      query     +=  "'" + data.Type + "',";
+      query     +=  "GeomFromText('POINT(" + data.Latitude + " " + data.Longitude + ")'),";
+      query     +=  "'" + data.Datetime + "',";
+      query     +=  data.Pdop + ",";
+      query     +=  data.Hdop + ",";
+      query     +=  data.Vdop + ",";
+      query     +=  data.Satellites + ",";
+      query     +=  data.Altitude + ",";
+      query     +=  data.HeightOfGeoid + ",";
+      query     +=  data.Speed + ",";
+      query     +=  data.Angle;
+      query     +=  ");";
+      
+      if (!MySql_Query(self.db_resource_, query))
+      {
+        if (self._ConnectToDatabase())
+        {
+          Log("Reconnected to MySql database!");
+          
+          MySql_Query(self.db_resource_, query);
+        }
+      }
+      
+      /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(self.db_resource_) + " LIMIT 1";
+      
+      Log("From DB:" + JSON.stringify(MySql_Query(self.db_resource_, query)));*/
+    }
+      
+    Log(JSON.stringify(data));
+  }
+  
+  /* Function for handling tracker connected disconnected */
+  this._HandleClientStatusUpdate = function(client_id, state)
+  {
+    switch (state)
+    {
+      case SOCKET_STATE_CONNECTED:
+      {
+        Log("Client " + client_id + " connected!");
+        
+        self.tracked_node_ids_[client_id] = true;
+        
+        break;
+      }
+      case SOCKET_STATE_DISCONNECTED:
+      {
+        Log("Client " + client_id + " disconnected!");
+        
+        if (self.tracked_node_ids_[client_id])
+        {
+          delete self.tracked_node_ids_[client_id];
+        }
+        
+        break;
+      }
+      default:
+      {
+        Log("Unknown state (" + state + ") for client " + client_id + "!");
+        break;
+      }
+    }
+  }
+  
+  /* Functio for handling tracker data */
+  this._HandleClientDataReceived = function(client_id, data)
+  {
+    if (self.tracked_node_ids_[client_id])
+    {
+      Log(data);
+    
+      var json_data = eval("(" + data + ")");
+      
+      if (json_data.method == "MBB.OnPosition")
+      {
+        if (self.tracked_node_ids_[client_id])
+        {
+          self._InsertPosition(self.tracked_node_ids_[client_id], json_data);
+        }
+      }
+      else if (json_data.method == "MBB.OnConnected")
+      {
+        self.tracked_node_ids_[client_id] = self._IdentifyTracker(json_data);
+      }
+      else
+      {
+        Log("Got unknown data \"" + data + "\" from client " + client_id);
+      }
+    }
+  }
+  
+  /* Initialize connection */
+  self._ConnectToDatabase();
+  self._StartServer();
 }

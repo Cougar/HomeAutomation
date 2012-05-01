@@ -33,7 +33,7 @@ namespace vm {
 namespace plugin {
     
 logging::Logger Console::LOG("vm::plugin::Console");
-net::ClientId Console::current_client_id_;
+net::SocketId Console::current_client_id_;
     
 Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugin(io_service)
 {
@@ -84,7 +84,7 @@ void Console::CallOutput(unsigned int request_id, std::string output)
     net::Manager::Instance()->SendTo(request_id, packet);
 }
 
-void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void Console::SlotOnNewData(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
 {
     if (server_id != this->server_id_)
     {
@@ -94,7 +94,7 @@ void Console::SlotOnNewData(net::ClientId client_id, net::ServerId server_id, co
     this->io_service_.post(boost::bind(&Console::SlotOnNewDataHandler, this, client_id, server_id, data));
 }
 
-void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Console::SlotOnNewState(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
 {
     if (server_id != this->server_id_)
     {
@@ -104,7 +104,7 @@ void Console::SlotOnNewState(net::ClientId client_id, net::ServerId server_id, n
     this->io_service_.post(boost::bind(&Console::SlotOnNewStateHandler, this, client_id, server_id, client_state));
 }
 
-void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data)
+void Console::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
@@ -173,7 +173,7 @@ void Console::SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server
     Console::current_client_id_ = 0;
 }
 
-void Console::SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state)
+void Console::SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());

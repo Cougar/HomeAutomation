@@ -66,7 +66,7 @@ void Manager::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state,
     this->signal_on_new_data_.connect(slot_on_new_data);
 }
 
-void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState client_state)
+void Manager::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state)
 {
     if (client_state == CLIENT_STATE_DISCONNECTED)
     {
@@ -78,7 +78,7 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
         
         if (it != this->clients_.end())
         {
-            TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), it->second->GetServerId()));
+            TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), it->second->GetServerId()));
             
             client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
                                  Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
@@ -99,41 +99,29 @@ void Manager::SlotOnNewState(ClientId client_id, ServerId server_id, ClientState
     this->signal_on_new_state_(client_id, server_id, client_state);
 }
 
-void Manager::SlotOnNewData(ClientId client_id, ServerId server_id, common::Byteset data)
+void Manager::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data)
 {
     this->signal_on_new_data_(client_id, server_id, data);
 }
 
-ServerId Manager::GetFreeServerId()
+SocketId Manager::GetFreeSocketId()
 {
-    ServerId server_id = 1;
+    SocketId id = 1;
     
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
-        if (it->second->GetServerId() != server_id)
+        if (it->second->GetServerId() != id && this->clients_.find(id) == this->clients_.end())
         {
-            return server_id;
+            return id;
         }
         
-        server_id++;
+        id++;
     }
     
-    return server_id;
+    return id;
 }
 
-ClientId Manager::GetFreeClientId()
-{
-    ClientId client_id = 1;
-    
-    while (this->clients_.find(client_id) != this->clients_.end())
-    {
-        client_id++;
-    }
-    
-    return client_id;
-}
-
-ServerId Manager::StartServer(Protocol protocol, unsigned int port)
+SocketId Manager::StartServer(Protocol protocol, unsigned int port)
 {
     if (protocol != PROTOCOL_TCP)
     {
@@ -141,7 +129,7 @@ ServerId Manager::StartServer(Protocol protocol, unsigned int port)
         return 0;
     }
     
-    TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), this->GetFreeServerId()));
+    TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), this->GetFreeSocketId()));
     
     client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
                          Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
@@ -155,7 +143,7 @@ ServerId Manager::StartServer(Protocol protocol, unsigned int port)
     return client->GetServerId();
 }
 
-ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int port_or_baud)
+SocketId Manager::Connect(Protocol protocol, std::string address, unsigned int port_or_baud)
 {
     Client::Pointer client;
     
@@ -163,17 +151,17 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     {
         case PROTOCOL_TCP:
         {
-            client = Client::Pointer(new TcpClient(this->io_service_, this->GetFreeClientId(), 0));
+            client = Client::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), 0));
             break;
         }
         case PROTOCOL_UDP:
         {
-            client = Client::Pointer(new UdpClient(this->io_service_, this->GetFreeClientId(), 0));
+            client = Client::Pointer(new UdpClient(this->io_service_, this->GetFreeSocketId(), 0));
             break;
         }
         case PROTOCOL_SERIAL:
         {
-            client = Client::Pointer(new SerialClient(this->io_service_, this->GetFreeClientId(), 0));
+            client = Client::Pointer(new SerialClient(this->io_service_, this->GetFreeSocketId(), 0));
             break;
         }
         default:
@@ -193,27 +181,27 @@ ClientId Manager::Connect(Protocol protocol, std::string address, unsigned int p
     return client->GetId();
 }
 
-void Manager::SendToAll(ServerId server_id, common::Byteset data)
+void Manager::SendToAll(SocketId server_id, common::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToAllHandler, this, server_id, data));
 }
 
-void Manager::SendTo(ClientId client_id, common::Byteset data)
+void Manager::SendTo(SocketId client_id, common::Byteset data)
 {
     this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
 }
 
-void Manager::StopServer(ServerId server_id)
+void Manager::StopServer(SocketId server_id)
 {
     this->io_service_.post(boost::bind(&Manager::StopServerHandler, this, server_id));
 }
 
-void Manager::Disconnect(ClientId client_id)
+void Manager::Disconnect(SocketId client_id)
 {
     this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
 }
 
-void Manager::SendToAllHandler(ServerId server_id, common::Byteset data)
+void Manager::SendToAllHandler(SocketId server_id, common::Byteset data)
 {
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
@@ -224,7 +212,7 @@ void Manager::SendToAllHandler(ServerId server_id, common::Byteset data)
     }
 }
 
-void Manager::SendToHandler(ClientId client_id, common::Byteset data)
+void Manager::SendToHandler(SocketId client_id, common::Byteset data)
 {
     ClientList::iterator it = this->clients_.find(client_id);
 
@@ -234,7 +222,7 @@ void Manager::SendToHandler(ClientId client_id, common::Byteset data)
     }
 }
 
-void Manager::StopServerHandler(ServerId server_id)
+void Manager::StopServerHandler(SocketId server_id)
 {
     for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
     {
@@ -245,7 +233,7 @@ void Manager::StopServerHandler(ServerId server_id)
     }
 }
 
-void Manager::DisconnectHandler(ClientId client_id)
+void Manager::DisconnectHandler(SocketId client_id)
 {
     ClientList::iterator it = this->clients_.find(client_id);
     

@@ -38,10 +38,10 @@ class Client
 public:
     typedef boost::shared_ptr<Client> Pointer;
 
-    typedef boost::signals2::signal<void(ClientId, ServerId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(ClientId, ServerId, common::Byteset)> SignalOnNewData;
+    typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)> SignalOnNewState;
+    typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)> SignalOnNewData;
 
-    Client(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
+    Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
     virtual ~Client();
 
     void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
@@ -51,8 +51,8 @@ public:
     virtual void Stop();
     virtual void Send(common::Byteset data) = 0;
 
-    ServerId GetServerId();
-    ClientId GetId();
+    SocketId GetServerId();
+    SocketId GetId();
     
 protected:
     common::Byteset buffer_;
@@ -63,8 +63,8 @@ protected:
     SignalOnNewState signal_on_new_state_;
     
 private:
-    ClientId id_;
-    ServerId server_id_;
+    SocketId id_;
+    SocketId server_id_;
     
     SignalOnNewData signal_on_new_data_;
 };

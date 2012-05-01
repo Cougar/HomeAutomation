@@ -31,7 +31,7 @@ class SerialClient : public Client
 public:
     typedef boost::shared_ptr<SerialClient> Pointer;
     
-    SerialClient(boost::asio::io_service& io_service, ClientId id, ServerId server_id);
+    SerialClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
     virtual ~SerialClient();
     
     void Connect(std::string address, unsigned int baud);

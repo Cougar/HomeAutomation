@@ -44,7 +44,7 @@ public:
     virtual ~Network();
     
 private:
-    net::ClientId client_id_;
+    net::SocketId client_id_;
     net::Protocol protocol_;
     std::string address_;
     unsigned int port_or_baud_;
@@ -55,8 +55,8 @@ private:
     
     void SlotOnTimeout(timer::TimerId timer_id);
     
-    void SlotOnNewStateHandler(net::ClientId client_id, net::ServerId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::ClientId client_id, net::ServerId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
+    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
     void SlotOnTimeoutHandler(timer::TimerId timer_id);
     
     void ProcessBuffer();
