@@ -31,12 +31,47 @@ namespace atom {
 namespace log {
 
 static boost::mutex   mutex_;
-static Level          level_ = LOG_LEVEL_ALL;
+static Level          level_ = (Level)(LOG_LEVEL_ERROR | LOG_LEVEL_EXCEPTION | LOG_LEVEL_WARNING | LOG_LEVEL_INFO);
 static const uint32_t kMaxBufferSize = 4096;
 
 void SetLogLevel(Level level)
 {
   level_ = level;
+}
+
+void SetLogLevelByString(std::string level_string)
+{
+  level_ = LOG_LEVEL_NONE;
+  
+  if (level_string.find("LOG_LEVEL_ERROR") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_ERROR);
+  }
+  
+  if (level_string.find("LOG_LEVEL_EXCEPTION") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_EXCEPTION);
+  }
+  
+  if (level_string.find("LOG_LEVEL_WARNING") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_WARNING);
+  }
+  
+  if (level_string.find("LOG_LEVEL_INFO") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_INFO);
+  }
+  
+  if (level_string.find("LOG_LEVEL_DEBUG") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_DEBUG);
+  }
+  
+  if (level_string.find("LOG_LEVEL_ALL") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_ALL);
+  }
 }
 
 void Print(Level level, std::string module, std::string message)

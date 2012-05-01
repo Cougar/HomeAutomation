@@ -41,6 +41,7 @@ typedef enum
 } Level;
 
 void SetLogLevel(Level level);
+void SetLogLevelByString( std::string level_string );
 
 void Info(std::string module, char* format, ...);
 void Info(std::string module, std::string message);

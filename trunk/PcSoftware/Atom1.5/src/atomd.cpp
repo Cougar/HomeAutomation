@@ -28,7 +28,8 @@
 
 #include "config.h"
 
-#include "logging/Logger.h"
+#include "logging/Logger.h" // Deprecated
+#include "common/log.h"
 #include "net/Manager.h"
 #include "timer/Manager.h"
 #include "config/Manager.h"
@@ -59,7 +60,8 @@
 
 using namespace atom;
 
-logging::Logger LOG("Main");
+logging::Logger LOG("Main"); // Deprecated
+static const std::string log_module_ = "main";
 std::vector<broker::Subscriber::Pointer> subscribers;
 boost::condition on_message_condition;
 boost::mutex guard_mutex;
@@ -72,13 +74,12 @@ int main(int argc, char **argv)
   rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
   setrlimit( RLIMIT_CORE, &core_limit ); // enable core dumps
       
-  
-  LOG.Info("\033[29;1mAtom Daemon, version " + std::string(VERSION) + " starting...\033[0m");
-  LOG.Info("\033[29;1mReleased under " + std::string(LICENSE) + ".\033[0m");
-  LOG.Info("Written by Mattias Runge 2010-2012.");
+  log::Info(log_module_, "Atom daemon, version %s starting...", VERSION);
+  log::Info(log_module_, "Released under %s.", LICENSE);
+  log::Info(log_module_, "Written by Mattias Runge 2010-2012.");
 
   signal(SIGTERM, Handler);
-  signal(SIGINT, Handler);
+  signal(SIGINT,  Handler);
   signal(SIGQUIT, Handler);
   signal(SIGABRT, Handler);
   signal(SIGPIPE, Handler);
@@ -96,7 +97,12 @@ int main(int argc, char **argv)
     logging::Logger::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
   }
 
-  if (config::Manager::Instance()->Exist("LogLevel"))
+  if (config::Manager::Instance()->Exist("LogLevelMask"))
+  {
+    log::SetLogLevelByString(config::Manager::Instance()->GetAsString("LogLevelMask"));
+  }
+  
+  if (config::Manager::Instance()->Exist("LogLevel")) // Deprecated
   {
     logging::Logger::SetLevel((logging::Logger::Level) config::Manager::Instance()->GetAsInt("LogLevel"));
   }
@@ -107,12 +113,12 @@ int main(int argc, char **argv)
 
     if (daemon(0, 0) == -1)
     {
-      LOG.Error("Could not enter daemon mode. Exiting...");
+      log::Error(log_module_, "Could not enter daemon mode. Exiting...");
       CleanUp();
       return EXIT_FAILURE;
     }
 
-    LOG.Info("Deamon mode entered successfully!");
+    log::Info(log_module_, "Deamon mode entered successfully!");
   }
 
   storage::Manager::Create();
@@ -171,18 +177,21 @@ int main(int argc, char **argv)
 
   on_message_condition.wait(guard);
 
-  LOG.Info("Cleaning up...");
+  log::Info(log_module_, "Cleaning up...");
 
   CleanUp();
 
-  LOG.Info("Thank you for using Atom. Goodbye!");
+  log::Info(log_module_, "Thank you for using Atom. Goodbye!");
 
   return EXIT_SUCCESS;
 }
 
 void CleanUp()
 {
-  net::Manager::Instance()->Stop();
+  if (net::Manager::Instance().use_count() > 0)
+  {
+    net::Manager::Instance()->Stop();
+  }
 
   subscribers.clear();
   config::Manager::Delete();
@@ -238,7 +247,7 @@ void Handler(int status)
     }
   }
 
-  LOG.Debug("Received signal " + signal_name + "(" + boost::lexical_cast<std::string>(status) + ").");
+  log::Info(log_module_, "Received signal %s (%d).", signal_name.c_str(), status);
 
   if (status != SIGPIPE)
   {
