@@ -43,53 +43,51 @@ namespace net {
 class Manager : public common::IoService
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
+  typedef boost::shared_ptr<Manager>                                          Pointer;
+  typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)>      SignalOnNewState;
+  typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)>  SignalOnNewData;
 
-    typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)> SignalOnNewData;
+  virtual ~Manager();
 
-    virtual ~Manager();
-
-    static Pointer Instance();
-    static void Create();
-    static void Delete();
-    
-    void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
-    
-    SocketId StartServer(Protocol protocol, unsigned int port);
-    SocketId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
-    
-    void StopServer(SocketId server_id);
-    void Disconnect(SocketId client_id);
-    
-    void SendToAll(SocketId server_id, common::Byteset data);
-    void SendTo(SocketId client_id, common::Byteset data);
+  static Pointer Instance();
+  static void Create();
+  static void Delete();
+  
+  void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
+  
+  SocketId StartServer(Protocol protocol, unsigned int port);
+  SocketId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
+  
+  void StopServer(SocketId server_id);
+  void Disconnect(SocketId client_id);
+  
+  void SendToAll(SocketId server_id, common::Byteset data);
+  void SendTo(SocketId client_id, common::Byteset data);
 
 private:
-    typedef std::map<SocketId, Client::Pointer>     ClientList;
-    typedef std::map<SocketId, TcpServer::Pointer>  ServerList;
+  typedef std::map<SocketId, Client::Pointer>     ClientList;
+  typedef std::map<SocketId, TcpServer::Pointer>  ServerList;
 
-    static Pointer instance_;
-    
-    ClientList clients_;
-    ServerList servers_;
-    
-    SignalOnNewState signal_on_new_state_;
-    SignalOnNewData signal_on_new_data_;
-    
-    Manager();
-    
-    void SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state);
-    void SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data);
-    void SlotOnNewClient(SocketId server_id, TcpSocketPointer socket);
-    
-    void StopServerHandler(SocketId server_id);
-    void DisconnectHandler(SocketId client_id);
-    
-    void SendToAllHandler(SocketId server_id, common::Byteset data);
-    void SendToHandler(SocketId client_id, common::Byteset data);
-    
-    SocketId GetFreeSocketId();
+  static Pointer instance_;
+  
+  ClientList        clients_;
+  ServerList        servers_;
+  SignalOnNewState  signal_on_new_state_;
+  SignalOnNewData   signal_on_new_data_;
+  
+  Manager();
+  
+  void SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state);
+  void SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data);
+  void SlotOnNewClient(SocketId server_id, TcpSocketPointer socket);
+  
+  void StopServerHandler(SocketId server_id);
+  void DisconnectHandler(SocketId client_id);
+  
+  void SendToAllHandler(SocketId server_id, common::Byteset data);
+  void SendToHandler(SocketId client_id, common::Byteset data);
+  
+  SocketId GetFreeSocketId();
 };
 
 }; // namespace net

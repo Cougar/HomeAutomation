@@ -22,72 +22,96 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace net {
+  
+static const std::string log_module_ = "net::udpclient";
 
 UdpClient::UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id)
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 UdpClient::~UdpClient()
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 void UdpClient::Connect(std::string address, unsigned int port)
 {
-    try
-    {
-        boost::asio::ip::udp::resolver resolver(this->io_service_);
-        boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), address, boost::lexical_cast<std::string>(port));
-        boost::asio::ip::udp::resolver::iterator it = resolver.resolve(query);
-        
-        this->endpoint_ = *it;
-        
-        this->socket_.reset(new boost::asio::ip::udp::socket(this->io_service_, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)));
-    }
-    catch (std::exception e)
-    {
-        throw std::runtime_error("Error while connecting to " + address + ":" + boost::lexical_cast<std::string>(port) + ", " + e.what());
-    }
+  LOG_DEBUG_ENTER;
+  
+  try
+  {
+    boost::asio::ip::udp::resolver resolver(this->io_service_);
+    boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), address, boost::lexical_cast<std::string>(port));
+    boost::asio::ip::udp::resolver::iterator it = resolver.resolve(query);
     
-    this->Read();
+    this->endpoint_ = *it;
+    
+    this->socket_.reset(new boost::asio::ip::udp::socket(this->io_service_, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)));
+  }
+  catch (std::exception e)
+  {
+    throw std::runtime_error("Error while connecting to " + address + ":" + boost::lexical_cast<std::string>(port) + ", " + e.what());
+  }
+  
+  this->Read();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void UdpClient::Stop()
 {
-    if (this->socket_.use_count() != 0)
-    {
-        this->socket_->cancel();
-        this->socket_->close();
-        this->socket_.reset();
-    }
+  LOG_DEBUG_ENTER;
+  
+  if (this->socket_.use_count() != 0)
+  {
+    this->socket_->cancel();
+    this->socket_->close();
+    this->socket_.reset();
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void UdpClient::Send(common::Byteset data)
 {
-    try
+  LOG_DEBUG_ENTER;
+  
+  try
+  {
+    if (this->socket_->is_open())
     {
-        if (this->socket_->is_open())
-        {
-            this->socket_->send_to(boost::asio::buffer(data.Get(), data.GetMaxSize()), this->endpoint_);
-        }
+      this->socket_->send_to(boost::asio::buffer(data.Get(), data.GetMaxSize()), this->endpoint_);
     }
-    catch (std::exception& e)
-    {
-        this->Disconnect();
-        //throw std::runtime_error(e.what());
-    }
+  }
+  catch (std::exception& e)
+  {
+    this->Disconnect();
+    //throw std::runtime_error(e.what());
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void UdpClient::Read()
 {
-    Client::Read();
+  LOG_DEBUG_ENTER;
+  
+  Client::Read();
 
-    this->socket_->async_receive(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
-                                 boost::bind(&UdpClient::ReadHandler,
-                                             this,
-                                             boost::asio::placeholders::error,
-                                             boost::asio::placeholders::bytes_transferred));
+  this->socket_->async_receive(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
+                               boost::bind(&UdpClient::ReadHandler,
+                                           this,
+                                           boost::asio::placeholders::error,
+                                           boost::asio::placeholders::bytes_transferred));
+  
+  LOG_DEBUG_EXIT;
 }
 
 }; // namespace net

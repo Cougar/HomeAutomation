@@ -25,67 +25,101 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace net {
+  
+static const std::string log_module_ = "net::client";
 
 Client::Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : buffer_(2048), io_service_(io_service)
 {
-    this->server_id_ = server_id;
-    this->id_ = id;
+  LOG_DEBUG_ENTER;
+  
+  this->server_id_ = server_id;
+  this->id_ = id;
+  
+  LOG_DEBUG_EXIT;
 }
 
 Client::~Client()
 {
-    this->Stop();
+  LOG_DEBUG_ENTER;
+  
+  this->Stop();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Client::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data)
 {
-    this->signal_on_new_state_.connect(slot_on_new_state);
-    this->signal_on_new_data_.connect(slot_on_new_data);
+  LOG_DEBUG_ENTER;
+  
+  this->signal_on_new_state_.connect(slot_on_new_state);
+  this->signal_on_new_data_.connect(slot_on_new_data);
+  
+  LOG_DEBUG_EXIT;
 }
 
 SocketId Client::GetId()
 {
-    return this->id_;
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
+  
+  return this->id_;
 }
 
 SocketId Client::GetServerId()
 {
-    return this->server_id_;
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
+  
+  return this->server_id_;
 }
 
 void Client::Read()
 {
-    this->buffer_.Clear();
+  LOG_DEBUG_ENTER;
+  
+  this->buffer_.Clear();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Client::ReadHandler(const boost::system::error_code& error, size_t size)
 {
-    if (error)
-    {
-        this->Disconnect();
-    }
-    else if (size == 0)
-    {
-        this->Disconnect();
-    }
-    else
-    {
-        this->buffer_.SetSize(size);
-        
-        this->signal_on_new_data_(this->id_, this->server_id_, this->buffer_);
-        
-        this->Read();
-    }
+  LOG_DEBUG_ENTER;
+  
+  if (error)
+  {
+    this->Disconnect();
+  }
+  else if (size == 0)
+  {
+    this->Disconnect();
+  }
+  else
+  {
+    this->buffer_.SetSize(size);
+    
+    this->signal_on_new_data_(this->id_, this->server_id_, this->buffer_);
+    
+    this->Read();
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Client::Stop()
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 void Client::Disconnect()
 {
+  LOG_DEBUG_ENTER;
+  
   if (this->id_ != 0)
   {
     SocketId id = this->id_;
@@ -96,6 +130,8 @@ void Client::Disconnect()
         
     this->signal_on_new_state_(id, this->server_id_, CLIENT_STATE_DISCONNECTED);
   }
+  
+  LOG_DEBUG_EXIT;
 }
     
 }; // namespace net

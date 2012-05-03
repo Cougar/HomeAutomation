@@ -36,30 +36,30 @@ namespace config {
 class Manager
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
-    
-    virtual ~Manager();
-    
-    static Pointer Instance();
-    static void Create();
-    static void Delete();
-    
-    bool Set(int argument_count, char **argument_vector);
-    
-    bool Exist(std::string name);
-    
-    std::string GetAsString(std::string name);
-    common::StringList GetAsStringVector(std::string name);
-    int GetAsInt(std::string name);
+  typedef boost::shared_ptr<Manager> Pointer;
+  
+  virtual ~Manager();
+  
+  static Pointer Instance();
+  static void Create();
+  static void Delete();
+  
+  bool Set(int argument_count, char **argument_vector);
+  
+  bool Exist(std::string name);
+  
+  std::string GetAsString(std::string name);
+  common::StringList GetAsStringVector(std::string name);
+  int GetAsInt(std::string name);
     
 private:
-    static Pointer instance_;
-    
-    boost::program_options::options_description command_line_;
-    boost::program_options::options_description configuration_file_;
-    boost::program_options::variables_map variable_map_;
-    
-    Manager();
+  static Pointer instance_;
+  
+  boost::program_options::options_description command_line_;
+  boost::program_options::options_description configuration_file_;
+  boost::program_options::variables_map       variable_map_;
+  
+  Manager();
 };
 
 }; // namespace config

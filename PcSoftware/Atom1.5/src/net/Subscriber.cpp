@@ -23,30 +23,47 @@
 #include <boost/bind.hpp>
 
 #include "Manager.h"
+#include "common/log.h"
 
 namespace atom {
 namespace net {
+  
+static const std::string log_module_ = "net::subscriber"; 
 
 Subscriber::Subscriber()
 {
-    Manager::Instance()->ConnectSlots(Manager::SignalOnNewState::slot_type(&Subscriber::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                      Manager::SignalOnNewData::slot_type(&Subscriber::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  LOG_DEBUG_ENTER;
+  
+  Manager::Instance()->ConnectSlots(Manager::SignalOnNewState::slot_type(&Subscriber::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
+                                    Manager::SignalOnNewData::slot_type(&Subscriber::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  
+  LOG_DEBUG_EXIT;
 }
 
 Subscriber::~Subscriber()
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 void Subscriber::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data)
 {
-    common::Byteset temp_buffer(data);
-    this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, temp_buffer));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, data));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Subscriber::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state)
 {
-    this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+  
+  LOG_DEBUG_EXIT;
 }
+
 
 }; // namespace net
 }; // namespace atom

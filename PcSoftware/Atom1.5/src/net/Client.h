@@ -36,37 +36,35 @@ namespace net {
 class Client
 {
 public:
-    typedef boost::shared_ptr<Client> Pointer;
+  typedef boost::shared_ptr<Client>                                           Pointer;
+  typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)>      SignalOnNewState;
+  typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)>  SignalOnNewData;
 
-    typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)> SignalOnNewState;
-    typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)> SignalOnNewData;
+  Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
+  virtual ~Client();
 
-    Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
-    virtual ~Client();
+  void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
+  
+  virtual void Connect(std::string address, unsigned int port_or_baud) = 0;
+  void Disconnect();
+  virtual void Stop();
+  virtual void Send(common::Byteset data) = 0;
 
-    void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
-    
-    virtual void Connect(std::string address, unsigned int port_or_baud) = 0;
-    void Disconnect();
-    virtual void Stop();
-    virtual void Send(common::Byteset data) = 0;
-
-    SocketId GetServerId();
-    SocketId GetId();
+  SocketId GetServerId();
+  SocketId GetId();
     
 protected:
     common::Byteset           buffer_;
     boost::asio::io_service&  io_service_;
-    
+    SignalOnNewState          signal_on_new_state_;
     virtual void Read();
     void ReadHandler(const boost::system::error_code& error, size_t size);
     
-    SignalOnNewState signal_on_new_state_;
+    
     
 private:
-    SocketId id_;
-    SocketId server_id_;
-    
+    SocketId        id_;
+    SocketId        server_id_;
     SignalOnNewData signal_on_new_data_;
 };
 
