@@ -25,31 +25,30 @@
 
 namespace atom {
 namespace net {
-    
+
 class UdpClient : public Client
 {
 public:
-    typedef boost::shared_ptr<UdpClient> Pointer;
-    
-    UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
-    virtual ~UdpClient();
-    
-    void Connect(std::string address, unsigned int port);
-    void Send(common::Byteset data);
+  typedef boost::shared_ptr<UdpClient> Pointer;
+  
+  UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
+  virtual ~UdpClient();
+  
+  void Connect(std::string address, unsigned int port);
+  void Send(common::Byteset data);
 
 protected:
-    void Read();
-    void Stop();
+  void Read();
+  void Stop();
     
 private:
-    typedef  boost::shared_ptr<boost::asio::ip::udp::socket> SocketPointer;
-    
-    SocketPointer socket_;
-    boost::asio::ip::udp::endpoint endpoint_;
-    
+  typedef  boost::shared_ptr<boost::asio::ip::udp::socket> SocketPointer;
+  
+  SocketPointer                   socket_;
+  boost::asio::ip::udp::endpoint  endpoint_;
 
 };
-    
+
 }; // namespace net
 }; // namespace atom
 

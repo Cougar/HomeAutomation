@@ -29,20 +29,20 @@ namespace net {
 class SerialClient : public Client
 {
 public:
-    typedef boost::shared_ptr<SerialClient> Pointer;
-    
-    SerialClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
-    virtual ~SerialClient();
-    
-    void Connect(std::string address, unsigned int baud);
-    void Send(common::Byteset data);
+  typedef boost::shared_ptr<SerialClient> Pointer;
+  
+  SerialClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
+  virtual ~SerialClient();
+  
+  void Connect(std::string address, unsigned int baud);
+  void Send(common::Byteset data);
     
 protected:
-    void Read();
-    void Stop();
+  void Read();
+  void Stop();
     
 private:
-    boost::asio::serial_port serial_port_;
+  boost::asio::serial_port serial_port_;
 };
 
 }; // namespace net

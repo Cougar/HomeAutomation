@@ -22,67 +22,91 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace net {
+  
+static const std::string log_module_ = "net::serialclient";
 
 SerialClient::SerialClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id), serial_port_(io_service)
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 SerialClient::~SerialClient()
 {
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 void SerialClient::Connect(std::string address, unsigned int baud)
 {
-    boost::asio::serial_port_base::baud_rate baud_option(baud);
-    
-    this->serial_port_.open(address);
-    
-    if (!this->serial_port_.is_open())
-    {
-        throw std::runtime_error("Error while opening " + address);
-    }
-    
-    this->serial_port_.set_option(baud_option);
-    
-    this->Read();
+  LOG_DEBUG_ENTER;
+  
+  boost::asio::serial_port_base::baud_rate baud_option(baud);
+  
+  this->serial_port_.open(address);
+  
+  if (!this->serial_port_.is_open())
+  {
+    throw std::runtime_error("Error while opening " + address);
+  }
+  
+  this->serial_port_.set_option(baud_option);
+  
+  this->Read();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void SerialClient::Stop()
 {
-    if (this->serial_port_.is_open())
-    {
-        this->serial_port_.cancel();
-        this->serial_port_.close();
-    }
+  LOG_DEBUG_ENTER;
+  
+  if (this->serial_port_.is_open())
+  {
+    this->serial_port_.cancel();
+    this->serial_port_.close();
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void SerialClient::Send(common::Byteset data)
 {
-    try
+  LOG_DEBUG_ENTER;
+  
+  try
+  {
+    if (this->serial_port_.is_open())
     {
-        if (this->serial_port_.is_open())
-        {
-            this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
-        }
+      this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
     }
-    catch (std::exception& e)
-    {
-        this->Disconnect();
-        //throw std::runtime_error(e.what());
-    }
+  }
+  catch (std::exception& e)
+  {
+    this->Disconnect();
+      //throw std::runtime_error(e.what());
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void SerialClient::Read()
 {
-    Client::Read();
-    
-    this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
-                                       boost::bind(&SerialClient::ReadHandler,
-                                                   this,
-                                                   boost::asio::placeholders::error,
-                                                   boost::asio::placeholders::bytes_transferred));
+  LOG_DEBUG_ENTER;
+  
+  Client::Read();
+  
+  this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
+                                     boost::bind(&SerialClient::ReadHandler,
+                                                 this,
+                                                 boost::asio::placeholders::error,
+                                                 boost::asio::placeholders::bytes_transferred));
+  
+  LOG_DEBUG_EXIT;
 }
 
 
