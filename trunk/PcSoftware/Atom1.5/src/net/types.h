@@ -22,6 +22,9 @@
 #define NET_TYPES_H
 
 #include <boost/array.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace atom {
 namespace net {
@@ -40,7 +43,8 @@ typedef enum
     PROTOCOL_SERIAL           = 0x02
 } Protocol;
 
-typedef unsigned int SocketId;
+typedef unsigned int                                    SocketId;
+typedef boost::shared_ptr<boost::asio::ip::tcp::socket> TcpSocketPointer;
 
 }; // namespace net
 }; // namespace atom

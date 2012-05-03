@@ -28,7 +28,7 @@
 namespace atom {
 namespace net {
 
-Client::Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : buffer_(2048)
+Client::Client(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : buffer_(2048), io_service_(io_service)
 {
     this->server_id_ = server_id;
     this->id_ = id;

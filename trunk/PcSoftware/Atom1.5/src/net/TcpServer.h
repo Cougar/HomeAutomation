@@ -18,33 +18,42 @@
  * 
  */
 
-#ifndef NET_TCPCLIENT_H
-#define NET_TCPCLIENT_H
+#ifndef NET_TCPSERVER_H
+#define NET_TCPSERVER_H
 
-#include "Client.h"
+#include <stdint.h>
+#include <boost/bind.hpp>
+#include <boost/cast.hpp>
+#include <boost/asio.hpp>
+#include <boost/signals2.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "types.h"
 
 namespace atom {
 namespace net {
 
-class TcpClient : public Client
+class TcpServer
 {
 public:
-  typedef boost::shared_ptr<TcpClient> Pointer;
+  typedef boost::shared_ptr<TcpServer>                              Pointer;
+  typedef boost::signals2::signal<void(SocketId, TcpSocketPointer)> SignalOnNewClient;
   
-  TcpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id);
-  TcpClient(boost::asio::io_service& io_service, TcpSocketPointer socket, SocketId id, SocketId server_id);
-  virtual ~TcpClient();
-  
-  void Connect(std::string address, unsigned int port);
-  void Send(common::Byteset data);
-    
-protected:
-  void Read();
-    
+  TcpServer(boost::asio::io_service& io_service, unsigned int port, SocketId id);
+  ~TcpServer();
+
+  void ConnectSlots(const SignalOnNewClient::slot_type& slot_on_new_client);
+  void Accept();
+  SocketId GetId();
+
 private:
-  TcpSocketPointer socket_;
+  TcpSocketPointer                new_client_socket_;
+  boost::asio::ip::tcp::acceptor  acceptor_;
+  SocketId                        id_;
+  uint32_t                        port_;
+  SignalOnNewClient               signal_on_new_client_;
+  
+  void AcceptHandler(const boost::system::error_code& error);
 };
 
 }; // namespace net

@@ -25,7 +25,7 @@
 namespace atom {
 namespace net {
 
-  UdpClient::UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id), io_service_(io_service)
+UdpClient::UdpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id)
 {
 }
 

@@ -26,222 +26,280 @@
 #include <boost/bind.hpp>
 #include <boost/cast.hpp>
 
+#include "common/log.h"
+
+static const std::string log_module_ = "net::manager";
+
 namespace atom {
 namespace net {
 
 Manager::Pointer Manager::instance_;
-   
-logging::Logger Manager::LOG("net::Manager");
+
 
 Manager::Manager()
 {
-
+  LOG_DEBUG_ENTER;
+  LOG_DEBUG_EXIT;
 }
 
 Manager::~Manager()
 {
-    this->Stop();
+  LOG_DEBUG_ENTER;
   
-    this->clients_.clear();
+  this->Stop();
+  
+  this->clients_.clear();
+  
+  LOG_DEBUG_EXIT;
 }
 
 Manager::Pointer Manager::Instance()
 {
-    return Manager::instance_;
+  LOG_DEBUG_ENTER;
+  
+  return Manager::instance_;
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::Create()
 {
-    Manager::instance_ = Manager::Pointer(new Manager());
+  LOG_DEBUG_ENTER;
+  
+  Manager::instance_ = Manager::Pointer(new Manager());
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::Delete()
 {
-    Manager::instance_.reset();
+  LOG_DEBUG_ENTER;
+  
+  Manager::instance_.reset();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data)
 {
-    this->signal_on_new_state_.connect(slot_on_new_state);
-    this->signal_on_new_data_.connect(slot_on_new_data);
+  LOG_DEBUG_ENTER;
+  
+  this->signal_on_new_state_.connect(slot_on_new_state);
+  this->signal_on_new_data_.connect(slot_on_new_data);
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state)
 {
-    if (client_state == CLIENT_STATE_DISCONNECTED)
-    {
-        this->clients_.erase(client_id);
-    }
-    else if (client_state == CLIENT_STATE_ACCEPTED)
-    {
-        ClientList::iterator it = this->clients_.find(client_id);
-        
-        if (it != this->clients_.end())
-        {
-            TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), it->second->GetServerId()));
-            
-            client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
-                                 Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
-            
-            client->Accept(boost::polymorphic_downcast<TcpClient*>(it->second.get())->ReleaseAcceptor());
-            
-            this->clients_[client->GetId()] = client;
-            
-            this->signal_on_new_state_(client_id, server_id, CLIENT_STATE_CONNECTED);
-            return;
-        }
-        else
-        {
-            throw std::runtime_error("Accepted unknown client!");
-        }
-    }
-    
-    this->signal_on_new_state_(client_id, server_id, client_state);
+  LOG_DEBUG_ENTER;
+  
+  if (client_state == CLIENT_STATE_DISCONNECTED)
+  {
+    this->clients_.erase(client_id);
+  }
+  
+  this->signal_on_new_state_(client_id, server_id, client_state);
+  
+  LOG_DEBUG_EXIT;
+}
+
+void Manager::SlotOnNewClient(SocketId server_id, TcpSocketPointer socket)
+{
+  LOG_DEBUG_ENTER;
+  
+  TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, socket, this->GetFreeSocketId(), server_id));
+  
+  client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
+                       Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
+  
+  this->clients_[client->GetId()] = client;
+
+  log::Debug(log_module_, "Client connected on server id %d with client id %d!", server_id, client->GetId());
+  
+  this->signal_on_new_state_(client->GetId(), server_id, CLIENT_STATE_CONNECTED);
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data)
 {
-    this->signal_on_new_data_(client_id, server_id, data);
+  LOG_DEBUG_ENTER;
+  
+  this->signal_on_new_data_(client_id, server_id, data);
+  
+  LOG_DEBUG_EXIT;
 }
 
 SocketId Manager::GetFreeSocketId()
 {
-    SocketId id = 1;
-    
-    for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
-    {
-        if (it->second->GetServerId() != id && this->clients_.find(id) == this->clients_.end())
-        {
-            return id;
-        }
-        
-        id++;
-    }
-    
-    return id;
+  LOG_DEBUG_ENTER;
+  
+  SocketId id = 1;
+  
+  while (this->clients_.find(id) != this->clients_.end() || this->servers_.find(id) != this->servers_.end())
+  {
+    id++;
+  }
+  
+  LOG_DEBUG_EXIT;
+  
+  return id;
 }
 
 SocketId Manager::StartServer(Protocol protocol, unsigned int port)
 {
-    if (protocol != PROTOCOL_TCP)
-    {
-        throw std::runtime_error("Can not start server for the Serial or UDP protocol!");
-        return 0;
-    }
-    
-    TcpClient::Pointer client = TcpClient::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), this->GetFreeSocketId()));
-    
-    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
-                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
-    
-    TcpClient::AcceptorPointer acceptor = TcpClient::AcceptorPointer(new boost::asio::ip::tcp::acceptor(this->io_service_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)));    
+  LOG_DEBUG_ENTER;
+  
+  if (protocol != PROTOCOL_TCP)
+  {
+    throw std::runtime_error("Can not start server for the Serial or UDP protocol!");
+  }
+  
+  TcpServer::Pointer server = TcpServer::Pointer(new TcpServer(this->io_service_, port, this->GetFreeSocketId()));
+  
+  server->ConnectSlots(TcpServer::SignalOnNewClient::slot_type(&Manager::SlotOnNewClient, this, _1, _2).track(Manager::instance_));
 
-    client->Accept(acceptor);
-    
-    this->clients_[client->GetId()] = client;
-    
-    return client->GetServerId();
+  server->Accept();
+  
+  this->servers_[server->GetId()] = server;
+  
+  log::Debug(log_module_, "Started server with id %d!", server->GetId());
+  
+  LOG_DEBUG_EXIT;
+  
+  return server->GetId();
 }
 
 SocketId Manager::Connect(Protocol protocol, std::string address, unsigned int port_or_baud)
 {
-    Client::Pointer client;
-    
-    switch (protocol)
+  LOG_DEBUG_ENTER;
+  
+  Client::Pointer client;
+  
+  switch (protocol)
+  {
+    case PROTOCOL_TCP:
     {
-        case PROTOCOL_TCP:
-        {
-            client = Client::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), 0));
-            break;
-        }
-        case PROTOCOL_UDP:
-        {
-            client = Client::Pointer(new UdpClient(this->io_service_, this->GetFreeSocketId(), 0));
-            break;
-        }
-        case PROTOCOL_SERIAL:
-        {
-            client = Client::Pointer(new SerialClient(this->io_service_, this->GetFreeSocketId(), 0));
-            break;
-        }
-        default:
-        {
-            throw std::runtime_error("Invalid protocol specified!");
-            return 0;
-        }
+      client = Client::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), 0));
+      break;
     }
-    
-    client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
-                         Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
-    
-    client->Connect(address, port_or_baud);
-    
-    this->clients_[client->GetId()] = client;
-    
-    return client->GetId();
+    case PROTOCOL_UDP:
+    {
+      client = Client::Pointer(new UdpClient(this->io_service_, this->GetFreeSocketId(), 0));
+      break;
+    }
+    case PROTOCOL_SERIAL:
+    {
+      client = Client::Pointer(new SerialClient(this->io_service_, this->GetFreeSocketId(), 0));
+      break;
+    }
+    default:
+    {
+      throw std::runtime_error("Invalid protocol specified!");
+    }
+  }
+  
+  client->ConnectSlots(Client::SignalOnNewState::slot_type(&Manager::SlotOnNewState, this, _1, _2, _3).track(Manager::instance_),
+                       Client::SignalOnNewData::slot_type(&Manager::SlotOnNewData, this, _1, _2, _3).track(Manager::instance_));
+  
+  client->Connect(address, port_or_baud);
+  
+  this->clients_[client->GetId()] = client;
+  
+  LOG_DEBUG_EXIT;
+  
+  return client->GetId();
 }
 
 void Manager::SendToAll(SocketId server_id, common::Byteset data)
 {
-    this->io_service_.post(boost::bind(&Manager::SendToAllHandler, this, server_id, data));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Manager::SendToAllHandler, this, server_id, data));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::SendTo(SocketId client_id, common::Byteset data)
 {
-    this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::StopServer(SocketId server_id)
 {
-    this->io_service_.post(boost::bind(&Manager::StopServerHandler, this, server_id));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Manager::StopServerHandler, this, server_id));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::Disconnect(SocketId client_id)
 {
-    this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::SendToAllHandler(SocketId server_id, common::Byteset data)
 {
-    for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
+  LOG_DEBUG_ENTER;
+  
+  for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
+  {
+    if (it->second->GetServerId() == server_id)
     {
-        if (it->second->GetServerId() == server_id)
-        {
-            it->second->Send(data);
-        }
+      it->second->Send(data);
     }
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::SendToHandler(SocketId client_id, common::Byteset data)
 {
-    ClientList::iterator it = this->clients_.find(client_id);
+  LOG_DEBUG_ENTER;
+  
+  ClientList::iterator it = this->clients_.find(client_id);
 
-    if (it != this->clients_.end())
-    {
-        it->second->Send(data);
-    }
+  if (it != this->clients_.end())
+  {
+    it->second->Send(data);
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::StopServerHandler(SocketId server_id)
 {
-    for (ClientList::iterator it = this->clients_.begin(); it != this->clients_.end(); it++)
-    {
-        if (it->second->GetServerId() == server_id)
-        {
-            it->second->Stop();
-        }
-    }
+  LOG_DEBUG_ENTER;
+  
+  this->clients_.erase(server_id);
+  
+  LOG_DEBUG_EXIT;
 }
 
 void Manager::DisconnectHandler(SocketId client_id)
 {
-    ClientList::iterator it = this->clients_.find(client_id);
-    
-    if (it != this->clients_.end())
-    {
-        it->second->Disconnect();
-    }
+  LOG_DEBUG_ENTER;
+  
+  ClientList::iterator it = this->clients_.find(client_id);
+  
+  if (it != this->clients_.end())
+  {
+    it->second->Disconnect();
+  }
+  
+  LOG_DEBUG_EXIT;
 }
+
 
 }; // namespace net
 }; // namespace atom

@@ -45,7 +45,6 @@ private:
     typedef  boost::shared_ptr<boost::asio::ip::udp::socket> SocketPointer;
     
     SocketPointer socket_;
-    boost::asio::io_service& io_service_;
     boost::asio::ip::udp::endpoint endpoint_;
     
 

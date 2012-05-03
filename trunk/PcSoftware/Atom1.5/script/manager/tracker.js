@@ -1,8 +1,6 @@
 
 function TrackerManager(host, username, password, database, server_port)
 {
-  var self = this;
-  
   this.host_              = host;
   this.username_          = username;
   this.password_          = password;
@@ -12,36 +10,25 @@ function TrackerManager(host, username, password, database, server_port)
   this.server_port_       = server_port;
   this.server_id_         = null;
   
-  this._StartServer = function()
-  {
-    self.server_id_ = Socket_StartServer(self.server_port_, self._HandleClientDataReceived, self._HandleConnectedTracker);
-    
-    if (self.server_id_ === false)
-    {
-      return false;
-    }
-    
-    return true;
-  }
-  
+ 
   this._ConnectToDatabase = function()
   {
-    if (self.db_resource_)
+    if (this.db_resource_)
     {
-      MySql_Close(self.db_resource_);
-      self.db_resource_ = null;
+      MySql_Close(this.db_resource_);
+      this.db_resource_ = null;
     }
     
-    self.db_resource_ = MySql_Connect(self.host_, self.username_, self.password_);
+    this.db_resource_ = MySql_Connect(this.host_, this.username_, this.password_);
 
-    if (self.db_resource_ === false)
+    if (this.db_resource_ === false)
     {
       return false;
     }
     
-    MySql_SelectDb(self.db_resource_, self.database_);
+    MySql_SelectDb(this.db_resource_, this.database_);
 
-    MySql_Query(self.db_resource_, "SET time_zone='+0:00';");
+    MySql_Query(this.db_resource_, "SET time_zone='+0:00';");
     
     return true;
   }
@@ -50,7 +37,7 @@ function TrackerManager(host, username, password, database, server_port)
   /* Function for finding tracked object */
   this._IdentifyTracker = function(data)
   {
-    var result = MySql_Query(self.db_resource_, "SELECT `Nodes`.* FROM `Nodes`, `Attributes` WHERE `Nodes`.`type` = 'tracker' AND `Nodes`.`id` = `Attributes`.`node_id` AND `Attributes`.`name` = 'Imei' AND `Attributes`.`value` = '" + data.Imei + "'");
+    var result = MySql_Query(this.db_resource_, "SELECT `Nodes`.* FROM `Nodes`, `Attributes` WHERE `Nodes`.`type` = 'tracker' AND `Nodes`.`id` = `Attributes`.`node_id` AND `Attributes`.`name` = 'Imei' AND `Attributes`.`value` = '" + data.Imei + "'");
       
     if (result === false || result.length == 0)
     {
@@ -63,7 +50,7 @@ function TrackerManager(host, username, password, database, server_port)
       
       Log("Found tracker \"" + tracker_node_name + "\" (NodeId " + tracker_node_id + ") that corresponds to IMEI " + data.Imei);
        
-      result = MySql_Query(self.db_resource_, "SELECT * FROM `Links` WHERE `node_id_down` = " + tracker_node_id + " AND `Role` = 'tracker'");
+      result = MySql_Query(this.db_resource_, "SELECT * FROM `Links` WHERE `node_id_down` = " + tracker_node_id + " AND `Role` = 'tracker'");
       
       if (result === false || result.length == 0)
       {
@@ -73,7 +60,7 @@ function TrackerManager(host, username, password, database, server_port)
       }
       else
       {
-        result = MySql_Query(self.db_resource_, "SELECT * FROM `Nodes` WHERE `id` = " + result[0]["node_id_up"]);
+        result = MySql_Query(this.db_resource_, "SELECT * FROM `Nodes` WHERE `id` = " + result[0]["node_id_up"]);
       
         if (result === false || result.length == 0)
         {
@@ -112,19 +99,19 @@ function TrackerManager(host, username, password, database, server_port)
       query     +=  data.Angle;
       query     +=  ");";
       
-      if (!MySql_Query(self.db_resource_, query))
+      if (!MySql_Query(this.db_resource_, query))
       {
-        if (self._ConnectToDatabase())
+        if (this._ConnectToDatabase())
         {
           Log("Reconnected to MySql database!");
           
-          MySql_Query(self.db_resource_, query);
+          MySql_Query(this.db_resource_, query);
         }
       }
       
-      /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(self.db_resource_) + " LIMIT 1";
+      /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(this.db_resource_) + " LIMIT 1";
       
-      Log("From DB:" + JSON.stringify(MySql_Query(self.db_resource_, query)));*/
+      Log("From DB:" + JSON.stringify(MySql_Query(this.db_resource_, query)));*/
     }
       
     Log(JSON.stringify(data));
@@ -139,7 +126,7 @@ function TrackerManager(host, username, password, database, server_port)
       {
         Log("Client " + client_id + " connected!");
         
-        self.tracked_node_ids_[client_id] = true;
+        this.tracked_node_ids_[client_id] = true;
         
         break;
       }
@@ -147,9 +134,9 @@ function TrackerManager(host, username, password, database, server_port)
       {
         Log("Client " + client_id + " disconnected!");
         
-        if (self.tracked_node_ids_[client_id])
+        if (this.tracked_node_ids_[client_id])
         {
-          delete self.tracked_node_ids_[client_id];
+          delete this.tracked_node_ids_[client_id];
         }
         
         break;
@@ -165,7 +152,7 @@ function TrackerManager(host, username, password, database, server_port)
   /* Functio for handling tracker data */
   this._HandleClientDataReceived = function(client_id, data)
   {
-    if (self.tracked_node_ids_[client_id])
+    if (this.tracked_node_ids_[client_id])
     {
       Log(data);
     
@@ -173,14 +160,14 @@ function TrackerManager(host, username, password, database, server_port)
       
       if (json_data.method == "MBB.OnPosition")
       {
-        if (self.tracked_node_ids_[client_id])
+        if (this.tracked_node_ids_[client_id])
         {
-          self._InsertPosition(self.tracked_node_ids_[client_id], json_data);
+          this._InsertPosition(this.tracked_node_ids_[client_id], json_data.params);
         }
       }
       else if (json_data.method == "MBB.OnConnected")
       {
-        self.tracked_node_ids_[client_id] = self._IdentifyTracker(json_data);
+        this.tracked_node_ids_[client_id] = this._IdentifyTracker(json_data.params);
       }
       else
       {
@@ -189,7 +176,21 @@ function TrackerManager(host, username, password, database, server_port)
     }
   }
   
+  this._StartServer = function()
+  {
+    var self = this;
+    
+    this.server_id_ = Socket_StartServer(this.server_port_, function(client_id, data) { self._HandleClientDataReceived(client_id, data); }, function(client_id, state) { self._HandleClientStatusUpdate(client_id, state); });
+    
+    if (this.server_id_ === false)
+    {
+      return false;
+    }
+    
+    return true;
+  }
+  
   /* Initialize connection */
-  self._ConnectToDatabase();
-  self._StartServer();
+  this._ConnectToDatabase();
+  this._StartServer();
 }
