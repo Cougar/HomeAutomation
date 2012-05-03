@@ -20,6 +20,8 @@
 
 #include "Manager.h"
 
+#include "common/exception.h"
+
 namespace atom {
 namespace storage {
 

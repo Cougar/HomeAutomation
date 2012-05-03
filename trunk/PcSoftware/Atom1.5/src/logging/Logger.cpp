@@ -21,98 +21,42 @@
 #include "Logger.h"
 
 #include <iostream>
-
 #include <syslog.h>
-
 #include <boost/date_time.hpp>
+
+#include "common/log.h"
 
 namespace atom {
 namespace logging {
-    
-Logger::Level Logger::level_ = Logger::LEVEL_ALL;
-std::ofstream Logger::file_;
-boost::mutex Logger::mutex_;
 
 Logger::Logger(std::string name)
 {
-    this->name_ = name;
-    this->name_.insert(this->name_.end(), 25 - this->name_.size(), ' ');
-    
-    openlog("Atom", LOG_ODELAY, LOG_DAEMON);
+  this->name_ = name;
+  this->name_.insert(this->name_.end(), 25 - this->name_.size(), ' ');
 }
 
 Logger::~Logger()
 {
-    closelog();
-}
-
-void Logger::SetLevel(Level level)
-{
-    Logger::level_ = level;
-}
-
-bool Logger::OpenFile(std::string filename)
-{
-    Logger::file_.open(filename.data(), std::ios::app);
-    
-    return Logger::file_.is_open();
-}
-
-void Logger::CloseFile()
-{
-    Logger::file_.close();
 }
 
 void Logger::Error(std::string message)
 {
-    if (Logger::level_ >= Logger::LEVEL_ERROR)
-    {
-        this->Print(" ERROR " + this->name_ + "\033[31m" + message + "\033[0m");
-    }
+  log::Error(this->name_, message.c_str());
 }
 
 void Logger::Warning(std::string message)
 {
-    if (Logger::level_ >= Logger::LEVEL_WARNING)
-    {
-        this->Print(" WARN  " + this->name_ + "\033[33m" + message + "\033[0m");
-    }
+  log::Warning(this->name_, message.c_str());
 }
 
 void Logger::Info(std::string message)
 {
-    if (Logger::level_ >= Logger::LEVEL_INFO)
-    {
-        this->Print(" INFO  " + this->name_ + message);
-    }
+  log::Info(this->name_, message.c_str());
 }
 
 void Logger::Debug(std::string message)
 {
-    if (Logger::level_ >= Logger::LEVEL_DEBUG)
-    {
-        this->Print(" DEBUG " + this->name_ + "\033[35m" + message + "\033[0m");
-    }
-}
-
-void Logger::Print(std::string line)
-{
-    this->mutex_.lock();
-    
-    boost::posix_time::ptime date_and_time(boost::posix_time::second_clock::local_time());
-    
-    std::cout << date_and_time << line << std::endl;
-    
-    if (Logger::file_.is_open())
-    {
-        Logger::file_ << date_and_time << line << std::endl;
-    }
-    
-    syslog(LOG_INFO, "%s", line.data());
-    
-    std::cout.imbue(std::locale::classic());
-    
-    this->mutex_.unlock();
+  log::Debug(this->name_, message.c_str());
 }
 
 }; // namespace logging

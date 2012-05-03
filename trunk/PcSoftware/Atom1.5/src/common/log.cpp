@@ -31,15 +31,16 @@ namespace atom {
 namespace log {
 
 static boost::mutex   mutex_;
+static std::ofstream  file_;
 static Level          level_ = (Level)(LOG_LEVEL_ERROR | LOG_LEVEL_EXCEPTION | LOG_LEVEL_WARNING | LOG_LEVEL_INFO);
 static const uint32_t kMaxBufferSize = 4096;
 
-void SetLogLevel(Level level)
+void SetLevel(Level level)
 {
   level_ = level;
 }
 
-void SetLogLevelByString(std::string level_string)
+void SetLevelByString(std::string level_string)
 {
   level_ = LOG_LEVEL_NONE;
   
@@ -74,8 +75,26 @@ void SetLogLevelByString(std::string level_string)
   }
 }
 
+bool OpenFile(std::string filepath)
+{
+  CloseFile();
+  
+  file_.open(filepath.data(), std::ios::app);
+  
+  return file_.is_open();
+}
+
+void CloseFile(void)
+{
+  if (file_.is_open())
+  {
+    file_.close();
+  }
+}
+
 void Print(Level level, std::string module, std::string message)
 {
+  std::string               log_string;
   std::string               level_string;
   boost::posix_time::ptime  date_and_time(boost::posix_time::second_clock::local_time());
   
@@ -119,10 +138,21 @@ void Print(Level level, std::string module, std::string message)
   module.insert(module.end(), 25 - module.size(), ' ');
   
   
+  /* Create log string */
+  log_string = boost::posix_time::to_simple_string(date_and_time) + " " + level_string + " " + module + " " + message;
+  
+  
   /* Print message */
   mutex_.lock();
 
-  std::cout << boost::posix_time::to_simple_string(date_and_time) << " " << level_string << " " << module << " " << message << std::endl;
+  std::cout << log_string << std::endl;
+  
+  
+  if (file_.is_open())
+  {
+    file_ << log_string << std::endl;
+  }
+  
   std::cout.imbue(std::locale::classic());
   
   mutex_.unlock();

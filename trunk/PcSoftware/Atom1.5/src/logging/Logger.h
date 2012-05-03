@@ -22,9 +22,6 @@
 #define LOGGING_LOGGER_H
 
 #include <string>
-#include <fstream>
-
-#include <boost/thread/mutex.hpp>
 
 namespace atom {
 namespace logging {
@@ -32,16 +29,6 @@ namespace logging {
 class Logger
 {
 public:
-    typedef enum
-    {
-        LEVEL_NONE    = 0,
-        LEVEL_ERROR   = 1,
-        LEVEL_WARNING = 2,
-        LEVEL_INFO    = 3,
-        LEVEL_DEBUG   = 4,
-        LEVEL_ALL     = 5
-    } Level;
-    
     Logger(std::string name);
     virtual ~Logger();
     
@@ -49,19 +36,9 @@ public:
     void Warning(std::string message);
     void Info(std::string message);
     void Debug(std::string message);
-    
-    static void SetLevel(Level level);
-    static bool OpenFile(std::string filename);
-    static void CloseFile();    
-    
+   
 private:
-    static Level level_;
-    static std::ofstream file_;
-    static boost::mutex mutex_;
-    
     std::string name_;
-    
-    void Print(std::string line);
 };    
     
 }; // namespace logging
