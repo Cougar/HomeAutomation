@@ -74,18 +74,16 @@ void Socket::InitializeDone()
 
 void Socket::CallOutput(unsigned int request_id, std::string output)
 {
-  LOG_DEBUG_ENTER;
+  //LOG_DEBUG_ENTER;
   
   log::Info(log_module_, output);
   
-  LOG_DEBUG_EXIT;
+  //LOG_DEBUG_EXIT;
 }
 
 void Socket::SlotOnNewData(net::SocketId socket_id, net::SocketId server_id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
-  
-  log::Debug(log_module_, data.ToDebugString());
   
   this->io_service_.post(boost::bind(&Socket::SlotOnNewDataHandler, this, socket_id, server_id, data));
   
@@ -117,6 +115,7 @@ void Socket::SlotOnNewDataHandler(net::SocketId socket_id, net::SocketId server_
     }
     
     arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(server_id)));
     arguments->push_back(v8::String::New(data.ToCharString().c_str()));
         
     if (!this->Call(socket_id, "Socket_OnNewData", arguments))
@@ -142,6 +141,7 @@ void Socket::SlotOnNewStateHandler(net::SocketId socket_id, net::SocketId server
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
     arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(server_id)));
     arguments->push_back(v8::Uint32::New((unsigned int)client_state));
     
     if (!this->Call(socket_id, "Socket_OnNewState", arguments))

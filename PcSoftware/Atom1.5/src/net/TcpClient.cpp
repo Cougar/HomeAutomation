@@ -22,115 +22,90 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace net {
 
-logging::Logger TcpClient::LOG("net::TcpClient");
+static const std::string log_module_ = "net::tcpclient";
   
-TcpClient::TcpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id), socket_(io_service)
+TcpClient::TcpClient(boost::asio::io_service& io_service, SocketId id, SocketId server_id) : Client(io_service, id, server_id)
 {
+  LOG_DEBUG_ENTER;
+  
+  LOG_DEBUG_EXIT;
+}
+  
+TcpClient::TcpClient(boost::asio::io_service& io_service, TcpSocketPointer socket, SocketId id, SocketId server_id) : Client(io_service, id, server_id)
+{
+  LOG_DEBUG_ENTER;
+  
+  this->socket_ = socket;
+  
+  this->Read();
+  
+  LOG_DEBUG_EXIT;
 }
 
 TcpClient::~TcpClient()
 {
-}
-
-void TcpClient::Accept(AcceptorPointer acceptor)
-{
-    try
-    {
-        this->acceptor_ = acceptor;
-        
-        this->acceptor_->async_accept(this->socket_,
-                                      boost::bind(&TcpClient::AcceptHandler,
-                                                  this,
-                                                  boost::asio::placeholders::error));
-    }
-    catch (std::exception e)
-    {
-        throw std::runtime_error("Error while opening port, " + std::string(e.what()));
-    }
-}
-
-void TcpClient::AcceptHandler(const boost::system::error_code& error)
-{
-    this->Read();
-    
-    this->signal_on_new_state_(this->GetId(), this->GetServerId(), CLIENT_STATE_ACCEPTED);
-}
-
-TcpClient::AcceptorPointer TcpClient::ReleaseAcceptor()
-{
-    AcceptorPointer acceptor = this->acceptor_;
-    this->acceptor_.reset();
-    return acceptor;
+  LOG_DEBUG_ENTER;
+  
+  LOG_DEBUG_EXIT;
 }
 
 void TcpClient::Connect(std::string address, unsigned int port)
 {
-    try
-    {
-        boost::asio::ip::tcp::resolver resolver(this->socket_.get_io_service());
-        boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), address, boost::lexical_cast<std::string>(port));
-        boost::asio::ip::tcp::resolver::iterator it = resolver.resolve(query);
-        
-        this->socket_.connect(*it);
-    }
-    catch (std::exception e)
-    {
-        throw std::runtime_error("Error while connecting to " + address + ":" + boost::lexical_cast<std::string>(port));
-    }
-    
-    this->Read();
-}
+  LOG_DEBUG_ENTER;
+  
+  this->socket_ = TcpSocketPointer(new boost::asio::ip::tcp::socket(this->io_service_));
+  
+  boost::asio::ip::tcp::resolver resolver(this->socket_->get_io_service());
+  boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), address, boost::lexical_cast<std::string>(port));
+  boost::asio::ip::tcp::resolver::iterator it = resolver.resolve(query);
 
-void TcpClient::Stop()
-{
-    if (this->socket_.is_open())
-    {
-        this->socket_.cancel();
-        this->socket_.close();
-    }
-    
-    if (this->acceptor_.use_count() != 0)
-    {
-        this->acceptor_->cancel();
-        this->acceptor_->close();
-    }
+  this->socket_->connect(*it);
+
+  this->Read();
+  
+  LOG_DEBUG_EXIT;
 }
 
 void TcpClient::Send(common::Byteset data)
 {
-    if (this->acceptor_.use_count() != 0)
+  LOG_DEBUG_ENTER;
+  
+  try
+  {
+    if (this->socket_->is_open())
     {
-        return;
+      this->socket_->send(boost::asio::buffer(data.Get(), data.GetMaxSize()));
     }
-
-    try
-    {
-        if (this->socket_.is_open())
-        {
-            this->socket_.send(boost::asio::buffer(data.Get(), data.GetMaxSize()));
-        }
-    }
-    catch (std::exception& e)
-    {
-        this->Disconnect();
-        //throw std::runtime_error(e.what());
-    }
+  }
+  catch (std::exception& e)
+  {
+    this->Disconnect();
+      //throw std::runtime_error(e.what());
+  }
+  
+  LOG_DEBUG_EXIT;
 }
 
 void TcpClient::Read()
 {
-    Client::Read();
+  LOG_DEBUG_ENTER;
+  
+  Client::Read();
     
-    this->socket_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
-                                  boost::bind(&TcpClient::ReadHandler,
-                                              this,
-                                              boost::asio::placeholders::error,
-                                              boost::asio::placeholders::bytes_transferred));
+  this->socket_->async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
+                                 boost::bind(&TcpClient::ReadHandler,
+                                             this,
+                                             boost::asio::placeholders::error,
+                                             boost::asio::placeholders::bytes_transferred));
+  
+  LOG_DEBUG_EXIT;
 }
 
-    
+
 }; // namespace net
 }; // namespace atom

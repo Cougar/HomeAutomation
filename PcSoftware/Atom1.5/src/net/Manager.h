@@ -28,13 +28,14 @@
 #include <boost/shared_ptr.hpp>
 
 #include "common/IoService.h"
-#include "logging/Logger.h"
 
 #include "types.h"
 #include "Client.h"
 #include "TcpClient.h"
 #include "UdpClient.h"
 #include "SerialClient.h"
+#include "TcpServer.h"
+
 
 namespace atom {
 namespace net {
@@ -65,13 +66,13 @@ public:
     void SendTo(SocketId client_id, common::Byteset data);
 
 private:
-    typedef std::map<SocketId, Client::Pointer> ClientList;
+    typedef std::map<SocketId, Client::Pointer>     ClientList;
+    typedef std::map<SocketId, TcpServer::Pointer>  ServerList;
 
-    static logging::Logger LOG;
-    
     static Pointer instance_;
     
     ClientList clients_;
+    ServerList servers_;
     
     SignalOnNewState signal_on_new_state_;
     SignalOnNewData signal_on_new_data_;
@@ -80,6 +81,7 @@ private:
     
     void SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state);
     void SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data);
+    void SlotOnNewClient(SocketId server_id, TcpSocketPointer socket);
     
     void StopServerHandler(SocketId server_id);
     void DisconnectHandler(SocketId client_id);

@@ -55,7 +55,8 @@ public:
     SocketId GetId();
     
 protected:
-    common::Byteset buffer_;
+    common::Byteset           buffer_;
+    boost::asio::io_service&  io_service_;
     
     virtual void Read();
     void ReadHandler(const boost::system::error_code& error, size_t size);
