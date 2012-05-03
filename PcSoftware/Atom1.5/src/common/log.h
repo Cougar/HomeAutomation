@@ -40,8 +40,11 @@ typedef enum
   LOG_LEVEL_ALL       = 0xFFFFFF
 } Level;
 
-void SetLogLevel(Level level);
-void SetLogLevelByString( std::string level_string );
+void SetLevel(Level level);
+void SetLevelByString( std::string level_string );
+
+bool OpenFile(std::string filepath);
+void CloseFile(void);
 
 void Info(std::string module, char* format, ...);
 void Info(std::string module, std::string message);

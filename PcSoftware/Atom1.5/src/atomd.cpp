@@ -94,17 +94,12 @@ int main(int argc, char **argv)
 
   if (config::Manager::Instance()->Exist("LogFile"))
   {
-    logging::Logger::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
+    log::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
   }
 
   if (config::Manager::Instance()->Exist("LogLevelMask"))
   {
-    log::SetLogLevelByString(config::Manager::Instance()->GetAsString("LogLevelMask"));
-  }
-  
-  if (config::Manager::Instance()->Exist("LogLevel")) // Deprecated
-  {
-    logging::Logger::SetLevel((logging::Logger::Level) config::Manager::Instance()->GetAsInt("LogLevel"));
+    log::SetLevelByString(config::Manager::Instance()->GetAsString("LogLevelMask"));
   }
 
   if (config::Manager::Instance()->Exist("daemon"))
@@ -202,6 +197,8 @@ void CleanUp()
   vm::Manager::Delete();
   net::Manager::Delete();
   storage::Manager::Delete();
+  
+  log::CloseFile();
 }
 
 void Handler(int status)
