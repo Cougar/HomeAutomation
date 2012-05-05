@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [ $# -lt 1 ] 
+then
+  echo "Error: need to run script with ubuntu releasename as argument"
+  exit 1
+fi
+
+#exit 1
+
 ATOMDIR=/tmp/atomppa
 SVNURL=http://svn.arune.se/svn/HomeAutomation/trunk/PcSoftware/Atom1.5
 SVNURLCNF=http://svn.arune.se/svn/HomeAutomation/trunk/Configuration
@@ -9,20 +17,36 @@ CNFDIR=Configuration
 PPA=ppa:arune/auml-atom-daily
 DEBUILDFLG="-S -sa -k7EA270B4"
 PKGNAME=atom
-DIST=oneiric
 PKGMAINT="Anders Runeson <runeson@gmail.com>"
 
+# Dist name from command line argument
+DIST=$1
 RUNDIR=`dirname $0`
 CHLOGDATE=`date -R`
-REVFILE=$RUNDIR/AtomSvnRev
+REVFILE=$RUNDIR/AtomSvnRev-$DIST
 TMPFILE=/tmp/atompparunning
 
 CURRREV=`svn info $SVNURL |grep '^Last Changed Rev:' | sed -e 's/^Last Changed Rev: //'`
-VERSION=1.5.$CURRREV
+VERSION=1.5.${CURRREV}ppa1~${DIST}
+# Dir name of atom svn export (no svn folders)
 NOSVNDIR=atom-$VERSION
+# File name to use for tarball with original source, NOSVNDIR will be compressed to this file
 ORIGTAR=atom_$VERSION.orig.tar.gz
+# File with source changes (?)
 SRCCHFILE=atom_$VERSION\_source.changes
+# Dput is called with these flags
 DPUTFLG="auml-atom-daily $SRCCHFILE"
+
+case $DIST in
+  oneiric)
+    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.46.1, libboost-system1.46.1, libboost-signals1.46.1, libboost-filesystem1.46.1, libboost-date-time1.46.1, libboost-program-options1.46.1, libv8-3.1.8.22"
+    BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.46-dev, libboost-filesystem1.46-dev, libboost-program-options1.46-dev, libboost-signals1.46-dev, libboost-thread1.46-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
+    ;;
+  precise)
+    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.48.0, libboost-system1.48.0, libboost-signals1.48.0, libboost-filesystem1.48.0, libboost-date-time1.48.0, libboost-program-options1.48.0, libv8-3.7.12.22"
+    BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.48-dev, libboost-filesystem1.48-dev, libboost-program-options1.48-dev, libboost-signals1.48-dev, libboost-thread1.48-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
+    ;;
+esac
 
 # Run script from cron every hour
 # script will check revision of Atom in SVN and if there is a new version the script will
@@ -77,11 +101,24 @@ svn export $SVNURL $ATOMDIR/$NOSVNDIR
 # Export configuration folder into the exported Atom-folder
 svn export $SVNURLCNF $ATOMDIR/$NOSVNDIR/$CNFDIR
 
+mkdir -p $ATOMDIR/$NOSVNDIR/debian
+
 # Add a svn revision file, atom need the svn revision when building
 echo -n $CURRREV > $ATOMDIR/$NOSVNDIR/AtomSvnRev
 
 # Change install-target for data.xml file in CMakeList.txt, not needed, done in CMakeList.txt
 #cat $ATOMDIR/$NOSVNDIR/CMakeLists.txt | sed -e 's/\/..\/..\/Configuration\/data.xml/\/Configuration\/data.xml/' > $ATOMDIR/$NOSVNDIR/CMakeLists.txt
+
+
+cp $RUNDIR/files/atom.conf $ATOMDIR/$NOSVNDIR/debian/
+cp $RUNDIR/files/compat $ATOMDIR/$NOSVNDIR/debian/
+cp $RUNDIR/files/copyright $ATOMDIR/$NOSVNDIR/debian/
+cp $RUNDIR/files/rules $ATOMDIR/$NOSVNDIR/debian/
+cp $RUNDIR/files/control $ATOMDIR/$NOSVNDIR/debian/
+
+# Set the correct depends and build depends, different for different distributions
+sed -i "s/^Build-Depends/Build-Depends: ${BDEPS}/g" $ATOMDIR/$NOSVNDIR/debian/control
+sed -i "s/^Depends/Depends: ${DEPS}/g" $ATOMDIR/$NOSVNDIR/debian/control
 
 # Create the debian changelog file from svn log
 echo "$PKGNAME ($VERSION) $DIST; urgency=low" > $ATOMDIR/$NOSVNDIR/debian/changelog
@@ -103,6 +140,7 @@ done
 IFS="$OLDIFS"
 echo "" >> $ATOMDIR/$NOSVNDIR/debian/changelog
 echo " -- $PKGMAINT  $CHLOGDATE" >> $ATOMDIR/$NOSVNDIR/debian/changelog
+
 
 # Create orig tar gz
 cd $ATOMDIR
