@@ -1,0 +1,13 @@
+Source: atom
+Section: devel
+Priority: optional
+Maintainer: Anders Runeson <runeson@gmail.com>
+Build-Depends
+Standards-Version: 3.8.4
+Homepage: http://projekt.auml.se
+
+Package: atom
+Architecture: any 
+Depends
+Description: 
+ Contains atomd and atomic for controlling your can network. Works in unison with the hardware on project.auml.se.
