@@ -27,7 +27,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
 
-#include "logging/Logger.h"
 #include "broker/Subscriber.h"
 
 #include "timer/Subscriber.h"
@@ -44,43 +43,42 @@ namespace control {
 class Manager : public broker::Subscriber, public timer::Subscriber
 {
 public:
-    typedef boost::shared_ptr<Manager> Pointer;
-    typedef std::map<Node::Id, Node::Pointer> NodeList;
-    typedef std::map<Module::FullId, Module::Pointer> ModuleList;
-    typedef boost::signals2::signal<void(Node::Id, bool available)> SignalOnNodeChange;
-    typedef boost::signals2::signal<void(std::string full_id, bool available)> SignalOnModuleChange;
-    typedef boost::signals2::signal<void(std::string full_id, std::string command, common::StringMap variables)> SignalOnModuleMessage;
-    
-    virtual ~Manager();
-    
-    static Pointer Instance();
-    static void Create();
-    static void Delete();
-    
-    void ConnectSlotNode(const SignalOnNodeChange::slot_type& signal_on_node_change_);
-    void ConnectSlotModule(const SignalOnModuleChange::slot_type& slot_on_module_change);
-    void ConnectSlotModule(const SignalOnModuleMessage::slot_type& slot_on_module_message);
-    
-    void SendMessage(std::string full_id, std::string command, common::StringMap variables);
-    common::StringList GetAvailableModules();
-    
-    common::StringList GetAvailableNodes();
-    bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
-    bool ProgramNodeHex(Node::Id node_id, bool is_bios, std::string hex_data);
-    bool ResetNode(Node::Id node_id);
-    Node::Information GetNodeInformation(Node::Id node_id);
+  typedef boost::shared_ptr<Manager>                                                                            Pointer;
+  typedef std::map<Node::Id, Node::Pointer>                                                                     NodeList;
+  typedef std::map<Module::FullId, Module::Pointer>                                                             ModuleList;
+  typedef boost::signals2::signal<void(Node::Id, bool available)>                                               SignalOnNodeChange;
+  typedef boost::signals2::signal<void(std::string full_id, bool available)>                                    SignalOnModuleChange;
+  typedef boost::signals2::signal<void(std::string full_id, std::string command, common::StringMap variables)>  SignalOnModuleMessage;
+  
+  virtual ~Manager();
+  
+  static Pointer Instance();
+  static void Create();
+  static void Delete();
+  
+  void ConnectSlotNode(const SignalOnNodeChange::slot_type& signal_on_node_change_);
+  void ConnectSlotModule(const SignalOnModuleChange::slot_type& slot_on_module_change);
+  void ConnectSlotModule(const SignalOnModuleMessage::slot_type& slot_on_module_message);
+  
+  void SendMessage(std::string full_id, std::string command, common::StringMap variables);
+  common::StringList GetAvailableModules();
+  
+  common::StringList GetAvailableNodes();
+  bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
+  bool ProgramNodeHex(Node::Id node_id, bool is_bios, std::string hex_data);
+  bool ResetNode(Node::Id node_id);
+  Node::Information GetNodeInformation(Node::Id node_id);
     
 private:
     static Pointer instance_;
     
-    timer::TimerId timer_id_;
+    timer::TimerId  timer_id_;
+    NodeList        nodes_;
+    ModuleList      modules_;
+    Node::Id        active_programming_node_id_;
     
-    NodeList nodes_;
-    ModuleList modules_;
-    Node::Id active_programming_node_id_;
-    
-    SignalOnNodeChange signal_on_node_change_;
-    SignalOnModuleChange signal_on_module_change_;
+    SignalOnNodeChange    signal_on_node_change_;
+    SignalOnModuleChange  signal_on_module_change_;
     SignalOnModuleMessage signal_on_module_message_;
     
     Manager();
@@ -95,8 +93,6 @@ private:
     Module::Pointer GetModule(Module::Id module_id, std::string module_name, std::string class_name);
     void RemoveModules(Node::Id node_id);
     unsigned int GetNumberOfModules(Node::Id node_id);
-    
-    logging::Logger LOG;
 };
 
 }; // namespace control

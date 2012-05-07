@@ -89,13 +89,21 @@ void Client::Read()
 void Client::ReadHandler(const boost::system::error_code& error, size_t size)
 {
   LOG_DEBUG_ENTER;
+
   
   if (error)
   {
-    this->Disconnect();
+    log::Debug(log_module_, "error %d", error);
+    
+    if (boost::system::errc::operation_canceled != error)
+    {
+      this->Disconnect();
+    }
   }
   else if (size == 0)
   {
+    log::Debug(log_module_, "size 0");
+    
     this->Disconnect();
   }
   else
