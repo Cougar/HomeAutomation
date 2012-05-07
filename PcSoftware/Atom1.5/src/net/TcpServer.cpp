@@ -80,6 +80,8 @@ void TcpServer::AcceptHandler(const boost::system::error_code& error)
   
   this->new_client_socket_.reset();
   
+  this->Accept();
+  
   LOG_DEBUG_EXIT;
 }
 

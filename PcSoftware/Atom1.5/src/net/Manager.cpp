@@ -94,6 +94,8 @@ void Manager::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState
 {
   LOG_DEBUG_ENTER;
   
+  log::Debug(log_module_, "SlotOnNewState, client_id %d, server_id %d, client_state %d", client_id, server_id, client_state);
+  
   if (client_state == CLIENT_STATE_DISCONNECTED)
   {
     this->clients_.erase(client_id);
@@ -225,6 +227,8 @@ void Manager::SendTo(SocketId client_id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
+  log::Debug(log_module_, "SendTo, client_id %d", client_id);
+  
   this->io_service_.post(boost::bind(&Manager::SendToHandler, this, client_id, data));
   
   LOG_DEBUG_EXIT;
@@ -242,6 +246,8 @@ void Manager::StopServer(SocketId server_id)
 void Manager::Disconnect(SocketId client_id)
 {
   LOG_DEBUG_ENTER;
+  
+  log::Debug(log_module_, "Disconnect, client_id %d", client_id);
   
   this->io_service_.post(boost::bind(&Manager::DisconnectHandler, this, client_id));
   
@@ -267,6 +273,8 @@ void Manager::SendToHandler(SocketId client_id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
+  log::Debug(log_module_, "SendToHandler, client_id %d, data %s", client_id, data.ToCharString().c_str());
+  
   ClientList::iterator it = this->clients_.find(client_id);
 
   if (it != this->clients_.end())
@@ -289,6 +297,8 @@ void Manager::StopServerHandler(SocketId server_id)
 void Manager::DisconnectHandler(SocketId client_id)
 {
   LOG_DEBUG_ENTER;
+  
+  log::Debug(log_module_, "DisconnectHandler, client_id %d", client_id);
   
   ClientList::iterator it = this->clients_.find(client_id);
   
