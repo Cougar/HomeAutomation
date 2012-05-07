@@ -44,7 +44,7 @@ DEBUG = stabs
 
 # List any extra directories to look for include files here.
 # Each directory must be separated by a space.
-EXTRAINCDIRS = $(LIBDIR) $(BIOSDIR)
+EXTRAINCDIRS = $(LIBDIR) $(BIOSDIR) $(LIBDIR)/bios
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
