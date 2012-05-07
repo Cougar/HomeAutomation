@@ -8,6 +8,7 @@ Node_ProgramClientId = null;
 Node_WaitClientId = null;
 
 Node_HexData = "";
+Node_HexNumLines = 0;
 
 function Node_OnChange(node_id, available)
 {
@@ -147,11 +148,16 @@ function Node_Program(node_id, bios, filename)
 }
 Console_RegisterCommand(Node_Program, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds(), [0, 1]); });
 
-function Node_ProgramHex(node_id, bios)
+function Node_ProgramHex(node_id, bios, hexnumlines)
 {
     if (arguments.length < 2)
     {
         Log("\033[31mNot enough parameters given.\033[0m\n");
+        return false;
+    }
+    if (Node_HexNumLines != hexnumlines)
+    {
+        Log("\033[31mNumber of hex lines does not match received (" + Node_HexNumLines + " received, should be " + hexnumlines + ").\033[0m\n");
         return false;
     }
     
@@ -168,6 +174,8 @@ function Node_ProgramHex(node_id, bios)
     Console_PreventDefaultPrompt();
 
     Node_HexData = "";
+    Node_HexNumLines = 0;
+
 
     return true;
 }
@@ -178,6 +186,7 @@ function Node_ClearHex()
 //    Log("Clearing hexdata...\n");
     
     Node_HexData = "";
+    Node_HexNumLines = 0;
 
     return true;
 }
@@ -194,6 +203,7 @@ function Node_AppendHex(hexrow)
 //    Log("Appending hexrow...\n");
     
     Node_HexData = Node_HexData + hexrow + "\n";
+    Node_HexNumLines += 1;
 
     return true;
 }
