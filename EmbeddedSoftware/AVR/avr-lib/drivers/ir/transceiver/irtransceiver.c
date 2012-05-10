@@ -16,6 +16,15 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+
+
+#include <stdio.h>
+#include <drivers/mcu/gpio.h>
+
+
+
+
+
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
@@ -113,8 +122,12 @@ ISR(IR_COMPARE_VECTOR)
 {
 	if ((bufIndex&1) == 1) {		/* if odd, ir-pause */
 		IR_OUTP_LOW();
+gpio_clr_pin(EXP_P);
+gpio_set_out(EXP_P);
 	} else {
 		IR_OUTP_HIGH();
+gpio_set_pin(EXP_P);
+gpio_set_out(EXP_P);
 	}
 	
 	//The following three lines is just to allow a start signal to be zero.
@@ -315,7 +328,7 @@ uint8_t IrTransceiver_Transmit(uint16_t *buffer, uint8_t length, uint8_t modfreq
 	txlen = length;
 	bufIndex = 1;
 	
-	IR_MODULATION_REG = modfreq;
+	IR_MODULATION_REG = (((F_CPU/2000)/modfreq) -1);
 	
 	IR_COMPARE_REG = IR_COUNT_REG + txbuf[0];
 	
