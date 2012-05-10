@@ -16,15 +16,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-
-
-#include <stdio.h>
-#include <drivers/mcu/gpio.h>
-
-
-
-
-
 /*-----------------------------------------------------------------------------
  * Globals
  *---------------------------------------------------------------------------*/
@@ -122,12 +113,8 @@ ISR(IR_COMPARE_VECTOR)
 {
 	if ((bufIndex&1) == 1) {		/* if odd, ir-pause */
 		IR_OUTP_LOW();
-gpio_clr_pin(EXP_P);
-gpio_set_out(EXP_P);
 	} else {
 		IR_OUTP_HIGH();
-gpio_set_pin(EXP_P);
-gpio_set_out(EXP_P);
 	}
 	
 	//The following three lines is just to allow a start signal to be zero.
