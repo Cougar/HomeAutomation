@@ -47,14 +47,7 @@ void sns_irTransmit_Process(void)
 		//polla om den är klar, om klar gå till sns_irTransmit_STATE_START_PAUSE
 		if (IrTransceiver_Transmit_Poll() != IR_NOT_FINISHED)
 		{
-			if (sns_irTransmit_burst_mode)
-			{
-				sns_irTransmit_state = sns_irTransmit_STATE_STOP;
-			}
-			else
-			{
-				sns_irTransmit_state = sns_irTransmit_STATE_START_PAUSE;
-			}
+			sns_irTransmit_state = sns_irTransmit_STATE_START_PAUSE;
 		}
 	}
 	else if (sns_irTransmit_state == sns_irTransmit_STATE_START_PAUSE)
@@ -81,7 +74,7 @@ void sns_irTransmit_Process(void)
 			sns_irTransmit_state = sns_irTransmit_STATE_START_TRANSMIT;
 		}
 		
-		if (sns_irTransmit_stop == 1 && sns_irTransmit_repeatCount >= sns_irTransmit_proto.repeats)
+		if ((sns_irTransmit_stop == 1 || sns_irTransmit_burst_mode) && sns_irTransmit_repeatCount >= sns_irTransmit_proto.repeats)
 		{
 			sns_irTransmit_state = sns_irTransmit_STATE_STOP;
 		}
