@@ -1,9 +1,12 @@
 #!/bin/bash
 
+mkdir debian
+svn export http://svn.arune.se/svn/HomeAutomation/trunk/PcSoftware/scripts/debian/files/atom.conf debian/atom.conf
+
+
 mkdir build
 cd build
 rm *.deb
-
 
 cmake ../
 
