@@ -3,8 +3,9 @@
 sns_irTransceive_ID=<ID>
 
 sns_irTransceive_SEND_DEBUG=0
+#sns_irTransceive_PRONTO_SUPPORT=1
 
-#sns_irTransceive_USEEEPROM=1
+sns_irTransceive_USEEEPROM=1
 
 IR_RX_ENABLE=1
 IR_TX_ENABLE=1
