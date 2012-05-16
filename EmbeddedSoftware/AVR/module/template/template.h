@@ -23,7 +23,11 @@ void <template>_HandleMessage(StdCan_Msg_t *rxMsg);
 void <template>_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef <template>_USEEEPROM
+#ifndef <template>_USEEEPROM
+#define <template>_USEEEPROM 0
+#endif
+
+#if <template>_USEEEPROM==1
 	struct <template>_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;
