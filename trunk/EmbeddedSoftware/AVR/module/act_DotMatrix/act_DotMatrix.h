@@ -31,7 +31,11 @@ void act_DotMatrix_List(uint8_t ModuleSequenceNumber);
 #define act_DotMatrix_PWM_FACT (256UL*0xff)/10000UL
 
 
-#ifdef act_DotMatrix_USEEEPROM
+#ifndef act_DotMatrix_USEEEPROM
+#define act_DotMatrix_USEEEPROM 0
+#endif
+
+#if act_DotMatrix_USEEEPROM==1
 	struct act_DotMatrix_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

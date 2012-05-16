@@ -1,7 +1,7 @@
 
 #include "act_DotMatrix.h"
 
-#ifdef act_DotMatrix_USEEEPROM
+#if act_DotMatrix_USEEEPROM==1
 #include "act_DotMatrix_eeprom.h"
 struct eeprom_act_DotMatrix EEMEM eeprom_act_DotMatrix =
 {
@@ -98,7 +98,7 @@ void act_DotMatrix_timer_callback(uint8_t timer)
 
 void act_DotMatrix_Init(void)
 {
-#ifdef act_DotMatrix_USEEEPROM
+#if act_DotMatrix_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

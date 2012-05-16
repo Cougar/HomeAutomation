@@ -89,7 +89,11 @@ void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 #define ACT_HWPWM_DEMO_STATE_INCREASE		2
 #define ACT_HWPWM_DEMO_STATE_GOBACK		3
 
-#ifdef act_hwPWM_USEEEPROM
+#ifndef act_hwPWM_USEEEPROM
+#define act_hwPWM_USEEEPROM 0
+#endif
+
+#if act_hwPWM_USEEEPROM==1
 	struct act_hwPWM_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t ch1;

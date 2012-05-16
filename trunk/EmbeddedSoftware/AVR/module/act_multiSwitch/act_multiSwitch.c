@@ -3,7 +3,7 @@
 
 
 uint8_t activeSwitch = 0;
-#ifdef act_multiSwitch_USEEEPROM
+#if act_multiSwitch_USEEEPROM==1
 #include "act_multiSwitch_eeprom.h"
 struct eeprom_act_multiSwitch EEMEM eeprom_act_multiSwitch =
 {
@@ -16,7 +16,7 @@ struct eeprom_act_multiSwitch EEMEM eeprom_act_multiSwitch =
 
 void act_multiSwitch_Init(void)
 {
-  #ifdef act_multiSwitch_USEEEPROM
+  #if act_multiSwitch_USEEEPROM==1
   if (EEDATA_OK)
   {
     activeSwitch = eeprom_read_byte(EEDATA.activeSwitch);
