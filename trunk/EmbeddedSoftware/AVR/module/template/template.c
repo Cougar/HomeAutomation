@@ -1,7 +1,7 @@
 
 #include "<template>.h"
 
-#ifdef <template>_USEEEPROM
+#if <template>_USEEEPROM==1
 #include "<template>_eeprom.h"
 struct eeprom_<template> EEMEM eeprom_<template> =
 {
@@ -17,7 +17,7 @@ struct eeprom_<template> EEMEM eeprom_<template> =
 
 void <template>_Init(void)
 {
-#ifdef <template>_USEEEPROM
+#if <template>_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

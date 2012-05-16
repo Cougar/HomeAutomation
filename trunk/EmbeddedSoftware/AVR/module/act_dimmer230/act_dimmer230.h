@@ -64,7 +64,11 @@ void act_dimmer230_Process(void);
 void act_dimmer230_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_dimmer230_List(uint8_t ModuleSequenceNumber);
 
-#ifdef act_dimmer230_USEEEPROM
+#ifndef act_dimmer230_USEEEPROM
+#define act_dimmer230_USEEEPROM 0
+#endif
+
+#if act_dimmer230_USEEEPROM==1
 	struct act_dimmer230_Data{
 		// the dimmer will store its current value in eeprom, to use when starting
 		uint8_t eeDimmerValue;

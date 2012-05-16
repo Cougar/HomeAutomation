@@ -223,7 +223,7 @@ void act_dimmer230_pcint_callback(uint8_t id, uint8_t status) //ISR (act_dimmer2
 	}
 }
 
-#ifdef act_dimmer230_USEEEPROM
+#if act_dimmer230_USEEEPROM==1
 struct eeprom_act_dimmer230 EEMEM eeprom_act_dimmer230 = 
 {
 	{
@@ -241,7 +241,7 @@ struct eeprom_act_dimmer230 EEMEM eeprom_act_dimmer230 =
 	saved eeprom value */
 void act_dimmer230_Init(void)
 {
-#ifdef act_dimmer230_USEEEPROM
+#if act_dimmer230_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  /* Use stored data to set initial values for the module */
