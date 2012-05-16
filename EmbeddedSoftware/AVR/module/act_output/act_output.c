@@ -3,7 +3,7 @@
 
 uint8_t chnValue[act_output_NUM_SUPPORTED];
 
-#ifdef act_output_USEEEPROM
+#if act_output_USEEEPROM==1
 #include "act_output_eeprom.h"
 struct eeprom_act_output EEMEM eeprom_act_output = 
 {
@@ -46,7 +46,7 @@ struct eeprom_act_output EEMEM eeprom_act_output =
 
 void act_output_Init(void)
 {
-#ifdef act_output_USEEEPROM
+#if act_output_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module
@@ -238,7 +238,7 @@ void act_output_Init(void)
 
 void act_output_Process(void)
 {
-#ifdef act_output_USEEEPROM
+#if act_output_USEEEPROM==1
 	if (Timer_Expired(act_output_STORE_VALUE_TIMEOUT))
 	{
 		uint8_t index = 0;

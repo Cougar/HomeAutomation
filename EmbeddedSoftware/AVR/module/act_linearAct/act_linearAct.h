@@ -45,7 +45,11 @@ void act_linearAct_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_linearAct_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef act_linearAct_USEEEPROM
+#ifndef act_linearAct_USEEEPROM
+#define act_linearAct_USEEEPROM 0
+#endif
+
+#if act_linearAct_USEEEPROM==1
 	struct act_linearAct_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t pulses_ee;

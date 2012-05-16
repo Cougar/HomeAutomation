@@ -25,7 +25,11 @@ void act_output_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_output_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef act_output_USEEEPROM
+#ifndef act_output_USEEEPROM
+#define act_output_USEEEPROM 0
+#endif
+
+#if act_output_USEEEPROM==1
 	struct act_output_Data{
 		///TODO: Define EEPROM variables needed by the module
 

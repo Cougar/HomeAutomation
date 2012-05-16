@@ -25,7 +25,7 @@
 
 #include "act_linearAct.h"
 
-#ifdef act_linearAct_USEEEPROM
+#if act_linearAct_USEEEPROM==1
 #include "act_linearAct_eeprom.h"
 struct eeprom_act_linearAct EEMEM eeprom_act_linearAct =
 {
@@ -79,7 +79,7 @@ ISR (TIMER1_COMPA_vect)
 
 void act_linearAct_Init(void)
 {
-#ifdef act_linearAct_USEEEPROM
+#if act_linearAct_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

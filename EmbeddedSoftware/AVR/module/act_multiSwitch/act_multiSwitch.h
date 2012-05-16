@@ -23,7 +23,11 @@ void act_multiSwitch_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_multiSwitch_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef act_multiSwitch_USEEEPROM
+#ifndef act_multiSwitch_USEEEPROM
+#define act_multiSwitch_USEEEPROM 0
+#endif
+
+#if act_multiSwitch_USEEEPROM==1
 	struct act_multiSwitch_Data{
 		uint8_t activeSwitch;
 	};	

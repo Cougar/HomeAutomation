@@ -13,7 +13,7 @@ uint16_t demoEndValue[4] = {0,0,0,0};
 uint16_t demoHighValue[4] = {0,0,0,0};
 uint8_t demoState[4] = {ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, 					ACT_HWPWM_DEMO_STATE_NOT_RUNNING};
 
-#ifdef act_hwPWM_USEEEPROM
+#if act_hwPWM_USEEEPROM==1
 #include "act_hwPWM_eeprom.h"
 struct eeprom_act_hwPWM EEMEM eeprom_act_hwPWM = 
 {
@@ -84,7 +84,7 @@ void act_hwPWM_timer_callback(uint8_t timer)
 
 void act_hwPWM_Init(void)
 {
-#ifdef act_hwPWM_USEEEPROM
+#if act_hwPWM_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module
