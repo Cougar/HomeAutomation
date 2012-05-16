@@ -99,13 +99,10 @@ void send_debug(uint16_t *buffer, uint8_t len) {
 
 #define channelIsOk(_ch)	((_ch)>=0 && (_ch)<IR_SUPPORTED_NUM_CHANNELS)
 
-#ifndef sns_irTransceive_PRONTO_SUPPORT
-#define sns_irTransceive_PRONTO_SUPPORT 0
-#endif
-
 /*
  * PRONTO HEX Routines
  */
+#if IR_TX_ENABLE==1
 static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 {
 	StdCan_Msg_t msg;
@@ -124,10 +121,12 @@ static void pronto_sendResponse(uint8_t channel, uint8_t responseValue)
 }
 
 static uint8_t prontoAllocatedTxChannel = -1;
+#endif
 
 #if sns_irTransceive_PRONTO_SUPPORT==1
 volatile uint32_t sns_irTransceive_LastPronto=0;
 
+#if IR_TX_ENABLE==1
 /* is any channel transmitting (or preparing to transmit) pronto? */
 static inline int8_t prontoChannelIsAllocated(void)
 {
@@ -139,7 +138,7 @@ static inline int8_t prontoChannelIsAllocated(void)
 	}
 	return 0;
 }
-
+#endif
 
 #define sns_irTransceive_MAXTIMING (16*1000)
 
@@ -305,6 +304,7 @@ static void pronto_sendData(uint16_t *buffer, uint8_t len, uint8_t channel, uint
 }
 
 
+#if IR_TX_ENABLE==1
 static int decodeProntoData(int channel, uint8_t data)
 {
 	static uint8_t waitingForLSB = FALSE;
@@ -360,6 +360,7 @@ static int decodeProntoData(int channel, uint8_t data)
 
 	return 1;
 }
+#endif
 
 #endif
 
@@ -402,16 +403,28 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 			switch (channel)
 			{
 				case 0:
+#ifdef sns_irTransceive_VCC_EN0_PIN
 					gpio_clr_pin(sns_irTransceive_VCC_EN0_PIN);
+#endif
+#ifdef sns_irTransceive_RX0_PIN
 					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
+#endif
 					break;
 				case 1:
+#ifdef sns_irTransceive_VCC_EN1_PIN
 					gpio_clr_pin(sns_irTransceive_VCC_EN1_PIN);
+#endif
+#ifdef sns_irTransceive_RX1_PIN
 					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
+#endif
 					break;
 				case 2:
+#ifdef sns_irTransceive_VCC_EN2_PIN
 					gpio_clr_pin(sns_irTransceive_VCC_EN2_PIN);
+#endif
+#ifdef sns_irTransceive_RX2_PIN
 					IrTransceiver_InitRxChannel(channel, irRxChannel[channel].rxbuf, sns_irTransceive_RX_done_callback, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
+#endif
 					break;
 			}
 			irRxChannel[channel].state = sns_irTransceive_STATE_RECEIVING;
@@ -429,7 +442,9 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 			{
 				case 0:
 #if IR_RX_ENABLE==1
+#ifdef sns_irTransceive_VCC_EN0_PIN
 					gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
+#endif
 					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX0_PCINT, sns_irTransceive_RX0_PIN);
 #endif
 					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX0_PIN);
@@ -449,7 +464,9 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 					break;
 				case 1:
 #if IR_RX_ENABLE==1
+#ifdef sns_irTransceive_VCC_EN1_PIN
 					gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
+#endif
 					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX1_PCINT, sns_irTransceive_RX1_PIN);
 #endif
 					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX1_PIN);
@@ -469,7 +486,9 @@ static void sns_irTransceive_setConfig(uint8_t channel, uint8_t config, uint8_t 
 					break;
 				case 2:
 #if IR_RX_ENABLE==1
+#ifdef sns_irTransceive_VCC_EN2_PIN
 					gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
+#endif
 					IrTransceiver_DeInitRxChannel(channel, sns_irTransceive_RX2_PCINT, sns_irTransceive_RX2_PIN);
 #endif
 					IrTransceiver_InitTxChannel(channel, sns_irTransceive_TX_done_callback, sns_irTransceive_TX2_PIN);
@@ -529,9 +548,15 @@ void sns_irTransceive_Init(void)
 	}
 
 #if IR_RX_ENABLE==1
+#ifdef sns_irTransceive_RX0_REPEATE_TIMER
 	if (IR_SUPPORTED_NUM_CHANNELS>=1) irRxChannel[0].timerNum=sns_irTransceive_RX0_REPEATE_TIMER;
+#endif
+#ifdef sns_irTransceive_RX1_REPEATE_TIMER
 	if (IR_SUPPORTED_NUM_CHANNELS>=2) irRxChannel[1].timerNum=sns_irTransceive_RX1_REPEATE_TIMER;
+#endif
+#ifdef sns_irTransceive_RX2_REPEATE_TIMER
 	if (IR_SUPPORTED_NUM_CHANNELS>=3) irRxChannel[2].timerNum=sns_irTransceive_RX2_REPEATE_TIMER;
+#endif
 #endif
 
 #if IR_TX_ENABLE==1
@@ -542,14 +567,20 @@ void sns_irTransceive_Init(void)
 
 	IrTransceiver_Init();
 	/* Configure all TX VCC pins as outputs and disable them. */
+#ifdef sns_irTransceive_VCC_EN0_PIN
 	gpio_set_out(sns_irTransceive_VCC_EN0_PIN);
-	gpio_set_out(sns_irTransceive_VCC_EN1_PIN);
-	gpio_set_out(sns_irTransceive_VCC_EN2_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN0_PIN);
+#endif
+#ifdef sns_irTransceive_VCC_EN1_PIN
+	gpio_set_out(sns_irTransceive_VCC_EN1_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN1_PIN);
+#endif
+#ifdef sns_irTransceive_VCC_EN2_PIN
+	gpio_set_out(sns_irTransceive_VCC_EN2_PIN);
 	gpio_set_pin(sns_irTransceive_VCC_EN2_PIN);
+#endif
 
-	/* TX-pins must be set in case transmitter is nexa. */
+#if IR_TX_ENABLE==1
 	gpio_set_out(sns_irTransceive_MOD_PIN);
 	gpio_set_out(sns_irTransceive_TX0_PIN);
 	gpio_set_out(sns_irTransceive_TX1_PIN);
@@ -558,6 +589,7 @@ void sns_irTransceive_Init(void)
 	gpio_set_pin(sns_irTransceive_TX0_PIN);
 	gpio_set_pin(sns_irTransceive_TX1_PIN);
 	gpio_set_pin(sns_irTransceive_TX2_PIN);
+#endif
 #endif
 
 	/* IR tx power pins on PCA95xx. */

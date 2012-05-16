@@ -52,6 +52,10 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_ENABLE_PCA95xx 0
 #endif
 
+#ifndef sns_irTransceive_PRONTO_SUPPORT
+#define sns_irTransceive_PRONTO_SUPPORT 0
+#endif
+
 #ifdef sns_irTransceive_USEEEPROM
 	struct sns_irTransceive_Data{
 		uint8_t ch0_config;
