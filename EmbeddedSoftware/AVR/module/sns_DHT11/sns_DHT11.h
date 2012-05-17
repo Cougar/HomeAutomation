@@ -24,7 +24,11 @@ void sns_DHT11_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_DHT11_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_DHT11_USEEEPROM
+#ifndef sns_DHT11_USEEEPROM
+#define sns_DHT11_USEEEPROM 0
+#endif
+
+#if sns_DHT11_USEEEPROM==1
 	struct sns_DHT11_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

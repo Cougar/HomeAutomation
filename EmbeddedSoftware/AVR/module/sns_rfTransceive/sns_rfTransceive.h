@@ -45,7 +45,11 @@ void sns_rfTransceive_List(uint8_t ModuleSequenceNumber);
 #define TRUE 1
 #define FALSE 0
 
-#ifdef sns_rfTransceive_USEEEPROM
+#ifndef sns_rfTransceive_USEEEPROM
+#define sns_rfTransceive_USEEEPROM 0
+#endif
+
+#if sns_rfTransceive_USEEEPROM==1
 	struct sns_rfTransceive_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

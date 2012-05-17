@@ -32,7 +32,11 @@ void act_RGBW_List(uint8_t ModuleSequenceNumber);
 #define ACT_RGBW_MAX_DIM				10000UL
 #define ACT_RGBW_MIN_DIM				0
 
-#ifdef act_RGBW_USEEEPROM
+#ifndef act_RGBW_USEEEPROM
+#define act_RGBW_USEEEPROM 0
+#endif
+
+#if act_RGBW_USEEEPROM==1
 	struct act_RGBW_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t ch1;

@@ -25,7 +25,11 @@ void sns_Touch_Process(void);
 void sns_Touch_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_Touch_List(uint8_t ModuleSequenceNumber);
 
-#ifdef sns_Touch_USEEEPROM
+#ifndef sns_Touch_USEEEPROM
+#define sns_Touch_USEEEPROM 0
+#endif
+
+#if sns_Touch_USEEEPROM==1
 	struct sns_Touch_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

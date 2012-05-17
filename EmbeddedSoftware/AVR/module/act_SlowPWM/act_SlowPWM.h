@@ -22,7 +22,11 @@ void act_SlowPWM_List(uint8_t ModuleSequenceNumber);
 
 #define PWMSENSORID	0
 
-#ifdef act_SlowPWM_USEEEPROM
+#ifndef act_SlowPWM_USEEEPROM
+#define act_SlowPWM_USEEEPROM 0
+#endif
+
+#if act_SlowPWM_USEEEPROM==1
 	struct act_SlowPWM_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t PwmPeriod;

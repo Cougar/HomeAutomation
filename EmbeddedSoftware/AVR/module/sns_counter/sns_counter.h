@@ -23,7 +23,11 @@ void sns_counter_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_counter_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_counter_USEEEPROM
+#ifndef sns_counter_USEEEPROM
+#define sns_counter_USEEEPROM 0
+#endif
+
+#if sns_counter_USEEEPROM==1
 	struct sns_counter_Data{
 		uint8_t reportInterval;
 		uint32_t Count0;

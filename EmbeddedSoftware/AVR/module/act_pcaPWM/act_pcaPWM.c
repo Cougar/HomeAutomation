@@ -17,7 +17,7 @@ uint8_t demoState[8] = {ACT_PCAPWM_DEMO_STATE_NOT_RUNNING, ACT_PCAPWM_DEMO_STATE
 						ACT_PCAPWM_DEMO_STATE_NOT_RUNNING, ACT_PCAPWM_DEMO_STATE_NOT_RUNNING,
 						ACT_PCAPWM_DEMO_STATE_NOT_RUNNING, ACT_PCAPWM_DEMO_STATE_NOT_RUNNING};
 
-#ifdef act_pcaPWM_USEEEPROM
+#if act_pcaPWM_USEEEPROM==1
 #include "act_pcaPWM_eeprom.h"
 struct eeprom_act_pcaPWM EEMEM eeprom_act_pcaPWM =
 {
@@ -91,7 +91,7 @@ void act_pcaPWM_timer_callback(uint8_t timer)
 
 void act_pcaPWM_Init(void)
 {
-#ifdef act_pcaPWM_USEEEPROM
+#if act_pcaPWM_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  setValue[0] = eeprom_read_word(EEDATA16.ch1);
@@ -147,13 +147,13 @@ void act_pcaPWM_Process(void)
 		{
 			isValue[i] = setValue[i];
 			pca9634_setDuty(i, isValue[i]*act_pcaPWM_FACT);
-#ifdef act_pcaPWM_USEEEPROM
+#if act_pcaPWM_USEEEPROM==1
 			Timer_SetTimeout(act_pcaPWM_STORE_VALUE_TIMEOUT, act_pcaPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
 #endif
 		}
 	}
 
-#ifdef act_pcaPWM_USEEEPROM
+#if act_pcaPWM_USEEEPROM==1
 	if (Timer_Expired(act_pcaPWM_STORE_VALUE_TIMEOUT))
 	{
 		if (isValue[0] != eeprom_read_word(EEDATA16.ch1))

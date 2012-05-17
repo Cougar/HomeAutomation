@@ -42,7 +42,7 @@ uint8_t demoState[4] = {ACT_RGBW_DEMO_STATE_NOT_RUNNING, ACT_RGBW_DEMO_STATE_NOT
 
 uint8_t channel_to_send = 1;
 void calculatePWM(uint8_t timer);
-#ifdef act_RGBW_USEEEPROM
+#if act_RGBW_USEEEPROM==1
 #include "act_RGBW_eeprom.h"
 struct eeprom_act_RGBW EEMEM eeprom_act_RGBW = 
 {
@@ -110,7 +110,7 @@ void act_RGBW_timer_callback(uint8_t timer)
 
 void act_RGBW_Init(void)
 {
-#ifdef act_RGBW_USEEEPROM
+#if act_RGBW_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

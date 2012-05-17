@@ -26,7 +26,11 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_Serial_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_Serial_USEEEPROM
+#ifndef sns_Serial_USEEEPROM
+#define sns_Serial_USEEEPROM 0
+#endif
+
+#if sns_Serial_USEEEPROM==1
 	struct sns_Serial_Data {
 		uint32_t baudRate;
 		uint16_t format;

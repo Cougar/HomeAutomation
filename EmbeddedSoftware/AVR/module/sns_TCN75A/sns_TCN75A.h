@@ -37,7 +37,11 @@ void sns_TCN75A_List(uint8_t ModuleSequenceNumber);
 #define TCN75A_CNF_RESOLUTION_12	3 /* gives 12bit resolution, 0.0625deg C*/
 
 
-#ifdef sns_TCN75A_USEEEPROM
+#ifndef sns_TCN75A_USEEEPROM
+#define sns_TCN75A_USEEEPROM 0
+#endif
+
+#if sns_TCN75A_USEEEPROM==1
 	struct sns_TCN75A_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

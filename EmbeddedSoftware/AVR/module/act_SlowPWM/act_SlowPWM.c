@@ -1,7 +1,7 @@
 
 #include "act_SlowPWM.h"
 
-#ifdef act_SlowPWM_USEEEPROM
+#if act_SlowPWM_USEEEPROM==1
 #include "act_SlowPWM_eeprom.h"
 struct eeprom_act_SlowPWM EEMEM eeprom_act_SlowPWM = 
 {
@@ -103,7 +103,7 @@ void pwmInit(void) {
 
 void act_SlowPWM_Init(void)
 {
-#ifdef act_SlowPWM_USEEEPROM
+#if act_SlowPWM_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ;

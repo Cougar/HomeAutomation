@@ -27,7 +27,11 @@ void chn_ChnMaster_HandleMessage(StdCan_Msg_t *rxMsg);
 void chn_ChnMaster_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef chn_ChnMaster_USEEEPROM
+#ifndef chn_ChnMaster_USEEEPROM
+#define chn_ChnMaster_USEEEPROM 0
+#endif
+
+#if chn_ChnMaster_USEEEPROM==1
 	struct chn_ChnMaster_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

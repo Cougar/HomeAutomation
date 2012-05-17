@@ -26,7 +26,11 @@ void sns_PIR_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_PIR_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_PIR_USEEEPROM
+#ifndef sns_PIR_USEEEPROM
+#define sns_PIR_USEEEPROM 0
+#endif
+
+#if sns_PIR_USEEEPROM==1
 	struct sns_PIR_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

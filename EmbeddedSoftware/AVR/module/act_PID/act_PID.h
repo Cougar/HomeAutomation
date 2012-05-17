@@ -18,7 +18,11 @@ void act_PID_Init(void);
 void act_PID_Process(void);
 void act_PID_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_PID_List(uint8_t ModuleSequenceNumber);
-#ifdef act_PID_USEEEPROM
+#ifndef act_PID_USEEEPROM
+#define act_PID_USEEEPROM 0
+#endif
+
+#if act_PID_USEEEPROM==1
 	struct act_PID_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t referenceValue;

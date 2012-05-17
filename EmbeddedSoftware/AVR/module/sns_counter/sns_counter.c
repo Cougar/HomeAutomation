@@ -4,13 +4,13 @@
 #ifdef sns_counter_DEBOUNCE_TIME_MS
 static uint32_t volatile PreviousTimerValue = 0;
 #endif
-#ifdef sns_counter_USEEEPROM
+#if sns_counter_USEEEPROM==1
 static uint8_t volatile StoreInEEPROM = 0;
 #endif
 static uint8_t sns_counter_ReportInterval = (uint8_t)sns_counter_SEND_PERIOD;
 static uint32_t volatile Count0 = 0;
 
-#ifdef sns_counter_USEEEPROM
+#if sns_counter_USEEEPROM==1
 #include "sns_counter_eeprom.h"
 struct eeprom_sns_counter EEMEM eeprom_sns_counter =
 {
@@ -24,7 +24,7 @@ struct eeprom_sns_counter EEMEM eeprom_sns_counter =
 
 uint8_t sns_counter_save_data(void)
 {
-#ifdef sns_counter_USEEEPROM
+#if sns_counter_USEEEPROM==1
 	eeprom_write_byte_crc(EEDATA.reportInterval, sns_counter_SEND_PERIOD, WITHOUT_CRC);
 	eeprom_write_dword_crc(EEDATA32.Count0, 0, WITHOUT_CRC);
 	EEDATA_UPDATE_CRC;
@@ -74,7 +74,7 @@ void sns_counter_pcint_callback(uint8_t id, uint8_t status)
 
 void sns_counter_Init(void)
 {
-#ifdef sns_counter_USEEEPROM
+#if sns_counter_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 		//Use stored data to set initial values for the module
@@ -97,7 +97,7 @@ void sns_counter_Init(void)
 
 void sns_counter_Process(void)
 {
-#ifdef sns_counter_USEEEPROM
+#if sns_counter_USEEEPROM==1
 	if (StoreInEEPROM == 1)
 	{
 		StoreInEEPROM = 0;

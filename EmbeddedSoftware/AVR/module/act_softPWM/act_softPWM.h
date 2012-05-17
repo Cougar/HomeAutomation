@@ -23,7 +23,11 @@ void act_softPWM_Process(void);
 void act_softPWM_HandleMessage(StdCan_Msg_t *rxMsg);
 void act_softPWM_List(uint8_t ModuleSequenceNumber);
 
-#ifdef act_softPWM_USEEEPROM
+#ifndef act_softPWM_USEEEPROM
+#define act_softPWM_USEEEPROM 0
+#endif
+
+#if act_softPWM_USEEEPROM==1
 	struct act_softPWM_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint16_t maxTimer;

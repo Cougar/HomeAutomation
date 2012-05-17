@@ -49,7 +49,7 @@ static struct __attribute__ ((packed)) {
 
 static StdCan_Msg_t msg;
 
-#ifdef sns_Serial_USEEEPROM
+#if sns_Serial_USEEEPROM==1
 #include "sns_Serial_eeprom.h"
 struct eeprom_sns_Serial EEMEM eeprom_sns_Serial =
 {
@@ -176,7 +176,7 @@ uint8_t sns_Serial_setSettings(void)
 
 void sns_Serial_Init()
 {
-#ifdef sns_Serial_USEEEPROM
+#if sns_Serial_USEEEPROM==1
 	if (EEDATA_OK) {
 	//if (0) {
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
@@ -335,7 +335,7 @@ void sns_Serial_HandleMessage(StdCan_Msg_t *rxMsg)
 				if (returnval) 
 				{
 				// update EEPROM data
-#ifdef sns_Serial_USEEEPROM
+#if sns_Serial_USEEEPROM==1
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >=2)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 				eeprom_write_dword_crc(EEDATA32.baudRate, baudRate, WITHOUT_CRC);
 #else

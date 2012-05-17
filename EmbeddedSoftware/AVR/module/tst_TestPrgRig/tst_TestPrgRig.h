@@ -45,7 +45,11 @@ void tst_TestPrgRig_HandleMessage(StdCan_Msg_t *rxMsg);
 void tst_TestPrgRig_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef tst_TestPrgRig_USEEEPROM
+#ifndef tst_TestPrgRig_USEEEPROM
+#define tst_TestPrgRig_USEEEPROM 0
+#endif
+
+#if tst_TestPrgRig_USEEEPROM==1
 	struct tst_TestPrgRig_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;
