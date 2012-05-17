@@ -24,7 +24,11 @@ void act_pcaPWM_List(uint8_t ModuleSequenceNumber);
 
 #define act_pcaPWM_FACT 0xffUL/10000UL
 
-#ifdef act_pcaPWM_USEEEPROM
+#ifndef act_pcaPWM_USEEEPROM
+#define act_pcaPWM_USEEEPROM 0
+#endif
+
+#if act_pcaPWM_USEEEPROM==1
 	struct act_pcaPWM_Data{
 		uint16_t ch1;
 		uint16_t ch2;

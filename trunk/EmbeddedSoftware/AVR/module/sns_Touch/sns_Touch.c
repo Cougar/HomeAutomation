@@ -7,7 +7,7 @@ point lastValidPoint;
 uint8_t timeCnt;
 
 
-#ifdef sns_Touch_USEEEPROM
+#if sns_Touch_USEEEPROM==1
 #include "sns_Touch_eeprom.h"
 struct eeprom_sns_Touch EEMEM eeprom_sns_Touch = 
 {
@@ -22,7 +22,7 @@ struct eeprom_sns_Touch EEMEM eeprom_sns_Touch =
 
 void sns_Touch_Init(void)
 {
-#ifdef sns_Touch_USEEEPROM
+#if sns_Touch_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

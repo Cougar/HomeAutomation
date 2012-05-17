@@ -1,6 +1,6 @@
 #include "sns_irTransceive.h"
 
-#ifdef sns_irTransceive_USEEEPROM
+#if sns_irTransceive_USEEEPROM==1
 #include "sns_irTransceive_eeprom.h"
 struct eeprom_sns_irTransceive EEMEM eeprom_sns_irTransceive =
 {
@@ -612,7 +612,7 @@ void sns_irTransceive_Init(void)
 	Pca95xx_set_out(sns_irTransceive_TX2_PWRh);
 #endif
 
-#ifdef sns_irTransceive_USEEEPROM
+#if sns_irTransceive_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  /* Use stored data to set initial values for the module. */
@@ -1372,7 +1372,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		}
 		sns_irTransceive_setConfig(channel, config, power, modfreq);
 
-#ifdef sns_irTransceive_USEEEPROM
+#if sns_irTransceive_USEEEPROM==1
 		if (channel < IR_SUPPORTED_NUM_CHANNELS && config <= CAN_MODULE_ENUM_IRTRANSCEIVE_IRCONFIG_DIRECTION_RECEIVE && power < 4)
 		{
 			switch (channel)

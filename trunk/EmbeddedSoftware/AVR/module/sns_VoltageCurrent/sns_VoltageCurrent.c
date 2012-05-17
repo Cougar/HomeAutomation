@@ -1,7 +1,7 @@
 
 #include "sns_VoltageCurrent.h"
 
-#ifdef sns_VoltageCurrent_USEEEPROM
+#if sns_VoltageCurrent_USEEEPROM==1
 #include "sns_VoltageCurrent_eeprom.h"
 
 struct eeprom_sns_VoltageCurrent EEMEM eeprom_sns_VoltageCurrent = 
@@ -17,7 +17,7 @@ struct eeprom_sns_VoltageCurrent EEMEM eeprom_sns_VoltageCurrent =
 
 void sns_VoltageCurrent_Init(void)
 {
-#ifdef sns_VoltageCurrent_USEEEPROM
+#if sns_VoltageCurrent_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

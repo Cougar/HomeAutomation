@@ -4,7 +4,7 @@ uint8_t sendNewTemp = 0;
 uint8_t temperature = 0;
 uint8_t humidity = 0;
 
-#ifdef sns_DHT11_USEEEPROM
+#if sns_DHT11_USEEEPROM==1
 #include "sns_DHT11_eeprom.h"
 struct eeprom_sns_DHT11 EEMEM eeprom_sns_DHT11 =
 {
@@ -36,7 +36,7 @@ void ConvertTemperature_callback_DHT11(uint8_t timer)
 
 void sns_DHT11_Init(void)
 {
-#ifdef sns_DHT11_USEEEPROM
+#if sns_DHT11_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

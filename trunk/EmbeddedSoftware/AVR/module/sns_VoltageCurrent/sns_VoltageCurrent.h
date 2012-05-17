@@ -25,7 +25,11 @@ void sns_VoltageCurrent_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_VoltageCurrent_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_VoltageCurrent_USEEEPROM
+#ifndef sns_VoltageCurrent_USEEEPROM
+#define sns_VoltageCurrent_USEEEPROM 0
+#endif
+
+#if sns_VoltageCurrent_USEEEPROM==1
 	struct sns_VoltageCurrent_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

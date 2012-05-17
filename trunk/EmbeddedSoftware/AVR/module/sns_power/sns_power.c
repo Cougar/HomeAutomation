@@ -28,7 +28,7 @@ static uint32_t volatile EnergyCounter=0;
     static uint16_t volatile avgCounter_ch2 = 0;
   #endif
 #endif
-#ifdef sns_power_USEEEPROM
+#if sns_power_USEEEPROM==1
   #include "sns_power_eeprom.h"
   struct eeprom_sns_power EEMEM eeprom_sns_power = 
   {
@@ -141,7 +141,7 @@ void sns_power_pcint_callback_ch2(uint8_t id, uint8_t status)
 
 void sns_power_Init(void)
 {
-#ifdef sns_power_USEEEPROM
+#if sns_power_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

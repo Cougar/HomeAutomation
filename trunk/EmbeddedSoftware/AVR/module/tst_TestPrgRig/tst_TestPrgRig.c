@@ -17,7 +17,7 @@ svn export template_module modDUT; cd modDUT; make bios; make installbios; sleep
 */
 
 
-#ifdef tst_TestPrgRig_USEEEPROM
+#if tst_TestPrgRig_USEEEPROM==1
 #include "tst_TestPrgRig_eeprom.h"
 struct eeprom_tst_TestPrgRig EEMEM eeprom_tst_TestPrgRig = 
 {
@@ -32,7 +32,7 @@ struct eeprom_tst_TestPrgRig EEMEM eeprom_tst_TestPrgRig =
 
 void tst_TestPrgRig_Init(void)
 {
-#ifdef tst_TestPrgRig_USEEEPROM
+#if tst_TestPrgRig_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

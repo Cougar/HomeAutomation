@@ -56,7 +56,11 @@ void sns_irTransceive_List(uint8_t ModuleSequenceNumber);
 #define sns_irTransceive_PRONTO_SUPPORT 0
 #endif
 
-#ifdef sns_irTransceive_USEEEPROM
+#ifndef sns_irTransceive_USEEEPROM
+#define sns_irTransceive_USEEEPROM 0
+#endif
+
+#if sns_irTransceive_USEEEPROM==1
 	struct sns_irTransceive_Data{
 		uint8_t ch0_config;
 		uint8_t ch0_txpower;

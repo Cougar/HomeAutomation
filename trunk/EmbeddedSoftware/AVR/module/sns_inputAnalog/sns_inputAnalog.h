@@ -34,7 +34,11 @@ struct sns_inputAnalog_Config{
 	uint8_t				RefEnable;		//Config, if the reference to GND should be enabled
 } sns_inputAnalog_Config[sns_inputAnalog_NUM_SUPPORTED];
 
-#ifdef sns_inputAnalog_USEEEPROM
+#ifndef sns_inputAnalog_USEEEPROM
+#define sns_inputAnalog_USEEEPROM 0
+#endif
+
+#if sns_inputAnalog_USEEEPROM==1
 	struct sns_inputAnalog_Data{
 		struct sns_inputAnalog_Config Config0;
 #if sns_inputAnalog_NUM_SUPPORTED>=2

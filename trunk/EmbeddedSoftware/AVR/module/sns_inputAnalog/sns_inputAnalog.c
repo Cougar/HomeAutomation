@@ -12,7 +12,7 @@ struct {
 #define LOW			2
 #define NOCHANGE 	0
 
-#ifdef sns_inputAnalog_USEEEPROM
+#if sns_inputAnalog_USEEEPROM==1
 #include "sns_inputAnalog_eeprom.h"
 
 struct eeprom_sns_inputAnalog EEMEM eeprom_sns_inputAnalog = 
@@ -254,7 +254,7 @@ void setReferences(void)
 
 void sns_inputAnalog_Init(void)
 {
-#ifdef sns_inputAnalog_USEEEPROM
+#if sns_inputAnalog_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 		/* Use stored data to set initial values for the module */
@@ -467,7 +467,7 @@ void sns_inputAnalog_HandleMessage(StdCan_Msg_t *rxMsg)
 						break;
 				}
 				
-#ifdef sns_inputAnalog_USEEEPROM
+#if sns_inputAnalog_USEEEPROM==1
 				/* Store config to eeprom */
 #if ((__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ == 6 && __AVR_LIBC_REVISION__ >= 7)||(__AVR_LIBC_MAJOR__ == 1  && __AVR_LIBC_MINOR__ > 6)||__AVR_LIBC_MAJOR__ > 1)
 				eeprom_update_block( &sns_inputAnalog_Config[index], &eeprom_sns_inputAnalog+sizeof(sns_inputAnalog_Config)*index, sizeof(sns_inputAnalog_Config) );

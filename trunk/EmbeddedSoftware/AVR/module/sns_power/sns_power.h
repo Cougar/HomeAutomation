@@ -23,7 +23,11 @@ void sns_power_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_power_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_power_USEEEPROM
+#ifndef sns_power_USEEEPROM
+#define sns_power_USEEEPROM 0
+#endif
+
+#if sns_power_USEEEPROM==1
 	struct sns_power_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t reportInterval;

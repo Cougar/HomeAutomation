@@ -24,7 +24,11 @@ void sns_rotaryHex_HandleMessage(StdCan_Msg_t *rxMsg);
 void sns_rotaryHex_List(uint8_t ModuleSequenceNumber);
 
 
-#ifdef sns_rotaryHex_USEEEPROM
+#ifndef sns_rotaryHex_USEEEPROM
+#define sns_rotaryHex_USEEEPROM 0
+#endif
+
+#if sns_rotaryHex_USEEEPROM==1
 	struct sns_rotaryHex_Data{
 		///TODO: Define EEPROM variables needed by the module
 		uint8_t x;

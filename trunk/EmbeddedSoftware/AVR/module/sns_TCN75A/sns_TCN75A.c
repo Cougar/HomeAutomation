@@ -3,7 +3,7 @@
 
 unsigned char messageBuf[5];
 
-#ifdef sns_TCN75A_USEEEPROM
+#if sns_TCN75A_USEEEPROM==1
 #include "sns_TCN75A_eeprom.h"
 struct eeprom_sns_TCN75A EEMEM eeprom_sns_TCN75A = 
 {
@@ -18,7 +18,7 @@ struct eeprom_sns_TCN75A EEMEM eeprom_sns_TCN75A =
 
 void sns_TCN75A_Init(void)
 {
-#ifdef sns_TCN75A_USEEEPROM
+#if sns_TCN75A_USEEEPROM==1
 	if (EEDATA_OK)
 	{
 	  ///TODO: Use stored data to set initial values for the module

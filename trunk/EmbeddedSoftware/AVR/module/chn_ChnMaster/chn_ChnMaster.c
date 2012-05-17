@@ -17,7 +17,7 @@ struct chn_ChnMaster_buffer_t {
 volatile uint8_t chn_ChnMaster_buf_in_pos = 0; // next to write
 volatile uint8_t chn_ChnMaster_buf_out_pos = 0; // next to read
 
-#ifdef chn_ChnMaster_USEEEPROM
+#if chn_ChnMaster_USEEEPROM==1
 #include "chn_ChnMaster_eeprom.h"
 struct eeprom_chn_ChnMaster EEMEM eeprom_chn_ChnMaster = 
 {

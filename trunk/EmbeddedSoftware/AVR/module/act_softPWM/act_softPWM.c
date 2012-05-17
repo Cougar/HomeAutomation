@@ -71,7 +71,7 @@ static uint8_t resolution = 1;
 static uint8_t act_softPWM_ReportInterval =0;
 static uint8_t currentSendChannelId = 0;
 
-#ifdef act_softPWM_USEEEPROM
+#if act_softPWM_USEEEPROM==1
 #include "act_softPWM_eeprom.h"
 struct eeprom_act_softPWM EEMEM eeprom_act_softPWM = 
 {
@@ -94,7 +94,7 @@ static uint8_t offCounter[NUMBEROFCHANNELS];
 
 void act_softPWM_Init(void)
 {
-#ifdef act_softPWM_USEEEPROM
+#if act_softPWM_USEEEPROM==1
 	//if (EEDATA_OK)
 	//{
 	 // ;
