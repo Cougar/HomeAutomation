@@ -24,6 +24,7 @@ include $(CFGDIR)/bios.inc
 # VPATH: setup search path for source files.
 vpath
 vpath %.c $(LIBDIR):$(SRCDIR):$(MODDIR)
+vpath %.S $(LIBDIR):$(SRCDIR):$(MODDIR)
 
 # List source files here. (C dependencies are automatically generated.)
 include $(CFGDIR)/sources.inc
@@ -170,7 +171,8 @@ MSG_CLEANING = Cleaning project:
 MSG_CREATE = Creating:
 
 # Define all object files.
-OBJ = $(filter %.o,$(SOURCES:.c=.o) $(SOURCES:.S=.o))
+#OBJ = $(filter %.o,$(SOURCES:.c=.o) $(SOURCES:.S=.o))
+OBJ = $(addsuffix .o,$(basename $(SOURCES)))
 
 # Define all listing files.
 LST = $(OBJ:.o=.lst)
