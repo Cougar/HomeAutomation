@@ -1,0 +1,15 @@
+## Section sns_qtouch -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_qtouch_USEEEPROM=1
+
+sns_qtouch_ID=<ID>
+#sns_qtouch_DUMMY=1
+#sns_qtouch_DUMMY_TIMER=<TIMER>
+
+sns_qtouch_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#sns_qtouch_DUMMY_PCINT=<PCINT>
+
+## End section sns_qtouch -- Do not edit this line
