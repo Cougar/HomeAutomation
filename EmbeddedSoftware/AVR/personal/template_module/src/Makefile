@@ -123,7 +123,7 @@ MATH_LIB = -lm
 
 EXTMEMOPTS =
 
-BIOSOPTS = -Wl,-L$(BIOSDIR),-Tdata,$(BIOS_RAM_END) -lbios
+BIOSOPTS = -Wl,-L$(BIOSDIR),-Tdata,$(BIOS_RAM_END) 
 
 # Linker flags.
 #  -Wl,...:     tell GCC to pass this to linker.
@@ -132,8 +132,9 @@ BIOSOPTS = -Wl,-L$(BIOSDIR),-Tdata,$(BIOS_RAM_END) -lbios
 LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(BIOSOPTS)
-LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
+LDLIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+LDLIBS += -lbios
 # ---------------------------------------------------------------------------
 
 # Define programs and commands.
@@ -170,6 +171,8 @@ MSG_DEPEND = Generating dependencies:
 MSG_CLEANING = Cleaning project:
 MSG_CREATE = Creating:
 
+#First filter out all .a library files
+SOURCES_FILTER = 
 # Define all object files.
 #OBJ = $(filter %.o,$(SOURCES:.c=.o) $(SOURCES:.S=.o))
 OBJ = $(addsuffix .o,$(basename $(SOURCES)))
@@ -269,7 +272,9 @@ extcoff: $(TARGET).elf
 # correct .data location substituted.
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
-	@eval $$($(CC) -v $(CFLAGS) -o $@ $^ $(LDFLAGS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
+	eval $$($(CC) -v $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
+
+#$(LDLIBS)
 
 # Compile: create object files from C source files.
 %.o : %.c
