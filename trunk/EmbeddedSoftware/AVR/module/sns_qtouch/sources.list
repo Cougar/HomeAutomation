@@ -9,3 +9,4 @@ sns_qtouch/src/QTouch/qt_asm_tiny_mega.S
 #drivers/mcu/pcint.c
 #Uncomment the line below if you want to use the ADC driver in this module
 #drivers/adc/adc.c
+
