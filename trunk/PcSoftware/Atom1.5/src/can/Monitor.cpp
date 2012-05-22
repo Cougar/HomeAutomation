@@ -119,41 +119,50 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
     }
 }
 
-void Monitor::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
+void Monitor::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
 {
-    if (server_id != this->server_id_)
+    if (std::find(this->clients_.begin(), this->clients_.end(), id) == this->clients_.end())
     {
-        return;
+      return;
     }
-    
+  
     std::string str = data.ToCharString();
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
-    LOG.Debug("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(client_id) + " on server " + boost::lexical_cast<std::string>(server_id));
+    LOG.Debug("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(id) + " on server " + boost::lexical_cast<std::string>(this->server_id_));
     
     if (str == "q" || str == "quit")
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has requested to be disconnected.");
-        net::Manager::Instance()->Disconnect(client_id);
+        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has requested to be disconnected.");
+        net::Manager::Instance()->Disconnect(id);
     }
 }
 
-void Monitor::SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
+void Monitor::SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id)
 {
-    if (server_id != this->server_id_)
+  if (server_id == this->server_id_)
+  {
+    this->clients_.insert(id);
+  }
+}
+
+void Monitor::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state)
+{
+    if (std::find(this->clients_.begin(), this->clients_.end(), id) == this->clients_.end())
     {
-        return;
+      return;
     }
-    
+  
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has disconnected.");
+        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has disconnected.");
+        this->clients_.erase(id);
     }
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has connected.");
-        net::Manager::Instance()->SendTo(client_id, common::Byteset("Welcome to Atom CAN monitoring\n"));
+        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has connected.");
+        net::Manager::Instance()->SendTo(id, common::Byteset("Welcome to Atom CAN monitoring\n"));
     }
     else
     {

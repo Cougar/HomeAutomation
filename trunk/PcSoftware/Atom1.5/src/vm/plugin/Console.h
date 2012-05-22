@@ -22,6 +22,7 @@
 #define VM_PLUGIN_CONSOLE_H
 
 #include <boost/shared_ptr.hpp>
+#include <set>
 
 #include "logging/Logger.h"
 #include "net/Subscriber.h"
@@ -48,12 +49,15 @@ public:
 private:
     net::SocketId server_id_;
     static net::SocketId current_client_id_;
+    std::set<net::SocketId> clients_;
     
-    void SlotOnNewState(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
+    void SlotOnNewState(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClient(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewData(net::SocketId id, common::Byteset data);
     
-    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewDataHandler(net::SocketId id, common::Byteset data);
     
     static logging::Logger LOG;
     

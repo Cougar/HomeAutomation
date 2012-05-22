@@ -43,9 +43,10 @@ namespace net {
 class Manager : public common::IoService
 {
 public:
-  typedef boost::shared_ptr<Manager>                                          Pointer;
-  typedef boost::signals2::signal<void(SocketId, SocketId, ClientState)>      SignalOnNewState;
-  typedef boost::signals2::signal<void(SocketId, SocketId, common::Byteset)>  SignalOnNewData;
+  typedef boost::shared_ptr<Manager>                                Pointer;
+  typedef boost::signals2::signal<void(SocketId, ClientState)>      SignalOnNewState;
+  typedef boost::signals2::signal<void(SocketId, SocketId)>         SignalOnNewClient;
+  typedef boost::signals2::signal<void(SocketId, common::Byteset)>  SignalOnNewData;
 
   virtual ~Manager();
 
@@ -53,7 +54,7 @@ public:
   static void Create();
   static void Delete();
   
-  void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data);
+  void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewClient::slot_type& slot_on_new_client, const SignalOnNewData::slot_type& slot_on_new_data);
   
   SocketId StartServer(Protocol protocol, unsigned int port);
   SocketId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
@@ -73,6 +74,7 @@ private:
   ClientList        clients_;
   ServerList        servers_;
   SignalOnNewState  signal_on_new_state_;
+  SignalOnNewClient signal_on_new_client_;
   SignalOnNewData   signal_on_new_data_;
   
   Manager();

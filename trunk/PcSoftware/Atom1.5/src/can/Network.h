@@ -55,8 +55,9 @@ private:
     
     void SlotOnTimeout(timer::TimerId timer_id);
     
-    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewDataHandler(net::SocketId id, common::Byteset data);
     void SlotOnTimeoutHandler(timer::TimerId timer_id);
     
     void ProcessBuffer();

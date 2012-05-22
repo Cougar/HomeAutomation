@@ -34,8 +34,9 @@ Subscriber::Subscriber()
 {
   LOG_DEBUG_ENTER;
   
-  Manager::Instance()->ConnectSlots(Manager::SignalOnNewState::slot_type(&Subscriber::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                    Manager::SignalOnNewData::slot_type(&Subscriber::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  Manager::Instance()->ConnectSlots(Manager::SignalOnNewState::slot_type(&Subscriber::SlotOnNewState, this, _1, _2).track(this->tracker_),
+                                    Manager::SignalOnNewClient::slot_type(&Subscriber::SlotOnNewClient, this, _1, _2).track(this->tracker_),
+                                    Manager::SignalOnNewData::slot_type(&Subscriber::SlotOnNewData, this, _1, _2).track(this->tracker_));
   
   LOG_DEBUG_EXIT;
 }
@@ -46,20 +47,30 @@ Subscriber::~Subscriber()
   LOG_DEBUG_EXIT;
 }
 
-void Subscriber::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byteset data)
+void Subscriber::SlotOnNewData(SocketId id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
-  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, client_id, server_id, data));
+  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewDataHandler, this, id, data));
   
   LOG_DEBUG_EXIT;
 }
 
-void Subscriber::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState client_state)
+void Subscriber::SlotOnNewClient(SocketId id, SocketId server_id)
 {
   LOG_DEBUG_ENTER;
   
-  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewClientHandler, this, id, server_id));
+  
+  LOG_DEBUG_EXIT;
+}
+
+
+void Subscriber::SlotOnNewState(SocketId id, ClientState client_state)
+{
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Subscriber::SlotOnNewStateHandler, this, id, client_state));
   
   LOG_DEBUG_EXIT;
 }

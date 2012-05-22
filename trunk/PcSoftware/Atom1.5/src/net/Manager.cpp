@@ -80,11 +80,12 @@ void Manager::Delete()
   LOG_DEBUG_EXIT;
 }
 
-void Manager::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewData::slot_type& slot_on_new_data)
+void Manager::ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewClient::slot_type& slot_on_new_client, const SignalOnNewData::slot_type& slot_on_new_data)
 {
   LOG_DEBUG_ENTER;
   
   this->signal_on_new_state_.connect(slot_on_new_state);
+  this->signal_on_new_client_.connect(slot_on_new_client);
   this->signal_on_new_data_.connect(slot_on_new_data);
   
   LOG_DEBUG_EXIT;
@@ -101,7 +102,7 @@ void Manager::SlotOnNewState(SocketId client_id, SocketId server_id, ClientState
     this->clients_.erase(client_id);
   }
   
-  this->signal_on_new_state_(client_id, server_id, client_state);
+  this->signal_on_new_state_(client_id, client_state);
   
   LOG_DEBUG_EXIT;
 }
@@ -117,9 +118,11 @@ void Manager::SlotOnNewClient(SocketId server_id, TcpSocketPointer socket)
   
   this->clients_[client->GetId()] = client;
 
-  log::Debug(log_module_, "Client connected on server id %d with client id %d!", server_id, client->GetId());
+  log::Info(log_module_, "Client connected on server id %d with client id %d!", server_id, client->GetId());
   
-  this->signal_on_new_state_(client->GetId(), server_id, CLIENT_STATE_CONNECTED);
+  this->signal_on_new_client_(client->GetId(), server_id);
+  
+  this->signal_on_new_state_(client->GetId(), CLIENT_STATE_CONNECTED);
   
   LOG_DEBUG_EXIT;
 }
@@ -128,7 +131,7 @@ void Manager::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byte
 {
   LOG_DEBUG_ENTER;
   
-  this->signal_on_new_data_(client_id, server_id, data);
+  this->signal_on_new_data_(client_id, data);
   
   LOG_DEBUG_EXIT;
 }
@@ -280,6 +283,10 @@ void Manager::SendToHandler(SocketId client_id, common::Byteset data)
   if (it != this->clients_.end())
   {
     it->second->Send(data);
+  }
+  else
+  {
+    log::Error(log_module_, "Failed to find client %d to send data to!", client_id);
   }
   
   LOG_DEBUG_EXIT;

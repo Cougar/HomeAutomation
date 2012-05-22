@@ -22,6 +22,7 @@
 #define CAN_MONITOR_H
 
 #include <string>
+#include <set>
 
 #include <boost/shared_ptr.hpp>
 
@@ -44,10 +45,12 @@ public:
     
 private:
     net::SocketId server_id_;
+    std::set<net::SocketId> clients_;
     
     void SlotOnMessageHandler(broker::Message::Pointer message);
-    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
+    void SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewDataHandler(net::SocketId id, common::Byteset data);
     
     logging::Logger LOG;
 };
