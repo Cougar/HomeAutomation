@@ -40,8 +40,9 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     this->name_ = "console";
     Console::current_client_id_ = 0;
     
-    net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2, _3).track(this->tracker_),
-                                           net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+    net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Console::SlotOnNewState, this, _1, _2).track(this->tracker_),
+                                           net::Manager::SignalOnNewClient::slot_type(&Console::SlotOnNewClient, this, _1, _2).track(this->tracker_),
+                                           net::Manager::SignalOnNewData::slot_type(&Console::SlotOnNewData, this, _1, _2).track(this->tracker_));
     
     this->ExportFunction("ConsoleExport_PromptRequest",        Console::Export_PromptRequest);
     this->ExportFunction("ConsoleExport_AutoCompleteResponse", Console::Export_AutoCompleteResponse);
@@ -84,32 +85,33 @@ void Console::CallOutput(unsigned int request_id, std::string output)
     net::Manager::Instance()->SendTo(request_id, packet);
 }
 
-void Console::SlotOnNewData(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
+void Console::SlotOnNewData(net::SocketId id, common::Byteset data)
 {
-    if (server_id != this->server_id_)
-    {
-        return;
-    }
-    
-    this->io_service_.post(boost::bind(&Console::SlotOnNewDataHandler, this, client_id, server_id, data));
+    this->io_service_.post(boost::bind(&Console::SlotOnNewDataHandler, this, id, data));
 }
 
-void Console::SlotOnNewState(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
+void Console::SlotOnNewClient(net::SocketId id, net::SocketId server_id)
 {
-    if (server_id != this->server_id_)
-    {
-        return;
-    }
-    
-    this->io_service_.post(boost::bind(&Console::SlotOnNewStateHandler, this, client_id, server_id, client_state));
+  this->io_service_.post(boost::bind(&Console::SlotOnNewClientHandler, this, id, server_id));
 }
 
-void Console::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data)
+void Console::SlotOnNewState(net::SocketId id, net::ClientState client_state)
+{
+    this->io_service_.post(boost::bind(&Console::SlotOnNewStateHandler, this, id, client_state));
+}
+
+void Console::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
 
+    if (std::find(this->clients_.begin(), this->clients_.end(), id) == this->clients_.end())
+    {
+      return;
+    }
+      
+    
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
 
     if (data.GetSize() == 0)
@@ -136,17 +138,17 @@ void Console::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server
     LOG.Debug(std::string(__FUNCTION__) + " parsed payload_length: \"" + boost::lexical_cast<std::string>(payload_length) + "\"");
 
     
-    Console::current_client_id_ = client_id;
+    Console::current_client_id_ = id;
     
     if (command == "COMP")
     {
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
         
-        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
         call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(s.substr(8, 4))));
         call_arguments->push_back(v8::String::New(s.substr(12).data()));
         
-        if (!this->Call(client_id, "Console_AutocompleteRequest", call_arguments))
+        if (!this->Call(id, "Console_AutocompleteRequest", call_arguments))
         {
             LOG.Error("Console_AutocompleteRequest failed, we are now in an undefined state!");
         }
@@ -157,10 +159,10 @@ void Console::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server
         
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
         
-        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
         call_arguments->push_back(v8::String::New(s.substr(8).data()));
         
-        if (!this->Call(client_id, "Console_PromptResponse", call_arguments))
+        if (!this->Call(id, "Console_PromptResponse", call_arguments))
         {
             LOG.Error("Console_PromptResponse failed, we are now in an undefined state!");
         }
@@ -173,29 +175,43 @@ void Console::SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server
     Console::current_client_id_ = 0;
 }
 
-void Console::SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state)
+void Console::SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id)
+{
+  if (server_id == this->server_id_)
+  {
+    this->clients_.insert(id);
+  }
+}
+
+void Console::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state)
 {
     v8::Locker lock;
     v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
     v8::HandleScope handle_scope;
  
+    if (std::find(this->clients_.begin(), this->clients_.end(), id) == this->clients_.end())
+    {
+      return;
+    }
+    
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
     
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has disconnected.");
+        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has disconnected.");
+        this->clients_.erase(id);
     }
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(client_id) + " has connected.");
+        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has connected.");
      
-        Console::current_client_id_ = client_id;
+        Console::current_client_id_ = id;
         
         ArgumentListPointer call_arguments = ArgumentListPointer(new ArgumentList);
         
-        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(client_id)));
+        call_arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
         
-        if (!this->Call(client_id, "Console_NewConnection", call_arguments))
+        if (!this->Call(id, "Console_NewConnection", call_arguments))
         {
             LOG.Error("Console_NewConnection failed, we are now in an undefined state!");
         }

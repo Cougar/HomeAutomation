@@ -46,12 +46,14 @@ public:
     void CallOutput(unsigned int request_id, std::string output);
     
 private:
-    void SlotOnNewState(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewData(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
+    void SlotOnNewState(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClient(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewData(net::SocketId id, common::Byteset data);
 
-    void SlotOnNewStateHandler(net::SocketId client_id, net::SocketId server_id, net::ClientState client_state);
-    void SlotOnNewDataHandler(net::SocketId client_id, net::SocketId server_id, common::Byteset data);
-    
+    void SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state);
+    void SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id);
+    void SlotOnNewDataHandler(net::SocketId id, common::Byteset data);
+
     static Value Export_StartServer(const v8::Arguments& args);
     static Value Export_Connect(const v8::Arguments& args);
     static Value Export_StopServer(const v8::Arguments& args);

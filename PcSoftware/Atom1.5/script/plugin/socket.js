@@ -5,15 +5,8 @@ var SOCKET_STATE_CONNECTED      = 0x00;
 var SOCKET_STATE_DISCONNECTED   = 0x01;
 var SOCKET_STATE_ACCEPTED       = 0x02;
 
-function Socket_OnNewData(socket_id, server_id, data)
+function Socket_OnNewData(id, data)
 {
-  var id = socket_id;
-  
-  if (!Socket_Connections[id])
-  {
-    id = server_id;
-  }
-  
   if (Socket_Connections[id])
   {
     Socket_Connections[id]["ondata"](id, data);
@@ -22,15 +15,20 @@ function Socket_OnNewData(socket_id, server_id, data)
   return true;
 }
 
-function Socket_OnNewState(socket_id, server_id, state)
+function Socket_OnNewClient(id, server_id)
 {
-  var id = socket_id;
-  
-  if (!Socket_Connections[id])
+  if (Socket_Connections[server_id])
   {
-    id = server_id;
+    Socket_Connections[id] = { "ondata" : Socket_Connections[server_id]["ondata"], "onstate" : Socket_Connections[server_id]["onstate"] };
+    
+    Socket_Connections[server_id]["onaccept"](id, server_id);
   }
   
+  return true;
+}
+
+function Socket_OnNewState(id, state)
+{
   if (Socket_Connections[id])
   {
     Socket_Connections[id]["onstate"](id, state);
@@ -44,13 +42,13 @@ function Socket_OnNewState(socket_id, server_id, state)
   return true;
 }
 
-function Socket_StartServer(port, ondata_callback, onstate_callback)
+function Socket_StartServer(port, onaccept_callback, ondata_callback, onstate_callback)
 {
   socket_id = SocketExport_StartServer(port);
   
   if (socket_id > 0)
   {
-    Socket_Connections[socket_id] = { "ondata" : ondata_callback, "onstate" : onstate_callback };
+    Socket_Connections[socket_id] = { "onaccept" : onaccept_callback, "ondata" : ondata_callback, "onstate" : onstate_callback };
   }
   
   return socket_id;

@@ -35,7 +35,7 @@ function TrackerManager(host, username, password, database, server_port)
   
   
   /* Function for finding tracked object */
-  this._IdentifyTracker = function(data)
+  this._Identify = function(data)
   {
     var result = MySql_Query(this.db_resource_, "SELECT `Nodes`.* FROM `Nodes`, `Attributes` WHERE `Nodes`.`type` = 'tracker' AND `Nodes`.`id` = `Attributes`.`node_id` AND `Attributes`.`name` = 'Imei' AND `Attributes`.`value` = '" + data.Imei + "'");
       
@@ -81,40 +81,45 @@ function TrackerManager(host, username, password, database, server_port)
   /* Function for inserting new position in database */
   this._InsertPosition = function(tracker_node_id, data)
   {
-    if (data.Type != "NO")
+    var result = false;
+    
+    var query  =  "INSERT INTO `Positions` (`node_id`, `source`, `type`, `latitude_longitude`, `datetime`, `pdop`, `hdop`, `vdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle`) VALUES (";
+    query     +=  tracker_node_id + ",";
+    query     +=  "'gps',";
+    query     +=  "'" + data.Type + "',";
+    query     +=  "GeomFromText('POINT(" + data.Latitude + " " + data.Longitude + ")'),";
+    query     +=  "'20" + data.Datetime + "',";
+    query     +=  data.Pdop + ",";
+    query     +=  data.Hdop + ",";
+    query     +=  data.Vdop + ",";
+    query     +=  data.Satellites + ",";
+    query     +=  data.Altitude + ",";
+    query     +=  data.HeightOfGeoid + ",";
+    query     +=  data.Speed + ",";
+    query     +=  data.Angle;
+    query     +=  ");";
+    
+    result = MySql_Query(this.db_resource_, query);
+    
+    if (!result)
     {
-      var query  =  "INSERT INTO `Positions` (`node_id`, `source`, `type`, `latitude_longitude`, `datetime`, `pdop`, `hdop`, `vdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle`) VALUES (";
-      query     +=  tracker_node_id + ",";
-      query     +=  "'gps',";
-      query     +=  "'" + data.Type + "',";
-      query     +=  "GeomFromText('POINT(" + data.Latitude + " " + data.Longitude + ")'),";
-      query     +=  "'" + data.Datetime + "',";
-      query     +=  data.Pdop + ",";
-      query     +=  data.Hdop + ",";
-      query     +=  data.Vdop + ",";
-      query     +=  data.Satellites + ",";
-      query     +=  data.Altitude + ",";
-      query     +=  data.HeightOfGeoid + ",";
-      query     +=  data.Speed + ",";
-      query     +=  data.Angle;
-      query     +=  ");";
+      Log("Insert failed will try to reconnect to MySql database!");
       
-      if (!MySql_Query(this.db_resource_, query))
+      if (this._ConnectToDatabase())
       {
-        if (this._ConnectToDatabase())
-        {
-          Log("Reconnected to MySql database!");
-          
-          MySql_Query(this.db_resource_, query);
-        }
+        Log("Reconnected to MySql database!");
+        
+        result = MySql_Query(this.db_resource_, query);
       }
-      
-      /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(this.db_resource_) + " LIMIT 1";
-      
-      Log("From DB:" + JSON.stringify(MySql_Query(this.db_resource_, query)));*/
     }
+    
+    /*query = "SELECT `node_id`, `source`, AsText(latitude_longitude), `created`, `datetime`, `hdop`, `satellites`, `altitude`, `height_of_geoid`, `speed`, `angle` FROM `Positions` WHERE `id` = " + MySql_InsertId(this.db_resource_) + " LIMIT 1";
+    
+    Log("From DB:" + JSON.stringify(MySql_Query(this.db_resource_, query)));*/
       
-    Log(JSON.stringify(data));
+    //Log(JSON.stringify(data));
+    
+    return !(result === false);
   }
   
   /* Function for handling tracker connected disconnected */
@@ -149,38 +154,69 @@ function TrackerManager(host, username, password, database, server_port)
     }
   }
   
+  this._SendResponse = function(client_id, id, success)
+  {
+    var data = "";
+    var json_data = {};
+    
+    json_data["jsonrpc"]  = "2.0";
+    json_data["result"]   = success;
+    json_data["id"]       = id;
+
+    var data = JSON.stringify(json_data);
+    
+    Log("Answer:" + data);
+
+    Socket_Send(client_id, data);
+  }
+  
   /* Functio for handling tracker data */
   this._HandleClientDataReceived = function(client_id, data)
   {
     if (this.tracked_node_ids_[client_id])
     {
-      Log(data);
+      var result = false;
+      
+      Log("Receive:" + data);
     
       var json_data = eval("(" + data + ")");
       
-      if (json_data.method == "MBB.OnPosition")
+      if (json_data.method == "Tracker.AddPosition")
       {
         if (this.tracked_node_ids_[client_id])
         {
-          this._InsertPosition(this.tracked_node_ids_[client_id], json_data.params);
+          result = this._InsertPosition(this.tracked_node_ids_[client_id], json_data.params);
         }
       }
-      else if (json_data.method == "MBB.OnConnected")
+      else if (json_data.method == "Tracker.Identify")
       {
-        this.tracked_node_ids_[client_id] = this._IdentifyTracker(json_data.params);
+        this.tracked_node_ids_[client_id] = this._Identify(json_data.params);
+        
+        result = !(this.tracked_node_ids_[client_id] === false);
+      }
+      else if (json_data.method == "Tracker.StatusReport")
+      {
+        result = true;
       }
       else
       {
         Log("Got unknown data \"" + data + "\" from client " + client_id);
       }
+      
+      this._SendResponse(client_id, json_data.id, result);
     }
+  }
+  
+  this._HandleNewClient = function(client_id, server_id)
+  {
+    Log("Client " + client_id + " connected to tracker server " + server_id);
   }
   
   this._StartServer = function()
   {
     var self = this;
     
-    this.server_id_ = Socket_StartServer(this.server_port_, function(client_id, data) { self._HandleClientDataReceived(client_id, data); }, function(client_id, state) { self._HandleClientStatusUpdate(client_id, state); });
+    this.server_id_ = Socket_StartServer(this.server_port_, function(client_id, server_id) { self._HandleNewClient(client_id, server_id); }, function(client_id, data) { self._HandleClientDataReceived(client_id, data); }, function(client_id, state) { self._HandleClientStatusUpdate(client_id, state); });
     
     if (this.server_id_ === false)
     {

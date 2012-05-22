@@ -65,9 +65,10 @@ void Socket::InitializeDone()
   Plugin::InitializeDone();
   
   this->ImportFunction("Socket_OnNewData");
+  this->ImportFunction("Socket_OnNewClient");
   this->ImportFunction("Socket_OnNewState");
   
-  net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Socket::SlotOnNewState, this, _1, _2, _3).track(this->tracker_), net::Manager::SignalOnNewData::slot_type(&Socket::SlotOnNewData, this, _1, _2, _3).track(this->tracker_));
+  net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&Socket::SlotOnNewState, this, _1, _2).track(this->tracker_), net::Manager::SignalOnNewClient::slot_type(&Socket::SlotOnNewClient, this, _1, _2).track(this->tracker_), net::Manager::SignalOnNewData::slot_type(&Socket::SlotOnNewData, this, _1, _2).track(this->tracker_));
   
   LOG_DEBUG_EXIT;
 }
@@ -81,25 +82,34 @@ void Socket::CallOutput(unsigned int request_id, std::string output)
   //LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewData(net::SocketId socket_id, net::SocketId server_id, common::Byteset data)
+void Socket::SlotOnNewData(net::SocketId id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
-  this->io_service_.post(boost::bind(&Socket::SlotOnNewDataHandler, this, socket_id, server_id, data));
+  this->io_service_.post(boost::bind(&Socket::SlotOnNewDataHandler, this, id, data));
   
   LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewState(net::SocketId socket_id, net::SocketId server_id, net::ClientState client_state)
+void Socket::SlotOnNewClient(net::SocketId id, net::SocketId server_id)
 {
   LOG_DEBUG_ENTER;
   
-  this->io_service_.post(boost::bind(&Socket::SlotOnNewStateHandler, this, socket_id, server_id, client_state));
+  this->io_service_.post(boost::bind(&Socket::SlotOnNewClientHandler, this, id, server_id));
   
   LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewDataHandler(net::SocketId socket_id, net::SocketId server_id, common::Byteset data)
+void Socket::SlotOnNewState(net::SocketId id, net::ClientState client_state)
+{
+  LOG_DEBUG_ENTER;
+  
+  this->io_service_.post(boost::bind(&Socket::SlotOnNewStateHandler, this, id, client_state));
+  
+  LOG_DEBUG_EXIT;
+}
+
+void Socket::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   ATOM_VM_PLUGIN_SCOPE;
@@ -114,11 +124,10 @@ void Socket::SlotOnNewDataHandler(net::SocketId socket_id, net::SocketId server_
         return;
     }
     
-    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
-    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(server_id)));
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
     arguments->push_back(v8::String::New(data.ToCharString().c_str()));
         
-    if (!this->Call(socket_id, "Socket_OnNewData", arguments))
+    if (!this->Call(id, "Socket_OnNewData", arguments))
     {
       atom::log::Error(log_module_, "%s failed!", __FUNCTION__);
     }
@@ -131,7 +140,33 @@ void Socket::SlotOnNewDataHandler(net::SocketId socket_id, net::SocketId server_
   LOG_DEBUG_EXIT;
 }
 
-void Socket::SlotOnNewStateHandler(net::SocketId socket_id, net::SocketId server_id, net::ClientState client_state)
+void Socket::SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id)
+{
+  LOG_DEBUG_ENTER;
+  ATOM_VM_PLUGIN_SCOPE;
+  
+  try
+  {
+    ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
+      
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(server_id)));
+        
+    if (!this->Call(id, "Socket_OnNewClient", arguments))
+    {
+      atom::log::Error(log_module_, "%s failed!", __FUNCTION__);
+    }
+  }
+  catch (std::exception& exception)
+  {
+    atom::log::Exception(log_module_, exception);
+  }
+  
+  LOG_DEBUG_EXIT;
+}
+
+
+void Socket::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_state)
 {
   LOG_DEBUG_ENTER;
   ATOM_VM_PLUGIN_SCOPE;
@@ -140,11 +175,10 @@ void Socket::SlotOnNewStateHandler(net::SocketId socket_id, net::SocketId server
   {
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
-    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(socket_id)));
-    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(server_id)));
+    arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
     arguments->push_back(v8::Uint32::New((unsigned int)client_state));
     
-    if (!this->Call(socket_id, "Socket_OnNewState", arguments))
+    if (!this->Call(id, "Socket_OnNewState", arguments))
     {
       atom::log::Error(log_module_, "%s failed!", __FUNCTION__);
     }
@@ -282,6 +316,8 @@ Value Socket::Export_Send(const v8::Arguments& args)
     }
     
     v8::String::AsciiValue data(args[1]);
+
+    atom::log::Debug(log_module_, "Socket %u send %s", args[0]->Uint32Value(), *data);
     
     net::Manager::Instance()->SendTo(args[0]->Uint32Value(), std::string(*data));
   }
