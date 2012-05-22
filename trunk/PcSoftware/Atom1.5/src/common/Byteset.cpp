@@ -23,7 +23,7 @@
 #include "string.h"
 
 #include <boost/lexical_cast.hpp>
-
+/*
 namespace atom {
 namespace common {
  
@@ -134,3 +134,4 @@ void Byteset::Fill(char c)
     
 }; // namespace type
 }; // namespace atom
+*/

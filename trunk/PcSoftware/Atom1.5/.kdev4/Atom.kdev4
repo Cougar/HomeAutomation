@@ -2,11 +2,11 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [CMake]
-BuildDirs[$e]=$HOME/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build
+BuildDirs[$e]=$HOME/leela/home/migan/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build2
 CMakeDir=/usr/share/cmake-2.8/Modules
 Current CMake Binary=file:///usr/bin/cmake
-CurrentBuildDir=file:///home/migan/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build
-CurrentInstallDir=file:///
+CurrentBuildDir=file:///home/migan/leela/home/migan/new_homeauto/HomeAutomation/trunk/PcSoftware/Atom1.5/build2
+CurrentBuildType=Debug
 ProjectRootRelative=./
 
 [Launch]

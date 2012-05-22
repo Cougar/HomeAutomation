@@ -22,6 +22,7 @@
 #define TYPE_BUFFER_H
 
 #include <string>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 
@@ -30,6 +31,8 @@
 namespace atom {
 namespace common {
 
+typedef std::vector<unsigned char> Byteset;
+/*
 class Byteset
 {
 public:
@@ -64,7 +67,7 @@ private:
     unsigned int size_;
     
 };
-
+*/
 }; // namespace type
 }; // namespace atom
 

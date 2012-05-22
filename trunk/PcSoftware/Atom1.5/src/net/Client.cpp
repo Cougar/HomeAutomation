@@ -81,8 +81,9 @@ void Client::Read()
 {
   LOG_DEBUG_ENTER;
   
-  this->buffer_.Clear();
-  
+  common::Byteset empty_vector(8192);
+  this->buffer_.swap(empty_vector);
+
   LOG_DEBUG_EXIT;
 }
 
@@ -108,9 +109,9 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
   }
   else
   {
-    this->buffer_.SetSize(size);
+    log::Debug(log_module_, "size was %u", size);
     
-    this->signal_on_new_data_(this->id_, this->server_id_, this->buffer_);
+    this->signal_on_new_data_(this->id_, this->server_id_, common::Byteset(this->buffer_.begin(), this->buffer_.begin() + size));
     
     this->Read();
   }

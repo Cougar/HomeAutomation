@@ -56,12 +56,12 @@ void CanDaemon::SlotOnMessageHandler(broker::Message::Pointer message)
 {
     if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
     {
-	std::string* payload_str; 
+      std::string* payload_str; 
       
-	payload_str = static_cast<std::string*>(message->GetPayload().get());
-	std::string line = *payload_str;
+      payload_str = static_cast<std::string*>(message->GetPayload().get());
+      std::string line = *payload_str;
 	
-        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line, true));
+      net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line.begin(), line.end()));
     }
 }
 
@@ -72,7 +72,7 @@ void CanDaemon::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
       return;
     }
     
-    std::string str = data.ToCharString();
+    std::string str(data.begin(), data.end());
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     

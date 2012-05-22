@@ -41,6 +41,7 @@
 #include "net/types.h"
 
 #include "common/common.h"
+#include "common/log.h"
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -93,7 +94,7 @@ public:
         packet += common::PadNumber(payload.length() + 1, 4);
         packet += payload;
         
-        net::Manager::Instance()->SendTo(this->client_id_, packet);
+        net::Manager::Instance()->SendTo(this->client_id_, common::Byteset(packet.begin(), packet.end()));
     }
     
     void AutoCompleteRequest(unsigned int arg_index, std::string commandline)
@@ -105,7 +106,7 @@ public:
         packet += common::PadNumber(payload.length() + 1, 4);
         packet += payload;
         
-        net::Manager::Instance()->SendTo(this->client_id_, packet);
+        net::Manager::Instance()->SendTo(this->client_id_, common::Byteset(packet.begin(), packet.end()));
     }
     
 private:
@@ -131,7 +132,7 @@ private:
     
     void SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data)
     {
-        for (unsigned int n = 0; n < data.GetSize(); n++)
+        for (unsigned int n = 0; n < data.size(); n++)
         {
             this->buffer_.push_back(data[n]);
         }
@@ -150,7 +151,7 @@ private:
             payload_length_str += (char)this->buffer_[6];
             payload_length_str += (char)this->buffer_[7];
             
-            unsigned int payload_length = boost::lexical_cast<unsigned int>(payload_length_str);
+            unsigned int payload_length = boost::lexical_cast<unsigned int>(payload_length_str) - 1;
             
             if (this->buffer_.size() - 8 < payload_length)
             {
@@ -222,6 +223,8 @@ int main(int argc, char **argv)
     // Parse commandline
     boost::program_options::options_description command_line;
     boost::program_options::variables_map variable_map;
+    
+    //log::SetLevel(log::LOG_LEVEL_ALL);
     
     command_line.add_options()
     ("help,h",    "produce help message")

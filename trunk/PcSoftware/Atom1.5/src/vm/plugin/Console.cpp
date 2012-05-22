@@ -82,7 +82,7 @@ void Console::CallOutput(unsigned int request_id, std::string output)
     packet += common::PadNumber(output.length() + 1, 4);
     packet += output;
     
-    net::Manager::Instance()->SendTo(request_id, packet);
+    net::Manager::Instance()->SendTo(request_id, common::Byteset(packet.begin(), packet.end()));
 }
 
 void Console::SlotOnNewData(net::SocketId id, common::Byteset data)
@@ -114,13 +114,13 @@ void Console::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
     
     //LOG.Debug(std::string(__FUNCTION__) + " called!");
 
-    if (data.GetSize() == 0)
+    if (data.size() == 0)
     {
         LOG.Error(std::string(__FUNCTION__) + " got empty data!");
         return;
     }
     
-    std::string s(data.ToCharString());
+    std::string s(data.begin(), data.end());
     
     if (s.length() < 8)
     {
@@ -244,7 +244,7 @@ Value Console::Export_PromptRequest(const v8::Arguments& args)
     packet += common::PadNumber(prompt.length() + 1, 4);
     packet += *prompt;
     
-    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), common::Byteset(packet.begin(), packet.end()));
     return handle_scope.Close(v8::Boolean::New(true));
 }
 
@@ -268,7 +268,7 @@ Value Console::Export_AutoCompleteResponse(const v8::Arguments& args)
     packet += common::PadNumber(result.length() + 1, 4);
     packet += *result;
     
-    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), common::Byteset(packet.begin(), packet.end()));
     return handle_scope.Close(v8::Boolean::New(true));
 }
 
@@ -294,7 +294,7 @@ Value Console::Export_LogToClient(const v8::Arguments& args)
     packet += common::PadNumber(line.length() + 1, 4);
     packet += line;
     
-    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), packet);
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), common::Byteset(packet.begin(), packet.end()));
     return handle_scope.Close(v8::Boolean::New(true));
 }
 

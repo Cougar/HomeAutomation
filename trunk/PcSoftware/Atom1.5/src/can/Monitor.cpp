@@ -115,7 +115,7 @@ void Monitor::SlotOnMessageHandler(broker::Message::Pointer message)
         
         line += "\n";
         
-        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line));
+        net::Manager::Instance()->SendToAll(this->server_id_, common::Byteset(line.begin(), line.end()));
     }
 }
 
@@ -126,7 +126,7 @@ void Monitor::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
       return;
     }
   
-    std::string str = data.ToCharString();
+    std::string str(data.begin(), data.end());
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
@@ -162,7 +162,10 @@ void Monitor::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_st
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
         LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has connected.");
-        net::Manager::Instance()->SendTo(id, common::Byteset("Welcome to Atom CAN monitoring\n"));
+        
+        std::string message = "Welcome to Atom CAN monitoring\n";
+        
+        net::Manager::Instance()->SendTo(id, common::Byteset(message.begin(), message.end()));
     }
     else
     {
