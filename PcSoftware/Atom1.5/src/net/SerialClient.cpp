@@ -82,7 +82,7 @@ void SerialClient::Send(common::Byteset data)
   {
     if (this->serial_port_.is_open())
     {
-      this->serial_port_.write_some(boost::asio::buffer(data.Get(), data.GetMaxSize()));
+      this->serial_port_.write_some(boost::asio::buffer(data.data(), data.size()));
     }
   }
   catch (std::exception& e)
@@ -100,7 +100,9 @@ void SerialClient::Read()
   
   Client::Read();
   
-  this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_.Get(), this->buffer_.GetMaxSize()),
+  log::Debug(log_module_, "this->buffer_.capacity()=%u", this->buffer_.capacity());
+  
+  this->serial_port_.async_read_some(boost::asio::buffer(this->buffer_.data(), this->buffer_.capacity()),
                                      boost::bind(&SerialClient::ReadHandler,
                                                  this,
                                                  boost::asio::placeholders::error,

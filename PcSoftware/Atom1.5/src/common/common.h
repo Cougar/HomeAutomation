@@ -59,6 +59,8 @@ std::string ToHex(unsigned int value);
 std::string ToHex8bit(unsigned int value);
 std::string ToHex4bit(unsigned int value);
 std::string ToHexIfNumber(std::string data);
+std::string ToHex(std::string data);
+
 }; // namespace type
 }; // namespace atom
 

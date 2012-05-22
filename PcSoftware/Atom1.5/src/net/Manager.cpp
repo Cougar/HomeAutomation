@@ -131,6 +131,8 @@ void Manager::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byte
 {
   LOG_DEBUG_ENTER;
   
+  log::Debug(log_module_, "data=\"%s\"", std::string(data.begin(), data.end()).data());
+  
   this->signal_on_new_data_(client_id, data);
   
   LOG_DEBUG_EXIT;
@@ -276,7 +278,7 @@ void Manager::SendToHandler(SocketId client_id, common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
-  log::Debug(log_module_, "SendToHandler, client_id %d, data %s", client_id, data.ToCharString().c_str());
+  log::Debug(log_module_, "SendToHandler, client_id %d, data %s", client_id, std::string(data.begin(), data.end()).data());
   
   ClientList::iterator it = this->clients_.find(client_id);
 

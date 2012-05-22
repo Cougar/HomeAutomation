@@ -118,14 +118,14 @@ void Socket::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
   {
     ArgumentListPointer arguments = ArgumentListPointer(new ArgumentList);
     
-    if (data.GetSize() == 0)
+    if (data.size() == 0)
     {
         atom::log::Error(log_module_, "Got empty data!");
         return;
     }
     
     arguments->push_back(v8::Integer::New(boost::lexical_cast<unsigned int>(id)));
-    arguments->push_back(v8::String::New(data.ToCharString().c_str()));
+    arguments->push_back(v8::String::New(std::string(data.begin(), data.end()).data()));
         
     if (!this->Call(id, "Socket_OnNewData", arguments))
     {
@@ -319,7 +319,9 @@ Value Socket::Export_Send(const v8::Arguments& args)
 
     atom::log::Debug(log_module_, "Socket %u send %s", args[0]->Uint32Value(), *data);
     
-    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), std::string(*data));
+    std::string data_string(*data);
+    
+    net::Manager::Instance()->SendTo(args[0]->Uint32Value(), common::Byteset(data_string.begin(), data_string.end()));
   }
   catch (std::exception& exception)
   {

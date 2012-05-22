@@ -40,10 +40,10 @@ Bitset::Bitset(unsigned int count)
 
 Bitset::Bitset(const Byteset& set)
 {
-    this->count_ = set.GetSize() * 8;
-    this->bytes_ = new unsigned char[set.GetSize()];
+    this->count_ = set.size() * 8;
+    this->bytes_ = new unsigned char[set.size()];
 
-    memcpy(this->bytes_, set.Get(), set.GetSize());
+    memcpy(this->bytes_, set.data(), set.size());
 }
 
 Bitset::~Bitset()

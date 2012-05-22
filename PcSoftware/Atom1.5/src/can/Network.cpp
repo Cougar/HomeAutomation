@@ -34,6 +34,7 @@
 
 #include "common/Bitset.h"
 #include "common/common.h"
+#include "common/log.h"
 
 namespace atom {
 namespace can {
@@ -44,8 +45,10 @@ enum
     PACKET_END   = 250,
     PACKET_PING  = 251
 };
-    
-Network::Network(std::string address): broker::Subscriber(false), buffer_(2048), LOG("can::Network")
+
+static const std::string log_module_ = "can::network";
+
+Network::Network(std::string address): broker::Subscriber(false), LOG("can::Network")
 {
     this->address_ = address;
     this->client_id_ = 0;
@@ -225,8 +228,6 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         
         data[16] = PACKET_END;
         
-        data.SetSize(17);
-        
         //LOG.Debug("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
     } else if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
@@ -279,8 +280,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         
         data[7] = length;
         data[16] = PACKET_END;
-        
-        data.SetSize(17);
+
         
         //LOG.Info("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
@@ -296,23 +296,31 @@ void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data
     
     static bool have_start = false;
     
-    for (unsigned int n = 0; n < data.GetSize(); n++)
+    for (unsigned int n = 0; n < data.size(); n++)
     {
+      log::Debug(log_module_, "data[%u]=%u", n, (unsigned int)data[n]);
+      
         if (have_start)
         {
-            if (data[n] == PACKET_END && this->buffer_.GetSize() == 15)
+          log::Debug(log_module_, "have_start, this->buffer_.size() = %u", this->buffer_.size());
+          
+            if (data[n] == PACKET_END && this->buffer_.size() == 15)
             {
+              log::Debug(log_module_, "PACKET_END");
+              
                 this->ProcessBuffer();
                 have_start = false;
             }
             else
             {
-                this->buffer_.Append(data[n]);
+                this->buffer_.push_back(data[n]);
             }
         }
         else if (data[n] == PACKET_START)
         {
-            this->buffer_.Clear();
+          common::Byteset empty_vector;
+            this->buffer_.swap(empty_vector);
+
             have_start = true;
         }
         else if (data[n] == PACKET_PING)
@@ -366,6 +374,8 @@ void Network::SlotOnTimeoutHandler(timer::TimerId timer_id)
 
 void Network::ProcessBuffer()
 {
+  LOG_DEBUG_ENTER;
+  
     try
     {
         std::string class_name = "";
@@ -433,7 +443,7 @@ void Network::ProcessBuffer()
         
         for (unsigned int n = 0; n < length; n++)
         {
-            data_set.Append(this->buffer_[n + 7]);
+            data_set.push_back(this->buffer_[n + 7]);
         }
 
         common::Bitset databits(data_set);
@@ -512,10 +522,14 @@ void Network::ProcessBuffer()
     catch (std::runtime_error& e)
     {
         LOG.Error("Malformed message received, " + std::string(e.what()));
-        LOG.Debug("Bytes: " + this->buffer_.ToDebugString());
+        LOG.Debug("Bytes: " + std::string(this->buffer_.begin(), this->buffer_.end()));
     }
     
-    this->buffer_.Clear();
+    common::Byteset empty_vector;
+    this->buffer_.swap(empty_vector);
+    
+    
+    LOG_DEBUG_EXIT;
 }
     
 }; // namespace can

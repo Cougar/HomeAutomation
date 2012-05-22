@@ -113,7 +113,19 @@ std::string ToHexIfNumber(std::string data)
   }
   
   return data;
-}   
+}
+
+std::string ToHex(std::string data)
+{
+    std::string debug_string;
+    
+    for (unsigned int n = 0; n < data.size(); n++)
+    {
+        debug_string += ToHex((unsigned int)data[n]) + ",";
+    }
+    
+    return debug_string;
+}
     
 }; // namespace type
 }; // namespace atom
