@@ -41,6 +41,8 @@
 #include "can/CanDaemon.h"
 #include "vm/Manager.h"
 #include "storage/Manager.h"
+#include "net/GetFile.h"
+#include "net/Url.h"
 
 #include "vm/plugin/System.h"
 #include "vm/plugin/Timer.h"
@@ -65,25 +67,50 @@ static const std::string log_module_ = "main";
 std::vector<broker::Subscriber::Pointer> subscribers;
 boost::condition on_message_condition;
 boost::mutex guard_mutex;
+net::GetFile::Pointer downloader;
 
+void ContinueInitialization(std::string protocol_filename);
 void Handler(int status);
 void CleanUp();
 
+
+
+
+void HandleProtocolFileDownload(bool success, net::Url url, std::string temporary_filepath)
+{
+  if (success)
+  {
+    log::Info(log_module_, "Successfully downloaded protocol file!");
+    ContinueInitialization(temporary_filepath);
+  }
+  else
+  {
+    ContinueInitialization(url.GetRaw());
+  }
+}
+
 int main(int argc, char **argv)
 {
+  /* Set core dump parameters */
   rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
   setrlimit( RLIMIT_CORE, &core_limit ); // enable core dumps
-      
+  
+  
+  /* Print startup information */
   log::Info(log_module_, "Atom daemon, version %s starting...", VERSION);
   log::Info(log_module_, "Released under %s.", LICENSE);
   log::Info(log_module_, "Written by Mattias Runge 2010-2012.");
 
+  
+  /* Register signal handlers */
   signal(SIGTERM, Handler);
   signal(SIGINT,  Handler);
   signal(SIGQUIT, Handler);
   signal(SIGABRT, Handler);
   signal(SIGPIPE, Handler);
 
+  
+  /* Check configuration */
   config::Manager::Create();
 
   if (!config::Manager::Instance()->Set(argc, argv))
@@ -92,6 +119,8 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
   }
 
+  
+  /* Set up logging */
   if (config::Manager::Instance()->Exist("LogFile"))
   {
     log::OpenFile(config::Manager::Instance()->GetAsString("LogFile"));
@@ -102,6 +131,8 @@ int main(int argc, char **argv)
     log::SetLevelByString(config::Manager::Instance()->GetAsString("LogLevelMask"));
   }
 
+  
+  /* Enter daemon mode if requested */
   if (config::Manager::Instance()->Exist("daemon"))
   {
     LOG.Info("Entering daemon mode...");
@@ -116,6 +147,8 @@ int main(int argc, char **argv)
     log::Info(log_module_, "Deamon mode entered successfully!");
   }
 
+  
+  /* Create singletons */
   storage::Manager::Create();
   timer::Manager::Create();
   broker::Manager::Create();
@@ -124,22 +157,77 @@ int main(int argc, char **argv)
   control::Manager::Create();
   vm::Manager::Create();
 
+  
+
+  std::string protocol_filename = config::Manager::Instance()->GetAsString("ProtocolFile");
+  
+  try
+  {
+    net::Url url(protocol_filename);
+    
+    downloader = net::GetFile::Pointer(new net::GetFile());
+    
+    log::Info(log_module_, "Will try to download protocol file from \"%s\"...", protocol_filename.data());
+    
+    downloader->Start(url, HandleProtocolFileDownload);
+  }
+  catch (std::exception& exception)
+  {
+    log::Debug(log_module_, "Could not parse ProtocolFile as a URL, \"%s\".", protocol_filename.data());
+    ContinueInitialization(protocol_filename);
+  }
+
+  
+  /* Lock main thread and wait for exit */
+  boost::mutex::scoped_lock guard(guard_mutex);
+
+  on_message_condition.wait(guard);
+
+  
+  /* Cleanup */
+  log::Info(log_module_, "Cleaning up...");
+
+  CleanUp();
+
+  log::Info(log_module_, "Thank you for using Atom. Goodbye!");
+
+  return EXIT_SUCCESS;
+}
+
+void ContinueInitialization(std::string protocol_filename)
+{  
+  /* Load protocol file */
+  if (!can::Protocol::Instance()->Load(protocol_filename))
+  {
+    log::Error(log_module_, "Failed to load %s!", protocol_filename.data());
+
+    on_message_condition.notify_all();
+  }
+  
+  
+  /* Set up storage path */
   storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
 
-  can::Protocol::Instance()->Load(config::Manager::Instance()->GetAsString("ProtocolFile"));
-
+  
+  /* Start monitor server */
   if (config::Manager::Instance()->Exist("MonitorPort"))
   {
     subscribers.push_back(can::Monitor::Pointer(new can::Monitor(config::Manager::Instance()->GetAsInt("MonitorPort"))));
   }
 
+  
+  /* Start CanDaemon server */
   if (config::Manager::Instance()->Exist("DaemonPort"))
   {
     subscribers.push_back(can::CanDaemon::Pointer(new can::CanDaemon(config::Manager::Instance()->GetAsInt("DaemonPort"))));
   }
 
+  
+  /* Subscribe Can control manager to data */
   subscribers.push_back(control::Manager::Instance());
 
+  
+  /* Start VM plugins */
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Storage(vm::Manager::Instance()->GetIoService())));
@@ -156,8 +244,12 @@ int main(int argc, char **argv)
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::MySql(vm::Manager::Instance()->GetIoService())));
 #endif // USE_PLUGIN_MYSQL
 
+  
+  /* Start VM */
   vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"), config::Manager::Instance()->GetAsString("UserScriptPath"));
 
+  
+  /* Connect to Can network */
   if (config::Manager::Instance()->Exist("CanNet"))
   {
     common::StringList cannetworks = config::Manager::Instance()->GetAsStringVector("CanNet");
@@ -167,22 +259,12 @@ int main(int argc, char **argv)
       subscribers.push_back(can::Network::Pointer(new can::Network(cannetworks[n])));
     }
   }
-
-  boost::mutex::scoped_lock guard(guard_mutex);
-
-  on_message_condition.wait(guard);
-
-  log::Info(log_module_, "Cleaning up...");
-
-  CleanUp();
-
-  log::Info(log_module_, "Thank you for using Atom. Goodbye!");
-
-  return EXIT_SUCCESS;
 }
 
 void CleanUp()
 {
+  downloader.reset();
+  
   if (net::Manager::Instance().use_count() > 0)
   {
     net::Manager::Instance()->Stop();

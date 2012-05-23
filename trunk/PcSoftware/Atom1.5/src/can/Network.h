@@ -45,7 +45,7 @@ public:
     
 private:
     net::SocketId client_id_;
-    net::Protocol protocol_;
+    net::TransportProtocol protocol_;
     std::string address_;
     unsigned int port_or_baud_;
     common::Byteset buffer_;    

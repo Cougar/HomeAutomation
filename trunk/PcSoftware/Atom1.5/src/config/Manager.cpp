@@ -137,7 +137,7 @@ bool Manager::Set(int argument_count, char** argument_vector)
     return false;
   }
   
-  log::Info(log_module_, "Using %s as configuraiton file.", this->GetAsString("file").c_str());
+  log::Info(log_module_, "Using %s as configuration file.", this->GetAsString("file").c_str());
   
   return true;
 }

@@ -43,6 +43,8 @@ typedef std::map<std::string, std::string> StringMap;
 #define GET_HIGH_BYTE_16(x)   (((x) >> 8) & 0xFF);
 #define GET_LOW_BYTE_16(x)    ((x) & 0xFF)
 
+#define ELEMENTS_OF(type) (sizeof(type) / sizeof(type[0]))
+
 template <typename ElemT>
 struct HexTo {
     ElemT value;

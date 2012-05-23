@@ -207,7 +207,7 @@ Value Socket::Export_StartServer(const v8::Arguments& args)
       throw atom::exception::missing_in_param();
     }
     
-    socket_id = net::Manager::Instance()->StartServer(net::PROTOCOL_TCP, args[0]->Uint32Value());
+    socket_id = net::Manager::Instance()->StartServer(net::TRANSPORT_PROTOCOL_TCP, args[0]->Uint32Value());
   }
   catch (std::exception& exception)
   {
@@ -237,7 +237,7 @@ Value Socket::Export_Connect(const v8::Arguments& args)
     
     v8::String::AsciiValue address(args[0]);
     
-    socket_id = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
+    socket_id = net::Manager::Instance()->Connect(net::TRANSPORT_PROTOCOL_TCP, std::string(*address), args[1]->Uint32Value());
   }
   catch (std::exception& exception)
   {

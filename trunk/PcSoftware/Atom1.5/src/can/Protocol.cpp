@@ -25,10 +25,14 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "common/log.h"
+
 namespace atom {
 namespace can {
 
 Protocol::Pointer Protocol::instance_;
+
+static const std::string log_module_ = "can::protocol";
 
 Protocol::Protocol() : LOG("can::Protocol")
 {
@@ -40,33 +44,33 @@ Protocol::~Protocol()
 
 void Protocol::Create()
 {
-    Protocol::instance_ = Protocol::Pointer(new Protocol());
+  Protocol::instance_ = Protocol::Pointer(new Protocol());
 }
 
 Protocol::Pointer Protocol::Instance()
 {
-    return Protocol::instance_;
+  return Protocol::instance_;
 }
 
 void Protocol::Delete()
 {
-    Protocol::instance_.reset();
+  Protocol::instance_.reset();
 }
-   
-bool Protocol::Load(std::string filename)
+
+bool Protocol::Load(std::string file_path)
 {
-    try
-    {
-        this->root_node_.LoadFile(filename);
-    }
-    catch (std::runtime_error& e)
-    {
-        LOG.Error(e.what());
-        return false;
-    }
-    
-    LOG.Info("Protocol loaded successfully.");
-    return true;
+  try
+  {
+    this->root_node_.LoadFile(file_path);
+  }
+  catch (std::runtime_error& e)
+  {
+    LOG.Error(e.what());
+    return false;
+  }
+  
+  LOG.Info("Protocol loaded successfully.");
+  return true;
 }
 
 std::string Protocol::LookupClassName(unsigned int class_id)
