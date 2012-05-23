@@ -69,6 +69,11 @@ void SetLevelByString(std::string level_string)
     level_ = (Level)(level_ | LOG_LEVEL_DEBUG);
   }
   
+  if (level_string.find("LOG_LEVEL_EXTREME") != std::string::npos)
+  {
+    level_ = (Level)(level_ | LOG_LEVEL_EXTREME);
+  }
+  
   if (level_string.find("LOG_LEVEL_ALL") != std::string::npos)
   {
     level_ = (Level)(level_ | LOG_LEVEL_ALL);
@@ -126,6 +131,10 @@ void Print(Level level, std::string module, std::string message)
   else if (0 != (level & LOG_LEVEL_WARNING))
   {
     level_string = "WARNING";
+  }
+  else if (0 != (level & LOG_LEVEL_EXTREME))
+  {
+    level_string = "EXTREME";
   }
   else
   {
@@ -202,6 +211,29 @@ void Debug(std::string module, char* format, ...)
 void Debug(std::string module, std::string message)
 {
   Print(LOG_LEVEL_DEBUG, module, message);
+}
+
+void Extreme(std::string module, char* format, ...)
+{
+  char    buffer[kMaxBufferSize];
+  va_list parameters;
+  
+  
+  /* Initialize variables */
+  memset(&buffer[0], 0, sizeof(buffer));
+  
+  
+  /* Construct message */
+  va_start(parameters, format);
+  vsnprintf(&buffer[0], sizeof(buffer), format, parameters);
+  va_end(parameters);
+  
+  Print(LOG_LEVEL_EXTREME, module, &buffer[0]);
+}
+
+void Extreme(std::string module, std::string message)
+{
+  Print(LOG_LEVEL_EXTREME, module, message);
 }
 
 void Error(std::string module, char* format, ...)

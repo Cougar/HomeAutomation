@@ -43,7 +43,10 @@ Bitset::Bitset(const Byteset& set)
     this->count_ = set.size() * 8;
     this->bytes_ = new unsigned char[set.size()];
 
-    memcpy(this->bytes_, set.data(), set.size());
+    for (unsigned int n = 0; n < set.size(); n++)
+    {
+      this->bytes_[n] = set[n];
+    }
 }
 
 Bitset::~Bitset()

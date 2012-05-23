@@ -37,6 +37,7 @@ typedef enum
   LOG_LEVEL_WARNING   = 0x000004,
   LOG_LEVEL_INFO      = 0x000008,
   LOG_LEVEL_DEBUG     = 0x000010,
+  LOG_LEVEL_EXTREME   = 0x000040,
   LOG_LEVEL_ALL       = 0xFFFFFF
 } Level;
 
@@ -52,6 +53,9 @@ void Info(std::string module, std::string message);
 void Debug(std::string module, char* format, ...);
 void Debug(std::string module, std::string message);
 
+void Extreme(std::string module, char* format, ...);
+void Extreme(std::string module, std::string message);
+
 void Error(std::string module, char* format, ...);
 void Error(std::string module, std::string message);
 
@@ -60,8 +64,8 @@ void Warning(std::string module, std::string message);
   
 void Exception(std::string module, std::exception& exception);
 
-#define LOG_DEBUG_ENTER log::Debug(log_module_, "%s entered!", __FUNCTION__);
-#define LOG_DEBUG_EXIT  log::Debug(log_module_, "%s exited!", __FUNCTION__);
+#define LOG_DEBUG_ENTER log::Extreme(log_module_, "%s entered!", __FUNCTION__);
+#define LOG_DEBUG_EXIT  log::Extreme(log_module_, "%s exited!", __FUNCTION__);
 
 #define LOG_DEBUG_ROW  log::Debug(log_module_, "%s at line %d!", __FUNCTION__, __LINE__);
 
