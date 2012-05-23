@@ -56,8 +56,8 @@ public:
   
   void ConnectSlots(const SignalOnNewState::slot_type& slot_on_new_state, const SignalOnNewClient::slot_type& slot_on_new_client, const SignalOnNewData::slot_type& slot_on_new_data);
   
-  SocketId StartServer(Protocol protocol, unsigned int port);
-  SocketId Connect(Protocol protocol, std::string address, unsigned int port_or_baud);
+  SocketId StartServer(TransportProtocol protocol, unsigned int port);
+  SocketId Connect(TransportProtocol protocol, std::string address, unsigned int port_or_baud);
   
   void StopServer(SocketId server_id);
   void Disconnect(SocketId client_id);

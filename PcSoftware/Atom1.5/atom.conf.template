@@ -1,7 +1,8 @@
 ###############################################################################
 ## Paths                                                                     ##
 ###############################################################################
-ProtocolFile = /usr/share/atom/protocol/data.xml
+ProtocolFile = http://svn.arune.se/svn/HomeAutomation/trunk/Configuration/data.xml
+#ProtocolFile = /usr/share/atom/protocol/data.xml
 ScriptPath = /usr/share/atom/script/
 UserScriptPath = /etc/atom/uscript/
 StoragePath = /etc/atom/storage/

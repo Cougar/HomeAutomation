@@ -73,7 +73,7 @@ public:
     
     ConsoleClient(std::string address, unsigned int port)
     {
-        this->client_id_ = net::Manager::Instance()->Connect(net::PROTOCOL_TCP, address, port);
+        this->client_id_ = net::Manager::Instance()->Connect(net::TRANSPORT_PROTOCOL_TCP, address, port);
     }
     
     virtual ~ConsoleClient()

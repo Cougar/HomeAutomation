@@ -51,7 +51,7 @@ Console::Console(boost::asio::io_service& io_service, unsigned int port) : Plugi
     
     try
     {
-        this->server_id_ = net::Manager::Instance()->StartServer(net::PROTOCOL_TCP, port);
+        this->server_id_ = net::Manager::Instance()->StartServer(net::TRANSPORT_PROTOCOL_TCP, port);
         LOG.Info("Started TCP server on port " + boost::lexical_cast<std::string>(port) + ".");
         LOG.Debug("Server id is " + boost::lexical_cast<std::string>(this->server_id_) + ".");
     }

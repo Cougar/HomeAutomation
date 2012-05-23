@@ -43,7 +43,7 @@ public:
     static void Create();
     static void Delete();
     
-    bool Load(std::string filename);
+    bool Load(std::string file_path);
     
     
     std::string LookupClassName(unsigned int class_id);

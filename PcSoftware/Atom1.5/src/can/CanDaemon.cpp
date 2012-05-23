@@ -35,7 +35,7 @@ CanDaemon::CanDaemon(unsigned int port): broker::Subscriber(port), LOG("can::Can
 {
     try
     {
-        this->server_id_ = net::Manager::Instance()->StartServer(net::PROTOCOL_TCP, port);
+        this->server_id_ = net::Manager::Instance()->StartServer(net::TRANSPORT_PROTOCOL_TCP, port);
         LOG.Info("Started TCP server on port " + boost::lexical_cast<std::string>(port) + ".");
         LOG.Debug("Server id is " + boost::lexical_cast<std::string>(this->server_id_) + ".");
     }

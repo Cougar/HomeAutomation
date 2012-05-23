@@ -70,11 +70,11 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
     
     if (parts[0] == "udp")
     {
-        this->protocol_ = net::PROTOCOL_UDP;
+        this->protocol_ = net::TRANSPORT_PROTOCOL_UDP;
     }
     else if (parts[0] == "serial")
     {
-        this->protocol_ = net::PROTOCOL_SERIAL;
+        this->protocol_ = net::TRANSPORT_PROTOCOL_SERIAL;
     }
     else
     {

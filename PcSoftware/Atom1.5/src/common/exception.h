@@ -31,11 +31,11 @@ namespace atom {
 namespace exception {
 
 #define CREATE_EXCEPTION(name, string)                                        \
-  class name : public std::exception                                  \
+  class name : public std::exception                                          \
   {                                                                           \
     virtual const char* what() const throw()                                  \
     {                                                                         \
-      return string;                                                        \
+      return string;                                                          \
     }                                                                         \
   };
   
@@ -47,6 +47,7 @@ CREATE_EXCEPTION(initialization_failed,       "Initialization failed");
 CREATE_EXCEPTION(missing_resource,            "Missing resource");
 CREATE_EXCEPTION(action_failed,               "Action failed");
 CREATE_EXCEPTION(unknown_state,               "Unrecognized state");
+CREATE_EXCEPTION(parsing_failed,              "Parsing failed");
 
   
 }; // namespace exception

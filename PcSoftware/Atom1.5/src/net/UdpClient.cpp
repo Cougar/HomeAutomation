@@ -83,7 +83,7 @@ void UdpClient::Send(common::Byteset data)
 {
   LOG_DEBUG_ENTER;
   
-  log::Debug(log_module_, "data=\"%s\", size=%u", std::string(data.begin(), data.end()).data(), data.size());
+  //log::Debug(log_module_, "data=\"%s\", size=%u", std::string(data.begin(), data.end()).data(), data.size());
   
   try
   {
@@ -107,7 +107,7 @@ void UdpClient::Read()
   
   Client::Read();
   
-  log::Debug(log_module_, "this->buffer_.capacity()=%u", this->buffer_.capacity());
+  //log::Debug(log_module_, "this->buffer_.capacity()=%u", this->buffer_.capacity());
 
   this->socket_->async_receive(boost::asio::buffer(this->buffer_.data(), this->buffer_.capacity()),
                                boost::bind(&UdpClient::ReadHandler,

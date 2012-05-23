@@ -31,17 +31,24 @@ namespace net {
 
 typedef enum
 {
-  CLIENT_STATE_CONNECTED      = 0x00,
-  CLIENT_STATE_DISCONNECTED   = 0x01,
-  CLIENT_STATE_ACCEPTED       = 0x02
+  CLIENT_STATE_CONNECTED        = 0x00,
+  CLIENT_STATE_DISCONNECTED     = 0x01,
+  CLIENT_STATE_ACCEPTED         = 0x02
 } ClientState;
 
 typedef enum
 {
-    PROTOCOL_TCP              = 0x00,
-    PROTOCOL_UDP              = 0x01,
-    PROTOCOL_SERIAL           = 0x02
-} Protocol;
+  TRANSPORT_PROTOCOL_TCP        = 0x00,
+  TRANSPORT_PROTOCOL_UDP        = 0x01,
+  TRANSPORT_PROTOCOL_SERIAL     = 0x02
+} TransportProtocol;
+
+typedef enum
+{
+  APPLICATION_PROTOCOL_UNKNOWN  = 0x00,
+  APPLICATION_PROTOCOL_HTTP     = 0x01,
+  APPLICATION_PROTOCOL_FTP      = 0x02
+} ApplicationProtocol;
 
 typedef unsigned int                                    SocketId;
 typedef boost::shared_ptr<boost::asio::ip::tcp::socket> TcpSocketPointer;

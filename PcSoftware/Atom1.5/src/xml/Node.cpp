@@ -43,33 +43,19 @@ Node::~Node()
 
 void Node::LoadFile(std::string filename)
 {
-    std::ifstream srcfile(filename.data());
-        
-    if (!srcfile.is_open())
-    {
-        srcfile.close();
-        throw std::runtime_error("Could not find " + filename);
-        return;
-    }
-    
-    std::string buffer = "";
-    std::string line;
-    
-    while (!srcfile.eof())
-    {
-        std::getline(srcfile, line);
-        
-        if (srcfile.eof())
-        {
-            break;
-        }
-        
-        buffer += line + "\n";
-    }
-    
-    srcfile.close();
-    
-    this->Parse(buffer);
+  std::ifstream file(filename.data());
+
+  if (!file.is_open())
+  {
+    throw std::runtime_error("Could not find " + filename);
+    return;
+  }
+  
+  std::string buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+  
+  file.close();
+  
+  this->Parse(buffer);
 }
 
 void Node::Parse(std::string data)

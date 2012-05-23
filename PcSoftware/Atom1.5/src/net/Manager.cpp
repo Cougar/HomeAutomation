@@ -131,7 +131,7 @@ void Manager::SlotOnNewData(SocketId client_id, SocketId server_id, common::Byte
 {
   LOG_DEBUG_ENTER;
   
-  log::Debug(log_module_, "data=\"%s\"", std::string(data.begin(), data.end()).data());
+  //log::Debug(log_module_, "data=\"%s\"", std::string(data.begin(), data.end()).data());
   
   this->signal_on_new_data_(client_id, data);
   
@@ -154,11 +154,11 @@ SocketId Manager::GetFreeSocketId()
   return id;
 }
 
-SocketId Manager::StartServer(Protocol protocol, unsigned int port)
+SocketId Manager::StartServer(TransportProtocol protocol, unsigned int port)
 {
   LOG_DEBUG_ENTER;
   
-  if (protocol != PROTOCOL_TCP)
+  if (protocol != TRANSPORT_PROTOCOL_TCP)
   {
     throw std::runtime_error("Can not start server for the Serial or UDP protocol!");
   }
@@ -178,7 +178,7 @@ SocketId Manager::StartServer(Protocol protocol, unsigned int port)
   return server->GetId();
 }
 
-SocketId Manager::Connect(Protocol protocol, std::string address, unsigned int port_or_baud)
+SocketId Manager::Connect(TransportProtocol protocol, std::string address, unsigned int port_or_baud)
 {
   LOG_DEBUG_ENTER;
   
@@ -186,17 +186,17 @@ SocketId Manager::Connect(Protocol protocol, std::string address, unsigned int p
   
   switch (protocol)
   {
-    case PROTOCOL_TCP:
+    case TRANSPORT_PROTOCOL_TCP:
     {
       client = Client::Pointer(new TcpClient(this->io_service_, this->GetFreeSocketId(), 0));
       break;
     }
-    case PROTOCOL_UDP:
+    case TRANSPORT_PROTOCOL_UDP:
     {
       client = Client::Pointer(new UdpClient(this->io_service_, this->GetFreeSocketId(), 0));
       break;
     }
-    case PROTOCOL_SERIAL:
+    case TRANSPORT_PROTOCOL_SERIAL:
     {
       client = Client::Pointer(new SerialClient(this->io_service_, this->GetFreeSocketId(), 0));
       break;
