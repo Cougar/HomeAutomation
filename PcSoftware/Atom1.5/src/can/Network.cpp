@@ -319,9 +319,9 @@ void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data
         else if (data[n] == PACKET_START)
         {
           common::Byteset empty_vector;
-            this->buffer_.swap(empty_vector);
+          this->buffer_.swap(empty_vector);
 
-            have_start = true;
+          have_start = true;
         }
         else if (data[n] == PACKET_PING)
         {
@@ -401,49 +401,60 @@ void Network::ProcessBuffer()
 	
 	PKTstring += "\n";
 	
-	//LOG.Info(PKTstring);
+	LOG.Debug(PKTstring);
 	
+  for (unsigned int n = 0; n < this->buffer_.size(); n++)
+  {
+     log::Debug(log_module_, "this->buffer_[%u]=%u", n, (unsigned int)this->buffer_[n]);
+  }
+  
 	std::string* payload_str = new std::string(PKTstring);
 	broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
 
 	
         unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
-        //LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id));
+        LOG.Debug("class_id=" + boost::lexical_cast<std::string>(class_id));
         class_name = Protocol::Instance()->LookupClassName(class_id);
         
         if (class_name == "nmt")
         {
             unsigned int command_id = this->buffer_[2];
-            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
+            LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupNMTCommandName(command_id);
         }
         else
         {
             unsigned int direction_flag = this->buffer_[3] & 0x01;
-            //LOG.Debug("direction_flag=" + boost::lexical_cast<std::string>(direction_flag));
+            LOG.Debug("direction_flag=" + boost::lexical_cast<std::string>(direction_flag));
             direction_name = Protocol::Instance()->LookupDirectionFlag(direction_flag);
             
             unsigned int module_id = this->buffer_[2];
-            //LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id));
+            LOG.Debug("module_id=" + boost::lexical_cast<std::string>(module_id));
             module_name = Protocol::Instance()->LookupModuleName(module_id);
-            //LOG.Debug("module_name=" + module_name);
+            LOG.Debug("module_name=" + module_name);
             id = this->buffer_[1];
             
             unsigned int command_id = this->buffer_[0];
-            //LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
+            LOG.Debug("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
-            //LOG.Debug("command_name=" + command_name);
+            LOG.Debug("command_name=" + command_name);
         }
 
         Message* payload = new Message(class_name, direction_name, module_name, id, command_name);
 
         unsigned int length = this->buffer_[6];
         
-        common::Byteset data_set(length);
+        common::Byteset data_set;
+        data_set.reserve(length);
         
         for (unsigned int n = 0; n < length; n++)
         {
             data_set.push_back(this->buffer_[n + 7]);
+        }
+        
+        for (unsigned int n = 0; n < data_set.size(); n++)
+        {
+           log::Debug(log_module_, "data_set[%u]=%u", n, (unsigned int)data_set[n]);
         }
 
         common::Bitset databits(data_set);
@@ -476,12 +487,13 @@ void Network::ProcessBuffer()
                 if (bit_length <= 0)
                 {
                     LOG.Warning("Can not read variable " + name + " for command " + command_name + ", message is to short, is there a match between the module and the protocol XML file?");
-                    //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length) + ", databits.GetCount()=" + boost::lexical_cast<std::string>(databits.GetCount()));
+                    LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length) + ", databits.GetCount()=" + boost::lexical_cast<std::string>(databits.GetCount()));
                     continue;
                 }
             }
             
             type = variable_nodes[n].GetAttributeValue("type");
+            LOG.Debug("type: type=" + type);
             
             if (type == "int")
             {
@@ -501,18 +513,19 @@ void Network::ProcessBuffer()
             }
             else if (type == "enum")
             {
-                //LOG.Debug("Enum: command name=" + command_name);
+                LOG.Debug("Enum: command name=" + command_name);
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
-                //LOG.Debug("Enum: value=" + boost::lexical_cast<std::string>(value));
-                //LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
+                LOG.Debug("Enum: value=" + boost::lexical_cast<std::string>(value));
+                LOG.Debug("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
                 
                 value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
             }
             else// if (type == "uint")
             {
-                //LOG.Debug("type: type=" + type);
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
             }
+            
+            LOG.Debug("value=\"" + value + "\"");
             
             payload->SetVariable(name, value);
         }
