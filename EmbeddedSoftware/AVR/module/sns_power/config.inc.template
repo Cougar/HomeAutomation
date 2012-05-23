@@ -26,5 +26,8 @@ POWER_SNS_PIN=EXP_C
 #POWER_SNS_PIN_ch2=EXP_F
 #sns_power_PCINT_ch2=<PCINT>
 
+# Uncomment below to enable debug pin, will toggle when light blink is detected on either channel
+#sns_power_LED_PIN=EXP_C
+
 
 ## End section sns_power -- Do not edit this line
