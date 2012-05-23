@@ -50,9 +50,9 @@ static uint32_t volatile EnergyCounter=0;
   void sns_power_timer_callback(uint8_t timer) 
   {
 	  StdCan_Msg_t txMsg;
-	  StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
+	  StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 	  StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	  txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER; ///TODO: Change this to the actual module type
+	  txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
 	  txMsg.Header.ModuleId = sns_power_ID;
 	  txMsg.Header.Command = CAN_MODULE_CMD_POWER_AVGPOWER;
 	  txMsg.Length = 2;
@@ -105,6 +105,10 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 					tmpCounter = 0;
 				}
 			#endif
+
+#ifdef sns_power_LED_PIN
+			gpio_toggle_pin(sns_power_LED_PIN);	// toggle pin
+#endif
 		}
 	}
 }
@@ -134,6 +138,9 @@ void sns_power_pcint_callback_ch2(uint8_t id, uint8_t status)
 					tmpCounter_ch2 = 0;
 				}
 			#endif
+#ifdef sns_power_LED_PIN
+			gpio_toggle_pin(sns_power_LED_PIN);	// toggle pin
+#endif
 		}
 	}
 }
@@ -167,14 +174,14 @@ void sns_power_Init(void)
 #endif  
 	///Initialize hardware etc
 	gpio_set_in(POWER_SNS_PIN);	// Set to input
-	gpio_set_pin(POWER_SNS_PIN);	// Enable pull-up
+	gpio_set_pullup(POWER_SNS_PIN);	// Enable pull-up
 	
 	Pcint_SetCallbackPin(sns_power_PCINT, POWER_SNS_PIN, &sns_power_pcint_callback);
 
 	MeasurmentBufferPointer = 0;
 #ifdef POWER_SNS_PIN_ch2
 	gpio_set_in(POWER_SNS_PIN_ch2);	// Set to input
-	gpio_set_pin(POWER_SNS_PIN_ch2);	// Enable pull-up
+	gpio_set_pullup(POWER_SNS_PIN_ch2);	// Enable pull-up
 	
 	Pcint_SetCallbackPin(sns_power_PCINT_ch2, POWER_SNS_PIN_ch2, &sns_power_pcint_callback_ch2);
 
@@ -183,6 +190,11 @@ void sns_power_Init(void)
 	Timer_SetTimeout(sns_power_SEND_TIMER, sns_power_ReportInterval*1000 , TimerTypeFreeRunning, 0);
 #if sns_power_SEND_1_MIN_AVG == 1
 	Timer_SetTimeout(sns_power_SEND_TIMER_1_MIN_AVG, 60000-10 , TimerTypeFreeRunning, &sns_power_timer_callback);
+#endif
+
+#ifdef sns_power_LED_PIN
+	gpio_set_out(sns_power_LED_PIN);	// Set to output
+	gpio_clr_pin(sns_power_LED_PIN);	// clear pin
 #endif
 }
 
@@ -200,7 +212,6 @@ void sns_power_Process(void)
 	#endif
 	}
 	StdCan_Msg_t txMsg;
-	///TODO: Stuff that needs doing is done here
 	if (Timer_Expired(sns_power_SEND_TIMER)) {
 		//4 times average
 		/*uint32_t Avg4 = MeasurmentBuffer[MeasurmentBufferPointer] + MeasurmentBuffer[MeasurmentBufferPointer-1] + MeasurmentBuffer[MeasurmentBufferPointer-2] + MeasurmentBuffer[MeasurmentBufferPointer-3];
@@ -220,9 +231,9 @@ void sns_power_Process(void)
 		#endif
 
 			
-		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
+		StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 		StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER; ///TODO: Change this to the actual module type
+		txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
 		txMsg.Header.ModuleId = sns_power_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_ELECTRICPOWER;
 		txMsg.Length = 8;
@@ -382,9 +393,9 @@ void sns_power_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
 	
-	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER; ///TODO: Change this to the actual module type
+	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_POWER;
 	txMsg.Header.ModuleId = sns_power_ID;
 	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_LIST;
 	txMsg.Length = 6;
