@@ -15,7 +15,7 @@ def getModules():
 		if fileName[0] != '.' and fileName != "template":
 			modules.append(fileName)
 
-	return modules
+	return sorted(modules)
 
 
 def getLocalModules():
@@ -24,7 +24,7 @@ def getLocalModules():
 		if fileName[0] != '.':
 			modules.append(fileName)
 
-	return modules
+	return sorted(modules)
 
 
 def parseModuleIdFromFile(moduleName, fileName):
@@ -387,7 +387,6 @@ def main():
 
 		elif o in ("-l", "--list"):
 			modules = getModules()
-			
 			print "Available modules"
 			print "================="
 			for module in modules:
