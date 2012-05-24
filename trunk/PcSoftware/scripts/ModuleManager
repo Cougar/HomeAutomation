@@ -243,17 +243,16 @@ def compileSourcesFile():
 		sources_list_lines = sources_list.readlines()
 		sources_list.close()
 	
-		if os.path.isfile("src/libraries.list.template"):
-			if os.path.isfile(localmoddir + "/" + moduleName + "/libraries.list"):
-				libraries_list = open(localmoddir + "/" + moduleName + "/libraries.list", 'r')
-				libraries_list_lines = libraries_list.readlines()
-				libraries_list.close()
-			
-				for libraries_list_line in libraries_list_lines:
-					line = libraries_list_line.strip("\n").strip(" ")
-					if len(line) > 0:
-						if line[0] != '#':
-							uniqueSet2.append("../../../module/" + moduleName + line)
+		if os.path.isfile(localmoddir + "/" + moduleName + "/libraries.list"):
+			libraries_list = open(localmoddir + "/" + moduleName + "/libraries.list", 'r')
+			libraries_list_lines = libraries_list.readlines()
+			libraries_list.close()
+		
+			for libraries_list_line in libraries_list_lines:
+				line = libraries_list_line.strip("\n").strip(" ")
+				if len(line) > 0:
+					if line[0] != '#':
+						uniqueSet2.append("../../../module/" + moduleName + line)
 		for sources_list_line in sources_list_lines:
 			line = sources_list_line.strip("\n").strip(" ")
 			if len(line) > 0:
@@ -269,9 +268,8 @@ def compileSourcesFile():
 		sourcesString += line + " "
 	sourcesString += "\n"
 	sourcesString += "LDLIBS = "
-	if os.path.isfile("src/libraries.list.template"):
-		for line in uniqueSet2:
-			sourcesString += line + " "
+	for line in uniqueSet2:
+		sourcesString += line + " "
 	sources_inc = open('sources.inc', 'w')
 	sources_inc.write(sourcesString.strip(" ") + "\n")
 	sources_inc.close()
