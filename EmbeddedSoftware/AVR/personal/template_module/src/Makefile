@@ -272,7 +272,7 @@ extcoff: $(TARGET).elf
 # correct .data location substituted.
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
-	eval $$($(CC) -v $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
+	@eval $$($(CC) -v $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
 
 #$(LDLIBS)
 
