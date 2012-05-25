@@ -16,15 +16,18 @@ sns_power_10000_PULSES_PER_KWH=1
 #sns_power_1000_PULSES_PER_KWH=1
 
 # if sns_power_SEND_1_MIN_AVG is active, also enable the sns_power_SEND_TIMER_1_MIN_AVG
-sns_power_SEND_1_MIN_AVG=1
-sns_power_SEND_TIMER_1_MIN_AVG=<TIMER>
+#sns_power_SEND_1_MIN_AVG=1
+#sns_power_SEND_TIMER_1_MIN_AVG=<TIMER>
 
 POWER_SNS_PIN=EXP_C
+
+sns_power_PIN_PULLUP=1
 
 #uncomment lines below if 2 channels shall be used
 #sns_power_ID_ch2=<ID>
 #POWER_SNS_PIN_ch2=EXP_F
 #sns_power_PCINT_ch2=<PCINT>
+#sns_power_PIN_PULLUP_ch2=1
 
 # Uncomment below to enable debug pin, will toggle when light blink is detected on either channel
 #sns_power_LED_PIN=EXP_C
