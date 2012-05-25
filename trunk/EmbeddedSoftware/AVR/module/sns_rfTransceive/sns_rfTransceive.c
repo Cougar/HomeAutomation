@@ -1,7 +1,9 @@
 
 #include "sns_rfTransceive.h"
 
+#if IR_RX_ENABLE==1
 StdCan_Msg_t		rfTxMsg;
+#endif
 
 #if IR_RX_ENABLE==1
 uint8_t rfRxChannel_newData;
@@ -35,13 +37,14 @@ void sns_rfTransceive_TX_done_callback(uint8_t channel)
 
 void sns_rfTransceive_Init(void)
 {
+#if IR_RX_ENABLE==1
 	StdCan_Set_class(rfTxMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(rfTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	rfTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_RFTRANSCEIVE;
 	rfTxMsg.Header.ModuleId = sns_rfTransceive_ID;
+	rfTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
 	rfTxMsg.Length = 8;
 	
-#if IR_RX_ENABLE==1
 	rfRxChannel_newData = FALSE;
 	rfRxChannel_rxlen = 0;
 	rfRxChannel_proto.timeout=0;
@@ -90,8 +93,7 @@ void sns_rfTransceive_Process(void)
 			/* If known protocol and timeout is not 0 (0 means burst) */
 			if (rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN && rfRxChannel_proto.timeout != 0) {
 				/* Send button release command on CAN */
-				rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTOP;
-				rfTxMsg.Data[0] = 0;
+				rfTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
 				rfTxMsg.Data[1] = rfRxChannel_proto.protocol;
 				rfTxMsg.Data[2] = (rfRxChannel_proto.data>>40)&0xff;
 				rfTxMsg.Data[3] = (rfRxChannel_proto.data>>32)&0xff;
@@ -126,15 +128,14 @@ void sns_rfTransceive_Process(void)
 					/* If timeout is 0, protocol is burst protocol */
 					if (rfRxChannel_proto.timeout > 0)
 					{
-						rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART;
+						rfTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
 						rfRxChannel_state = sns_rfTransceive_STATE_START_PAUSE;
 					}
 					else
 					{
-						rfTxMsg.Header.Command = CAN_MODULE_CMD_RFTRANSCEIVE_DATABURST;
+						rfTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST;
 						rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
 					}
-					rfTxMsg.Data[0] = 0;
 					rfTxMsg.Data[1] = rfRxChannel_proto.protocol;
 					rfTxMsg.Data[2] = (rfRxChannel_proto.data>>40)&0xff;
 					rfTxMsg.Data[3] = (rfRxChannel_proto.data>>32)&0xff;
@@ -279,39 +280,34 @@ void sns_rfTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		switch (rxMsg->Header.Command)
 		{
 #if IR_TX_ENABLE==1
-		case CAN_MODULE_CMD_RFTRANSCEIVE_DATABURST:
-		{
-			if (rfTxChannel_state == sns_rfTransceive_STATE_IDLE)
+			case CAN_MODULE_CMD_PHYSICAL_IR:
 			{
-				rfTxChannel_stopSend = TRUE;
-			}
-		}	/* Fall through, no break */
-		case CAN_MODULE_CMD_RFTRANSCEIVE_DATASTART:
-		{
-			if (rfTxChannel_state == sns_rfTransceive_STATE_IDLE)
-			{
-				rfTxChannel_proto.protocol = rxMsg->Data[1];
-				rfTxChannel_proto.data = rxMsg->Data[2];
-				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
-				rfTxChannel_proto.data |= rxMsg->Data[3];
-				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
-				rfTxChannel_proto.data |= rxMsg->Data[4];
-				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
-				rfTxChannel_proto.data |= rxMsg->Data[5];
-				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
-				rfTxChannel_proto.data |= rxMsg->Data[6];
-				rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
-				rfTxChannel_proto.data |= rxMsg->Data[7];
+				if (	rfTxChannel_state == sns_rfTransceive_STATE_IDLE && 
+					(rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED ||
+					rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST))
+				{
+					rfTxChannel_stopSend = (uint8_t)(rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST);
 
-				rfTxChannel_state = sns_rfTransceive_STATE_START_TRANSMIT;
+					rfTxChannel_proto.protocol = rxMsg->Data[1];
+					rfTxChannel_proto.data = rxMsg->Data[2];
+					rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+					rfTxChannel_proto.data |= rxMsg->Data[3];
+					rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+					rfTxChannel_proto.data |= rxMsg->Data[4];
+					rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+					rfTxChannel_proto.data |= rxMsg->Data[5];
+					rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+					rfTxChannel_proto.data |= rxMsg->Data[6];
+					rfTxChannel_proto.data = rfTxChannel_proto.data<<8;
+					rfTxChannel_proto.data |= rxMsg->Data[7];
+
+					rfTxChannel_state = sns_rfTransceive_STATE_START_TRANSMIT;
+				}
+				else if (rfTxChannel_state != sns_rfTransceive_STATE_IDLE && rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED)
+				{
+					rfTxChannel_stopSend = TRUE;
+				}
 			}
-		}
-		break;
-		case CAN_MODULE_CMD_RFTRANSCEIVE_DATASTOP:
-		{
-			rfTxChannel_stopSend = TRUE;
-		}
-		break;
 #endif
 		}
 	}
