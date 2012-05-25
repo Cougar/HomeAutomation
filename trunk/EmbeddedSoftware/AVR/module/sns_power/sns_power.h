@@ -27,6 +27,14 @@ void sns_power_List(uint8_t ModuleSequenceNumber);
 #define sns_power_USEEEPROM 0
 #endif
 
+#ifndef sns_power_PIN_PULLUP
+#define sns_power_PIN_PULLUP 1
+#endif
+
+#ifndef sns_power_PIN_PULLUP_ch2
+#define sns_power_PIN_PULLUP_ch2 1
+#endif
+
 #if sns_power_USEEEPROM==1
 	struct sns_power_Data{
 		///TODO: Define EEPROM variables needed by the module

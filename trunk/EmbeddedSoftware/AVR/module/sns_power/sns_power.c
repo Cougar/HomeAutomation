@@ -174,14 +174,18 @@ void sns_power_Init(void)
 #endif  
 	///Initialize hardware etc
 	gpio_set_in(POWER_SNS_PIN);	// Set to input
+#if sns_power_PIN_PULLUP==1
 	gpio_set_pullup(POWER_SNS_PIN);	// Enable pull-up
-	
+#endif
+
 	Pcint_SetCallbackPin(sns_power_PCINT, POWER_SNS_PIN, &sns_power_pcint_callback);
 
 	MeasurmentBufferPointer = 0;
 #ifdef POWER_SNS_PIN_ch2
 	gpio_set_in(POWER_SNS_PIN_ch2);	// Set to input
+#if sns_power_PIN_PULLUP_ch2==1
 	gpio_set_pullup(POWER_SNS_PIN_ch2);	// Enable pull-up
+#endif
 	
 	Pcint_SetCallbackPin(sns_power_PCINT_ch2, POWER_SNS_PIN_ch2, &sns_power_pcint_callback_ch2);
 
