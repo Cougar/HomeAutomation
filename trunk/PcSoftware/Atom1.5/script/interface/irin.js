@@ -1,5 +1,5 @@
 
-IRIn_ModuleNames    = [ "irReceive" ];
+IRIn_ModuleNames    = [ "irReceive", "rfTransceive" ];
 IRIn_Channels       = function() { return [ 0 ]; };
 IRIn_Aliases        = function() { return Module_GetAliasNames(IRIn_ModuleNames); };
 IRIn_AvailableIds   = function() { return Module_GetAvailableIds(IRIn_ModuleNames); };
