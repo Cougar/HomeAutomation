@@ -1,5 +1,5 @@
 
-IROut_ModuleNames    = [ "irTransmit" ];
+IROut_ModuleNames    = [ "irTransmit", "rfTransceive" ];
 IROut_Channels       = function() { return [ 0 ]; };
 IROut_Statuses       = function() { return [ "Pressed", "Released", "Burst" ]; };
 IROut_Protocols      = function() { return [ "RC5", "RC6", "RCMM", "SIRC", "Sharp", "NEC", "Samsung", "Marantz", "Panasonic", "Sky", "Nexa2" ]; };
