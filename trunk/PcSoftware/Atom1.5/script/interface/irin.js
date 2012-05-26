@@ -70,7 +70,7 @@ function IRIn_Record(alias_name, remote_name)
 		IRIn_RecordClientId = Console_GetClientId();
 		
 		IRIn_RecordAliasData = aliases_data[name];
-		Log("Enter a single dot to finish.\n");
+		Log("To finish press a random key on the remote and then enter dot as name.\n");
 		
 		Log("\033[29mPress a button on you remote...\033[0m\n");
 		Console_PreventDefaultPrompt();
