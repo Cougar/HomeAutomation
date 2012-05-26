@@ -289,45 +289,56 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 
 void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data)
 {
-    if (client_id != this->client_id_)
+  if (client_id != this->client_id_)
+  {
+    return;
+  }
+  
+  static bool have_start = false;
+  
+  for (unsigned int n = 0; n < data.size(); n++)
+  {
+    log::Debug(log_module_, "data[%u] = %u, have_start = %s, this->buffer_.size() = %u", n, (unsigned int)data[n], have_start ? "true" : "false", this->buffer_.size());
+    
+    if (have_start)
     {
-      return;
+      if (data[n] == PACKET_END)
+      {
+        log::Debug(log_module_, "PACKET_END");
+        
+        while (this->buffer_.size() < 15)
+        {
+          this->buffer_.push_back(0);
+        }
+        
+        for (unsigned int k = 0; k < this->buffer_.size(); k++)
+        {
+          log::Debug(log_module_, "this->buffer_[%u]=%u", k, (unsigned int)this->buffer_[k]);
+        }
+        
+        this->ProcessBuffer();
+        
+        have_start = false;
+      }
+      else
+      {
+        this->buffer_.push_back(data[n]);
+      }
     }
-    
-    static bool have_start = false;
-    
-    for (unsigned int n = 0; n < data.size(); n++)
+    else if (data[n] == PACKET_START)
     {
-      log::Debug(log_module_, "data[%u]=%u", n, (unsigned int)data[n]);
+      log::Debug(log_module_, "PACKET_START");
       
-        if (have_start)
-        {
-          log::Debug(log_module_, "have_start, this->buffer_.size() = %u", this->buffer_.size());
-          
-            if (data[n] == PACKET_END && this->buffer_.size() == 15)
-            {
-              log::Debug(log_module_, "PACKET_END");
-              
-                this->ProcessBuffer();
-                have_start = false;
-            }
-            else
-            {
-                this->buffer_.push_back(data[n]);
-            }
-        }
-        else if (data[n] == PACKET_START)
-        {
-          common::Byteset empty_vector;
-          this->buffer_.swap(empty_vector);
+      common::Byteset empty_vector;
+      this->buffer_.swap(empty_vector);
 
-          have_start = true;
-        }
-        else if (data[n] == PACKET_PING)
-        {
-            LOG.Info("Received pong.");
-        }
+      have_start = true;
     }
+    else if (data[n] == PACKET_PING)
+    {
+      log::Info(log_module_, "Got Pong!");
+    }
+  }
 }
 
 void Network::SlotOnNewClientHandler(net::SocketId id, net::SocketId server_id)
