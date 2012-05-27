@@ -14,5 +14,6 @@ Require("interface/rotary.js");
 Require("interface/http.js");
 Require("interface/lgtv.js");
 Require("interface/counter.js");
+Require("interface/eggdrop.js");
 Require("interface/xbmc.js");
 
