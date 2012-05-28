@@ -29,11 +29,11 @@ sub atomd_read_packet
 	$payload="";
 	if ($payload_length > 0)
 	{
-		read($socket, $payload, $payload_length);
+		read($socket, $payload, $payload_length-1);
 	}
-	
+
 	#Pad payload length with 0s
-	$payload_length = sprintf("%04d", $payload_length);
+	$payload_length = sprintf("%04d", $payload_length-1);
 	
 	#print "areadpacket ".$command . $payload_length . $payload."\n";
 	return $command . $payload_length . $payload;
@@ -44,8 +44,10 @@ sub atomd_write_packet
 	($socket, $command, $payload) = @_;
 	
 	#Pad payload length with 0s
-	$payload_length = sprintf("%04d", length($payload)+1);
-	$packet = $command.$payload_length.$payload.chr(0);
+#	$payload_length = sprintf("%04d", length($payload)+1);
+#	$packet = $command.$payload_length.$payload.chr(0);
+	$payload_length = sprintf("%04d", length($payload));
+	$packet = $command.$payload_length.$payload;
 
 	#print "awritepacket ".$packet."\n";
 	print $socket $packet;
@@ -113,12 +115,39 @@ sub atomd_read_command_response
 		}
 
 		$packet =~ s/\n//g;
-		$response .= substr($packet, 8, -1); 
+#		$response .= substr($packet, 8, -1); 
+		$response .= substr($packet, 8); 
 		$response .= "\n";
 	}
 
 	return $response;
 }
+
+
+# Perl trim function to remove whitespace from the start and end of the string
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
+# Left trim function to remove leading whitespace
+sub ltrim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	return $string;
+}
+# Right trim function to remove trailing whitespace
+sub rtrim($)
+{
+	my $string = shift;
+	$string =~ s/\s+$//;
+	return $string;
+}
+
+
 
 # "return" 1 to not generate an error when loading file
 1;
