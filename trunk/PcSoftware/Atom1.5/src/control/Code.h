@@ -47,7 +47,7 @@ public:
   unsigned int GetChecksum();
   unsigned int GetLength();
   bool IsValid();
-  void Reset();
+  void Reset(bool fill);
   void AddByte(unsigned char byte);
 
 private:
