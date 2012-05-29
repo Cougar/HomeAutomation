@@ -66,6 +66,9 @@ void Code::Reset()
   this->address_upper_  = 0;
   this->is_valid_       = false;
   
+  this->data_.reserve(MAX_BUFFER_SIZE);
+  std::fill(this->data_.begin(), this->data_.begin() + MAX_BUFFER_SIZE, 0xFF);
+  
   LOG_DEBUG_EXIT;
 }
 
