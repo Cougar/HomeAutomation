@@ -349,7 +349,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     {
         LOG.Debug("Preparing to send null application to node " + this->id_);
         
-        this->code_->Reset();
+        this->code_->Reset(false);
         
         this->code_->AddByte(0xFF);
         this->code_->AddByte(0xFF);

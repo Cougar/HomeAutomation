@@ -46,7 +46,7 @@ Code::Code()
 {
   LOG_DEBUG_ENTER;
   
-  this->Reset();
+  this->Reset(false);
   //this->data_.insert(this->data_.begin(), 0xFF, MAX_BUFFER_SIZE);
   
   LOG_DEBUG_EXIT;
@@ -58,7 +58,7 @@ Code::~Code()
   LOG_DEBUG_EXIT;
 }
 
-void Code::Reset()
+void Code::Reset(bool fill)
 {
   LOG_DEBUG_ENTER;
   
@@ -66,8 +66,14 @@ void Code::Reset()
   this->address_upper_  = 0;
   this->is_valid_       = false;
   
-  this->data_.reserve(MAX_BUFFER_SIZE);
-  std::fill(this->data_.begin(), this->data_.begin() + MAX_BUFFER_SIZE, 0xFF);
+  common::Byteset empty_vector;
+  this->data_.swap(empty_vector);
+  
+  if (fill)
+  {
+    this->data_.reserve(MAX_BUFFER_SIZE);
+    std::fill(this->data_.begin(), this->data_.begin() + MAX_BUFFER_SIZE, 0xFF);
+  }
   
   LOG_DEBUG_EXIT;
 }
@@ -145,7 +151,7 @@ bool Code::ParseIntelHex(std::string data)
 
   boost::algorithm::split(lines, data, boost::is_any_of("\n"), boost::algorithm::token_compress_on);
 
-  this->Reset();
+  this->Reset(true);
 
   unsigned int byte_count;
   unsigned int addess;
