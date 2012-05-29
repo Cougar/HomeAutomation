@@ -39,7 +39,7 @@ def parseModuleIdFromFile(moduleName, fileName):
 			parts = line.split("=")
 			if parts[1].strip(" ") != -1 and parts[1].strip(" ") != "<ID>":
 				takenIds.append(int(parts[1].strip(" "), 16))
-				print "hittade: "+parts[1].strip(" ")+" in file: "+fileName
+				print "Found id: "+parts[1].strip(" ")+" in file: "+fileName+" for module: "+moduleName
 	return takenIds
 
 
@@ -51,6 +51,25 @@ def getModuleIdsFromFile(moduleName):
 
 	return takenIds
 	
+def parseAllModuleIdFromFile(fileName):
+	modules = getModules()
+	config_inc = open(fileName, 'r') 
+	config_inc_lines = config_inc.readlines()
+	config_inc.close()
+	for line in config_inc_lines:
+		line = line.strip("\n").strip(" ")
+		
+		if line.find("_ID") != -1:
+			parts = line.split("=")
+			if (parts[0][:-3] in modules):
+				if parts[1].strip(" ") != -1 and parts[1].strip(" ") != "<ID>":
+					print "\tModule: "+parts[0][:-3]+"\t"+parts[1].strip(" ")
+	
+def getAllModuleIdsFromFile():
+	for applicationName in os.listdir("../"):	
+		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
+			print "Found node: "+applicationName
+			parseAllModuleIdFromFile("../" + applicationName + "/config.inc")
 
 def getFreeModuleId(takenIds):
 	if len(takenIds) == 0:
@@ -288,6 +307,13 @@ def regenerateModules():
 	print "Regenerating modules complete"
 	print ""
 
+def listUsedModules():
+	print "Listing modules..."
+	print ""
+	getAllModuleIdsFromFile()
+	print ""
+	print "Listing modules complete"
+	print ""
 
 def addModule(moduleName):
 	print "Trying to add module " + moduleName
@@ -362,12 +388,13 @@ def usage():
 	print "  --add=<module name>  Adds a module to the application"
 	print "  --del=<module name>  Removes a module from the application"
 	print "  --new=<module name>  Creates a new module from the module template"
+	print "  --modules            Lists all used modules in your personal folder"
 	print ""
 
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlrc", ["help", "list", "regenerate", "add=", "del=", "new="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlrcm", ["help", "list", "modules", "regenerate", "add=", "del=", "new="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -409,6 +436,9 @@ def main():
 			
 		elif o in ("-r", "--regenerate"):
 			regenerateModules()
+			
+		elif o in ("-m", "--modules"):
+			listUsedModules()
 			
 		elif o in ("--add"):
 			if len(a) == 0:
