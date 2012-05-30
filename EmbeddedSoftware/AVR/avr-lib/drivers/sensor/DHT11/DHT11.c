@@ -17,11 +17,11 @@
 
 #ifdef DHT11_ONE_BUS
 
-#define DHT11_GET_IN()   gpio_get_state(DHT11_PIN)
-#define DHT11_OUT_LOW()  gpio_clr_pin(DHT11_PIN)
-#define DHT11_OUT_HIGH() gpio_set_pin(DHT11_PIN)
-#define DHT11_DIR_IN()   gpio_set_in(DHT11_PIN)
-#define DHT11_DIR_OUT()  gpio_set_out(DHT11_PIN)
+#define DHT11_GET_IN()   gpio_get_state(DHT11_PIN_ch0)
+#define DHT11_OUT_LOW()  gpio_clr_pin(DHT11_PIN_ch0)
+#define DHT11_OUT_HIGH() gpio_set_pin(DHT11_PIN_ch0)
+#define DHT11_DIR_IN()   gpio_set_in(DHT11_PIN_ch0)
+#define DHT11_DIR_OUT()  gpio_set_out(DHT11_PIN_ch0)
 
 
 #else
@@ -34,20 +34,21 @@ volatile uint8_t* DHT11_DDR;
 
 #define DHT11_GET_IN()  ( *DHT11_IN & DHT11_PIN_MASK )
 #define DHT11_OUT_LOW() ( *DHT11_OUT &= (uint8_t) ~DHT11_PIN_MASK )
-#define DHT11OUT_HIGH() ( *DHT11_OUT |= (uint8_t)  DHT11_PIN_MASK )
-#define DHT11DIR_IN()   ( *DHT11_DDR &= (uint8_t) ~DHT11_PIN_MASK )
-#define DHT11DIR_OUT()  ( *DHT11_DDR |= (uint8_t)  DHT11_PIN_MASK )
+#define DHT11_OUT_HIGH() ( *DHT11_OUT |= (uint8_t)  DHT11_PIN_MASK )
+#define DHT11_DIR_IN()   ( *DHT11_DDR &= (uint8_t) ~DHT11_PIN_MASK )
+#define DHT11_DIR_OUT()  ( *DHT11_DDR |= (uint8_t)  DHT11_PIN_MASK )
 
-void dht11_set_bus(volatile uint8_t* in,
-	volatile uint8_t* out,
+void dht11_set_bus(volatile uint8_t* out,
+	volatile uint8_t* in,
 	volatile uint8_t* ddr,
-	uint8_t pin)
+	uint8_t pin,
+	uint8_t pcint)
 {
 	DHT11_DDR=ddr;
 	DHT11_OUT=out;
 	DHT11_IN=in;
 	DHT11_PIN_MASK=(1<<pin);
-	dht11_reset();
+	//dht11_reset();
 }
 #endif
 
