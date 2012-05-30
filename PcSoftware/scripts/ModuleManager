@@ -15,7 +15,7 @@ def getModules():
 		if fileName[0] != '.' and fileName != "template":
 			modules.append(fileName)
 
-	return sorted(modules)
+	return sorted(modules, key=str.lower)
 
 
 def getLocalModules():
@@ -24,7 +24,7 @@ def getLocalModules():
 		if fileName[0] != '.':
 			modules.append(fileName)
 
-	return sorted(modules)
+	return sorted(modules, key=str.lower)
 
 
 def parseModuleIdFromFile(moduleName, fileName):
@@ -51,11 +51,14 @@ def getModuleIdsFromFile(moduleName):
 
 	return takenIds
 	
-def parseAllModuleIdFromFile(fileName):
+def parseAllModuleIdFromFile(fileName, foundModules):
+	index = 0
 	modules = getModules()
 	config_inc = open(fileName, 'r') 
 	config_inc_lines = config_inc.readlines()
 	config_inc.close()
+	parts = fileName.split("/")
+	node = parts[1]
 	for line in config_inc_lines:
 		line = line.strip("\n").strip(" ")
 		
@@ -63,13 +66,35 @@ def parseAllModuleIdFromFile(fileName):
 			parts = line.split("=")
 			if (parts[0][:-3] in modules):
 				if parts[1].strip(" ") != -1 and parts[1].strip(" ") != "<ID>":
-					print "\tModule: "+parts[0][:-3]+"\t"+parts[1].strip(" ")
+					if (foundModules == 0):
+						print "\tModule: "+parts[0][:-3]+"\t"+parts[1].strip(" ")
+					else:
+						foundModules.append(parts[0][:-3]+"$"+node+"$"+parts[1].strip(" ")) 
+					      
+	return foundModules
 	
 def getAllModuleIdsFromFile():
+	foundModules = []
 	for applicationName in os.listdir("../"):	
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
+			parseAllModuleIdFromFile("../" + applicationName + "/config.inc", foundModules)
+			
+	foundModulesSorted = sorted(foundModules, key=str.lower)
+	lastModule = ""
+	for x in foundModulesSorted:
+		splitted = x.split("$")
+		if (lastModule != splitted[0]):
+			lastModule = splitted[0]
+			print lastModule
+		print "%20s :" % splitted[1],
+		print splitted[2]
+	
+def getAllNodesFromFile():
+	files = sorted(os.listdir("../"), key=str.lower)
+	for applicationName in files:	
+		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
 			print "Found node: "+applicationName
-			parseAllModuleIdFromFile("../" + applicationName + "/config.inc")
+			parseAllModuleIdFromFile("../" + applicationName + "/config.inc", 0)
 
 def getFreeModuleId(takenIds):
 	if len(takenIds) == 0:
@@ -314,6 +339,14 @@ def listUsedModules():
 	print ""
 	print "Listing modules complete"
 	print ""
+	
+def listUsedNodes():
+	print "Listing nodes..."
+	print ""
+	getAllNodesFromFile()
+	print ""
+	print "Listing nodes complete"
+	print ""
 
 def addModule(moduleName):
 	print "Trying to add module " + moduleName
@@ -389,12 +422,13 @@ def usage():
 	print "  --del=<module name>  Removes a module from the application"
 	print "  --new=<module name>  Creates a new module from the module template"
 	print "  --modules            Lists all used modules in your personal folder"
+	print "  --nodes              Lists all nodes in your personal folder"
 	print ""
 
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hlrcm", ["help", "list", "modules", "regenerate", "add=", "del=", "new="])
+		opts, args = getopt.getopt(sys.argv[1:], "hlrcmn", ["help", "list", "modules", "nodes", "regenerate", "add=", "del=", "new="])
 	except getopt.GetoptError, err:
 		# print help information and exit:
 		print str(err) # will print something like "option -a not recognized"
@@ -439,6 +473,9 @@ def main():
 			
 		elif o in ("-m", "--modules"):
 			listUsedModules()
+		
+		elif o in ("-n", "--nodes"):
+			listUsedNodes()
 			
 		elif o in ("--add"):
 			if len(a) == 0:
