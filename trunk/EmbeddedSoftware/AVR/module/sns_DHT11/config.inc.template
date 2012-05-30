@@ -1,14 +1,12 @@
 ## Section sns_DHT11 -- Do not edit this line
 
-#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
-#sns_DHT11_USEEEPROM=1
-
 sns_DHT11_ID=<ID>
-#sns_DHT11_DUMMY=1
 sns_DHT11_TIMER=<TIMER>
 sns_DHT11_18MS_TIMER=<TIMER>
-DHT11_PIN = EXP_F
-#Uncomment to use the pcint driver
-#sns_DHT11_DUMMY_PCINT=<PCINT>
+
+DHT11_PIN_ch0=EXP_F
+#DHT11_PIN_ch1=EXP_E
+
+DHT11_NUM_SENSORS=1
 
 ## End section sns_DHT11 -- Do not edit this line
