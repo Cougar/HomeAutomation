@@ -88,7 +88,7 @@ void sns_DHT11_Init(void)
 	  EEDATA_UPDATE_CRC;
 	}
 #endif
-	Timer_SetTimeout(sns_DHT11_TIMER, 5000, TimerTypeFreeRunning, &ConvertTemperature_callback_DHT11);
+	Timer_SetTimeout(sns_DHT11_TIMER, 10000/DHT11_NUM_SENSORS, TimerTypeFreeRunning, &ConvertTemperature_callback_DHT11);
 }
 
 void sns_DHT11_Process(void)
