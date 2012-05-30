@@ -44,6 +44,18 @@ void ConvertTemperature_callback_DHT11(uint8_t timer)
 		case 1:
 			dht11_set_bus(DHT11_PIN_ch1);
 			break;
+		case 2:
+			dht11_set_bus(DHT11_PIN_ch2);
+			break;
+		case 3:
+			dht11_set_bus(DHT11_PIN_ch3);
+			break;
+		case 4:
+			dht11_set_bus(DHT11_PIN_ch4);
+			break;
+		case 5:
+			dht11_set_bus(DHT11_PIN_ch5);
+			break;
 	}
 #endif
 
@@ -86,7 +98,7 @@ void sns_DHT11_Process(void)
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS;
 		txMsg.Length = 3;
 
-		txMsg.Data[0] = 1;
+		txMsg.Data[0] = sns_DHT11_currentSensor;
 		temp = temperature[sns_DHT11_currentSensor]*64;
 		txMsg.Data[1] = (uint8_t)(temp >> 8);
 		txMsg.Data[2] = (uint8_t)(temp & 0xff);
