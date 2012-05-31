@@ -253,8 +253,8 @@ void act_hwPWM_Process(void)
   	/* Send netinfo packet (if pwmvalue has changed, and periodically) */
 	uint8_t index;
 	for(index =0;index < 4; index++){
-		if (pwmValue[index] > 10000) {
-			pwmValue[index] = 10000;
+		if (pwmValue[index] > ACT_HWPWM_MAX_DIM) {
+			pwmValue[index] = ACT_HWPWM_MAX_DIM;
 		}
 		if (sendInfo[index])
 		{

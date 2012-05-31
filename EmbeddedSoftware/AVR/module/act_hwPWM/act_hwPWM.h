@@ -64,6 +64,14 @@ void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 #error Not supported Waveform Generation Mode on CH1 and CH2
 #endif
 
+#if act_hwPWM_CH3_WGM==2 || act_hwPWM_CH3_WGM>3
+//#error Not supported Waveform Generation Mode on CH3 and CH4
+// Supported but you need to know how to use it
+#warning Waveform Generation Mode only supports 50% dutycycle and setting frequency as pwmvalue
+#define act_hwPWM_CH3_TOP 0xff
+#define act_hwPWM_CH4_TOP 0xff
+#endif
+
 
 #if act_hwPWM_CH3_WGM==0 || act_hwPWM_CH3_WGM==1 || act_hwPWM_CH3_WGM==3
 #define act_hwPWM_CH3_TOP 0xff
@@ -71,10 +79,6 @@ void act_hwPWM_List(uint8_t ModuleSequenceNumber);
 #endif
 #define act_hwPWM_CH3_FACT (256UL*act_hwPWM_CH3_TOP)/10000UL
 #define act_hwPWM_CH4_FACT (256UL*act_hwPWM_CH4_TOP)/10000UL
-
-#if act_hwPWM_CH3_WGM==2 || act_hwPWM_CH3_WGM>3
-#error Not supported Waveform Generation Mode on CH3 and CH4
-#endif
 
 #define OCR_1	OCR1B
 #define OCR_2	OCR1A
