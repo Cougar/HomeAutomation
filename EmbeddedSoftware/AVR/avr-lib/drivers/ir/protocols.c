@@ -1044,13 +1044,13 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	*len = 131;
 	uint8_t dimming = 0;
 	
-	/* If most significant bit i set, then dimming should be sent */
-	if (tempshift&(1<<64))
-	{
+	/* If most significant bit is set, then dimming should be sent */
+//	if (tempshift&(1ULL<<63))
+//	{
 		/* Dimming */
-		*len = 147;
-		dimming=1;
-	}
+//		*len = 147;
+//		dimming=1;
+//	}
 	
 	for (uint8_t i = 2; i < 131; i+=4)
 	{
@@ -1096,8 +1096,6 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
 
-//gpio_set_pin(EXP_H);
-
 	/* check if we have correct amount of data */ 
 	if (len != 50) {
 		return IR_NOT_CORRECT_DATA;
@@ -1130,6 +1128,12 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 			/* do nothing, a zero is already in rawbits */
 			bitCounter++;
 		}
+	}
+
+	if (rawbitsTemp==0)
+	{
+		/* Bogus RF data */
+		return IR_NOT_CORRECT_DATA;
 	}
 	
 	proto->protocol=IR_PROTO_NEXA1;
