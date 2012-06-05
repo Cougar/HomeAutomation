@@ -133,9 +133,96 @@ function Sensor_StoreNumberInPhonebook(number)
 {
 	var phonebook = Storage_GetJsonParamter("PhoneBook",number)
 	if (!phonebook) {
+		
 		if (number.charAt(0) != '0') {
-			number = "031"+number;
+			if (typeof sensorDefaultPhoneAreaCode === 'undefined'){
+				Log("\033[31mOnlinePhonebook: please add sensorDefaultPhoneAreaCode = yourAreaCode to autostart.js, defaulting to 031\033[0m\n");  
+			    number = "031"+number;
+			} else {
+			    number = sensorDefaultPhoneAreaCode+number;
+			}
    		}
+   		var persons = new Array();
+		  url = "wap.eniro.se/query?search_word=" + number + "&what=mobwp";
+		  //Log("\033[31mURL:"+url+"\033[0m\n");
+		  Http_Request(url, 
+			function(socket_id, result, header, content_data) {
+				if (result.indexOf("200 OK") != -1)
+				{
+					//Log("\033[31mOnlinePhonebook: result was: " + content_data + "\033[0m\n");
+					var lines = content_data.split("\n");
+					
+					var endString = "<anchor>Tillbaka<prev/></anchor>";
+					var nameStartString = "<td class=\"hTd2\">";
+					var nameEndString = "</table>";
+					for (var n = 1; n < lines.length; n++)
+					{
+						var line = lines[n].trim("\n");
+						
+						if (line.indexOf(endString) != -1)
+						{
+							break;
+						}
+						if (line.indexOf(nameStartString) != -1)
+						{
+							line = lines[n+1].trim("\n");
+							splitted = line.split("b>");
+							persons[persons.length] = splitted[1].substr(0, splitted[1].length -2);
+							break;
+						}
+						
+					}
+					
+					//Log("\033[31mOnlinePhonebook: Line: " + lines[1] + "\033[0m\n");
+					//Log("\033[31mOnlinePhonebook: Line: " + lines[2] + "\033[0m\n");
+					//Log("\033[31mOnlinePhonebook: Line: " + lines[3] + "\033[0m\n");
+					if (persons.length > 0) {
+						Storage_SetJsonParameter("PhoneBook", number, persons);
+						
+						//CAll all listeners!
+						//....
+						
+						Log("\033[31mOnlinePhonebook: Found: " + JSON.stringify(persons) + "\033[0m\n");
+					}	
+				}
+				else
+				{
+					Log("\033[31mOnlinePhonebook: Failed to do name lookup, result was: " + result + "\033[0m\n");
+				} 
+			}
+		); 
+		if (persons.length == 0) {
+			if (typeof SsensorRKSEEK_API === 'undefined') {
+			  ;
+			} else {
+				url = "rkseek.oblivioncreations.se/?client="+sensorRKSEEK_API+"&n=" + number + "&out=text";
+				//Log("\033[31mURL:"+url+"\033[0m\n");
+				  Http_Request(url, 
+					function(socket_id, result, header, content_data) {
+						var persons = new Array();
+						if (result.indexOf("200 OK") != -1)
+						{
+							//Log("\033[31mOnlinePhonebook: result was: " + content_data + "\033[0m\n");
+							var lines = content_data.split("\n");
+							//Log("\033[31mOnlinePhonebook: Line: " + lines[1] + "\033[0m\n");
+							//Log("\033[31mOnlinePhonebook: Line: " + lines[2] + "\033[0m\n");
+							//Log("\033[31mOnlinePhonebook: Line: " + lines[3] + "\033[0m\n");
+							if (lines[2].length > 0) {
+								persons = lines[2];
+								Storage_SetJsonParameter("PhoneBook", number, persons);	
+								Log("\033[31mOnlinePhonebook: Found: " + JSON.stringify(persons) + "\033[0m\n");
+							}
+						}
+						else
+						{
+							Log("\033[31mOnlinePhonebook: Failed to do name lookup, result was: " + result + "\033[0m\n");
+						} 
+					}
+				);
+			}
+		}
+   		
+   		/*
 		Http_Request("wap.hitta.se/default.aspx?Who=" + number + "&Where=&PageAction=White", 
 			function(socket_id, result, header, content_data) {
 				var persons = new Array();
@@ -178,6 +265,7 @@ function Sensor_StoreNumberInPhonebook(number)
 				} 
 			}
 		);
+		*/
 	} else {
 		Log("Number already stored\n");
 	}
