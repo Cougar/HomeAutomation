@@ -336,6 +336,9 @@ void act_ks0108_Init(void)
 	TCCR0B |= (1<<CS00);
 	OCR0B = 0xff-act_ks0108_INITIAL_BACKLIGHT;
 	DDRD |= (1<<PD5);
+	
+	/* Start timer for row management */
+	Timer_SetTimeout(act_ks0108_DOTMATRIX_TIMER, 1, TimerTypeFreeRunning, &glcdRefresh);	
 #endif
 
 
