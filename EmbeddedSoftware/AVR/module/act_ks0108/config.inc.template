@@ -41,5 +41,6 @@ dotmatrixROW_IO8=EXP_O
 
 dotmatrixLATCHCLOCK_IO=EXP_I
 
+#act_ks0108_DOTMATRIX_TIMER=<TIMER>
 
 ## End section act_ks0108 -- Do not edit this line
