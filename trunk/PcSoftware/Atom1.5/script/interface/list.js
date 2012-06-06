@@ -10,6 +10,7 @@ Require("interface/Touch.js");
 Require("interface/PID.js");
 Require("interface/sensor.js");
 Require("interface/display.js");
+Require("interface/g_display.js");
 Require("interface/rotary.js");
 Require("interface/http.js");
 Require("interface/lgtv.js");
