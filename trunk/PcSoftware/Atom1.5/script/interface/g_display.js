@@ -1,16 +1,16 @@
 
-g_display_ModuleNames    = [ "KS0108" ];
-g_display_Height         = function() { return [ 0, 1, 2, 3  ]; };
-g_display_Radius         = function() { return [ 2, 5, 10, 20, 30, 50, 100  ]; };
-g_display_Inverted       = function() { return [ "Standard", "Inverted"  ]; };
-g_display_Fill           = function() { return [ "NoFill", "Fill"  ]; };
-g_display_Transparent    = function() { return [ "Standard", "Transparent"  ]; };
-g_display_Width          = function() { return [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]; };
-g_display_Backlight      = function() { return [ 0, 50, 100, 150, 200, 255 ]; };
-g_display_Aliases        = function() { return Module_GetAliasNames(g_display_ModuleNames); };
-g_display_AvailableIds   = function() { return Module_GetAvailableIds(g_display_ModuleNames); };
+G_Display_ModuleNames    = [ "KS0108" ];
+G_Display_Height         = function() { return [ 0, 1, 2, 3  ]; };
+G_Display_Radius         = function() { return [ 2, 5, 10, 20, 30, 50, 100  ]; };
+G_Display_Inverted       = function() { return [ "Standard", "Inverted"  ]; };
+G_Display_Fill           = function() { return [ "NoFill", "Fill"  ]; };
+G_Dsplay_Transparent    = function() { return [ "Standard", "Transparent"  ]; };
+G_Display_Width          = function() { return [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]; };
+G_Display_Backlight      = function() { return [ 0, 50, 100, 150, 200, 255 ]; };
+G_Display_Aliases        = function() { return Module_GetAliasNames(G_Display_ModuleNames); };
+G_Display_AvailableIds   = function() { return Module_GetAvailableIds(G_Display_ModuleNames); };
 
-function g_display_Clear(alias_name, inverted)
+function G_Display_Clear(alias_name, inverted)
 {
 	if (arguments.length < 2)
 	{
@@ -18,7 +18,7 @@ function g_display_Clear(alias_name, inverted)
 		return false;
 	}
 	
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	
 	for (var name in aliases_data)
@@ -42,9 +42,9 @@ function g_display_Clear(alias_name, inverted)
 	
 	return true;
 }
-Console_RegisterCommand(g_display_Clear, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Inverted()); });
+Console_RegisterCommand(G_Display_Clear, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Inverted()); });
 
-function g_display_SetBacklight(alias_name, strength)
+function G_Display_SetBacklight(alias_name, strength)
 {
 	if (arguments.length < 2)
 	{
@@ -52,7 +52,7 @@ function g_display_SetBacklight(alias_name, strength)
 		return false;
 	}
 	
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	
 	for (var name in aliases_data)
@@ -82,10 +82,10 @@ function g_display_SetBacklight(alias_name, strength)
 	
 	return true;
 }
-Console_RegisterCommand(g_display_SetBacklight, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Backlight()); });
+Console_RegisterCommand(G_Display_SetBacklight, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Backlight()); });
 
 
-function g_display_Print(alias_name, x, y, inverted, transparent, text)
+function G_Display_Print(alias_name, x, y, inverted, transparent, text)
 {
 	if (arguments.length < 6)
 	{
@@ -109,7 +109,7 @@ function g_display_Print(alias_name, x, y, inverted, transparent, text)
 		text += " " + arguments[n];
 	}
 	
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	
 	for (var name in aliases_data)
@@ -153,9 +153,9 @@ function g_display_Print(alias_name, x, y, inverted, transparent, text)
 	
 	return true;
 }
-Console_RegisterCommand(g_display_Print, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Width(), g_display_Height(), g_display_Inverted(), g_display_Transparent()); });
+Console_RegisterCommand(G_Display_Print, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Width(), G_Display_Height(), G_Display_Inverted(), G_Display_Transparent()); });
 
-function g_display_drawCircle(alias_name, xCentre, yCentre, radius, inverted)
+function G_Display_DrawCircle(alias_name, xCentre, yCentre, radius, inverted)
 {
 	if (arguments.length < 5)
 	{
@@ -165,7 +165,7 @@ function g_display_drawCircle(alias_name, xCentre, yCentre, radius, inverted)
 	xCentre = parseInt(xCentre);
 	yCentre = parseInt(yCentre);
 	radius = parseInt(radius);
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	for (var name in aliases_data)
 	{
@@ -188,9 +188,9 @@ function g_display_drawCircle(alias_name, xCentre, yCentre, radius, inverted)
 	}
 	return true;
 }
-Console_RegisterCommand(g_display_drawCircle, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Width(), g_display_Height(), g_display_Radius(), g_display_Inverted()); });
+Console_RegisterCommand(G_Display_DrawCircle, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Width(), G_Display_Height(), G_Display_Radius(), G_Display_Inverted()); });
 
-function g_display_drawLine(alias_name, xStart, yStart, xEnd, yEnd, inverted)
+function G_Display_DrawLine(alias_name, xStart, yStart, xEnd, yEnd, inverted)
 {
 	if (arguments.length < 6)
 	{
@@ -201,7 +201,7 @@ function g_display_drawLine(alias_name, xStart, yStart, xEnd, yEnd, inverted)
 	yStart = parseInt(yStart);
 	xEnd = parseInt(xEnd);
 	yEnd = parseInt(yEnd);
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	for (var name in aliases_data)
 	{
@@ -225,9 +225,9 @@ function g_display_drawLine(alias_name, xStart, yStart, xEnd, yEnd, inverted)
 	}
 	return true;
 }
-Console_RegisterCommand(g_display_drawLine, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Width(), g_display_Height(),g_display_Width(), g_display_Height(), g_display_Inverted()); });
+Console_RegisterCommand(G_Display_DrawLine, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Width(), G_Display_Height(),G_Display_Width(), G_Display_Height(), G_Display_Inverted()); });
 
-function g_display_invertRect(alias_name, xStart, yStart, width, height)
+function G_Display_invertRect(alias_name, xStart, yStart, width, height)
 {
 	if (arguments.length < 5)
 	{
@@ -238,7 +238,7 @@ function g_display_invertRect(alias_name, xStart, yStart, width, height)
 	yStart = parseInt(yStart);
 	width = parseInt(width);
 	height = parseInt(height);
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	for (var name in aliases_data)
 	{
@@ -261,9 +261,9 @@ function g_display_invertRect(alias_name, xStart, yStart, width, height)
 	}
 	return true;
 }
-Console_RegisterCommand(g_display_invertRect, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Width(), g_display_Height(),g_display_Width(), g_display_Height()); });
+Console_RegisterCommand(G_Display_invertRect, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Width(), G_Display_Height(),G_Display_Width(), G_Display_Height()); });
 
-function g_display_DrawRect(alias_name, xStart, yStart, width, height, inverted, fill, radius)
+function G_Display_DrawRect(alias_name, xStart, yStart, width, height, inverted, fill, radius)
 {
 	if (arguments.length < 8)
 	{
@@ -275,7 +275,7 @@ function g_display_DrawRect(alias_name, xStart, yStart, width, height, inverted,
 	width = parseInt(width);
 	height = parseInt(height);
 	radius = parseInt(radius);
-	var aliases_data = Module_ResolveAlias(alias_name, g_display_ModuleNames);
+	var aliases_data = Module_ResolveAlias(alias_name, G_Display_ModuleNames);
 	var found = false;
 	for (var name in aliases_data)
 	{
@@ -301,11 +301,11 @@ function g_display_DrawRect(alias_name, xStart, yStart, width, height, inverted,
 	}
 	return true;
 }
-Console_RegisterCommand(g_display_DrawRect, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, g_display_Aliases(), g_display_Width(), g_display_Height(),g_display_Width(), g_display_Height(), g_display_Inverted(), g_display_Fill(), g_display_Radius()); });
+Console_RegisterCommand(G_Display_DrawRect, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, G_Display_Aliases(), G_Display_Width(), G_Display_Height(),G_Display_Width(), G_Display_Height(), G_Display_Inverted(), G_Display_Fill(), G_Display_Radius()); });
 
-function g_display_OnMessage(module_name, module_id, command, variables)
+function G_Display_OnMessage(module_name, module_id, command, variables)
 {
-	if (in_array(g_display_ModuleNames, module_name))
+	if (in_array(G_Display_ModuleNames, module_name))
 	{
 		var aliases_data = Module_LookupAliases({
 			"module_name" : module_name,
@@ -338,11 +338,11 @@ function g_display_OnMessage(module_name, module_id, command, variables)
 		}
 	}
 }
-Module_RegisterToOnMessage("all", g_display_OnMessage);
+Module_RegisterToOnMessage("all", G_Display_OnMessage);
 
-function g_display_OnChange(module_name, module_id, available)
+function G_Display_OnChange(module_name, module_id, available)
 {
-	if (in_array(g_display_ModuleNames, module_name) && available)
+	if (in_array(G_Display_ModuleNames, module_name) && available)
 	{
 		var aliases_data = Module_LookupAliases({
 			"module_name" : module_name,
@@ -358,4 +358,4 @@ function g_display_OnChange(module_name, module_id, available)
 		}
 	}
 }
-Module_RegisterToOnChange("all", g_display_OnChange);
+Module_RegisterToOnChange("all", G_Display_OnChange);
