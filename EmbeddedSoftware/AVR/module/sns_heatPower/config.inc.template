@@ -1,0 +1,13 @@
+## Section sns_heatPower -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_heatPower_USEEEPROM=1
+
+sns_heatPower_ID=<ID>
+#sns_heatPower_DUMMY=1
+#sns_heatPower_DUMMY_TIMER=<TIMER>
+
+#Uncomment to use the pcint driver
+#sns_heatPower_DUMMY_PCINT=<PCINT>
+
+## End section sns_heatPower -- Do not edit this line
