@@ -1357,6 +1357,7 @@
     <module id="0" name="Debug" class="tst"/>
     <module id="1" name="Default" class="def"/>
     <module id="3" name="DS18x20" class="sns"/>
+    <module id="4" name="heatPower" class="sns"/>
     <module id="5" name="FOST02" class="sns"/>
     <module id="6" name="BusVoltage" class="sns"/>
     <module id="7" name="SimpleDTMF" class="sns"/>
