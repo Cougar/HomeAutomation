@@ -1,47 +1,61 @@
 
 #include "sns_heatPower.h"
 
-#if sns_heatPower_USEEEPROM==1
-#include "sns_heatPower_eeprom.h"
-struct eeprom_sns_heatPower EEMEM eeprom_sns_heatPower =
-{
-	{
-		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file.
-		0xAB,		// x
-		0x1234		// y
-		0x12345678	// z
-	},
-	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
-};
-#endif
+const char sns_heatPower_request[sns_heatPower_REQ_STRING_LEN] = sns_heatPower_REQ_STRING;
+
+typedef enum {
+	PARITY_NONE = 0,
+	PARITY_EVEN = 1,
+	PARITY_ODD = 2,
+} parityMode_t;
 
 void sns_heatPower_Init(void)
 {
-#if sns_heatPower_USEEEPROM==1
-	if (EEDATA_OK)
-	{
-	  ///TODO: Use stored data to set initial values for the module
-	  blablaX = eeprom_read_byte(EEDATA.x);
-	  blablaY = eeprom_read_word(EEDATA16.y);
-	  blablaZ = eeprom_read_dword(EEDATA32.y);
-	} else
-	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-	  eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
-	  eeprom_write_word_crc(EEDATA16.y, 0x1234, WITHOUT_CRC);
-	  eeprom_write_dword_crc(EEDATA32.y, 0x12345678, WITHOUT_CRC);
-	  EEDATA_UPDATE_CRC;
-	}
-#endif
-	///TODO: Initialize hardware etc here
+	uart_setDatabits(sns_heatPower_CNF_DATABITS);
+	uart_setStopbits(sns_heatPower_CNF_STOPBITS);
+	uart_setParity(sns_heatPower_CNF_PARITY!=PARITY_NONE, sns_heatPower_CNF_PARITY==PARITY_ODD);
+	uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(sns_heatPower_BAUD_RX, F_CPU));
 
-	// to use PCINt lib, call this function: (the callback function look as a timer callback function)
-	// Pcint_SetCallbackPin(sns_heatPower_PCINT, EXP_C , &sns_heatPower_pcint_callback);
-
+	Timer_SetTimeout(sns_heatPower_REQ_TIMER, sns_heatPower_REQ_INTERVAL_S*1000 , TimerTypeFreeRunning, 0);
 }
 
 void sns_heatPower_Process(void)
 {
-	///TODO: Stuff that needs doing is done here
+	/* At timer timeout send a new request */
+	if (Timer_Expired(sns_heatPower_REQ_TIMER))
+	{
+		/* Set baudrate to transmit baudrate */
+		uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(sns_heatPower_BAUD_TX, F_CPU));
+		
+		/* Send request string */
+		uart_puts(sns_heatPower_request);
+		
+		/* TX buffer must be empty before we change buadrate */
+		while(!uart_txbufempty()) {}
+		/* Set baudrate to receive baudrate */
+		uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(sns_heatPower_BAUD_RX, F_CPU));
+	}
+	
+	unsigned char status;
+	do
+	{
+		/* ask uart driver for more data */
+		unsigned int data = uart_getc();
+		/* character is contained in LSB */
+		unsigned char c = (unsigned char)(data & 0x00FF);
+
+		/* status is contained in MSB */
+		status = (unsigned char)((data & 0xFF00) >> 8);
+		
+		/* status == 0 means we just received a new char */
+		if (status == 0)
+		{
+			//printf("RX \n"); ADD c !
+			// TODO c contains data, use it! filter with config.inc parameters and send can package
+			
+		}
+	/* keep going until uart RXBUF is empty */
+	} while (status == 0);
 }
 
 void sns_heatPower_HandleMessage(StdCan_Msg_t *rxMsg)

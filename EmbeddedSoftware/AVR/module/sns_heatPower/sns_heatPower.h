@@ -16,6 +16,7 @@
 #include <drivers/mcu/gpio.h>
 #include <drivers/adc/adc.h>
 #include <drivers/mcu/pcint.h>
+#include <drivers/uart/uart.h>
 
 void sns_heatPower_Init(void);
 void sns_heatPower_Process(void);
