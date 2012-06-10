@@ -4,10 +4,24 @@
 #sns_heatPower_USEEEPROM=1
 
 sns_heatPower_ID=<ID>
-#sns_heatPower_DUMMY=1
-#sns_heatPower_DUMMY_TIMER=<TIMER>
+sns_heatPower_BAUD_RX=1200
+sns_heatPower_BAUD_TX=300
 
-#Uncomment to use the pcint driver
-#sns_heatPower_DUMMY_PCINT=<PCINT>
+# 0 none, 1 even, 2 odd
+sns_heatPower_CNF_PARITY=1
+sns_heatPower_CNF_STOPBITS=2
+sns_heatPower_CNF_DATABITS=7
+
+sns_heatPower_REQ_STRING={'\\', '#', '1', 0}
+sns_heatPower_REQ_STRING_LEN=4
+
+sns_heatPower_REQ_TIMER=<TIMER>
+sns_heatPower_REQ_INTERVAL_S=10
+
+sns_heatPower_RES_ENERGY_START=0
+sns_heatPower_RES_ENERGY_LEN=7
+sns_heatPower_RES_POWER_START=42
+sns_heatPower_RES_POWER_LEN=7
+
 
 ## End section sns_heatPower -- Do not edit this line

@@ -362,6 +362,15 @@ void uart_init(unsigned int baudrate)
 
 }/* uart_init */
 
+/*************************************************************************
+Function: uart_txbufempty()
+Purpose:  Check if transmitt buffer is empty
+Returns:  true if buffer is empty, false if not
+**************************************************************************/
+unsigned int uart_txbufempty(void)
+{
+	return ( UART_TxHead == UART_TxTail);
+}/* uart_txbufempty */
 
 /*************************************************************************
 Function: uart_getc()
