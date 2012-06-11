@@ -322,6 +322,14 @@ void saveImageFromScreen(uint8_t id, uint8_t size_x , uint8_t size_y) {
 }
 #endif
 
+#if GRAPHICS_DRIVER==DOTMATRIX
+/* Refresh display */
+void act_ks0108_Refresh(uint8_t timer)
+{
+	glcdRefresh();
+}
+#endif
+
 void act_ks0108_Init(void)
 {
 	/* Set up PWM controlling brightness */
@@ -338,7 +346,8 @@ void act_ks0108_Init(void)
 	DDRD |= (1<<PD5);
 	
 	/* Start timer for row management */
-	Timer_SetTimeout(act_ks0108_DOTMATRIX_TIMER, 1, TimerTypeFreeRunning, &glcdRefresh);	
+	// TODO polled from process() or callback??
+	Timer_SetTimeout(act_ks0108_DOTMATRIX_TIMER, 1, TimerTypeFreeRunning, &act_ks0108_Refresh);
 #endif
 
 
