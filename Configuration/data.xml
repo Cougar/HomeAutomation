@@ -1356,6 +1356,7 @@
   <modules>
     <module id="0" name="Debug" class="tst"/>
     <module id="1" name="Default" class="def"/>
+
     <module id="3" name="DS18x20" class="sns"/>
     <module id="4" name="heatPower" class="sns"/>
     <module id="5" name="FOST02" class="sns"/>
@@ -1385,6 +1386,8 @@
     <module id="29" name="PCAPWM" class="act"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
+
+
     <module id="45" name="PIR" class="sns"/>
     <module id="46" name="TCN75A" class="sns"/>
     <module id="47" name="VoltageCurrent" class="sns"/>
@@ -1393,8 +1396,8 @@
     <module id="50" name="inputAnalog" class="sns"/>
     <module id="51" name="LM335" class="sns"/>
     <module id="52" name="SH11" class="sns"/>
-    <module id="53" name="Radio433Transmit" class="act"/>
-    <module id="54" name="Radio433Receive" class="sns"/>
+
+
     <module id="55" name="NTC" class="sns"/>
     <module id="56" name="sigmadelta_dimmer" class="act"/>
     <module id="57" name="counter" class="sns"/>
