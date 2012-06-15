@@ -24,6 +24,7 @@ void sns_heatPower_Process(void)
 	/* At timer timeout send a new request */
 	if (Timer_Expired(sns_heatPower_REQ_TIMER))
 	{
+printf("TX\n");
 		/* Set baudrate to transmit baudrate */
 		uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(sns_heatPower_BAUD_TX, F_CPU));
 		
@@ -31,7 +32,14 @@ void sns_heatPower_Process(void)
 		uart_puts(sns_heatPower_request);
 		
 		/* TX buffer must be empty before we change buadrate */
-		while(!uart_txbufempty()) {}
+		//while(uart_txbufempty()) {;}
+		
+		Timer_SetTimeout(sns_heatPower_REQ_TIMER2, 300 , TimerTypeOneShot, 0);		
+	}
+
+	/* At timer timeout send a new request */
+	if (Timer_Expired(sns_heatPower_REQ_TIMER))
+	{
 		/* Set baudrate to receive baudrate */
 		uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(sns_heatPower_BAUD_RX, F_CPU));
 	}
@@ -50,9 +58,12 @@ void sns_heatPower_Process(void)
 		/* status == 0 means we just received a new char */
 		if (status == 0)
 		{
-			//printf("RX \n"); ADD c !
-			// TODO c contains data, use it! filter with config.inc parameters and send can package
-			
+			printf("RX %c\n", c);
+			// TODO c contains data, use it! add a counter which reset at TX then filter with config.inc parameters and send can package
+		}
+		else if (data != UART_NO_DATA)
+		{
+			printf("RX %u\n", data);
 		}
 	/* keep going until uart RXBUF is empty */
 	} while (status == 0);
