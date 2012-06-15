@@ -16,6 +16,7 @@ sns_heatPower_REQ_STRING={'\\', '#', '1', 0}
 sns_heatPower_REQ_STRING_LEN=4
 
 sns_heatPower_REQ_TIMER=<TIMER>
+sns_heatPower_REQ_TIMER2=<TIMER>
 sns_heatPower_REQ_INTERVAL_S=10
 
 sns_heatPower_RES_ENERGY_START=0

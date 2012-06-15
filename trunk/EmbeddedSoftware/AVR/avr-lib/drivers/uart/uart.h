@@ -96,12 +96,6 @@ extern void uart_init(unsigned int baudrate);
 
 
 /**
-   @brief   Check if transmit buffer is empty 
-   @return  true if buffer is empty, false if not
-*/
-extern unsigned int uart_txbufempty(void);
-
-/**
  *  @brief   Get received byte from ringbuffer
  *
  * Returns in the lower byte the received character and in the 
