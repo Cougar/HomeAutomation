@@ -1,7 +1,7 @@
 
 //Require("plugin/module.js");
 
-Power_ModuleNames    = [ "power" ];
+Power_ModuleNames    = [ "power", "heatPower" ];
 Power_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Power_Energy         = function() { return [ 0, 500, 1000, 5000, 10000 ]; };
 Power_Aliases        = function() { return Module_GetAliasNames(Power_ModuleNames); };
