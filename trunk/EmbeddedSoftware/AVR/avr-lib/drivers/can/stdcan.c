@@ -1,4 +1,3 @@
-
 #include "stdcan.h"
 #if defined(_AVRLIB_BIOS_)
 #include <bios.h>
@@ -8,6 +7,7 @@
 #endif
 
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 
 #if (STDCAN_TX_QUEUE_SIZE > 1)
 #error StdCan: Tx queue size longer than one msg not yet implemented.
@@ -16,10 +16,9 @@
 /**
  * The receive queue.
  */
-StdCan_Msg_t RxQ[STDCAN_RX_QUEUE_SIZE];
+StdCan_Msg_t RxQ[STDCAN_RX_QUEUE_SIZE + 1];
 unsigned char RxQ_Rd_idx; /**< Receive queue read index. */
 unsigned char RxQ_Wr_idx; /**< Receive queue write index. */
-unsigned char RxQ_Len; /**< Number of messages in receive queue. */
 
 #if (STDCAN_TX_QUEUE_SIZE > 1)
 /**
@@ -28,7 +27,6 @@ unsigned char RxQ_Len; /**< Number of messages in receive queue. */
 StdCan_Msg_t TxQ[STDCAN_TX_QUEUE_SIZE];
 unsigned char TxQ_Rd_idx; /**< Transmit queue read index. */
 unsigned char TxQ_Wr_idx; /**< Transmit queue write index. */
-unsigned char TxQ_Len; /**< Number of messages in transmit queue. */
 #endif
 
 #if (STDCAN_FILTER)
@@ -51,10 +49,13 @@ StdCan_Filter_t RxFilters[STDCAN_NUM_FILTERS];
  */
 void Can_Process(Can_Message_t* msg)
 {
-	unsigned char n;
-	/* Check if there is room on the queue. */
-	if (RxQ_Len < STDCAN_RX_QUEUE_SIZE) {
+	/* What will the next write index be if the push goes well? */
+	unsigned char Wr_next = RxQ_Wr_idx + 1;
+	if (Wr_next >= STDCAN_RX_QUEUE_SIZE + 1) Wr_next = 0;
 
+	/* Check if there is room on the queue. */
+	if (Wr_next != RxQ_Rd_idx) {
+		unsigned char n;
 #if (STDCAN_FILTER)
 		/* Try to match each filter in turn. */
 		for (n = 0; n < STDCAN_NUM_FILTERS; n++) {
@@ -73,9 +74,8 @@ void Can_Process(Can_Message_t* msg)
 		for (n = 0; n < RxQ[RxQ_Wr_idx].Length; n++) {
 			RxQ[RxQ_Wr_idx].Data[n] = msg->Data.bytes[n];
 		}
-		/* Increment write index and queue length. */
-		if (++RxQ_Wr_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Wr_idx = 0;
-		RxQ_Len++;
+		/* Update write index. */
+		RxQ_Wr_idx = Wr_next;
 	} else {
 		/* Overflow, just drop the new message. In the future, some
 		 * form of priority scheme could be used to drop another
@@ -96,11 +96,9 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 	/* Reset all queue variables. */
 	RxQ_Rd_idx = 0;
 	RxQ_Wr_idx = 0;
-	RxQ_Len    = 0;
 #if (STDCAN_TX_QUEUE_SIZE > 1)
 	TxQ_Rd_idx = 0;
 	TxQ_Wr_idx = 0;
-	TxQ_Len    = 0;
 #endif
 
 #if defined(_AVRLIB_BIOS_)
@@ -149,35 +147,38 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc)
 
 StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg)
 {
-	unsigned char n;
-	cli();
+	unsigned char Wr_idx;
+	unsigned char Rd_idx;
+
+	/* Read indices atomically into local copies. */
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		Wr_idx = *(volatile unsigned char*)&RxQ_Wr_idx;
+		Rd_idx = *(volatile unsigned char*)&RxQ_Rd_idx;
+	}
+
 	/* Check if there's a message waiting. */
-	if (RxQ_Len) {
+	if (Rd_idx != Wr_idx) {
+		unsigned char n;
 
 		/* Copy message to user buffer. */
-		msg->Id     = RxQ[RxQ_Rd_idx].Id;
-		msg->Length = RxQ[RxQ_Rd_idx].Length;
+		msg->Id     = RxQ[Rd_idx].Id;
+		msg->Length = RxQ[Rd_idx].Length;
 		//TODO: Consider a mempcy() of the entire message.
-		for (n = 0; n < RxQ[RxQ_Rd_idx].Length; n++) {
-			msg->Data[n] = RxQ[RxQ_Rd_idx].Data[n];
+		for (n = 0; n < RxQ[Rd_idx].Length; n++) {
+			msg->Data[n] = RxQ[Rd_idx].Data[n];
 		}
 
-		/* Increment read index and decrease queue length. */
-		if (++RxQ_Rd_idx >= STDCAN_RX_QUEUE_SIZE) RxQ_Rd_idx = 0;
-		RxQ_Len--;
-		
-		sei();
+		/* Update read index and store back atomically. */
+		if (++Rd_idx >= STDCAN_RX_QUEUE_SIZE + 1) Rd_idx = 0;
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			*(volatile unsigned char*)&RxQ_Rd_idx = Rd_idx;
+		}
+
 		return StdCan_Ret_OK;
 	} else {
 		/* Queue is empty. */
-		sei();
 		return StdCan_Ret_Empty;
 	}
-}
-
-unsigned char StdCan_Get_Pending(void)
-{
-	return RxQ_Len;
 }
 
 StdCan_Ret_t StdCan_Put(StdCan_Msg_t* msg)
