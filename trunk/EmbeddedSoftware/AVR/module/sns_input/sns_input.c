@@ -449,7 +449,9 @@ void sns_input_Init(void)
 	sns_input_setPinStatus();
 
 	Timer_SetTimeout(sns_input_DEBOUNCE_TIMER, sns_input_DEBOUNCE_TIME_MS, TimerTypeFreeRunning, 0);
+#if sns_input_SEND_PERIODIC==1
 	Timer_SetTimeout(sns_input_SEND_PERIODIC_TIMER, sns_input_SEND_PERIOD_MS, TimerTypeFreeRunning, 0);
+#endif
 }
 
 #if sns_input_SEND_PERIODIC==1
