@@ -130,16 +130,6 @@ StdCan_Ret_t StdCan_Init(Node_Desc_t* node_desc);
 StdCan_Ret_t StdCan_Get(StdCan_Msg_t* msg);
 
 /**
- * @brief Queue size.
- * 
- * Returns the number of messages pending in the receive queue.
- * 
- * @retval
- * 		Number of messages in the receive queue.
- */ 
-unsigned char StdCan_Get_Pending(void);
-
-/**
  * @brief Send a message.
  * 
  * Puts a message on the transmit queue.
