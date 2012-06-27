@@ -30,6 +30,14 @@ void nmea_parse_GGA(void) {
 		NMEA_data.time_m = 10*a2d(nmea_buffer[8]) + a2d(nmea_buffer[9]);
 		NMEA_data.time_s = 10*a2d(nmea_buffer[10]) + a2d(nmea_buffer[11]);
 		
+        NMEA_data.unixtimestamp = 0
+            + NMEA_data.time_s * 1UL
+            + NMEA_data.time_m * 60UL
+            + NMEA_data.time_h * 3600UL
+            + NMEA_data.date_d * 86400UL;
+//            + NMEA_data.time_s * 1UL
+//            + NMEA_data.time_s * 1UL
+
 		//Get fixtype
 		NMEA_data.fixvalid=a2d(nmea_buffer[nmea_comindex[5]+1]);
 		
@@ -216,7 +224,7 @@ void sns_nmea_Init(void)
 	//TODO: put in progmem to save space
 	//TODO: do not send this directly at power on, the GPS module is quite slow at startup
 	uint8_t tsip_command[] = {0x10, 0xBC, 0x00, 0x07, 0x07, 0x03, 0x00, 0x00, 0x00, 0x02, 0x04, 0x00, 0x10, 0x03};
-	for(i = 0; i<14; i++){
+	for( uint8_t i = 0; i<14; i++){
 		uart_putc(tsip_command[i]);
 	}
 #endif

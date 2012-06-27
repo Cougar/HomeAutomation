@@ -41,7 +41,7 @@ void chn_ChnMaster_UpdateChannel( uint16_t channel_id, uint16_t value ) {
     txMsg.Id = 0;
     StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_CHN);
 
-    txMsg.Id |= channel_id << 8;
+    txMsg.Id |= ((uint32_t)channel_id) << 8;
     txMsg.Id |= chn_ChnMaster_ID;
 
     txMsg.Length = 2;
