@@ -8,6 +8,8 @@ uint8_t sns_rfid_got_card = 0;
 void sns_rfid_Init(void)
 {
 	rfid_init();
+
+	gpio_set_out( sns_rfid_STATUS_LED );
 }
 
 void sns_rfid_Process(void)
@@ -33,6 +35,8 @@ void sns_rfid_Process(void)
 
 void sns_rfid_HandleCardEvent( uint8_t event ) {
 	StdCan_Msg_t txMsg;
+	
+	gpio_set_statement( event, sns_rfid_STATUS_LED );
 
 	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS); ///TODO: Change this to the actual class type
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
