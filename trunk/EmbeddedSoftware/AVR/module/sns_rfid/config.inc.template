@@ -15,4 +15,6 @@ sns_rfid_READ_PIN=EXP_N
 sns_rfid_CARD_LEFT_TIME=1000
 sns_rfid_CARD_LEFT_TIMER=<TIMER>
 
+sns_rfid_STATUS_LED=EXP_H
+
 ## End section sns_rfid -- Do not edit this line
