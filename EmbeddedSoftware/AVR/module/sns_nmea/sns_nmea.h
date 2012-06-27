@@ -45,6 +45,8 @@ struct {
 	uint8_t speed;
 	uint8_t cmg_h, cmg_l;
 	uint8_t date_y, date_m, date_d;
+
+    uint32_t unixtimestamp;
 } NMEA_data;
 
 #endif // SNS_NMEA

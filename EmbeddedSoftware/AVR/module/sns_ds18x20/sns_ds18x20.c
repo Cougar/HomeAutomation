@@ -2,6 +2,8 @@
 
 #ifdef CHN_LOADED
 #include "../chn_ChnMaster/chn_ChnMaster.h"
+
+uint16_t sns_ds18s20_sensorids[DS18x20_MAXSENSORS] = {sns_ds18x20_chn_sensors};
 #endif
 
 void ConvertTemperature(void);
@@ -53,7 +55,11 @@ void ReadTemperature(void)
 		txMsg.Data[2] = (uint8_t)(temp & 0xff);
 
 #ifdef CHN_LOADED
-        chn_ChnMaster_UpdateChannel( sns_ds18x20_CHN_CHANNEL, (temp<<2)+25600 );
+		for( uint8_t i=0; i<DS18x20_MAXSENSORS; i++) {
+			if( sns_ds18s20_sensorids[i] == SensorIds[CurrentSensor] ) {
+			        chn_ChnMaster_UpdateChannel( sns_ds18x20_CHN_CHANNEL + i, (temp<<2) + 25600 );
+			}
+		}
 #endif
 	}
 	

@@ -1,0 +1,18 @@
+## Section sns_rfid -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_rfid_USEEEPROM=1
+
+sns_rfid_ID=<ID>
+#sns_rfid_DUMMY=1
+#sns_rfid_DUMMY_TIMER=<TIMER>
+
+sns_rfid_READ_PIN=EXP_N
+
+# NOTE: EXP_G / OC0B is hardcoded output. Needs to be output of timer 0
+
+# Time until card is accepted as left, and not only a glitch
+sns_rfid_CARD_LEFT_TIME=1000
+sns_rfid_CARD_LEFT_TIMER=<TIMER>
+
+## End section sns_rfid -- Do not edit this line

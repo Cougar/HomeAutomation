@@ -1386,6 +1386,7 @@
     <module id="29" name="PCAPWM" class="act"/>
     <module id="30" name="ChnMaster" class="chn"/>
     <module id="31" name="ChnController" class="chn"/>
+    <module id="32" name="rfid" class="sns"/>
 
 
     <module id="45" name="PIR" class="sns"/>

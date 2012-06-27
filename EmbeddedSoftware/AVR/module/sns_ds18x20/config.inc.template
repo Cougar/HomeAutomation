@@ -9,6 +9,7 @@ DS18x20_MAXSENSORS=4
 
 #Only used if chn_ChnMaster is loaded to
 sns_ds18x20_CHN_CHANNEL=0
+sns_ds18x20_chn_sensors=0x01,0x02,0x03
 
 OW_PIN=EXP_F
 
