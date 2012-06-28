@@ -103,8 +103,7 @@ void Can_Process(Can_Message_t* msg) {
 			memcpy(bios_msg_ptr, msg, sizeof(Can_Message_t));
 			bios_msg_full = 1;
 		}
-	}
-    if (BIOS_CanCallback) {
+	} else if (BIOS_CanCallback) {
 		//printf("Calling app callback.\n");
 		BIOS_CanCallback(msg);
 	}

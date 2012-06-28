@@ -60,7 +60,7 @@
 #error AVR device not supported!
 #endif
 
-#if defined( MCP_USART_SPI_MODE ) || defined( MCP_USE_INT0 )
+#ifdef MCP_USART_SPI_MODE
 	#define MCP_INT_VECTOR	INT0_vect	
 	#define MCP_INT_ENABLE()	INT1_REG |= _BV(INT0)
 	#define MCP_INT_DISABLE()	INT1_REG &= ~(_BV(INT0))
