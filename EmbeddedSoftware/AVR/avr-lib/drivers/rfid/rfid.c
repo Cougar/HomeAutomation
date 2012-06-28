@@ -10,8 +10,9 @@
 #include <avr/pgmspace.h>
 
 #include <drivers/mcu/gpio.h>
-#include "rfid.h"
-#include "config.h"
+#include <drivers/rfid/rfid.h>
+
+#include <config.h>
 
 /* edge detection, for resynchronization */
 volatile uint8_t rfid_m_lastbit = 0;
@@ -90,8 +91,7 @@ static inline uint8_t rfid_bitrev8(uint8_t x) {
 }
 
 ISR( TIMER1_COMPA_vect ) {
-	gpio_toggle_pin( EXP_M );
-	uint8_t bit = gpio_get_state( sns_rfid_READ_PIN );
+	uint8_t bit = gpio_get_state( RFID_READ_PIN );
 
 	if( rfid_m_lastbit != bit ) {
 		rfid_m_nextsample = RFID_OSR/2;
@@ -154,9 +154,7 @@ void rfid_init( void ) {
 	OCR1A = (RFID_BITLENGTH*F_CPU/RFID_OSR/RFID_FREQ/8)-1;
 	TIMSK1 = (1<<OCIE1A);
 
-	gpio_set_in( sns_rfid_READ_PIN );
-
-	gpio_set_out( EXP_M );
+	gpio_set_in( RFID_READ_PIN );
 }
 
 uint8_t rfid_fetch( uint8_t *version, uint32_t *tag ) {

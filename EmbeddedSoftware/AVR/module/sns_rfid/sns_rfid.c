@@ -1,7 +1,6 @@
 
+#include <drivers/rfid/rfid.h>
 #include "sns_rfid.h"
-
-#include "rfid.h"
 
 uint8_t sns_rfid_got_card = 0;
 
