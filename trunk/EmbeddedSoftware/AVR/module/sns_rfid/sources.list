@@ -1,6 +1,6 @@
 # List all files that needs to be compiled here
 sns_rfid/sns_rfid.c
-sns_rfid/rfid.c
+drivers/rfid/rfid.c
 #Uncomment the line below if you want to use EEPROM with this module
 #drivers/misc/eeprom_crc8.c
 #Uncomment the line below if you want to use the PCINT driver in this module

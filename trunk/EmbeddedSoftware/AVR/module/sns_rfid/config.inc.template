@@ -7,7 +7,7 @@ sns_rfid_ID=<ID>
 #sns_rfid_DUMMY=1
 #sns_rfid_DUMMY_TIMER=<TIMER>
 
-sns_rfid_READ_PIN=EXP_N
+RFID_READ_PIN=EXP_N
 
 # NOTE: EXP_G / OC0B is hardcoded output. Needs to be output of timer 0
 
