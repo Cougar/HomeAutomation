@@ -178,7 +178,7 @@ Node::State Node::GetTransitionTarget(Node::Event event)
     
     if (it2 == it1->second.end())
     {
-        LOG.Warning("No transitions found for current state " + boost::lexical_cast<std::string>(this->state_) + " for event " + boost::lexical_cast<std::string>(event));
+        //LOG.Warning("No transitions found for current state " + boost::lexical_cast<std::string>(this->state_) + " for event " + boost::lexical_cast<std::string>(event));
         return STATE_INVALID;
     }
     
@@ -203,7 +203,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
     
     if (target_state == STATE_INVALID)
     {
-        this->SendReset();
+        //this->SendReset();
         target_state = STATE_NORM_OFFLINE;
     }
     else if (target_state == STATE_NO_CHANGE)
