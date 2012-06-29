@@ -2,11 +2,13 @@
 
 act_ks0108_ID=<ID>
 
+# Set Initial backligt very low for a dotmatrix display, start with about 5
 act_ks0108_INITIAL_BACKLIGHT=0x7f
 
 act_ks0108_USE_EXTERNAL_EEPROM=0
 act_ks0108_EXTERNAL_EEPROM_SIZE_kBYTES=64
 
+# Graphics driver is either KS0108 or DOTMATRIX
 GRAPHICS_DRIVER=KS0108
 
 GRAPHICS_WIDTH=128
@@ -41,6 +43,8 @@ dotmatrixROW_IO8=EXP_O
 
 dotmatrixLATCHCLOCK_IO=EXP_I
 
+# When graphics driver is DOTMATRIX this timer must be enabled:
+# Remove comment and run ./ModuleManager --regenerate
 #act_ks0108_DOTMATRIX_TIMER=<TIMER>
 
 ## End section act_ks0108 -- Do not edit this line
