@@ -76,7 +76,7 @@ void CanDaemon::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
     
     boost::algorithm::trim_right_if(str, boost::is_any_of("\r\n"));
     
-    LOG.Info("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(id) + " on server " + boost::lexical_cast<std::string>(this->server_id_));
+    LOG.Debug("Received: \"" + str + "\" from client " + boost::lexical_cast<std::string>(id) + " on server " + boost::lexical_cast<std::string>(this->server_id_));
     
     std::string* payload_str = new std::string(str);
     broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
@@ -85,7 +85,7 @@ void CanDaemon::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
     
     if (str == "q" || str == "quit")
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has requested to be disconnected.");
+        LOG.Debug("Client " + boost::lexical_cast<std::string>(id) + " has requested to be disconnected.");
         net::Manager::Instance()->Disconnect(id);
     }
 }
@@ -107,12 +107,12 @@ void CanDaemon::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_
   
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has disconnected.");
+        LOG.Debug("Client " + boost::lexical_cast<std::string>(id) + " has disconnected.");
         this->clients_.erase(id);
     }
     else if (client_state == net::CLIENT_STATE_CONNECTED)
     {
-        LOG.Info("Client " + boost::lexical_cast<std::string>(id) + " has connected.");
+        LOG.Debug("Client " + boost::lexical_cast<std::string>(id) + " has connected.");
     }
     else
     {
