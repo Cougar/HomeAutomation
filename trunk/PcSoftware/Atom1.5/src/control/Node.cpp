@@ -178,7 +178,7 @@ Node::State Node::GetTransitionTarget(Node::Event event)
     
     if (it2 == it1->second.end())
     {
-        //LOG.Warning("No transitions found for current state " + boost::lexical_cast<std::string>(this->state_) + " for event " + boost::lexical_cast<std::string>(event));
+        LOG.Warning("No transitions found for current state " + boost::lexical_cast<std::string>(this->state_) + " for event " + boost::lexical_cast<std::string>(event));
         return STATE_INVALID;
     }
     
@@ -187,186 +187,189 @@ Node::State Node::GetTransitionTarget(Node::Event event)
 
 void Node::Trigger(Node::Event event, common::StringMap variables)
 {
-    this->ResetTimeout();
-    
-    State target_state = this->GetTransitionTarget(event);
-    
-    LOG.Debug("Trigger called on " + this->id_ + ", current state: " + Node::state_names_[this->state_] + ", event: " + Node::event_names_[event] + ", target state: "  + Node::state_names_[target_state]);
-    
-    if (event == EVENT_BIOS_START)
-    {
-        this->information_.has_application_ = boost::lexical_cast<int>(variables["HasApplication"]) > 0;
-        this->information_.bios_version_ = boost::lexical_cast<unsigned int>(variables["BiosVersion"]);
-        this->information_.device_type_ = variables["DeviceType"];
-        this->information_.valid_ = true;
-    }
-    
-    if (target_state == STATE_INVALID)
-    {
-        //this->SendReset();
-        target_state = STATE_NORM_OFFLINE;
-    }
-    else if (target_state == STATE_NO_CHANGE)
-    {
-        return;
-    }
-    
-    if ((this->state_ == STATE_APGM_END || this->state_ == STATE_BPGM_END) && event == EVENT_PGM_ACK)
-    {
-        unsigned int checksum = boost::lexical_cast<unsigned int>(variables["Data"]);
-        
-        if (this->expected_ack_data_ != checksum)
-        {
-            LOG.Warning("Checksum received in ACK was incorrect got " + boost::lexical_cast<std::string>(checksum) + " expected " + boost::lexical_cast<std::string>(this->expected_ack_data_) + ", aborting...");
+	if (!this->id_.empty())
+	{
+		this->ResetTimeout();
+		
+		State target_state = this->GetTransitionTarget(event);
+		
+		LOG.Debug("Trigger called on " + this->id_ + ", current state: " + Node::state_names_[this->state_] + ", event: " + Node::event_names_[event] + ", target state: "  + Node::state_names_[target_state]);
+		
+		if (event == EVENT_BIOS_START)
+		{
+		    this->information_.has_application_ = boost::lexical_cast<int>(variables["HasApplication"]) > 0;
+		    this->information_.bios_version_ = boost::lexical_cast<unsigned int>(variables["BiosVersion"]);
+		    this->information_.device_type_ = variables["DeviceType"];
+		    this->information_.valid_ = true;
+		}
+		
+		if (target_state == STATE_INVALID)
+		{
+		    //this->SendReset();
+		    target_state = STATE_NORM_OFFLINE;
+		}
+		else if (target_state == STATE_NO_CHANGE)
+		{
+		    return;
+		}
+		
+		if ((this->state_ == STATE_APGM_END || this->state_ == STATE_BPGM_END) && event == EVENT_PGM_ACK)
+		{
+		    unsigned int checksum = boost::lexical_cast<unsigned int>(variables["Data"]);
+		    
+		    if (this->expected_ack_data_ != checksum)
+		    {
+		        LOG.Warning("Checksum received in ACK was incorrect got " + boost::lexical_cast<std::string>(checksum) + " expected " + boost::lexical_cast<std::string>(this->expected_ack_data_) + ", aborting...");
 
-            this->SendReset();
+		        this->SendReset();
 
-            target_state = STATE_NORM_OFFLINE;
-        }
-        else if (this->state_ == STATE_BPGM_END)
-        {
-            float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
-            
-            LOG.Info("Data was successfully transferred to " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
-            
-            LOG.Debug("Sending application programming copy to node " + this->id_);
-            can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Copy");
-            
-            unsigned int source0 = GET_LOW_BYTE_16(this->start_offset_);
-            unsigned int source1 = GET_HIGH_BYTE_16(this->start_offset_);
-            
-            unsigned int destination0 = GET_LOW_BYTE_16(this->code_->GetAddressLower());
-            unsigned int destination1 = GET_HIGH_BYTE_16(this->code_->GetAddressLower());
-            
-            unsigned int length0 = GET_LOW_BYTE_16(this->code_->GetLength());
-            unsigned int length1 = GET_HIGH_BYTE_16(this->code_->GetLength());
-            
-            payload->SetVariable("Source0", boost::lexical_cast<std::string>(source0));
-            payload->SetVariable("Source1", boost::lexical_cast<std::string>(source1));
-            payload->SetVariable("Destination0", boost::lexical_cast<std::string>(destination0));
-            payload->SetVariable("Destination1", boost::lexical_cast<std::string>(destination1));
-            payload->SetVariable("Length0", boost::lexical_cast<std::string>(length0));
-            payload->SetVariable("Length1", boost::lexical_cast<std::string>(length1));
-            
-            broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
-        }
-        else
-        {
-            float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
-            
-            LOG.Info("Programming was completed successfully on " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
-        }
-    }
-    
-    if (target_state == STATE_NORM_LIST)
-    {
-        this->SendListRequest();
-    }
-    else if (target_state == STATE_BPGM_OFFLINE || target_state == STATE_APGM_OFFLINE)
-    {
-        if (event != EVENT_BIOS_START)
-        {
-            this->SendReset();
-        }
-    }
-    else if (target_state == STATE_APGM_START || target_state == STATE_BPGM_START)
-    {
-        if (!this->code_->IsValid())
-        {
-            LOG.Error("Code is not valid, aborting...");
-            target_state = STATE_NORM_OFFLINE;
-        }
-        else
-        {
-            LOG.Debug("Sending programming start to node " + this->id_);
-            can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Start");
-            payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
-            
-            this->start_offset_ = target_state == STATE_BPGM_START ? 0 : this->code_->GetAddressLower();
-            
-            unsigned int address0 = GET_LOW_BYTE_16(this->start_offset_);
-            unsigned int address1 = GET_HIGH_BYTE_16(this->start_offset_);
-            
-            this->expected_ack_data_ = SWAP_BYTE_ORDER_16(this->start_offset_);
-            
-            payload->SetVariable("Address0", boost::lexical_cast<std::string>(address0));
-            payload->SetVariable("Address1", boost::lexical_cast<std::string>(address1));
-            payload->SetVariable("Address2", "0"); // Not used?
-            payload->SetVariable("Address3", "0"); // Not used?
-            
-            this->current_offset_ = 0;
-            
-            broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
-            
-            this->program_start_time_ = time(NULL);
-        }
-    }
-    else if (target_state == STATE_APGM_DATA || target_state == STATE_BPGM_DATA)
-    {
-        unsigned int offset = boost::lexical_cast<unsigned int>(variables["Data"]);
-        
-        if ( this->expected_ack_data_ != offset)
-        {
-            LOG.Warning("Offset received in ACK was incorrect got " + boost::lexical_cast<std::string>(offset) + " expected " + boost::lexical_cast<std::string>(this->expected_ack_data_) + ", aborting...");
-            target_state = STATE_NORM_OFFLINE;
-        }
-        else if (this->current_offset_ >= this->code_->GetLength())
-        {
-            LOG.Debug("Sending programming end to node " + this->id_);
-            
-            unsigned int checksum = this->code_->GetChecksum();
-            this->expected_ack_data_ = SWAP_BYTE_ORDER_16(checksum);
-            
-            can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_End");
-            broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
-            
-            target_state = target_state == STATE_BPGM_DATA ? STATE_BPGM_END : STATE_APGM_END;
-        }
-        else
-        {
-            LOG.Debug("Sending programming data to node " + this->id_);
-            can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Data_48");
-            
-            unsigned int offset0 = GET_LOW_BYTE_16(this->start_offset_ + this->current_offset_);
-            unsigned int offset1 = GET_HIGH_BYTE_16(this->start_offset_ + this->current_offset_);
-            
-            this->expected_ack_data_ = SWAP_BYTE_ORDER_16(this->start_offset_ + this->current_offset_);
-            
-            payload->SetVariable("Offset0", boost::lexical_cast<std::string>(offset0));
-            payload->SetVariable("Offset1", boost::lexical_cast<std::string>(offset1));
-            
-            for (int n = 0; (this->current_offset_ < this->code_->GetLength()) && (n < 6); n++)
-            {
-                //LOG.Debug("Data" + boost::lexical_cast<std::string>(n) + "=" +  boost::lexical_cast<std::string>((unsigned int)this->code_->GetByte(this->code_->GetAddressLower() + this->current_offset_)));
-                payload->SetVariable("Data" + boost::lexical_cast<std::string>(n), boost::lexical_cast<std::string>((unsigned int)this->code_->GetByte(this->code_->GetAddressLower() + this->current_offset_)));
-                this->current_offset_++;
-            }
-            
-            broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
-        }
-    }
-    else if (target_state == STATE_BPGM_COPY)
-    {
-        LOG.Debug("Preparing to send null application to node " + this->id_);
-        
-        this->code_->Reset(false);
-        
-        this->code_->AddByte(0xFF);
-        this->code_->AddByte(0xFF);
-    }
-    else if (target_state == STATE_NORM_OFFLINE)
-    {
-        this->information_.valid_ = false;
-        this->SendReset();
-    }
-    
-    
-    if (this->state_ != target_state)
-    {
-        this->signal_on_new_state_(this->id_, this->state_, target_state);
-    }
-    
-    this->state_ = target_state;
+		        target_state = STATE_NORM_OFFLINE;
+		    }
+		    else if (this->state_ == STATE_BPGM_END)
+		    {
+		        float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
+		        
+		        LOG.Info("Data was successfully transferred to " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
+		        
+		        LOG.Debug("Sending application programming copy to node " + this->id_);
+		        can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Copy");
+		        
+		        unsigned int source0 = GET_LOW_BYTE_16(this->start_offset_);
+		        unsigned int source1 = GET_HIGH_BYTE_16(this->start_offset_);
+		        
+		        unsigned int destination0 = GET_LOW_BYTE_16(this->code_->GetAddressLower());
+		        unsigned int destination1 = GET_HIGH_BYTE_16(this->code_->GetAddressLower());
+		        
+		        unsigned int length0 = GET_LOW_BYTE_16(this->code_->GetLength());
+		        unsigned int length1 = GET_HIGH_BYTE_16(this->code_->GetLength());
+		        
+		        payload->SetVariable("Source0", boost::lexical_cast<std::string>(source0));
+		        payload->SetVariable("Source1", boost::lexical_cast<std::string>(source1));
+		        payload->SetVariable("Destination0", boost::lexical_cast<std::string>(destination0));
+		        payload->SetVariable("Destination1", boost::lexical_cast<std::string>(destination1));
+		        payload->SetVariable("Length0", boost::lexical_cast<std::string>(length0));
+		        payload->SetVariable("Length1", boost::lexical_cast<std::string>(length1));
+		        
+		        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+		    }
+		    else
+		    {
+		        float speed = (float)this->code_->GetLength() / (float)(time(NULL) - this->program_start_time_);
+		        
+		        LOG.Info("Programming was completed successfully on " + this->id_ + ", speed was " + boost::lexical_cast<std::string>(speed) + " B/s");
+		    }
+		}
+		
+		if (target_state == STATE_NORM_LIST)
+		{
+		    this->SendListRequest();
+		}
+		else if (target_state == STATE_BPGM_OFFLINE || target_state == STATE_APGM_OFFLINE)
+		{
+		    if (event != EVENT_BIOS_START)
+		    {
+		        this->SendReset();
+		    }
+		}
+		else if (target_state == STATE_APGM_START || target_state == STATE_BPGM_START)
+		{
+		    if (!this->code_->IsValid())
+		    {
+		        LOG.Error("Code is not valid, aborting...");
+		        target_state = STATE_NORM_OFFLINE;
+		    }
+		    else
+		    {
+		        LOG.Debug("Sending programming start to node " + this->id_);
+		        can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Start");
+		        payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
+		        
+		        this->start_offset_ = target_state == STATE_BPGM_START ? 0 : this->code_->GetAddressLower();
+		        
+		        unsigned int address0 = GET_LOW_BYTE_16(this->start_offset_);
+		        unsigned int address1 = GET_HIGH_BYTE_16(this->start_offset_);
+		        
+		        this->expected_ack_data_ = SWAP_BYTE_ORDER_16(this->start_offset_);
+		        
+		        payload->SetVariable("Address0", boost::lexical_cast<std::string>(address0));
+		        payload->SetVariable("Address1", boost::lexical_cast<std::string>(address1));
+		        payload->SetVariable("Address2", "0"); // Not used?
+		        payload->SetVariable("Address3", "0"); // Not used?
+		        
+		        this->current_offset_ = 0;
+		        
+		        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+		        
+		        this->program_start_time_ = time(NULL);
+		    }
+		}
+		else if (target_state == STATE_APGM_DATA || target_state == STATE_BPGM_DATA)
+		{
+		    unsigned int offset = boost::lexical_cast<unsigned int>(variables["Data"]);
+		    
+		    if ( this->expected_ack_data_ != offset)
+		    {
+		        LOG.Warning("Offset received in ACK was incorrect got " + boost::lexical_cast<std::string>(offset) + " expected " + boost::lexical_cast<std::string>(this->expected_ack_data_) + ", aborting...");
+		        target_state = STATE_NORM_OFFLINE;
+		    }
+		    else if (this->current_offset_ >= this->code_->GetLength())
+		    {
+		        LOG.Debug("Sending programming end to node " + this->id_);
+		        
+		        unsigned int checksum = this->code_->GetChecksum();
+		        this->expected_ack_data_ = SWAP_BYTE_ORDER_16(checksum);
+		        
+		        can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_End");
+		        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+		        
+		        target_state = target_state == STATE_BPGM_DATA ? STATE_BPGM_END : STATE_APGM_END;
+		    }
+		    else
+		    {
+		        LOG.Debug("Sending programming data to node " + this->id_);
+		        can::Message* payload = new can::Message("nmt", "", "", 0, "Pgm_Data_48");
+		        
+		        unsigned int offset0 = GET_LOW_BYTE_16(this->start_offset_ + this->current_offset_);
+		        unsigned int offset1 = GET_HIGH_BYTE_16(this->start_offset_ + this->current_offset_);
+		        
+		        this->expected_ack_data_ = SWAP_BYTE_ORDER_16(this->start_offset_ + this->current_offset_);
+		        
+		        payload->SetVariable("Offset0", boost::lexical_cast<std::string>(offset0));
+		        payload->SetVariable("Offset1", boost::lexical_cast<std::string>(offset1));
+		        
+		        for (int n = 0; (this->current_offset_ < this->code_->GetLength()) && (n < 6); n++)
+		        {
+		            //LOG.Debug("Data" + boost::lexical_cast<std::string>(n) + "=" +  boost::lexical_cast<std::string>((unsigned int)this->code_->GetByte(this->code_->GetAddressLower() + this->current_offset_)));
+		            payload->SetVariable("Data" + boost::lexical_cast<std::string>(n), boost::lexical_cast<std::string>((unsigned int)this->code_->GetByte(this->code_->GetAddressLower() + this->current_offset_)));
+		            this->current_offset_++;
+		        }
+		        
+		        broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+		    }
+		}
+		else if (target_state == STATE_BPGM_COPY)
+		{
+		    LOG.Debug("Preparing to send null application to node " + this->id_);
+		    
+		    this->code_->Reset(false);
+		    
+		    this->code_->AddByte(0xFF);
+		    this->code_->AddByte(0xFF);
+		}
+		else if (target_state == STATE_NORM_OFFLINE)
+		{
+		    this->information_.valid_ = false;
+		    this->SendReset();
+		}
+		
+		
+		if (this->state_ != target_state)
+		{
+		    this->signal_on_new_state_(this->id_, this->state_, target_state);
+		}
+		
+		this->state_ = target_state;
+	}
 }
 
 bool Node::CheckTimeout()
@@ -417,20 +420,26 @@ void Node::ProgramBios(Code::Pointer code)
 
 void Node::SendReset()
 {
-    LOG.Info("Sending node reset to " + this->id_);
-    can::Message* payload = new can::Message("nmt", "", "", 0, "Reset");
-    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
-    
-    broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+	if (!this->id_.empty())
+	{
+		LOG.Info("Sending node reset to " + this->id_);
+		can::Message* payload = new can::Message("nmt", "", "", 0, "Reset");
+		payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
+		
+		broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+    }
 }
 
 void Node::SendListRequest()
 {
-    LOG.Debug("Sending module listing on node " + this->id_);
-    can::Message* payload = new can::Message("mnmt", "To_Owner", "", 0, "List");
-    payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
-    
-    broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+	if (!this->id_.empty())
+	{
+		LOG.Debug("Sending module listing on node " + this->id_);
+		can::Message* payload = new can::Message("mnmt", "To_Owner", "", 0, "List");
+		payload->SetVariable("HardwareId", boost::lexical_cast<std::string>(common::FromHex(this->id_)));
+		
+		broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), Manager::Instance().get())));
+	}
 }
 
 }; // namespace control
