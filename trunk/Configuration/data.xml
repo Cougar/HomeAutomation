@@ -115,7 +115,7 @@
           <value id="12" name="Viking"/>
           <value id="255" name="Unknown"/>
         </variable>
-        <variable name="IRdata" type="uint" start_bit="16" bit_length="32" unit="" description="Button protocol unique ID"/>
+        <variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
     <command id="72" name="Current" type="physical" module="" description="Current data">

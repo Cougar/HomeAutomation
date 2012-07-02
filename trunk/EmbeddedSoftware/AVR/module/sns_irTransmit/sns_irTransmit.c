@@ -116,6 +116,10 @@ void sns_irTransmit_HandleMessage(StdCan_Msg_t *rxMsg)
 			sns_irTransmit_proto.data |= rxMsg->Data[4];
 			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
 			sns_irTransmit_proto.data |= rxMsg->Data[5];
+			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
+			sns_irTransmit_proto.data |= rxMsg->Data[6];
+			sns_irTransmit_proto.data = sns_irTransmit_proto.data<<8;
+			sns_irTransmit_proto.data |= rxMsg->Data[7];
 
 			sns_irTransmit_state = sns_irTransmit_STATE_START_TRANSMIT;
 		}

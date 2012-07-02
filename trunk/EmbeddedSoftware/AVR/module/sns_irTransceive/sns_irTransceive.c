@@ -521,7 +521,7 @@ void sns_irTransceive_Init(void)
 	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRTRANSCEIVE;
 	irTxMsg.Header.ModuleId = sns_irTransceive_ID;
 	irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
-	irTxMsg.Length = 6;
+	irTxMsg.Length = 8;
 
 	for (uint8_t i = 0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
@@ -659,10 +659,12 @@ void sns_irTransceive_Process(void)
 				irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
 				irTxMsg.Data[0] |= channel<<4;
 				irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
-				irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
-				irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
-				irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
-				irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
+				irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>40)&0xff;
+				irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>32)&0xff;
+				irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>24)&0xff;
+				irTxMsg.Data[5] = (irRxChannel[channel].proto.data>>16)&0xff;
+				irTxMsg.Data[6] = (irRxChannel[channel].proto.data>>8)&0xff;
+				irTxMsg.Data[7] = irRxChannel[channel].proto.data&0xff;
 
 				StdCan_Put(&irTxMsg);
 			}
@@ -694,10 +696,12 @@ void sns_irTransceive_Process(void)
 					irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
 					irTxMsg.Data[0] |= channel<<4;
 					irTxMsg.Data[1] = irRxChannel[channel].proto.protocol;
-					irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>24)&0xff;
-					irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>16)&0xff;
-					irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>8)&0xff;
-					irTxMsg.Data[5] = irRxChannel[channel].proto.data&0xff;
+					irTxMsg.Data[2] = (irRxChannel[channel].proto.data>>40)&0xff;
+					irTxMsg.Data[3] = (irRxChannel[channel].proto.data>>32)&0xff;
+					irTxMsg.Data[4] = (irRxChannel[channel].proto.data>>24)&0xff;
+					irTxMsg.Data[5] = (irRxChannel[channel].proto.data>>16)&0xff;
+					irTxMsg.Data[6] = (irRxChannel[channel].proto.data>>8)&0xff;
+					irTxMsg.Data[7] = irRxChannel[channel].proto.data&0xff;
 
 					StdCan_Put(&irTxMsg);
 				}
@@ -1016,6 +1020,10 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 				irTxChannel[channel].proto.data |= rxMsg->Data[4];
 				irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
 				irTxChannel[channel].proto.data |= rxMsg->Data[5];
+				irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
+				irTxChannel[channel].proto.data |= rxMsg->Data[6];
+				irTxChannel[channel].proto.data = irTxChannel[channel].proto.data<<8;
+				irTxChannel[channel].proto.data |= rxMsg->Data[7];
 
 				irTxChannel[channel].state = sns_irTransceive_STATE_START_TRANSMIT;
 			}

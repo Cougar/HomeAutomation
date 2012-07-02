@@ -95,12 +95,7 @@ void sns_rfTransceive_Process(void)
 				/* Send button release command on CAN */
 				rfTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_RELEASED;
 				rfTxMsg.Data[1] = rfRxChannel_proto.protocol;
-				rfTxMsg.Data[2] = (rfRxChannel_proto.data>>40)&0xff;
-				rfTxMsg.Data[3] = (rfRxChannel_proto.data>>32)&0xff;
-				rfTxMsg.Data[4] = (rfRxChannel_proto.data>>24)&0xff;
-				rfTxMsg.Data[5] = (rfRxChannel_proto.data>>16)&0xff;
-				rfTxMsg.Data[6] = (rfRxChannel_proto.data>>8)&0xff;
-				rfTxMsg.Data[7] = rfRxChannel_proto.data&0xff;
+				/* Data content is kept from last transmit (pressed) */
 
 				StdCan_Put(&rfTxMsg);
 			}
@@ -282,7 +277,7 @@ void sns_rfTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 #if IR_TX_ENABLE==1
 			case CAN_MODULE_CMD_PHYSICAL_IR:
 			{
-				if (	rfTxChannel_state == sns_rfTransceive_STATE_IDLE && 
+				if (rfTxChannel_state == sns_rfTransceive_STATE_IDLE && 
 					(rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED ||
 					rxMsg->Data[0] == CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_BURST))
 				{
