@@ -85,11 +85,13 @@ void sns_irReceive_Process(void)
 				irTxMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_IR;
 				irTxMsg.Data[0] = CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
 				irTxMsg.Data[1] = proto.protocol;
-				irTxMsg.Data[2] = (proto.data>>24)&0xff;
-				irTxMsg.Data[3] = (proto.data>>16)&0xff;
-				irTxMsg.Data[4] = (proto.data>>8)&0xff;
-				irTxMsg.Data[5] = proto.data&0xff;
-				irTxMsg.Length = 6;
+				irTxMsg.Data[2] = (proto.data>>40)&0xff;
+				irTxMsg.Data[3] = (proto.data>>32)&0xff;
+				irTxMsg.Data[4] = (proto.data>>24)&0xff;
+				irTxMsg.Data[5] = (proto.data>>16)&0xff;
+				irTxMsg.Data[6] = (proto.data>>8)&0xff;
+				irTxMsg.Data[7] = proto.data&0xff;
+				irTxMsg.Length = 8;
 				StdCan_Put(&irTxMsg);
 			} else if (proto.protocol == IR_PROTO_UNKNOWN) {
 #if (sns_irReceive_SEND_DEBUG==1)
