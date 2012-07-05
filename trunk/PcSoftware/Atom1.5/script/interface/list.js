@@ -17,4 +17,5 @@ Require("interface/lgtv.js");
 Require("interface/counter.js");
 Require("interface/eggdrop.js");
 Require("interface/xbmc.js");
+Require("interface/RRD_Tool.js");
 
