@@ -886,6 +886,7 @@ void sns_irTransceive_Process(void)
 				IrTransceiver_Transmit(channel, irTxChannel[channel].txbuf, 0, irTxChannel[channel].txlen - 1, irTxChannel[channel].proto.modfreq);
 			}
 			irTxChannel[channel].state = sns_irTransceive_STATE_TRANSMITTING;
+			break;
 		}
 
 		case sns_irTransceive_STATE_TRANSMITTING:
@@ -967,8 +968,12 @@ void sns_irTransceive_Process(void)
 			}
 			break;
 		}
+
 		default:
+		{
 			break;
+		}
+
 		}
 #endif
 
@@ -1136,6 +1141,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		if (!prontoChannelIsAllocated()) {
 			/* Nothing to stop. No pronto TX channel allocated right now. */
 			pronto_sendResponse(channel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ALREADYSTOPPED);
+			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
 
@@ -1149,6 +1155,7 @@ void sns_irTransceive_HandleMessage(StdCan_Msg_t *rxMsg)
 		{
 			/* Nothing to stop. Not in TX state. Respond that we're already stopped. */
 			pronto_sendResponse(prontoAllocatedTxChannel, CAN_MODULE_ENUM_IRTRANSCEIVE_IRPRONTORESPONSE_RESPONSE_ALREADYSTOPPED);
+			irTxChannel[channel].state = sns_irTransceive_STATE_IDLE;
 			break;
 		}
 
