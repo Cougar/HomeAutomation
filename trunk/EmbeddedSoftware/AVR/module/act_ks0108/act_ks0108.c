@@ -563,8 +563,8 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 					OCR0A = rxMsg->Data[0];
 				    #endif
 			            #if GRAPHICS_DRIVER==DOTMATRIX
-					TCCR0B &= ~(1<<COM0B0);
-					TCCR0B &= ~(1<<COM0B1);
+					TCCR0A &= ~(1<<COM0B0);
+					TCCR0A &= ~(1<<COM0B1);
 					PORTD |= (1<<PD5);
 					OCR0B = 0xff-rxMsg->Data[0];
 				    #endif
@@ -574,7 +574,7 @@ void act_ks0108_HandleMessage(StdCan_Msg_t *rxMsg)
 					OCR0A = rxMsg->Data[0];
 				    #endif
 			            #if GRAPHICS_DRIVER==DOTMATRIX
-					TCCR0B |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
+					TCCR0A |= (1<<COM0B1)|(1<<WGM01)|(1<<WGM00);
 					OCR0B = 0xff-rxMsg->Data[0];
 				    #endif
 				}
