@@ -99,6 +99,12 @@ function RRDTool_AddConfig(alias_name, variable_name, push_interval, store_name,
 /* Function to add new rrd config on atomic command line interface */
 function RRDTool_AddConfig(alias_name, variable_name, push_interval, store_name, rrd_filename, rrd_data_source_name)
 {
+	if (arguments.length < 6)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+
 	/* In case RRD_Tool() is not called from autostart.js yet */
 	if (RRD_Tool_Config == null || RRD_Tool_StoredData == null || RRD_Tool_Timers == null)
 	{
