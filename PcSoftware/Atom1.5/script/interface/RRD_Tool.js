@@ -1,5 +1,7 @@
-/* RRD_Tool() must be called from autostart.js to start timers */
-function RRD_Tool()
+function RRD_Tool() {Log("\033[31mCall to RRD_Tool() can be removed from autostart.js!\033[0m\n");}
+
+RRD_Tool_Init();
+function RRD_Tool_Init()
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
@@ -8,7 +10,7 @@ function RRD_Tool()
 	/* Constant config name */
 	RRD_Tool_Config = "RRD_Tool_config";
 	
-	Log("\033[33mRRD Tool updater starting...\033[0m");
+	//Log("\033[33mRRD Tool updater starting...\033[0m");
 	
 	var last_value_string = Storage_GetParameters(RRD_Tool_Config);
 	RRD_Tool_StoredData = new Array();
@@ -19,7 +21,7 @@ function RRD_Tool()
 		Log("\033[33mFound: "+name+" with update rate of "+RRD_Tool_StoredData[name]["rrd"]["Period_s"]+"s.\033[0m");
 		RRD_Tool_Timers[name] = Timer_SetTimer(function(timer) {RRD_Tool_timerUpdate(timer)}, RRD_Tool_StoredData[name]["rrd"]["Period_s"]*1000, true);
 	}
-	Log("\033[33mRRD Tool updater created.\033[0m");
+	//Log("\033[33mRRD Tool updater created.\033[0m");
 }
 
 /* Declaration of static variables */
@@ -105,14 +107,11 @@ function RRDTool_AddConfig(alias_name, variable_name, push_interval, store_name,
 		return false;
 	}
 
-	/* In case RRD_Tool() is not called from autostart.js yet */
 	if (RRD_Tool_Config == null || RRD_Tool_StoredData == null || RRD_Tool_Timers == null)
 	{
 		RRD_Tool_Config = "RRD_Tool_config";
 		RRD_Tool_StoredData = new Array();
 		RRD_Tool_Timers = new Array();
-		
-		Log("\033[31mRRD_Tool() must be called from autostart.js!.\033[0m\n");
 	}
 	
 	//Log("rrd data source array length: "+rrd_data_source_name_array.length);
