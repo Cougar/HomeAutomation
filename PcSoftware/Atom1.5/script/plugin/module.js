@@ -436,3 +436,53 @@ function Module_ListAvailable()
 	return true;
 }
 Console_RegisterCommand(Module_ListAvailable);
+
+function Module_GetLastData(alias_name)
+{
+	if (arguments.length < 1)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	var aliases_data = Module_ResolveAlias(alias_name);
+	var found = false;
+	
+	for (var name in aliases_data)
+	{
+		var last_value_string = Storage_GetParameter("LastValues", name);
+		
+		if (last_value_string)
+		{
+			Log("\033[0;1mStored values for " + name + ":\033[0m\n");
+			var last_value = eval("(" + last_value_string + ")");			
+			for (var type_name in last_value)
+			{
+				var date = new Date(last_value[type_name]["timestamp"] * 1000);
+				var text = "";
+				for (var data in last_value[type_name])
+				{
+					if (data != "timestamp"){
+						text += data+"="+last_value[type_name][data]+" ";
+					}
+				}
+				Log("\033[96m" + type_name + ": \033[0;1m" + text + "\033[0m at " + date.toString() + "\n");
+			}
+		}
+		else
+		{
+			Log("\033[32mNo value is stored for " + name + ".\033[0m\n");
+		}
+		
+		found = true;
+	}
+	
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+	
+	return true;
+}
+Console_RegisterCommand(Module_GetLastData, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
