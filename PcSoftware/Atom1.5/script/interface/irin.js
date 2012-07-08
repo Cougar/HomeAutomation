@@ -9,6 +9,73 @@ IRIn_RecordRemoteName = null;
 IRIn_RecordAliasData = null;
 IRIn_RecordLast = null;
 IRIn_RecordClientId = null;
+IRIn_OnMessageFunctions = null;
+
+for (var i=0; i<IRIn_Aliases().length; i++)
+{
+	/* Register to messages from all ir aliases */
+	Module_RegisterToOnMessage(IRIn_Aliases()[i], IRIn_IrMessage);
+}
+function IRIn_IrMessage(alias_name, command, variables)
+{
+	/* First check if there are any callbacks registered */
+	if (IRIn_OnMessageFunctions == null)
+	{
+		return false;
+	}
+	/* Also check if there are any callbacks registered to this alias */
+	if (!IRIn_OnMessageFunctions[alias_name])
+	{
+		return false;
+	}
+	/* Check if code and protocol maches one or more remote */
+	var remotes = get_keys(Storage_GetParameters("RemoteList"));
+	for (var i=0; i < remotes.length; i++)
+	{
+		var buttons = get_keys(Storage_GetParameters("Remote_"+remotes[i]));
+		for (var j=0; j < buttons.length; j++)
+		{
+			var button_string = Storage_GetParameter("Remote_"+remotes[i], buttons[j]);
+			var button_data = eval("(" + button_string + ")");
+	
+			if (typeof button_data["protocol"] == 'undefined' || typeof button_data["data"] == 'undefined')
+			{
+				Log("\033[31mButton data is corrupt.\033[0m\n");
+				return false;
+			}
+			
+			if (button_data["protocol"] == variables["Protocol"] && button_data["data"] == variables["IRdata"])
+			{
+				//Log("Found match: "+remotes[i]+" "+buttons[j]+" "+button_data["protocol"]+" "+button_data["data"]+"");
+				if (IRIn_OnMessageFunctions[alias_name])
+				{
+					for (var n in IRIn_OnMessageFunctions[alias_name])
+					{
+						//Log("Found callback, calling");
+						/* Call callback with arguments remotes[i] buttons[j] and variables["Status"]*/
+						IRIn_OnMessageFunctions[alias_name][n](alias_name, remotes[i], buttons[j], variables["Status"]);
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+function IRIn_RegisterToMessage(alias_name, callback)
+{
+	if (IRIn_OnMessageFunctions == null)
+	{
+		IRIn_OnMessageFunctions = new Array();
+	}
+	
+	if (!IRIn_OnMessageFunctions[alias_name])
+	{
+		IRIn_OnMessageFunctions[alias_name] = new Array();
+	}
+	
+	IRIn_OnMessageFunctions[alias_name].push(callback);
+}
 
 function IRIn_CodeToName(data, protocol, remote_name)
 {
