@@ -1,15 +1,14 @@
 function RRD_Tool() {Log("\033[31mCall to RRD_Tool() can be removed from autostart.js!\033[0m\n");}
 
-RRD_Tool_Init();
+/* Declaration of static variables */
+RRD_Tool_myInterval = null;
+RRD_Tool_StoredData = null;
+RRD_Tool_Timers = null;
+/* Constant config name */
+RRD_Tool_Config = "RRD_Tool_config";
+
 function RRD_Tool_Init()
 {
-	/* We must always call the parent constructor, initialization
-	   of variables could be done here, but initialize is a better place */
-	var self = this;
-	
-	/* Constant config name */
-	RRD_Tool_Config = "RRD_Tool_config";
-	
 	//Log("\033[33mRRD Tool updater starting...\033[0m");
 	
 	var last_value_string = Storage_GetParameters(RRD_Tool_Config);
@@ -24,11 +23,7 @@ function RRD_Tool_Init()
 	//Log("\033[33mRRD Tool updater created.\033[0m");
 }
 
-/* Declaration of static variables */
-RRD_Tool_myInterval = null;
-RRD_Tool_StoredData = null;
-RRD_Tool_Timers = null;
-RRD_Tool_Config = null;
+RRD_Tool_Init();
 
 RRD_Tool_timerUpdate = function(timer)
 {
