@@ -40,6 +40,23 @@ function Sensor_SetReportInterval(alias_name, interval)
 }
 Console_RegisterCommand(Sensor_SetReportInterval, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Sensor_Aliases(), Sensor_Intervals()); });
 
+Sensor_OnNewPhonenumberFunctions = null;
+
+function Sensor_RegisterToNewPhonenumber(alias_name, callback)
+{
+	if (Sensor_OnNewPhonenumberFunctions == null)
+	{
+		Sensor_OnNewPhonenumberFunctions = new Array();
+	}
+	
+	if (!Sensor_OnNewPhonenumberFunctions[alias_name])
+	{
+		Sensor_OnNewPhonenumberFunctions[alias_name] = new Array();
+	}
+	
+	Sensor_OnNewPhonenumberFunctions[alias_name].push(callback);
+}
+
 function Sensor_OnMessage(module_name, module_id, command, variables)
 {
 	if (in_array(Sensor_ModuleNames, module_name))
@@ -56,7 +73,8 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 			{
 				for (var alias_name in aliases_data)
 				{
-					if (variables["Number"].length > 6) {
+					if (variables["Number"].length > 6) 
+					{
 						var direction;
 						var start = 0;
 						if (variables["Number"].charAt(0) == 'A') {
@@ -87,6 +105,49 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 						Storage_SetParameter("PhoneCalls", get_time(), newString);
 						Log("New number: "+newString +"\n");
 						Sensor_StoreNumberInPhonebook(variables["Number"]);
+						if (Sensor_OnNewPhonenumberFunctions[alias_name])
+						{
+							for (var n in Sensor_OnNewPhonenumberFunctions[alias_name])
+							{
+								/* Call callback with arguments number, direction */
+								Sensor_OnNewPhonenumberFunctions[alias_name][n](alias_name, variables["Number"], direction);
+							}
+						}
+					}
+					else if (variables["Number"].length > 1) 
+					{
+						if (variables["Number"] == "B00C")
+						{
+							/* Unknown number */
+							var newString = "{\"number\":\"" + variables["Number"] + "\",\"module\":\"" + alias_name + "\",\"direction\":\"" + "in" + "\"}";
+							Storage_SetParameter("PhoneCalls", get_time(), newString);
+							if (Sensor_OnNewPhonenumberFunctions[alias_name])
+							{
+								for (var n in Sensor_OnNewPhonenumberFunctions[alias_name])
+								{
+									/* Call callback with arguments number, direction */
+									Sensor_OnNewPhonenumberFunctions[alias_name][n](alias_name, variables["Number"], "in");
+								}
+							}
+						}
+						else if (variables["Number"] == "B10C")
+						{
+							/* Secret/protected number */
+							var newString = "{\"number\":\"" + variables["Number"] + "\",\"module\":\"" + alias_name + "\",\"direction\":\"" + "in" + "\"}";
+							Storage_SetParameter("PhoneCalls", get_time(), newString);
+							if (Sensor_OnNewPhonenumberFunctions[alias_name])
+							{
+								for (var n in Sensor_OnNewPhonenumberFunctions[alias_name])
+								{
+									/* Call callback with arguments number, direction */
+									Sensor_OnNewPhonenumberFunctions[alias_name][n](alias_name, variables["Number"], "in");
+								}
+							}
+						}
+						else
+						{
+							Log("Incoming phonecall, short number: "+variables["Number"]+" length: "+variables["Number"].length);
+						}
 					}
 				}
 				break;
@@ -132,20 +193,25 @@ Module_RegisterToOnMessage("all", Sensor_OnMessage);
 function Sensor_StoreNumberInPhonebook(number) 
 {
 	var phonebook = Storage_GetJsonParamter("PhoneBook",number)
-	if (!phonebook) {
-		
-		if (number.charAt(0) != '0') {
-			if (typeof sensorDefaultPhoneAreaCode === 'undefined'){
+	if (!phonebook)
+	{
+		if (number.charAt(0) != '0') 
+		{
+			if (typeof sensorDefaultPhoneAreaCode === 'undefined')
+			{
 				Log("\033[31mOnlinePhonebook: please add sensorDefaultPhoneAreaCode = yourAreaCode to autostart.js, defaulting to 031\033[0m\n");  
 			    number = "031"+number;
-			} else {
+			}
+			else
+			{
 			    number = sensorDefaultPhoneAreaCode+number;
 			}
    		}
+   		
    		var persons = new Array();
-		  url = "wap.eniro.se/query?search_word=" + number + "&what=mobwp";
-		  //Log("\033[31mURL:"+url+"\033[0m\n");
-		  Http_Request(url, 
+		url = "wap.eniro.se/query?search_word=" + number + "&what=mobwp";
+		Log("\033[31mURL: http://"+url+"\033[0m\n");
+		Http_Request(url, 
 			function(socket_id, result, header, content_data) {
 				if (result.indexOf("200 OK") != -1)
 				{
@@ -176,7 +242,8 @@ function Sensor_StoreNumberInPhonebook(number)
 					//Log("\033[31mOnlinePhonebook: Line: " + lines[1] + "\033[0m\n");
 					//Log("\033[31mOnlinePhonebook: Line: " + lines[2] + "\033[0m\n");
 					//Log("\033[31mOnlinePhonebook: Line: " + lines[3] + "\033[0m\n");
-					if (persons.length > 0) {
+					if (persons.length > 0)
+					{
 						Storage_SetJsonParameter("PhoneBook", number, persons);
 						
 						//CAll all listeners!
@@ -192,13 +259,17 @@ function Sensor_StoreNumberInPhonebook(number)
 			}
 		); 
 		if (persons.length == 0) {
-			if (typeof SsensorRKSEEK_API === 'undefined') {
+			if (typeof sensorRKSEEK_API === 'undefined') 
+			{
 			  ;
-			} else {
+			}
+			else
+			{
 				url = "rkseek.oblivioncreations.se/?client="+sensorRKSEEK_API+"&n=" + number + "&out=text";
-				//Log("\033[31mURL:"+url+"\033[0m\n");
-				  Http_Request(url, 
-					function(socket_id, result, header, content_data) {
+				Log("\033[31mURL: http://"+url+"\033[0m\n");
+				Http_Request(url, 
+					function(socket_id, result, header, content_data) 
+					{
 						var persons = new Array();
 						if (result.indexOf("200 OK") != -1)
 						{
