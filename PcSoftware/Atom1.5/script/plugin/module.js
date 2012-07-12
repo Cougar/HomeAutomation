@@ -225,7 +225,7 @@ function Module_GetAvailableIds(filter_module_names)
 
 function Module_GetNames()
 {
-	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789", "Rotary", "RotaryHex", "Touch", "power", "input", "output", "softPWM", "counter", "rfTransceive", "hwPWM", "KS0108", "heatPower"];
+	return [ "Dimmer230", "irTransmit", "irReceive", "SimpleDTMF", "BusVoltage", "DS18x20", "FOST02", "HD44789", "Rotary", "RotaryHex", "Touch", "power", "input", "output", "softPWM"];
 }
 
 function Module_SendMessage(module_name, module_id, command, variables)
@@ -486,3 +486,39 @@ function Module_GetLastData(alias_name)
 	return true;
 }
 Console_RegisterCommand(Module_GetLastData, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
+
+function Module_GetLastDataRaw(alias_name)
+{
+	var result = {};
+  
+	if (arguments.length < 1)
+	{
+		result.error = true;
+	}
+	else
+	{
+	  var aliases_data = Module_ResolveAlias(alias_name);
+	  var found = false;
+	
+	  result.results = {};
+	  
+	  for (var name in aliases_data)
+	  {
+		var last_value_string = Storage_GetParameter("LastValues", name);
+		
+		if (last_value_string)
+		{
+		   result.results[name] = JSON.parse(last_value_string);
+		}
+		else
+		{
+		  result.results[name] = {};
+		}
+	}
+	}
+	
+	Log(JSON.stringify(result)+'\n');
+	return true;
+}
+Console_RegisterCommand(Module_GetLastDataRaw, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
+
