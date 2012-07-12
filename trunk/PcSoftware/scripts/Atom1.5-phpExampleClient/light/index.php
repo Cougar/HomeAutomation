@@ -1,6 +1,6 @@
 <?php
-$aliasesDimmer = array("bardisk_tv", "TakSovrum");
-$aliasesOther = array("Power", "PowerBRF", "PID");
+require 'config.php';
+
 
 require 'atom_interface.php';
 require 'getSetData.php';
