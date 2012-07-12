@@ -1,219 +1,44 @@
-<?
-$aliases = array("sovrum", "bardisk");
+<?php
+$aliasesDimmer = array("TakSovrum", "bardisk", "bardisk_tak", "bardisk_tv");
+$aliasesPower = array("Power", "PowerBRF");
 
-
-function atomd_connect($host, $port)
-{
-  $socket = pfsockopen("127.0.0.1", 1202, $errno, $errstr); 
-
-  if (!$socket)
-  { 
-    throw new Exception("$errstr ($errno)"); 
-  }
-  
-  return $socket;
-}
-
-function atomd_read_packet($socket)
-{
-  if (feof($socket))
-  {
-    throw new Exception("socket not open"); 
-  }
-  
-  $command = fread($socket, 4);
-  
-  if ($command === FALSE)
-  {
-    throw new Exception("got EOF while reading command from socket"); 
-  }
-  
-  $payload_length = fread($socket, 4);
-  
-  if ($payload_length === FALSE)
-  {
-    throw new Exception("got EOF while reading payload_length from socket"); 
-  }
-  
-  $payload = "";
-  
-  if ($payload_length > 0)
-  {
-    $payload = fread($socket, intval($payload_length));
-    
-    if ($payload === FALSE)
-    {
-      throw new Exception("got EOF while reading payload from socket"); 
-    }
-  }
-  
-  return $command . $payload_length . $payload;
-}
-
-function atomd_write_packet($socket, $command, $payload)
-{
-  if (feof($socket))
-  {
-    throw new Exception("socket not open"); 
-  }
-  
-  $packet = $command . str_pad(strlen($payload) + 1, 4, "0", STR_PAD_LEFT) . $payload . "\0";
-  
-  if (fwrite($socket, $packet) === FALSE)
-  {
-     throw new Exception("got error while writing payload to socket"); 
-  }
-}
-
-function atomd_data_available($socket)
-{
-  $read   = array($socket);
-  $write  = NULL;
-  $except = NULL;
-  
-  if (false === ($num_changed_streams = stream_select($read, $write, $except, 0)))
-  {
-    throw new Exception("could not do select on socket");
-  }
-
-  return $num_changed_streams > 0;
-  /*
-
-
-  $position = ftell($socket);
-  
-  fseek($socket, -1, SEEK_END);
-
-  $has_data = ftell($socket) > $position;
-  
-  fseek($socket, $position, SEEK_SET);
-  
-  return $has_data;*/
-}
-
-
-
-function atomd_initialize($host, $port)
-{
-  $socket = atomd_connect("127.0.0.1", 1202);
-
-  while (atomd_data_available($socket))
-  {
-    $packet = atomd_read_packet($socket); // Read initial prompt
-  }
-  
-  return $socket;
-}
-
-function atomd_send_command($socket, $command)
-{
-  atomd_write_packet($socket, "RESP", $command);
-}
-
-function atomd_read_command_response($socket)
-{
-  $response = "";
-  
-  while (true)
-  {
-    $packet = atomd_read_packet($socket);
-    
-    if (substr($packet, 0, 4) != "TEXT")
-    {
-      break;
-    }
-    
-    $response .= substr($packet, 8) . "\n";
-  }
-  
-  return $response;
-}
-
-
-
-function GetCurrentValue($alias2)
-{
-  $level2 = 0;
-  $buffer = "";
-
-  try
-  {
-    $socket = atomd_initialize("127.0.0.1", 1202);
-
-    atomd_send_command($socket, "Module_GetLastValue $alias2");
-    
-    $buffer = atomd_read_command_response($socket);
-  }
-  catch (Exception $e)
-  {
-    die($e);
-  }
-
-  $output = explode("\n", $buffer);
-
-  foreach ($output as $line)
-  {
-    if (strpos($line, "Level: ") !== FALSE)
-    {
-      list($dummy1, $level2) = explode(" ", $line);
-      
-      $start = strpos($level2, "m") + 1;
-      
-      $level2 = substr($level2, $start, strpos($level2, "[", $start) - $start);
-    }
-  }
-
-  return intval($level2);
-}
-
-function SetCurrentValue($alias2, $level)
-{
-  $level2 = 0;
-  $buffer = "";
-
-  try
-  {
-    $socket = atomd_initialize("127.0.0.1", 1202);
-
-    atomd_send_command($socket, "Dimmer_AbsoluteFade $alias2 255 $level");
-    
-    $buffer = atomd_read_command_response($socket);
-  }
-  catch (Exception $e)
-  {
-    die($e);
-  }
-}
+require 'atom_interface.php';
+require 'getSetData.php';
 
 $response = array();
 
-
-if (isset($_GET["strength"]))
+if (isset($_GET["DimmerStrength"]))
 {
   if (intval($_GET["strength"]) < 10)
   {
     $_GET["strength"] = 0;
   }
   
-  SetCurrentValue($_GET["alias"], $_GET["strength"]);
+  SetDimmerValue($_GET["alias"], $_GET["strength"]);
   
   echo json_encode($response);
   exit(0);
 }
 else if (isset($_GET["getvalue"]))
 {
-  foreach ($aliases as $alias)
+  foreach ($aliasesDimmer as $alias)
   {
-    $response[$alias] = GetCurrentValue($alias);
+    $response[$alias] = GetLastValue($alias);
   }
   
   echo json_encode($response);
   exit(0);
 }
-
-
-
-
+else if (isset($_GET["getdata"]))
+{
+  foreach ($aliasesDimmer as $alias)
+  {
+    $response[$alias] = GetLastData($alias);
+  }
+  
+  echo json_encode($response);
+  exit(0);
+}
 ?>
 
 
@@ -223,16 +48,20 @@ else if (isset($_GET["getvalue"]))
   <meta charset="utf-8"> 
   <meta name="viewport" content="width=device-width, initial-scale=1"> 
   <title>Light switch</title> 
-  <link rel="stylesheet"  href="jquery.mobile-1.0b1.css" /> 
-  <script src="jquery-1.6.1.min.js"></script> 
-  <script src="jquery.mobile-1.0b1.min.js"></script> 
-  
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+<?
+//  <link rel="stylesheet"  href="jquery.mobile-1.0b1.css" /> 
+//  <script src="jquery-1.6.1.min.js"></script> 
+//  <script src="jquery.mobile-1.0b1.min.js"></script> 
+?>
   <script>
 
     $(document).bind("pagecreate", function(event, ui)
     {
       <?
-      foreach ($aliases as $alias)
+      foreach ($aliasesDimmer as $alias)
       {
       ?>
         $('#slider<?=$alias?>' ).bind('change', function(event, ui){ makeAjaxChange("<?=$alias?>"); });
@@ -246,7 +75,7 @@ else if (isset($_GET["getvalue"]))
     var next_value = {};
     
     <?
-    foreach ($aliases as $alias)
+    foreach ($aliasesDimmer as $alias)
     {
     ?>
       current_value['<?=$alias?>'] = 0;
@@ -272,6 +101,7 @@ else if (isset($_GET["getvalue"]))
         
         updating_current = false;
       });
+      timer = setTimeout(checkCurrentValue, 1000);
     }
 
     function makeAjaxChange(alias)
@@ -301,10 +131,10 @@ else if (isset($_GET["getvalue"]))
     {
       next_value[alias] = strength;
       
-      //clearInterval(timer);
+      clearInterval(timer);
       timer = null;
       
-      jQuery.get("?alias=" + alias + "&strength=" + strength, "", function()
+      jQuery.get("?alias=" + alias + "&DimmerStrength=" + strength, "", function()
       {
         current_value[alias] = strength;
         
@@ -314,7 +144,7 @@ else if (isset($_GET["getvalue"]))
         }
         else
         {
-          //timer = setTimeout(delayed_start_of_poll, 3000);
+          timer = setTimeout(delayed_start_of_poll, 3000);
           next_value[alias] = -1;
         }
       });
@@ -329,24 +159,69 @@ else if (isset($_GET["getvalue"]))
   
 </head> 
 <body> 
-<div data-role="page" id="jqm-home" class="type-home" data-theme="a"> 
-  <div data-role="content"> 
-    
-     <?
-    foreach ($aliases as $alias)
-    {
-    ?>
-      <div data-role="fieldcontain" id="slider-container">
-        <label for="slider<?=$alias?>"><?=ucfirst($alias)?>:</label>
-        <input type="range" name="slider<?=$alias?>" id="slider<?=$alias?>" value="<?=intval($level)?>" min="0" max="255"  />
+  <div data-role="page" id="jqm-home" class="type-home" data-theme="a"> 
+    <div data-role="header" data-position="inline">
+	    <a href="index.html" data-icon="delete">Cancel</a>
+	    <h1>Testar</h1>
+	    <a href="index.html" data-icon="check">Save</a>
+    </div>
+    <div data-role="content"> 
+      <div data-role="collapsible-set" data-theme="" data-content-theme="">
+	<div data-role="collapsible" data-collapsed="true">
+	  <h3>
+	    Dimmers
+	  </h3>
+	  <?
+	  foreach ($aliasesDimmer as $alias)
+	  {
+	  ?>
+	  <div data-role="fieldcontain" id="slider-container">
+	    <label for="slider<?=$alias?>"><?=ucfirst($alias)?>:</label>
+	    <input type="range" name="slider<?=$alias?>" id="slider<?=$alias?>" value="<?=intval($level)?>" min="0" max="255"  />
+	  </div>
+
+	  <div style="">
+
+	  </div>
+	  <?
+	  }
+	  ?>
+	</div>
       </div>
-    <?
-    }
-    ?>
-   
- 
+      <div data-role="collapsible-set" data-theme="" data-content-theme="">
+	<div data-role="collapsible" data-collapsed="true">
+	  <h3>
+	    Power
+	  </h3>
+	  <?
+	  foreach ($aliasesPower as $alias)
+	  {
+	  ?>
+	  <div data-role="fieldcontain" id="slider-container">
+	    <label for="slider<?=$alias?>"><?=ucfirst($alias)?>:</label>
+	  </div>
+
+	  <div style="">
+
+	  </div>
+	  <?
+	  }
+	  ?>
+	</div>
+      </div>
+      <div data-role="collapsible-set" data-theme="" data-content-theme="">
+	<div data-role="collapsible" data-collapsed="true">
+	  <h3>
+	    Ute temperatur
+	  </h3>
+<?
+//	  <div style="width: 997px; height: 519px; position: relative; background-color: #fbfbfb; border: 1px solid #b8b8b8;">
+//	    <img style=" top: 50%; left: 50%; " src="http://linuxz-home.mine.nu/CANgraph/outside_day.png" />
+//	  </div>
+?>
+	</div>
+      </div>
+    </div> 
   </div> 
-  
-</div> 
 </body> 
 </html> 
