@@ -1,6 +1,6 @@
 <?php
 $aliasesDimmer = array("bardisk_tv", "TakSovrum");
-$aliasesOther = array("Power", "PowerBRF");
+$aliasesOther = array("Power", "PowerBRF", "PID");
 
 require 'atom_interface.php';
 require 'getSetData.php';
@@ -15,16 +15,6 @@ if (isset($_GET["DimmerStrength"]))
   }
   
   SetDimmerValue($_GET["alias"], $_GET["strength"]);
-  
-  echo json_encode($response);
-  exit(0);
-}
-else if (isset($_GET["getvalue"]))
-{
-  foreach ($_GET["alias"] as $alias)
-  {
-    $response[$alias] = GetLastValue($alias);
-  }
   
   echo json_encode($response);
   exit(0);
@@ -94,14 +84,14 @@ else if (isset($_GET["getdata"]))
     function checkCurrentValue()
     {
       updating_current = true;
-      jQuery.getJSON("?getvalue=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesDimmer)?>", function(data)
+      jQuery.getJSON("?getdata=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesDimmer)?>", function(data)
       {
         
         
         jQuery.each(data, function(alias, value)
         {
-          current_value[alias] = value;
-          $('#slider' + alias).val(value).slider("refresh");
+          current_value[alias] = value.Level.value;
+          $('#slider' + alias).val(value.Level.value).slider("refresh");
         });
         
         updating_current = false;
@@ -120,7 +110,18 @@ else if (isset($_GET["getdata"]))
 
 	    jQuery.each(aliasData, function(name, value)
 	    {
-	      text += name + "=" + value.value + "<br/>";
+	      if (typeof value.value == "string")
+	      {
+		text += name + "=" + value.value + "<br/>";
+	      }
+	      else
+	      {
+		text += name + "<br/>";
+		jQuery.each(value.value, function(name2, value2)
+		{
+		  text += "&nbsp;&nbsp;" + name2 + "=" + value2 + "<br/>";
+		});
+	      }
 	    });
 
 	    text += "<br/>";
