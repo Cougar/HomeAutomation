@@ -1,5 +1,5 @@
 <?php
-$aliasesDimmer = array("TakSovrum", "bardisk", "bardisk_tak", "bardisk_tv");
+$aliasesDimmer = array("TakSovrum", "bardisk", "bardisk_tak", "bardisk_tv","Power", "PowerBRF");
 $aliasesPower = array("Power", "PowerBRF");
 
 require 'atom_interface.php';
@@ -33,7 +33,12 @@ else if (isset($_GET["getdata"]))
 {
   foreach ($aliasesDimmer as $alias)
   {
-    $response[$alias] = GetLastData($alias);
+    $responseData = GetLastData($alias);
+
+    foreach ($responseData as $name => $value)
+    {
+      $response[$name] = $value;
+    }
   }
   
   echo json_encode($response);
@@ -89,6 +94,7 @@ else if (isset($_GET["getdata"]))
     function checkCurrentValue()
     {
       updating_current = true;
+      /*
       jQuery.getJSON("?getvalue=1", "", function(data)
       {
         
@@ -100,8 +106,32 @@ else if (isset($_GET["getdata"]))
         });
         
         updating_current = false;
+      });*/
+      jQuery.getJSON("?getdata=1", "", function(data)
+      {
+	  var element = $("#current-information");
+
+	  element.empty();
+
+	  var text = "";
+
+	  jQuery.each(data, function(alias, aliasData)
+	  {
+	    text += "<b>" + alias + "</b><br/>";
+
+	    jQuery.each(aliasData, function(name, value)
+	    {
+	      text += name + "=" + value.value + "<br/>";
+	    });
+
+	    text += "<br/>";
+	  });
+
+	  element.html(text);
+
+
       });
-      timer = setTimeout(checkCurrentValue, 1000);
+      timer = setTimeout(checkCurrentValue, 5000);
     }
 
     function makeAjaxChange(alias)
@@ -214,6 +244,7 @@ else if (isset($_GET["getdata"]))
 	  <h3>
 	    Ute temperatur
 	  </h3>
+	  <div id="current-information">None</div>
 <?
 //	  <div style="width: 997px; height: 519px; position: relative; background-color: #fbfbfb; border: 1px solid #b8b8b8;">
 //	    <img style=" top: 50%; left: 50%; " src="http://linuxz-home.mine.nu/CANgraph/outside_day.png" />

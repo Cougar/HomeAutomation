@@ -48,9 +48,6 @@ function GetLastData($alias2)
 
     $buffer = atomd_read_command_response($socket);
     $array = json_decode(trim($buffer), true);
-  echo '<br>';
-  print_r($array);
-  echo '<br>';
   }
   catch (Exception $e)
   {
