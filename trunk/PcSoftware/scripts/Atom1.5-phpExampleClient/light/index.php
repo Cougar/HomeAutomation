@@ -1,6 +1,6 @@
 <?php
-$aliasesDimmer = array("TakSovrum", "bardisk", "bardisk_tak", "bardisk_tv","Power", "PowerBRF");
-$aliasesPower = array("Power", "PowerBRF");
+$aliasesDimmer = array("powerMeter", "heatMeter");
+//$aliasesPower = array("powerMeter", "heatMeter");
 
 require 'atom_interface.php';
 require 'getSetData.php';
@@ -56,7 +56,7 @@ else if (isset($_GET["getdata"]))
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
-<?
+<?php
 //  <link rel="stylesheet"  href="jquery.mobile-1.0b1.css" /> 
 //  <script src="jquery-1.6.1.min.js"></script> 
 //  <script src="jquery.mobile-1.0b1.min.js"></script> 
@@ -65,12 +65,12 @@ else if (isset($_GET["getdata"]))
 
     $(document).bind("pagecreate", function(event, ui)
     {
-      <?
+      <?php
       foreach ($aliasesDimmer as $alias)
       {
       ?>
-        $('#slider<?=$alias?>' ).bind('change', function(event, ui){ makeAjaxChange("<?=$alias?>"); });
-      <?
+        $('#slider<?php=$alias?>' ).bind('change', function(event, ui){ makeAjaxChange("<?php=$alias?>"); });
+      <?php
       }
       ?>
       delayed_start_of_poll();
@@ -79,13 +79,13 @@ else if (isset($_GET["getdata"]))
     var current_value = {};
     var next_value = {};
     
-    <?
+    <?php
     foreach ($aliasesDimmer as $alias)
     {
     ?>
-      current_value['<?=$alias?>'] = 0;
-      next_value['<?=$alias?>'] = -1;
-    <?
+      current_value['<?php=$alias?>'] = 0;
+      next_value['<?php=$alias?>'] = -1;
+    <?php
     }
     ?>
     var updating_current = false;
@@ -201,19 +201,19 @@ else if (isset($_GET["getdata"]))
 	  <h3>
 	    Dimmers
 	  </h3>
-	  <?
+	  <?php
 	  foreach ($aliasesDimmer as $alias)
 	  {
 	  ?>
 	  <div data-role="fieldcontain" id="slider-container">
-	    <label for="slider<?=$alias?>"><?=ucfirst($alias)?>:</label>
-	    <input type="range" name="slider<?=$alias?>" id="slider<?=$alias?>" value="<?=intval($level)?>" min="0" max="255"  />
+	    <label for="slider<?php=$alias?>"><?php=ucfirst($alias)?>:</label>
+	    <input type="range" name="slider<?php=$alias?>" id="slider<?php=$alias?>" value="<?php=intval($level)?>" min="0" max="255"  />
 	  </div>
 
 	  <div style="">
 
 	  </div>
-	  <?
+	  <?php
 	  }
 	  ?>
 	</div>
@@ -223,18 +223,18 @@ else if (isset($_GET["getdata"]))
 	  <h3>
 	    Power
 	  </h3>
-	  <?
+	  <?php
 	  foreach ($aliasesPower as $alias)
 	  {
 	  ?>
 	  <div data-role="fieldcontain" id="slider-container">
-	    <label for="slider<?=$alias?>"><?=ucfirst($alias)?>:</label>
+	    <label for="slider<?php=$alias?>"><?php=ucfirst($alias)?>:</label>
 	  </div>
 
 	  <div style="">
 
 	  </div>
-	  <?
+	  <?php
 	  }
 	  ?>
 	</div>
@@ -245,7 +245,7 @@ else if (isset($_GET["getdata"]))
 	    Ute temperatur
 	  </h3>
 	  <div id="current-information">None</div>
-<?
+<?php
 //	  <div style="width: 997px; height: 519px; position: relative; background-color: #fbfbfb; border: 1px solid #b8b8b8;">
 //	    <img style=" top: 50%; left: 50%; " src="http://linuxz-home.mine.nu/CANgraph/outside_day.png" />
 //	  </div>
