@@ -1,21 +1,21 @@
 /*
- * 
+ *
  *  Copyright (C) 2010  Mattias Runge
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  */
 
 #include "Protocol.h"
@@ -68,7 +68,7 @@ bool Protocol::Load(std::string file_path)
     LOG.Error(e.what());
     return false;
   }
-  
+
   LOG.Info("Protocol loaded successfully.");
   return true;
 }
@@ -107,7 +107,7 @@ std::string Protocol::LookupCommandName(unsigned int command_id, std::string mod
         {
             return this->root_node_.FindChild("commands").SelectChild("id", boost::lexical_cast<std::string>(command_id), "module", module_name).GetAttributeValue("name");
         }
-    
+
         return this->root_node_.FindChild("commands").SelectChild("id", boost::lexical_cast<std::string>(command_id)).GetAttributeValue("name");
     }
     catch (std::runtime_error& e)
@@ -126,7 +126,7 @@ unsigned int Protocol::ResolveCommandId(std::string command_name, std::string mo
     catch (std::runtime_error& e)
     {
     }
-    
+
     try
     {
         return boost::lexical_cast<unsigned int >(this->root_node_.FindChild("commands").SelectChild("name", command_name).GetAttributeValue("id"));
@@ -222,7 +222,7 @@ unsigned int Protocol::ResolveModuleId(std::string module_name)
     {
         return 0;
     }
-    
+
     try
     {
         return boost::lexical_cast<unsigned int>(this->root_node_.FindChild("modules").SelectChild("name", module_name).GetAttributeValue("id"));
@@ -237,11 +237,11 @@ unsigned int Protocol::ResolveModuleId(std::string module_name)
 xml::Node::NodeList Protocol::GetCommandVariables(std::string command_name, std::string module_name)
 {
     xml::Node node;
-    
+
     try
     {
         node = this->root_node_.FindChild("commands").SelectChild("name", command_name, "module", module_name);
-        
+
         try
         {
             return node.FindChild("variables").GetChildren();
@@ -254,12 +254,12 @@ xml::Node::NodeList Protocol::GetCommandVariables(std::string command_name, std:
     catch (std::runtime_error& e)
     {
     }
-  
-    
+
+
     try
     {
         node = this->root_node_.FindChild("commands").SelectChild("name", command_name);
-        
+
         try
         {
             return node.FindChild("variables").GetChildren();
@@ -274,18 +274,18 @@ xml::Node::NodeList Protocol::GetCommandVariables(std::string command_name, std:
         LOG.Error(e.what());
         throw std::runtime_error("Could not find variables for command, name = " + command_name + ", module = " + module_name);
     }
-    
+
     return xml::Node::NodeList();
 }
 
 xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
 {
     xml::Node node;
-    
+
     try
     {
         node = this->root_node_.FindChild("nmt_messages").SelectChild("name", command_name);
-        
+
         try
         {
             return node.FindChild("variables").GetChildren();
@@ -300,27 +300,27 @@ xml::Node::NodeList Protocol::GetNMTCommandVariables(std::string command_name)
         LOG.Error(e.what());
         throw std::runtime_error("Could not find variables for nmt command, name = " + command_name);
     }
-    
+
     return xml::Node::NodeList();
 }
 
 std::string Protocol::DecodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     bool sign = bitset.Get(start_bit) == 1;
-    
+
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
 
-    int raw_value = raw_bit_value;
-    
+    long raw_value = raw_bit_value;
+
     if (sign)
     {
         long mask = 0;
-        
+
         for (unsigned int n = 0; n < bit_length; n++)
         {
             mask += (1 << n);
         }
-        
+
         raw_value = -((~raw_bit_value) & mask);
     }
 
@@ -330,39 +330,39 @@ std::string Protocol::DecodeInt(common::Bitset& bitset, unsigned int start_bit, 
 void Protocol::EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     unsigned long raw_bit_value = 0;
-    int raw_value = boost::lexical_cast<int>(value);
+    long raw_value = boost::lexical_cast<long>(value);
     //LOG.Info("Float as int: " + raw_value);
 
     raw_bit_value = raw_value;
-    
+
     if (raw_value < 0)
     {
         long mask = 0;
-        
+
         for (unsigned int n = 0; n < bit_length; n++)
         {
             mask += (1 << n);
         }
-        
+
         raw_bit_value = (~(-raw_value)) & mask;
     }
-    
+
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }
 
 std::string Protocol::DecodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
-    
+
     //LOG.Debug("DecodeUint: raw_bit_value=" + boost::lexical_cast<std::string>(raw_bit_value));
-    
-    return boost::lexical_cast<std::string>((unsigned int)raw_bit_value);
+
+    return boost::lexical_cast<std::string>((unsigned long)raw_bit_value);
 }
 
 void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    unsigned long raw_bit_value = boost::lexical_cast<unsigned int>(value);
-    
+    unsigned long raw_bit_value = boost::lexical_cast<unsigned long>(value);
+
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }
 
@@ -370,18 +370,18 @@ std::string Protocol::DecodeFloat(common::Bitset& bitset, unsigned int start_bit
 {
     float float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length));
     //LOG.Debug("DecodeFloat::float_value1=" + boost::lexical_cast<std::string>(float_value));
-    
-    
+
+
     float_value = float_value / 64.0f;
-    
+
     //LOG.Debug("DecodeFloat::float_value2=" + boost::lexical_cast<std::string>(float_value));
-    
+
     return boost::lexical_cast<std::string>(float_value);
 }
 
 void Protocol::EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    int int_value = boost::lexical_cast<float>(value) * 64.0f;
+    long int_value = boost::lexical_cast<float>(value) * 64.0f;
     //LOG.Info("Float: " + int_value);
 
     this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
@@ -390,29 +390,29 @@ void Protocol::EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsig
 std::string Protocol::DecodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     std::string value;
-    
+
     for (unsigned int n = 0; n < bit_length; n += 8)
     {
         unsigned long raw_value = bitset.Read(start_bit + n, 8);
         value += (char)raw_value;
     }
-    
+
     return value;
 }
 
 void Protocol::EncodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
     //LOG.Debug("EncodeAscii: " + value + ", length=" + boost::lexical_cast<std::string>(value.length()) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
-    
+
     for (unsigned int n = 0; n < bit_length; n += 8)
     {
         if (n / 8 >= value.length())
         {
             break;
         }
-        
+
         //LOG.Debug(boost::lexical_cast<std::string>((unsigned int)value[n / 8]));
-        
+
         bitset.Write(start_bit + n, 8, value[n / 8]);
     }
 }
@@ -421,11 +421,11 @@ std::string Protocol::DecodeHexstring(common::Bitset& bitset, unsigned int start
 {
     std::string value;
     char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-    
+
     for (unsigned int n = 0; n < bit_length; n += 4)
     {
         unsigned long raw_bit_value = bitset.Read(start_bit + n, 4);
-        
+
         if (raw_bit_value >= sizeof(hex))
         {
             value += '-';
@@ -435,18 +435,18 @@ std::string Protocol::DecodeHexstring(common::Bitset& bitset, unsigned int start
             value += hex[raw_bit_value];
         }
     }
-    
+
     return value;
 }
 
 void Protocol::EncodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    int ascii_value;
-    
+    long ascii_value;
+
     for (unsigned int n = 0; n < bit_length; n += 4)
     {
-        ascii_value = boost::lexical_cast<int>((int)std::toupper(value[n / 4]));
-        
+        ascii_value = boost::lexical_cast<long>((long)std::toupper(value[n / 4]));
+
         if (48 <= ascii_value && ascii_value <= 57)
         {
             bitset.Write(start_bit + n, 4, ascii_value - 48);

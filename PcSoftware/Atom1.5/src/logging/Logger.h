@@ -36,6 +36,7 @@ public:
     void Warning(std::string message);
     void Info(std::string message);
     void Debug(std::string message);
+    void Extreme(std::string message);
    
 private:
     std::string name_;
