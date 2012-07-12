@@ -34,20 +34,25 @@ act_hwPWM_CH1_WGM=1
 # See datasheet for more information
 act_hwPWM_CH1_CS=1
 
+# Set this to 1 to enable LED scaling on PWM output
+act_hwPWM_CH1_LED=0
+
 #### PWM Channel 2, EXP_C, Timer1, OC1A ####
 act_hwPWM_CH2_COM=0
 act_hwPWM_CH2_WGM=1
 act_hwPWM_CH2_CS=1
+act_hwPWM_CH3_LED=0
 
 #### PWM Channel 3, EXP_F, Timer0, OC0A ####
 act_hwPWM_CH3_COM=0
 act_hwPWM_CH3_WGM=1
 act_hwPWM_CH3_CS=1
+act_hwPWM_CH3_LED=0
 
 #### PWM Channel 4, EXP_G, Timer0, OC0B ####
 act_hwPWM_CH4_COM=0
 act_hwPWM_CH4_WGM=1
 act_hwPWM_CH4_CS=1
-
+act_hwPWM_CH4_LED=0
 
 ## End section act_hwPWM -- Do not edit this line
