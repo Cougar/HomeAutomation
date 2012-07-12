@@ -1,6 +1,6 @@
 <?php
-$aliasesDimmer = array("powerMeter", "heatMeter");
-//$aliasesPower = array("powerMeter", "heatMeter");
+$aliasesDimmer = array("bardisk_tv", "TakSovrum");
+$aliasesOther = array("Power", "PowerBRF");
 
 require 'atom_interface.php';
 require 'getSetData.php';
@@ -21,7 +21,7 @@ if (isset($_GET["DimmerStrength"]))
 }
 else if (isset($_GET["getvalue"]))
 {
-  foreach ($aliasesDimmer as $alias)
+  foreach ($_GET["alias"] as $alias)
   {
     $response[$alias] = GetLastValue($alias);
   }
@@ -31,7 +31,7 @@ else if (isset($_GET["getvalue"]))
 }
 else if (isset($_GET["getdata"]))
 {
-  foreach ($aliasesDimmer as $alias)
+  foreach ($_GET["alias"] as $alias)
   {
     $responseData = GetLastData($alias);
 
@@ -69,7 +69,7 @@ else if (isset($_GET["getdata"]))
       foreach ($aliasesDimmer as $alias)
       {
       ?>
-        $('#slider<?php=$alias?>' ).bind('change', function(event, ui){ makeAjaxChange("<?php=$alias?>"); });
+        $('#slider<?php  echo $alias?>' ).bind('change', function(event, ui){ makeAjaxChange("<?php  echo $alias?>"); });
       <?php
       }
       ?>
@@ -83,8 +83,8 @@ else if (isset($_GET["getdata"]))
     foreach ($aliasesDimmer as $alias)
     {
     ?>
-      current_value['<?php=$alias?>'] = 0;
-      next_value['<?php=$alias?>'] = -1;
+      current_value['<?php echo $alias?>'] = 0;
+      next_value['<?php echo $alias?>'] = -1;
     <?php
     }
     ?>
@@ -94,8 +94,7 @@ else if (isset($_GET["getdata"]))
     function checkCurrentValue()
     {
       updating_current = true;
-      /*
-      jQuery.getJSON("?getvalue=1", "", function(data)
+      jQuery.getJSON("?getvalue=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesDimmer)?>", function(data)
       {
         
         
@@ -106,8 +105,8 @@ else if (isset($_GET["getdata"]))
         });
         
         updating_current = false;
-      });*/
-      jQuery.getJSON("?getdata=1", "", function(data)
+      });
+      jQuery.getJSON("?getdata=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesOther)?>", function(data)
       {
 	  var element = $("#current-information");
 
@@ -206,8 +205,8 @@ else if (isset($_GET["getdata"]))
 	  {
 	  ?>
 	  <div data-role="fieldcontain" id="slider-container">
-	    <label for="slider<?php=$alias?>"><?php=ucfirst($alias)?>:</label>
-	    <input type="range" name="slider<?php=$alias?>" id="slider<?php=$alias?>" value="<?php=intval($level)?>" min="0" max="255"  />
+	    <label for="slider<?php echo $alias?>"><?php echo ucfirst($alias)?>:</label>
+	    <input type="range" name="slider<?php echo $alias?>" id="slider<?php echo $alias?>" value="<?php echo intval($level)?>" min="0" max="255"  />
 	  </div>
 
 	  <div style="">
@@ -228,7 +227,7 @@ else if (isset($_GET["getdata"]))
 	  {
 	  ?>
 	  <div data-role="fieldcontain" id="slider-container">
-	    <label for="slider<?php=$alias?>"><?php=ucfirst($alias)?>:</label>
+	    <label for="slider<?php echo $alias?>"><?php echo ucfirst($alias)?>:</label>
 	  </div>
 
 	  <div style="">
