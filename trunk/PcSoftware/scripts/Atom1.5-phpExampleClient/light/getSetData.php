@@ -26,19 +26,18 @@ function GetLastData($alias2)
 
 
 
-function SetDimmerValue($alias2, $level)
+function SendGenericCommand($command)
 {
   global $AtomURL;
   global $AtomPort;
 
-  $level2 = 0;
   $buffer = "";
 
   try
   {
     $socket = atomd_initialize($AtomURL, $AtomPort);
 
-    atomd_send_command($socket, "Dimmer_AbsoluteFade $alias2 255 $level");
+    atomd_send_command($socket, $command);
     
     $buffer = atomd_read_command_response($socket);
   }
@@ -46,6 +45,26 @@ function SetDimmerValue($alias2, $level)
   {
     die($e);
   }
+  return $buffer;
+}
+
+
+
+function SetDimmerValue($alias2, $level)
+{
+    SendGenericCommand("Dimmer_AbsoluteFade $alias2 255 $level");
+}
+
+
+function SetPidTemperature($alias, $temperature)
+{
+  SendGenericCommand("PID_setValue $alias $temperature");
+}
+
+
+function SetPidParameters($alias, $KP, $KI, $KD, $Time, $Unit)
+{
+  SendGenericCommand("PID_setParameters $alias $KP $KI $KD $Time $Unit");
 }
 
 ?>
