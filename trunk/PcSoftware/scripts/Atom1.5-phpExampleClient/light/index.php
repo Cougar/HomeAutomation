@@ -9,13 +9,11 @@ $response = array();
 
 if (isset($_GET["DimmerStrength"]))
 {
-  if (intval($_GET["strength"]) < 10)
+  if (intval($_GET["DimmerStrength"]) < 10)
   {
-    $_GET["strength"] = 0;
+    $_GET["DimmerStrength"] = 0;
   }
-  
-  SetDimmerValue($_GET["alias"], $_GET["strength"]);
-  
+  SetDimmerValue($_GET["alias"], $_GET["DimmerStrength"]);
   echo json_encode($response);
   exit(0);
 }
@@ -84,7 +82,7 @@ else if (isset($_GET["getdata"]))
     function checkCurrentValue()
     {
       updating_current = true;
-      jQuery.getJSON("?getdata=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesDimmer)?>", function(data)
+      jQuery.getJSON("?getdata=1", "<?php echo "alias[]=" . implode("&alias[]=", $aliasesDimmer)?>", function(data)
       {
         
         
@@ -96,7 +94,7 @@ else if (isset($_GET["getdata"]))
         
         updating_current = false;
       });
-      jQuery.getJSON("?getdata=1", "<? echo "alias[]=" . implode("&alias[]=", $aliasesOther)?>", function(data)
+      jQuery.getJSON("?getdata=1", "<?php echo "alias[]=" . implode("&alias[]=", $aliasesOther)?>", function(data)
       {
 	  var element = $("#current-information");
 
