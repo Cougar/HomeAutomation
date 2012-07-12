@@ -962,6 +962,7 @@ int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 /**
  * Test data on NEXA protocol
  * http://elektronikforumet.com/wiki/index.php?title=RF_Protokoll_-_Nexa_sj%C3%A4lvl%C3%A4rande
+ * http://pastebin.com/PJX3bRAs
  * 
  * @param buf
  * 		Pointer to buffer to where to data to parse is stored
@@ -1045,14 +1046,14 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	uint8_t dimming = 0;
 	
 	/* If most significant bit is set, then dimming should be sent */
-//	if (tempshift&(1ULL<<63))
-//	{
+	if (tempshift&(1ULL<<47))
+	{
 		/* Dimming */
-//		*len = 147;
-//		dimming=1;
-//	}
+		*len = 147;
+		dimming=1;
+	}
 	
-	for (uint8_t i = 2; i < 131; i+=4)
+	for (uint8_t i = 2; i < *len; i+=4)
 	{
 		buf[i] = IR_NEXA2_HIGH;
 		buf[i+2] = IR_NEXA2_HIGH;
@@ -1068,8 +1069,9 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	if (dimming)
 	{
-		//TODO: find which bit to change, also find if it should be long or short
-		//buf[xyz] = IR_NEXA2_LOW_xyz;
+		//TODO: verify below bit numbers
+		buf[111] = IR_NEXA2_LOW_ONE;
+		buf[113] = IR_NEXA2_LOW_ONE;
 	}
 	
 	proto->modfreq=IR_NEXA2_F_MOD;
