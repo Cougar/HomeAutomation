@@ -103,13 +103,13 @@ void Client::ReadHandler(const boost::system::error_code& error, size_t size)
   }
   else if (size == 0)
   {
-    log::Debug(log_module_, "size 0");
+    //log::Debug(log_module_, "size 0");
     
     this->Disconnect();
   }
   else
   {
-    log::Debug(log_module_, "size was %u", size);
+    //log::Debug(log_module_, "size was %u", size);
     
     this->signal_on_new_data_(this->id_, this->server_id_, common::Byteset(this->buffer_.begin(), this->buffer_.begin() + size));
     

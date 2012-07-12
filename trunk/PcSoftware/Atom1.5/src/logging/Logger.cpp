@@ -59,5 +59,10 @@ void Logger::Debug(std::string message)
   log::Debug(this->name_, message.c_str());
 }
 
+void Logger::Extreme(std::string message)
+{
+  log::Extreme(this->name_, message.c_str());
+}
+
 }; // namespace logging
 }; // namespace atom
