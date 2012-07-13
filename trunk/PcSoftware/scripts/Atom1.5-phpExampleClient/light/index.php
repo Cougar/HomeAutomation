@@ -30,15 +30,18 @@ require_once("config.php");
     ?>
 
     <script id="page-template" type="text/x-jquery-tmpl" data-enhance="false">
-      <div id="page-${name}" data-role="page" data-add-back-btn="true" data-theme="a">
-        <div data-role="header"><h1>Home Automation Control Center - ${title}</h1></div>
+      <div id="page-${name}" data-role="page" data-theme="a">
+        <div data-role="header">
+          <a href="#" data-icon="left" data-rel="back" data-direction="reverse">Home</a>
+          <h1>Home Automation Control Center - ${title}</h1>
+        </div>
         <div data-role="content"></div>
       </div>
     </script>
 
     <script id="pagelink-template" type="text/x-jquery-tmpl" data-enhance="false">
       <span>
-        <a href="#pagelink?page=${name}" data-role="button">${title}</a>
+        <a href="#" data-role="button">${title}</a>
       </span>
     </script>
 
@@ -77,39 +80,47 @@ require_once("config.php");
 
           pageInstances[pageName].name = pageName;
 
-          pageInstances[pageName].pageLinkElement = $("#pagelink-template").tmpl(pageInstances[pageName]).appendTo($("#home").find(":jqmData(role=content)")).trigger("create");
           pageInstances[pageName].pageElement = $("#page-template").tmpl(pageInstances[pageName]).appendTo($("body")).page();
           pageInstances[pageName].pageContentElement = pageInstances[pageName].pageElement.find(":jqmData(role=content)");
+
+          pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
+          {
+            $.mobile.changePage($("#home"), "slide");
+            event.preventDefault();
+          });
+
+          pageInstances[pageName].pageLinkElement = $("#pagelink-template").tmpl(pageInstances[pageName]).appendTo($("#home").find(":jqmData(role=content)")).trigger("create").on("click", function(event)
+          {
+            $.mobile.changePage(pageInstances[pageName].pageElement, "slide");
+            event.preventDefault();
+          });
+
 
           if (pages[configuration.page] && pages[configuration.page].init)
           {
             pages[configuration.page].init(pageInstances[pageName]);
           }
         });
-      });
 
-      $(document).bind("pagebeforechange", function(e, data)
-      {
-        if (typeof data.toPage === "string")
+        $(".ui-page").on("swipeleft", function()
         {
-          var u = $.mobile.path.parseUrl(data.toPage);
-          var re = /^#pagelink/;
+          var nextpage = $(this).nextAll(":jqmData(role=page)");
 
-          if (u.hash.search(re) !== -1)
+          if (nextpage.length > 0)
           {
-            var pageName = u.hash.replace(/.*page=/, "");
-            var page = $("#page-" + pageName);
-
-            if (page)
-            {
-              data.options.dataUrl = u.href;
-
-              $.mobile.changePage(page, data.options);
-            }
-
-            e.preventDefault();
+            $.mobile.changePage($(nextpage[0]), "slide");
           }
-        }
+        });
+        
+        $(".ui-page").on("swiperight", function()
+        {
+          var prevpage = $(this).prevAll(":jqmData(role=page)");
+
+          if (prevpage.length > 0)
+          {
+            $.mobile.changePage($(prevpage[0]), "slide", true);
+          }
+        });
       });
 
     </script>
