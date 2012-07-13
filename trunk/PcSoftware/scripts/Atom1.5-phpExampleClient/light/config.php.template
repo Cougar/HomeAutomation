@@ -2,6 +2,7 @@
 
 $atomdHostname = "127.0.0.1";
 $atomdPort = 1202;
+$atomdOld = false;
 
 $pageConfiguration = array(
                            array("page" => "dimmers", 
@@ -23,7 +24,15 @@ $pageConfiguration = array(
                                   "title" => "IR Remote",
                                   "aliases" => array("tvbankut"),
                                   "remotes" => array("LG_MKJ42519615")
-                                  )
+                                  ),
+                            array("page" => "buttons",
+                                  "title" => "TV Bedroom",
+                                  "buttons" => array("On" => "Serial_Send tv ka 0 01",
+                                                     "Screen On" => "Serial_Send tv kd 0 00",
+                                                     "Screen Off" => "Serial_Send tv kd 0 01",
+                                                     "Off" => "Serial_Send tv ka 0 00"
+                                                     )
+                                 )
                            );
 
 ?>

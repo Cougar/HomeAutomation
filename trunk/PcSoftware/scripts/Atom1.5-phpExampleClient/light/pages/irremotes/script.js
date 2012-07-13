@@ -2,7 +2,6 @@
 pages.irremotes = {
   init: function(pageInstance)
   {
-    /* List to keep referenses to all the different slider elements */
     pageInstance.pageButtonElements = {};
 
 
