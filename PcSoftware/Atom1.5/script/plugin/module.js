@@ -489,32 +489,26 @@ Console_RegisterCommand(Module_GetLastData, function(arg_index, args) { return C
 
 function Module_GetLastDataRaw(alias_name)
 {
-	var result = {};
+	var result = { results : {} };
   
-	if (arguments.length < 1)
+
+  for (var n = 0; n < arguments.length; n++)
 	{
-		result.error = true;
-	}
-	else
-	{
-	  var aliases_data = Module_ResolveAlias(alias_name);
-	  var found = false;
+	  var aliases_data = Module_ResolveAlias(arguments[n]);
 	
-	  result.results = {};
-	  
 	  for (var name in aliases_data)
 	  {
-		var last_value_string = Storage_GetParameter("LastValues", name);
+		  var last_value_string = Storage_GetParameter("LastValues", name);
 		
-		if (last_value_string)
-		{
-		   result.results[name] = JSON.parse(last_value_string);
-		}
-		else
-		{
-		  result.results[name] = {};
-		}
-	}
+		  if (last_value_string)
+		  {
+		    result.results[name] = JSON.parse(last_value_string);
+		  }
+		  else
+		  {
+		    result.results[name] = {};
+		  }
+    }
 	}
 	
 	Log(JSON.stringify(result)+'\n');
