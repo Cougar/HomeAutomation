@@ -69,6 +69,12 @@ pages.dimmers = {
       
       /* Bind a change event to the slider */
       pageInstance.pageSliderElements[alias].find("input").on("change", function(event, ui) { requestServerAction(alias); });
+
+      /* Bind a click event to the minimum button */
+      pageInstance.pageSliderElements[alias].find(".page-dimmers-button-minimum").on("click", function(event, ui) { pageInstance.pageSliderElements[alias].find("input").val(0).slider("refresh") });
+
+      /* Bind a click event to the maximum button */
+      pageInstance.pageSliderElements[alias].find(".page-dimmers-button-maximum").on("click", function(event, ui) { pageInstance.pageSliderElements[alias].find("input").val(255).slider("refresh") });
     });
     
     
