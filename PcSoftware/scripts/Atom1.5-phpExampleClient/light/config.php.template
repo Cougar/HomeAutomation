@@ -6,11 +6,24 @@ $atomdPort = 1202;
 $pageConfiguration = array(
                            array("page" => "dimmers", 
                                  "title" => "Dimmers", 
-                                 "aliases" => array("sovrum",
-                                                    "sovrumdsdorr",
+                                 "aliases" => array("sovrumtak",
+                                                    "sovrumdorr",
+                                                    "sovrumvagg",
+                                                    "hall")
+                                 ),
+                           array("page" => "info",
+                                 "title" => "Information",
+                                 "aliases" => array("sovrumtak",
+                                                    "sovrumdorr",
+                                                    "sovrumvagg",
                                                     "hall",
-                                                    "fotovagg")
-                                 )
+                                                    "garderobtemp")
+                                 ),
+                            array("page" => "irremotes",
+                                  "title" => "IR Remote",
+                                  "aliases" => array("tvbankut"),
+                                  "remotes" => array("LG_MKJ42519615")
+                                  )
                            );
 
 ?>
