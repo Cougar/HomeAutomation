@@ -1,7 +1,16 @@
 <?php
 
 require_once("config.php");
-require_once("atom_interface.php");
+
+if ($atomdOld)
+{
+  require_once("atom_interface_old.php");
+}
+else
+{
+  require_once("atom_interface_new.php");
+}
+
 
 function GetSubfolders($directory)
 {
