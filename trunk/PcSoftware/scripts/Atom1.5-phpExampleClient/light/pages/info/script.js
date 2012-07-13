@@ -45,7 +45,7 @@ pages.info = {
           }
 
           /* Add the title */
-          text = "<h3>" + alias + "</h3>" + text;
+          text = "<h3>" + alias + "</h3>" + text + "<br/>";
 
           /* Update the element markup */
           pageInstance.pageInfoElements[alias].html(text);
