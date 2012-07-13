@@ -2,7 +2,7 @@
 IROut_ModuleNames    = [ "irTransmit", "rfTransceive" ];
 IROut_Channels       = function() { return [ 0 ]; };
 IROut_Statuses       = function() { return [ "Pressed", "Released", "Burst" ]; };
-IROut_Protocols      = function() { return [ "RC5", "RC6", "RCMM", "SIRC", "Sharp", "NEC", "Samsung", "Marantz", "Panasonic", "Sky", "Nexa2" ]; };
+IROut_Protocols      = function() { return [ "RC5", "RC6", "RCMM", "SIRC", "Sharp", "NEC", "Samsung", "Marantz", "Panasonic", "Sky", "Nexa2", "Nexa" ]; };
 IROut_Aliases        = function() { return Module_GetAliasNames(IROut_ModuleNames); };
 IROut_AvailableIds   = function() { return Module_GetAvailableIds(IROut_ModuleNames); };
 
@@ -65,7 +65,7 @@ function IROut_StartSendAutoComplete(arg_index, args)
 	return [];
 }
 
-function IROut_Send(alias_name, remote_name, button_name, status)
+function IROut_Send_Raw(alias_name, protocol, data, status)
 {
 	if (arguments.length < 4)
 	{
@@ -73,8 +73,45 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 		return false;
 	}
 	
-	var result_text = "";
 	var aliases_data = Module_ResolveAlias(alias_name, IROut_ModuleNames);
+	
+	for (var name in aliases_data)
+	{
+		var variables = {
+		"Channel"  : aliases_data[name]["specific"]["Channel"],
+		"Protocol" : protocol,
+		"IRdata"   : data,
+		"Status"   : status };
+		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
+		{
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+		
+		found = true;
+	}
+	
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+	
+	return true;
+}
+
+
+function IROut_Send(alias_name, remote_name, button_name, status)
+{
+	if (arguments.length < 4)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
 	
 	var remote_storage_name = Storage_GetParameter("RemoteList", remote_name);
 	
@@ -100,33 +137,7 @@ function IROut_Send(alias_name, remote_name, button_name, status)
 		return false;
 	}
 	
-	for (var name in aliases_data)
-	{
-		var variables = {
-		"Channel"  : aliases_data[name]["specific"]["Channel"],
-		"Protocol" : button_data["protocol"],
-		"IRdata"   : button_data["data"],
-		"Status"   : status };
-		
-		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
-		{
-			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
-		}
-		else
-		{
-			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
-		}
-		
-		found = true;
-	}
-	
-	if (!found)
-	{
-		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
-		return false;
-	}
-	
-	return true;
+	return IROut_Send_Raw(alias_name, button_data["protocol"], button_data["data"], status);
 }
 
 function IROut_StartSend(alias_name, remote_name, button_name)
