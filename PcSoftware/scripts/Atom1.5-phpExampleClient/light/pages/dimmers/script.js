@@ -30,7 +30,7 @@ pages.dimmers = {
       jQuery.each(pageInstance.aliases, function(n, alias)
       {
         /* If no valid value was given, the alias is offline */
-        if (!jsonData.results[alias] || !jsonData.results[alias].Level || jsonData.results[alias].Level.timestamp + 60 < ((new Date()).getTime() / 1000))
+        if (!jsonData.results[alias] || !jsonData.results[alias].Level/* || jsonData.results[alias].Level.timestamp + 60 < ((new Date()).getTime() / 1000)*/)
         {
           /* Disable the slider component */
           pageInstance.pageSliderElements[alias].find("input").slider("disable");
