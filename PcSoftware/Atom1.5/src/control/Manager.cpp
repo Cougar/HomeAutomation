@@ -202,7 +202,7 @@ void Manager::SlotOnMessageHandler(broker::Message::Pointer message)
       }
       else
       {
-        log::Info(log_module_, "Nothing found, id=%s, modulename=%s, classname=%s", payload->GetId().data(), payload->GetModuleName().data(), payload->GetClassName().data());
+        log::Info(log_module_, "Nothing found, id=%d, modulename=%s, classname=%s", payload->GetId(), payload->GetModuleName().data(), payload->GetClassName().data());
       }
     }
   }
