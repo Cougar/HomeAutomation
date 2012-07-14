@@ -6,26 +6,45 @@ function Storage_ListParameters(store_name)
 		Log("\033[31mNot enough parameters given.\033[0m\n");
 		return false;
 	}
-	
+
 	var parameters = StorageExport_GetParameters(store_name);
-	
+
 	var result_text = "";
-	
+
 	for (var key in parameters)
 	{
 		result_text += key + "=" + parameters[key] + "\n";
 	}
-	
+
 	if (result_text.length == 0)
 	{
 		Log("\033[31mNo parameters found.\033[0m\n");
 		return false;
 	}
-	
+
 	Log(result_text);
 	return true;
 }
 Console_RegisterCommand(Storage_ListParameters);
+
+function Storage_ListParametersRaw(store_name)
+{
+  var result = { results : {} };
+
+  if (arguments.length >= 1)
+  {
+    var parameters = StorageExport_GetParameters(store_name);
+
+    for (var key in parameters)
+    {
+      result.results[key] = parameters[key];
+    }
+  }
+
+  Log(JSON.stringify(result)+'\n');
+  return true;
+}
+Console_RegisterCommand(Storage_ListParametersRaw);
 
 function Storage_GetParameter(store_name, parameter_name)
 {
@@ -58,11 +77,11 @@ function Storage_GetJsonParamters(store_name)
 {
   var json_parameters = {};
   var paramaters = Storage_GetParameters(store_name);
-  
+
   for(parameter in parameters)
   {
     json_parameters[paramater] = eval("(" + paramaters[parameter] + ")");
   }
-  
-  return json_parameters;    
+
+  return json_parameters;
 }
