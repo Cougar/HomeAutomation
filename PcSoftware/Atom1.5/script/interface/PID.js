@@ -207,7 +207,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["Debug"] = { "P_term" : variables["P_term"],"I_term" : variables["I_term"],"D_term" : variables["D_term"],"Sum" : variables["Sum"], "timestamp" : get_time() };
+					last_value["Debug"] = { "value" : { "P_term" : variables["P_term"],"I_term" : variables["I_term"],"D_term" : variables["D_term"],"Sum" : variables["Sum"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 					//Log("Got message DEBUG");
 				}
@@ -223,7 +223,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["Sensor"] = { "sensorModuleType" : variables["sensorModuleType"],"sensorModuleId" : variables["sensorModuleId"],"sensorId" : variables["sensorId"], "timestamp" : get_time() };
+					last_value["Sensor"] = { "value" : { "sensorModuleType" : variables["sensorModuleType"],"sensorModuleId" : variables["sensorModuleId"],"sensorId" : variables["sensorId"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 			break;
@@ -238,7 +238,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["Actuator"] = { "actuatorModuleType" : variables["actuatorModuleType"],"actuatorModuleId" : variables["actuatorModuleId"],"actuatorId" : variables["actuatorId"], "timestamp" : get_time() };
+					last_value["Actuator"] = { "value" : { "actuatorModuleType" : variables["actuatorModuleType"],"actuatorModuleId" : variables["actuatorModuleId"],"actuatorId" : variables["actuatorId"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 			break;
@@ -253,7 +253,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["Parameters"] = { "K_P" : variables["K_P"],"K_I" : variables["K_I"],"K_D" : variables["K_D"],"TimeUnit" : variables["TimeUnit"],"RegulatorTime" : variables["RegulatorTime"], "timestamp" : get_time() };
+					last_value["Parameters"] = { "value" : { "K_P" : variables["K_P"],"K_I" : variables["K_I"],"K_D" : variables["K_D"],"TimeUnit" : variables["TimeUnit"],"RegulatorTime" : variables["RegulatorTime"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 			break;
@@ -268,7 +268,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["PID_status"] = { "Measurment" : variables["Measurment"],"Reference" : variables["Reference"],"PWM" : variables["PWM"],"Sum" : variables["Sum"], "timestamp" : get_time() };
+					last_value["PID_status"] = { "value" : { "Measurment" : variables["Measurment"],"Reference" : variables["Reference"],"PWM" : variables["PWM"],"Sum" : variables["Sum"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
 	//log("PID status: mea:" + this.Measurment + " ref:" + this.Reference + " pwm:" + this.PWM/100 + " sum:" + this.Sum + "\n");
@@ -288,7 +288,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 						last_value = eval("(" + last_value_string + ")");
 					}
 					
-					last_value["Reference"] = { "Value" : variables["Value"], "timestamp" : get_time() };
+					last_value["Reference"] = { "value" : variables["Value"], "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}	
 				break;
