@@ -1,21 +1,21 @@
 /*
- * 
+ *
  *  Copyright (C) 2010  Mattias Runge
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  */
 
 #include "Network.h"
@@ -52,22 +52,22 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
 {
     this->address_ = address;
     this->client_id_ = 0;
-       
+
     // Examples of address
     // udp:192.168.1.250:1100
     // serial:/dev/ttyUSB0:38400
-    
+
     common::StringList parts;
     boost::algorithm::split(parts, address, boost::is_any_of(":"), boost::algorithm::token_compress_off);
-    
+
     if (parts.size() < 3)
     {
         LOG.Error("Malformed address string: " + address);
         return;
     }
-    
+
     boost::algorithm::to_lower(parts[0]);
-    
+
     if (parts[0] == "udp")
     {
         this->protocol_ = net::TRANSPORT_PROTOCOL_UDP;
@@ -81,20 +81,20 @@ Network::Network(std::string address): broker::Subscriber(false), LOG("can::Netw
         LOG.Error("Unknown protocol, only support udp and serial, got " + parts[0]);
         return;
     }
-    
+
     this->address_ = parts[1];
     this->port_or_baud_ = boost::lexical_cast<unsigned int>(parts[2]);
-    
+
     try
     {
         this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
         LOG.Info("Connected to " + address);
-        
+
         LOG.Info("Sending ping...");
 
         common::Byteset buffer(1);
         buffer[0] = PACKET_PING;
-        
+
         net::Manager::Instance()->SendTo(this->client_id_, buffer);
     }
     catch (std::runtime_error& e)
@@ -122,9 +122,9 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
     {
         Message* payload = static_cast<Message*>(message->GetPayload().get());
         common::Byteset data(17);
-        
+
         data[0] = PACKET_START;
-        
+
         unsigned int class_id = Protocol::Instance()->ResolveClassId(payload->GetClassName());
         data[4] = class_id << 1;
 
@@ -137,25 +137,25 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         {
             unsigned int direction_flag = Protocol::Instance()->ResolveDirectionFlag(payload->GetDirectionName());
             data[4] |= (direction_flag & 0x01);
-            
+
             unsigned int module_id = Protocol::Instance()->ResolveModuleId(payload->GetModuleName());
             data[3] = module_id;
-            
+
             data[2] = payload->GetId();
-            
+
             unsigned int command_id = Protocol::Instance()->ResolveCommandId(payload->GetCommandName(), payload->GetModuleName());
             data[1] = command_id;
         }
-        
+
         unsigned int highest_bit = 0;
         common::Bitset databits(64);
-        
+
         xml::Node::NodeList variable_nodes;
         unsigned int start_bit;
         unsigned int bit_length;
         std::string type;
         std::string value;
-        
+
         if (payload->GetClassName() == "nmt")
         {
             variable_nodes = Protocol::Instance()->GetNMTCommandVariables(payload->GetCommandName());
@@ -164,20 +164,20 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
         {
             variable_nodes = Protocol::Instance()->GetCommandVariables(payload->GetCommandName(), payload->GetModuleName());
         }
-        
+
         for (unsigned int n = 0; n < variable_nodes.size(); n++)
         {
             value = payload->GetVariable(variable_nodes[n].GetAttributeValue("name"));
-            //LOG.Debug(variable_nodes[n].GetAttributeValue("name") + "=" + value); 
+            //LOG.Debug(variable_nodes[n].GetAttributeValue("name") + "=" + value);
             if (value == "")
             {
                 continue;
             }
-            
+
             start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
             bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
             type = variable_nodes[n].GetAttributeValue("type");
-            
+
             if (type == "int")
             {
                 Protocol::Instance()->EncodeInt(databits, start_bit, bit_length, value);
@@ -211,58 +211,66 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
                 highest_bit = start_bit + bit_length;
             }
         }
-        
+
         //LOG.Debug(databits.ToDebugString());
-        
+
         unsigned int length = std::min((int)ceil((float)highest_bit / 8.0f), 8);
-        
+
         data[5] = 1;
         data[6] = 0;
-        
+
         data[7] = length;
-        
+
         for (unsigned int n = 0; n < 8; n++)
         {
             data[8 + n] = databits.GetBytes()[n];
         }
-        
+
         data[16] = PACKET_END;
-        
+
         //LOG.Debug("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
-    } else if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
+    }
+    else if (message->GetType() == broker::Message::CAN_RAW_MESSAGE)
     {
-	
-        std::string* payload_str; 
+        std::string* payload_str;
 	payload_str = static_cast<std::string*>(message->GetPayload().get());
 	std::string line = *payload_str;
+
+        if (line.length() < 17)
+        {
+          log::Error(log_module_, "Packet was to short: \"%s\".", line.data());
+          return;
+        }
+
+
         common::Byteset data(17);
         //LOG.Info("Got "+ line + "end");
-    
+
         data[0] = PACKET_START;
         std::string value = line.substr(4,2);
 	//LOG.Info("<"+ value + ">");
 	data[4] = common::FromHex(value);
 	//LOG.Info("id1: " + value + " data: ");//+ data[1]);
-	
+
 	value = line.substr(6,2);
 	//LOG.Info("<"+ value + ">");
-	
+
 	data[3] = common::FromHex(value);
 	//LOG.Info("id2: " + value + " data: ");//+ data[2]);
-	
+
 	value = line.substr(8,2);
 	data[2] = common::FromHex(value);
 	//LOG.Info("id3: " + value + " data: ");//+ data[3]);
-	
+
 	value = line.substr(10,2);
 	data[1] = common::FromHex(value);
 	//LOG.Info("id4: " + value + " data: ");//+ data[4]);
-	
+
 	value = line.substr(13,1);
 	data[5] = common::FromHex(value);
 	//LOG.Info("1: " + value + " data: ");//+ data[5]);
-	
+
 	value = line.substr(15,1);
 	data[6] = common::FromHex(value);
 	//LOG.Info("1: " + value + " data: ");//+ data[6]);
@@ -277,11 +285,11 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 	    index += 3;
 	    length++;
         }
-        
+
         data[7] = length;
         data[16] = PACKET_END;
 
-        
+
         //LOG.Info("Bytes: " + data.ToDebugString());
         net::Manager::Instance()->SendTo(this->client_id_, data);
     }
@@ -293,31 +301,31 @@ void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data
   {
     return;
   }
-  
+
   static bool have_start = false;
-  
+
   for (unsigned int n = 0; n < data.size(); n++)
   {
     log::Extreme(log_module_, "data[%u] = %u, have_start = %s, this->buffer_.size() = %u", n, (unsigned int)data[n], have_start ? "true" : "false", this->buffer_.size());
-    
+
     if (have_start)
     {
-      if (data[n] == PACKET_END)
+      if (data[n] == PACKET_END && this->buffer_.size() >= 15)
       {
         log::Extreme(log_module_, "PACKET_END");
-        
+
         while (this->buffer_.size() < 15)
         {
           this->buffer_.push_back(0);
         }
-        
+
         for (unsigned int k = 0; k < this->buffer_.size(); k++)
         {
           log::Extreme(log_module_, "this->buffer_[%u]=%u", k, (unsigned int)this->buffer_[k]);
         }
-        
+
         this->ProcessBuffer();
-        
+
         have_start = false;
       }
       else
@@ -328,7 +336,7 @@ void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data
     else if (data[n] == PACKET_START)
     {
       log::Extreme(log_module_, "PACKET_START");
-      
+
       common::Byteset empty_vector;
       this->buffer_.swap(empty_vector);
 
@@ -352,11 +360,11 @@ void Network::SlotOnNewStateHandler(net::SocketId client_id, net::ClientState cl
     {
         return;
     }
-    
+
     if (client_state == net::CLIENT_STATE_DISCONNECTED)
     {
         LOG.Warning("Got disconnected, setting reconnect timer...");
-       
+
         this->timer_id_ = timer::Manager::Instance()->SetTimer(10000, true);
         this->client_id_ = 0;
     }
@@ -372,7 +380,7 @@ void Network::SlotOnTimeoutHandler(timer::TimerId timer_id)
     {
         this->client_id_ = net::Manager::Instance()->Connect(this->protocol_, this->address_, this->port_or_baud_);
         LOG.Info("Connected again.");
-        
+
         timer::Manager::Instance()->Cancel(timer_id);
         this->timer_id_ = 0;
     }
@@ -386,7 +394,7 @@ void Network::SlotOnTimeoutHandler(timer::TimerId timer_id)
 void Network::ProcessBuffer()
 {
   LOG_DEBUG_ENTER;
-  
+
     try
     {
         std::string class_name = "";
@@ -394,39 +402,39 @@ void Network::ProcessBuffer()
         std::string module_name = "";
         unsigned int id = 0;
         std::string command_name = "";
-        
-	std::string PKTstring = "PKT " + 
-				atom::common::ToHex8bit((unsigned int)this->buffer_[3]) + 
+
+	std::string PKTstring = "PKT " +
+				atom::common::ToHex8bit((unsigned int)this->buffer_[3]) +
 				atom::common::ToHex8bit((unsigned int)this->buffer_[2]) +
-				atom::common::ToHex8bit((unsigned int)this->buffer_[1]) + 
+				atom::common::ToHex8bit((unsigned int)this->buffer_[1]) +
 				atom::common::ToHex8bit((unsigned int)this->buffer_[0]) +
 				" " +
-				atom::common::ToHex4bit((unsigned int)this->buffer_[4]) + 
+				atom::common::ToHex4bit((unsigned int)this->buffer_[4]) +
 				" " +
 				atom::common::ToHex4bit((unsigned int)this->buffer_[5]);
-	
+
 	for (unsigned int index = 7; index < 7 + (unsigned int)this->buffer_[6]; index++)
 	{
 	    PKTstring += " " + atom::common::ToHex8bit((unsigned int)this->buffer_[index]) ;
 	}
-	
+
 	PKTstring += "\n";
-	
+
 	LOG.Extreme(PKTstring);
-	
+
   for (unsigned int n = 0; n < this->buffer_.size(); n++)
   {
      log::Extreme(log_module_, "this->buffer_[%u]=%u", n, (unsigned int)this->buffer_[n]);
   }
-  
+
 	std::string* payload_str = new std::string(PKTstring);
 	broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_MESSAGE, broker::Message::PayloadPointer(payload_str), this)));
 
-	
+
         unsigned int class_id = (this->buffer_[3] >> 1) & 0x0F;
         LOG.Extreme("class_id=" + boost::lexical_cast<std::string>(class_id));
         class_name = Protocol::Instance()->LookupClassName(class_id);
-        
+
         if (class_name == "nmt")
         {
             unsigned int command_id = this->buffer_[2];
@@ -438,13 +446,13 @@ void Network::ProcessBuffer()
             unsigned int direction_flag = this->buffer_[3] & 0x01;
             LOG.Extreme("direction_flag=" + boost::lexical_cast<std::string>(direction_flag));
             direction_name = Protocol::Instance()->LookupDirectionFlag(direction_flag);
-            
+
             unsigned int module_id = this->buffer_[2];
             LOG.Extreme("module_id=" + boost::lexical_cast<std::string>(module_id));
             module_name = Protocol::Instance()->LookupModuleName(module_id);
             LOG.Extreme("module_name=" + module_name);
             id = this->buffer_[1];
-            
+
             unsigned int command_id = this->buffer_[0];
             LOG.Extreme("command_id=" + boost::lexical_cast<std::string>(command_id));
             command_name = Protocol::Instance()->LookupCommandName(command_id, module_name);
@@ -454,15 +462,15 @@ void Network::ProcessBuffer()
         Message* payload = new Message(class_name, direction_name, module_name, id, command_name);
 
         unsigned int length = this->buffer_[6];
-        
+
         common::Byteset data_set;
         data_set.reserve(length);
-        
+
         for (unsigned int n = 0; n < length; n++)
         {
             data_set.push_back(this->buffer_[n + 7]);
         }
-        
+
         for (unsigned int n = 0; n < data_set.size(); n++)
         {
            log::Extreme(log_module_, "data_set[%u]=%u", n, (unsigned int)data_set[n]);
@@ -475,7 +483,7 @@ void Network::ProcessBuffer()
         std::string type;
         std::string value;
         std::string name;
-        
+
         if (class_name == "nmt")
         {
             variable_nodes = Protocol::Instance()->GetNMTCommandVariables(command_name);
@@ -484,17 +492,17 @@ void Network::ProcessBuffer()
         {
             variable_nodes = Protocol::Instance()->GetCommandVariables(command_name, module_name);
         }
-        
+
         for (unsigned int n = 0; n < variable_nodes.size(); n++)
         {
             name = variable_nodes[n].GetAttributeValue("name");
             start_bit = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("start_bit"));
             bit_length = boost::lexical_cast<unsigned int>(variable_nodes[n].GetAttributeValue("bit_length"));
-            
+
             if (databits.GetCount() < start_bit + bit_length)
             {
                 bit_length = databits.GetCount() - start_bit;
-                
+
                 if (bit_length <= 0)
                 {
                     LOG.Warning("Can not read variable " + name + " for command " + command_name + ", message is to short, is there a match between the module and the protocol XML file?");
@@ -502,10 +510,10 @@ void Network::ProcessBuffer()
                     continue;
                 }
             }
-            
+
             type = variable_nodes[n].GetAttributeValue("type");
             LOG.Extreme("type: type=" + type);
-            
+
             if (type == "int")
             {
                 value = Protocol::Instance()->DecodeInt(databits, start_bit, bit_length);
@@ -528,19 +536,19 @@ void Network::ProcessBuffer()
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
                 LOG.Extreme("Enum: value=" + boost::lexical_cast<std::string>(value));
                 LOG.Extreme("start_bit=" + boost::lexical_cast<std::string>(start_bit) + ", bit_length=" + boost::lexical_cast<std::string>(bit_length));
-                
+
                 value = variable_nodes[n].SelectChild("id", value).GetAttributeValue("name");
             }
             else// if (type == "uint")
             {
                 value = Protocol::Instance()->DecodeUint(databits, start_bit, bit_length);
             }
-            
+
             LOG.Extreme("value=\"" + value + "\"");
-            
+
             payload->SetVariable(name, value);
         }
-        
+
         broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_MESSAGE, broker::Message::PayloadPointer(payload), this)));
     }
     catch (std::runtime_error& e)
@@ -548,13 +556,13 @@ void Network::ProcessBuffer()
         LOG.Error("Malformed message received, " + std::string(e.what()));
         LOG.Debug("Bytes: " + std::string(this->buffer_.begin(), this->buffer_.end()));
     }
-    
+
     common::Byteset empty_vector;
     this->buffer_.swap(empty_vector);
-    
-    
+
+
     LOG_DEBUG_EXIT;
 }
-    
+
 }; // namespace can
 }; // namespace atom
