@@ -4,9 +4,16 @@ $atomdHostname = "127.0.0.1";
 $atomdPort = 1202;
 $atomdOld = false;
 
+$aliasNames = array("sovrumtak" => "Taklampa sovrum",
+                    "sovrumdorr" => "Spotlights sovrumsdörr",
+                    "sovrumvagg" => "Spotlights fototapet sovrum",
+                    "hall" => "Spotlights hallen",
+                    "tv" => "TV sovrum",
+                   );
+
 $pageConfiguration = array(
                            array("page" => "dimmers", 
-                                 "title" => "Dimmers", 
+                                 "title" => "Lampor",
                                  "aliases" => array("sovrumtak",
                                                     "sovrumdorr",
                                                     "sovrumvagg",
@@ -21,16 +28,20 @@ $pageConfiguration = array(
                                                     "garderobtemp")
                                  ),
                             array("page" => "irremotes",
-                                  "title" => "IR Remote",
+                                  "title" => "Fjärrkontroll",
                                   "aliases" => array("tvbankut"),
                                   "remotes" => array("LG_MKJ42519615")
                                   ),
                             array("page" => "buttons",
-                                  "title" => "TV Bedroom",
+                                  "title" => "TV Sovrum",
                                   "buttons" => array("On" => "Serial_Send tv ka 0 01",
+                                                     "Off" => "Serial_Send tv ka 0 00",
                                                      "Screen On" => "Serial_Send tv kd 0 00",
                                                      "Screen Off" => "Serial_Send tv kd 0 01",
-                                                     "Off" => "Serial_Send tv ka 0 00"
+                                                     "Backlight Min" => "Serial_Send tv mg 0 64",
+                                                     "Backlight Max" => "Serial_Send tv mg 0 00",
+                                                     "Input TV" => "Serial_Send tv xb 0 93",
+                                                     "Input Dator" => "Serial_Send tv xb 0 92"
                                                      )
                                  )
                            );

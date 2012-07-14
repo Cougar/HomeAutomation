@@ -44,8 +44,15 @@ pages.info = {
             text = "<i>No data available</i>";
           }
 
+          var name = alias;
+
+          if (aliasNames[alias])
+          {
+            name = aliasNames[alias];
+          }
+
           /* Add the title */
-          text = "<h3>" + alias + "</h3>" + text + "<br/>";
+          text = "<h3>" + name + "</h3>" + text + "<br/>";
 
           /* Update the element markup */
           pageInstance.pageInfoElements[alias].html(text);
@@ -64,8 +71,15 @@ pages.info = {
     /* Loop through all the aliases and create sliders */
     jQuery.each(pageInstance.aliases, function(n, alias)
     {
+      var name = alias;
+
+      if (aliasNames[alias])
+      {
+        name = aliasNames[alias];
+      }
+    
       /* Create the slider HTML from the template and add it to the DOM */
-      pageInstance.pageInfoElements[alias] = $("#page-info-template").tmpl({ alias: alias }).appendTo(pageInstance.pageContentElement).trigger("create");
+      pageInstance.pageInfoElements[alias] = $("#page-info-template").tmpl({ alias: alias, name: name }).appendTo(pageInstance.pageContentElement).trigger("create");
     });
     
     
