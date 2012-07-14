@@ -61,8 +61,15 @@ pages.dimmers = {
     /* Loop through all the aliases and create sliders */
     jQuery.each(pageInstance.aliases, function(n, alias)
     {
+      var name = alias;
+
+      if (aliasNames[alias])
+      {
+        name = aliasNames[alias];
+      }
+    
       /* Create the slider HTML from the template and add it to the DOM */
-      pageInstance.pageSliderElements[alias] = $("#page-dimmers-slider-template").tmpl({ alias: alias, value: 0 }).appendTo(pageInstance.pageContentElement).trigger("create");
+      pageInstance.pageSliderElements[alias] = $("#page-dimmers-slider-template").tmpl({ alias: name, name: name, value: 0 }).appendTo(pageInstance.pageContentElement).trigger("create");
       
       /* Before we have any value it should be disabled */
       pageInstance.pageSliderElements[alias].find("input").slider("disable");

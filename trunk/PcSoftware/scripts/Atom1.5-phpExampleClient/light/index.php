@@ -67,6 +67,7 @@ require_once("config.php");
 
     <script>
 
+      var aliasNames = <?php echo json_encode($aliasNames); ?>;
       var pageConfigurations = <?php echo json_encode($pageConfiguration); ?>;
       var pageInstances = {};
 
