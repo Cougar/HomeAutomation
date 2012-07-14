@@ -88,7 +88,7 @@ function Dimmer_StopFade(alias_name)
 }
 Console_RegisterCommand(Dimmer_StopFade, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Dimmer_Aliases()); });
 
-function Dimmer_AbsoluteFade(alias_name, speed, level)
+function Dimmer_AbsoluteFade(alias_name, speed, level_in)
 {
 	if (arguments.length < 3)
 	{
@@ -98,11 +98,12 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 	
 	var aliases_data = Module_ResolveAlias(alias_name, Dimmer_ModuleNames);
 	var found = false;
+	var level = level_in;
 	
 	for (var name in aliases_data)
 	{
 		if (aliases_data[name]["module_name"]=="hwPWM") {
-		  level = level*39;
+		  level = level_in*39;
 		}
 		var variables = {
 		"Channel"   : aliases_data[name]["specific"]["Channel"],
