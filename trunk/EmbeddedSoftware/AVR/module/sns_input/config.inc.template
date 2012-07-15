@@ -2,6 +2,7 @@
 
 #Do not modify rows ending with <PCINT>, if you want to add an interrupt, uncomment the line and run ./ModuleManager --regenerate
 #Note for corecard, EXT_A is also used for coreled, EXT_B is output only. Full I/O-list at http://projekt.auml.se/homeautomation:hardware:avr:corecard
+#Note for coremodule, EXT_B is output only. Full I/O-list at http://projekt.auml.se/homeautomation:hardware:avr:coremodule
 
 sns_input_CH0=EXP_C
 sns_input_CH0PCA95xxIO=0
