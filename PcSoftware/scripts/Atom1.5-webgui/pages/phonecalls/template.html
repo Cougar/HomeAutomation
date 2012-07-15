@@ -1,0 +1,24 @@
+<script id="page-phonecalls-template" type="text/x-jquery-tmpl" data-enhance="false">
+  <div>
+    <ul data-role="listview" data-theme="d" data-divider-theme="d"></ul>
+  </div>
+</script>
+
+<script id="page-phonecalls-divider-template" type="text/x-jquery-tmpl" data-enhance="false">
+  <li data-role="list-divider">${title}<span class="ui-li-count">2</span></li>
+</script>
+
+<script id="page-phonecalls-item-template" type="text/x-jquery-tmpl" data-enhance="false">
+  <li>
+    <h3>
+      ${direction}
+      ${number}
+    </h3>
+
+    {{each names}}
+      <p>${$value}</p>
+    {{/each}}
+
+    <p class="ui-li-aside"><strong>${time}</strong></p>
+  </li>
+</script>

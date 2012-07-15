@@ -19,13 +19,12 @@ $pageConfiguration = array(
                                                     "sovrumvagg",
                                                     "hall")
                                  ),
-                           array("page" => "info",
-                                 "title" => "Information",
-                                 "aliases" => array("sovrumtak",
-                                                    "sovrumdorr",
-                                                    "sovrumvagg",
-                                                    "hall",
-                                                    "garderobtemp")
+                            array("page" => "phonecalls",
+                                  "title" => "Telefonhistorik",
+                                  "aliases" => array("dtmf"),
+                                  "limit" => 40,
+                                  "inText" => "Inkommande samtal från",
+                                  "outText" => "Utgående samtal till"
                                  ),
                             array("page" => "irremotes",
                                   "title" => "Fjärrkontroll",
@@ -38,11 +37,19 @@ $pageConfiguration = array(
                                                      "Off" => "Serial_Send tv ka 0 00",
                                                      "Screen On" => "Serial_Send tv kd 0 00",
                                                      "Screen Off" => "Serial_Send tv kd 0 01",
-                                                     "Backlight Min" => "Serial_Send tv mg 0 64",
-                                                     "Backlight Max" => "Serial_Send tv mg 0 00",
+                                                     "Backlight Min" => "Serial_Send tv mg 0 00",
+                                                     "Backlight Max" => "Serial_Send tv mg 0 64",
                                                      "Input TV" => "Serial_Send tv xb 0 93",
                                                      "Input Dator" => "Serial_Send tv xb 0 92"
                                                      )
+                                 ),
+                            array("page" => "info",
+                                  "title" => "Information",
+                                  "aliases" => array("sovrumtak",
+                                                     "sovrumdorr",
+                                                     "sovrumvagg",
+                                                     "hall",
+                                                     "garderobtemp")
                                  )
                            );
 
