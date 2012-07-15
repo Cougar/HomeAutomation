@@ -237,7 +237,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 	payload_str = static_cast<std::string*>(message->GetPayload().get());
 	std::string line = *payload_str;
 
-        if (line.length() < 17)
+        if (line.length() < 16)
         {
           log::Error(log_module_, "Packet was to short: \"%s\".", line.data());
           return;
