@@ -1,35 +1,38 @@
 ## Section sns_input -- Do not edit this line
 
-sns_input_CH0=EXP_A
+#Do not modify rows ending with <PCINT>, if you want to add an interrupt, uncomment the line and run ./ModuleManager --regenerate
+#Note for corecard, EXT_A is also used for coreled, EXT_B is output only. Full I/O-list at http://projekt.auml.se/homeautomation:hardware:avr:corecard
+
+sns_input_CH0=EXP_C
 sns_input_CH0PCA95xxIO=0
 sns_input_CH0_pullup=0
 # Disable the PCINT line if PCA95xx is used (and run --regenerate)
 sns_input_PCINT_CH0=<PCINT>
-#sns_input_CH1=EXP_K
+#sns_input_CH1=EXP_D
 #sns_input_CH1PCA95xxIO=0
 #sns_input_CH1_pullup=0
 #sns_input_PCINT_CH1=<PCINT>
-#sns_input_CH2=EXP_F
+#sns_input_CH2=EXP_E
 #sns_input_CH2PCA95xxIO=0
 #sns_input_CH2_pullup=0
 #sns_input_PCINT_CH2=<PCINT>
-#sns_input_CH3=EXP_D
+#sns_input_CH3=EXP_F
 #sns_input_CH3PCA95xxIO=0
 #sns_input_CH3_pullup=0
 #sns_input_PCINT_CH3=<PCINT>
-#sns_input_CH4=EXP_J
+#sns_input_CH4=EXP_G
 #sns_input_CH4PCA95xxIO=0
 #sns_input_CH4_pullup=0
 #sns_input_PCINT_CH4=<PCINT>
-#sns_input_CH5=EXP_A
+#sns_input_CH5=EXP_H
 #sns_input_CH5PCA95xxIO=0
 #sns_input_CH5_pullup=0
 #sns_input_PCINT_CH5=<PCINT>
-#sns_input_CH6=EXP_A
+#sns_input_CH6=EXP_I
 #sns_input_CH6PCA95xxIO=0
 #sns_input_CH6_pullup=0
 #sns_input_PCINT_CH6=<PCINT>
-#sns_input_CH7=EXP_A
+#sns_input_CH7=EXP_J
 #sns_input_CH7PCA95xxIO=0
 #sns_input_CH7_pullup=0
 #sns_input_PCINT_CH7=<PCINT>
