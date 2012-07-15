@@ -239,7 +239,7 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 
         if (line.length() < 16)
         {
-          log::Error(log_module_, "Packet was to short: \"%s\".", line.data());
+          log::Error(log_module_, "Packet was to short: \"%s\", length was %u.", line.data(), line.length());
           return;
         }
 
