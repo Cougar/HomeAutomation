@@ -73,23 +73,17 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 
           if (variables["Number"].length > 6)
           {
-            /* A seems to mean it is an outgoing call! */
-            if (number.charAt(0) === 'A')
+            /* A seems to mean it is an incomming call! */
+            if (number.charAt(0) === 'A' || number.charAt(0) === 'D')
             {
-              incommingCall = false;
+              incommingCall = true;
 
               /* Remove leading A */
               number = number.substring(1);
             }
-            else /* Incomming call */
+            else /* Outgoing call */
             {
-              incommingCall = true;
-
-              /* Remove leading D if needed */
-              if (number.charAt(0) === 'D')
-              {
-                number = number.substring(1);
-              }
+              incommingCall = false;
             }
 
             /* A number can have a trailing C */
