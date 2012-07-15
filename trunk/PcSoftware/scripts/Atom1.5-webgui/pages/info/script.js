@@ -78,7 +78,7 @@ pages.info = {
         name = aliasNames[alias];
       }
     
-      /* Create the slider HTML from the template and add it to the DOM */
+      /* Create the info HTML from the template and add it to the DOM */
       pageInstance.pageInfoElements[alias] = $("#page-info-template").tmpl({ alias: alias, name: name }).appendTo(pageInstance.pageContentElement).trigger("create");
     });
     
