@@ -60,7 +60,7 @@ sub atomd_data_available
 
 	$s = IO::Select->new();
 	$s->add($socket);
-	@handles = $s->can_read(0.001);
+	@handles = $s->can_read(0.005);
 
 	$has_data = 0;
 	if (@handles)
