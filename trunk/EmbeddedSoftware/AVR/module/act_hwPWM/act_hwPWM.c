@@ -14,10 +14,34 @@ uint16_t demoEndValue[4] = {0,0,0,0};
 uint16_t demoHighValue[4] = {0,0,0,0};
 uint8_t demoState[4] = {ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING};
 
-static uint16_t lookuptable[256] PROGMEM = 
+static uint16_t lookuptable[257] PROGMEM = 
 { 
-  0,4, 8,12,  17,  21	,  25	,  30	,  34	,  39	,  43	,  48	,  52	,  57	,  62	,  67	,  72	,  77	,  82	,  87	,  93	,  98	,  104	,  109	, 115	,  120	,  126	,  132	,  138	,  144	,  150	,  156	,  162	,  169	,  175	,  182	,  188	,  195	,  202	,  209	,  216	,  223	,  230	,  237	,  245	, 252	,  260	,  267	,  275	,  283	,  291	,  299	,  308	,  316	,  325	,  333	,  342	,  351	,  360	,  369	,  378	,  388	,  397	,  407	,  417	,  427	, 437	,  447	,  457	,  468	,  478	,  489	,  500	,  511	,  523	,  534	,  546	,  557	,  569	,  581	,  594	,  606	,  619	,  632	,  645	,  658	,  671	, 685	,  698	,  712	,  726	,  741	,  755	,  770	,  785	,  800	,  815	,  831	,  847	,  863	,  879	,  896	,  912	,  929	,  946	,  964	,  982	,  999	, 1018	,  1036	,  1055	,  1074	,  1093	,  1113	,  1132	,  1152	,  1173	,  1193	,  1214	,  1236	,  1257	,  1279	,  1301	,  1324	,  1346	,  1369	,  1393	,  1417	,  1441	, 1465	,  1490	,  1515	,  1540	,  1566	,  1593	,  1619	,  1646	,  1673	,  1701	,  1729	,  1758	,  1787	,  1816	,  1846	,  1876	,  1907	,  1938	,  1969	,  2001	,  2033	, 2066	,  2099	,  2133	,  2167	,  2202	,  2237	,  2273	,  2309	,  2346	,  2383	,  2421	,  2459	,  2498	,  2538	,  2577	,  2618	,  2659	,  2701	,  2743	,  2786	,  2829	, 2873	,  2918	,  2963	,  3009	,  3056	,  3103	,  3151	,  3200	,  3249	,  3299	,  3350	,  3402	,  3454	,  3507	,  3560	,  3615	,  3670	,  3726	,  3783	,  3840	,  3899	, 3958	,  4018	,  4079	,  4141	,  4203	,  4267	,  4331	,  4397	,  4463	,  4530	,  4598	,  4667	,  4737	,  4808	,  4881	,  4954	,  5028	,  5103	,  5179	,  5257	,  5335	, 5415	,  5495	,  5577	,  5660	,  5744	,  5830	,  5916	,  6004	,  6093	,  6183	,  6275	,  6368	,  6462	,  6557	,  6654	,  6752	,  6852	,  6953	,  7055	,  7159	,  7265	, 7371	,  7480	,  7590	,  7701	,  7814	,  7929	,  8045	,  8163	,  8283	,  8404	, 8527	,  8652	,  8778	,  8906	,  9036	,  9168	,  9302	,  9438	,  9575	,  9715	, 9856	,
-  10000	,
+  0	,  4	,  8	,  12	,  17	,  21	,  25	,  30	,  34	,  39	,  //0
+43	,  48	,  52	,  57	,  62	,  67	,  72	,  77	,  82	,  87	,  //10
+93	,  98	,  104	,  109	, 115	,  120	,  126	,  132	,  138	,  144	,  //20
+150	,  156	,  162	,  169	,  175	,  182	,  188	,  195	,  202	,  209	,  //30
+216	,  223	,  230	,  237	,  245	,  252	,  260	,  267	,  275	,  283	,  //40
+291	,  299	,  308	,  316	,  325	,  333	,  342	,  351	,  360	,  369	,  //50
+378	,  388	,  397	,  407	,  417	,  427	,  437	,  447	,  457	,  468	,  //60
+478	,  489	,  500	,  511	,  523	,  534	,  546	,  557	,  569	,  581	,  //70
+594	,  606	,  619	,  632	,  645	,  658	,  671	,  685	,  698	,  712	,  //80
+726	,  741	,  755	,  770	,  785	,  800	,  815	,  831	,  847	,  863	,  //90
+879	,  896	,  912	,  929	,  946	,  964	,  982	,  999	,  1018	,  1036	,  //100
+1055	,  1074	,  1093	,  1113	,  1132	,  1152	,  1173	,  1193	,  1214	,  1236	,  //110
+1257	,  1279	,  1301	,  1324	,  1346	,  1369	,  1393	,  1417	,  1441	,  1465	,  //120
+1490	,  1515	,  1540	,  1566	,  1593	,  1619	,  1646	,  1673	,  1701	,  1729	,  //130
+1758	,  1787	,  1816	,  1846	,  1876	,  1907	,  1938	,  1969	,  2001	,  2033	,  //140
+2066	,  2099	,  2133	,  2167	,  2202	,  2237	,  2273	,  2309	,  2346	,  2383	,  //150
+2421	,  2459	,  2498	,  2538	,  2577	,  2618	,  2659	,  2701	,  2743	,  2786	,  //160
+2829	,  2873	,  2918	,  2963	,  3009	,  3056	,  3103	,  3151	,  3200	,  3249	,  //170
+3299	,  3350	,  3402	,  3454	,  3507	,  3560	,  3615	,  3670	,  3726	,  3783	,  //180
+3840	,  3899	,  3958	,  4018	,  4079	,  4141	,  4203	,  4267	,  4331	,  4397	,  //190
+4463	,  4530	,  4598	,  4667	,  4737	,  4808	,  4881	,  4954	,  5028	,  5103	,  //200
+5179	,  5257	,  5335	,  5415	,  5495	,  5577	,  5660	,  5744	,  5830	,  5916	,  //210
+6004	,  6093	,  6183	,  6275	,  6368	,  6462	,  6557	,  6654	,  6752	,  6852	,  //220
+6953	,  7055	,  7159	,  7265	,  7371	,  7480	,  7590	,  7701	,  7814	,  7929	,  //230
+8045	,  8163	,  8283	,  8404	,  8527	,  8652	,  8778	,  8906	,  9036	,  9168	,  //240
+9302	,  9438	,  9575	,  9715	,  9856	,  10000,  10000			   //250
 };
 
 
@@ -278,6 +302,8 @@ void act_hwPWM_Process(void)
 			txMsg.Data[1] = (0xff&(pwmValue[index]>>8));
 			txMsg.Data[2] = (0xff&(pwmValue[index]));
 			StdCan_Put(&txMsg);
+			
+			//printf("CH1 PWM: %u, LED: %u, ledindex: %u, ocr: %u\n",pwmValue[1],(uint16_t)(pgm_read_word(&lookuptable[(pwmValue[1]/39)])), (pwmValue[1]/39),OCR_2);
 		}
 	}
 	
@@ -303,7 +329,7 @@ void act_hwPWM_Process(void)
 					
 #if act_hwPWM_CH1_COM>0
 # if act_hwPWM_CH1_LED>0
-#  define CH1_calculation ((lookuptable[pwmValue[0]/39-1]*act_hwPWM_CH1_FACT)>>8)
+#  define CH1_calculation ((pgm_read_word(&lookuptable[(pwmValue[0]/39)])*act_hwPWM_CH1_FACT)>>8)
 # else
 #  define CH1_calculation ((pwmValue[0]*act_hwPWM_CH1_FACT)>>8)
 # endif
@@ -320,13 +346,14 @@ void act_hwPWM_Process(void)
 		}
 		sei();
 		Timer_SetTimeout(act_hwPWM_STORE_VALUE_TIMEOUT, act_hwPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
+		//printf("CH0 PWM: %u, LED: %u, ORG: %u\n",pwmValue[0],(uint16_t)((lookuptable[(pwmValue[0]/39)-1]*act_hwPWM_CH1_FACT)>>8), (uint16_t)((pwmValue[0]*act_hwPWM_CH1_FACT)>>8));
 	}
 #endif
 #if act_hwPWM_CH2_COM>0
 # if act_hwPWM_CH2_LED>0
-#  define CH2_calculation ((uint32_t)((lookuptable[pwmValue[1]/39-1]*act_hwPWM_CH2_FACT)>>8))
+#  define CH2_calculation ((pgm_read_word(&lookuptable[(pwmValue[1]/39)])*act_hwPWM_CH2_FACT)>>8)
 # else
-#  define CH2_calculation ((uint32_t)((pwmValue[1]*act_hwPWM_CH2_FACT)>>8))
+#  define CH2_calculation ((pwmValue[1]*act_hwPWM_CH2_FACT)>>8)
 # endif
 	if (OCR_2 != (uint16_t)CH2_calculation) {
 		cli();	
@@ -341,11 +368,12 @@ void act_hwPWM_Process(void)
 		}
 		sei();
 		Timer_SetTimeout(act_hwPWM_STORE_VALUE_TIMEOUT, act_hwPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
+		//printf("CH1 PWM: %u, LED: %u, ORG: %u, ocr: %u\n",pwmValue[1],(uint16_t)((lookuptable[(pwmValue[1]/39)-1]*act_hwPWM_CH2_FACT)>>8), (uint16_t)((pwmValue[1]*act_hwPWM_CH2_FACT)>>8),OCR_2);
 	}
 #endif
 #if act_hwPWM_CH3_COM>0
 # if act_hwPWM_CH3_LED>0
-#  define CH3_calculation ((lookuptable[pwmValue[2]/39-1]*act_hwPWM_CH3_FACT)>>8)
+#  define CH3_calculation ((pgm_read_word(&lookuptable[(pwmValue[2]/39)])*act_hwPWM_CH3_FACT)>>8)
 # else
 #  define CH3_calculation ((pwmValue[2]*act_hwPWM_CH3_FACT)>>8)
 # endif
@@ -362,11 +390,12 @@ void act_hwPWM_Process(void)
 		}
 		sei();
 		Timer_SetTimeout(act_hwPWM_STORE_VALUE_TIMEOUT, act_hwPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
+		//printf("CH2 PWM: %u, LED: %u, ORG: %u\n",pwmValue[2],(uint16_t)((lookuptable[(pwmValue[2]/39)-1]*act_hwPWM_CH3_FACT)>>8), (uint16_t)((pwmValue[2]*act_hwPWM_CH3_FACT)>>8));
 	}
 #endif
 #if act_hwPWM_CH4_COM>0
 # if act_hwPWM_CH4_LED>0
-#  define CH4_calculation ((lookuptable[pwmValue[3]/39-1]*act_hwPWM_CH4_FACT)>>8)
+#  define CH4_calculation ((pgm_read_word(&lookuptable[(pwmValue[3]/39)])*act_hwPWM_CH4_FACT)>>8)
 # else
 #  define CH4_calculation ((pwmValue[3]*act_hwPWM_CH4_FACT)>>8)
 # endif
@@ -383,6 +412,7 @@ void act_hwPWM_Process(void)
 		}
 		sei();
 		Timer_SetTimeout(act_hwPWM_STORE_VALUE_TIMEOUT, act_hwPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
+		//printf("CH3 PWM: %u, LED: %u, ORG: %u\n",pwmValue[3],(uint16_t)((lookuptable[(pwmValue[3]/39)-1]*act_hwPWM_CH4_FACT)>>8), (uint16_t)((pwmValue[3]*act_hwPWM_CH4_FACT)>>8));
 	}
 #endif
 }
