@@ -227,3 +227,12 @@ function quit()
 	return false;
 }
 Console_RegisterCommand(quit);
+
+function timestampRaw()
+{
+  var result = { timestamp: (new Date()).getTime() };
+
+  Log(JSON.stringify(result));
+  return true;
+}
+Console_RegisterCommand(timestampRaw);
