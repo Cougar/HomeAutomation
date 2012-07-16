@@ -82,6 +82,6 @@ pages.phonecalls = {
     
     
     /* Set timer for continious polling of the current values */
-//    pageInstance.pollTimer = setInterval(requestServerData, 4000);
+    pageInstance.pollTimer = setInterval(requestServerData, 4000);
   }
 };
