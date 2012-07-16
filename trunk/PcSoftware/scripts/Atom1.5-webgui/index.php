@@ -36,7 +36,7 @@ require_once("config.php");
     <script id="page-template" type="text/x-jquery-tmpl" data-enhance="false">
       <div id="page-${name}" data-role="page" data-theme="a" id="page-{name}">
         <div data-role="header">
-          <a href="#home" data-icon="home" data-direction="reverse">Home</a>
+          <a href="#home" data-icon="home" data-direction="reverse">Start</a>
           <h1>${title} - Home Automation Control Center</h1>
         </div>
         <div data-role="content"></div>
