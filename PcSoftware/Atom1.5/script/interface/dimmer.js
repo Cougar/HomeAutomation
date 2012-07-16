@@ -104,7 +104,12 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
     {
         if (aliases_data[name]["module_name"]=="hwPWM") {
             level_set = level*39;
-        }
+	    if (level_set > 9940) {
+	      level_set = 10000;
+	    }
+        } else {
+            level_set = level;
+	}
         
         //Check for undefined Channel parameter in alias
         if (typeof aliases_data[name]["specific"]["Channel"] == 'undefined') {
@@ -157,7 +162,12 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
     {
         if (aliases_data[name]["module_name"]=="hwPWM") {
             steps_set = steps*39;
-        }
+	    if (steps_set > 9940) {
+	      level_set = 10000;
+	    }
+        } else {
+            steps_set = steps;
+	}
         var variables = {
             "Channel"   : aliases_data[name]["specific"]["Channel"],
             "Speed"     : speed,
@@ -209,7 +219,12 @@ function Dimmer_Demo(alias_name, speed, steps)
     {
         if (aliases_data[name]["module_name"]=="hwPWM") {
             steps_set = steps*39;
-        }
+	    if (steps_set > 9940) {
+	      level_set = 10000;
+	    }
+        } else {
+            steps_set = steps;
+	}
         var variables = {
             "Channel"   : aliases_data[name]["specific"]["Channel"],
             "Speed"     : speed,
