@@ -70,6 +70,9 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
         {
           var number = variables["Number"];
           var incommingCall = true;
+          var checkName = true;
+
+          Log("received from DTMF:\"" + number + "\"");
 
           if (variables["Number"].length > 6)
           {
@@ -100,12 +103,14 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
             /* Unknown number */
             number = "Unknown";
             incommingCall = true;
+            checkName = false;
           }
           else if (number == "B10C")
           {
             /* Secret/protected number */
             number = "Protected";
             incommingCall = true;
+            checkName = false;
           }
           else
           {
@@ -142,7 +147,10 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 
 
           /* Lookup name */
-          Sensor_StoreNumberInPhonebook(number, timestamp);
+          if (checkName)
+          {
+            Sensor_StoreNumberInPhonebook(number, timestamp);
+          }
 
 
           /* Call any potential subscribers */
