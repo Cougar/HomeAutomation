@@ -33,7 +33,7 @@ pages.phonecalls = {
         }
 
         var d = new Date(data.timestamp * 1000);
-        data.time = d.toUTCString();
+        data.time = d.toLocaleString();
 
         if (data.direction === "in" && pageInstance.inText)
         {
@@ -82,6 +82,6 @@ pages.phonecalls = {
     
     
     /* Set timer for continious polling of the current values */
-    pageInstance.pollTimer = setInterval(requestServerData, 4000);
+//    pageInstance.pollTimer = setInterval(requestServerData, 4000);
   }
 };

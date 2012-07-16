@@ -20,6 +20,10 @@ require_once("config.php");
         include("pages/" . $page . "/style.css");
       }
     ?>
+
+      .ui-li-heading {
+        white-space: normal;
+      }
     </style>
 
     <?php
@@ -47,6 +51,15 @@ require_once("config.php");
 
     <script>
       $.mobile.ignoreContentEnabled = true;
+      $.mobile.transitionFallbacks.pop = "none"
+      $.mobile.transitionFallbacks.flip = "none"
+      $.mobile.transitionFallbacks.turn = "none"
+      $.mobile.transitionFallbacks.flow = "none"
+      $.mobile.transitionFallbacks.slidefade = "none"
+      $.mobile.transitionFallbacks.slide = "none"
+      $.mobile.transitionFallbacks.slideup = "none"
+      $.mobile.transitionFallbacks.slidedown = "none"
+      $.mobile.defaultPageTransition = "none"
 
       function sendCommand(command, callback)
       {
@@ -86,7 +99,7 @@ require_once("config.php");
 
           pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
           {
-            $.mobile.changePage($("#home"), "slide");
+            $.mobile.changePage($("#home"), "slide", true);
             event.preventDefault();
           });
 
