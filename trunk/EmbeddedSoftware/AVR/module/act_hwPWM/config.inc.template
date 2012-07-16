@@ -15,6 +15,15 @@ act_hwPWM_FADE_TIMER=<TIMER>
 
 act_hwPWM_ENABLE_FADE=1
 
+# Examples:
+# for channel 1 or 2:
+# COM=2, WGM= 5, CS=4
+# will give 120Hz PWM, adjust CS to change frequency
+
+# for channel 3 or 4:
+# COM=2, WGM= 1, CS=3
+# will give 240Hz PWM, adjust CS to change frequency
+
 #### PWM Channel 1, EXP_B, Timer1, OC1B ####
 
 # Select Compare Output Mode, act_hwPWM_CHx_COM
