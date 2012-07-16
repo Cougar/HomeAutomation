@@ -271,44 +271,43 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
       {
         Log("\033[31mOnlinePhonebook-eniro: Failed to do name lookup, result was: " + result + "\033[0m\n");
       }
-    });
 
-    if (phonebookNumbers.length == 0)
-    {
-      if (typeof sensorRKSEEK_API !== 'undefined')
+      if (phonebookNumbers.length == 0)
       {
-        url = "rkseek.oblivioncreations.se/?client="+sensorRKSEEK_API+"&n=" + number + "&out=text";
-        Log("\033[31mURL: http://"+url+"\033[0m\n");
-
-        Http_Request(url, function(socket_id, result, header, content_data)
+        if (typeof sensorRKSEEK_API !== 'undefined')
         {
-          phonebookNumbers = [];
+          url = "rkseek.oblivioncreations.se/?client="+sensorRKSEEK_API+"&n=" + number + "&out=text";
+          Log("\033[31mURL: http://"+url+"\033[0m\n");
 
-          if (result.indexOf("200 OK") != -1)
+          Http_Request(url, function(socket_id, result, header, content_data)
           {
-            //Log("\033[31mOnlinePhonebook: result was: " + content_data + "\033[0m\n");
-            var lines = content_data.split("\n");
-            //Log("\033[31mOnlinePhonebook: Line: " + lines[1] + "\033[0m\n");
-            //Log("\033[31mOnlinePhonebook: Line: " + lines[2] + "\033[0m\n");
-            //Log("\033[31mOnlinePhonebook: Line: " + lines[3] + "\033[0m\n");
-            if (lines[2].length > 0)
+            phonebookNumbers = [];
+
+            if (result.indexOf("200 OK") != -1)
             {
-              phonebookNumbers = lines[2];
-              Storage_SetJsonParameter("PhoneBook", number, phonebookNumbers);
-
-              Sensor_UpdateNameInPhonecalls(timestamp, phonebookNumbers);
-
-              Log("\033[31mOnlinePhonebook-rseek: Found: " + JSON.stringify(phonebookNumbers) + "\033[0m\n");
+              //Log("\033[31mOnlinePhonebook: result was: " + content_data + "\033[0m\n");
+              var lines = content_data.split("\n");
+              //Log("\033[31mOnlinePhonebook: Line: " + lines[1] + "\033[0m\n");
+              //Log("\033[31mOnlinePhonebook: Line: " + lines[2] + "\033[0m\n");
+              //Log("\033[31mOnlinePhonebook: Line: " + lines[3] + "\033[0m\n");
+              if (lines[2].length > 0)
+              {
+                phonebookNumbers = [ lines[2] ]; // TODO Is this really correct?!
+                Storage_SetJsonParameter("PhoneBook", number, phonebookNumbers);
+                
+                Sensor_UpdateNameInPhonecalls(timestamp, phonebookNumbers);
+                
+                Log("\033[31mOnlinePhonebook-rseek: Found: " + JSON.stringify(phonebookNumbers) + "\033[0m\n");
+              }
             }
-          }
-          else
-          {
-            Log("\033[31mOnlinePhonebook-rseek: Failed to do name lookup, result was: " + result + "\033[0m\n");
-          }
-        });
+            else
+            {
+              Log("\033[31mOnlinePhonebook-rseek: Failed to do name lookup, result was: " + result + "\033[0m\n");
+            }
+          });
+        }
       }
-    }
-
+    });
    		/*
 		Http_Request("wap.hitta.se/default.aspx?Who=" + number + "&Where=&PageAction=White",
 			function(socket_id, result, header, content_data) {
