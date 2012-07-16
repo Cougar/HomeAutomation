@@ -11,8 +11,8 @@
 <script id="page-phonecalls-item-template" type="text/x-jquery-tmpl" data-enhance="false">
   <li>
     <h3>
-      ${direction}
-      ${number}
+      ${directionText}
+      <a href="tel:${number}">${number}</a>
     </h3>
 
     {{each names}}

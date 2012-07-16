@@ -34,10 +34,10 @@ require_once("config.php");
     ?>
 
     <script id="page-template" type="text/x-jquery-tmpl" data-enhance="false">
-      <div id="page-${name}" data-role="page" data-theme="a">
+      <div id="page-${name}" data-role="page" data-theme="a" id="page-{name}">
         <div data-role="header">
-          <a href="#" data-icon="home" data-rel="back" data-direction="reverse">Home</a>
-          <h1>Home Automation Control Center - ${title}</h1>
+          <a href="#home" data-icon="home" data-direction="reverse">Home</a>
+          <h1>${title} - Home Automation Control Center</h1>
         </div>
         <div data-role="content"></div>
       </div>
@@ -51,19 +51,44 @@ require_once("config.php");
 
     <script>
       $.mobile.ignoreContentEnabled = true;
-      $.mobile.transitionFallbacks.pop = "none"
-      $.mobile.transitionFallbacks.flip = "none"
-      $.mobile.transitionFallbacks.turn = "none"
-      $.mobile.transitionFallbacks.flow = "none"
-      $.mobile.transitionFallbacks.slidefade = "none"
-      $.mobile.transitionFallbacks.slide = "none"
-      $.mobile.transitionFallbacks.slideup = "none"
-      $.mobile.transitionFallbacks.slidedown = "none"
-      $.mobile.defaultPageTransition = "none"
+      $.mobile.transitionFallbacks.pop = "none";
+      $.mobile.transitionFallbacks.flip = "none";
+      $.mobile.transitionFallbacks.turn = "none";
+      $.mobile.transitionFallbacks.flow = "none";
+      $.mobile.transitionFallbacks.slidefade = "none";
+      $.mobile.transitionFallbacks.slide = "none";
+      $.mobile.transitionFallbacks.slideup = "none";
+      $.mobile.transitionFallbacks.slidedown = "none";
+      $.mobile.defaultPageTransition = "none";
+      $.mobile.ajaxEnabled = false;
+
+      var commandActive = false;
+      var commandQueue = [];
 
       function sendCommand(command, callback)
       {
-        jQuery.getJSON("backend.php?ajax", { command: command }, callback);
+        if (commandActive)
+        {
+          commandQueue.push({ command: command, callback: callback });
+        }
+        else
+        {
+          commandActive = true;
+
+          jQuery.getJSON("backend.php?ajax", { command: command }, function(jsonData)
+          {
+            commandActive = false;
+
+            if (commandQueue.length > 0)
+            {
+              var commandItem = commandQueue.shift();
+
+              sendCommand(commandItem.command, commandItem.callback);
+            }
+
+            callback(jsonData);
+          });
+        }
       }
     </script>
 
@@ -83,9 +108,22 @@ require_once("config.php");
       var aliasNames = <?php echo json_encode($aliasNames); ?>;
       var pageConfigurations = <?php echo json_encode($pageConfiguration); ?>;
       var pageInstances = {};
+      var serverTimeOffset = 0;
+
+      function getServerTimestamp()
+      {
+        return ((new Date()).getTime()) - serverTimeOffset
+      }
 
       $(document).ready(function(event)
       {
+        document.location.hash = "";
+
+        sendCommand("timestampRaw", function(jsonData)
+        {
+          serverTimeOffset = ((new Date()).getTime()) - jsonData.timestamp;
+        });
+
         jQuery.each(pageConfigurations, function(n, configuration)
         {
           var pageName = configuration.page + "_" + n;
@@ -99,13 +137,13 @@ require_once("config.php");
 
           pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
           {
-            $.mobile.changePage($("#home"), "slide", true);
+            $.mobile.changePage("#home", { transition: "slide", reverse: true });
             event.preventDefault();
           });
 
           pageInstances[pageName].pageLinkElement = $("#pagelink-template").tmpl(pageInstances[pageName]).appendTo($("#home").find(":jqmData(role=content)")).trigger("create").on("click", function(event)
           {
-            $.mobile.changePage(pageInstances[pageName].pageElement, "slide");
+            $.mobile.changePage("#" + pageInstances[pageName].pageElement.attr("id"), "slide");
             event.preventDefault();
           });
 
@@ -122,7 +160,7 @@ require_once("config.php");
 
           if (nextpage.length > 0)
           {
-            $.mobile.changePage($(nextpage[0]), "slide");
+            $.mobile.changePage("#" + nextpage[0].id, { transition: "slide", changeHash: true });
           }
         });
         
@@ -132,10 +170,71 @@ require_once("config.php");
 
           if (prevpage.length > 0)
           {
-            $.mobile.changePage($(prevpage[0]), "slide", true);
+            $.mobile.changePage("#" + prevpage[0].id, { transition: "slide", reverse: true, changeHash: true });
           }
         });
       });
+
+      var dialogCloseTimer = null;
+      var dialogCloseCallback = null;
+
+      function openDialog(titleText, contentsHtml, autoCloseTimeout, closeCallback)
+      {
+        closeDialog();
+
+        $("#dialog .dialog-title").text(titleText);
+        $("#dialog .dialog-contents").html(contentsHtml);
+        $("#dialog a").on("click", function(event)
+        {
+          closeDialog();
+          event.preventDefault();
+          return false;
+        });
+      
+        dialogCloseCallback = closeCallback;
+
+        $.mobile.changePage($("#dialog"), { role: "dialog"});
+
+        $("#dialog").dialog({ close: function(event)
+        {
+          var callback = dialogCloseCallback;
+
+          closeDialog();
+
+          if (callback)
+          {
+            callback();
+          }
+        }});
+
+
+        if (autoCloseTimeout)
+        {
+          dialogCloseTimer = setTimeout(closeDialog, autoCloseTimeout);
+        }
+      }
+
+      function closeDialog()
+      {
+        if (dialogCloseTimer)
+        {
+          clearTimeout(dialogCloseTimer);
+          dialogCloseTimer = null;
+        }
+
+        if ($("#dialog").is(":visible"))
+        {
+          $("#dialog").dialog("close");
+
+          if (dialogCloseCallback)
+          {
+            dialogCloseCallback();
+          }
+        }
+
+        dialogCloseCallback = null;
+      }
+
 
     </script>
   </head>
@@ -145,5 +244,14 @@ require_once("config.php");
       <div data-role="header"><h1>Home Automation Control Center</h1></div>
       <div data-role="content"></div>
     </div>
+
+    <div data-role="dialog" id="dialog">
+      <div data-role="content">
+        <h3 class="dialog-title"></h3>
+        <p class="dialog-contents"></p>
+        <a href="#" data-role="button" data-theme="c">Close</a>
+      </div>
+    </div>
+
   </body>
 </html>
