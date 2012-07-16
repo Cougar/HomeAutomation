@@ -3,15 +3,13 @@ pages.phonecalls = {
   init: function(pageInstance)
   {
     pageInstance.pagePhoneCallsElement = null;
+    pageInstance.lastPhoneCallTimestamp = 0;
 
     /* Function to update values of sliders based on new server data */
     function handleServerData(jsonData)
     {
       var list = [];
 
-      pageInstance.pageContentElement.empty();
-      pageInstance.pagePhoneCallsElement = $("#page-phonecalls-template").tmpl().appendTo(pageInstance.pageContentElement);
-    
       /* Loop through all */
       jQuery.each(jsonData.results, function(timestamp, data)
       {
@@ -37,11 +35,15 @@ pages.phonecalls = {
 
         if (data.direction === "in" && pageInstance.inText)
         {
-          data.direction = pageInstance.inText;
+          data.directionText = pageInstance.inText;
         }
         else if (data.direction === "out" && pageInstance.outText)
         {
-          data.direction = pageInstance.outText;
+          data.directionText = pageInstance.outText;
+        }
+        else
+        {
+          data.directionText = data.direction;
         }
 
         list.push(data);
@@ -51,6 +53,16 @@ pages.phonecalls = {
       {
         return b.timestamp - a.timestamp;
       });
+
+      if (list.length > 0 && pageInstance.lastPhoneCallTimestamp === list[0].timestamp)
+      {
+        return; // Do not update if no change
+      }
+
+      pageInstance.pageContentElement.empty();
+      pageInstance.pagePhoneCallsElement = $("#page-phonecalls-template").tmpl().appendTo(pageInstance.pageContentElement);
+
+      pageInstance.lastPhoneCallTimestamp = list[0].timestamp;
 
       var count = 0;
 
@@ -67,6 +79,20 @@ pages.phonecalls = {
       });
 
       pageInstance.pagePhoneCallsElement.trigger("create");
+
+      var timestamp = getServerTimestamp() / 1000;
+
+      if (list.length > 0 && list[0].direction == "in" && list[0].timestamp + 10 > timestamp)
+      {
+        /* Pause polling timer */
+        clearInterval(pageInstance.pollTimer);
+        pageInstance.pollTimer = null;
+
+        openDialog("Event", pageInstance.inText + " " + list[0].number + ".<br/>" + list[0].names.toString(), 15000, function()
+        {
+          pageInstance.pollTimer = setInterval(requestServerData, 4000);
+        });
+      }
     }
 
     
