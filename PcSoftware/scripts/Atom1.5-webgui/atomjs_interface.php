@@ -21,7 +21,12 @@ function atomjs_read($socket)
     throw new Exception("socket not open"); 
   }
 
-  $result = fread($socket, 8096);
+  $result = fread($socket, 8096 * 8);
+
+  while (strpos($result, "\n") === FALSE)
+  {
+    $result .= fread($socket, 8096 * 8);
+  }
   
   return $result;
 }

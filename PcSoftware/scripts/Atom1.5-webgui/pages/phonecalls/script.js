@@ -18,6 +18,11 @@ pages.phonecalls = {
         var data = JSON.parse(data);
         var found = false;
 
+        if (!data.timestamp)
+        {
+          data.timestamp = timestamp;
+        }
+        
         jQuery.each(pageInstance.aliases, function(n, alias)
         {
           if (data.module === alias)
