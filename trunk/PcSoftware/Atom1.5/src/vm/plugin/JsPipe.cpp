@@ -1,21 +1,21 @@
 /*
- * 
+ *
  *  Copyright (C) 2012  Mattias Runge
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  */
 
 #include "JsPipe.h"
@@ -32,19 +32,19 @@
 namespace atom {
 namespace vm {
 namespace plugin {
-    
+
 static const std::string log_module_ = "vm::plugin::jspipe";
-    
+
 JsPipe::JsPipe(boost::asio::io_service& io_service, unsigned int port) : Plugin(io_service)
 {
   this->name_ = "jspipe";
-    
+
   net::Manager::Instance()->ConnectSlots(net::Manager::SignalOnNewState::slot_type(&JsPipe::SlotOnNewState, this, _1, _2).track(this->tracker_),
                                          net::Manager::SignalOnNewClient::slot_type(&JsPipe::SlotOnNewClient, this, _1, _2).track(this->tracker_),
                                          net::Manager::SignalOnNewData::slot_type(&JsPipe::SlotOnNewData, this, _1, _2).track(this->tracker_));
-    
+
   this->ExportFunction("JsPipeExport_DisconnectClient", JsPipe::Export_DisconnectClient);
-    
+
   try
   {
     this->server_id_ = net::Manager::Instance()->StartServer(net::TRANSPORT_PROTOCOL_TCP, port);
@@ -70,6 +70,8 @@ void JsPipe::InitializeDone()
 
 void JsPipe::CallResult(unsigned int request_id, std::string output)
 {
+  output += "\n";
+
   net::Manager::Instance()->SendTo(request_id, common::Byteset(output.begin(), output.end()));
 }
 
@@ -98,8 +100,8 @@ void JsPipe::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
   {
     return;
   }
-      
-    
+
+
   //log::Debug(log_module_, "%s called!", __FUNCTION__);
 
   if (data.size() == 0)
@@ -107,7 +109,7 @@ void JsPipe::SlotOnNewDataHandler(net::SocketId id, common::Byteset data)
     log::Error("%s got empty data!", __FUNCTION__);
     return;
   }
-    
+
   std::string s(data.begin(), data.end());
 
   this->Execute(id, s);
@@ -126,13 +128,13 @@ void JsPipe::SlotOnNewStateHandler(net::SocketId id, net::ClientState client_sta
   v8::Locker lock;
   v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
   v8::HandleScope handle_scope;
- 
+
   if (std::find(this->clients_.begin(), this->clients_.end(), id) == this->clients_.end())
   {
     return;
   }
-   
-  //log::Debug(log_module_, "%s called!", __FUNCTION__);  
+
+  //log::Debug(log_module_, "%s called!", __FUNCTION__);
 
   if (client_state == net::CLIENT_STATE_DISCONNECTED)
   {
@@ -154,9 +156,9 @@ Value JsPipe::Export_DisconnectClient(const v8::Arguments& args)
   v8::Locker lock;
   v8::Context::Scope context_scope(vm::Manager::Instance()->GetContext());
   v8::HandleScope handle_scope;
-  
-  //log::Debug(log_module_, "%s called!", __FUNCTION__);   
-    
+
+  //log::Debug(log_module_, "%s called!", __FUNCTION__);
+
   if (args.Length() < 1)
   {
     log::Error(log_module_, "%s: To few arguments.", __FUNCTION__);
