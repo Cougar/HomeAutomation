@@ -45,6 +45,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
   this->configuration_file_.add_options()
   ("MonitorPort",   boost::program_options::value<int>()->default_value(1201), "TCP port to open for monitor output")
   ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
+  ("JsPipePort",    boost::program_options::value<int>()->default_value(1203), "TCP port to open for the JsPipe")
   ("DaemonPort",    boost::program_options::value<int>()->default_value(1200), "TCP port to open for canDaemon input/output")
   ("MbbPort",       boost::program_options::value<int>()->default_value(1212), "TCP port to open for MBB clients")
   ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")

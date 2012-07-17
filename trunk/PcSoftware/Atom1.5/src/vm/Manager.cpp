@@ -98,6 +98,25 @@ void Manager::CallOutput(std::string output)
     }
 }
 
+void Manager::CallResult(std::string output)
+{
+  if (this->current_plugin_name_ != "")
+  {
+    for (unsigned int n = 0; n < this->plugins_.size(); n++)
+    {
+      if (this->plugins_[n]->GetName() == this->current_plugin_name_)
+      {
+        this->plugins_[n]->CallResult(this->current_request_id_, output);
+        return;
+      }
+    }
+  }
+  else
+  {
+    LOG.Info(output);
+  }
+}
+
 Value Manager::Export_Log(const v8::Arguments& args)
 {
     v8::Locker lock;
@@ -332,8 +351,8 @@ void Manager::ExecuteHandler(std::string plugin_name, unsigned int request_id, s
         }
         else
         {
-            //v8::String::AsciiValue response(result->ToString());
-            //this->CallOutput(std::string(*response));
+            v8::String::AsciiValue response(result->ToString());
+            this->CallResult(std::string(*response));
         }
     }
     

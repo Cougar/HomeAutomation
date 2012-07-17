@@ -58,7 +58,8 @@ public:
     
     virtual void InitializeDone();
     virtual void CallOutput(unsigned int request_id, std::string output);
-    
+    virtual void CallResult(unsigned int request_id, std::string output);
+
 protected:
     typedef boost::shared_ptr<char> TrackerPointer;
     
