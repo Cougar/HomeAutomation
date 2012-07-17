@@ -30,6 +30,11 @@ pages.phonecalls = {
           return true; // continue
         }
 
+        if (!data.timestamp)
+        {
+          data.timestamp = timestamp; // Workaround for older lists
+        }
+
         var d = new Date(data.timestamp * 1000);
         data.time = d.toLocaleString();
 
