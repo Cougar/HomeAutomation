@@ -89,6 +89,7 @@ private:
     static Value Export_Log(const v8::Arguments& args);    
     
     void CallOutput(std::string output);
+    void CallResult(std::string output);
     
     std::string FormatException(v8::TryCatch& try_catch);
     

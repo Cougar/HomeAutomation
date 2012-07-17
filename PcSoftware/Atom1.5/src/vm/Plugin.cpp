@@ -53,6 +53,10 @@ void Plugin::CallOutput(unsigned int request_id, std::string output)
 {
 }
 
+void Plugin::CallResult(unsigned int request_id, std::string output)
+{
+}
+
 bool Plugin::Call(unsigned int request_id, std::string name, ArgumentListPointer arguments)
 {
     return Manager::Instance()->CallHandler(this->name_, request_id, name, arguments);
