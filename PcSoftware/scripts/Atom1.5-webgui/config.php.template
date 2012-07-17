@@ -1,8 +1,7 @@
 <?php
 
 $atomdHostname = "127.0.0.1";
-$atomdPort = 1202;
-$atomdOld = false;
+$atomdPort = 1203;
 
 $aliasNames = array("sovrumtak" => "Taklampa sovrum",
                     "sovrumdorr" => "Spotlights sovrumsdörr",
@@ -33,14 +32,14 @@ $pageConfiguration = array(
                                   ),
                             array("page" => "buttons",
                                   "title" => "TV Sovrum",
-                                  "buttons" => array("On" => "Serial_Send tv ka 0 01",
-                                                     "Off" => "Serial_Send tv ka 0 00",
-                                                     "Screen On" => "Serial_Send tv kd 0 00",
-                                                     "Screen Off" => "Serial_Send tv kd 0 01",
-                                                     "Backlight Min" => "Serial_Send tv mg 0 00",
-                                                     "Backlight Max" => "Serial_Send tv mg 0 64",
-                                                     "Input TV" => "Serial_Send tv xb 0 93",
-                                                     "Input Dator" => "Serial_Send tv xb 0 92"
+                                  "buttons" => array("On" => "Serial_Send('tv','ka 0 01');",
+                                                     "Off" => "Serial_Send('tv','ka 0 00');",
+                                                     "Screen On" => "Serial_Send('tv','kd 0 00');",
+                                                     "Screen Off" => "Serial_Send('tv','kd 0 01');",
+                                                     "Backlight Min" => "Serial_Send('tv','mg 0 00');",
+                                                     "Backlight Max" => "Serial_Send('tv','mg 0 64');",
+                                                     "Input TV" => "Serial_Send('tv','xb 0 93');",
+                                                     "Input Dator" => "Serial_Send('tv','xb 0 92');"
                                                      )
                                  ),
                             array("page" => "info",

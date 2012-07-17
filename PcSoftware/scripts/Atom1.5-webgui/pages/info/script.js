@@ -10,7 +10,7 @@ pages.info = {
     function handleServerData(jsonData)
     {
       /* Loop through all results */
-      jQuery.each(jsonData.results, function(alias, data)
+      jQuery.each(jsonData, function(alias, data)
       {
         /* Only do something if we know the alias*/
         if (pageInstance.pageInfoElements[alias])
@@ -64,7 +64,7 @@ pages.info = {
     /* Function to request new values from the server */
     function requestServerData()
     {
-      sendCommand("Module_GetLastDataRaw " + pageInstance.aliases.join(" "), handleServerData);
+      sendCommand("JSON.stringify(Module_GetLastDataNative('" + pageInstance.aliases.join("','") + "'));", handleServerData);
     }
         
 

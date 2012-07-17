@@ -137,9 +137,9 @@ require_once("config.php");
       {
         document.location.hash = "";
 
-        sendCommand("timestampRaw", function(jsonData)
+        sendCommand("(new Date()).getTime();", function(timestamp)
         {
-          serverTimeOffset = ((new Date()).getTime()) - jsonData.timestamp;
+          serverTimeOffset = ((new Date()).getTime()) - parseInt(timestamp, 10);
         });
 
         jQuery.each(pageConfigurations, function(n, configuration)

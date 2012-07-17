@@ -3,15 +3,17 @@ pages.phonecalls = {
   init: function(pageInstance)
   {
     pageInstance.pagePhoneCallsElement = null;
-    pageInstance.lastPhoneCallTimestamp = 0;
 
     /* Function to update values of sliders based on new server data */
     function handleServerData(jsonData)
     {
       var list = [];
 
+      pageInstance.pageContentElement.empty();
+      pageInstance.pagePhoneCallsElement = $("#page-phonecalls-template").tmpl().appendTo(pageInstance.pageContentElement);
+    
       /* Loop through all */
-      jQuery.each(jsonData.results, function(timestamp, data)
+      jQuery.each(jsonData, function(timestamp, data)
       {
         var data = JSON.parse(data);
         var found = false;
@@ -30,13 +32,8 @@ pages.phonecalls = {
           return true; // continue
         }
 
-        if (!data.timestamp)
-        {
-          data.timestamp = timestamp; // Workaround for older lists
-        }
-
         var d = new Date(data.timestamp * 1000);
-        data.time = d.toLocaleString();
+        data.time = d.toUTCString();
 
         if (data.direction === "in" && pageInstance.inText)
         {
@@ -59,16 +56,6 @@ pages.phonecalls = {
         return b.timestamp - a.timestamp;
       });
 
-      if (list.length > 0 && pageInstance.lastPhoneCallTimestamp === list[0].timestamp)
-      {
-        return; // Do not update if no change
-      }
-
-      pageInstance.pageContentElement.empty();
-      pageInstance.pagePhoneCallsElement = $("#page-phonecalls-template").tmpl().appendTo(pageInstance.pageContentElement);
-
-      pageInstance.lastPhoneCallTimestamp = list[0].timestamp;
-
       var count = 0;
 
       jQuery.each(list, function(n, item)
@@ -84,27 +71,13 @@ pages.phonecalls = {
       });
 
       pageInstance.pagePhoneCallsElement.trigger("create");
-
-      var timestamp = getServerTimestamp() / 1000;
-
-      if (list.length > 0 && list[0].direction == "in" && list[0].timestamp + 10 > timestamp)
-      {
-        /* Pause polling timer */
-        clearInterval(pageInstance.pollTimer);
-        pageInstance.pollTimer = null;
-
-        openDialog("Event", pageInstance.inText + " " + list[0].number + ".<br/>" + list[0].names.toString(), 15000, function()
-        {
-          pageInstance.pollTimer = setInterval(requestServerData, 4000);
-        });
-      }
     }
 
     
     /* Function to request new values from the server */
     function requestServerData()
     {
-      sendCommand("Storage_ListParametersRaw PhoneCalls", handleServerData);
+      sendCommand("JSON.stringify(Storage_ListParametersNative('PhoneCalls'));", handleServerData);
     }
     
     
