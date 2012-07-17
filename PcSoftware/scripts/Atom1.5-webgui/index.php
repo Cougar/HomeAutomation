@@ -77,17 +77,35 @@ require_once("config.php");
 
           jQuery.getJSON("backend.php?ajax", { command: command }, function(jsonData)
           {
-            commandActive = false;
-
-            if (commandQueue.length > 0)
-            {
-              var commandItem = commandQueue.shift();
-
-              sendCommand(commandItem.command, commandItem.callback);
-            }
-
-            callback(jsonData);
+            handleCommandResponse(true, jsonData, callback);
+          }).error(function()
+          {
+            handleCommandResponse(false, {}, callback);
           });
+        }
+      }
+
+      function handleCommandResponse(success, jsonData, callback)
+      {
+        commandActive = false;
+
+        if (commandQueue.length > 0)
+        {
+          var commandItem = commandQueue.shift();
+
+          sendCommand(commandItem.command, commandItem.callback);
+        }
+
+        if (success)
+        {
+          if (callback)
+          {
+            callback(jsonData);
+          }
+        }
+        else
+        {
+          console.log("command failed!");
         }
       }
     </script>
