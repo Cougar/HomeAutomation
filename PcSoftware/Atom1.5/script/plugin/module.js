@@ -487,6 +487,32 @@ function Module_GetLastData(alias_name)
 }
 Console_RegisterCommand(Module_GetLastData, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Module_GetAliasNames()); });
 
+function Module_GetLastDataNative(alias_name)
+{
+  var result = { };
+
+  for (var n = 0; n < arguments.length; n++)
+  {
+    var aliases_data = Module_ResolveAlias(arguments[n]);
+
+    for (var name in aliases_data)
+    {
+      var last_value_string = Storage_GetParameter("LastValues", name);
+
+      if (last_value_string)
+      {
+        result[name] = JSON.parse(last_value_string);
+      }
+      else
+      {
+        result[name] = {};
+      }
+    }
+  }
+
+  return result;
+}
+
 function Module_GetLastDataRaw(alias_name)
 {
 	var result = { results : {} };
