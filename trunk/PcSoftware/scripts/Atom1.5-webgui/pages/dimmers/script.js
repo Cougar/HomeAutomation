@@ -10,7 +10,7 @@ pages.dimmers = {
     function handleServerData(jsonData)
     {
       /* Loop through all results */
-      jQuery.each(jsonData.results, function(alias, data)
+      jQuery.each(jsonData, function(alias, data)
       {
         /* Only do something if we have a Level value and know the alias*/
         if (pageInstance.pageSliderElements[alias] && data.Level)
@@ -30,7 +30,7 @@ pages.dimmers = {
       jQuery.each(pageInstance.aliases, function(n, alias)
       {
         /* If no valid value was given, the alias is offline */
-        if (!jsonData.results[alias] || !jsonData.results[alias].Level/* || jsonData.results[alias].Level.timestamp + 60 < ((new Date()).getTime() / 1000)*/)
+        if (!jsonData[alias] || !jsonData[alias].Level/* || jsonData[alias].Level.timestamp + 60 < ((new Date()).getTime() / 1000)*/)
         {
           /* Disable the slider component */
           pageInstance.pageSliderElements[alias].find("input").slider("disable");
@@ -47,14 +47,14 @@ pages.dimmers = {
     /* Function to request new values from the server */
     function requestServerData()
     {
-      sendCommand("Module_GetLastDataRaw " + pageInstance.aliases.join(" "), handleServerData);
+      sendCommand("JSON.stringify(Module_GetLastDataNative('" + pageInstance.aliases.join("','") + "'));", handleServerData);
     }
     
     
     /* Function to set new values to the server */
     function requestServerAction(alias)
     {
-      sendCommand("Dimmer_AbsoluteFade " + alias + " 135 " + pageInstance.pageSliderElements[alias].find("input").val());
+      sendCommand("Dimmer_AbsoluteFade('" + alias + "', 135, " + pageInstance.pageSliderElements[alias].find("input").val() + ");");
     }
     
 

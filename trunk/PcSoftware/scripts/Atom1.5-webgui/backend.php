@@ -1,16 +1,7 @@
 <?php
 
 require_once("config.php");
-
-if ($atomdOld)
-{
-  require_once("atom_interface_old.php");
-}
-else
-{
-  require_once("atom_interface_new.php");
-}
-
+require_once("atomjs_interface.php");
 
 function GetSubfolders($directory)
 {
@@ -49,18 +40,18 @@ if (isset($_GET["ajax"]))
 
   try
   {
-    $socket = atomd_initialize($atomdHostname, $atomdPort);
+    $socket = atomjs_connect($atomdHostname, $atomdPort);
 
-    atomd_send_command($socket, $_GET["command"]);
+    atomjs_write($socket, $_GET["command"]);
 
-    echo trim(atomd_read_command_response($socket));
+    echo trim(atomjs_read($socket));
   }
   catch (Exception $e)
   {
     die($e);
   }
-  
-  exit(0);  
+
+  exit(0);
 }
 else
 {
