@@ -24,6 +24,43 @@ act_hwPWM_ENABLE_FADE=1
 # COM=2, WGM= 1, CS=3
 # will give 240Hz PWM, adjust CS to change frequency
 
+#Channel 1 and 2 is attached to the 16 bit timer 1
+#Channel 3 and 4 is attached to the 8 bit timer 0
+
+#### PWM Channel 1 and 2 ####
+# COM-modes:
+#   In Fast PWM mode:
+#     0 - Disabled
+#     1 - Toggle OC1A on compare match, OC1B disabled (if WGM = 14 or 15)
+#     2 - Clear output on Compare match, set at bottom (non-inverting)
+#     3 - Set output on Compare match, clear at bottom (inverting)
+#   In Phase correct mode:
+#     0 - Disabled
+#     1 - Toggle OC1A on compare match, OC1B disabled (if WGM = 9 or 11)
+#     2 - Clear output on compare match when upcounting
+#         set when downcounting
+#     3 - Set output on compare match when upcounting
+#         clear when downcounting
+#
+# WGM-modes:
+#  Mode    "TOP"     "Update Output"  "Name"
+#     0 -  0xFFFF      Immediate      Normal
+#     1 -  0x00FF         Top         PWM, Phase correct, 8-bit
+#     2 -  0x01FF         Top         PWM, Phase correct, 9-bit
+#     3 -  0x03FF         Top         PWM, Phase correct, 10-bit
+#     4 -  0CR1A       Immediate      CTC
+#     5 -  0x00FF        Bottom       PWM, Fast, 8-bit
+#     6 -  0x01FF        Bottom       PWM, Fast, 9-bit
+#     7 -  0x03FF        Bottom       PWM, Fast, 10-bit
+#     8 -  ICR1          Bottom       PWM, Phase and frequency correct
+#     9 -  OCR1A         Bottom       PWM, Phase and frequency correct
+#    10 -  ICR1           Top         PWM, Phase correct
+#    11 -  OCR1A          Top         PWM, Phase correct
+#    12 -  ICR1        Immediate      CTC
+#    13 -  Reserved
+#    14 -  ICR1          Bottom       PWM, Fast
+#    15 -  OCR1A         Bottom       PWM, Fast
+
 #### PWM Channel 1, EXP_B, Timer1, OC1B ####
 
 # Select Compare Output Mode, act_hwPWM_CHx_COM
@@ -51,6 +88,32 @@ act_hwPWM_CH2_COM=0
 act_hwPWM_CH2_WGM=1
 act_hwPWM_CH2_CS=1
 act_hwPWM_CH3_LED=0
+
+#### PWM Channel 3 and 4 ####
+# COM-modes:
+#   In Fast PWM mode:
+#     0 - Disabled
+#     1 - Toggle output on compare match (if WGM >= 4)
+#     2 - Clear output on Compare match, set at bottom (non-inverting)
+#     3 - Set output on Compare match, clear at bottom (inverting)
+#   In Phase correct mode:
+#     0 - Disabled
+#     1 - Toggle output on compare match (if WGM >= 4)
+#     2 - Clear output on compare match when upcounting
+#         set when downcounting
+#     3 - Set output on compare match when upcounting
+#         clear when downcounting
+#
+# WGM-modes:
+#  Mode    "TOP"   "Update Output"  "Name"
+#     0 -  0xFF      Immediate      Normal
+#     1 -  0xFF         Top         PWM, Phase correct
+#     2 -  0CRA      Immediate      CTC
+#     3 -  0xFF        Bottom       PWM, Fast
+#     4 -  Reserved
+#     5 -  OCRA         Top         PWM, Phase correct
+#     6 -  Reserved
+#     7 -  OCRA        Bottom       PWM, Fast
 
 #### PWM Channel 3, EXP_F, Timer0, OC0A ####
 act_hwPWM_CH3_COM=0
