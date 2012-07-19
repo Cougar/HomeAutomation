@@ -495,6 +495,8 @@ function Module_GetLastDataNative(alias_name)
   {
     var aliases_data = Module_ResolveAlias(arguments[n]);
 
+    result[arguments[n]] = {};
+
     for (var name in aliases_data)
     {
       var last_value_string = Storage_GetParameter("LastValues", name);
@@ -502,6 +504,7 @@ function Module_GetLastDataNative(alias_name)
       if (last_value_string)
       {
         result[name] = JSON.parse(last_value_string);
+        result[arguments[n]] = result[name];
       }
       else
       {
@@ -525,9 +528,12 @@ function Module_GetLastDataRaw(alias_name)
 	  {
 		  var last_value_string = Storage_GetParameter("LastValues", name);
 
+      result[arguments[n]] = {};
+
 		  if (last_value_string)
 		  {
 		    result.results[name] = JSON.parse(last_value_string);
+        result[arguments[n]] = result[name];
 		  }
 		  else
 		  {
