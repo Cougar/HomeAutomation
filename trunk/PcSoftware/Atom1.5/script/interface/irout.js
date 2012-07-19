@@ -152,3 +152,10 @@ function IROut_SendBurst(alias_name, remote_name, button_name)
 }
 Console_RegisterCommand(IROut_SendBurst, IROut_StartSendAutoComplete);
 
+function IROut_SendDuration(alias_name, remote_name, button_name, duration_ms)
+{
+	IROut_Send(alias_name, remote_name, button_name, "Pressed");
+	Timer_SetTimer(function(timer) {IROut_StopSend(alias_name);}, duration_ms, false);
+}
+Console_RegisterCommand(IROut_SendDuration, IROut_StartSendAutoComplete);
+
