@@ -5,14 +5,14 @@
 uint16_t pwmValue[4];
 uint8_t sendInfo[4] = {0,0,0,0};
 
-int8_t fadeSpeed[4] = {0,0,0,0};
-uint8_t fadeSpeedFrac[4] = {0,0,0,0};
-uint16_t fadeTarget[4] = {0,0,0,0};
-uint8_t fadeSpeedCnt[4] = {0,0,0,0};
+int8_t hw_fadeSpeed[4] = {0,0,0,0};
+uint8_t hw_fadeSpeedFrac[4] = {0,0,0,0};
+uint16_t hw_fadeTarget[4] = {0,0,0,0};
+uint8_t hw_fadeSpeedCnt[4] = {0,0,0,0};
 
-uint16_t demoEndValue[4] = {0,0,0,0};
-uint16_t demoHighValue[4] = {0,0,0,0};
-uint8_t demoState[4] = {ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING};
+uint16_t hw_demoEndValue[4] = {0,0,0,0};
+uint16_t hw_demoHighValue[4] = {0,0,0,0};
+uint8_t hw_demoState[4] = {ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING};
 
 static uint16_t lookuptable[257] PROGMEM = 
 { 
@@ -66,44 +66,44 @@ void act_hwPWM_timer_callback(uint8_t timer)
 	uint8_t channel = 0;
 	for (channel = 0; channel < 4; channel++) {
 		/* Check demo states */
-		if (pwmValue[channel] == fadeTarget[channel]) {
-			switch (demoState[channel])
+		if (pwmValue[channel] == hw_fadeTarget[channel]) {
+			switch (hw_demoState[channel])
 			{
 			case ACT_HWPWM_DEMO_STATE_NOT_RUNNING:
 			break;
 			case ACT_HWPWM_DEMO_STATE_DECREASE:
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_INCREASE;
-				fadeTarget[channel] = demoHighValue[channel];
-				fadeSpeed[channel] = -fadeSpeed[channel];
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_INCREASE;
+				hw_fadeTarget[channel] = hw_demoHighValue[channel];
+				hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 			break;
 			case ACT_HWPWM_DEMO_STATE_INCREASE:
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_GOBACK;
-				fadeTarget[channel] = demoEndValue[channel];
-				fadeSpeed[channel] = -fadeSpeed[channel];
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_GOBACK;
+				hw_fadeTarget[channel] = hw_demoEndValue[channel];
+				hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 			break;
 			case ACT_HWPWM_DEMO_STATE_GOBACK:
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
 			break;
 			}
 		}
 		
 		/* Change the dimmerValue according to the current fading */
-		fadeSpeedCnt[channel]++;
-		if (fadeSpeedCnt[channel] == fadeSpeedFrac[channel] && pwmValue[channel] != (fadeTarget[channel])) 
+		hw_fadeSpeedCnt[channel]++;
+		if (hw_fadeSpeedCnt[channel] == hw_fadeSpeedFrac[channel] && pwmValue[channel] != (hw_fadeTarget[channel])) 
 		{
-			fadeSpeedCnt[channel] = 0;
+			hw_fadeSpeedCnt[channel] = 0;
 			uint16_t tempDimVal = pwmValue[channel];
-			pwmValue[channel] += (fadeSpeed[channel]*39);
-			if ((fadeSpeed[channel] > 0 && (pwmValue[channel] < tempDimVal || pwmValue[channel] >= (fadeTarget[channel]))) || 
-				(fadeSpeed[channel] < 0 && (pwmValue[channel] > tempDimVal || pwmValue[channel] <= (fadeTarget[channel])))) 
+			pwmValue[channel] += (hw_fadeSpeed[channel]*39);
+			if ((hw_fadeSpeed[channel] > 0 && (pwmValue[channel] < tempDimVal || pwmValue[channel] >= (hw_fadeTarget[channel]))) || 
+				(hw_fadeSpeed[channel] < 0 && (pwmValue[channel] > tempDimVal || pwmValue[channel] <= (hw_fadeTarget[channel])))) 
 			{
-				pwmValue[channel] = (fadeTarget[channel]);
+				pwmValue[channel] = (hw_fadeTarget[channel]);
 			}
 			if (pwmValue[channel] > 10000) {
 				pwmValue[channel] = 10000;
 			}
 			/* if targetvalue was reached then send the netinfo packet */
-			if (pwmValue[channel] == fadeTarget[channel])
+			if (pwmValue[channel] == hw_fadeTarget[channel])
 			{
 				sendInfo[channel] = 1;
 			}
@@ -441,44 +441,44 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t steps = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
 				
-				fadeSpeedCnt[channel] = 0;
-				fadeSpeed[channel] = 0;
+				hw_fadeSpeedCnt[channel] = 0;
+				hw_fadeSpeed[channel] = 0;
 				if (speed == 0) {
 					/* do nothing */
 				} else {
 					uint16_t diffToMin = pwmValue[channel] - ACT_HWPWM_MIN_DIM;
 					uint16_t diffToMax = ACT_HWPWM_MAX_DIM - pwmValue[channel];
 				
-					demoEndValue[channel] = pwmValue[channel];
+					hw_demoEndValue[channel] = pwmValue[channel];
 					if (diffToMin >= steps && diffToMax >= steps)
 					{
 						/* not close to min or max */
-						fadeTarget[channel] = pwmValue[channel] - steps;
-						demoHighValue[channel] = pwmValue[channel] + steps;
+						hw_fadeTarget[channel] = pwmValue[channel] - steps;
+						hw_demoHighValue[channel] = pwmValue[channel] + steps;
 					}
 					else if (diffToMin >= steps)
 					{
 						/* close to max */
-						fadeTarget[channel] = pwmValue[channel] - steps - steps + diffToMax;
-						demoHighValue[channel] = ACT_HWPWM_MAX_DIM;
+						hw_fadeTarget[channel] = pwmValue[channel] - steps - steps + diffToMax;
+						hw_demoHighValue[channel] = ACT_HWPWM_MAX_DIM;
 					}
 					else if (diffToMax >= steps)
 					{
 						/* close to min */
-						fadeTarget[channel] = ACT_HWPWM_MIN_DIM;
-						demoHighValue[channel] = pwmValue[channel] + steps + steps - diffToMin;
+						hw_fadeTarget[channel] = ACT_HWPWM_MIN_DIM;
+						hw_demoHighValue[channel] = pwmValue[channel] + steps + steps - diffToMin;
 					}
-					demoState[channel] = ACT_HWPWM_DEMO_STATE_DECREASE;
+					hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_DECREASE;
 				
 					if ((speed&0x80) == 0x80) {
-						fadeSpeed[channel] = (speed&0x7f)+1;
-						fadeSpeedFrac[channel] = 1;
+						hw_fadeSpeed[channel] = (speed&0x7f)+1;
+						hw_fadeSpeedFrac[channel] = 1;
 					} else {
-						fadeSpeed[channel] = 1;
-						fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
+						hw_fadeSpeed[channel] = 1;
+						hw_fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
 					}
-					if (fadeTarget[channel] <= pwmValue[channel]) {
-						fadeSpeed[channel] = -fadeSpeed[channel];
+					if (hw_fadeTarget[channel] <= pwmValue[channel]) {
+						hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 					}
 				}
 			}
@@ -490,9 +490,9 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint8_t direction = rxMsg->Data[2];
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
-				fadeSpeedCnt[channel] = 0;
-				fadeSpeed[channel] = 0;
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
+				hw_fadeSpeedCnt[channel] = 0;
+				hw_fadeSpeed[channel] = 0;
 				uint16_t endValue = 0;
 				if (direction == CAN_MODULE_ENUM_HWPWM_START_FADE_DIRECTION_INCREASE) {
 					endValue = ACT_HWPWM_MAX_DIM;
@@ -504,17 +504,17 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 					pwmValue[channel] = endValue;	/* set dimmer value immediately */
 					sendInfo[channel] = 1;		/* send netinfo with the current dimmervalue*/
 				} else {
-					fadeTarget[channel] = endValue;
-					if (fadeTarget[channel] != pwmValue[channel]) {
+					hw_fadeTarget[channel] = endValue;
+					if (hw_fadeTarget[channel] != pwmValue[channel]) {
 						if ((speed&0x80) == 0x80) {
-							fadeSpeed[channel] = (speed&0x7f)+1;
-							fadeSpeedFrac[channel] = 1;
+							hw_fadeSpeed[channel] = (speed&0x7f)+1;
+							hw_fadeSpeedFrac[channel] = 1;
 						} else {
-							fadeSpeed[channel] = 1;
-							fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
+							hw_fadeSpeed[channel] = 1;
+							hw_fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
 						}
-						if (fadeTarget[channel] < pwmValue[channel]) {
-							fadeSpeed[channel] = -fadeSpeed[channel];
+						if (hw_fadeTarget[channel] < pwmValue[channel]) {
+							hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 						}
 					}
 				}
@@ -524,8 +524,8 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_HWPWM_STOP_FADE:	/* StopFade(channel) */
 			if (rxMsg->Length == 1) {
 				channel = rxMsg->Data[0];
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
-				fadeSpeed[channel] = 0;
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
+				hw_fadeSpeed[channel] = 0;
 				sendInfo[channel] = 1;		/* send netinfo with the current dimmervalue*/
 			}
 		break;
@@ -535,28 +535,28 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				channel = rxMsg->Data[0];
 				uint8_t speed = rxMsg->Data[1];
 				uint16_t endValue = (rxMsg->Data[2]<<8)+(rxMsg->Data[3]);
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
-				fadeSpeedCnt[channel] = 0;
-				fadeSpeed[channel] = 0;
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
+				hw_fadeSpeedCnt[channel] = 0;
+				hw_fadeSpeed[channel] = 0;
 				if (speed == 0) {
 					pwmValue[channel] = endValue;	/* set dimmer value immediately */
 					sendInfo[channel] = 1;		/* send netinfo with the current dimmervalue*/
 				} else {
-					fadeTarget[channel] = endValue;
-					if (fadeTarget[channel] != pwmValue[channel]) {
+					hw_fadeTarget[channel] = endValue;
+					if (hw_fadeTarget[channel] != pwmValue[channel]) {
 						if ((speed&0x80) == 0x80) {
-							fadeSpeed[channel] = (speed&0x7f)+1;
-							fadeSpeedFrac[channel] = 1;
+							hw_fadeSpeed[channel] = (speed&0x7f)+1;
+							hw_fadeSpeedFrac[channel] = 1;
 						} else {
-							fadeSpeed[channel] = 1;
-							fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
+							hw_fadeSpeed[channel] = 1;
+							hw_fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
 						}
-						if (fadeTarget[channel] < pwmValue[channel]) {
-							fadeSpeed[channel] = -fadeSpeed[channel];
+						if (hw_fadeTarget[channel] < pwmValue[channel]) {
+							hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 						}
 					}
 				}
-				//printf("abs fade %d %d %d!\n",fadeTarget[channel], endValue ,pwmValue[channel] );
+				//printf("abs fade %d %d %d!\n",hw_fadeTarget[channel], endValue ,pwmValue[channel] );
 			}
 		break;
 
@@ -568,9 +568,9 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 				uint8_t direction = rxMsg->Data[2];
 				uint16_t steps = (rxMsg->Data[3]<<8)+(rxMsg->Data[4]);
 				
-				demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
-				fadeSpeedCnt[channel] = 0;
-				fadeSpeed[channel] = 0;
+				hw_demoState[channel] = ACT_HWPWM_DEMO_STATE_NOT_RUNNING;
+				hw_fadeSpeedCnt[channel] = 0;
+				hw_fadeSpeed[channel] = 0;
 				uint16_t tempDimVal = pwmValue[channel];
 				uint16_t tempDimVal2 = pwmValue[channel];
 				if (direction == CAN_MODULE_ENUM_HWPWM_REL_FADE_DIRECTION_INCREASE) {					/* if increase */
@@ -588,18 +588,18 @@ void act_hwPWM_HandleMessage(StdCan_Msg_t *rxMsg)
 					pwmValue[channel] = tempDimVal2;		/* set dimmer value immediately */
 					sendInfo[channel] = 1;				/* send netinfo with the current dimmervalue*/
 				} else {
-					fadeTarget[channel] = tempDimVal2;		/* set the fade target */
+					hw_fadeTarget[channel] = tempDimVal2;		/* set the fade target */
 					
-					if (fadeTarget[channel] != pwmValue[channel]) {
+					if (hw_fadeTarget[channel] != pwmValue[channel]) {
 						if ((speed&0x80) == 0x80) {
-							fadeSpeed[channel] = (speed&0x7f)+1;
-							fadeSpeedFrac[channel] = 1;
+							hw_fadeSpeed[channel] = (speed&0x7f)+1;
+							hw_fadeSpeedFrac[channel] = 1;
 						} else {
-							fadeSpeed[channel] = 1;
-							fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
+							hw_fadeSpeed[channel] = 1;
+							hw_fadeSpeedFrac[channel] = 0x80-(speed&0x7f);
 						}
-						if (fadeTarget[channel] < pwmValue[channel]) {
-							fadeSpeed[channel] = -fadeSpeed[channel];
+						if (hw_fadeTarget[channel] < pwmValue[channel]) {
+							hw_fadeSpeed[channel] = -hw_fadeSpeed[channel];
 						}
 					}
 				}
