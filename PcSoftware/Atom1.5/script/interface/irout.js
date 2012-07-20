@@ -152,11 +152,11 @@ function IROut_SendBurst(alias_name, remote_name, button_name)
 }
 Console_RegisterCommand(IROut_SendBurst, IROut_StartSendAutoComplete);
 
-function IROut_SendBurst_Raw(alias_name, data)
+function IROut_SendBurst_Raw(alias_name, protocol, data)
 {
-	return IROut_Send_Raw(alias_name, "Nexa2", data, "Burst");
+	return IROut_Send_Raw(alias_name, protocol, data, "Burst");
 }
-Console_RegisterCommand(IROut_SendBurst_Raw, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, IROut_Aliases()); });
+Console_RegisterCommand(IROut_SendBurst_Raw, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, IROut_Aliases(), IROut_Protocols()); });
 
 function IROut_SendDuration(alias_name, remote_name, button_name, duration_ms)
 {
