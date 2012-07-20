@@ -82,7 +82,7 @@ function IROut_Send_Raw(alias_name, protocol, data, status)
 		"Protocol" : protocol,
 		"IRdata"   : data,
 		"Status"   : status };
-		
+		Log("will send data to: "+aliases_data[name]["module_name"]+":"+aliases_data[name]["module_id"]+" Data: "+ data + " Prot: "+protocol+" Sts: "+status+"\n");
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
 		{
 			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
@@ -103,7 +103,7 @@ function IROut_Send_Raw(alias_name, protocol, data, status)
 	
 	return true;
 }
-
+Console_RegisterCommand(IROut_SendBurst, IROut_StartSendAutoComplete);
 
 function IROut_Send(alias_name, remote_name, button_name, status)
 {
@@ -151,6 +151,12 @@ function IROut_SendBurst(alias_name, remote_name, button_name)
 	return IROut_Send(alias_name, remote_name, button_name, "Burst");
 }
 Console_RegisterCommand(IROut_SendBurst, IROut_StartSendAutoComplete);
+
+function IROut_SendBurst_Raw(alias_name, data)
+{
+	return IROut_Send_Raw(alias_name, "Nexa2", data, "Burst");
+}
+Console_RegisterCommand(IROut_SendBurst_Raw, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, IROut_Aliases()); });
 
 function IROut_SendDuration(alias_name, remote_name, button_name, duration_ms)
 {
