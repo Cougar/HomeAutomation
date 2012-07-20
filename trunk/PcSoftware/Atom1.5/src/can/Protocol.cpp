@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 #include <string.h>
-
+#include <stdint.h>
 #include <boost/lexical_cast.hpp>
 
 #include "common/log.h"
@@ -352,16 +352,16 @@ void Protocol::EncodeInt(common::Bitset& bitset, unsigned int start_bit, unsigne
 
 std::string Protocol::DecodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
-    unsigned long raw_bit_value = bitset.Read(start_bit, bit_length);
+    uint64_t raw_bit_value = bitset.Read(start_bit, bit_length);
 
     //LOG.Debug("DecodeUint: raw_bit_value=" + boost::lexical_cast<std::string>(raw_bit_value));
 
-    return boost::lexical_cast<std::string>((unsigned long)raw_bit_value);
+    return boost::lexical_cast<std::string>((uint64_t)raw_bit_value);
 }
 
 void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
-    unsigned long raw_bit_value = boost::lexical_cast<unsigned long>(value);
+    uint64_t raw_bit_value = boost::lexical_cast<uint64_t>(value);
 
     bitset.Write(start_bit, bit_length, raw_bit_value);
 }

@@ -22,6 +22,7 @@
 #define TYPE_BITSET_H
 
 #include <boost/shared_ptr.hpp>
+#include <stdint.h>
 
 #include "common.h"
 #include "Byteset.h"
@@ -42,8 +43,8 @@ public:
     int Unset(unsigned int position);
     int Get(unsigned int position);
     
-    unsigned long Read(unsigned int position, unsigned int length);
-    void Write(unsigned int position, unsigned int length, unsigned long value);
+    uint64_t Read(unsigned int position, unsigned int length);
+    void Write(unsigned int position, unsigned int length, uint64_t value);
     
     unsigned int GetCount();
     unsigned char* GetBytes() const;

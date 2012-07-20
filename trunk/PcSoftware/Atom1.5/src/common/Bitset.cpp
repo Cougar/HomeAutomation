@@ -64,9 +64,9 @@ unsigned char* Bitset::GetBytes() const
     return this->bytes_;
 }
 
-unsigned long Bitset::Read(unsigned int position, unsigned int length)
+uint64_t Bitset::Read(unsigned int position, unsigned int length)
 {
-    unsigned long value = 0;
+    uint64_t value = 0;
     
     for (unsigned int index = 0; index < length; index++)
     {
@@ -76,7 +76,7 @@ unsigned long Bitset::Read(unsigned int position, unsigned int length)
     return value;
 }
 
-void Bitset::Write(unsigned int position, unsigned int length, long unsigned value)
+void Bitset::Write(unsigned int position, unsigned int length, uint64_t value)
 {
     for (unsigned int index = 0; index < length; index++)
     {
