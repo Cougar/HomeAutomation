@@ -1044,9 +1044,8 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	/* No dimming */
 	*len = 131;
 	uint8_t dimming = 0;
-	
 	/* If most significant bit is set, then dimming should be sent */
-	if (tempshift&(1ULL<<47))
+	if ((uint32_t)(tempshift>> 32)&0x80)
 	{
 		/* Dimming */
 		*len = 147;
@@ -1069,11 +1068,9 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	if (dimming)
 	{
-		//TODO: verify below bit numbers
 		buf[111] = IR_NEXA2_LOW_ONE;
 		buf[113] = IR_NEXA2_LOW_ONE;
 	}
-	
 	proto->modfreq=IR_NEXA2_F_MOD;
 	proto->timeout=IR_NEXA2_START1/1000;
 	proto->repeats=IR_NEXA2_REPS;
