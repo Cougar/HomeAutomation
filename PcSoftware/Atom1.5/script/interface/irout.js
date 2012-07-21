@@ -191,58 +191,63 @@ function IROut_SendDimmer(alias_name, remote_name, button_name, level)
 	}	
 	levelInt = parseInt(level);
 	dataInt = parseInt(button_data["data"]);
-	if (levelInt  >= 0 && levelInt <= 15) {
+	if (levelInt  >= 0 && levelInt <= 16) {
+		dataInt += 549755813888; //Set MSB
 		switch(levelInt) {
 		  case 0:
-		    levelInt = 15;
+		    dataInt -= 549755813888; //Clear MSB
+		    //dataInt |= 134217728;
+		    levelInt = 0;
 		    break;
 		  case 1:
-		    levelInt = 7;
+		    levelInt = 15;
 		    break;
 		  case 2:
-		    levelInt = 11;
+		    levelInt = 7;
 		    break;
 		  case 3:
-		    levelInt = 3;
+		    levelInt = 11;
 		    break;
 		  case 4:
-		    levelInt = 13;
+		    levelInt = 3;
 		    break;
 		  case 5:
-		    levelInt = 5;
+		    levelInt = 13;
 		    break;
 		  case 6:
-		    levelInt = 9;
+		    levelInt = 5;
 		    break;
 		  case 7:
-		    levelInt = 1;
+		    levelInt = 9;
 		    break;
 		  case 8:
-		    levelInt = 14;
+		    levelInt = 1;
 		    break;
 		  case 9:
-		    levelInt = 6;
+		    levelInt = 14;
 		    break;
 		  case 10:
-		    levelInt = 10;
+		    levelInt = 6;
 		    break;
 		  case 11:
-		    levelInt = 2;
+		    levelInt = 10;
 		    break;
 		  case 12:
-		    levelInt = 12;
+		    levelInt = 2;
 		    break;
 		  case 13:
-		    levelInt = 4;
+		    levelInt = 12;
 		    break;
 		  case 14:
-		    levelInt = 8;
+		    levelInt = 4;
 		    break;
 		  case 15:
+		    levelInt = 8;
+		    break;
+		  case 16:
 		    levelInt = 0;
 		    break;
 		}
-		dataInt += 549755813888; //Set MSB
 		dataInt += levelInt*4294967296//Add dimmer level
 		Log("button_data[protocol]=" + button_data["protocol"] + "\n");
 		return IROut_Send_Raw(alias_name, button_data["protocol"], dataInt.toString(), "Burst");	
