@@ -40,6 +40,7 @@ def parseModuleIdFromFile(moduleName, fileName):
 			if parts[1].strip(" ") != -1 and parts[1].strip(" ") != "<ID>":
 				takenIds.append(int(parts[1].strip(" "), 16))
 				print "Found id: "+parts[1].strip(" ")+" in file: "+fileName+" for module: "+moduleName
+	
 	return takenIds
 
 
@@ -47,8 +48,7 @@ def getModuleIdsFromFile(moduleName):
 	takenIds = []
 	for applicationName in os.listdir("../"):	
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
-			takenIds = parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
-
+			takenIds += parseModuleIdFromFile(moduleName, "../" + applicationName + "/config.inc")
 	return takenIds
 	
 def parseAllModuleIdFromFile(fileName, foundModules):
@@ -100,17 +100,15 @@ def getFreeModuleId(takenIds):
 	if len(takenIds) == 0:
 		return 1
 	takenIds.sort()
-
 	lastId = 0
 
 	for takenId in takenIds:
-		if takenId != lastId+1:
+		if ((takenId != lastId+1) & (takenId != lastId)):
 			return lastId+1
 		lastId = takenId
 
 	return lastId+1
-
-
+	
 
 def compileMainFile():
 	print "Compiling new main.c..."
@@ -208,7 +206,7 @@ def updateConfigFile():
 				if line[0] != '#':
 					if line.find("<ID>") != -1:
 						new_ID = getFreeModuleId(moduleIds)
-						print "id = "+hex(new_ID)
+						print "\nNew module id set to: "+hex(new_ID)+"\n"
 						moduleIds.append(new_ID)
 						line = line.replace("<ID>", hex(new_ID))
 					elif line.find("<TIMER>") != -1:
