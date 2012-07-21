@@ -196,6 +196,13 @@ function IROut_SendDimmer(alias_name, remote_name, button_name, level)
 		switch(levelInt) {
 		  case 0:
 		    dataInt -= 549755813888; //Clear MSB
+
+		    var b = dataInt | 1;
+
+		    dataInt |= 134217728;
+		    
+		    var c = dataInt >>> 1;
+		    dataInt = (c * 2) + (b & 1);
 		    //dataInt |= 134217728;
 		    levelInt = 0;
 		    break;
