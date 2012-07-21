@@ -29,16 +29,36 @@ typedef struct {
 
 /* Which protocols to use. These should perhaps be configuration options 
  * (config.inc). Only applies to receiver right now */
-#define IR_PROTOCOLS_USE_SIRC		1
-#define IR_PROTOCOLS_USE_RC5		1
-#define IR_PROTOCOLS_USE_SHARP		1
-#define IR_PROTOCOLS_USE_NEC		1
-#define IR_PROTOCOLS_USE_SAMSUNG	1
-#define IR_PROTOCOLS_USE_MARANTZ	1
-#define IR_PROTOCOLS_USE_PANASONIC	1
-#define IR_PROTOCOLS_USE_SKY		1
-#define IR_PROTOCOLS_USE_NEXA2		1
-#define IR_PROTOCOLS_USE_NEXA1		1
+#ifndef IR_PROTOCOLS_USE_SIRC
+# define IR_PROTOCOLS_USE_SIRC		1
+#endif
+#ifndef IR_PROTOCOLS_USE_RC5
+# define IR_PROTOCOLS_USE_RC5		1
+#endif
+#ifndef IR_PROTOCOLS_USE_SHARP
+# define IR_PROTOCOLS_USE_SHARP		1
+#endif
+#ifndef IR_PROTOCOLS_USE_NEC
+# define IR_PROTOCOLS_USE_NEC		1
+#endif
+#ifndef IR_PROTOCOLS_USE_SAMSUNG
+# define IR_PROTOCOLS_USE_SAMSUNG	1
+#endif
+#ifndef IR_PROTOCOLS_USE_MARANTZ
+# define IR_PROTOCOLS_USE_MARANTZ	1
+#endif
+#ifndef IR_PROTOCOLS_USE_PANASONIC
+# define IR_PROTOCOLS_USE_PANASONIC	1
+#endif
+#ifndef IR_PROTOCOLS_USE_SKY
+# define IR_PROTOCOLS_USE_SKY		1
+#endif
+#ifndef IR_PROTOCOLS_USE_NEXA2
+# define IR_PROTOCOLS_USE_NEXA2		1
+#endif
+#ifndef IR_PROTOCOLS_USE_NEXA1
+# define IR_PROTOCOLS_USE_NEXA1		1
+#endif
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
