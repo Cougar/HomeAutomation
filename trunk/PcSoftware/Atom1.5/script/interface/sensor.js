@@ -74,7 +74,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 
           Log("received from DTMF:\"" + number + "\"");
 
-          if (variables["Number"].length > 6)
+          if (variables["Number"].length >= 6)
           {
             /* A seems to mean it is an incomming call! */
             if (number.charAt(0) === 'A' || number.charAt(0) === 'D')
