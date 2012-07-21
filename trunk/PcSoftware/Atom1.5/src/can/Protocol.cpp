@@ -361,6 +361,7 @@ std::string Protocol::DecodeUint(common::Bitset& bitset, unsigned int start_bit,
 
 void Protocol::EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
 {
+  LOG.Debug("start_bit:" + boost::lexical_cast<std::string>(start_bit) + ", bit_lengt:" + boost::lexical_cast<std::string>(bit_length) + ", value:\"" + value + "\"");
     uint64_t raw_bit_value = boost::lexical_cast<uint64_t>(value);
 
     bitset.Write(start_bit, bit_length, raw_bit_value);
