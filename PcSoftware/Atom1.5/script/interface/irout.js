@@ -178,7 +178,7 @@ function IROut_SendDimmer(alias_name, remote_name, button_name, level)
 	
 	if (!button_string)
 	{
-		Log("\033[31mNo such button " + button_name + " found on remote " + remote + ".\033[0m\n");
+		Log("\033[31mNo such button " + button_name + " found on remote " + remote_name + ".\033[0m\n");
 		return false;
 	}
 	
@@ -244,6 +244,7 @@ function IROut_SendDimmer(alias_name, remote_name, button_name, level)
 		}
 		dataInt += 549755813888; //Set MSB
 		dataInt += levelInt*4294967296//Add dimmer level
+		Log("button_data[protocol]=" + button_data["protocol"] + "\n");
 		return IROut_Send_Raw(alias_name, button_data["protocol"], dataInt.toString(), "Burst");	
 	} else {
 		Log("\033[31mDimmer level out of range [0 -> 16].\033[0m\n");
