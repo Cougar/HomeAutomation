@@ -142,6 +142,18 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
         if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
         {
           Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+
+          var last_value = {};
+          var last_value_string = Storage_GetParameter("LastValues", name);
+
+          if (last_value_string)
+          {
+            last_value = eval("(" + last_value_string + ")");
+          }
+
+          last_value["Level"] = { "value" : level, "timestamp" : get_time() };
+
+          Storage_SetParameter("LastValues", name, JSON.stringify(last_value));
         }
         else
         {
