@@ -102,20 +102,67 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
     
     for (var name in aliases_data)
     {
-        if (aliases_data[name]["module_name"]=="hwPWM") {
-            level_set = level*39;
-	    if (level_set > 9940) {
-	      level_set = 10000;
-	    }
-        } else {
-            level_set = level;
-	}
-        
-        //Check for undefined Channel parameter in alias
-        if (typeof aliases_data[name]["specific"]["Channel"] == 'undefined') {
-            Log("\033[31mFailed to send command to " + name + ", Alias does not contain specific parameter \"Channel\".\033[0m\n");
-            break;
+      if (aliases_data[name]["module_name"] == "hwPWM")
+      {
+        level_set = level*39;
+
+	      if (level_set > 9940)
+        {
+	        level_set = 10000;
+	      }
+      }
+      else if (alias_data[name]["module_name"] == "rfTransceiver")
+      {
+        var data = parseInt(alias_data[name]["specific"]["Data"], 10);
+        var level_index = Math.ceil(parseInt(level, 10) / 16);
+        var level_values = [ 0, 15, 7, 11, 3, 13, 5, 9, 1, 14, 6, 10, 2, 12, 4, 8, 0 ];
+
+        if (level_index === 0)
+        {
+          var highest_bit = data | 1;
+
+          data |= 0x8000000;
+
+          var down_shifted_data = data >>> 1;
+          data = (down_shifted_data * 2) + (highest_bit & 1);
         }
+        else
+        {
+          data += 0x8000000000; // Set MSB = Dimmer mode 
+        }
+
+        data += level_values[level_index] * 0x100000000; //Add dimmer level 
+
+        var variables = {
+          "Channel"  : aliases_data[name]["specific"]["Channel"],
+          "Protocol" : "Nexa2",
+          "IRdata"   : data,
+          "Status"   : "Burst" };
+
+        if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
+        {
+          Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+        }
+        else
+        {
+          Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+        }
+
+        found = true;
+
+        continue;
+      }
+      else
+      {
+        level_set = level;
+	    }
+        
+      //Check for undefined Channel parameter in alias
+      if (typeof aliases_data[name]["specific"]["Channel"] == 'undefined')
+      {
+        Log("\033[31mFailed to send command to " + name + ", Alias does not contain specific parameter \"Channel\".\033[0m\n");
+        break;
+      }
         
         var variables = {
             "Channel"   : aliases_data[name]["specific"]["Channel"],
