@@ -22,3 +22,19 @@
     <p clasS="ui-li-aside ui-li-desc"><strong>${time}</strong></p>
   </li>
 </script>
+
+
+<script id="page-phonecalls-item-template2" type="text/x-jquery-tmpl" data-enhance="false">
+  <li>
+    <h3>
+      {{each names}}
+      ${$value}, 
+    {{/each}}
+     
+    </h3>
+
+    
+    <p>${directionText} <a href="tel:${number}">${number}</a></p>
+    <p clasS="ui-li-aside ui-li-desc"><strong>${time}</strong></p>
+  </li>
+</script>

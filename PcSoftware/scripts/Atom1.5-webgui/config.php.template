@@ -20,6 +20,7 @@ $pageConfiguration = array(
                                  ),
                             array("page" => "phonecalls",
                                   "title" => "Telefonhistorik",
+				   "template" => "page-phonecalls-item-template",
                                   "aliases" => array("dtmf"),
                                   "limit" => 40,
                                   "inText" => "Inkommande samtal från",
