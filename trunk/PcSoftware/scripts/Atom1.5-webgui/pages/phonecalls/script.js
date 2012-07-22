@@ -70,7 +70,7 @@ pages.phonecalls = {
           return false;
         }
         
-        $("#" + (pageInstance.template ? pageInstance.template : "page-phonecalls-item-template").tmpl(item).appendTo(pageInstance.pageContentElement.find("ul"));
+        $("#" + (pageInstance.template ? pageInstance.template : "page-phonecalls-item-template")).tmpl(item).appendTo(pageInstance.pageContentElement.find("ul"));
 
         count++;
       });
