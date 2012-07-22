@@ -155,13 +155,13 @@ require_once("config.php");
 
           pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
           {
-            $.mobile.changePage("#home", { transition: "slide", reverse: true });
+            $.mobile.changePage("#home", { transition: "none", reverse: true });
             event.preventDefault();
           });
 
           pageInstances[pageName].pageLinkElement = $("#pagelink-template").tmpl(pageInstances[pageName]).appendTo($("#home").find(":jqmData(role=content)")).trigger("create").on("click", function(event)
           {
-            $.mobile.changePage("#" + pageInstances[pageName].pageElement.attr("id"), "slide");
+            $.mobile.changePage("#" + pageInstances[pageName].pageElement.attr("id"), "none");
             event.preventDefault();
           });
 
@@ -178,7 +178,13 @@ require_once("config.php");
 
           if (nextpage.length > 0)
           {
-            $.mobile.changePage("#" + nextpage[0].id, { transition: "slide", changeHash: true });
+            $.mobile.changePage("#" + nextpage[0].id, { transition: "none", changeHash: true });
+          }
+          else
+          {
+            nextpage = $(":jqmData(role=page)");
+
+            $.mobile.changePage("#" + nextpage[0].id, { transition: "none", changeHash: true });
           }
         });
         
@@ -188,7 +194,13 @@ require_once("config.php");
 
           if (prevpage.length > 0)
           {
-            $.mobile.changePage("#" + prevpage[0].id, { transition: "slide", reverse: true, changeHash: true });
+            $.mobile.changePage("#" + prevpage[0].id, { transition: "none", reverse: true, changeHash: true });
+          }
+          else
+          {
+            prevpage = $(":jqmData(role=page)");
+
+            $.mobile.changePage("#" + prevpage[prevpage.length - 1].id, { transition: "none", reverse: true, changeHash: true });
           }
         });
       });
