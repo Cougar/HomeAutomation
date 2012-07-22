@@ -5,6 +5,14 @@ sns_BusVoltage_TIMER=<TIMER>
 sns_BusVoltage_SEND_PERIOD=20
 sns_BusVoltage_SEND_DELAY=500
 
+# Settings for CoreCard
+#sns_BusVoltage_R51=12000
+#sns_BusVoltage_R50=47000
+
+# Settings for CoreModule
+sns_BusVoltage_R51=10000
+sns_BusVoltage_R50=68000
+
 BUSVOLTAGEAD=6
 
 ## End section sns_BusVoltage -- Do not edit this line
