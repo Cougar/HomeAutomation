@@ -111,9 +111,9 @@ function Dimmer_AbsoluteFade(alias_name, speed, level)
 	        level_set = 10000;
 	      }
       }
-      else if (alias_data[name]["module_name"] == "rfTransceiver")
+      else if (aliases_data[name]["module_name"] == "rfTransceiver")
       {
-        var data = parseInt(alias_data[name]["specific"]["Data"], 10);
+        var data = parseInt(aliases_data[name]["specific"]["Data"], 10);
         var level_index = Math.ceil(parseInt(level, 10) / 16);
         var level_values = [ 0, 15, 7, 11, 3, 13, 5, 9, 1, 14, 6, 10, 2, 12, 4, 8, 0 ];
 
