@@ -463,10 +463,29 @@ function Module_GetLastData(alias_name)
 				for (var data in last_value[type_name])
 				{
 					if (data != "timestamp"){
-						text += data+"="+last_value[type_name][data]+" ";
+						if (typeof last_value[type_name][data] == "string")
+						{
+							text += data+"="+last_value[type_name][data]+" ";
+						}
+						else
+						{
+							for (var name2 in last_value[type_name][data])
+							{
+							  text += name2 + "=" + last_value[type_name][data][name2] + " ";
+							} 
+						}
 					}
+					
 				}
 				Log("\033[96m" + type_name + ": \033[0;1m" + text + "\033[0m at " + date.toString() + "\n");
+				
+				
+				/* Check if the value is simple or complex */
+            
+				
+				
+				
+				
 			}
 		}
 		else
