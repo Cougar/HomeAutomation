@@ -152,7 +152,7 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 		txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_HD44789;
 		txMsg.Header.ModuleId = act_hd44780_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_HD44789_LCD_BACKLIGHT;
-		txMsg.Length = 1;
+		txMsg.Length = 2;
 
 #if (act_hd44780_TYPE==0)
 			txMsg.Data[0] = OCR0A;
@@ -161,7 +161,8 @@ void act_hd44780_HandleMessage(StdCan_Msg_t *rxMsg)
 #endif
 #if act_hd44780_USE_AUTO_BL == 1
 		txMsg.Data[1] = autoMode;
-		txMsg.Length = 2;
+#else
+		txMsg.Data[1] = 0; 
 #endif
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 		break;
