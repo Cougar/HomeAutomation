@@ -1,8 +1,18 @@
 
 #include "sns_BusVoltage.h"
 
+#ifndef sns_BusVoltage_R51
 #define R51	12000
+#else
+#define R51	sns_BusVoltage_R51
+#endif
+
+
+#ifndef sns_BusVoltage_R50
 #define R50	47000
+#else
+#define R50	sns_BusVoltage_R50
+#endif
 
 #if (5 * (R51 + R50))/(R51) > 64
 	#error "ADC_FACTOR must be less then 64, change R51 and R52"
