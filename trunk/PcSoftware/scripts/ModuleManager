@@ -72,6 +72,21 @@ def parseAllModuleIdFromFile(fileName, foundModules):
 						foundModules.append(parts[0][:-3]+"$"+node+"$"+parts[1].strip(" ")) 
 					      
 	return foundModules
+
+def parseHwIdFromFile(fileName):
+	index = 0
+	config_inc = open(fileName, 'r') 
+	config_inc_lines = config_inc.readlines()
+	config_inc.close()
+	parts = fileName.split("/")
+	node = parts[1]
+	for line in config_inc_lines:
+		line = line.strip("\n").strip(" ")
+		
+		if line.find("NODE_HW_ID=") == 0:
+			parts = line.split("=")
+			return parts[1]
+	return ""
 	
 def getAllModuleIdsFromFile():
 	foundModules = []
@@ -93,7 +108,9 @@ def getAllNodesFromFile():
 	files = sorted(os.listdir("../"), key=str.lower)
 	for applicationName in files:	
 		if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/config.inc"):
-			print "Found node: "+applicationName
+			if applicationName[0] != '.' and os.path.exists("../" + applicationName + "/bios.inc"):
+				hwid = parseHwIdFromFile("../" + applicationName + "/bios.inc")
+			print "Found node: "+applicationName+ "\n With hwId: "+hwid
 			parseAllModuleIdFromFile("../" + applicationName + "/config.inc", 0)
 
 def getFreeModuleId(takenIds):
