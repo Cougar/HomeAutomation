@@ -1157,7 +1157,36 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
  * 		IR_OK if data expanded successfully, one of several errormessages if not
  */
 int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	uint64_t tempshift = proto->data;
+  
+	/* 12 data bits + 1 stop bit */
+	*len = 49;
+
+	/* encode data bits */
+	for (uint8_t i = 0; i < 45; i += 4)
+	{
+		if (tempshift & 1) {
+			/* encode 0 bit */
+			buf[i+0] = IR_NEXA1_SHORT;
+			buf[i+1] = IR_NEXA1_LONG;
+			buf[i+2] = IR_NEXA1_SHORT;
+			buf[i+3] = IR_NEXA1_LONG;
+		} else {
+			/* encode X bit */
+			buf[i+0] = IR_NEXA1_SHORT;
+			buf[i+1] = IR_NEXA1_LONG;
+			buf[i+2] = IR_NEXA1_LONG;
+			buf[i+3] = IR_NEXA1_SHORT;
+		}
+		tempshift = tempshift>>1;
+	}
+
+	/* encode stop/sync bit */
+	buf[48] = IR_NEXA1_SHORT;
 	
-	return IR_NOT_CORRECT_DATA;
+	proto->modfreq = IR_NEXA1_F_MOD;
+	proto->timeout = IR_NEXA1_START/1000;
+	proto->repeats = IR_NEXA1_REPS;
+	return IR_OK;  	
 }
 
