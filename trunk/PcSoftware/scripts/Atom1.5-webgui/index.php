@@ -35,9 +35,10 @@ require_once("config.php");
 
     <script id="page-template" type="text/x-jquery-tmpl" data-enhance="false">
       <div id="page-${name}" data-role="page" data-theme="a" id="page-{name}">
-        <div data-role="header" data-position="fixed">
-          <a href="#home" data-icon="home" data-direction="reverse">Start</a>
-          <h1>${title} - Home Automation Control Center</h1>
+        <div data-id="PersistentFooter" data-role="header" data-position="fixed">
+          <div data-role="navbar">
+            <ul class="navbar-container"></ul>
+          </div>
         </div>
         <div data-role="content"></div>
       </div>
@@ -153,6 +154,8 @@ require_once("config.php");
           pageInstances[pageName].pageElement = $("#page-template").tmpl(pageInstances[pageName]).appendTo($("body")).page();
           pageInstances[pageName].pageContentElement = pageInstances[pageName].pageElement.find(":jqmData(role=content)");
 
+
+
           pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
           {
             $.mobile.changePage("#home", { transition: "none", reverse: true });
@@ -172,7 +175,30 @@ require_once("config.php");
           }
         });
 
-        $(".ui-page").on("swipeleft", function()
+        
+        jQuery.each(pageInstances, function(pageName, pageInstance)
+        {
+          var navbarContainerElement = pageInstances[pageName].pageElement.find("ul.navbar-container");
+
+          $("<li class=''><a href='#home'>Start</a></li>").appendTo(navbarContainerElement);
+
+          jQuery.each(pageInstances, function(pageName2, pageInstance2)
+          {
+            if (pageInstance === pageInstance2)
+            {
+              $("<li class=''><a href='#page-" + pageName2 + "' class='ui-btn-active ui-state-persist'>" + pageInstance2.title + "</a></li>").appendTo(navbarContainerElement);
+            }
+            else
+            {
+              $("<li class=''><a href='#page-" + pageName2 + "'>" + pageInstance2.title + "</a></li>").appendTo(navbarContainerElement);
+            }
+          });
+        });
+
+        $(":jqmData(role=header)").navbar();
+
+        
+        /*$(".ui-page").on("swipeleft", function()
         {
           var nextpage = $(this).nextAll(":jqmData(role=page)");
 
@@ -201,6 +227,15 @@ require_once("config.php");
             prevpage = $(":jqmData(role=page)");
 
             $.mobile.changePage("#" + prevpage[prevpage.length - 1].id, { transition: "none", reverse: true, changeHash: true });
+          }
+        });*/
+
+        $(":jqmData(role=navbar)").delegate("a", "vclick", function(event)
+        {
+          if(!$(event.target).hasClass("ui-disabled"))
+          {
+            $(":jqmData(role=navbar)").find("a").not(".ui-state-persist").removeClass($.mobile.activeBtnClass);
+            $(this).addClass($.mobile.activeBtnClass);
           }
         });
       });
