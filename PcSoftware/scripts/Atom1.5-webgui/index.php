@@ -126,7 +126,7 @@ require_once("config.php");
 
       var aliasNames = <?php echo json_encode($aliasNames); ?>;
       var pageConfigurations = <?php echo json_encode($pageConfiguration); ?>;
-      var pageInstances = {};
+      var pageInstances = { };
       var serverTimeOffset = 0;
 
       function getServerTimestamp()
@@ -136,8 +136,6 @@ require_once("config.php");
 
       $(document).ready(function(event)
       {
-        document.location.hash = "";
-
         sendCommand("(new Date()).getTime();", function(timestamp)
         {
           serverTimeOffset = ((new Date()).getTime()) - parseInt(timestamp, 10);
@@ -154,21 +152,6 @@ require_once("config.php");
           pageInstances[pageName].pageElement = $("#page-template").tmpl(pageInstances[pageName]).appendTo($("body")).page();
           pageInstances[pageName].pageContentElement = pageInstances[pageName].pageElement.find(":jqmData(role=content)");
 
-
-
-          pageInstances[pageName].pageElement.find(":jqmData(rel=back)").on("click", function(event)
-          {
-            $.mobile.changePage("#home", { transition: "none", reverse: true });
-            event.preventDefault();
-          });
-
-          pageInstances[pageName].pageLinkElement = $("#pagelink-template").tmpl(pageInstances[pageName]).appendTo($("#home").find(":jqmData(role=content)")).trigger("create").on("click", function(event)
-          {
-            $.mobile.changePage("#" + pageInstances[pageName].pageElement.attr("id"), "none");
-            event.preventDefault();
-          });
-
-
           if (pages[configuration.page] && pages[configuration.page].init)
           {
             pages[configuration.page].init(pageInstances[pageName]);
@@ -179,8 +162,6 @@ require_once("config.php");
         jQuery.each(pageInstances, function(pageName, pageInstance)
         {
           var navbarContainerElement = pageInstances[pageName].pageElement.find("ul.navbar-container");
-
-          $("<li class=''><a href='#home'>Start</a></li>").appendTo(navbarContainerElement);
 
           jQuery.each(pageInstances, function(pageName2, pageInstance2)
           {
@@ -238,6 +219,14 @@ require_once("config.php");
             $(this).addClass($.mobile.activeBtnClass);
           }
         });
+
+        if (document.location.hash === "" || document.location.hash === "#")
+        {
+          document.location.hash = "#" + $(":jqmData(role=page)").attr("id");
+        }
+
+        $.mobile.changePage($(document.location.hash));
+
       });
 
       var dialogCloseTimer = null;
@@ -305,11 +294,6 @@ require_once("config.php");
   </head>
 
   <body>
-    <div id="home" data-role="page" data-theme="a">
-      <div data-role="header"><h1>Home Automation Control Center</h1></div>
-      <div data-role="content"></div>
-    </div>
-
     <div data-role="dialog" id="dialog">
       <div data-role="content">
         <h3 class="dialog-title"></h3>
