@@ -35,7 +35,7 @@ require_once("config.php");
 
     <script id="page-template" type="text/x-jquery-tmpl" data-enhance="false">
       <div id="page-${name}" data-role="page" data-theme="a" id="page-{name}">
-        <div data-id="PersistentFooter" data-role="header" data-position="fixed">
+        <div data-id="PersistentFooter" data-role="header" data-position="fixed" data-tap-toggle="false">
           <div data-role="navbar">
             <ul class="navbar-container"></ul>
           </div>
