@@ -20,7 +20,7 @@
 //#define MCP_CS_DDR 			DDRB
 //#define MCP_CS_BIT 			PB2
 
-
+//#define SERIAL_DOUBLE_SPEED			1
 #define SERIAL_BAUDRATE 		19200
 #define SERIAL_RX_BUFFER_SIZE		32
 #define SERIAL_TX_BUFFER_SIZE		64
