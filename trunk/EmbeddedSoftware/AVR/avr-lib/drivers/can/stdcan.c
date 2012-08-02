@@ -8,7 +8,6 @@
 
 #include <avr/interrupt.h>
 #include <util/atomic.h>
-#include <bios.h>
 #if (STDCAN_TX_QUEUE_SIZE > 1)
 #error StdCan: Tx queue size longer than one msg not yet implemented.
 #endif
