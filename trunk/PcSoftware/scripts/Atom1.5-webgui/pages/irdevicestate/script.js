@@ -11,14 +11,16 @@ pages.irdevicestate = {
       /* Loop through all results */
       jQuery.each(jsonData, function(device, data)
       {
-    //$("#debug").html($("#debug").html()+"Got data "+device+" "+data+"<br />\n");
         /* Only do something if we know the device and have a value */
-        if (pageInstance.pageSwitchElements[device] && data)
+        if (pageInstance.pageSwitchElements[device] && data.state  && data.timestamp)
         {
           /* Enable the switch if it was disabled by default */
           pageInstance.pageSwitchElements[device].find("select").slider("enable");
           /* Update the slider with the new value */
-          pageInstance.pageSwitchElements[device].find("select").val(data).slider("refresh");
+          pageInstance.pageSwitchElements[device].find("select").val(data.state).slider("refresh");
+          
+          var date = new Date(data.timestamp*1000);
+          pageInstance.pageSwitchElements[device].find(":jqmData(id=page-irdevice-timestamp-"+device+")").text(date.toDateString()+", "+date.toLocaleTimeString());
         }
       });
     }
