@@ -150,7 +150,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
           /* Lookup name */
           if (checkName)
           {
-            var phonebookNumbers = Sensor_StoreNumberInPhonebook(number, timestamp);
+            phonebookNumbers = Sensor_StoreNumberInPhonebook(number, timestamp);
           }
 
           if (!phonebookNumbers)
