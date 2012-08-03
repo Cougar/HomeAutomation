@@ -144,22 +144,27 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
 
           /* Log the number */
           Log("New number: " + number + ", direction: " + (incommingCall ? "in" : "out"));
-
-
+          
+          
+          var phonebookNumbers;
           /* Lookup name */
           if (checkName)
           {
-            Sensor_StoreNumberInPhonebook(number, timestamp);
+            var phonebookNumbers = Sensor_StoreNumberInPhonebook(number, timestamp);
           }
 
-
+          if (!phonebookNumbers)
+          {
+            phonebookNumbers = [];
+          }
+          
           /* Call any potential subscribers */
           if (Sensor_OnNewPhonenumberFunctions[alias_name])
           {
             for (var n in Sensor_OnNewPhonenumberFunctions[alias_name])
             {
-              /* Call callback with arguments number, direction */
-              Sensor_OnNewPhonenumberFunctions[alias_name][n](alias_name, number, incommingCall ? "in" : "out");
+              /* Call callback with arguments alias, number, direction */
+              Sensor_OnNewPhonenumberFunctions[alias_name][n](alias_name, number, incommingCall ? "in" : "out", phonebookNumbers);
             }
           }
         }
@@ -205,7 +210,7 @@ Module_RegisterToOnMessage("all", Sensor_OnMessage);
 
 function Sensor_StoreNumberInPhonebook(number, timestamp)
 {
-  var phonebookNumbers = Storage_GetJsonParamter("PhoneBook", number)
+  var phonebookNumbers = Storage_GetJsonParamter("PhoneBook", number);
 
   if (!phonebookNumbers)
   {
@@ -269,9 +274,6 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
 
           Sensor_UpdateNameInPhonecalls(timestamp, phonebookNumbers);
 
-          //CAll all listeners!
-          //....
-
           Log("\033[31mOnlinePhonebook-eniro: Found: " + JSON.stringify(phonebookNumbers) + "\033[0m\n");
         }
       }
@@ -304,7 +306,7 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
                 Storage_SetJsonParameter("PhoneBook", number, phonebookNumbers);
                 
                 Sensor_UpdateNameInPhonecalls(timestamp, phonebookNumbers);
-                
+
                 Log("\033[31mOnlinePhonebook-rseek: Found: " + JSON.stringify(phonebookNumbers) + "\033[0m\n");
               }
             }
@@ -368,6 +370,8 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
 
     Sensor_UpdateNameInPhonecalls(timestamp, phonebookNumbers);
   }
+  
+  return phonebookNumbers;
 }
 Console_RegisterCommand(Sensor_StoreNumberInPhonebook, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args); });
 
