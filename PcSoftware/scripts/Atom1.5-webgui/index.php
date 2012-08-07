@@ -10,6 +10,7 @@ require_once("config.php");
     <title>Home Automation Control Center</title>
     <link rel="stylesheet" href="jquery.mobile-1.1.1.min.css" />
     <script src="jquery-1.7.2.min.js"></script>
+    <script src="jquery.timeago.js"></script>
     <script src="jquery.mobile-1.1.1.min.js"></script>
     <script src="jquery.tmpl.min.js"></script>
 
