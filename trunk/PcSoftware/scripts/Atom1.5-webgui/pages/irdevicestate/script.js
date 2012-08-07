@@ -20,7 +20,8 @@ pages.irdevicestate = {
           pageInstance.pageSwitchElements[device].find("select").val(data.state).slider("refresh");
           
           var date = new Date(data.timestamp*1000);
-          pageInstance.pageSwitchElements[device].find(":jqmData(id=page-irdevice-timestamp-"+device+")").text(date.toDateString()+", "+date.toLocaleTimeString());
+          //pageInstance.pageSwitchElements[device].find(":jqmData(id=page-irdevice-timestamp-"+device+")").text(date.toDateString()+", "+date.toLocaleTimeString());
+          pageInstance.pageSwitchElements[device].find(":jqmData(id=page-irdevice-timestamp-"+device+")").text(jQuery.timeago(date));
         }
       });
     }
