@@ -10,6 +10,7 @@ use threads;
 use Cwd qw(abs_path);
 use File::Basename;
 use Getopt::Long;
+use Time::HiRes qw(usleep nanosleep);
 
 $host = "localhost";
 $port = 1201;
@@ -106,6 +107,8 @@ my @device = ();
 #my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
 
 $socket = atomd_initialize($host, $port);
+usleep(100000);
+atomd_kill_promt($socket);
 atomd_send_command($socket, "Node_WaitForInformation");
 #atomd_send_command($socket, "Node_GetInformation 0x7DD44E0A");
 $return = atomd_read_command_response($socket);
