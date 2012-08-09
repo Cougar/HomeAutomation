@@ -82,6 +82,9 @@ print "Parameters: " . "\n";
 if ($reset eq "true" && $filename eq "")
 {
 	$socket = atomd_initialize($hostname, $port);
+	usleep(100000);
+	atomd_kill_promt($socket);
+#	atomjs_write("Node_Reset('".$hwid."')");
 	atomd_send_command($socket, "Node_Reset $hwid");
 	print atomd_read_command_response($socket);
 	exit(0);
@@ -95,6 +98,8 @@ else
 	close FP;
 
 	$socket = atomd_initialize($hostname, $port);
+	usleep(100000);
+	atomd_kill_promt($socket);
 	
 	#print "Sending Node_ClearHex\n";
 	atomd_send_command($socket, "Node_ClearHex");
