@@ -81,48 +81,83 @@ print "Parameters: " . "\n";
 
 if ($reset eq "true" && $filename eq "")
 {
-	$socket = atomd_initialize($hostname, $port);
-	usleep(100000);
-	atomd_kill_promt($socket);
-#	atomjs_write("Node_Reset('".$hwid."')");
-	atomd_send_command($socket, "Node_Reset $hwid");
-	print atomd_read_command_response($socket);
-	exit(0);
-	#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
-	#exit($result);
+	if ($port == 1203)
+	{
+		$socket = atomd_initialize($hostname, $port);
+		atomjs_write($socket, "Node_ResetNative('".$hwid."');\n");
+		print atomjs_read_line($socket);
+		for ($count = 0; $count < 15; $count++)
+		{
+			atomjs_write($socket, "Node_ResetPollNative();\n");
+			if (atomjs_read_line($socket) =~ m/true/)
+			{
+				print "\033[32m" . $hwid . " started okay.\033[0m\n";
+				last;
+			}
+			usleep(200000);
+		}
+	}
+	else
+	{
+		$socket = atomd_initialize($hostname, $port);
+
+		usleep(100000);
+		atomd_kill_promt($socket);
+		atomd_send_command($socket, "Node_Reset $hwid");
+		print atomd_read_command_response($socket);
+		#my $result = system("atomic -s $hostname -p $port -c \"Node_Reset $hwid\"");
+		#exit($result);
+	}
 }
 else
 {
-	open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
-	@filecontents = <FP>;
-	close FP;
+	if ($port == 1203)
+	{
+		open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
+		@filecontents = <FP>;
+		close FP;
+		$socket = atomd_initialize($hostname, $port);
 
-	$socket = atomd_initialize($hostname, $port);
-	usleep(100000);
-	atomd_kill_promt($socket);
-	
-	#print "Sending Node_ClearHex\n";
-	atomd_send_command($socket, "Node_ClearHex");
-	atomd_kill_promt($socket);
-	
-	my $linenums = 0;
-	foreach $filerow (@filecontents) {
-		#print "Sending Node_AppendHex $filerow \n";
-		atomd_send_command($socket, "Node_AppendHex $filerow");
-		atomd_kill_promt($socket);
-		$linenums += 1;
+		atomjs_write($socket, "Node_ProgramNative('".$hwid."', '".$bios."'");
+#		print "Node_ProgramNative('".$hwid."', '".$bios."'";
+		foreach $filerow (@filecontents) {
+			$filerow =~ s/^\s+//;
+			$filerow =~ s/\s+$//;
+			atomjs_write($socket, ", '" . $filerow . "'");
+			print ", '".$filerow."'";
+		}
+		atomjs_write($socket, ");\n");
+#		print ");\n";
 	}
-	#print "Sending Node_ProgramHex $hwid $bios $linenums \n";
-	atomd_send_command($socket, "Node_ProgramHex $hwid $bios $linenums");
-#	atomd_kill_promt($socket);
+	else
+	{
+		open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
+		@filecontents = <FP>;
+		close FP;
+		$socket = atomd_initialize($hostname, $port);
+		usleep(100000);
+		atomd_kill_promt($socket);
+	
+		#print "Sending Node_ClearHex\n";
+		atomd_send_command($socket, "Node_ClearHex");
+		atomd_kill_promt($socket);
+	
+		my $linenums = 0;
+		foreach $filerow (@filecontents) {
+			#print "Sending Node_AppendHex $filerow \n";
+			#$filerow =~ s/^\s+//;
+			#$filerow =~ s/\s+$//;
+			atomd_send_command($socket, "Node_AppendHex $filerow");
+			atomd_kill_promt($socket);
+			$linenums += 1;
+		}
+		#print "Sending Node_ProgramHex $hwid $bios $linenums \n";
+		atomd_send_command($socket, "Node_ProgramHex $hwid $bios $linenums");
 
-	#atomd_send_command($socket, "Node_Program $hwid $bios $filename");
+		print atomd_read_command_response($socket);
 
-	print atomd_read_command_response($socket);
-	exit(0);
-
-#	my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
-#	exit($result);
+#		my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
+#		exit($result);
 }
 
 exit(0);
