@@ -77,7 +77,7 @@ print "atomDude settings:\n";
 print "Hardware id: " . $hwid . "\n";
 print "Atom address: " . $hostname . ":" . $port . "\n";
 print "Hexfile: " . $filename . "\n";
-print "Parameters: " . "\n";
+#print "Parameters: " . "\n";
 
 if ($reset eq "true" && $filename eq "")
 {
@@ -86,15 +86,21 @@ if ($reset eq "true" && $filename eq "")
 		$socket = atomd_initialize($hostname, $port);
 		atomjs_write($socket, "Node_ResetNative('".$hwid."');\n");
 		print atomjs_read_line($socket);
+		$success = 0;
 		for ($count = 0; $count < 15; $count++)
 		{
 			atomjs_write($socket, "Node_ResetPollNative();\n");
 			if (atomjs_read_line($socket) =~ m/true/)
 			{
 				print "\033[32m" . $hwid . " started okay.\033[0m\n";
+				$success = 1;
 				last;
 			}
 			usleep(200000);
+		}
+		if ($success == 0)
+		{
+			print "\033[31mTimed out waiting for reset.\033[0m\n";
 		}
 	}
 	else
@@ -117,17 +123,39 @@ else
 		@filecontents = <FP>;
 		close FP;
 		$socket = atomd_initialize($hostname, $port);
-
-		atomjs_write($socket, "Node_ProgramNative('".$hwid."', '".$bios."'");
-#		print "Node_ProgramNative('".$hwid."', '".$bios."'";
-		foreach $filerow (@filecontents) {
+		atomjs_write($socket, "Node_ClearHex();\n");
+		atomjs_read_line($socket);
+		my $linenums = 0;
+		foreach $filerow (@filecontents) 
+		{
 			$filerow =~ s/^\s+//;
 			$filerow =~ s/\s+$//;
-			atomjs_write($socket, ", '" . $filerow . "'");
-			print ", '".$filerow."'";
+			$linenums += 1;
+			$command = "Node_AppendHexNative('".$filerow."');\n";
+			atomjs_write($socket, $command);
+			atomjs_read_line($socket);
 		}
-		atomjs_write($socket, ");\n");
-#		print ");\n";
+		$command = "Node_ProgramNative('".$hwid."', '".$bios."', '".$linenums."');\n";
+		atomjs_write($socket, $command);
+		#print $command;
+		print atomjs_read_line($socket);
+atomd_disconnect($socket);
+#		$success = 0;
+#		for ($count = 0; $count < 150; $count++)
+#		{
+#			atomjs_write($socket, "Node_ProgramPollNative();\n");
+#			if (atomjs_read_line($socket) =~ m/true/)
+#			{
+#				print "\033[32m" . $hwid . " started okay.\033[0m\n";
+#				$success = 1;
+#				last;
+#			}
+#			usleep(200000);
+#		}
+#		if ($success == 0)
+#		{
+#			print "\033[31mTimed out waiting for program to finish.\033[0m\n";
+#		}
 	}
 	else
 	{
@@ -143,7 +171,8 @@ else
 		atomd_kill_promt($socket);
 	
 		my $linenums = 0;
-		foreach $filerow (@filecontents) {
+		foreach $filerow (@filecontents) 
+		{
 			#print "Sending Node_AppendHex $filerow \n";
 			#$filerow =~ s/^\s+//;
 			#$filerow =~ s/\s+$//;
@@ -158,6 +187,7 @@ else
 
 #		my $result = system("atomic -s $hostname -p $port -c \"Node_Program $hwid $bios $filename\"");
 #		exit($result);
+	}
 }
 
 exit(0);

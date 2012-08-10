@@ -16,6 +16,12 @@ sub atomd_connect
 	return $socket;
 }
 
+sub atomd_disconnect
+{
+	($socket) = @_;
+	close($socket);
+}
+
 # ----------------- Atom JS functions -----------------
 sub atomjs_read_line
 {
