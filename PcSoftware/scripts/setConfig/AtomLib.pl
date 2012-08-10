@@ -16,6 +16,39 @@ sub atomd_connect
 	return $socket;
 }
 
+# ----------------- Atom JS functions -----------------
+sub atomjs_read_line
+{
+	($socket) = @_;
+	# read line
+	defined( $result = <$socket> ) or die "Readline failed: $! \n";
+	
+	return $result;
+}
+
+sub atomjs_write
+{
+	($socket, $command) = @_;
+	print $socket $command;
+}
+
+#function atomjs_data_available($socket)
+#{
+#	$read   = array($socket);
+#	$write  = NULL;
+#	$except = NULL;
+	
+#	if (false === ($num_changed_streams = stream_select($read, $write, $except, 0)))
+#	{
+#		throw new Exception("could not do select on socket");
+#	}
+
+#	return $num_changed_streams > 0;
+#}
+
+
+# ----------------- Atomic functions -----------------
+
 sub atomd_read_packet
 {
 	($socket) = @_;
@@ -108,7 +141,6 @@ sub atomd_read_command_response
 	while (1)
 	{
 		$packet = atomd_read_packet($socket);
-
 		if (substr($packet, 0, 4) ne "TEXT")
 		{
 			last;
