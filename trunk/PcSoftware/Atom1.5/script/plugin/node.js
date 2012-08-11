@@ -7,27 +7,38 @@ Node_ProgramClientId = null;
 
 Node_WaitClientId = null;
 
+Node_Native_Reset = false;
+Node_Native_Program = false;
+//Node_Native_WaitNodeId = null;
+
 Node_HexData = "";
 Node_HexNumLines = 0;
 
 function Node_OnChange(node_id, available)
 {
+Log("Node_OnChange "+Node_ResetNodeId+" "+Node_ProgramNodeId+" "+node_id+" "+available+"\n");
 	if (node_id == Node_ResetNodeId && available)
 	{
+Log("ResetNodeId "+Node_Native_Reset+"\n");
 		Console_LogToClient(Node_ResetClientId, "\033[32m" + Node_ResetNodeId + " started okay.\033[0m\n");
 
-    Console_NewConnection(Node_ResetClientId); // This is a ugly hack for a bad design for multiusers
-    Node_ResetNodeId = null;
-    Node_ResetClientId = null;
+        Console_NewConnection(Node_ResetClientId); // This is a ugly hack for a bad design for multiusers
+        Node_ResetNodeId = null;
+        Node_ResetClientId = null;
+        
+        Node_Native_Reset = true;
 	}
 
 	if (node_id == Node_ProgramNodeId && available)
     {
+Log("ProgramNodeId "+Node_Native_Program+"\n");
         Console_LogToClient(Node_ProgramClientId, "\033[32m" + Node_ProgramNodeId + " started okay.\033[0m\n");
 
         Console_NewConnection(Node_ProgramClientId); // This is a ugly hack for a bad design for multiusers
         Node_ProgramNodeId = null;
         Node_ProgramClientId = null;
+        
+        Node_Native_Program = true;
     }
 
     if (Node_WaitClientId != null && available)
@@ -102,6 +113,30 @@ function Node_ListAvailable()
 }
 Console_RegisterCommand(Node_ListAvailable);
 
+function Node_ResetPollNative()
+{
+	return Node_Native_Reset;
+}
+
+function Node_ResetNative(node_id)
+{
+	if (arguments.length < 1)
+	{
+		return "\033[31mError: Not enough parameters given.\033[0m";
+	}
+
+	Node_Native_Reset = false;
+	if (!NodeExport_ResetNode(node_id))
+	{
+		return "\033[31mError: Failed to send reset, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m";
+	}
+
+	Node_ResetClientId = Console_GetClientId();
+	Node_ResetNodeId = node_id;
+
+	return "Reset command sent successfully";
+}
+
 function Node_Reset(node_id)
 {
 	if (arguments.length < 1)
@@ -114,17 +149,60 @@ function Node_Reset(node_id)
 
 	if (!NodeExport_ResetNode(node_id))
 	{
-		Log("\033[31mFailed to send reset.\033[0m\n");
+		Log("\033[31mFailed to send reset, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m\n");
 		return false;
 	}
 
-	Node_ProgramClientId = Console_GetClientId();
-	Node_ProgramNodeId = node_id;
+	Node_ResetClientId = Console_GetClientId();
+	Node_ResetNodeId = node_id;
 	Console_PreventDefaultPrompt();
 
 	return true;
 }
 Console_RegisterCommand(Node_Reset, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Node_GetAvailableIds()); });
+
+function Node_ProgramPollNative()
+{
+	return Node_Native_Program;
+}
+
+function Node_AppendHexNative(hexrow)
+{
+    if (arguments.length < 1)
+    {
+        return "\033[31mError: Not enough parameters given.\033[0m";
+    }
+
+    Node_HexData = Node_HexData + hexrow + "\n";
+    Node_HexNumLines += 1;
+
+    return true;
+}
+
+function Node_ProgramNative(node_id, bios, hexnumlines)
+{
+    if (arguments.length < 3)
+    {
+        return "\033[31mError: Not enough parameters given.\033[0m";
+    }
+    if (Node_HexNumLines != hexnumlines)
+    {
+        return "\033[31mError: Number of hex lines does not match received (" + Node_HexNumLines + " received, should be " + hexnumlines + ").\033[0m";
+    }
+    
+	Node_Native_Program = false;
+    if (!NodeExport_ProgramNodeHex(node_id, bios > 0, Node_HexData))
+    {
+        return "\033[31mError: Failed to start programming, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m";
+    }
+
+    Node_ProgramClientId = Console_GetClientId();
+    Node_ProgramNodeId = node_id;
+    Node_HexData = "";
+    Node_HexNumLines = 0;
+
+    return "Program command sent successfully";
+}
 
 function Node_Program(node_id, bios, filename)
 {
@@ -138,12 +216,12 @@ function Node_Program(node_id, bios, filename)
 
     if (!NodeExport_ProgramNode(node_id, bios > 0, filename))
     {
-        Log("\033[31mFailed to start programming.\033[0m\n");
+        Log("\033[31mFailed to start programming, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m\n");
         return false;
     }
 
-    Node_ResetClientId = Console_GetClientId();
-    Node_ResetNodeId = node_id;
+    Node_ProgramClientId = Console_GetClientId();
+    Node_ProgramNodeId = node_id;
     Console_PreventDefaultPrompt();
 
     return true;
@@ -167,12 +245,12 @@ function Node_ProgramHex(node_id, bios, hexnumlines)
 
     if (!NodeExport_ProgramNodeHex(node_id, bios > 0, Node_HexData))
     {
-        Log("\033[31mFailed to start programming.\033[0m\n");
+        Log("\033[31mFailed to start programming, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m\n");
         return false;
     }
 
-    Node_ResetClientId = Console_GetClientId();
-    Node_ResetNodeId = node_id;
+    Node_ProgramClientId = Console_GetClientId();
+    Node_ProgramNodeId = node_id;
     Console_PreventDefaultPrompt();
 
     Node_HexData = "";
