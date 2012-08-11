@@ -79,13 +79,20 @@ print "Atom address: " . $hostname . ":" . $port . "\n";
 print "Hexfile: " . $filename . "\n";
 #print "Parameters: " . "\n";
 
+############################## RESET ##############################
 if ($reset eq "true" && $filename eq "")
 {
 	if ($port == 1203)
 	{
 		$socket = atomd_initialize($hostname, $port);
 		atomjs_write($socket, "Node_ResetNative('".$hwid."');\n");
-		print atomjs_read_line($socket);
+		$response = atomjs_read_line($socket);
+		if ($response =~ m/Error/)
+		{
+			die $response;
+		}
+		print $response;
+
 		$success = 0;
 		for ($count = 0; $count < 15; $count++)
 		{
@@ -115,6 +122,7 @@ if ($reset eq "true" && $filename eq "")
 		#exit($result);
 	}
 }
+############################## REPROGRAM ##############################
 else
 {
 	if ($port == 1203)
@@ -133,29 +141,38 @@ else
 			$linenums += 1;
 			$command = "Node_AppendHexNative('".$filerow."');\n";
 			atomjs_write($socket, $command);
-			atomjs_read_line($socket);
+			$response = atomjs_read_line($socket);
+			if ($response =~ m/Error/)
+			{
+				die $response;
+			}
 		}
 		$command = "Node_ProgramNative('".$hwid."', '".$bios."', '".$linenums."');\n";
 		atomjs_write($socket, $command);
 		#print $command;
-		print atomjs_read_line($socket);
-atomd_disconnect($socket);
-#		$success = 0;
-#		for ($count = 0; $count < 150; $count++)
-#		{
-#			atomjs_write($socket, "Node_ProgramPollNative();\n");
-#			if (atomjs_read_line($socket) =~ m/true/)
-#			{
-#				print "\033[32m" . $hwid . " started okay.\033[0m\n";
-#				$success = 1;
-#				last;
-#			}
-#			usleep(200000);
-#		}
-#		if ($success == 0)
-#		{
-#			print "\033[31mTimed out waiting for program to finish.\033[0m\n";
-#		}
+		$response = atomjs_read_line($socket);
+		if ($response =~ m/Error/)
+		{
+			die $response;
+		}
+		print $response;
+#atomd_disconnect($socket);
+		$success = 0;
+		for ($count = 0; $count < 150; $count++)
+		{
+			atomjs_write($socket, "Node_ProgramPollNative();\n");
+			if (atomjs_read_line($socket) =~ m/true/)
+			{
+				print "\033[32m" . $hwid . " started okay.\033[0m\n";
+				$success = 1;
+				last;
+			}
+			usleep(200000);
+		}
+		if ($success == 0)
+		{
+			print "\033[31mTimed out waiting for program to finish.\033[0m\n";
+		}
 	}
 	else
 	{
