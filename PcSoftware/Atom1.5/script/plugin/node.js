@@ -9,17 +9,17 @@ Node_WaitClientId = null;
 
 Node_Native_Reset = false;
 Node_Native_Program = false;
-//Node_Native_WaitNodeId = null;
+Node_Native_WaitNodeId = false;
 
 Node_HexData = "";
 Node_HexNumLines = 0;
 
 function Node_OnChange(node_id, available)
 {
-Log("Node_OnChange "+Node_ResetNodeId+" "+Node_ProgramNodeId+" "+node_id+" "+available+"\n");
+//Log("Node_OnChange "+Node_ResetNodeId+" "+Node_ProgramNodeId+" "+node_id+" "+available+"\n");
 	if (node_id == Node_ResetNodeId && available)
 	{
-Log("ResetNodeId "+Node_Native_Reset+"\n");
+//Log("ResetNodeId "+Node_Native_Reset+"\n");
 		Console_LogToClient(Node_ResetClientId, "\033[32m" + Node_ResetNodeId + " started okay.\033[0m\n");
 
         Console_NewConnection(Node_ResetClientId); // This is a ugly hack for a bad design for multiusers
@@ -31,7 +31,7 @@ Log("ResetNodeId "+Node_Native_Reset+"\n");
 
 	if (node_id == Node_ProgramNodeId && available)
     {
-Log("ProgramNodeId "+Node_Native_Program+"\n");
+//Log("ProgramNodeId "+Node_Native_Program+"\n");
         Console_LogToClient(Node_ProgramClientId, "\033[32m" + Node_ProgramNodeId + " started okay.\033[0m\n");
 
         Console_NewConnection(Node_ProgramClientId); // This is a ugly hack for a bad design for multiusers
@@ -44,6 +44,7 @@ Log("ProgramNodeId "+Node_Native_Program+"\n");
     if (Node_WaitClientId != null && available)
     {
         var result = NodeExport_GetNodeInformation(node_id);
+        Node_Native_WaitNodeId = node_id;
 
         if (!result)
         {
@@ -112,6 +113,38 @@ function Node_ListAvailable()
 	return true;
 }
 Console_RegisterCommand(Node_ListAvailable);
+
+function Node_WaitNodePollNative()
+{
+	if (Node_Native_WaitNodeId)
+	{
+		var result = NodeExport_GetNodeInformation(Node_Native_WaitNodeId);
+
+		if (!result)
+		{
+			return "\033[31mError: No node with id " + Node_Native_WaitNodeId + " found.\033[0m";
+		}
+
+		var date = new Date(result["LastActive"] * 1000);
+
+		return "Id: " + result["Id"] + "\t"+
+		"Valid: " + result["Valid"] + "\t"+
+		"Bios Version: " + result["BiosVersion"] + "\t"+
+		"Device Type: " + result["DeviceType"] + "\t"+
+		"Has Application: " + result["HasApplication"] + "\t"+
+		"Last Active: " + date.toString();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function Node_WaitForInformationNative()
+{
+    Node_WaitClientId = Console_GetClientId();
+    Node_Native_WaitNodeId = false;
+}
 
 function Node_ResetPollNative()
 {
