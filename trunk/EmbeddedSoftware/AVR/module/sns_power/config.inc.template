@@ -14,6 +14,7 @@ sns_power_SEND_PERIOD=10
 
 sns_power_10000_PULSES_PER_KWH=1
 #sns_power_1000_PULSES_PER_KWH=1
+#sns_power_100_PULSES_PER_KWH=1
 
 # if sns_power_SEND_1_MIN_AVG is active, also enable the sns_power_SEND_TIMER_1_MIN_AVG
 #sns_power_SEND_1_MIN_AVG=1
