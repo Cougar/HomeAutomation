@@ -334,6 +334,23 @@ bool Manager::ResetNode(Node::Id node_id)
   return true;
 }
 
+unsigned int Manager::GetProgramProgress(Node::Id node_id)
+{
+  LOG_DEBUG_ENTER;
+
+  NodeList::iterator it = this->nodes_.find(node_id);
+
+  if (it == this->nodes_.end())
+  {
+    log::Error(log_module_, "Could not find node %s.", node_id.c_str());
+    return 0;
+  }
+  
+  return it->second->GetProgramProgress();
+
+  LOG_DEBUG_EXIT;
+}
+
 bool Manager::ProgramNode(Node::Id node_id, bool is_bios, std::string filename)
 {
   LOG_DEBUG_ENTER;

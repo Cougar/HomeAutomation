@@ -442,5 +442,11 @@ void Node::SendListRequest()
 	}
 }
 
+unsigned int Node::GetProgramProgress()
+{
+	//100 * current_offset_ / this->code_->GetLength()
+	return 100 * this->current_offset_ / this->code_->GetLength();
+}
+
 }; // namespace control
 }; // namespace atom

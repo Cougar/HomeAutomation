@@ -110,6 +110,8 @@ public:
     void ProgramBios(Code::Pointer code);
     void Reset();
     
+    unsigned int GetProgramProgress();
+    
 private:
     typedef std::map<Event, State> Transition;
     typedef std::map<State, Transition> TransitionList;

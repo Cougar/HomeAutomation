@@ -212,6 +212,21 @@ function Node_AppendHexNative(hexrow)
     return true;
 }
 
+function Node_GetProgramProgress(node_id)
+{
+    if (arguments.length < 1)
+    {
+        return "\033[31mError: Not enough parameters given.\033[0m";
+    }
+    
+    //if (!NodeExport_ProgramNodeHex(node_id, bios > 0, Node_HexData))
+    //{
+    //    return "\033[31mError: Failed to start programming, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m";
+    //}
+
+    return NodeExport_GetProgramProgress(node_id);
+}
+
 function Node_ProgramNative(node_id, bios, hexnumlines)
 {
     if (arguments.length < 3)
