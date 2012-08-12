@@ -266,6 +266,7 @@ void Node::Trigger(Node::Event event, common::StringMap variables)
 		}
 		else if (target_state == STATE_BPGM_OFFLINE || target_state == STATE_APGM_OFFLINE)
 		{
+		    this->current_offset_ = 0;
 		    if (event != EVENT_BIOS_START)
 		    {
 		        this->SendReset();
@@ -444,8 +445,14 @@ void Node::SendListRequest()
 
 unsigned int Node::GetProgramProgress()
 {
-	//100 * current_offset_ / this->code_->GetLength()
-	return 100 * this->current_offset_ / this->code_->GetLength();
+	//if ( this->state_ == STATE_APGM_START || this->state_ == STATE_BPGM_START || this->state_ == STATE_APGM_DATA || this->state_ == STATE_BPGM_DATA || this->state_ == STATE_APGM_END || this->state_ == STATE_BPGM_END || this->state_ == STATE_BPGM_COPY )
+	//{
+		return 100 * this->current_offset_ / this->code_->GetLength();
+	//}
+	//else
+	//{
+	//	return 0;
+	//}
 }
 
 }; // namespace control
