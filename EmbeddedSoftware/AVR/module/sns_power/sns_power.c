@@ -88,6 +88,11 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 			lastMeasurment =  Timer_GetTicks() - PreviusTimerValue;
 			MeasurmentBuffer[MeasurmentBufferPointer] = (uint16_t) (lastMeasurment & 0x0000FFFF);
 			PreviusTimerValue = Timer_GetTicks();
+			#if sns_power_100_PULSES_PER_KWH == 1
+				EnergyCounter+=10;
+				if (EnergyCounter % 1024 == 0)
+					StoreInEEPROM = 1;	
+			#endif
 			#if sns_power_1000_PULSES_PER_KWH == 1
 				EnergyCounter++;
 				if (EnergyCounter % 1024 == 0)
@@ -125,6 +130,9 @@ void sns_power_pcint_callback_ch2(uint8_t id, uint8_t status)
 			lastMeasurment_ch2 =  Timer_GetTicks() - PreviusTimerValue_ch2;
 			MeasurmentBuffer_ch2[MeasurmentBufferPointer_ch2] = (uint16_t) (lastMeasurment_ch2 & 0x0000FFFF);
 			PreviusTimerValue_ch2 = Timer_GetTicks();
+			#if sns_power_100_PULSES_PER_KWH == 1
+				EnergyCounter_ch2+=10;
+			#endif
 			#if sns_power_1000_PULSES_PER_KWH == 1
 				EnergyCounter_ch2++;
 			#endif
@@ -227,6 +235,9 @@ void sns_power_Process(void)
 			 Avg32 += MeasurmentBuffer[i]; 
 		}
 		Avg32 /= 32;
+		#if sns_power_100_PULSES_PER_KWH == 1
+			Avg32 = (36000000UL/Avg32);
+		#endif
 		#if sns_power_1000_PULSES_PER_KWH == 1
 			Avg32 = (3600000/Avg32);
 		#endif
@@ -241,6 +252,9 @@ void sns_power_Process(void)
 		txMsg.Header.ModuleId = sns_power_ID;
 		txMsg.Header.Command = CAN_MODULE_CMD_PHYSICAL_ELECTRICPOWER;
 		txMsg.Length = 8;
+		#if sns_power_100_PULSES_PER_KWH == 1
+			uint32_t tmp = 36000000UL/MeasurmentBuffer[MeasurmentBufferPointer];
+		#endif
 		#if sns_power_1000_PULSES_PER_KWH == 1
 			uint32_t tmp = 3600000/MeasurmentBuffer[MeasurmentBufferPointer];
 		#endif
@@ -263,6 +277,9 @@ void sns_power_Process(void)
 			 Avg32_ch2 += MeasurmentBuffer_ch2[i]; 
 		}
 		Avg32_ch2 /= 32;
+		#if sns_power_100_PULSES_PER_KWH == 1
+			Avg32_ch2 = (36000000UL/Avg32_ch2);
+		#endif
 		#if sns_power_1000_PULSES_PER_KWH == 1
 			Avg32_ch2 = (3600000/Avg32_ch2);
 		#endif
@@ -271,6 +288,9 @@ void sns_power_Process(void)
 		#endif
 			
 		txMsg.Header.ModuleId = sns_power_ID_ch2;
+		#if sns_power_100_PULSES_PER_KWH == 1
+			tmp = 36000000UL/MeasurmentBuffer_ch2[MeasurmentBufferPointer_ch2];
+		#endif
 		#if sns_power_1000_PULSES_PER_KWH == 1
 			tmp = 3600000/MeasurmentBuffer_ch2[MeasurmentBufferPointer_ch2];
 		#endif
