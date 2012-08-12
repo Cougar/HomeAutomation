@@ -64,6 +64,7 @@ public:
   common::StringList GetAvailableModules();
   
   common::StringList GetAvailableNodes();
+  unsigned int GetProgramProgress(Node::Id node_id);
   bool ProgramNode(Node::Id node_id, bool is_bios, std::string filename);
   bool ProgramNodeHex(Node::Id node_id, bool is_bios, std::string hex_data);
   bool ResetNode(Node::Id node_id);

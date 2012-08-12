@@ -158,20 +158,37 @@ else
 		print $response;
 #atomd_disconnect($socket);
 		$success = 0;
+		$alreadyprintfull = 0;
 		for ($count = 0; $count < 150; $count++)
 		{
 			atomjs_write($socket, "Node_ProgramPollNative();\n");
 			if (atomjs_read_line($socket) =~ m/true/)
 			{
-				print "\033[32m" . $hwid . " started okay.\033[0m\n";
+				print progress_bar( 100, 100, 40, '=' );
+				print "\n\033[32m" . $hwid . " started okay.\033[0m\n";
 				$success = 1;
 				last;
 			}
+			atomjs_write($socket, "Node_GetProgramProgress('".$hwid."');\n");
+			$response = atomjs_read_line($socket);
+			if ($response =~ m/Error/)
+			{
+				die $response;
+			}
+			$response =~ s/^\s+//;
+			$response =~ s/\s+$//;
+			if ($response > 99)
+			{
+				$response = 99;
+			}
+			#print $response."\n";
+			print progress_bar( $response, 100, 40, '=' );
+			
 			usleep(200000);
 		}
 		if ($success == 0)
 		{
-			print "\033[31mTimed out waiting for program to finish.\033[0m\n";
+			print "\n\033[31mTimed out waiting for program to finish.\033[0m\n";
 		}
 	}
 	else
@@ -208,3 +225,15 @@ else
 }
 
 exit(0);
+
+# wget-style. routine by tachyon
+# at http://tachyon.perlmonk.org/
+sub progress_bar {
+    my ( $got, $total, $width, $char ) = @_;
+    $width ||= 25; $char ||= '=';
+    my $num_width = length $total;
+    sprintf "|%-${width}s| (%.2f%%)\r", 
+        $char x (($width-1)*$got/$total). '>', 
+        $got, $total, 100*$got/+$total;
+}
+
