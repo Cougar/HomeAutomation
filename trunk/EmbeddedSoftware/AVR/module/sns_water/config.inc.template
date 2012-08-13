@@ -1,0 +1,20 @@
+## Section sns_water -- Do not edit this line
+
+# Use eeprom to store total water consumption
+#sns_water_USEEEPROM=1
+
+sns_water_HIGH_THRESHOLD_MV=2400
+sns_water_LOW_THRESHOLD_MV=2250
+sns_water_SEND_PERIOD_S=10
+sns_water_AD_CHANNEL=1
+# The water volume for one cog-edge on the wheel, cannot be higher than 1000
+sns_water_ML_PER_TICK=25
+
+# Normally you don't need to edit below
+sns_water_ADPOLL_TIMER=<TIMER>
+sns_water_SEND_TIMER=<TIMER>
+# Conversion takes about 0.1ms on 8MHz FCPU (unless another module is using AD)
+sns_water_ADPOLL_PERIOD_MS=5
+sns_water_ID=<ID>
+
+## End section sns_water -- Do not edit this line
