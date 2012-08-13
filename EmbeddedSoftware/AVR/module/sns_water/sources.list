@@ -1,0 +1,6 @@
+# List all files that needs to be compiled here
+drivers/adc/adc.c
+sns_water/sns_water.c
+#Uncomment the line below if you want to use EEPROM with this module
+drivers/misc/eeprom_crc8.c
+
