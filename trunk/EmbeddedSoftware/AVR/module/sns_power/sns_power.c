@@ -4,11 +4,14 @@
 static uint32_t volatile PreviusTimerValue, lastMeasurment;
 
 #ifdef sns_power_10000_PULSES_PER_KWH
-  static uint8_t volatile tmpCounter=0;
+static uint8_t volatile tmpCounter=0;
 #endif
 static uint8_t volatile StoreInEEPROM = 0;
 static uint8_t sns_power_ReportInterval = (uint8_t)sns_power_SEND_PERIOD;
-static uint16_t volatile MeasurmentBuffer[32]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+static uint16_t volatile MeasurmentBuffer[32]= {0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+												0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+												0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+												0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff};
 static uint8_t volatile MeasurmentBufferPointer=0;
 static uint32_t volatile EnergyCounter=0;
 #if sns_power_SEND_1_MIN_AVG == 1
@@ -16,12 +19,15 @@ static uint32_t volatile EnergyCounter=0;
 #endif
 
 #ifdef POWER_SNS_PIN_ch2
-  static uint32_t volatile PreviusTimerValue_ch2, lastMeasurment_ch2;
+static uint32_t volatile PreviusTimerValue_ch2, lastMeasurment_ch2;
 
-  #ifdef sns_power_10000_PULSES_PER_KWH
-    static uint8_t volatile tmpCounter_ch2=0;
-  #endif
-  static uint16_t volatile MeasurmentBuffer_ch2[32]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+#ifdef sns_power_10000_PULSES_PER_KWH
+static uint8_t volatile tmpCounter_ch2=0;
+#endif
+static uint16_t volatile MeasurmentBuffer_ch2[32]= {0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+													0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+													0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,
+													0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff};
   static uint8_t volatile MeasurmentBufferPointer_ch2=0;
   static uint32_t volatile EnergyCounter_ch2=0;
   #if sns_power_SEND_1_MIN_AVG == 1
