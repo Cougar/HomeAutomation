@@ -28,7 +28,7 @@ function Node_OnChange(node_id, available)
         Node_ResetNodeId = null;
         Node_ResetClientId = null;
 	}
-	if (node_id == Node_ResetNodeId && available)
+	if (node_id == Node_ResetNodeNativeId && available)
 	{
         Node_Native_Reset = true;
         Node_ResetNodeNativeId = null;
@@ -43,7 +43,7 @@ function Node_OnChange(node_id, available)
         Node_ProgramNodeId = null;
         Node_ProgramClientId = null;
     }
-	if (node_id == Node_ProgramNodeId && available)
+	if (node_id == Node_ProgramNodeNativeId && available)
     {
         Node_ProgramNodeNativeId = null;
         Node_Native_Program = true;
