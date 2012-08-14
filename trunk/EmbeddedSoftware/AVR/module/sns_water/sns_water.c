@@ -94,12 +94,12 @@ void sns_water_Process(void)
 	{
 		sns_water_microliter_cnt += sns_water_UL_PER_TICK;
 		/* If microliter counter has more than one liter */
-		while (sns_water_microliter_cnt >= 1000)
+		while (sns_water_microliter_cnt >= MIKROLITERINLITER)
 		{
 			/* Add one liter to liter counter */
 			sns_water_liter_cnt += 1;
 			/* Decrease microliter counter with the volume added to liter counter */
-			sns_water_microliter_cnt -= 1000;
+			sns_water_microliter_cnt -= MIKROLITERINLITER;
 		}
 		
 		sns_water_Buffer[sns_water_Buf_Pointer] = Timer_GetTicks() - sns_water_TimePrevTick;
