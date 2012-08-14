@@ -8,6 +8,10 @@ static uint32_t volatile sns_water_TimePrevTick;
 static uint32_t volatile sns_water_Buffer[4]= {0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff};
 static uint8_t volatile sns_water_Buf_Pointer=0;
 
+/* Set this parameter to 1000 to send volume in ml instead of liters, useful for debugging */
+#define MIKROLITERINLITER 1000000
+
+/* When printf is enabled the number of ticks are sent on can instead of volume */
 #if CAN_PRINTF==1
 uint32_t sns_water_debug_cnt=0;
 #endif
@@ -90,12 +94,12 @@ void sns_water_Process(void)
 	{
 		sns_water_microliter_cnt += sns_water_UL_PER_TICK;
 		/* If microliter counter has more than one liter */
-		if (sns_water_microliter_cnt >= 1000000)
+		while (sns_water_microliter_cnt >= 1000)
 		{
 			/* Add one liter to liter counter */
 			sns_water_liter_cnt += 1;
 			/* Decrease microliter counter with the volume added to liter counter */
-			sns_water_microliter_cnt -= 1000000;
+			sns_water_microliter_cnt -= 1000;
 		}
 		
 		sns_water_Buffer[sns_water_Buf_Pointer] = Timer_GetTicks() - sns_water_TimePrevTick;
@@ -145,7 +149,7 @@ void sns_water_Process(void)
 				sns_water_Buf_Pointer = 0;
 			}
 		}
-#ifdef CAN_PRINTF
+#if CAN_PRINTF==1
 		//printf("c:%d\n", sns_water_debug_cnt);
 #endif
 	}
