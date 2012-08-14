@@ -7,6 +7,8 @@ Node_ProgramClientId = null;
 
 Node_WaitClientId = null;
 
+Node_ResetNodeNativeId = null;
+Node_ProgramNodeNativeId = null;
 Node_Native_Reset = false;
 Node_Native_Program = false;
 Node_Native_WaitNodeId = false;
@@ -25,9 +27,12 @@ function Node_OnChange(node_id, available)
         Console_NewConnection(Node_ResetClientId); // This is a ugly hack for a bad design for multiusers
         Node_ResetNodeId = null;
         Node_ResetClientId = null;
-        
-        Node_Native_Reset = true;
 	}
+	if (node_id == Node_ResetNodeId && available)
+	{
+        Node_Native_Reset = true;
+        Node_ResetNodeNativeId = null;
+    }
 
 	if (node_id == Node_ProgramNodeId && available)
     {
@@ -37,7 +42,10 @@ function Node_OnChange(node_id, available)
         Console_NewConnection(Node_ProgramClientId); // This is a ugly hack for a bad design for multiusers
         Node_ProgramNodeId = null;
         Node_ProgramClientId = null;
-        
+    }
+	if (node_id == Node_ProgramNodeId && available)
+    {
+        Node_ProgramNodeNativeId = null;
         Node_Native_Program = true;
     }
 
@@ -164,8 +172,7 @@ function Node_ResetNative(node_id)
 		return "\033[31mError: Failed to send reset, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m";
 	}
 
-	Node_ResetClientId = Console_GetClientId();
-	Node_ResetNodeId = node_id;
+	Node_ResetNodeNativeId = node_id;
 
 	return "Reset command sent successfully";
 }
@@ -244,8 +251,7 @@ function Node_ProgramNative(node_id, bios, hexnumlines)
         return "\033[31mError: Failed to start programming, this can happen if node only contains bios and it was connected before atom was started/restarted.\033[0m";
     }
 
-    Node_ProgramClientId = Console_GetClientId();
-    Node_ProgramNodeId = node_id;
+    Node_ProgramNodeNativeId = node_id;
     Node_HexData = "";
     Node_HexNumLines = 0;
 
