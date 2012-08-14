@@ -1,4 +1,5 @@
 Require("interface/power.js");
+Require("interface/water.js");
 Require("interface/dimmer.js");
 Require("interface/irout.js");
 Require("interface/irin.js");
