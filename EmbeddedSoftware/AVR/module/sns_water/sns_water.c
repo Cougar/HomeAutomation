@@ -1,12 +1,16 @@
 
 #include "sns_water.h"
 
-uint8_t sns_water_status = LOW;
-uint32_t sns_water_liter_cnt=0;
-uint16_t sns_water_milliliter_cnt=0;
+static uint8_t volatile sns_water_status = LOW;
+static uint32_t volatile sns_water_liter_cnt=0;
+static uint32_t volatile sns_water_microliter_cnt=0;
 static uint32_t volatile sns_water_TimePrevTick;
-static uint32_t volatile sns_water_Buffer[4]= {0xffff,0xffff,0xffff,0xffff};
+static uint32_t volatile sns_water_Buffer[4]= {0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff};
 static uint8_t volatile sns_water_Buf_Pointer=0;
+
+#if CAN_PRINTF==1
+uint32_t sns_water_debug_cnt=0;
+#endif
 
 StdCan_Msg_t txMsg;
 
@@ -47,6 +51,12 @@ void sns_water_Init(void)
 	Timer_SetTimeout(sns_water_ADPOLL_TIMER, sns_water_ADPOLL_PERIOD_MS, TimerTypeFreeRunning, 0);
 	Timer_SetTimeout(sns_water_SEND_TIMER, sns_water_SEND_PERIOD_S*1000, TimerTypeFreeRunning, 0);
 
+	uint16_t ADvalue = ADC_Get(sns_water_AD_CHANNEL);
+	if (ADvalue > (sns_water_HIGH_THRESHOLD_MV*1024UL/5000UL))
+	{
+		sns_water_status = HIGH;
+	}
+
 	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_WATER;
@@ -60,7 +70,6 @@ void sns_water_Process(void)
 	/*
 	Notes 
 	maybe its better to skip the poll timer and always poll when in process
-	maybe one need a filter of x samples
 	*/
 	uint8_t oldstatus = sns_water_status;
 	if (Timer_Expired(sns_water_ADPOLL_TIMER))
@@ -69,25 +78,24 @@ void sns_water_Process(void)
 		if (sns_water_status == LOW && ADvalue > (sns_water_HIGH_THRESHOLD_MV*1024UL/5000UL))
 		{
 			sns_water_status = HIGH;
-//printf("H\n");
 		}
 		else if (sns_water_status == HIGH && ADvalue < (sns_water_LOW_THRESHOLD_MV*1024UL/5000UL))
 		{
 			sns_water_status = LOW;
-//printf("L\n");
 		}
 	}
 	
+	/* If status changed */
 	if (oldstatus != sns_water_status)
 	{
-		sns_water_milliliter_cnt += sns_water_ML_PER_TICK;
-		/* If milliliter counter has more than one liter */
-		if (sns_water_milliliter_cnt >= 1000)
+		sns_water_microliter_cnt += sns_water_UL_PER_TICK;
+		/* If microliter counter has more than one liter */
+		if (sns_water_microliter_cnt >= 1000000)
 		{
 			/* Add one liter to liter counter */
 			sns_water_liter_cnt += 1;
-			/* Decrease milliliter counter with the volume added to liter counter */
-			sns_water_milliliter_cnt -= 1000;
+			/* Decrease microliter counter with the volume added to liter counter */
+			sns_water_microliter_cnt -= 1000000;
 		}
 		
 		sns_water_Buffer[sns_water_Buf_Pointer] = Timer_GetTicks() - sns_water_TimePrevTick;
@@ -97,6 +105,10 @@ void sns_water_Process(void)
 		}
 		
 		sns_water_TimePrevTick = Timer_GetTicks();
+
+#if CAN_PRINTF==1
+		sns_water_debug_cnt += 1;
+#endif
 	}
 	
 	if (Timer_Expired(sns_water_SEND_TIMER))
@@ -107,14 +119,20 @@ void sns_water_Process(void)
 		}
 		flow4 = flow4/4;
 		/* The flow is ml per tick / time between ticks */
-		flow4 = sns_water_ML_PER_TICK*1000UL/flow4;
-		//uint16_t flow = sns_water_ML_PER_TICK*1000UL/sns_water_TimeDiff;
+		flow4 = sns_water_UL_PER_TICK/flow4;
+
 		txMsg.Data[0] = (uint8_t)((flow4>>8) & 0xff);
 		txMsg.Data[1] = (uint8_t)(flow4 & 0xff);
 		txMsg.Data[5] = (uint8_t)sns_water_liter_cnt & 0xff;
 		txMsg.Data[4] = (uint8_t)(sns_water_liter_cnt >> 8) & 0xff;
 		txMsg.Data[3] = (uint8_t)(sns_water_liter_cnt >> 16) & 0xff;
 		txMsg.Data[2] = (uint8_t)(sns_water_liter_cnt >> 24) & 0xff;
+#if CAN_PRINTF==1
+		txMsg.Data[5] = (uint8_t)sns_water_debug_cnt & 0xff;
+		txMsg.Data[4] = (uint8_t)(sns_water_debug_cnt >> 8) & 0xff;
+		txMsg.Data[3] = (uint8_t)(sns_water_debug_cnt >> 16) & 0xff;
+		txMsg.Data[2] = (uint8_t)(sns_water_debug_cnt >> 24) & 0xff;
+#endif
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 
 		/* TODO How to handle no flow? (means no ticks, no new time-diffs) */
@@ -127,6 +145,9 @@ void sns_water_Process(void)
 				sns_water_Buf_Pointer = 0;
 			}
 		}
+#ifdef CAN_PRINTF
+		//printf("c:%d\n", sns_water_debug_cnt);
+#endif
 	}
 }
 
