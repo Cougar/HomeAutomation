@@ -176,6 +176,15 @@ uint8_t sns_Serial_setSettings(void)
 
 void sns_Serial_Init()
 {
+	/* Init filter in case eeprom not correct */
+	filter.prefixLength = 0;
+	filter.suffixLength = 0;
+	filter.prefixPattern[0] = 0;
+	filter.prefixPattern[1] = 0;
+	filter.prefixPattern[2] = 0;
+	filter.suffixPattern[0] = 0;
+	filter.suffixPattern[1] = 0;
+	filter.suffixPattern[2] = 0;
 #if sns_Serial_USEEEPROM==1
 	if (EEDATA_OK) {
 	//if (0) {
