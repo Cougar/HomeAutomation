@@ -38,8 +38,7 @@ static uint16_t volatile MeasurmentBuffer_ch2[32]= {0x0000ffff,0x0000ffff,0x0000
   #include "sns_power_eeprom.h"
   struct eeprom_sns_power EEMEM eeprom_sns_power = 
   {
-	  {
-		  ///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
+	  {	  /// Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file. 
 		  (uint8_t)sns_power_SEND_PERIOD,	// reportInterval
 		  0,	// EnergyCounterUpper
 		  0,	// EnergyCounterLower
@@ -96,12 +95,14 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 			PreviusTimerValue = Timer_GetTicks();
 			#if sns_power_100_PULSES_PER_KWH == 1
 				EnergyCounter+=10;
-				if (EnergyCounter % 1024 == 0)
+				//if (EnergyCounter % 1024 == 0)
+				if (EnergyCounter & (1024-1) == 0)
 					StoreInEEPROM = 1;	
 			#endif
 			#if sns_power_1000_PULSES_PER_KWH == 1
 				EnergyCounter++;
-				if (EnergyCounter % 1024 == 0)
+				//if (EnergyCounter % 1024 == 0)
+				if (EnergyCounter & (1024-1) == 0)
 					StoreInEEPROM = 1;	
 			#endif
 			#if sns_power_10000_PULSES_PER_KWH == 1
@@ -111,7 +112,8 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 				#endif
 				if(tmpCounter >= 10) {
 					EnergyCounter++;
-					if (EnergyCounter % 1024 == 0)
+					//if (EnergyCounter % 1024 == 0)
+					if (EnergyCounter & (1024-1) == 0)
 						StoreInEEPROM = 1;
 					tmpCounter = 0;
 				}
@@ -164,8 +166,7 @@ void sns_power_Init(void)
 {
 #if sns_power_USEEEPROM==1
 	if (EEDATA_OK)
-	{
-	  ///TODO: Use stored data to set initial values for the module
+	{  /// Use stored data to set initial values for the module
 	  sns_power_ReportInterval = eeprom_read_byte(EEDATA.reportInterval);
 	  EnergyCounter = eeprom_read_word(EEDATA16.EnergyCounterLower);
 	  EnergyCounter += (((uint32_t)(eeprom_read_word(EEDATA16.EnergyCounterUpper)))<<16);
