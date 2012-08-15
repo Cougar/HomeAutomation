@@ -2,19 +2,12 @@
 #include "sns_water.h"
 
 static uint8_t volatile sns_water_status = LOW;
-static uint32_t volatile sns_water_liter_cnt=0;
-static uint32_t volatile sns_water_microliter_cnt=0;
+static uint8_t sns_water_ReportInterval = (uint8_t)sns_water_SEND_PERIOD_S;
+static uint32_t volatile sns_water_TickCnt=0;
 static uint32_t volatile sns_water_TimePrevTick;
 static uint32_t volatile sns_water_Buffer[4]= {0x0000ffff,0x0000ffff,0x0000ffff,0x0000ffff};
-static uint8_t volatile sns_water_Buf_Pointer=0;
-
-/* Set this parameter to 1000 to send volume in ml instead of liters, useful for debugging */
-#define MIKROLITERINLITER 1000000
-
-/* When printf is enabled the number of ticks are sent on can instead of volume */
-#if CAN_PRINTF==1
-uint32_t sns_water_debug_cnt=0;
-#endif
+static uint8_t volatile sns_water_BufPointer=0;
+static uint32_t volatile sns_water_StoreCnt=0;
 
 StdCan_Msg_t txMsg;
 
@@ -23,10 +16,9 @@ StdCan_Msg_t txMsg;
 struct eeprom_sns_water EEMEM eeprom_sns_water =
 {
 	{
-		///TODO: Define initialization values on the EEPROM variables here, this will generate a *.eep file that can be used to store this values to the node, can in future be done with a EEPROM module and the make-scrips. Write the values in the exact same order as the struct is defined in the *.h file.
-		0xAB,		// x
-		0x1234		// y
-		0x12345678	// z
+		  (uint8_t)sns_water_SEND_PERIOD_S,	// reportInterval
+		  0,	// VolumeCounterUpper
+		  0		// VolumeCounterLower
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 };
@@ -36,16 +28,17 @@ void sns_water_Init(void)
 {
 #if sns_water_USEEEPROM==1
 	if (EEDATA_OK)
-	{
-	  ///TODO: Use stored data to set initial values for the module
-	  blablaX = eeprom_read_byte(EEDATA.x);
-	  blablaY = eeprom_read_word(EEDATA16.y);
-	  blablaZ = eeprom_read_dword(EEDATA32.y);
+	{  // Use stored data to set initial values for the module
+printf("ok\n");
+	  sns_water_ReportInterval = eeprom_read_byte(EEDATA.reportInterval);
+	  sns_water_TickCnt = eeprom_read_word(EEDATA16.VolumeCounterLower);
+	  sns_water_TickCnt += (((uint32_t)(eeprom_read_word(EEDATA16.VolumeCounterUpper)))<<16);
 	} else
 	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-	  eeprom_write_byte_crc(EEDATA.x, 0xAB, WITHOUT_CRC);
-	  eeprom_write_word_crc(EEDATA16.y, 0x1234, WITHOUT_CRC);
-	  eeprom_write_dword_crc(EEDATA32.y, 0x12345678, WITHOUT_CRC);
+printf("nok;");
+	  eeprom_write_byte_crc(EEDATA.reportInterval, sns_water_SEND_PERIOD_S, WITHOUT_CRC);
+	  eeprom_write_word_crc(EEDATA16.VolumeCounterUpper, 0, WITHOUT_CRC);
+	  eeprom_write_word_crc(EEDATA16.VolumeCounterLower, 0, WITHOUT_CRC);
 	  EEDATA_UPDATE_CRC;
 	}
 #endif
@@ -88,33 +81,29 @@ void sns_water_Process(void)
 			sns_water_status = LOW;
 		}
 	}
-	
-	/* If status changed */
+
+	/* If status changed == one tick */
 	if (oldstatus != sns_water_status)
 	{
-		sns_water_microliter_cnt += sns_water_UL_PER_TICK;
-		/* If microliter counter has more than one liter */
-		while (sns_water_microliter_cnt >= MIKROLITERINLITER)
+		sns_water_TickCnt += 1;
+
+		sns_water_Buffer[sns_water_BufPointer] = Timer_GetTicks() - sns_water_TimePrevTick;
+		if (sns_water_BufPointer++ == 4)
 		{
-			/* Add one liter to liter counter */
-			sns_water_liter_cnt += 1;
-			/* Decrease microliter counter with the volume added to liter counter */
-			sns_water_microliter_cnt -= MIKROLITERINLITER;
+			sns_water_BufPointer = 0;
 		}
-		
-		sns_water_Buffer[sns_water_Buf_Pointer] = Timer_GetTicks() - sns_water_TimePrevTick;
-		if (sns_water_Buf_Pointer++ == 4)
-		{
-			sns_water_Buf_Pointer = 0;
-		}
-		
+
 		sns_water_TimePrevTick = Timer_GetTicks();
 
-#if CAN_PRINTF==1
-		sns_water_debug_cnt += 1;
+#if sns_water_USEEEPROM==1
+		if ((sns_water_TickCnt % 2048) == 0)
+		{
+			eeprom_write_word_crc(EEDATA16.VolumeCounterUpper, (uint16_t)((sns_water_TickCnt>>16) & 0xffff), WITHOUT_CRC);
+			eeprom_write_word_crc(EEDATA16.VolumeCounterLower, (uint16_t)(sns_water_TickCnt & 0xffff), WITH_CRC);
+		}
 #endif
 	}
-	
+
 	if (Timer_Expired(sns_water_SEND_TIMER))
 	{
 		uint32_t flow4 = 0;
@@ -127,31 +116,28 @@ void sns_water_Process(void)
 
 		txMsg.Data[0] = (uint8_t)((flow4>>8) & 0xff);
 		txMsg.Data[1] = (uint8_t)(flow4 & 0xff);
-		txMsg.Data[5] = (uint8_t)sns_water_liter_cnt & 0xff;
-		txMsg.Data[4] = (uint8_t)(sns_water_liter_cnt >> 8) & 0xff;
-		txMsg.Data[3] = (uint8_t)(sns_water_liter_cnt >> 16) & 0xff;
-		txMsg.Data[2] = (uint8_t)(sns_water_liter_cnt >> 24) & 0xff;
+		txMsg.Data[5] = (uint8_t)(sns_water_TickCnt*sns_water_UL_PER_TICK/1000) & 0xff;
+		txMsg.Data[4] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 8) & 0xff;
+		txMsg.Data[3] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 16) & 0xff;
+		txMsg.Data[2] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 24) & 0xff;
 #if CAN_PRINTF==1
-		txMsg.Data[5] = (uint8_t)sns_water_debug_cnt & 0xff;
-		txMsg.Data[4] = (uint8_t)(sns_water_debug_cnt >> 8) & 0xff;
-		txMsg.Data[3] = (uint8_t)(sns_water_debug_cnt >> 16) & 0xff;
-		txMsg.Data[2] = (uint8_t)(sns_water_debug_cnt >> 24) & 0xff;
+//		txMsg.Data[5] = (uint8_t)sns_water_TickCnt & 0xff;
+//		txMsg.Data[4] = (uint8_t)(sns_water_TickCnt >> 8) & 0xff;
+//		txMsg.Data[3] = (uint8_t)(sns_water_TickCnt >> 16) & 0xff;
+//		txMsg.Data[2] = (uint8_t)(sns_water_TickCnt >> 24) & 0xff;
 #endif
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 
 		/* TODO How to handle no flow? (means no ticks, no new time-diffs) */
 		/* This solution starts to fill buffer with older values if ticks come in slower than we send out data */
-		if (Timer_GetTicks() - sns_water_TimePrevTick > sns_water_SEND_PERIOD_S*2000)
+		if (Timer_GetTicks() - sns_water_TimePrevTick > sns_water_SEND_PERIOD_S*1000)
 		{
-			sns_water_Buffer[sns_water_Buf_Pointer] = Timer_GetTicks() - sns_water_TimePrevTick;
-			if (sns_water_Buf_Pointer++ == 4)
+			sns_water_Buffer[sns_water_BufPointer] = Timer_GetTicks() - sns_water_TimePrevTick;
+			if (sns_water_BufPointer++ == 4)
 			{
-				sns_water_Buf_Pointer = 0;
+				sns_water_BufPointer = 0;
 			}
 		}
-#if CAN_PRINTF==1
-		//printf("c:%d\n", sns_water_debug_cnt);
-#endif
 	}
 }
 

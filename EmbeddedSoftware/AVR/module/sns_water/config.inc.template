@@ -1,7 +1,7 @@
 ## Section sns_water -- Do not edit this line
 
 # Use eeprom to store total water consumption
-#sns_water_USEEEPROM=1
+sns_water_USEEEPROM=1
 
 sns_water_HIGH_THRESHOLD_MV=2400
 sns_water_LOW_THRESHOLD_MV=2250
