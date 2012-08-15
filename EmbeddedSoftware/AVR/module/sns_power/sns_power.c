@@ -95,15 +95,13 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 			PreviusTimerValue = Timer_GetTicks();
 			#if sns_power_100_PULSES_PER_KWH == 1
 				EnergyCounter+=10;
-				//if (EnergyCounter % 1024 == 0)
-				if (EnergyCounter & (1024-1) == 0)
-					StoreInEEPROM = 1;	
+				if (EnergyCounter % 1024 == 0)
+					StoreInEEPROM = 1;
 			#endif
 			#if sns_power_1000_PULSES_PER_KWH == 1
 				EnergyCounter++;
-				//if (EnergyCounter % 1024 == 0)
-				if (EnergyCounter & (1024-1) == 0)
-					StoreInEEPROM = 1;	
+				if (EnergyCounter % 1024 == 0)
+					StoreInEEPROM = 1;
 			#endif
 			#if sns_power_10000_PULSES_PER_KWH == 1
 				tmpCounter++;
@@ -112,8 +110,7 @@ void sns_power_pcint_callback(uint8_t id, uint8_t status)
 				#endif
 				if(tmpCounter >= 10) {
 					EnergyCounter++;
-					//if (EnergyCounter % 1024 == 0)
-					if (EnergyCounter & (1024-1) == 0)
+					if (EnergyCounter % 1024 == 0)
 						StoreInEEPROM = 1;
 					tmpCounter = 0;
 				}
