@@ -35,9 +35,9 @@ void sns_water_List(uint8_t ModuleSequenceNumber);
 
 #if sns_water_USEEEPROM==1
 	struct sns_water_Data{
-		///TODO: Define EEPROM variables needed by the module
-		uint8_t x;
-		uint16_t y;
+		uint8_t reportInterval;
+		uint16_t VolumeCounterUpper;
+		uint16_t VolumeCounterLower;
 	};	
 #endif
 
