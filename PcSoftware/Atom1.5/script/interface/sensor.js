@@ -117,7 +117,20 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
             Log("DTMF decoded number is to short, number: \"" + number + "\", length: " + number.length);
             return;
           }
-
+          
+          /* Adding area code prefix if needed */
+          if (number.charAt(0) != '0' && checkName)
+          {
+            if (typeof sensorDefaultPhoneAreaCode === 'undefined')
+            {
+              Log("\033[31mOnlinePhonebook: please add sensorDefaultPhoneAreaCode = yourAreaCode to autostart.js, defaulting to 031\033[0m\n");
+              number = "031" + number;
+            }
+            else
+            {
+                number = sensorDefaultPhoneAreaCode + number;
+            }
+          }
 
           /* Store number and direction in last values */
           var lastValue = {};
@@ -145,14 +158,13 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
           /* Log the number */
           Log("New number: " + number + ", direction: " + (incommingCall ? "in" : "out"));
           
-          
-          var phonebookNumbers;
           /* Lookup name */
           if (checkName)
           {
-            phonebookNumbers = Sensor_StoreNumberInPhonebook(number, timestamp);
+            Sensor_StoreNumberInPhonebook(number, timestamp);
           }
 
+          var phonebookNumbers = Storage_GetJsonParamter("PhoneBook", number);
           if (!phonebookNumbers)
           {
             phonebookNumbers = [];
@@ -214,19 +226,6 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
 
   if (!phonebookNumbers)
   {
-    if (number.charAt(0) != '0')
-    {
-      if (typeof sensorDefaultPhoneAreaCode === 'undefined')
-      {
-        Log("\033[31mOnlinePhonebook: please add sensorDefaultPhoneAreaCode = yourAreaCode to autostart.js, defaulting to 031\033[0m\n");
-        number = "031" + number;
-      }
-      else
-      {
-          number = sensorDefaultPhoneAreaCode + number;
-      }
-    }
-
     phonebookNumbers = [];
 
     url = "wap.eniro.se/query?search_word=" + number + "&what=mobwp";
