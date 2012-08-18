@@ -374,6 +374,26 @@ function Sensor_StoreNumberInPhonebook(number, timestamp)
 }
 Console_RegisterCommand(Sensor_StoreNumberInPhonebook, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args); });
 
+function Sensor_StoreNumberInPhonebookManual(number, name)
+{
+	if (arguments.length < 2)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	
+	var completename = arguments[1];
+	for (var i=2; i<arguments.length; i++)
+	{
+		completename = completename+" "+arguments[i];
+	}
+	
+	phonebookNumbers = [];
+	phonebookNumbers.push(completename);
+	Storage_SetJsonParameter("PhoneBook", number, phonebookNumbers);
+}
+Console_RegisterCommand(Sensor_StoreNumberInPhonebookManual, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args); });
+
 function Sensor_UpdateNameInPhonecalls(timestamp, numbers)
 {
   if (numbers.length > 0)
