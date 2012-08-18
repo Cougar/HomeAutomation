@@ -38,7 +38,8 @@ pages.phonecalls = {
         }
 
         var d = new Date(data.timestamp * 1000);
-        data.time = d.toUTCString();
+        //data.time = d.toUTCString();
+        data.time = d.toDateString()+", "+d.toLocaleTimeString();
 
         if (data.direction === "in" && pageInstance.inText)
         {
