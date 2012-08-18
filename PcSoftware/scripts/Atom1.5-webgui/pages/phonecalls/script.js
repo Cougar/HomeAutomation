@@ -40,6 +40,7 @@ pages.phonecalls = {
         var d = new Date(data.timestamp * 1000);
         //data.time = d.toUTCString();
         data.time = d.toDateString()+", "+d.toLocaleTimeString();
+        data.time2 = jQuery.timeago(d);
 
         if (data.direction === "in" && pageInstance.inText)
         {
