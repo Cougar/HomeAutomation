@@ -159,7 +159,7 @@
     <command id="77" name="Flow" type="physical" module="" description="Message with flow data, such as water flow">
       <variables>
         <variable name="Flow" type="uint" start_bit="0" bit_length="16" unit="Milliliter/s" description=""/>
-        <variable name="Volume" type="uint" start_bit="16" bit_length="32" unit="Liter" description=""/>
+        <variable name="Volume" type="uint" start_bit="16" bit_length="32" unit="Milliliter" description=""/>
       </variables>
     </command>
     
@@ -1356,6 +1356,12 @@
         <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
         <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
         <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+
+    <command id="128" name="setVolume" type="specific" module="water" description="Set the volume value on the water meter module">
+      <variables>
+        <variable name="Volume" type="uint" start_bit="0" bit_length="32" unit="Milliliter" description=""/>
       </variables>
     </command>
 

@@ -143,20 +143,52 @@ void sns_water_Process(void)
 
 void sns_water_HandleMessage(StdCan_Msg_t *rxMsg)
 {
-#if 0
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS &&
 		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_WATER &&
 		rxMsg->Header.ModuleId == sns_water_ID)
 	{
+		StdCan_Msg_t txMsg2;
 		switch (rxMsg->Header.Command)
 		{
-		case CAN_CMD_MODULE_DUMMY:
-		
-		break;
+		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
+			if (rxMsg->Length > 0)
+			{
+				sns_water_ReportInterval = rxMsg->Data[0];
+				Timer_SetTimeout(sns_water_SEND_TIMER, sns_water_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+			}
+			StdCan_Set_class(txMsg2.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg2.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg2.Header.ModuleType = CAN_MODULE_TYPE_SNS_WATER;
+			txMsg2.Header.ModuleId = sns_water_ID;
+			txMsg2.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+			txMsg2.Length = 1;
+			txMsg2.Data[0] = sns_water_ReportInterval;
+			StdCan_Put(&txMsg2);
+			break;
+		case CAN_MODULE_CMD_WATER_SETVOLUME:
+			if (rxMsg->Length == 4)
+			{
+				sns_water_TickCnt = (rxMsg->Data[3]*1000/sns_water_UL_PER_TICK);
+				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[2]*1000/sns_water_UL_PER_TICK))<<8;
+				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[1]*1000/sns_water_UL_PER_TICK))<<16;
+				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[0]*1000/sns_water_UL_PER_TICK))<<24;
+			}
+			StdCan_Set_class(txMsg2.Header, CAN_MODULE_CLASS_SNS);
+			StdCan_Set_direction(txMsg2.Header, DIRECTIONFLAG_FROM_OWNER);
+			txMsg2.Header.ModuleType = CAN_MODULE_TYPE_SNS_WATER;
+			txMsg2.Header.ModuleId = sns_water_ID;
+			txMsg2.Header.Command = CAN_MODULE_CMD_WATER_SETVOLUME;
+			txMsg2.Length = 1;
+			txMsg2.Data[3] = (uint8_t)(sns_water_TickCnt*sns_water_UL_PER_TICK/1000) & 0xff;
+			txMsg2.Data[2] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 8) & 0xff;
+			txMsg2.Data[1] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 16) & 0xff;
+			txMsg2.Data[0] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 24) & 0xff;
+			StdCan_Put(&txMsg2);
+			
+			break;
 		}
 	}
-#endif
 }
 
 void sns_water_List(uint8_t ModuleSequenceNumber)
