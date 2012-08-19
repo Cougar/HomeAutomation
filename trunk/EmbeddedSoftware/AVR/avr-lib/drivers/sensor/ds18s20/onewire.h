@@ -18,7 +18,7 @@
 #ifdef OW_ONE_BUS
 
 #ifndef OW_PIN
-  #warning OW_PIN shall be defined in config.inc, useing OW_PIN=EXP_F... 
+  #warning OW_PIN shall be defined in config.inc, using OW_PIN=EXP_F... 
   #define OW_PIN  EXP_F
 #endif
 

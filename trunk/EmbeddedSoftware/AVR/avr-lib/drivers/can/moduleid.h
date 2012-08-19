@@ -1,4 +1,4 @@
-// Built on Mon Aug 13 22:37:27 2012 by makeCanId.pl
+// Built on Sun Aug 19 13:03:45 2012 by makeCanId.pl
 // DO NOT CHANGE MANUALLY
 
 #ifndef MODULEID_H_
@@ -158,6 +158,7 @@
 #define CAN_MODULE_CMD_DOTMATRIX_IMAGEDATAMODULE2 129
 #define CAN_MODULE_CMD_DOTMATRIX_IMAGEDATAMODULE3 130
 #define CAN_MODULE_CMD_DOTMATRIX_IMAGEDATAMODULE4 131
+#define CAN_MODULE_CMD_WATER_SETVOLUME 128
 
 //------------------------------- //
 // Command enum value definitions //
