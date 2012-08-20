@@ -8,7 +8,7 @@ sns_water_LOW_THRESHOLD_MV=2250
 sns_water_SEND_PERIOD_S=10
 sns_water_AD_CHANNEL=1
 # The water volume for one cog-edge on the wheel, in micro liter
-sns_water_UL_PER_TICK=12500
+sns_water_UL_PER_TICK=12500UL
 
 # Normally you don't need to edit below
 sns_water_ADPOLL_TIMER=<TIMER>

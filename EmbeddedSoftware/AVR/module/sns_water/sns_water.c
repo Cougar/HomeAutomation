@@ -11,6 +11,19 @@ static uint32_t volatile sns_water_StoreCnt=0;
 
 StdCan_Msg_t txMsg;
 
+#if sns_water_UL_PER_TICK % 1000UL == 0
+#define sns_water_CONVERT_DIVIDEND	(sns_water_UL_PER_TICK/1000UL)
+#define sns_water_CONVERT_DIVISOR	1UL
+#elif sns_water_UL_PER_TICK % 100UL == 0
+#define sns_water_CONVERT_DIVIDEND	(sns_water_UL_PER_TICK/100UL)
+#define sns_water_CONVERT_DIVISOR	10UL
+#elif sns_water_UL_PER_TICK % 10UL == 0
+#define sns_water_CONVERT_DIVIDEND	(sns_water_UL_PER_TICK/10UL)
+#define sns_water_CONVERT_DIVISOR	100UL
+#else
+#error Could not find a suitable conversion, report this error to get help on how to solve it
+#endif
+
 #if sns_water_USEEEPROM==1
 #include "sns_water_eeprom.h"
 struct eeprom_sns_water EEMEM eeprom_sns_water =
@@ -29,13 +42,11 @@ void sns_water_Init(void)
 #if sns_water_USEEEPROM==1
 	if (EEDATA_OK)
 	{  // Use stored data to set initial values for the module
-printf("ok\n");
 	  sns_water_ReportInterval = eeprom_read_byte(EEDATA.reportInterval);
 	  sns_water_TickCnt = eeprom_read_word(EEDATA16.VolumeCounterLower);
 	  sns_water_TickCnt += (((uint32_t)(eeprom_read_word(EEDATA16.VolumeCounterUpper)))<<16);
 	} else
 	{	//The CRC of the EEPROM is not correct, store default values and update CRC
-printf("nok;");
 	  eeprom_write_byte_crc(EEDATA.reportInterval, sns_water_SEND_PERIOD_S, WITHOUT_CRC);
 	  eeprom_write_word_crc(EEDATA16.VolumeCounterUpper, 0, WITHOUT_CRC);
 	  eeprom_write_word_crc(EEDATA16.VolumeCounterLower, 0, WITHOUT_CRC);
@@ -96,7 +107,7 @@ void sns_water_Process(void)
 		sns_water_TimePrevTick = Timer_GetTicks();
 
 #if sns_water_USEEEPROM==1
-		if ((sns_water_TickCnt % 2048) == 0)
+		if ((sns_water_TickCnt % 1024) == 0)
 		{
 			eeprom_write_word_crc(EEDATA16.VolumeCounterUpper, (uint16_t)((sns_water_TickCnt>>16) & 0xffff), WITHOUT_CRC);
 			eeprom_write_word_crc(EEDATA16.VolumeCounterLower, (uint16_t)(sns_water_TickCnt & 0xffff), WITH_CRC);
@@ -113,18 +124,20 @@ void sns_water_Process(void)
 		flow4 = flow4/4;
 		/* The flow is ml per tick / time between ticks */
 		flow4 = sns_water_UL_PER_TICK/flow4;
+		
+		uint32_t waterVolume = (uint64_t)sns_water_TickCnt*sns_water_CONVERT_DIVIDEND/sns_water_CONVERT_DIVISOR;
 
-		txMsg.Data[0] = (uint8_t)((flow4>>8) & 0xff);
-		txMsg.Data[1] = (uint8_t)(flow4 & 0xff);
-		txMsg.Data[5] = (uint8_t)(sns_water_TickCnt*sns_water_UL_PER_TICK/1000) & 0xff;
-		txMsg.Data[4] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 8) & 0xff;
-		txMsg.Data[3] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 16) & 0xff;
-		txMsg.Data[2] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 24) & 0xff;
+		txMsg.Data[0] = (flow4>>8) & 0xff;
+		txMsg.Data[1] = flow4 & 0xff;
+		txMsg.Data[5] = waterVolume & 0xff;
+		txMsg.Data[4] = (waterVolume >> 8) & 0xff;
+		txMsg.Data[3] = (waterVolume >> 16) & 0xff;
+		txMsg.Data[2] = (waterVolume >> 24) & 0xff;
 #if CAN_PRINTF==1
-//		txMsg.Data[5] = (uint8_t)sns_water_TickCnt & 0xff;
-//		txMsg.Data[4] = (uint8_t)(sns_water_TickCnt >> 8) & 0xff;
-//		txMsg.Data[3] = (uint8_t)(sns_water_TickCnt >> 16) & 0xff;
-//		txMsg.Data[2] = (uint8_t)(sns_water_TickCnt >> 24) & 0xff;
+		txMsg.Data[5] = (uint8_t)sns_water_TickCnt & 0xff;
+		txMsg.Data[4] = (uint8_t)(sns_water_TickCnt >> 8) & 0xff;
+		txMsg.Data[3] = (uint8_t)(sns_water_TickCnt >> 16) & 0xff;
+		txMsg.Data[2] = (uint8_t)(sns_water_TickCnt >> 24) & 0xff;
 #endif
 		while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 
@@ -144,7 +157,7 @@ void sns_water_Process(void)
 void sns_water_HandleMessage(StdCan_Msg_t *rxMsg)
 {
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS &&
-		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_TO_OWNER &&
 		rxMsg->Header.ModuleType == CAN_MODULE_TYPE_SNS_WATER &&
 		rxMsg->Header.ModuleId == sns_water_ID)
 	{
@@ -156,6 +169,10 @@ void sns_water_HandleMessage(StdCan_Msg_t *rxMsg)
 			{
 				sns_water_ReportInterval = rxMsg->Data[0];
 				Timer_SetTimeout(sns_water_SEND_TIMER, sns_water_ReportInterval*1000 , TimerTypeFreeRunning, 0);
+#if sns_water_USEEEPROM==1
+				// this did not work
+				//eeprom_write_byte_crc(EEDATA.reportInterval, sns_water_ReportInterval, WITH_CRC);
+#endif
 			}
 			StdCan_Set_class(txMsg2.Header, CAN_MODULE_CLASS_SNS);
 			StdCan_Set_direction(txMsg2.Header, DIRECTIONFLAG_FROM_OWNER);
@@ -169,21 +186,25 @@ void sns_water_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_WATER_SETVOLUME:
 			if (rxMsg->Length == 4)
 			{
-				sns_water_TickCnt = (rxMsg->Data[3]*1000/sns_water_UL_PER_TICK);
-				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[2]*1000/sns_water_UL_PER_TICK))<<8;
-				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[1]*1000/sns_water_UL_PER_TICK))<<16;
-				sns_water_TickCnt += ((uint32_t)(rxMsg->Data[0]*1000/sns_water_UL_PER_TICK))<<24;
+				sns_water_TickCnt = (rxMsg->Data[3]);
+				sns_water_TickCnt += ((uint32_t)rxMsg->Data[2]<<8);
+				sns_water_TickCnt += ((uint32_t)rxMsg->Data[1]<<16);
+				sns_water_TickCnt += ((uint32_t)rxMsg->Data[0]<<24);
+				/* Volume sent was in Liters */
+				sns_water_TickCnt = sns_water_TickCnt*(1000000/sns_water_UL_PER_TICK);
 			}
 			StdCan_Set_class(txMsg2.Header, CAN_MODULE_CLASS_SNS);
 			StdCan_Set_direction(txMsg2.Header, DIRECTIONFLAG_FROM_OWNER);
 			txMsg2.Header.ModuleType = CAN_MODULE_TYPE_SNS_WATER;
 			txMsg2.Header.ModuleId = sns_water_ID;
 			txMsg2.Header.Command = CAN_MODULE_CMD_WATER_SETVOLUME;
-			txMsg2.Length = 1;
-			txMsg2.Data[3] = (uint8_t)(sns_water_TickCnt*sns_water_UL_PER_TICK/1000) & 0xff;
-			txMsg2.Data[2] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 8) & 0xff;
-			txMsg2.Data[1] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 16) & 0xff;
-			txMsg2.Data[0] = (uint8_t)((sns_water_TickCnt*sns_water_UL_PER_TICK/1000) >> 24) & 0xff;
+			txMsg2.Length = 4;
+			uint32_t dataToSend = sns_water_TickCnt;
+			dataToSend = (uint64_t)dataToSend*sns_water_UL_PER_TICK/1000000UL;
+			txMsg2.Data[3] = ((uint32_t)dataToSend) & 0xff;
+			txMsg2.Data[2] = (((uint32_t)dataToSend) >> 8) & 0xff;
+			txMsg2.Data[1] = (((uint32_t)dataToSend) >> 16) & 0xff;
+			txMsg2.Data[0] = (((uint32_t)dataToSend) >> 24) & 0xff;
 			StdCan_Put(&txMsg2);
 			
 			break;
