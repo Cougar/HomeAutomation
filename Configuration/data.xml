@@ -1361,7 +1361,7 @@
 
     <command id="128" name="setVolume" type="specific" module="water" description="Set the volume value on the water meter module">
       <variables>
-        <variable name="Volume" type="uint" start_bit="0" bit_length="32" unit="Milliliter" description=""/>
+        <variable name="Volume" type="uint" start_bit="0" bit_length="32" unit="Liter" description=""/>
       </variables>
     </command>
 
