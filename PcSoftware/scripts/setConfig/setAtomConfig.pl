@@ -105,15 +105,46 @@ my @device = ();
 #print "/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"\n";
 #my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_GetInformation 0xB23F54EA\"};
 #my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
+my @lines;
 
 $socket = atomd_initialize($host, $port);
-usleep(100000);
-atomd_kill_promt($socket);
-atomd_send_command($socket, "Node_WaitForInformation");
-#atomd_send_command($socket, "Node_GetInformation 0x7DD44E0A");
-$return = atomd_read_command_response($socket);
+if ($port == 1203)
+{
+	atomjs_write($socket, "Node_WaitForInformationNative();\n");
 
-my @lines = split(/\n/, $return);
+	$success = 0;
+	for ($count = 0; $count < 50; $count++)
+	{
+		atomjs_write($socket, "Node_WaitNodePollNative();\n");
+		$return = atomjs_read_line($socket);
+		if ($return =~ m/false/)
+		{
+		}
+		elsif ($return =~ m/Error/)
+		{
+			die $return;
+		}
+		else
+		{
+			@lines = split(/\t/, $return);
+		}
+		usleep(200000);
+	}
+	if ($success == 0)
+	{
+		die "\033[31mTimed out waiting for node to start.\033[0m\n";
+	}
+
+}
+else
+{
+	usleep(100000);
+	atomd_kill_promt($socket);
+	atomd_send_command($socket, "Node_WaitForInformation");
+	#atomd_send_command($socket, "Node_GetInformation 0x7DD44E0A");
+	$return = atomd_read_command_response($socket);
+	@lines = split(/\n/, $return);
+}
 
 my $foundDeviceType = 0;
 foreach (@lines)
