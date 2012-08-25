@@ -9,6 +9,7 @@ Node_WaitClientId = null;
 
 Node_ResetNodeNativeId = null;
 Node_ProgramNodeNativeId = null;
+Node_WaitClientNativeId = null;
 Node_Native_Reset = false;
 Node_Native_Program = false;
 Node_Native_WaitNodeId = false;
@@ -49,10 +50,16 @@ function Node_OnChange(node_id, available)
         Node_Native_Program = true;
     }
 
+    if (Node_WaitClientNativeId != null && available)
+    {
+        Node_Native_WaitNodeId = node_id;
+
+        Node_WaitClientNativeId = null;
+    }
+
     if (Node_WaitClientId != null && available)
     {
         var result = NodeExport_GetNodeInformation(node_id);
-        Node_Native_WaitNodeId = node_id;
 
         if (!result)
         {
@@ -150,7 +157,7 @@ function Node_WaitNodePollNative()
 
 function Node_WaitForInformationNative()
 {
-    Node_WaitClientId = Console_GetClientId();
+    Node_WaitClientNativeId = true;
     Node_Native_WaitNodeId = false;
 }
 

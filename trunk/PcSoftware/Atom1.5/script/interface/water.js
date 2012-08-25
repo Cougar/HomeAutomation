@@ -7,7 +7,7 @@ Water_Volume         = function() { return [ 0, 500, 1000, 5000, 10000 ]; };
 Water_Aliases        = function() { return Module_GetAliasNames(Water_ModuleNames); };
 Water_AvailableIds   = function() { return Module_GetAvailableIds(Water_ModuleNames); };
 
-/*
+
 function Water_SetVolume(alias_name, volume)
 {
 	if (arguments.length < 2)
@@ -44,8 +44,8 @@ function Water_SetVolume(alias_name, volume)
 	return true;
 }
 Console_RegisterCommand(Water_SetVolume, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Water_Aliases(), Water_Volume()); });
-*/
-/*
+
+
 function Water_SetReportInterval(alias_name, interval)
 {
 	if (arguments.length < 2)
@@ -82,7 +82,6 @@ function Water_SetReportInterval(alias_name, interval)
 	return true;
 }
 Console_RegisterCommand(Water_SetReportInterval, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Water_Aliases(), Water_Intervals()); });
-*/
 
 function Water_OnMessage(module_name, module_id, command, variables)
 {
