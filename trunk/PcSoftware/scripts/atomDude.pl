@@ -82,9 +82,9 @@ print "Hexfile: " . $filename . "\n";
 ############################## RESET ##############################
 if ($reset eq "true" && $filename eq "")
 {
+	$socket = atomd_initialize($hostname, $port);
 	if ($port == 1203)
 	{
-		$socket = atomd_initialize($hostname, $port);
 		atomjs_write($socket, "Node_ResetNative('".$hwid."');\n");
 		$response = atomjs_read_line($socket);
 		if ($response =~ m/Error/)
@@ -112,8 +112,6 @@ if ($reset eq "true" && $filename eq "")
 	}
 	else
 	{
-		$socket = atomd_initialize($hostname, $port);
-
 		usleep(100000);
 		atomd_kill_promt($socket);
 		atomd_send_command($socket, "Node_Reset $hwid");
@@ -125,12 +123,13 @@ if ($reset eq "true" && $filename eq "")
 ############################## REPROGRAM ##############################
 else
 {
+	open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
+	@filecontents = <FP>;
+	close FP;
+	$socket = atomd_initialize($hostname, $port);
+
 	if ($port == 1203)
 	{
-		open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
-		@filecontents = <FP>;
-		close FP;
-		$socket = atomd_initialize($hostname, $port);
 		atomjs_write($socket, "Node_ClearHex();\n");
 		atomjs_read_line($socket);
 		my $linenums = 0;
@@ -193,10 +192,6 @@ else
 	}
 	else
 	{
-		open (FP, "+<".$filename) or die "Error: Cannot open file $filename\n";
-		@filecontents = <FP>;
-		close FP;
-		$socket = atomd_initialize($hostname, $port);
 		usleep(100000);
 		atomd_kill_promt($socket);
 	
