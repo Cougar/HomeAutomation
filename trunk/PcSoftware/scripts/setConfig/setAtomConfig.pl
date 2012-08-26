@@ -107,17 +107,19 @@ my @device = ();
 #my @lines = qx{/usr/bin/atomic -s $host -p $port -c \"Node_WaitForInformation\"};
 my @lines;
 
+print "Abort with Ctrl+c\n";
+
 $socket = atomd_initialize($host, $port);
 if ($port == 1203)
 {
 	atomjs_write($socket, "Node_WaitForInformationNative();\n");
 
 	$success = 0;
-	for ($count = 0; $count < 50; $count++)
+	for ($count = 0; $count < 300; $count++)
 	{
 		atomjs_write($socket, "Node_WaitNodePollNative();\n");
 		$return = atomjs_read_line($socket);
-		if ($return =~ m/false/)
+		if (($return =~ m/NoInfo/) || ($return =~ m/undefined/))
 		{
 		}
 		elsif ($return =~ m/Error/)
@@ -127,6 +129,8 @@ if ($port == 1203)
 		else
 		{
 			@lines = split(/\t/, $return);
+			$success = 1;
+			last;
 		}
 		usleep(200000);
 	}
@@ -134,7 +138,6 @@ if ($port == 1203)
 	{
 		die "\033[31mTimed out waiting for node to start.\033[0m\n";
 	}
-
 }
 else
 {
@@ -163,7 +166,7 @@ foreach (@lines)
 		my @hwidChars = split(//, $temp);
 		$hwid = $hwidChars[0]. $hwidChars[1]. $hwidChars[8]. $hwidChars[9]. $hwidChars[6]. $hwidChars[7]. $hwidChars[4]. $hwidChars[5]. $hwidChars[2]. $hwidChars[3];
 
-		print "Setting HWID in bios.inc to ".$hwid."\n";
+		print "\033[32mSetting HWID in bios.inc to ".$hwid."\033[0m\n";
 	}
 	elsif (index($line, "Device Type") != -1)
 	{
