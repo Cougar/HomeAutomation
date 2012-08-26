@@ -5,7 +5,18 @@ pages.info = {
     /* List to keep referenses to all the different slider elements */
     pageInstance.pageInfoElements = {};
 
-
+    this.pageshow = function(arg) {
+	/* Request the initial value from the server */
+      requestServerData();
+      
+      /* Set timer for continious polling of the current values */
+      pageInstance.pollTimer = setInterval(requestServerData, 2000);
+    }
+    
+    this.pagehide = function(arg) {
+      clearInterval(pageInstance.pollTimer);
+    }
+    
     /* Function to update values of sliders based on new server data */
     function handleServerData(jsonData)
     {
@@ -81,13 +92,5 @@ pages.info = {
       /* Create the info HTML from the template and add it to the DOM */
       pageInstance.pageInfoElements[alias] = $("#page-info-template").tmpl({ alias: alias, name: name }).appendTo(pageInstance.pageContentElement).trigger("create");
     });
-    
-    
-    /* Request the initial value from the server */
-    requestServerData();
-    
-    
-    /* Set timer for continious polling of the current values */
-    pageInstance.pollTimer = setInterval(requestServerData, 4000);
   }
 };

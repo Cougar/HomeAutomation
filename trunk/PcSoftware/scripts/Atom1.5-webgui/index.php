@@ -212,6 +212,29 @@ require_once("config.php");
           }
         });*/
 
+	$(".ui-page").on("pagebeforeshow", function(arg1, arg2)
+        {
+	    var res=arg1.currentTarget.id.split("-");
+	    if (res[1] != null) {
+		res=res[1].split("_");	    
+		if (pages[res[0]].pageshow) {
+		    pages[res[0]].pageshow();
+		}
+	    }
+        });
+
+	$(".ui-page").on("pagehide", function(arg1, arg2)
+        {
+	    
+	    var res=arg1.currentTarget.id.split("-");
+	    if (res[1] != null) {
+		res=res[1].split("_");	    
+		if (pages[res[0]].pagehide) {
+		    pages[res[0]].pagehide();
+		}
+	    }
+        });
+
         $(":jqmData(role=navbar)").delegate("a", "vclick", function(event)
         {
           if(!$(event.target).hasClass("ui-disabled"))
