@@ -151,7 +151,7 @@ function Node_WaitNodePollNative()
 	}
 	else
 	{
-		return false;
+		return "NoInfo";
 	}
 }
 
