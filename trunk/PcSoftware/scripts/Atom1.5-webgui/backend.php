@@ -3,7 +3,8 @@
 require_once("config.php");
 require_once("atomjs_interface.php");
 
-function GetSubfolders($directory)
+
+function GetSubfolders($directory, $pageConfiguration)
 {
   $folders = array();
 
@@ -15,7 +16,14 @@ function GetSubfolders($directory)
     {
       if (is_dir($directory . "/" . $filename) && $filename[0] != ".")
       {
-        $folders[] = $filename;
+	  $found = 0;
+	  foreach($pageConfiguration as $page) {
+	      if (strcmp($page['page'],$filename)==0) {
+		$found = 1;
+	      }
+	  }
+        if ($found == 1)
+	    $folders[] = $filename;
       }
     }
 
@@ -55,7 +63,7 @@ if (isset($_GET["ajax"]))
 }
 else
 {
-  $pages = GetSubfolders("pages/");
+  $pages = GetSubfolders("pages/", $pageConfiguration);
 }
 
 ?>
