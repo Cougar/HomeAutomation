@@ -1,0 +1,5 @@
+.my-list label.ui-input-text  { vertical-align: top;   }
+.my-list label.ui-input-text { display: inline-block;  width: 70%;  margin: 0 2% 0 0; }
+.my-list input.ui-input-text, 
+.my-list textarea.ui-input-text, 
+.my-list .ui-input-search { width: 100px; display: inline-block; }

@@ -4,6 +4,16 @@ pages.irdevicestate = {
     /* List to keep referenses to all the different switch elements */
     pageInstance.pageSwitchElements = {};
 
+    this.pageshow = function(arg) {
+      /* Request the initial value from the server */
+      requestServerData();
+      /* Set timer for continious polling of the current values */
+      pageInstance.pollTimer = setInterval(requestServerData, 4000);
+    }
+    
+    this.pagehide = function(arg) {
+      clearInterval(pageInstance.pollTimer);
+    }
 
     /* Function to update values of switches based on new server data */
     function handleServerData(jsonData)
@@ -50,14 +60,6 @@ pages.irdevicestate = {
       /* Before we have any value it should be disabled */
       pageInstance.pageSwitchElements[device].find("select").slider("disable");
     });
-    
-    
-    /* Request the initial value from the server */
-    requestServerData();
-    
-    
-    /* Set timer for continious polling of the current values */
-    pageInstance.pollTimer = setInterval(requestServerData, 4000);
   }
 };
 

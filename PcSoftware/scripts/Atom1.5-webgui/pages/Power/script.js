@@ -8,6 +8,7 @@ pages.Power = {
       /* Set timer for continious polling of the current values */
       pageInstance.pollTimer = setInterval(reloadImage, 60000);
       pageInstance.pollTimer2 = setInterval(requestServerData, 2000);
+      reloadImage();
     }
     
     this.pagehide = function(arg) {

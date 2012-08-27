@@ -5,7 +5,18 @@ pages.dimmers = {
     /* List to keep referenses to all the different slider elements */
     pageInstance.pageSliderElements = {};
 
-
+    this.pageshow = function(arg) {
+      /* Request the initial value from the server */
+      requestServerData();
+      /* Set timer for continious polling of the current values */
+      pageInstance.pollTimer = setInterval(requestServerData, 4000);
+    }
+    
+    this.pagehide = function(arg) {
+      clearInterval(pageInstance.pollTimer);
+    }
+    
+    
     /* Function to update values of sliders based on new server data */
     function handleServerData(jsonData)
     {
@@ -83,13 +94,5 @@ pages.dimmers = {
       /* Bind a click event to the maximum button */
       pageInstance.pageSliderElements[alias].find(".page-dimmers-button-maximum").on("click", function(event, ui) { pageInstance.pageSliderElements[alias].find("input").val(255).slider("refresh") });
     });
-    
-    
-    /* Request the initial value from the server */
-    requestServerData();
-    
-    
-    /* Set timer for continious polling of the current values */
-    pageInstance.pollTimer = setInterval(requestServerData, 4000);
   }
 };
