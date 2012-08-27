@@ -50,6 +50,16 @@ $pageConfiguration = array(
                                                      "sovrumvagg",
                                                      "hall",
                                                      "garderobtemp")
+                                 ),
+			    array("page" => "PID",
+                                  "title" => "Värme",
+                                  "alias" => "PID",
+				   "picture" => "http://linuxz.mine.nu/CANgraph/regulator.png"
+                                 ),
+			    array("page" => "Power",
+                                  "title" => "El",
+                                  "alias" => "Power",
+				   "picture" => "http://linuxz.mine.nu/CANgraph/power.png"
                                  )
                            );
 
