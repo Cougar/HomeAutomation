@@ -7,7 +7,8 @@ pages.info = {
 
     this.pageshow = function(arg) {
 	/* Request the initial value from the server */
-      requestServerData();    
+      requestServerData();
+      
       /* Set timer for continious polling of the current values */
       pageInstance.pollTimer = setInterval(requestServerData, 2000);
     }
