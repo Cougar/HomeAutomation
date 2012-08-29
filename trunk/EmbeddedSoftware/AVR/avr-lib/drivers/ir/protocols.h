@@ -59,6 +59,9 @@ typedef struct {
 #ifndef IR_PROTOCOLS_USE_NEXA1
 # define IR_PROTOCOLS_USE_NEXA1		1
 #endif
+#ifndef IR_PROTOCOLS_USE_VIKING
+# define IR_PROTOCOLS_USE_VIKING	1
+#endif
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -94,6 +97,9 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 #endif
 #if (IR_PROTOCOLS_USE_NEXA1)
 int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
+#endif
+#if (IR_PROTOCOLS_USE_VIKING)
+int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
 
 /* Try to parse all above protocols until a match is found. */
@@ -324,7 +330,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_VIKING_TIMEOUT	(0)									//ms BURST!	(time between ir frames)
 #define IR_VIKING_REPS		(1)									//		(minimum number of times to repeat code)
 #define IR_VIKING_F_MOD		(38)								//kHz	(modulation frequency)
-#define IR_VIKING_TOL_DIV	(4)
+#define IR_VIKING_TOL_DIV	(3)
 
 
 #define IR_PROTO_HASH		0xfe

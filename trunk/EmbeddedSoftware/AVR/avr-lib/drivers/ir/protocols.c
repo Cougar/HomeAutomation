@@ -54,6 +54,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 #if (IR_PROTOCOLS_USE_NEXA1)
 	if (parseNexa1(buf, len, index, proto)==IR_OK) return IR_OK;
 #endif
+#if (IR_PROTOCOLS_USE_VIKING)
+	if (parseViking(buf, len, index, proto)==IR_OK) return IR_OK;
+#endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
@@ -1040,7 +1043,7 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 			}
 			i+=2; 	// skip every other bit, implement check here in the future
 		} else {			/* if odd, no data */
-			if ((buf[i2] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) && (buf[i2] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV)) {
+			if ((buf[i2] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) || (buf[i2] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV)) {
 				return IR_NOT_CORRECT_DATA;
 			}
 		}
@@ -1052,7 +1055,6 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 
 	return IR_OK;
 }
-
 #endif
 
 /**
@@ -1143,9 +1145,9 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 		/* Check if '0' bit */
 		if (
 			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+1] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+1] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
 			(buf[i+2] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+2] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+3] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+3] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV))
+			(buf[i+3] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+3] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV))
 		{
 			/* write a one */
 			rawbitsTemp |= (1UL)<<(bitCounter++);
@@ -1153,8 +1155,8 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 		/* Check if 'X' bit */
 		else if (
 			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+1] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+1] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
-			(buf[i+2] > IR_NEXA1_LONG - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV && buf[i+2] < IR_NEXA1_LONG + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
+			(buf[i+2] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+2] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
 			(buf[i+3] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+3] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV))
 		{
 			/* do nothing, a zero is already in rawbits */
@@ -1223,3 +1225,71 @@ int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	return IR_OK;  	
 }
 
+
+#if (IR_PROTOCOLS_USE_VIKING)
+/**
+ * Test data on Viking temperature sensor protocol
+ * 
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+
+int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
+{
+	/* check if we have correct amount of data */ 
+	if (len < 94) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint8_t i, i2;
+	uint32_t rawbitsTemp = 0;
+	uint8_t bitCounter = 0;
+	for (i = 0; i < 94; i++) {
+#if IR_RX_CONTINUOUS_MODE==0
+		i2 = i;
+#else
+		i2=index-(94-i);
+		if (i2>index)
+			i2+=MAX_NR_TIMES;
+#endif
+		if ((i&1) == 0) 
+		{		/* if even, no data */
+			if ((buf[i2] < IR_VIKING_LOW - IR_VIKING_LOW/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_LOW + IR_VIKING_LOW/IR_VIKING_TOL_DIV)) 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		} 
+		else 
+		{			/* if odd, data */
+			/* check length of transmit pulse */
+			if ((buf[i2] > IR_VIKING_HIGH_ONE - IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ONE + IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV)) 
+			{
+				/* write a one */
+				rawbitsTemp |= (1UL)<<(bitCounter++);
+			}
+			else if ((buf[i2] > IR_VIKING_HIGH_ZERO - IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ZERO + IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV)) 
+			{
+				/* do nothing, a zero is already in rawbits */
+				bitCounter++;
+			}
+			else 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	proto->protocol=IR_PROTO_VIKING;
+	proto->timeout=0;
+	proto->data=rawbitsTemp;
+
+	return IR_OK;
+}
+#endif
