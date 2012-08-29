@@ -21,6 +21,7 @@ void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 		rfRxChannel_newData = TRUE;
 		rfRxChannel_len = len;
 		rfRxChannel_index = index;
+//gpio_set_pin(EXP_B);
 	}
 #endif
 }
@@ -171,7 +172,9 @@ void sns_rfTransceive_Process(void)
 				sei();
 				/* Let protocol driver parse and then send on CAN */
 				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_len, rfRxChannel_index, &rfRxChannel_proto);
-				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
+				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) 
+				{
+//gpio_clr_pin(EXP_B);
 					//send_debug(rfRxChannel_buf, rfRxChannel_len);
 					/* If timeout is 0, protocol is burst protocol */
 					if (rfRxChannel_proto.timeout > 0)
