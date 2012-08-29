@@ -76,7 +76,7 @@ void sns_irReceive_Process(void)
 		res = IrTransceiver_Receive_Poll(&len);
 		if ((res == IR_OK) && (len > 0)) {
 			//låt protocols parsa och skicka sen på can
-			uint8_t res2 = parseProtocol(rxbuffer, len, &proto);
+			uint8_t res2 = parseProtocol(rxbuffer, len, 0, &proto);
 			if (res2 == IR_OK && proto.protocol != IR_PROTO_UNKNOWN) {
 				StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
 				StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);

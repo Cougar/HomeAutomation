@@ -193,7 +193,6 @@ ISR(IR_TIMEOUT_VECTOR)
 	/* Disable ISR */
 	IR_MASK_TIMEOUT();
 #endif
-//	gpio_toggle_pin(EXP_J);
 }
 #endif
 
@@ -218,9 +217,6 @@ void IrTransceiver_Store_ch2(uint8_t id, uint8_t status)
 	IrTransceiver_Store(2);
 }
 
-
-///////////// DEBUG!!!!
-//#include <drivers/mcu/gpio.h>
 void IrTransceiver_Store(uint8_t channel)
 {
 	static uint16_t prev_time[3];
@@ -244,15 +240,12 @@ void IrTransceiver_Store(uint8_t channel)
 		IR_UNMASK_TIMEOUT();
 	}
 #endif
-//gpio_toggle_pin(EXP_K);
 
 #if IR_RX_CONTINUOUS_MODE==1
 /* in continuous mode when short pulse arrives received len should be set to zero */
 //TODO?
 	if ((pulsewidth < (IR_MIN_PULSE_WIDTH*CYCLES_PER_US/TIMER_PRESC)) && (drvIrRxChannel[channel].storeEnable == TRUE))
 	{
-///////////// DEBUG!!!!
-//gpio_toggle_pin(EXP_A);
 		drvIrRxChannel[channel].len = 0;
 		return;
 	}
@@ -260,11 +253,10 @@ void IrTransceiver_Store(uint8_t channel)
 	{
 	}
 #endif
-//gpio_toggle_pin(EXP_A);
-
 
 	if (drvIrRxChannel[channel].storeEnable)
 	{
+#if IR_RX_CONTINUOUS_MODE==0
 		/* Store the measurement. */
 		drvIrRxChannel[channel].buf[drvIrRxChannel[channel].len++] = pulsewidth;
 
@@ -276,16 +268,26 @@ void IrTransceiver_Store(uint8_t channel)
 		}
 		else
 		{
-#if IR_RX_CONTINUOUS_MODE==0
 			/* Set the timeout for detection of the end of the pulse train. */
 			drvIrRxChannel[channel].timeout = time + (IR_MAX_PULSE_WIDTH*CYCLES_PER_US/TIMER_PRESC);
 			IR_TIMEOUT_REG = drvIrRxChannel[channel].timeout;
+		}
 #else
-			/* Notify the application that a pulse has been received. */
-			drvIrRxChannel[channel].callback(channel, drvIrRxChannel[channel].buf, drvIrRxChannel[channel].len, drvIrRxChannel[channel].index);
+		/* Store the measurement. */
+		drvIrRxChannel[channel].buf[drvIrRxChannel[channel].index++] = pulsewidth;
+
+		if (drvIrRxChannel[channel].index == MAX_NR_TIMES)
+		{
+			drvIrRxChannel[channel].index = 0;
+		}
+		if (drvIrRxChannel[channel].len++ == MAX_NR_TIMES)
+		{
+			drvIrRxChannel[channel].len = MAX_NR_TIMES-1;
+		}
+		/* Notify the application that a pulse has been received. */
+		drvIrRxChannel[channel].callback(channel, drvIrRxChannel[channel].buf, drvIrRxChannel[channel].len, drvIrRxChannel[channel].index);
 #endif
 
-		}
 	}
 	else if (drvIrRxChannel[channel].enable == TRUE)
 	{

@@ -691,7 +691,7 @@ void sns_irTransceive_Process(void)
 				sei();
 
 				/* Let protocol driver parse and then send on CAN. */
-				uint8_t res2 = parseProtocol(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, &irRxChannel[channel].proto);
+				uint8_t res2 = parseProtocol(irRxChannel[channel].rxbuf, irRxChannel[channel].rxlen, 0, &irRxChannel[channel].proto);
 				if (res2 == IR_OK && irRxChannel[channel].proto.protocol != IR_PROTO_UNKNOWN) {
 					irTxMsg.Data[0] = 0xf&CAN_MODULE_ENUM_PHYSICAL_IR_STATUS_PRESSED;
 					irTxMsg.Data[0] |= channel<<4;

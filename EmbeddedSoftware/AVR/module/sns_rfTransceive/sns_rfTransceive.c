@@ -3,39 +3,25 @@
 
 #if IR_RX_ENABLE==1
 StdCan_Msg_t		rfTxMsg;
-#endif
-
-#if IR_RX_ENABLE==1
 uint8_t rfRxChannel_newData;
-uint8_t rfRxChannel_rxlen;
+uint8_t rfRxChannel_len;
+uint8_t rfRxChannel_index;
 uint8_t rfRxChannel_state;
 Ir_Protocol_Data_t	rfRxChannel_proto;
 uint16_t	rfRxChannel_buf[MAX_NR_TIMES];
-
-uint16_t debugCnt1 = 0;
-uint16_t debugCnt2 = 0;
-uint16_t debugCnt3 = 5;
 
 void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len, uint8_t index)
 {
 #if IR_RX_CONTINUOUS_MODE==0
 	rfRxChannel_newData = TRUE;
-	rfRxChannel_rxlen = len;
+	rfRxChannel_len = len;
 #else
-//gpio_toggle_pin(EXP_B);
 	if (len > sns_rfTransceive_MIN_NUM_PULSES)
 	{
 		rfRxChannel_newData = TRUE;
-		rfRxChannel_rxlen = len;
-		
-///////////// DEBUG!!!!
-//gpio_set_pin(EXP_B);
-
-//debugCnt1 +=1;
+		rfRxChannel_len = len;
+		rfRxChannel_index = index;
 	}
-//debugCnt2 +=1;
-	//check if len is > something reasonable
-	//let process function parse protocols
 #endif
 }
 #endif
@@ -44,7 +30,7 @@ void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_
 #if IR_TX_ENABLE==1
 uint8_t rfTxChannel_sendComplete;
 uint8_t rfTxChannel_state;
-uint8_t rfTxChannel_txlen;
+uint8_t rfTxChannel_len;
 Ir_Protocol_Data_t	rfTxChannel_proto;
 uint16_t	rfTxChannel_buf[MAX_NR_TIMES];
 uint8_t rfTxChannel_repeatCount;
@@ -67,7 +53,7 @@ void sns_rfTransceive_Init(void)
 	rfTxMsg.Length = 8;
 	
 	rfRxChannel_newData = FALSE;
-	rfRxChannel_rxlen = 0;
+	rfRxChannel_len = 0;
 	rfRxChannel_proto.timeout=0;
 	rfRxChannel_proto.data=0;
 	rfRxChannel_proto.repeats=0;
@@ -76,7 +62,7 @@ void sns_rfTransceive_Init(void)
 
 #if IR_TX_ENABLE==1
 	rfTxChannel_sendComplete = FALSE;
-	rfTxChannel_txlen = 0;
+	rfTxChannel_len = 0;
 	rfTxChannel_proto.data=0;
 	rfTxChannel_proto.repeats=0;
 	rfTxChannel_proto.framecnt=0;
@@ -102,9 +88,6 @@ void sns_rfTransceive_Init(void)
 	IrTransceiver_InitTxChannel(0, sns_rfTransceive_TX_done_callback, sns_rfTransceive_TX_PIN);
 	rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
 #endif
-
-///////////// DEBUG!!!!
-gpio_set_out(EXP_A);
 }
 
 
@@ -186,19 +169,10 @@ void sns_rfTransceive_Process(void)
 				cli();
 				rfRxChannel_newData = FALSE;
 				sei();
-/*
-debugCnt3 +=1;
-if (debugCnt3>5)
-{
-printf("1\n");
-debugCnt3=0;
-}
-*/
 				/* Let protocol driver parse and then send on CAN */
-				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &rfRxChannel_proto);
+				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_len, rfRxChannel_index, &rfRxChannel_proto);
 				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
-gpio_clr_pin(EXP_B);
-//send_debug(rfRxChannel_buf, rfRxChannel_rxlen);
+					//send_debug(rfRxChannel_buf, rfRxChannel_len);
 					/* If timeout is 0, protocol is burst protocol */
 					if (rfRxChannel_proto.timeout > 0)
 					{
@@ -223,7 +197,7 @@ gpio_clr_pin(EXP_B);
 				else if (rfRxChannel_proto.protocol == IR_PROTO_UNKNOWN)
 				{
 #if (sns_rfTransceive_SEND_DEBUG==1)
-					//send_debug(rfRxChannel_buf, rfRxChannel_rxlen);
+					//send_debug(rfRxChannel_buf, rfRxChannel_len);
 					//rfRxChannel_proto.timeout=300;
 #endif
 					rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
@@ -241,12 +215,11 @@ gpio_clr_pin(EXP_B);
 			/* reset timer if new IR arrived */
 			if (rfRxChannel_newData == TRUE) {
 				cli();
-				IrTransceiver_ResetRx(0); //TODO??
 				rfRxChannel_newData = FALSE;
 				sei();
 
 				Ir_Protocol_Data_t	protoDummy;
-				if (parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &protoDummy) == IR_OK) {
+				if (parseProtocol(rfRxChannel_buf, rfRxChannel_len, rfRxChannel_index, &protoDummy) == IR_OK) {
 					if (protoDummy.protocol == rfRxChannel_proto.protocol) {
 						/* re-set timer so we can send release button event when no new RF is arriving */
 						Timer_SetTimeout(sns_rfTransceive_RX_REPEATE_TIMER, rfRxChannel_proto.timeout, TimerTypeOneShot, 0);
@@ -279,14 +252,14 @@ gpio_clr_pin(EXP_B);
 		case sns_rfTransceive_STATE_START_TRANSMIT:
 		{
 			/* Expand protocol. */
-			if (expandProtocol(rfTxChannel_buf, &rfTxChannel_txlen, &rfTxChannel_proto) != IR_OK) {
+			if (expandProtocol(rfTxChannel_buf, &rfTxChannel_len, &rfTxChannel_proto) != IR_OK) {
 				/* Failed to expand protocol -> enter idle state. */
 				rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
 				break;
 			}
 
 			/* Start RF transmission. */
-			IrTransceiver_Transmit(0, rfTxChannel_buf, 0, rfTxChannel_txlen, rfTxChannel_proto.modfreq);
+			IrTransceiver_Transmit(0, rfTxChannel_buf, 0, rfTxChannel_len, rfTxChannel_proto.modfreq);
 
 			/* Enter transmitting state. */
 			rfTxChannel_state = sns_rfTransceive_STATE_TRANSMITTING;

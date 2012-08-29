@@ -87,15 +87,17 @@ int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *prot
 #if (IR_PROTOCOLS_USE_SKY)
 int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+
+/* RF protocols needs index parameter */
 #if (IR_PROTOCOLS_USE_NEXA2)
-int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
 #if (IR_PROTOCOLS_USE_NEXA1)
-int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
 
 /* Try to parse all above protocols until a match is found. */
-int8_t parseProtocol(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 /* The Hash protocol always succeeds and creates a one-way signature of the
  * pulse times buffer that is supposed to be unique and constant for a specific
  * IR event. It may be used to send a valid event even if the protocol hasn't
