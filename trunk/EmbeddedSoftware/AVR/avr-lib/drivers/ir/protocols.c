@@ -973,28 +973,27 @@ int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
  * @return
  * 		IR_OK if data parsed successfully, one of several errormessages if not
  */
+
 int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
-	/* parse buf[], max is len */
-	
 	/* check if we have correct amount of data */ 
-	if (len != 148 && len != 132) {
+	if (len < 132) {
 		return IR_NOT_CORRECT_DATA;
 	}
 
-	if (buf[0] < IR_NEXA2_START1 - IR_NEXA2_START1/IR_NEXA2_TOL_DIV && buf[0] > IR_NEXA2_START1 + IR_NEXA2_START1/IR_NEXA2_TOL_DIV) { //check start bit
+	if ((buf[len-132] < IR_NEXA2_START1 - IR_NEXA2_START1/IR_NEXA2_TOL_DIV) || (buf[len-132] > IR_NEXA2_START1 + IR_NEXA2_START1/IR_NEXA2_TOL_DIV)) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
-	if (buf[1] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV && buf[1] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) { //check start bit
+	if ((buf[len-131] < IR_NEXA2_HIGH - IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV) || (buf[len-131] > IR_NEXA2_HIGH + IR_NEXA2_HIGH/IR_NEXA2_TOL_DIV)) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
-	if (buf[2] < IR_NEXA2_START2 - IR_NEXA2_START2/IR_NEXA2_TOL_DIV && buf[2] > IR_NEXA2_START2 + IR_NEXA2_START2/IR_NEXA2_TOL_DIV) { //check start bit
+	if ((buf[len-130] < IR_NEXA2_START2 - IR_NEXA2_START2/IR_NEXA2_TOL_DIV) || (buf[len-130] > IR_NEXA2_START2 + IR_NEXA2_START2/IR_NEXA2_TOL_DIV)) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
 
 	/* Incoming data could actually be longer than 32bits when a dimming command is received */
 	uint64_t rawbitsTemp = 0;
 	uint8_t bitCounter = 0;
-	for (uint8_t i = 3; i < len; i++) {
+	for (uint8_t i = len-129; i < len; i++) {
 		if ((i&1) == 0) {		/* if even, data */
 			/* check length of transmit pulse */
 			if (buf[i] > IR_NEXA2_LOW_ONE - IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV && buf[i] < IR_NEXA2_LOW_ONE + IR_NEXA2_LOW_ONE/IR_NEXA2_TOL_DIV) {
@@ -1017,6 +1016,7 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	proto->protocol=IR_PROTO_NEXA2;
 	proto->timeout=IR_NEXA2_TIMEOUT;
 	proto->data=rawbitsTemp;
+
 	return IR_OK;
 }
 
@@ -1099,7 +1099,7 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 	if (len != 50) {
 		return IR_NOT_CORRECT_DATA;
 	}
-	if (buf[0] < IR_NEXA1_START - IR_NEXA1_START/IR_NEXA1_TOL_DIV && buf[0] > IR_NEXA1_START + IR_NEXA1_START/IR_NEXA1_TOL_DIV) { //check start bit
+	if (buf[0] < IR_NEXA1_START - IR_NEXA1_START/IR_NEXA1_TOL_DIV || buf[0] > IR_NEXA1_START + IR_NEXA1_START/IR_NEXA1_TOL_DIV) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
 

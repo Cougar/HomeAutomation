@@ -10,17 +10,20 @@ IR_TX_ACTIVE_LOW=0
 
 IR_SUPPORTED_NUM_CHANNELS=2
 MAX_NR_TIMES=150
-IR_MAX_PULSE_WIDTH=4000
+IR_MAX_PULSE_WIDTH=4000UL
 
 #IR_RX_CONTINUOUS_MODE=1
-#IR_MIN_PULSE_WIDTH=300
-IR_MIN_STARTPULSE_WIDTH=8000
+#IR_MIN_PULSE_WIDTH=120UL
+IR_MIN_STARTPULSE_WIDTH=8000UL
 
-# Transmit Nexa
+# This may need to be changed if new protocols are introduced which have a lower number of pulses
+sns_rfTransceive_MIN_NUM_PULSES=80
+
+# Transmit 433MHz RF
 sns_rfTransceive_TX_PIN=GPIO_B1
 sns_rfTransceive_TX_REPEATE_TIMER=0x1 /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */
 
-# Receive Nexa
+# Receive 433MHz RF
 sns_rfTransceive_RX_PIN=GPIO_D2
 sns_rfTransceive_RX_PCINT=0x0 /* <PCINT> -- DO NOT REMOVE THIS COMMENT -- */
 sns_rfTransceive_RX_REPEATE_TIMER=0x3 /* <TIMER> -- DO NOT REMOVE THIS COMMENT -- */

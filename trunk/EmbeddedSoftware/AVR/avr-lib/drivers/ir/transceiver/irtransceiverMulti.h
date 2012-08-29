@@ -59,7 +59,7 @@
  * @brief Type of the callback function pointer
  * parameters: channel, buffer, length
  */
-typedef void (*irRxCallback_t)(uint8_t, uint16_t*, uint8_t);
+typedef void (*irRxCallback_t)(uint8_t, uint16_t*, uint8_t, uint8_t);
 typedef void (*irTxCallback_t)(uint8_t);
 
 

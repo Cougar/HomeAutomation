@@ -12,10 +12,31 @@ uint8_t rfRxChannel_state;
 Ir_Protocol_Data_t	rfRxChannel_proto;
 uint16_t	rfRxChannel_buf[MAX_NR_TIMES];
 
-void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len)
+uint16_t debugCnt1 = 0;
+uint16_t debugCnt2 = 0;
+uint16_t debugCnt3 = 5;
+
+void sns_rfTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len, uint8_t index)
 {
+#if IR_RX_CONTINUOUS_MODE==0
 	rfRxChannel_newData = TRUE;
 	rfRxChannel_rxlen = len;
+#else
+//gpio_toggle_pin(EXP_B);
+	if (len > sns_rfTransceive_MIN_NUM_PULSES)
+	{
+		rfRxChannel_newData = TRUE;
+		rfRxChannel_rxlen = len;
+		
+///////////// DEBUG!!!!
+//gpio_set_pin(EXP_B);
+
+//debugCnt1 +=1;
+	}
+//debugCnt2 +=1;
+	//check if len is > something reasonable
+	//let process function parse protocols
+#endif
 }
 #endif
 
@@ -81,7 +102,56 @@ void sns_rfTransceive_Init(void)
 	IrTransceiver_InitTxChannel(0, sns_rfTransceive_TX_done_callback, sns_rfTransceive_TX_PIN);
 	rfTxChannel_state = sns_rfTransceive_STATE_IDLE;
 #endif
+
+///////////// DEBUG!!!!
+gpio_set_out(EXP_A);
 }
+
+
+///////////// DEBUG!!!!
+#if 0
+StdCan_Msg_t irTxMsg;
+void send_debug(uint16_t *buffer, uint8_t len) {
+
+	/* the protocol is unknown so the raw ir-data is sent, makes it easier to develop a new protocol */
+
+	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
+	irTxMsg.Length = 8;
+	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRRECEIVE;
+	irTxMsg.Header.ModuleId = 0;
+	irTxMsg.Header.Command = CAN_MODULE_CMD_IRRECEIVE_IRRAW;
+	for (uint8_t i = 0; i < len>>2; i++) {
+		uint8_t index = i<<2;
+
+		irTxMsg.Data[0] = (buffer[index]>>8)&0xff;
+		irTxMsg.Data[1] = (buffer[index]>>0)&0xff;
+		irTxMsg.Data[2] = (buffer[index+1]>>8)&0xff;
+		irTxMsg.Data[3] = (buffer[index+1]>>0)&0xff;
+		irTxMsg.Data[4] = (buffer[index+2]>>8)&0xff;
+		irTxMsg.Data[5] = (buffer[index+2]>>0)&0xff;
+		irTxMsg.Data[6] = (buffer[index+3]>>8)&0xff;
+		irTxMsg.Data[7] = (buffer[index+3]>>0)&0xff;
+				
+		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+	}
+	
+	uint8_t lastpacketcnt = len&0x03;
+	if (lastpacketcnt > 0) {
+		irTxMsg.Length = lastpacketcnt<<1;
+		for (uint8_t i = 0; i < lastpacketcnt; i++) {
+			irTxMsg.Data[i<<1] = (buffer[(len&0xfc)|i]>>8)&0xff;
+			irTxMsg.Data[(i<<1)+1] = (buffer[(len&0xfc)|i]>>0)&0xff;
+		}
+		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+		_delay_ms(1);
+	}
+
+}
+#endif
 
 void sns_rfTransceive_Process(void)
 {
@@ -116,10 +186,19 @@ void sns_rfTransceive_Process(void)
 				cli();
 				rfRxChannel_newData = FALSE;
 				sei();
-				
+/*
+debugCnt3 +=1;
+if (debugCnt3>5)
+{
+printf("1\n");
+debugCnt3=0;
+}
+*/
 				/* Let protocol driver parse and then send on CAN */
 				uint8_t res2 = parseProtocol(rfRxChannel_buf, rfRxChannel_rxlen, &rfRxChannel_proto);
 				if (res2 == IR_OK && rfRxChannel_proto.protocol != IR_PROTO_UNKNOWN) {
+gpio_clr_pin(EXP_B);
+//send_debug(rfRxChannel_buf, rfRxChannel_rxlen);
 					/* If timeout is 0, protocol is burst protocol */
 					if (rfRxChannel_proto.timeout > 0)
 					{
