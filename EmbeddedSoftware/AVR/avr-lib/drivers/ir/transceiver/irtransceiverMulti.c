@@ -71,8 +71,9 @@
 struct {
 	uint8_t		enable;
 	uint16_t	timeout;
-	uint16_t	*rxbuf;
-	uint8_t		rxlen;
+	uint16_t	*buf;
+	uint8_t		len;
+	uint8_t		index;
 	uint8_t		storeEnable;
 	irRxCallback_t callback;
 } drvIrRxChannel[3];
@@ -83,9 +84,9 @@ struct {
 	uint8_t		enable;
 	uint16_t	timeout;
 	uint8_t		timeoutEnable;
-	uint16_t	*txbuf;
-	uint8_t		txlen;
-	uint8_t		txindex;
+	uint16_t	*buf;
+	uint8_t		len;
+	uint8_t		index;
 	irTxCallback_t callback;
 	volatile uint8_t 	*port;
 	uint8_t 	pinmask;
@@ -120,17 +121,17 @@ ISR(IR_COMPARE_VECTOR)
 			if (diff < IR_MAX_PULSE_WIDTH)
 			{
 				/* check what to output next */
-				if ((drvIrTxChannel[channel].txindex&1) == 1) {		/* if odd, ir-pause */
+				if ((drvIrTxChannel[channel].index&1) == 1) {		/* if odd, ir-pause */
 					IR_OUTP_LOW();
 				} else {
 					IR_OUTP_HIGH();
 				}
 				
 				/* is there more to send */
-				if (drvIrTxChannel[channel].txindex < drvIrTxChannel[channel].txlen)
+				if (drvIrTxChannel[channel].index < drvIrTxChannel[channel].len)
 				{
 					/* load next timeout value */
-					drvIrTxChannel[channel].timeout = IR_COMPARE_REG + drvIrTxChannel[channel].txbuf[drvIrTxChannel[channel].txindex++];
+					drvIrTxChannel[channel].timeout = IR_COMPARE_REG + drvIrTxChannel[channel].buf[drvIrTxChannel[channel].index++];
 				}
 				else
 				{
@@ -180,10 +181,10 @@ ISR(IR_TIMEOUT_VECTOR)
 	for (uint8_t i=0; i < IR_SUPPORTED_NUM_CHANNELS; i++)
 	{
 		/* If more than 2 edges were recevied */
-		if (drvIrRxChannel[i].storeEnable == TRUE && drvIrRxChannel[i].rxlen > 2)
+		if (drvIrRxChannel[i].storeEnable == TRUE && drvIrRxChannel[i].len > 2)
 		{
 			/* Notify the application that a pulse train has been received. */
-			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].rxbuf, drvIrRxChannel[i].rxlen);
+			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].buf, drvIrRxChannel[i].len, drvIrRxChannel[i].index);
 		}
 
 		drvIrRxChannel[i].storeEnable = FALSE;
@@ -217,6 +218,9 @@ void IrTransceiver_Store_ch2(uint8_t id, uint8_t status)
 	IrTransceiver_Store(2);
 }
 
+
+///////////// DEBUG!!!!
+//#include <drivers/mcu/gpio.h>
 void IrTransceiver_Store(uint8_t channel)
 {
 	static uint16_t prev_time[3];
@@ -230,7 +234,7 @@ void IrTransceiver_Store(uint8_t channel)
 	prev_time[channel] = time;
 
 #if IR_MIN_STARTPULSE_WIDTH>0
-	if ((pulsewidth <= IR_MIN_STARTPULSE_WIDTH) && (drvIrRxChannel[channel].storeEnable == TRUE) && (drvIrRxChannel[channel].rxlen == 0))
+	if ((pulsewidth <= IR_MIN_STARTPULSE_WIDTH) && (drvIrRxChannel[channel].storeEnable == TRUE) && (drvIrRxChannel[channel].len == 0))
 	{
 		IR_MASK_TIMEOUT();
 		return;
@@ -242,42 +246,43 @@ void IrTransceiver_Store(uint8_t channel)
 #endif
 //gpio_toggle_pin(EXP_K);
 
-#if IR_RX_CONTINUOUS_MODE==0
+#if IR_RX_CONTINUOUS_MODE==1
 /* in continuous mode when short pulse arrives received len should be set to zero */
-//TODO
-	if ((pulsewidth <= IR_MIN_PULSE_WIDTH) && (drvIrRxChannel[channel].storeEnable == TRUE))
+//TODO?
+	if ((pulsewidth < (IR_MIN_PULSE_WIDTH*CYCLES_PER_US/TIMER_PRESC)) && (drvIrRxChannel[channel].storeEnable == TRUE))
 	{
-		drvIrRxChannel[channel].rxlen = 0;
-		//IR_MASK_TIMEOUT();
+///////////// DEBUG!!!!
+//gpio_toggle_pin(EXP_A);
+		drvIrRxChannel[channel].len = 0;
 		return;
 	}
 	else
 	{
-		//IR_UNMASK_TIMEOUT();
 	}
 #endif
+//gpio_toggle_pin(EXP_A);
 
 
 	if (drvIrRxChannel[channel].storeEnable)
 	{
 		/* Store the measurement. */
-		drvIrRxChannel[channel].rxbuf[drvIrRxChannel[channel].rxlen++] = pulsewidth;
+		drvIrRxChannel[channel].buf[drvIrRxChannel[channel].len++] = pulsewidth;
 
 		/* Disable future measurements if we've filled the buffer. */
 		//TODO: Report overflow to application
-		if (drvIrRxChannel[channel].rxlen == MAX_NR_TIMES)
+		if (drvIrRxChannel[channel].len == MAX_NR_TIMES)
 		{
-			drvIrRxChannel[channel].rxlen = MAX_NR_TIMES-1;
+			drvIrRxChannel[channel].len = MAX_NR_TIMES-1;
 		}
 		else
 		{
 #if IR_RX_CONTINUOUS_MODE==0
 			/* Set the timeout for detection of the end of the pulse train. */
-			drvIrRxChannel[channel].timeout = time + IR_MAX_PULSE_WIDTH;
+			drvIrRxChannel[channel].timeout = time + (IR_MAX_PULSE_WIDTH*CYCLES_PER_US/TIMER_PRESC);
 			IR_TIMEOUT_REG = drvIrRxChannel[channel].timeout;
-#else			
+#else
 			/* Notify the application that a pulse has been received. */
-			drvIrRxChannel[i].callback(i, drvIrRxChannel[i].rxbuf, drvIrRxChannel[i].rxlen);
+			drvIrRxChannel[channel].callback(channel, drvIrRxChannel[channel].buf, drvIrRxChannel[channel].len, drvIrRxChannel[channel].index);
 #endif
 
 		}
@@ -286,11 +291,11 @@ void IrTransceiver_Store(uint8_t channel)
 	{
 		/* The first edge of the pulse train has been detected. Enable the storage of the following pulsewidths. */
 		drvIrRxChannel[channel].storeEnable = TRUE;
-		drvIrRxChannel[channel].rxlen = 0;
+		drvIrRxChannel[channel].len = 0;
 
 #if IR_RX_CONTINUOUS_MODE==0
 		/* Enable timeout interrupt for detection of the end of the pulse train. */
-		IR_TIMEOUT_REG = time + IR_MAX_PULSE_WIDTH;
+		IR_TIMEOUT_REG = time + (IR_MAX_PULSE_WIDTH*CYCLES_PER_US/TIMER_PRESC);
 		IR_UNMASK_TIMEOUT();
 #endif
 	}
@@ -326,8 +331,8 @@ void IrTransceiver_InitRxChannel(uint8_t channel, uint16_t *buffer, irRxCallback
 		/* Set port direction to input */
 		*ddr &= ~(1 << nr);
 		
-		drvIrRxChannel[channel].rxbuf = buffer;
-		drvIrRxChannel[channel].rxlen = 0;
+		drvIrRxChannel[channel].buf = buffer;
+		drvIrRxChannel[channel].len = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
 		drvIrRxChannel[channel].callback = callback;
 		drvIrRxChannel[channel].enable = TRUE;
@@ -347,7 +352,7 @@ void IrTransceiver_DeInitRxChannel(uint8_t channel, uint8_t pcint_id, volatile u
 	{
 		/* Deactivate channel */
 		drvIrRxChannel[channel].enable = FALSE;
-		drvIrRxChannel[channel].rxlen = 0;
+		drvIrRxChannel[channel].len = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
 		drvIrRxChannel[channel].callback = 0;
 	}
@@ -381,7 +386,7 @@ void IrTransceiver_ResetRx(uint8_t channel)
 	if (channel < 3)
 	{
 		/* Reset channel */
-		drvIrRxChannel[channel].rxlen = 0;
+		drvIrRxChannel[channel].len = 0;
 		drvIrRxChannel[channel].storeEnable = FALSE;
 	}
 }
@@ -396,7 +401,7 @@ void IrTransceiver_Init(void)
 	for (uint8_t i = 0; i < 3; i++)
 	{
 		drvIrRxChannel[i].storeEnable = FALSE;
-		drvIrRxChannel[i].rxlen = 0;
+		drvIrRxChannel[i].len = 0;
 	}
 #endif
 	
@@ -470,12 +475,12 @@ int IrTransceiver_Transmit(uint8_t channel, uint16_t *buffer, uint8_t start, uin
 
 	/* Start new transmission. */
 	drvIrTxChannel[channel].timeoutEnable = TRUE;
-	drvIrTxChannel[channel].txbuf = buffer;
-	drvIrTxChannel[channel].txlen = start + length;
+	drvIrTxChannel[channel].buf = buffer;
+	drvIrTxChannel[channel].len = start + length;
 
 	/* first value will be loaded directly to timer below, therefore index is set to 1 here */
-	drvIrTxChannel[channel].txindex = 1 + start;
-	drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].txbuf[start];
+	drvIrTxChannel[channel].index = 1 + start;
+	drvIrTxChannel[channel].timeout = IR_COUNT_REG + drvIrTxChannel[channel].buf[start];
 
 	/* go through all channels and find the one that have the next overflow */
 	uint8_t nextChannel = 0;

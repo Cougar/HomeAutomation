@@ -366,7 +366,7 @@ static int decodeProntoData(int channel, uint8_t data)
 
 
 #if IR_RX_ENABLE==1
-void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len)
+void sns_irTransceive_RX_done_callback(uint8_t channel, uint16_t *buffer, uint8_t len, uint8_t index)
 {
 	if (channel < IR_SUPPORTED_NUM_CHANNELS)
 	{
