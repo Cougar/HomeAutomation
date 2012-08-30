@@ -1244,6 +1244,7 @@ int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 
 int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
 {
+#if IR_RX_CONTINUOUS_MODE==1
 	/* check if we have correct amount of data */ 
 	if (len < 90) {
 		return IR_NOT_CORRECT_DATA;
@@ -1299,5 +1300,8 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 	proto->data=rawbitsTemp;
 
 	return IR_OK;
+#else
+	return IR_NOT_CORRECT_DATA;
+#endif
 }
 #endif
