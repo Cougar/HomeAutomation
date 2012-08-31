@@ -1250,8 +1250,7 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 		return IR_NOT_CORRECT_DATA;
 	}
 	uint8_t i, i2;
-	uint64_t rawbitsTemp = 0;
-	uint8_t bitCounter = 0;
+	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
 	
 	for (i = 90; i > 0; i--)
 	{
@@ -1260,7 +1259,7 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 			i2+=MAX_NR_TIMES;
 
 		/* Check if correct amount of data have been received */
-		if ((i == 78) && (rawbitsTemp != 0b000001))
+		if ((i == 78) && (rawbitsTemp != 0b00001))
 			return IR_NOT_CORRECT_DATA;
 
 		if ((i&1) == 0) 
@@ -1270,20 +1269,18 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 				return IR_NOT_CORRECT_DATA;
 			}
 		} 
-		else 
+		else
 		{			/* if odd, data */
 			/* check length of transmit pulse */
 			if ((buf[i2] > IR_VIKING_HIGH_ONE - IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ONE + IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV)) 
 			{
 				/* write a one */
-				//rawbitsTemp |= (1ULL)<<(bitCounter++);
 				rawbitsTemp = rawbitsTemp<<1;
 				rawbitsTemp |= 1;
 			}
 			else if ((buf[i2] > IR_VIKING_HIGH_ZERO - IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ZERO + IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV)) 
 			{
 				/* do nothing, a zero is already in rawbits */
-				//bitCounter++;
 				rawbitsTemp = rawbitsTemp<<1;
 			}
 			else 
@@ -1293,7 +1290,8 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 		}
 	}
 	
-	//rawbitsTemp = rawbitsTemp>>5;
+	rawbitsTemp = ~rawbitsTemp;
+	rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
 	proto->protocol=IR_PROTO_VIKING;
 	proto->timeout=0;
