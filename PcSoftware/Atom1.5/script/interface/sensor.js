@@ -53,6 +53,19 @@ function Sensor_RegisterToNewPhonenumber(alias_name, callback)
   Sensor_OnNewPhonenumberFunctions[alias_name].push(callback);
 }
 
+Sensor_OnDeviceStateChangeFunctions = [];
+
+function Sensor_RegisterToDeviceStateChange(alias_name, callback)
+{
+  if (!Sensor_OnDeviceStateChangeFunctions[alias_name])
+  {
+    Sensor_OnDeviceStateChangeFunctions[alias_name] = [];
+  }
+
+  Sensor_OnDeviceStateChangeFunctions[alias_name].push(callback);
+}
+
+
 function Sensor_OnMessage(module_name, module_id, command, variables)
 {
   if (in_array(Sensor_ModuleNames, module_name))
@@ -235,13 +248,12 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		for (var alias_name in aliases_data)
 		{
 			if (aliases_data[alias_name]["specific"]["Channel"] == variables["Channel"] &&
-				variables["Status"] == "Burst" &&
 				aliases_data[alias_name]["specific"]["Proto"] == variables["Protocol"])
 			{
 				switch (variables["Protocol"])
 				{
 					case "Viking":
-					{
+					{	/* Add alias with these specifics: Channel=0,Proto=Viking,Address=<address of sensor> */
 						VikingSuccess = "VikingNotFound";
 						/*
 										  ??? aaaaaaaa sttttttttttt hhhhhhhh cccccccc
@@ -293,6 +305,50 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 							
 							break loopAliases;
+						}
+						break;
+					}
+					case "Nexa2":
+					{	/* Add alias with these specifics: Channel=0,Proto=Nexa,OnData=<data for on>,OffData=<data for off> */
+						var deviceStateCommand = "";
+						if (variables["IRdata"] == aliases_data[alias_name]["specific"]["OnData"] && variables["Status"] == "Pressed")
+						{
+							deviceStateCommand = "On";
+						}
+						else if (variables["IRdata"] == aliases_data[alias_name]["specific"]["OffData"] && variables["Status"] == "Pressed")
+						{
+							deviceStateCommand = "Off";
+						}
+						else
+						{
+							break;
+						}
+						
+						var last_value = {};
+						var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+						if (last_value_string)
+						{
+							last_value = eval("(" + last_value_string + ")");
+						}
+						
+						if (( typeof(last_value["State"]) == "undefined" ) || 
+							( deviceStateCommand == "Off" && last_value["State"]["value"] == "On" ) ||
+							( deviceStateCommand == "On" && last_value["State"]["value"] == "Off" ))
+						{
+							last_value["State"] = { "value" : deviceStateCommand, "timestamp" : get_time() };
+
+							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+
+							/* Call any potential subscribers */
+							if (Sensor_OnDeviceStateChangeFunctions[alias_name])
+							{
+								for (var n in Sensor_OnDeviceStateChangeFunctions[alias_name])
+								{
+									/* Call callback with arguments alias, state */
+									Sensor_OnDeviceStateChangeFunctions[alias_name][n](alias_name, deviceStateCommand);
+								}
+							}
 						}
 						break;
 					}
