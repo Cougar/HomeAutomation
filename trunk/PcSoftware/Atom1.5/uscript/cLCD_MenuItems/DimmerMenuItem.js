@@ -134,6 +134,7 @@ DimmerMenuItem.prototype.update = function ()
 		for (var i = this.window_low; i < this.dimmers.length && i <= this.window_high; i++) {
 			var last_value_string = Storage_GetParameter("LastValues", this.dimmers[i]);
 			var last_value = eval("(" + last_value_string + ")");
+
 			if (this.mode == 1 && this.currentDimmerItem == i) {
 				Display_Print(this.display, 0, row, this.parentDisplay.lcdCenterText(" -"+ this.dimmerNames[i] ));
 			} else if (this.mode == 3 && this.currentDimmerItem == i) {
@@ -141,7 +142,8 @@ DimmerMenuItem.prototype.update = function ()
 			} else {
 				Display_Print(this.display, 0, row, this.parentDisplay.lcdCenterText("  "+ this.dimmerNames[i] ));
 			}
-			Display_Print(this.display, 17, row,last_value["Level"]["value"]);
+			//Log("--> "+this.dimmerNames[i]+"  Value:"+last_value["Level"]["value"]+"\n");
+			Display_Print(this.display, 17, row, ""+last_value["Level"]["value"]);
 			row++;
 		}
 	} else {
