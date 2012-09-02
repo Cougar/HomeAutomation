@@ -1,5 +1,6 @@
 
 Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11" ];
+SensorRf_ModuleNames    = [ "rfTransceive" ];
 Sensor_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Sensor_Aliases        = function() { return Module_GetAliasNames(Sensor_ModuleNames); };
 Sensor_AvailableIds   = function() { return Module_GetAvailableIds(Sensor_ModuleNames); };
@@ -219,6 +220,92 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
   }
 }
 Module_RegisterToOnMessage("all", Sensor_OnMessage);
+
+function SensorRf_OnMessage(module_name, module_id, command, variables)
+{
+	if (in_array(SensorRf_ModuleNames, module_name))
+	{
+		var aliases_data = Module_LookupAliases({
+		"module_name" : module_name,
+		"module_id"   : module_id,
+		"group"       : false	});
+
+		var VikingSuccess = "NoVikingSensor";
+		loopAliases:	/* Label to break nested */
+		for (var alias_name in aliases_data)
+		{
+			if (aliases_data[alias_name]["specific"]["Channel"] == variables["Channel"] &&
+				variables["Status"] == "Burst" &&
+				aliases_data[alias_name]["specific"]["Proto"] == variables["Protocol"])
+			{
+				switch (variables["Protocol"])
+				{
+					case "Viking":
+					{
+						VikingSuccess = "VikingNotFound";
+						/*
+										  ??? aaaaaaaa sttttttttttt hhhhhhhh cccccccc
+						341731651126	0b100 11111001 000011001011 00101110 00110110	20.3 46%
+						a = address, s = sign, t = temperature, h = humidity, c = crc
+						*/
+						var data = variables["IRdata"];
+						var crc = data&0xFF;
+						var humidity = (data>>>8)&0xFF;
+						var temp = (data>>>16)&0xFFF;
+						var addr = rshift(data,28)&0xFF;
+						var unknown = rshift(data,36)&0xF;
+						var calccrc=crc8(rshift(data,8), 32);
+		
+						if (crc != calccrc)
+						{
+							Log("\033[31mError: VikingSensor, incorrect CRC, data="+data+", CRC="+crc+", calcCRC="+calccrc+"\033[0m");
+							break loopAliases;
+						}
+						if (addr == aliases_data[alias_name]["specific"]["Address"])
+						{
+							VikingSuccess = "VikingFound";
+							
+							var sign = (temp>>>11)&1;
+							temp = temp&0x7FF;
+							if (sign > 0)
+							{
+								temp = -temp;
+							}
+							temp = temp/10;
+		
+							if (unknown != 4)
+							{
+								Log("\033[33mWarning: VikingSensor, unknown part="+unknown+", data="+data+"\033[0m");
+							}
+
+							var last_value = {};
+							var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+							if (last_value_string)
+							{
+								last_value = eval("(" + last_value_string + ")");
+							}
+
+							var timestamp = get_time();
+							last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
+							last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
+
+							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+							
+							break loopAliases;
+						}
+						break;
+					}
+				}
+			}
+		}
+		if (VikingSuccess == "VikingNotFound")
+		{
+			Log("Found unknown vikingsensor address="+addr+" temperature="+temp+" humidity="+humidity+" unknown="+unknown);
+		}
+	}
+}
+Module_RegisterToOnMessage("all", SensorRf_OnMessage);
 
 function Sensor_StoreNumberInPhonebook(number, timestamp)
 {

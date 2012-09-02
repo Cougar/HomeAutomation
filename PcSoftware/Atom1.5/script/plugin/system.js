@@ -263,10 +263,27 @@ function parse_json_rpc(data)
   return items;
 }
 
+function crc8(data, length)
+{
+/*
+CRC calculation 
+http://ghsi.de/CRC/index.php?Polynom=100110001&Message=4F90CB2E
+with polynomial 100110001
+*/
+	var crc = 0;
+	for (var i=length-1; i>=0; i--)
+	{
+		var doInv = (((data>>i)&1) ^ (crc>>7)&1);
+		crc=(crc<<1)&0xff;
+		crc=crc|doInv;
+		crc=crc^((doInv<<4)|((doInv<<5)));
+	}
+	
+	return crc;
+}
 
-
-
-
-
-
+function rshift(num, bits) {
+	num = num - (num % Math.pow(2,bits));
+    return num / Math.pow(2,bits);
+}
 
