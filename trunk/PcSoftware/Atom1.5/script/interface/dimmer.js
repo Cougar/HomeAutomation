@@ -224,7 +224,86 @@ function Dimmer_RelativeFade(alias_name, speed, direction, steps)
 	    if (steps_set > 9940) {
 	      level_set = 10000;
 	    }
-        } else {
+        }       
+	else if (aliases_data[name]["module_name"] == "rfTransceive")
+	{
+	   var last_value = { "Level" : { "value" : 0, "timestamp" : 0 } };
+	    var last_value_string = Storage_GetParameter("LastValues", name);
+
+	    if (last_value_string)
+	    {
+	      last_value = eval("(" + last_value_string + ")");
+	    }
+	    
+	    var current_level = parseInt(last_value["Level"]["value"], 10) 
+	    if (direction == "Decrease") 
+	    {
+	      current_level -= parseInt(steps,10);
+	    }
+	    else 
+	    {
+	      current_level += parseInt(steps,10);
+	    }
+	    if (current_level > 255)
+	    {
+	      current_level = 255;
+	    }
+	    if (current_level < 0)
+	    {
+	      current_level = 0;
+	    }
+	  var data = parseInt(aliases_data[name]["specific"]["Data"], 10);
+	  var level_index = Math.ceil(current_level / 16);
+	  var level_values = [ 0, 15, 7, 11, 3, 13, 5, 9, 1, 14, 6, 10, 2, 12, 4, 8, 0 ];
+
+	  if (level_index === 0)
+	  {
+	    var highest_bit = data | 1;
+
+	    data |= 0x8000000;
+
+	    var down_shifted_data = data >>> 1;
+	    data = (down_shifted_data * 2) + (highest_bit & 1);
+	  }
+	  else
+	  {
+	    data += 0x8000000000; // Set MSB = Dimmer mode 
+	  }
+
+	  data += level_values[level_index] * 0x100000000; //Add dimmer level 
+
+	  var variables = {
+	    "Channel"  : aliases_data[name]["specific"]["Channel"],
+	    "Protocol" : "Nexa2",
+	    "IRdata"   : data,
+	    "Status"   : "Burst" };
+
+	  if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "IR", variables))
+	  {
+	    //Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+
+	    var last_value = {};
+	    var last_value_string = Storage_GetParameter("LastValues", name);
+
+	    if (last_value_string)
+	    {
+	      last_value = eval("(" + last_value_string + ")");
+	    }
+
+	    last_value["Level"] = { "value" : current_level, "timestamp" : get_time() };
+
+	    Storage_SetParameter("LastValues", name, JSON.stringify(last_value));
+	  }
+	  else
+	  {
+	    Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+	  }
+
+	  found = true;
+
+	  continue;
+	}	
+        else {
             steps_set = steps;
 	}
         var variables = {
