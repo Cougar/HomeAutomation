@@ -243,7 +243,39 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		"module_id"   : module_id,
 		"group"       : false	});
 
+		/* Must check sensor here in case no alias is stored the adress needs to be printed */
 		var VikingSuccess = "NoVikingSensor";
+		if (variables["Protocol"] == "Viking")
+		{
+			/*
+							  ??? aaaaaaaa sttttttttttt hhhhhhhh cccccccc
+			341731651126	0b100 11111001 000011001011 00101110 00110110	20.3 46%
+			a = address, s = sign, t = temperature, h = humidity, c = crc
+			*/
+			var data = variables["IRdata"];
+			var crc = data&0xFF;
+			var humidity = (data>>>8)&0xFF;
+			var temp = (data>>>16)&0xFFF;
+			var addr = rshift(data,28)&0xFF;
+			var unknown = rshift(data,36)&0xF;
+			var calccrc=crc8(rshift(data,8), 32);
+
+			var sign = (temp>>>11)&1;
+			temp = temp&0x7FF;
+			if (sign > 0)
+			{
+				temp = -temp;
+			}
+			temp = temp/10;
+
+			VikingSuccess = "VikingNotFound";
+			
+			if (unknown != 4)
+			{
+				Log("\033[33mWarning: VikingSensor, unknown part="+unknown+", data="+data+"\033[0m");
+			}
+		}
+				
 		loopAliases:	/* Label to break nested */
 		for (var alias_name in aliases_data)
 		{
@@ -254,20 +286,6 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 				{
 					case "Viking":
 					{	/* Add alias with these specifics: Channel=0,Proto=Viking,Address=<address of sensor> */
-						VikingSuccess = "VikingNotFound";
-						/*
-										  ??? aaaaaaaa sttttttttttt hhhhhhhh cccccccc
-						341731651126	0b100 11111001 000011001011 00101110 00110110	20.3 46%
-						a = address, s = sign, t = temperature, h = humidity, c = crc
-						*/
-						var data = variables["IRdata"];
-						var crc = data&0xFF;
-						var humidity = (data>>>8)&0xFF;
-						var temp = (data>>>16)&0xFFF;
-						var addr = rshift(data,28)&0xFF;
-						var unknown = rshift(data,36)&0xF;
-						var calccrc=crc8(rshift(data,8), 32);
-		
 						if (crc != calccrc)
 						{
 							Log("\033[31mError: VikingSensor, incorrect CRC, data="+data+", CRC="+crc+", calcCRC="+calccrc+"\033[0m");
@@ -276,19 +294,6 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 						if (addr == aliases_data[alias_name]["specific"]["Address"])
 						{
 							VikingSuccess = "VikingFound";
-							
-							var sign = (temp>>>11)&1;
-							temp = temp&0x7FF;
-							if (sign > 0)
-							{
-								temp = -temp;
-							}
-							temp = temp/10;
-		
-							if (unknown != 4)
-							{
-								Log("\033[33mWarning: VikingSensor, unknown part="+unknown+", data="+data+"\033[0m");
-							}
 
 							var last_value = {};
 							var last_value_string = Storage_GetParameter("LastValues", alias_name);
@@ -309,7 +314,7 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 						break;
 					}
 					case "Nexa2":
-					{	/* Add alias with these specifics: Channel=0,Proto=Nexa,OnData=<data for on>,OffData=<data for off> */
+					{	/* Add alias with these specifics: Channel=0,Proto=Nexa2,OnData=<data for on>,OffData=<data for off> */
 						var deviceStateCommand = "";
 						if (variables["IRdata"] == aliases_data[alias_name]["specific"]["OnData"] && variables["Status"] == "Pressed")
 						{
