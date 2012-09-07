@@ -38,7 +38,6 @@ typedef struct struct_GrLcdStateType
 {
     unsigned char lcdXAddr;
     unsigned char lcdYAddr;
-    uint8_t lcdYpage;
     uint8_t color;
 } GrLcdStateType;
 
