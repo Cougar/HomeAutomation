@@ -25,8 +25,8 @@
 //		which can be found at http://www.gnu.org/licenses/gpl.txt
 //
 //*****************************************************************************
-#ifndef GRAPHICS_WIDTH
-#error GRAPHICS_WIDTH, GRAPHICS_HEIGHT must be defined
+#ifndef dotmatrixSIZEX
+#error dotmatrixSIZEX, dotmatrixSIZEY must be defined
 #endif
 
 #define OUTPUT	0
@@ -61,7 +61,7 @@ void dotmatrixSetData(uint8_t Data)
 	/* Which ledmodule */
 	uint8_t module = GrLcdState.lcdXAddr;
 	/* Which column in ledmodule */
-	uint8_t column = GrLcdState.lcdYAddr/dotmatrixSIZEY;
+	uint8_t column = GrLcdState.lcdYAddr/8;
 	//uint8_t column = GrLcdState.lcdXAddr%8;
 	/* Which row */
 //	uint8_t row = GrLcdState.lcdYAddr%8;
@@ -77,7 +77,7 @@ uint8_t dotmatrixGetData(void){
 	/* Which ledmodule */
 	uint8_t module = GrLcdState.lcdXAddr;
 	/* Which column in ledmodule */
-	uint8_t column = GrLcdState.lcdYAddr/dotmatrixSIZEY;
+	uint8_t column = GrLcdState.lcdYAddr/8;
 	/* Which row */
 //	uint8_t row = GrLcdState.lcdYAddr%8;
 	
@@ -108,7 +108,7 @@ void dotmatrixWriteData(uint8_t data, uint8_t color){
 	
 	GrLcdState.lcdXAddr++;
 
-	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
+	if (GrLcdState.lcdXAddr > dotmatrixSIZEX ){
 		dotmatrixSetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
@@ -140,7 +140,7 @@ void dotmatrixWriteDataTransparent(uint8_t inputdata, uint8_t color){
 
 	GrLcdState.lcdXAddr++;
 
-	if (GrLcdState.lcdXAddr > GRAPHICS_WIDTH ){
+	if (GrLcdState.lcdXAddr > dotmatrixSIZEX ){
 		dotmatrixSetXY(0,GrLcdState.lcdYAddr+8);
 	}
 }
@@ -171,7 +171,7 @@ void dotmatrixRefresh()
 
 	/* Write one column of frame buffer to shift registers */
 	for (col = 0; col < (dotmatrixSIZEX/8*dotmatrixSIZEY/8); col++) {
-		dotmatrixSPIWrite(dotmatrixFramebuf[0][col*8+dotmatrixRowCounter]);
+		dotmatrixSPIWrite(dotmatrixFramebuf[(col*8+dotmatrixRowCounter)/dotmatrixSIZEX][(col*8+dotmatrixRowCounter)%dotmatrixSIZEX]);
 	}
 
 	/* Disable all rows */
@@ -265,9 +265,9 @@ void dotmatrixInit(){
 
 void dotmatrixClear(){
 	/* Clear buffer memory */
-	for (uint8_t i=0; i<dotmatrixSIZEY; i++)
+	for (uint8_t i=0; i<dotmatrixSIZEY/8; i++)
 	{
-		for (uint8_t j=0; j<(dotmatrixSIZEX/8); j++)
+		for (uint8_t j=0; j<(dotmatrixSIZEX); j++)
 		{
 			dotmatrixFramebuf[i][j] = dotmatrixINITIAL_ROW;
 		}
