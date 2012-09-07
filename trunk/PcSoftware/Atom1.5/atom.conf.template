@@ -25,6 +25,7 @@ LogLevel = 3
 DaemonPort = 1200
 MonitorPort = 1201
 CommandPort = 1202
+CanForwardPort = 1101
 #MbbPort = 1212
 
 ###############################################################################

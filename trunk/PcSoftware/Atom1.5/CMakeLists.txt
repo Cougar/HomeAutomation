@@ -72,7 +72,7 @@ MARK_AS_ADVANCED(
 )
 
 
-  
+
 ###############################################################################
 include_directories(${MYSQL_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -92,7 +92,7 @@ find_package(Threads REQUIRED)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/AtomSvnRev")
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/AtomSvnRev" SUBVERSION_REVISION)
 else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/AtomSvnRev")
-    GET_SVN_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)        
+    GET_SVN_REVISION(${CMAKE_CURRENT_SOURCE_DIR} SUBVERSION_REVISION)
 endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/AtomSvnRev")
 
 
@@ -112,7 +112,7 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR
 
 set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 
-set(ATOMD_FILES src/net/Url.cpp src/net/GetFile.cpp src/net/TcpServer.cpp src/common/log.cpp src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/JsPipe.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/CanDaemon.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
+set(ATOMD_FILES src/can/Forward.cpp src/net/Url.cpp src/net/GetFile.cpp src/net/TcpServer.cpp src/common/log.cpp src/common/common.cpp src/control/Code.cpp src/vm/plugin/Storage.cpp src/storage/Store.cpp src/storage/Manager.cpp src/vm/plugin/Socket.cpp src/vm/plugin/Console.cpp src/vm/plugin/JsPipe.cpp src/vm/plugin/Module.cpp src/vm/plugin/Node.cpp src/vm/plugin/Timer.cpp src/vm/plugin/System.cpp src/vm/Plugin.cpp src/vm/Manager.cpp src/timer/Subscriber.cpp src/control/Module.cpp src/control/Node.cpp src/control/Manager.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/can/Monitor.cpp src/can/CanDaemon.cpp src/can/Message.cpp src/xml/Node.cpp src/can/Protocol.cpp src/common/Bitset.cpp src/common/Byteset.cpp src/can/Network.cpp src/broker/Subscriber.cpp src/broker/Message.cpp src/broker/Manager.cpp src/config/Manager.cpp src/logging/Logger.cpp src/timer/Timer.cpp src/timer/Manager.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp src/atomd.cpp)
 set(ATOMD_LIBS ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} v8)
 
 set(ATOMIC_FILES src/common/common.cpp src/atomic.cpp src/logging/Logger.cpp src/common/log.cpp src/common/IoService.cpp src/net/Subscriber.cpp src/common/Byteset.cpp src/net/TcpServer.cpp src/net/SerialClient.cpp src/net/UdpClient.cpp src/net/TcpClient.cpp src/net/Client.cpp src/net/Manager.cpp)

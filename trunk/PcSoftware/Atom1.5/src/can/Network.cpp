@@ -118,7 +118,11 @@ void Network::SlotOnTimeout(timer::TimerId timer_id)
 
 void Network::SlotOnMessageHandler(broker::Message::Pointer message)
 {
-    if (message->GetType() == broker::Message::CAN_MESSAGE)
+    if (message->GetType() == broker::Message::CAN_RAW_BYTES)
+    {
+      net::Manager::Instance()->SendTo(this->client_id_, message->GetRawData());
+    }
+    else if (message->GetType() == broker::Message::CAN_MESSAGE)
     {
         Message* payload = static_cast<Message*>(message->GetPayload().get());
         common::Byteset data(17);
@@ -301,6 +305,8 @@ void Network::SlotOnNewDataHandler(net::SocketId client_id, common::Byteset data
   {
     return;
   }
+
+  broker::Manager::Instance()->Post(broker::Message::Pointer(new broker::Message(broker::Message::CAN_RAW_BYTES, data, this)));
 
   static bool have_start = false;
 
