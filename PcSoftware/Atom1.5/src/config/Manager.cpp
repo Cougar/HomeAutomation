@@ -1,21 +1,21 @@
 /*
- * 
+ *
  *  Copyright (C) 2010  Mattias Runge
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  */
 
 #include "Manager.h"
@@ -36,7 +36,7 @@ Manager::Pointer Manager::instance_;
 Manager::Manager() : command_line_("Command line options"), configuration_file_("Configuration file options")
 {
   std::string default_config_file = "/etc/atom/atom.conf";
-  
+
   if (!boost::filesystem::exists(default_config_file))
   {
       default_config_file = "atom.conf";
@@ -47,6 +47,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
   ("CommandPort",   boost::program_options::value<int>()->default_value(1202), "TCP port to open for command input")
   ("JsPipePort",    boost::program_options::value<int>()->default_value(1203), "TCP port to open for the JsPipe")
   ("DaemonPort",    boost::program_options::value<int>()->default_value(1200), "TCP port to open for canDaemon input/output")
+  ("CanForwardPort",boost::program_options::value<int>()->default_value(1101), "TCP port to open for CAN traffic forward")
   ("MbbPort",       boost::program_options::value<int>()->default_value(1212), "TCP port to open for MBB clients")
   ("LogFile",       boost::program_options::value<std::string>(),              "File to log output to")
   ("LogLevel",      boost::program_options::value<int>()->default_value(4),    "Level of logging")
@@ -62,7 +63,7 @@ Manager::Manager() : command_line_("Command line options"), configuration_file_(
   ("help,h",    "produce help message")
   ("daemon,d",  "start in daemon mode")
   ("file,f",    boost::program_options::value<std::string>()->default_value(default_config_file), "configuration file");
-  
+
   this->command_line_.add(this->configuration_file_);
 }
 
@@ -92,7 +93,7 @@ bool Manager::Set(int argument_count, char** argument_vector)
     boost::program_options::store(boost::program_options::command_line_parser(argument_count, argument_vector).options(this->command_line_).run(), this->variable_map_);
   }
   catch (boost::program_options::unknown_option e)
-  { 
+  {
     log::Error(log_module_, e.what());
     std::cout << this->command_line_ << std::endl;
     return false;
@@ -103,15 +104,15 @@ bool Manager::Set(int argument_count, char** argument_vector)
     std::cout << this->command_line_ << std::endl;
     return false;
   }
-  
+
   std::ifstream ifs(this->GetAsString("file").data());
-      
+
   if (!ifs.is_open())
   {
     log::Error(log_module_, "Could not find %s!", this->GetAsString("file").c_str());
     return false;
   }
-  
+
   try
   {
       boost::program_options::store(boost::program_options::parse_config_file(ifs, this->configuration_file_), this->variable_map_);
@@ -129,17 +130,17 @@ bool Manager::Set(int argument_count, char** argument_vector)
     std::cout << this->command_line_ << std::endl;
     return false;
   }
-      
+
   ifs.close();
-  
+
   if (this->Exist("help"))
   {
     std::cout << this->command_line_ << std::endl;
     return false;
   }
-  
+
   log::Info(log_module_, "Using %s as configuration file.", this->GetAsString("file").c_str());
-  
+
   return true;
 }
 

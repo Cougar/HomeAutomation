@@ -39,6 +39,7 @@
 #include "can/Network.h"
 #include "can/Monitor.h"
 #include "can/CanDaemon.h"
+#include "can/Forward.h"
 #include "vm/Manager.h"
 #include "storage/Manager.h"
 #include "net/GetFile.h"
@@ -95,14 +96,14 @@ int main(int argc, char **argv)
   /* Set core dump parameters */
   rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
   setrlimit( RLIMIT_CORE, &core_limit ); // enable core dumps
-  
-  
+
+
   /* Print startup information */
   log::Info(log_module_, "Atom daemon, version %s starting...", VERSION);
   log::Info(log_module_, "Released under %s.", LICENSE);
   log::Info(log_module_, "Written by Mattias Runge 2010-2012.");
 
-  
+
   /* Register signal handlers */
   signal(SIGTERM, Handler);
   signal(SIGINT,  Handler);
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
   signal(SIGABRT, Handler);
   signal(SIGPIPE, Handler);
 
-  
+
   /* Check configuration */
   config::Manager::Create();
 
@@ -120,7 +121,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
   }
 
-  
+
   /* Set up logging */
   if (config::Manager::Instance()->Exist("LogFile"))
   {
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
     log::SetLevelByString(config::Manager::Instance()->GetAsString("LogLevelMask"));
   }
 
-  
+
   /* Enter daemon mode if requested */
   if (config::Manager::Instance()->Exist("daemon"))
   {
@@ -148,7 +149,7 @@ int main(int argc, char **argv)
     log::Info(log_module_, "Deamon mode entered successfully!");
   }
 
-  
+
   /* Create singletons */
   storage::Manager::Create();
   timer::Manager::Create();
@@ -158,18 +159,18 @@ int main(int argc, char **argv)
   control::Manager::Create();
   vm::Manager::Create();
 
-  
+
 
   std::string protocol_filename = config::Manager::Instance()->GetAsString("ProtocolFile");
-  
+
   try
   {
     net::Url url(protocol_filename);
-    
+
     downloader = net::GetFile::Pointer(new net::GetFile());
-    
+
     log::Info(log_module_, "Will try to download protocol file from \"%s\"...", protocol_filename.data());
-    
+
     downloader->Start(url, HandleProtocolFileDownload);
   }
   catch (std::exception& exception)
@@ -178,13 +179,13 @@ int main(int argc, char **argv)
     ContinueInitialization(protocol_filename);
   }
 
-  
+
   /* Lock main thread and wait for exit */
   boost::mutex::scoped_lock guard(guard_mutex);
 
   on_message_condition.wait(guard);
 
-  
+
   /* Cleanup */
   log::Info(log_module_, "Cleaning up...");
 
@@ -196,7 +197,7 @@ int main(int argc, char **argv)
 }
 
 void ContinueInitialization(std::string protocol_filename)
-{  
+{
   /* Load protocol file */
   if (!can::Protocol::Instance()->Load(protocol_filename))
   {
@@ -204,30 +205,37 @@ void ContinueInitialization(std::string protocol_filename)
 
     on_message_condition.notify_all();
   }
-  
-  
+
+
   /* Set up storage path */
   storage::Manager::Instance()->SetRootPath(config::Manager::Instance()->GetAsString("StoragePath"));
 
-  
+
   /* Start monitor server */
   if (config::Manager::Instance()->Exist("MonitorPort"))
   {
     subscribers.push_back(can::Monitor::Pointer(new can::Monitor(config::Manager::Instance()->GetAsInt("MonitorPort"))));
   }
 
-  
+
   /* Start CanDaemon server */
   if (config::Manager::Instance()->Exist("DaemonPort"))
   {
     subscribers.push_back(can::CanDaemon::Pointer(new can::CanDaemon(config::Manager::Instance()->GetAsInt("DaemonPort"))));
   }
 
-  
+    /* Start CAN forward server */
+  if (config::Manager::Instance()->Exist("CanForwardPort"))
+  {
+    subscribers.push_back(can::Forward::Pointer(new can::Forward(config::Manager::Instance()->GetAsInt("CanForwardPort"))));
+  }
+
+
+
   /* Subscribe Can control manager to data */
   subscribers.push_back(control::Manager::Instance());
 
-  
+
   /* Start VM plugins */
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::System(vm::Manager::Instance()->GetIoService())));
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Console(vm::Manager::Instance()->GetIoService(), config::Manager::Instance()->GetAsInt("CommandPort"))));
@@ -241,16 +249,16 @@ void ContinueInitialization(std::string protocol_filename)
 #ifdef USE_PLUGIN_XORG
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::Xorg(vm::Manager::Instance()->GetIoService())));
 #endif // USE_PLUGIN_XORG
-  
+
 #ifdef USE_PLUGIN_MYSQL
   vm::Manager::Instance()->AddPlugin(vm::Plugin::Pointer(new vm::plugin::MySql(vm::Manager::Instance()->GetIoService())));
 #endif // USE_PLUGIN_MYSQL
 
-  
+
   /* Start VM */
   vm::Manager::Instance()->Start(config::Manager::Instance()->GetAsString("ScriptPath"), config::Manager::Instance()->GetAsString("UserScriptPath"));
 
-  
+
   /* Connect to Can network */
   if (config::Manager::Instance()->Exist("CanNet"))
   {
@@ -266,7 +274,7 @@ void ContinueInitialization(std::string protocol_filename)
 void CleanUp()
 {
   downloader.reset();
-  
+
   if (net::Manager::Instance().use_count() > 0)
   {
     net::Manager::Instance()->Stop();
@@ -281,7 +289,7 @@ void CleanUp()
   vm::Manager::Delete();
   net::Manager::Delete();
   storage::Manager::Delete();
-  
+
   log::CloseFile();
 }
 
