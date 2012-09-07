@@ -24,6 +24,12 @@
 
 #define dotmatrixSIZEX GRAPHICS_WIDTH
 #define dotmatrixSIZEY GRAPHICS_HEIGHT
+#if dotmatrixSIZEY % 8 !=0
+#error Dotmatrix display only supports screen sizes of multiples of 8 in Y direction
+#endif
+#if dotmatrixSIZEX % 32 !=0
+#error Dotmatrix display only supports screen sizes of multiples of 32 in X direction
+#endif
 
 #define dotmatrixINITIAL_ROW 0x0
 
