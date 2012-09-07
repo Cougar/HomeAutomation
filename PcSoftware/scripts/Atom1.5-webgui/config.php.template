@@ -51,6 +51,13 @@ $pageConfiguration = array(
                                                      "hall",
                                                      "garderobtemp")
                                  ),
+                            array("page" => "irdevicestate",
+                                  "title" => "Windows/Doors",
+                                  "aliases" => array("bedroomDoor",
+                                  					"frontDoor",
+                                  					"backDoor"
+                                                     )
+                                 ),
 			    array("page" => "PID",
                                   "title" => "Värme",
                                   "alias" => "PID",
