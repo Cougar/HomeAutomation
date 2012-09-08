@@ -44,10 +44,10 @@ RRD_Tool_timerUpdate = function(timer)
 				//Log("Found label: "+label+"\n");
 				var data = eval("(" + alias_string[RRD_Tool_StoredData[name]["rrdNames"][label]["Module"]] + ")");
 				var datatype=RRD_Tool_StoredData[name]["rrdNames"][label]["data"];
-				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"]*1000;
+				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"];
 				if ((get_time() - periodicity*2) > data[datatype]["timestamp"])
 				{
-					Log("\033[31mError: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+".\033[0m");
+					//Log("\033[31mError: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+".\033[0m");
 					break timer_loop;
 				}
 				if (first == 1) {
