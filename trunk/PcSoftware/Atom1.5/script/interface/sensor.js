@@ -305,7 +305,10 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 
 							var timestamp = get_time();
 							last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
-							last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
+							if (humidity<101)
+							{
+								last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
+							}
 
 							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 							

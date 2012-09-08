@@ -28,9 +28,11 @@ RRD_Tool_Init();
 RRD_Tool_timerUpdate = function(timer)
 {
 	var alias_string = Storage_GetParameters("LastValues");
+	timer_loop:
 	for (var name in RRD_Tool_Timers)
 	{	
-		if (RRD_Tool_Timers[name] == timer) {
+		if (RRD_Tool_Timers[name] == timer) 
+		{
 			//Log("Timer: "+timer+", named: "+name+" with data: "+RRD_Tool_StoredData[name]["rrd"]["file"]+"\n");
 			/* Create command to execute...*/
 			var names = "";
@@ -41,6 +43,13 @@ RRD_Tool_timerUpdate = function(timer)
 			{
 				//Log("Found label: "+label+"\n");
 				var data = eval("(" + alias_string[RRD_Tool_StoredData[name]["rrdNames"][label]["Module"]] + ")");
+				var datatype=RRD_Tool_StoredData[name]["rrdNames"][label]["data"];
+				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"]*1000;
+				if ((get_time() - periodicity*2) > data[datatype]["timestamp"])
+				{
+					Log("\033[31mError: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+".\033[0m");
+					break timer_loop;
+				}
 				if (first == 1) {
 					names += label;
 					first = 0;
@@ -49,17 +58,18 @@ RRD_Tool_timerUpdate = function(timer)
 				}
 				if (typeof data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"] == "string")
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"];
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"].toString;
 				}
 				else
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]]	 
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]].toString;
 				}	
+				}
+				cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
+				//Log("Command: "+cmd);
+				Execute(cmd);
+				break;
 			}
-			cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
-			//Log("Command: "+cmd);
-			Execute(cmd);
-			break;
 		}
 	}
 }
@@ -67,6 +77,8 @@ RRD_Tool_timerUpdate = function(timer)
 /* Tab complete stuff */
 RRD_Tool_Aliases        = function() { return Module_GetAliasNames(); };
 RRD_Tool_Intervals      = function() { return [ 5, 10, 30, 60, 120, 150, 300 ]; };
+RRD_Tool_MinValues      = function() { return [ -40, 0 ]; };
+RRD_Tool_MaxValues      = function() { return [ 50, 100, 10000, 20000 ]; };
 /* Function returns an array with all CAN variables existing in LastValues storage */
 RRD_Tool_Variables      = function() 
 {
@@ -136,6 +148,19 @@ function RRDTool_AddConfig(alias_name, variable_name, push_interval, store_name,
 	RRD_Tool_Timers[store_name] = Timer_SetTimer(function(timer) {RRD_Tool_timerUpdate(timer)}, RRD_Tool_StoredData[store_name]["rrd"]["Period_s"]*1000, true);	
 	Log("\033[33mCreated: "+store_name+" with update rate of "+RRD_Tool_StoredData[store_name]["rrd"]["Period_s"]+"s.\033[0m\n");
 }
-
 Console_RegisterCommand(RRDTool_AddConfig, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, RRD_Tool_Aliases(), RRD_Tool_Variables(), RRD_Tool_Intervals() ); });
+
+
+/* Function to add new rrd config and create rrd file on atomic command line interface */
+function RRDTool_AddConfigCreateRrd(alias_name, variable_name, push_interval, data_max, data_min, store_name, rrd_filename, rrd_data_source_name)
+{
+	/* Create new rrd file */
+	/* Two avarages, one with 1 value avarage and one with 12 values avarage */
+	/* Make sure 1 value avarage last 14 days and 12 value avarage last 10 years, independant of push interval */
+	
+	/* set data timeout to double push interval */
+	/* set step to push interval */
+	
+}
+//Console_RegisterCommand(RRDTool_AddConfigCreateRrd, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, RRD_Tool_Aliases(), RRD_Tool_Variables(), RRD_Tool_Intervals(), RRD_Tool_MaxValues(), RRD_Tool_MinValues() ); });
 
