@@ -64,7 +64,6 @@ RRD_Tool_timerUpdate = function(timer)
 				{
 					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]].toString;
 				}	
-				}
 				cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
 				//Log("Command: "+cmd);
 				Execute(cmd);
