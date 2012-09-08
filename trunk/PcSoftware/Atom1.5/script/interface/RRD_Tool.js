@@ -58,11 +58,11 @@ RRD_Tool_timerUpdate = function(timer)
 				}
 				if (typeof data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"] == "string")
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"].toString;
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"];
 				}
 				else
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]].toString;
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]];
 				}	
 				cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
 				//Log("Command: "+cmd);
