@@ -1130,37 +1130,58 @@ int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) {
 	/* parse buf[], max is len */
 
+	uint8_t i;
 	/* check if we have correct amount of data */ 
-	if (len != 50) {
+	if (len < 50) {
 		return IR_NOT_CORRECT_DATA;
 	}
-	if (buf[0] < IR_NEXA1_START - IR_NEXA1_START/IR_NEXA1_TOL_DIV || buf[0] > IR_NEXA1_START + IR_NEXA1_START/IR_NEXA1_TOL_DIV) { //check start bit
+#if IR_RX_CONTINUOUS_MODE==0
+	i = 0;
+#else
+	i=index-50;
+	if (i>index)
+		i+=MAX_NR_TIMES;
+#endif
+	if (buf[i] < IR_NEXA1_START - IR_NEXA1_START/IR_NEXA1_TOL_DIV || buf[i] > IR_NEXA1_START + IR_NEXA1_START/IR_NEXA1_TOL_DIV) { //check start bit
 		return IR_NOT_CORRECT_DATA;
 	}
 
 	uint32_t rawbitsTemp = 0;
 	uint8_t bitCounter = 0;
 
-	for (uint8_t i = 1; i < len; i+=4) {
+	for (i = 1; i < 48; i+=4) 
+	{
+		uint8_t i2;
+#if IR_RX_CONTINUOUS_MODE==0
+		i2 = i;
+#else
+		i2=index-(50-i);
+		if (i2>index)
+			i2+=MAX_NR_TIMES;
+#endif
 		/* Check if '0' bit */
 		if (
-			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
-			(buf[i+2] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+2] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+3] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+3] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV))
+			(buf[i2+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) && (buf[i2+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i2+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) && (buf[i2+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) &&
+			(buf[i2+2] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) && (buf[i2+2] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i2+3] > IR_NEXA1_LONG  - IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) && (buf[i2+3] < IR_NEXA1_LONG  + IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) )
 		{
 			/* write a one */
 			rawbitsTemp |= (1UL)<<(bitCounter++);
 		}
 		/* Check if 'X' bit */
 		else if (
-			(buf[i+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
-			(buf[i+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
-			(buf[i+2] > IR_NEXA1_LONG  - IR_NEXA1_LONG/IR_NEXA1_TOL_DIV  && buf[i+2] < IR_NEXA1_LONG  + IR_NEXA1_LONG/IR_NEXA1_TOL_DIV) &&
-			(buf[i+3] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV && buf[i+3] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV))
+			(buf[i2+0] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) && (buf[i2+0] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) &&
+			(buf[i2+1] > IR_NEXA1_LONG  - IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) && (buf[i2+1] < IR_NEXA1_LONG  + IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) &&
+			(buf[i2+2] > IR_NEXA1_LONG  - IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) && (buf[i2+2] < IR_NEXA1_LONG  + IR_NEXA1_LONG /IR_NEXA1_TOL_DIV) &&
+			(buf[i2+3] > IR_NEXA1_SHORT - IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) && (buf[i2+3] < IR_NEXA1_SHORT + IR_NEXA1_SHORT/IR_NEXA1_TOL_DIV) )
 		{
 			/* do nothing, a zero is already in rawbits */
 			bitCounter++;
+		}
+		else
+		{
+			return IR_NOT_CORRECT_DATA;
 		}
 	}
 
