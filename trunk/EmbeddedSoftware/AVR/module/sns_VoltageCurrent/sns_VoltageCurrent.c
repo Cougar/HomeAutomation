@@ -57,10 +57,10 @@ void sns_VoltageCurrent_Process(void)
 		txMsg.Header.ModuleId = sns_VoltageCurrent_ID;
 		txMsg.Length = 3;
 		uint16_t ADvalue;
-		
+		switch (VoltageCurrentChannelToSend) {
+		case 0:
 #ifdef sns_VoltageCurrent0AD
-		if (VoltageCurrentChannelToSend==0)
-		{
+		  
 			ADvalue = ADC_Get(sns_VoltageCurrent0AD);
 			ADvalue = ADvalue * sns_VoltageCurrent0Factor;
 #if sns_VoltageCurrent0VorA==0
@@ -71,14 +71,15 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[0] = 0;
 			txMsg.Data[1] = (ADvalue>>(sns_VoltageCurrent0Scale-6+8))&0xff;
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent0Scale-6))&0xff;
-
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 1;
+#if  !(defined(sns_VoltageCurrent1AD) || defined(sns_VoltageCurrent2AD) || defined(sns_VoltageCurrent3AD) || defined(sns_VoltageCurrent4AD) || defined(sns_VoltageCurrent5AD))
+			VoltageCurrentChannelToSend = 0;
 #endif
-
+			break;
+#endif
+		case 1:
 #ifdef sns_VoltageCurrent1AD
-		if (VoltageCurrentChannelToSend==1)
-		{
 			ADvalue = ADC_Get(sns_VoltageCurrent1AD);
 			ADvalue = ADvalue * sns_VoltageCurrent1Factor;
 #if sns_VoltageCurrent1VorA==0
@@ -91,12 +92,14 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent1Scale-6))&0xff;
 
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 2;
+#if  !(defined(sns_VoltageCurrent2AD) || defined(sns_VoltageCurrent3AD) || defined(sns_VoltageCurrent4AD) || defined(sns_VoltageCurrent5AD))
+			VoltageCurrentChannelToSend = 0;
 #endif
-
+			break;
+#endif
+		case 2:
 #ifdef sns_VoltageCurrent2AD
-		if (VoltageCurrentChannelToSend==2)
-		{
 			ADvalue = ADC_Get(sns_VoltageCurrent2AD);
 			ADvalue = ADvalue * sns_VoltageCurrent2Factor;
 #if sns_VoltageCurrent2VorA==0
@@ -109,12 +112,14 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent2Scale-6))&0xff;
 
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 3;
+#if  !(defined(sns_VoltageCurrent3AD) || defined(sns_VoltageCurrent4AD) || defined(sns_VoltageCurrent5AD))
+			VoltageCurrentChannelToSend = 0;
 #endif
-
+			break;
+#endif
+		case 3:
 #ifdef sns_VoltageCurrent3AD
-		if (VoltageCurrentChannelToSend==3)
-		{
 			ADvalue = ADC_Get(sns_VoltageCurrent3AD);
 			ADvalue = ADvalue * sns_VoltageCurrent3Factor;
 #if sns_VoltageCurrent3VorA==0
@@ -127,12 +132,14 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent3Scale-6))&0xff;
 
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 4;
+#if  !( defined(sns_VoltageCurrent4AD) || defined(sns_VoltageCurrent5AD))
+			VoltageCurrentChannelToSend = 0;
 #endif
-
+			break;
+#endif
+		case 4:
 #ifdef sns_VoltageCurrent4AD
-		if (VoltageCurrentChannelToSend==4)
-		{
 			ADvalue = ADC_Get(sns_VoltageCurrent4AD);
 			ADvalue = ADvalue * sns_VoltageCurrent4Factor;
 #if sns_VoltageCurrent4VorA==0
@@ -145,12 +152,14 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent4Scale-6))&0xff;
 
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 5;
+#if  !(defined(sns_VoltageCurrent5AD))
+			VoltageCurrentChannelToSend = 0;
 #endif
-
+			break;
+#endif
+		case 5:
 #ifdef sns_VoltageCurrent5AD
-		if (VoltageCurrentChannelToSend==5)
-		{
 			ADvalue = ADC_Get(sns_VoltageCurrent5AD);
 			ADvalue = ADvalue * sns_VoltageCurrent5Factor;
 #if sns_VoltageCurrent5VorA==0
@@ -163,10 +172,14 @@ void sns_VoltageCurrent_Process(void)
 			txMsg.Data[2] = (ADvalue>>(sns_VoltageCurrent5Scale-6))&0xff;
 
 			while (StdCan_Put(&txMsg) != StdCan_Ret_OK) {}
-		}
+			VoltageCurrentChannelToSend = 6;
+			break;
 #endif
-
-		if (VoltageCurrentChannelToSend++ >=6)
+		default:
+			VoltageCurrentChannelToSend = 6;
+			break;
+		}
+		if (VoltageCurrentChannelToSend >=6)
 		{
 			VoltageCurrentChannelToSend=0;
 		}
