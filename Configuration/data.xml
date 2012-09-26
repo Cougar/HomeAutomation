@@ -162,6 +162,12 @@
         <variable name="Volume" type="uint" start_bit="16" bit_length="32" unit="Milliliter" description=""/>
       </variables>
     </command>
+    <command id="78" name="Distance" type="physical" module="" description="Distance data">
+      <variables>
+        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="mm" description=""/>
+      </variables>
+    </command>
     
     
     <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
@@ -1424,6 +1430,7 @@
     <module id="61" name="DHT11" class="sns"/>
     <module id="62" name="rfTransceive" class="sns"/>
     <module id="63" name="qtouch" class="sns"/>
+    <module id="64" name="ultrasonic" class="sns"/>
   </modules>
   
   
