@@ -1,0 +1,19 @@
+## Section sns_ultrasonic -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+sns_ultrasonic_USEEEPROM=1
+
+sns_ultrasonic_ID=<ID>
+#sns_ultrasonic_DUMMY=1
+#sns_ultrasonic_DUMMY_TIMER=<TIMER>
+sns_ultrasonic_REPORT_TIMER=<TIMER>
+sns_ultrasonic_MEASURE_TIMER=<TIMER>
+
+sns_ultrasonic_DEFAULT_REPORTINTERVAL=10u
+
+sns_ultrasonic_Trigger_PIN=EXP_C
+
+#Uncomment to use the pcint driver
+#sns_ultrasonic_DUMMY_PCINT=<PCINT>
+
+## End section sns_ultrasonic -- Do not edit this line
