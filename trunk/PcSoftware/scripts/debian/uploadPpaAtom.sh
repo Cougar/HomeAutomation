@@ -46,6 +46,10 @@ case $DIST in
     DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.48.0, libboost-system1.48.0, libboost-signals1.48.0, libboost-filesystem1.48.0, libboost-date-time1.48.0, libboost-program-options1.48.0, libv8-3.7.12.22, libmysqlclient18"
     BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.48-dev, libboost-filesystem1.48-dev, libboost-program-options1.48-dev, libboost-signals1.48-dev, libboost-thread1.48-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
     ;;
+  quantal)
+    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.49.0, libboost-system1.49.0, libboost-signals1.49.0, libboost-filesystem1.49.0, libboost-date-time1.49.0, libboost-program-options1.49.0, libv8-3.8.9.20, libmysqlclient18"
+    BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.49-dev, libboost-filesystem1.49-dev, libboost-program-options1.49-dev, libboost-signals1.49-dev, libboost-thread1.49-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
+    ;;
 esac
 
 # Run script from cron every hour
