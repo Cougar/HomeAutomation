@@ -192,7 +192,7 @@ def readConfigSection(fileName, sectionName):
 	
 
 def updateConfigFile():
-	print "Updating config.inc..."
+	print "Updating config.inc...\n"
 	modules = getLocalModules()
 	moduleSections = {}
 	applicationSection = []
@@ -204,24 +204,23 @@ def updateConfigFile():
 			moduleSections[moduleName] = readConfigSection(localmoddir + "/" + moduleName + "/config.inc.template", moduleName)
 	else:
 		applicationSection = readConfigSection("config.inc", "application")
-		
+		print "\tModules used:"
 		for moduleName in modules:
 			moduleSections[moduleName] = readConfigSection("config.inc", moduleName)
-			
+			print "\t\t"+moduleName
 			if len(moduleSections[moduleName]) <= 1:
 				moduleSections[moduleName] = readConfigSection(localmoddir + "/" + moduleName + "/config.inc.template", moduleName)
 	
 	timers = 0
 	pcints = 0
-	
-	moduleIds = getModuleIdsFromFile(moduleName)
-	
+	print ""
 	for moduleName, moduleSection in moduleSections.iteritems():
 		c = 0
 		for line in moduleSection:
 			if len(line) > 0:
 				if line[0] != '#':
 					if line.find("<ID>") != -1:
+						moduleIds = getModuleIdsFromFile(moduleName)
 						new_ID = getFreeModuleId(moduleIds)
 						print "\nNew module id set to: "+hex(new_ID)+"\n"
 						moduleIds.append(new_ID)
