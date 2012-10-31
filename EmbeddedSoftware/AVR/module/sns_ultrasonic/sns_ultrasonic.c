@@ -150,7 +150,7 @@ void sns_ultrasonic_Process(void)
 	if (Timer_Expired(sns_ultrasonic_REPORT_TIMER)) {
 	  uint16_t temp;
 		switch (sns_ultrasonic_Mode) {
-		case CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_LENGTH:
+		case CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_LENGTH:
 			
 			temp = (uint16_t)((float)sns_ultrasonic_Measurement*1.36f);
 			//temp = lastCaptures[3];
@@ -166,7 +166,7 @@ void sns_ultrasonic_Process(void)
 			txMsg.Data[2] = (temp)&0xff;
 			StdCan_Put(&txMsg);
 			break;
-		case CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_PERCENT:
+		case CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_PERCENT:
 			temp = (uint16_t)((float)sns_ultrasonic_Measurement*1.36f);
 			if (temp > sns_ultrasonic_BottomLevel && temp < sns_ultrasonic_TopLevel) {
 				temp = temp - sns_ultrasonic_BottomLevel;
@@ -192,7 +192,7 @@ void sns_ultrasonic_Process(void)
 	        uint16_t temp;
 	      lastvalue = sns_ultrasonic_Measurement;
 	      switch (sns_ultrasonic_Mode) {
-		case CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_LENGTH:
+		case CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_LENGTH:
 			
 			temp = (uint16_t)((float)sns_ultrasonic_Measurement*1.36f);
 			//temp = lastCaptures[3];
@@ -208,7 +208,7 @@ void sns_ultrasonic_Process(void)
 			txMsg.Data[2] = (temp)&0xff;
 			StdCan_Put(&txMsg);
 			break;
-		case CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_PERCENT:
+		case CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_PERCENT:
 			temp = (uint16_t)((float)sns_ultrasonic_Measurement*1.36f);
 			if (temp > sns_ultrasonic_BottomLevel && temp < sns_ultrasonic_TopLevel) {
 				temp = temp - sns_ultrasonic_BottomLevel;
@@ -262,14 +262,14 @@ void sns_ultrasonic_HandleMessage(StdCan_Msg_t *rxMsg)
 
 			StdCan_Put(&txMsg);
 			break;
-		case CAN_MODULE_CMD_ULTRASONIC_ULTASONICCONFIG:
+		case CAN_MODULE_CMD_ULTRASONIC_ULTRASONICCONFIG:
 			if (rxMsg->Length > 5)
 			{
 				sns_ultrasonic_BottomLevel = ((uint16_t)rxMsg->Data[1]<<8) + rxMsg->Data[2];
 				sns_ultrasonic_TopLevel = ((uint16_t)rxMsg->Data[3]<<8) + rxMsg->Data[4];
 				sns_ultrasonic_Mode = rxMsg->Data[5];
-				if (sns_ultrasonic_Mode != CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_LENGTH && sns_ultrasonic_Mode != CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_PERCENT) {
-					sns_ultrasonic_Mode = CAN_MODULE_ENUM_ULTRASONIC_ULTASONICCONFIG_SENSORMODE_LENGTH;
+				if (sns_ultrasonic_Mode != CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_LENGTH && sns_ultrasonic_Mode != CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_PERCENT) {
+					sns_ultrasonic_Mode = CAN_MODULE_ENUM_ULTRASONIC_ULTRASONICCONFIG_SENSORMODE_LENGTH;
 				}
 				#if sns_ultrasonic_USEEEPROM==1
 				eeprom_write_word_crc(EEDATA16.BottomLevel, sns_ultrasonic_BottomLevel, WITHOUT_CRC);
@@ -282,7 +282,7 @@ void sns_ultrasonic_HandleMessage(StdCan_Msg_t *rxMsg)
 			StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 			txMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_ULTRASONIC;
 			txMsg.Header.ModuleId = sns_ultrasonic_ID;
-			txMsg.Header.Command = CAN_MODULE_CMD_ULTRASONIC_ULTASONICCONFIG;
+			txMsg.Header.Command = CAN_MODULE_CMD_ULTRASONIC_ULTRASONICCONFIG;
 			txMsg.Length = 6;
 
 			txMsg.Data[0] = 0u;

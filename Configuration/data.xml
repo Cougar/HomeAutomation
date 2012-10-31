@@ -1377,7 +1377,7 @@
       </variables>
     </command>
     
-    <command id="128" name="UltasonicConfig" type="specific" module="ultrasonic" description="Configure an ultrasonic module to output 0 to 100%">
+    <command id="128" name="UltrasonicConfig" type="specific" module="ultrasonic" description="Configure an ultrasonic module to output 0 to 100%">
       <variables>
 	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
 	<variable name="0Percent" type="uint" start_bit="8" bit_length="16" unit="mm" description=""/>
