@@ -30,6 +30,9 @@ void sns_ultrasonic_List(uint8_t ModuleSequenceNumber);
 #if sns_ultrasonic_USEEEPROM==1
 	struct sns_ultrasonic_Data{
 		uint8_t reportInterval;
+		uint16_t BottomLevel;
+		uint16_t TopLevel;
+		uint8_t mode;
 	};	
 #endif
 
