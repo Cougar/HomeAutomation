@@ -1,5 +1,5 @@
 
-Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11" ];
+Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11", "VoltageCurrent", "ultrasonic" ];
 SensorRf_ModuleNames    = [ "rfTransceive" ];
 Sensor_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Sensor_Aliases        = function() { return Module_GetAliasNames(Sensor_ModuleNames); };
@@ -206,6 +206,8 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
         }
       }
       case "Humidity_Percent":
+      case "Percent":
+      case "Distance":
       {
         for (var alias_name in aliases_data)
         {
@@ -562,3 +564,42 @@ function Sensor_UpdateNameInPhonecalls(timestamp, numbers)
   }
 }
 
+function Sensor_SetUltrasonicMode(alias_name, BottomLimit, TopLimit, mode)
+{
+	if (arguments.length < 4)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+
+	var aliases_data = Module_ResolveAlias(alias_name, Sensor_ModuleNames);
+	var found = false;
+
+	for (var name in aliases_data)
+	{
+		var variables = {	"0Percent"     : BottomLimit,
+					"100Percent"   : TopLimit,
+					"SensorMode"   : mode,
+					"SensorId"	: aliases_data[name]["specific"]["Channel"],
+		};
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "UltrasonicConfig", variables))
+		{
+			Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+
+		found = true;
+	}
+
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+
+	return true;
+}
+Console_RegisterCommand(Sensor_SetUltrasonicMode, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, Sensor_Aliases()); });
