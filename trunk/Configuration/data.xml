@@ -12,843 +12,857 @@
   <commands>
     <command id="0" name="List" type="global" module="" description="Message that module send to tell the world what it is">
       <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
-        <variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="SequenceNumber" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="SequenceNumber" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     
     <command id="2" name="Debug" type="global" module="" description="Used for debugging, should not be used for anything real"/>
     <command id="3" name="Report_Interval" type="global" module="" description="Get/Set interval of reporting">
       <variables>
-        <variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
+	<variable name="Time" type="uint" start_bit="0" bit_length="8" unit="Second" description=""/>
       </variables>
     </command>
-
+    
     <command id="10" name="GPSTime" type="global" module="" description="Timestamp from GPS module">
       <variables>
-	 <variable name="Hour" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-	 <variable name="Minute" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	 <variable name="Second" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	 <variable name="Zone" type="uint" start_bit="24" bit_length="8" unit="" description="Timezone diff from GMT"/>
+	<variable name="Hour" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Minute" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Second" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Zone" type="uint" start_bit="24" bit_length="8" unit="" description="Timezone diff from GMT"/>
       </variables>
     </command>
-
+    
     <command id="11" name="GPSDate" type="global" module="" description="Date from GPS module">
       <variables>
-	 <variable name="Year" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-	 <variable name="Month" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	 <variable name="Day" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Year" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Month" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Day" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     
     
     <command id="64" name="Pwm" type="physical" module="" description="Message for pwm data">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="65" name="Temperature_Celsius" type="physical" module="" description="Temperature data">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Celsius" description=""/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="float" start_bit="8" bit_length="16" unit="Celsius" description=""/>
       </variables>
     </command>
     <command id="66" name="Humidity_Percent" type="physical" module="" description="Humidity data">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="float" start_bit="8" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="67" name="Voltage" type="physical" module="" description="Voltage data">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Volt" description=""/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="float" start_bit="8" bit_length="16" unit="Volt" description=""/>
       </variables>
     </command>
     <command id="68" name="Phonenumber" type="physical" module="" description="Phonenumber data">
       <variables>
-        <variable name="Number" type="hexstring" start_bit="0" bit_length="64" unit="" description=""/>
+	<variable name="Number" type="hexstring" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
     <command id="69" name="Rotary_Switch" type="physical" module="" description="Command to transmit a rotary encoder switch status">
       <variables>
-        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Direction" type="enum" start_bit="8" bit_length="8" unit="" description="">
-          <value id="0" name="Clockwise"/>
-          <value id="1" name="Counterclockwise"/>
-        </variable>
-        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Position" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Direction" type="enum" start_bit="8" bit_length="8" unit="" description="">
+	  <value id="0" name="Clockwise"/>
+	  <value id="1" name="Counterclockwise"/>
+	</variable>
+	<variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Position" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="70" name="Button" type="physical" module="" description="">
       <variables>
-        <variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
-          <value id="1" name="Pressed"/>
-          <value id="0" name="Released"/>
-        </variable>
+	<variable name="SwitchId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+	  <value id="1" name="Pressed"/>
+	  <value id="0" name="Released"/>
+	</variable>
       </variables>
     </command>
     <command id="71" name="IR" type="physical" module="" description="IR data protocol encoding">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
-        <variable name="Status" type="enum" start_bit="4" bit_length="4" unit="" description="State of remote button">
-          <value id="0" name="Released"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Channel of received or transmitted data"/>
+	<variable name="Status" type="enum" start_bit="4" bit_length="4" unit="" description="State of remote button">
+	  <value id="0" name="Released"/>
 	  <value id="1" name="Pressed"/>
 	  <value id="2" name="Burst"/>
-        </variable>
-        <variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Button protocol">
-          <value id="0" name="RC5"/>
-          <value id="1" name="RC6"/>
-          <value id="2" name="RCMM"/>
-          <value id="3" name="SIRC"/>
-          <value id="4" name="Sharp"/>
-          <value id="5" name="NEC"/>
-          <value id="6" name="Samsung"/>
-          <value id="7" name="Marantz"/>
-          <value id="8" name="Panasonic"/>
-          <value id="9" name="Sky"/>
-          <value id="10" name="Nexa2"/>
-          <value id="11" name="Nexa"/>
-          <value id="12" name="Viking"/>
-          <value id="255" name="Unknown"/>
-        </variable>
-        <variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
+	</variable>
+	<variable name="Protocol" type="enum" start_bit="8" bit_length="8" unit="" description="Button protocol">
+	  <value id="0" name="RC5"/>
+	  <value id="1" name="RC6"/>
+	  <value id="2" name="RCMM"/>
+	  <value id="3" name="SIRC"/>
+	  <value id="4" name="Sharp"/>
+	  <value id="5" name="NEC"/>
+	  <value id="6" name="Samsung"/>
+	  <value id="7" name="Marantz"/>
+	  <value id="8" name="Panasonic"/>
+	  <value id="9" name="Sky"/>
+	  <value id="10" name="Nexa2"/>
+	  <value id="11" name="Nexa"/>
+	  <value id="12" name="Viking"/>
+	  <value id="255" name="Unknown"/>
+	</variable>
+	<variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
       </variables>
     </command>
     <command id="72" name="Current" type="physical" module="" description="Current data">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="float" start_bit="8" bit_length="16" unit="Ampere" description=""/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="float" start_bit="8" bit_length="16" unit="Ampere" description=""/>
       </variables>
     </command>
     <command id="73" name="ElectricPower" type="physical" module="" description="Message with data from a power meter">
       <variables>
-        <variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
-        <variable name="EnergySum" type="uint" start_bit="16" bit_length="32" unit="Wh" description=""/>
-		<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
+	<variable name="Power" type="uint" start_bit="0" bit_length="16" unit="Watt" description=""/>
+	<variable name="EnergySum" type="uint" start_bit="16" bit_length="32" unit="Wh" description=""/>
+	<variable name="Power32" type="uint" start_bit="48" bit_length="16" unit="Watt" description="Average of 32 measurments"/>
       </variables>
     </command>
     <command id="74" name="SetPin" type="physical" module="" description="">
       <variables>
-        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
-          <value id="1" name="High"/>
-          <value id="0" name="Low"/>
-        </variable>
+	<variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+	  <value id="1" name="High"/>
+	  <value id="0" name="Low"/>
+	</variable>
       </variables>
     </command>
-        <command id="75" name="PinStatus" type="physical" module="" description="">
+    <command id="75" name="PinStatus" type="physical" module="" description="">
       <variables>
-        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
-          <value id="1" name="High"/>
-          <value id="0" name="Low"/>
-        </variable>
+	<variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Status" type="enum" start_bit="8" bit_length="8" unit="" description="">
+	  <value id="1" name="High"/>
+	  <value id="0" name="Low"/>
+	</variable>
       </variables>
     </command>
     <command id="76" name="Counter" type="physical" module="" description="Message with counter value">
       <variables>
-        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
+	<variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
       </variables>
     </command>
     <command id="77" name="Flow" type="physical" module="" description="Message with flow data, such as water flow">
       <variables>
-        <variable name="Flow" type="uint" start_bit="0" bit_length="16" unit="Milliliter/s" description=""/>
-        <variable name="Volume" type="uint" start_bit="16" bit_length="32" unit="Milliliter" description=""/>
+	<variable name="Flow" type="uint" start_bit="0" bit_length="16" unit="Milliliter/s" description=""/>
+	<variable name="Volume" type="uint" start_bit="16" bit_length="32" unit="Milliliter" description=""/>
       </variables>
     </command>
     <command id="78" name="Distance" type="physical" module="" description="Distance data">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Value" type="uint" start_bit="8" bit_length="16" unit="mm" description=""/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="uint" start_bit="8" bit_length="16" unit="mm" description=""/>
+      </variables>
+    </command>
+    <command id="79" name="Percent" type="physical" module="" description="0 to 100.00%">
+      <variables>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Value" type="uint" start_bit="8" bit_length="16" unit="%" description=""/>
       </variables>
     </command>
     
     
     <command id="128" name="setEnergy" type="specific" module="power" description="Set the energy value on the power meter module">
       <variables>
-        <variable name="Energy" type="uint" start_bit="0" bit_length="32" unit="W/h" description=""/>
+	<variable name="Energy" type="uint" start_bit="0" bit_length="32" unit="W/h" description=""/>
       </variables>
     </command>
     <command id="129" name="avgPower" type="specific" module="power" description="The energy since last message">
       <variables>
-        <variable name="Energy" type="uint" start_bit="0" bit_length="16" unit="W/(10*h)" description=""/>
+	<variable name="Energy" type="uint" start_bit="0" bit_length="16" unit="W/(10*h)" description=""/>
       </variables>
     </command>    
+    
     <command id="128" name="IRraw" type="specific" module="irReceive" description="If a protocol not could be found, then send raw data">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
       </variables>
     </command>
+    
     <command id="128" name="IRraw" type="specific" module="irTransceive" description="If a protocol not could be found, then send raw data">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
       </variables>
     </command>
     <command id="129" name="IrConfig" type="specific" module="irTransceive" description="irTransceive config">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Which channel to configure"/>
-        <variable name="Direction" type="enum" start_bit="4" bit_length="4" unit="" description="">
-        	<value id="0" name="Auto"/>
-	    	<value id="1" name="Transmit"/>
-	    	<value id="2" name="Receive"/>
-	    </variable>
-        <variable name="Transmit power" type="uint" start_bit="8" bit_length="2" unit="" description="0 for lowest power, 3 for max"/>
-        <variable name="Modulation divider" type="uint" start_bit="16" bit_length="16" unit="" description="Freq=4145146Hz/divider"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Which channel to configure"/>
+	<variable name="Direction" type="enum" start_bit="4" bit_length="4" unit="" description="">
+	  <value id="0" name="Auto"/>
+	  <value id="1" name="Transmit"/>
+	  <value id="2" name="Receive"/>
+	</variable>
+	<variable name="Transmit power" type="uint" start_bit="8" bit_length="2" unit="" description="0 for lowest power, 3 for max"/>
+	<variable name="Modulation divider" type="uint" start_bit="16" bit_length="16" unit="" description="Freq=4145146Hz/divider"/>
       </variables>
     </command>
     <command id="130" name="IrProntoStart" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
-        <variable name="Format" type="uint" start_bit="4" bit_length="12" unit="" description=""/>
-        <variable name="wFrqDiv" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-        <variable name="OnceSeqLen" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-        <variable name="RepSeqLen" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+	<variable name="Format" type="uint" start_bit="4" bit_length="12" unit="" description=""/>
+	<variable name="wFrqDiv" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="OnceSeqLen" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="RepSeqLen" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="131" name="IrProntoTiming" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
-        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
-        <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+	<variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
+	<variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Time" type="uint" start_bit="16" bit_length="24" unit="Microsecond" description=""/>
       </variables>
     </command>
     <command id="132" name="IrProntoContinue" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
-        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
-        <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+	<variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
+	<variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="133" name="IrProntoStop" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
-        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
-        <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+	<variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
+	<variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="134" name="IrProntoResponse" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
-        <variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
-        <variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Response" type="enum" start_bit="16" bit_length="8" unit="" description="">
-        	<value id="0" name="Ok"/>
-	    	
-	    	<!-- Pronto transmission was stopped (either prematurely or due to completion). -->
-	    	<value id="1" name="Stopped"/>
-	    	
-	    	<!-- Waiting for next pronto data packet. -->
-	    	<value id="2" name="Waiting"/>
-	    	
-	    	<!-- Pronto data is now being transmitted. -->
-	    	<value id="4" name="Transmitting"/>
-	    	
-	    	<!-- Trying to stop or continue a pronto transmission that has already stopped. -->
-	    	<value id="241" name="AlreadyStopped"/>
-	    	
-	    	<!-- Pronto data is already being transmitted (or prepared) on another channel. Can only process pronto data at one channel at once. -->
-	    	<value id="242" name="Busy_AlreadySendingPronto"/>
-	    	
-	    	<!-- The specified channel is busy transmitting (pronto or non-pronto) data. -->
-	    	<value id="243" name="Busy_ChannelBusy"/>
-	    	
-	    	<!-- Transmission (pronto or non-pronto) with other frequency is ongoing on other channel. -->
-	    	<value id="244" name="Busy_OtherFrequencyLocked"/>
-	    	
-	    	<!-- Pronto activity is ongoing, but on a different channel than that specified in STOP/CONTINUE request. -->
-	    	<value id="245" name="Error_WrongProntoChannel"/>
-	    	
-	    	<!-- Generic error code. Bad data in packet. -->
-	    	<value id="255" name="Error"/>
-	    </variable>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description=""/>
+	<variable name="Mode1" type="uint" start_bit="4" bit_length="4" unit="" description=""/>
+	<variable name="Mode2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Response" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Ok"/>
+	  
+	  <!-- Pronto transmission was stopped (either prematurely or due to completion). -->
+	  <value id="1" name="Stopped"/>
+	  
+	  <!-- Waiting for next pronto data packet. -->
+	  <value id="2" name="Waiting"/>
+	  
+	  <!-- Pronto data is now being transmitted. -->
+	  <value id="4" name="Transmitting"/>
+	  
+	  <!-- Trying to stop or continue a pronto transmission that has already stopped. -->
+	  <value id="241" name="AlreadyStopped"/>
+	  
+	  <!-- Pronto data is already being transmitted (or prepared) on another channel. Can only process pronto data at one channel at once. -->
+	  <value id="242" name="Busy_AlreadySendingPronto"/>
+	  
+	  <!-- The specified channel is busy transmitting (pronto or non-pronto) data. -->
+	  <value id="243" name="Busy_ChannelBusy"/>
+	  
+	  <!-- Transmission (pronto or non-pronto) with other frequency is ongoing on other channel. -->
+	  <value id="244" name="Busy_OtherFrequencyLocked"/>
+	  
+	  <!-- Pronto activity is ongoing, but on a different channel than that specified in STOP/CONTINUE request. -->
+	  <value id="245" name="Error_WrongProntoChannel"/>
+	  
+	  <!-- Generic error code. Bad data in packet. -->
+	  <value id="255" name="Error"/>
+	</variable>
       </variables>
     </command>
     <command id="135" name="IrProntoData1" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="136" name="IrProntoData2" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="137" name="IrProntoData3" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="138" name="IrProntoData4" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="139" name="IrProntoData5" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="140" name="IrProntoData6" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="141" name="IrProntoData7" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="142" name="IrProntoData8" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="143" name="IrProntoData9" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="144" name="IrProntoData10" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="145" name="IrProntoData11" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="146" name="IrProntoData12" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="147" name="IrProntoData13" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="148" name="IrProntoData14" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="149" name="IrProntoData15" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="150" name="IrProntoData16" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
-        <variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Act4" type="uint" start_bit="48" bit_length="8" unit="Pulses" description="Fourth active time"/>
+	<variable name="Pas4" type="uint" start_bit="56" bit_length="8" unit="Pulses" description="Fourth passive time"/>
       </variables>
     </command>
     <command id="151" name="IrProntoEnd1" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="152" name="IrProntoEnd2" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-		<variable name="Repeat" type="uint" start_bit="56" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="56" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="153" name="IrProntoEnd3" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="154" name="IrProntoEnd4" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="155" name="IrProntoEnd5" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="156" name="IrProntoEnd6" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="157" name="IrProntoEnd7" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="158" name="IrProntoEnd8" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="159" name="IrProntoEnd9" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="160" name="IrProntoEnd10" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="161" name="IrProntoEnd11" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="162" name="IrProntoEnd12" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-       <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="163" name="IrProntoEnd13" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-       <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="164" name="IrProntoEnd14" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-       <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="165" name="IrProntoEnd15" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-        <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
     <command id="166" name="IrProntoEnd16" type="specific" module="irTransceive" description="">
-     <variables>
-        <variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
-        <variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
-        <variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
-        <variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
-        <variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
-        <variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
-       <variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="8" unit="Pulses" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="8" bit_length="8" unit="Pulses" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="16" bit_length="8" unit="Pulses" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="24" bit_length="8" unit="Pulses" description="Second passive time"/>
+	<variable name="Act3" type="uint" start_bit="32" bit_length="8" unit="Pulses" description="Third active time"/>
+	<variable name="Pas3" type="uint" start_bit="40" bit_length="8" unit="Pulses" description="Third passive time"/>
+	<variable name="Repeat" type="uint" start_bit="48" bit_length="8" unit="Count" description="Repeat info"/>
       </variables>
     </command>
-
+    
     <command id="128" name="Position" type="specific" module="nmea" description="WGS80 LAT/LONG Position">
-	<variables>
-		<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
-		<variable name="Lat_min" type="uint" start_bit="8" bit_length="8" unit="'" description="Minutes lat"/>
-		<variable name="Lat_sec" type="uint" start_bit="16" bit_length="15" unit="''" description="Seconds Lat"/>
-		<variable name="Lat_CD" type="uint" start_bit="31" bit_length="1" unit="" description="N/S"/>
-		<variable name="Lon_deg" type="uint" start_bit="32" bit_length="8" unit="Degrees" description="Degrees Lat"/>
-		<variable name="Lon_min" type="uint" start_bit="40" bit_length="8" unit="'" description="Minutes lat"/>
-		<variable name="Lon_sec" type="uint" start_bit="48" bit_length="15" unit="''" description="Seconds Lat"/>
-		<variable name="Lon_CD" type="uint" start_bit="63" bit_length="1" unit="" description="E/W"/>		
-	</variables>
+      <variables>
+	<variable name="Lat_deg" type="uint" start_bit="0" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+	<variable name="Lat_min" type="uint" start_bit="8" bit_length="8" unit="'" description="Minutes lat"/>
+	<variable name="Lat_sec" type="uint" start_bit="16" bit_length="15" unit="''" description="Seconds Lat"/>
+	<variable name="Lat_CD" type="uint" start_bit="31" bit_length="1" unit="" description="N/S"/>
+	<variable name="Lon_deg" type="uint" start_bit="32" bit_length="8" unit="Degrees" description="Degrees Lat"/>
+	<variable name="Lon_min" type="uint" start_bit="40" bit_length="8" unit="'" description="Minutes lat"/>
+	<variable name="Lon_sec" type="uint" start_bit="48" bit_length="15" unit="''" description="Seconds Lat"/>
+	<variable name="Lon_CD" type="uint" start_bit="63" bit_length="1" unit="" description="E/W"/>		
+      </variables>
     </command>
     <command id="129" name="Heading" type="specific" module="nmea" description="Speed, heading, fix information">
-	<variables>
-		<variable name="Fixvalid" type="uint" start_bit="0" bit_length="8" unit="" description="0/1"/>
-		<variable name="Fixtype" type="uint" start_bit="8" bit_length="8" unit="" description="1=No, 2=2D, 3=3D"/>
-		<variable name="Numsat" type="uint" start_bit="16" bit_length="8" unit="" description="Number of sats in fix"/>
-		<variable name="Speed" type="uint" start_bit="24" bit_length="8" unit="Knots" description="Speed over ground"/>
-		<variable name="Course" type="uint" start_bit="32" bit_length="16" unit="Degrees" description="Course made good"/>
-	</variables>
-    </command>
-    <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
-     <variables>
-        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      <variables>
+	<variable name="Fixvalid" type="uint" start_bit="0" bit_length="8" unit="" description="0/1"/>
+	<variable name="Fixtype" type="uint" start_bit="8" bit_length="8" unit="" description="1=No, 2=2D, 3=3D"/>
+	<variable name="Numsat" type="uint" start_bit="16" bit_length="8" unit="" description="Number of sats in fix"/>
+	<variable name="Speed" type="uint" start_bit="24" bit_length="8" unit="Knots" description="Speed over ground"/>
+	<variable name="Course" type="uint" start_bit="32" bit_length="16" unit="Degrees" description="Course made good"/>
       </variables>
     </command>
+    
+    <command id="128" name="Printf" type="specific" module="Debug" description="Used for sending debug text with printf">
+      <variables>
+	<variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+      </variables>
+    </command>
+    
     <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
     <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
       <variables>
-        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="130" name="LCD_Text" type="specific" module="HD44789" description="Print text on LCD">
       <variables>
-        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+	<variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
-     <command id="131" name="LCD_Size" type="specific" module="HD44789" description="Size of LCD">
+    <command id="131" name="LCD_Size" type="specific" module="HD44789" description="Size of LCD">
       <variables>
-        <variable name="Width" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Height" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Width" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Height" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="132" name="LCD_Backlight" type="specific" module="HD44789" description="Set LCD backlight brightness">
       <variables>
-        <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
 	<variable name="AutoLight" type="enum" start_bit="15" bit_length="1" unit="" description="">
-	    <value id="0" name="OFF"/>
-	    <value id="1" name="ON"/>
+	  <value id="0" name="OFF"/>
+	  <value id="1" name="ON"/>
 	</variable>
       </variables>
     </command>
-      <command id="133" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
+    <command id="133" name="LCD_TextAt" type="specific" module="HD44789" description="Print text on LCD">
       <variables>
-        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
-     <command id="128" name="DEBUG" type="specific" module="RGBdriver" description="Debug data from RGB-driver">
-	<variables>
-	  <variable name="ADC_W" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-	  <variable name="ADC_R" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	  <variable name="ADC_G" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	  <variable name="ADC_B" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-	  <variable name="PWM_W" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-	  <variable name="PWM_R" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-	  <variable name="PWM_G" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-	  <variable name="PWM_B" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
-	</variables>
-      </command>
+    
+    <command id="128" name="DEBUG" type="specific" module="RGBdriver" description="Debug data from RGB-driver">
+      <variables>
+	<variable name="ADC_W" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="ADC_R" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="ADC_G" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="ADC_B" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="PWM_W" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="PWM_R" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="PWM_G" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="PWM_B" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    
     <command id="128" name="SerialData" type="specific" module="Serial" description="Serial data">
       <variables>
-        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+	<variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
     <command id="129" name="SerialConfig" type="specific" module="Serial" description="Serial config">
       <variables>
-        <variable name="BaudRate" type="uint" start_bit="0" bit_length="16" unit="" description="Baudrate/10"/>
-        <variable name="PhysicalFormat" type="enum" start_bit="16" bit_length="8" unit="" description="">
-        	<value id="0" name="RS232"/>
-	    	<value id="1" name="RS485FullDuplex"/>
-	    	<value id="2" name="RS485HalfDuplex"/>
-	    	<value id="3" name="RS485HalfDuplexWithTermination"/>
-	    	<value id="255" name="Loopback"/>
-	    </variable>
-	    <variable name="DataBits" type="uint" start_bit="24" bit_length="8" unit="" description="Nr of data bits (5-9)"/>
-	    <variable name="StopBits" type="uint" start_bit="32" bit_length="8" unit="" description="Nr of stop bits (1-2)"/>
-	    <variable name="Parity" type="enum" start_bit="40" bit_length="8" unit="" description="Parity mode">
-	    	<value id="0" name="ParityNone"/>
-	    	<value id="1" name="ParityEven"/>
-	    	<value id="2" name="ParityOdd"/>
-	    </variable>
+	<variable name="BaudRate" type="uint" start_bit="0" bit_length="16" unit="" description="Baudrate/10"/>
+	<variable name="PhysicalFormat" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="RS232"/>
+	  <value id="1" name="RS485FullDuplex"/>
+	  <value id="2" name="RS485HalfDuplex"/>
+	  <value id="3" name="RS485HalfDuplexWithTermination"/>
+	  <value id="255" name="Loopback"/>
+	</variable>
+	<variable name="DataBits" type="uint" start_bit="24" bit_length="8" unit="" description="Nr of data bits (5-9)"/>
+	<variable name="StopBits" type="uint" start_bit="32" bit_length="8" unit="" description="Nr of stop bits (1-2)"/>
+	<variable name="Parity" type="enum" start_bit="40" bit_length="8" unit="" description="Parity mode">
+	  <value id="0" name="ParityNone"/>
+	  <value id="1" name="ParityEven"/>
+	  <value id="2" name="ParityOdd"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="SerialFilter" type="specific" module="Serial" description="Serial Filter Config">
       <variables>
-        <variable name="DataTimeout" type="uint" start_bit="0" bit_length="8" unit="" description="Timeout before RX data is sent via CAN"/>
-        <variable name="PrefixLength" type="uint" start_bit="8" bit_length="2" unit="" description="Length of prefix (in bytes)"/>
-        <variable name="SuffixLength" type="uint" start_bit="10" bit_length="2" unit="" description="Length of suffix (in bytes)"/>
-        <variable name="PacketLength" type="uint" start_bit="12" bit_length="4" unit="" description="Max nr of RX bytes to pack into CAN frame"/>
-        <variable name="PrefixByte2" type="uint" start_bit="16" bit_length="8" unit="" description="Prefix byte2"/>
-        <variable name="PrefixByte1" type="uint" start_bit="24" bit_length="8" unit="" description="Prefix byte1"/>
-        <variable name="PrefixByte0" type="uint" start_bit="32" bit_length="8" unit="" description="Prefix byte0"/>
-        <variable name="SuffixByte2" type="uint" start_bit="40" bit_length="8" unit="" description="Suffix byte2"/>
-        <variable name="SuffixByte1" type="uint" start_bit="48" bit_length="8" unit="" description="Suffix byte1"/>
-        <variable name="SuffixByte0" type="uint" start_bit="54" bit_length="8" unit="" description="Suffix byte0"/>
+	<variable name="DataTimeout" type="uint" start_bit="0" bit_length="8" unit="" description="Timeout before RX data is sent via CAN"/>
+	<variable name="PrefixLength" type="uint" start_bit="8" bit_length="2" unit="" description="Length of prefix (in bytes)"/>
+	<variable name="SuffixLength" type="uint" start_bit="10" bit_length="2" unit="" description="Length of suffix (in bytes)"/>
+	<variable name="PacketLength" type="uint" start_bit="12" bit_length="4" unit="" description="Max nr of RX bytes to pack into CAN frame"/>
+	<variable name="PrefixByte2" type="uint" start_bit="16" bit_length="8" unit="" description="Prefix byte2"/>
+	<variable name="PrefixByte1" type="uint" start_bit="24" bit_length="8" unit="" description="Prefix byte1"/>
+	<variable name="PrefixByte0" type="uint" start_bit="32" bit_length="8" unit="" description="Prefix byte0"/>
+	<variable name="SuffixByte2" type="uint" start_bit="40" bit_length="8" unit="" description="Suffix byte2"/>
+	<variable name="SuffixByte1" type="uint" start_bit="48" bit_length="8" unit="" description="Suffix byte1"/>
+	<variable name="SuffixByte0" type="uint" start_bit="54" bit_length="8" unit="" description="Suffix byte0"/>
       </variables>
     </command>
-
+    
     <command id="128" name="AnalogConfig" type="specific" module="inputAnalog" description="Configuration for analog input module">
       <variables>
-        <variable name="SensorId" type="uint" start_bit="0" bit_length="4" unit="" description="Which input to configure"/>
-        <variable name="Setting" type="enum" start_bit="4" bit_length="2" unit="" description="">
-        	<value id="0" name="PeriodicMeasure"/>
-	    	<value id="1" name="DigitalInput"/>
-	    </variable>
-        <variable name="Pullup" type="enum" start_bit="6" bit_length="1" unit="" description="Enable pullup on sensor">
-        	<value id="0" name="Disable"/>
-	    	<value id="1" name="Enable"/>
-	    </variable>
-        <variable name="Reference" type="enum" start_bit="7" bit_length="1" unit="" description="Enable GND reference on sensor">
-        	<value id="0" name="Disable"/>
-	    	<value id="1" name="Enable"/>
-	    </variable>
-        <variable name="VoltageLowTh" type="float" start_bit="8" bit_length="16" unit="Volt" description="Low threshold for digital input"/>
-        <variable name="VoltageHighTh" type="float" start_bit="24" bit_length="16" unit="Volt" description="High threshold for digital input"/>
-        <variable name="Periodicity" type="uint" start_bit="40" bit_length="16" unit="Millisecond" description="The periodicity at which the sensorvalue is sent during periodic measure"/>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="4" unit="" description="Which input to configure"/>
+	<variable name="Setting" type="enum" start_bit="4" bit_length="2" unit="" description="">
+	  <value id="0" name="PeriodicMeasure"/>
+	  <value id="1" name="DigitalInput"/>
+	</variable>
+	<variable name="Pullup" type="enum" start_bit="6" bit_length="1" unit="" description="Enable pullup on sensor">
+	  <value id="0" name="Disable"/>
+	  <value id="1" name="Enable"/>
+	</variable>
+	<variable name="Reference" type="enum" start_bit="7" bit_length="1" unit="" description="Enable GND reference on sensor">
+	  <value id="0" name="Disable"/>
+	  <value id="1" name="Enable"/>
+	</variable>
+	<variable name="VoltageLowTh" type="float" start_bit="8" bit_length="16" unit="Volt" description="Low threshold for digital input"/>
+	<variable name="VoltageHighTh" type="float" start_bit="24" bit_length="16" unit="Volt" description="High threshold for digital input"/>
+	<variable name="Periodicity" type="uint" start_bit="40" bit_length="16" unit="Millisecond" description="The periodicity at which the sensorvalue is sent during periodic measure"/>
       </variables>
     </command>
-
+    
     <command id="128" name="DEBUG" type="specific" module="PID" description="Debug data from PID regulator">
-	<variables>
-	  <variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-	  <variable name="I_term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="D_term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
-	</variables>
-      </command>
-      <command id="129" name="CONFIG_SENSOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
-	<variables>
-	  <variable name="sensorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-	  <variable name="sensorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	  <variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	</variables>
-      </command>
-      <command id="130" name="CONFIG_ACTUATOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
-	<variables>
-	  <variable name="actuatorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-	  <variable name="actuatorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	  <variable name="actuatorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	</variables>
-      </command>
-      <command id="131" name="CONFIG_PARAMETER" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
-	<variables>
-	  <variable name="K_P" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-	  <variable name="K_I" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="K_D" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
-	    <value id="0" name="s"/>
-	    <value id="1" name="ms"/>
-	  </variable>
-	  <variable name="RegulatorTime" type="uint" start_bit="49" bit_length="15" unit="" description=""/>
-	</variables>
-      </command>
-      <command id="132" name="PID_STATUS" type="specific" module="PID" description="information about the pid controller">
-	<variables>
-	  <variable name="Measurment" type="float" start_bit="0" bit_length="16" unit="" description=""/>
-	  <variable name="Reference" type="float" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="PWM" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-	  <variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
-	</variables>
-      </command>
-      <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
-	<variables>
-	  <variable name="pwmPeriod" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-	  <variable name="pwmDefaultValue" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-	  <variable name="DefaultState" type="enum" start_bit="32" bit_length="2" unit="" description="">
-	    <value id="0" name="LOW"/>
-	    <value id="1" name="HIGH"/>
-	    <value id="2" name="TRISTATE"/>
-	  </variable>
-	   <variable name="StartUpState" type="enum" start_bit="34" bit_length="1" unit="" description="">
-	    <value id="0" name="ON"/>
-	    <value id="1" name="OFF"/>
-	  </variable>
-	</variables>
-      </command>
-      <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
       <variables>
-        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	<variable name="P_term" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="I_term" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="D_term" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="129" name="CONFIG_SENSOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="sensorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="sensorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="sensorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="130" name="CONFIG_ACTUATOR" type="specific" module="PID" description="Configure PID regulator, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="actuatorModuleType" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="actuatorModuleId" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="actuatorId" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="131" name="CONFIG_PARAMETER" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="K_P" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="K_I" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="K_D" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
+	  <value id="0" name="s"/>
+	  <value id="1" name="ms"/>
+	</variable>
+	<variable name="RegulatorTime" type="uint" start_bit="49" bit_length="15" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="132" name="PID_STATUS" type="specific" module="PID" description="information about the pid controller">
+      <variables>
+	<variable name="Measurment" type="float" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Reference" type="float" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="PWM" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="Sum" type="int" start_bit="48" bit_length="16" unit="" description=""/>
+      </variables>
+    </command>
+    
+    <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="pwmPeriod" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="pwmDefaultValue" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="DefaultState" type="enum" start_bit="32" bit_length="2" unit="" description="">
+	  <value id="0" name="LOW"/>
+	  <value id="1" name="HIGH"/>
+	  <value id="2" name="TRISTATE"/>
+	</variable>
+	<variable name="StartUpState" type="enum" start_bit="34" bit_length="1" unit="" description="">
+	  <value id="0" name="ON"/>
+	  <value id="1" name="OFF"/>
+	</variable>
+      </variables>
+    </command>
+    
+    <command id="128" name="LCD_Clear" type="specific" module="KS0108" description="Clear LCD">
+      <variables>
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
 	  <value id="0" name="Standard"/>
-          <value id="1" name="Inverted"/>
+	  <value id="1" name="Inverted"/>
 	</variable>
       </variables>
     </command>
     <command id="129" name="LCD_Cursor" type="specific" module="KS0108" description="Set LCD cursor position">
       <variables>
-        <variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description="Char position in x direction"/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description="Char position in y direction"/>
+	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description="Char position in x direction"/>
+	<variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description="Char position in y direction"/>
 	<variable name="Inverted" type="enum" start_bit="16" bit_length="1" unit="" description="Set to 1 of you want an inverted output">
 	  <value id="0" name="Standard"/>
-          <value id="1" name="Inverted"/>
+	  <value id="1" name="Inverted"/>
 	</variable>
 	<variable name="Transparent" type="enum" start_bit="17" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
 	  <value id="0" name="Standard"/>
@@ -858,170 +872,164 @@
     </command>
     <command id="130" name="LCD_Text" type="specific" module="KS0108" description="Print text on LCD on current postion, according to the latest LCD_Cursor command">
       <variables>
-        <variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
+	<variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
     <command id="131" name="LCD_Invert" type="specific" module="KS0108" description="Invert LCD">
       <variables>
-        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
 	  <value id="0" name="Standard"/>
-          <value id="1" name="Inverted"/>
+	  <value id="1" name="Inverted"/>
 	</variable>
       </variables>
     </command>
     <command id="132" name="LCD_Backlight" type="specific" module="KS0108" description="Set LCD backlight brightness">
       <variables>
-        <variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Strength" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
 	<variable name="AutoLight" type="enum" start_bit="15" bit_length="1" unit="" description="">
-	    <value id="0" name="OFF"/>
-	    <value id="1" name="ON"/>
+	  <value id="0" name="OFF"/>
+	  <value id="1" name="ON"/>
 	</variable>
       </variables>
     </command>
     <command id="133" name="LCD_TextAt" type="specific" module="KS0108" description="Print text on LCD">
       <variables>
-        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
 	  <value id="0" name="Standard"/>
-          <value id="1" name="Inverted"/>
+	  <value id="1" name="Inverted"/>
 	</variable>
 	<variable name="Transparent" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want to keep screen background">
 	  <value id="0" name="Standard"/>
 	  <value id="1" name="Transparent"/>
 	</variable>  
 	<variable name="X" type="uint" start_bit="2" bit_length="6" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Text" type="ascii" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </command>
     <command id="134" name="LCD_DrawRect" type="specific" module="KS0108" description="Draw a rectangle on LCD">
       <variables>
-        <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
 	  <value id="0" name="Standard"/>
-          <value id="1" name="Inverted"/>
+	  <value id="1" name="Inverted"/>
 	</variable>
 	<variable name="Fill" type="enum" start_bit="1" bit_length="1" unit="" description="Set to 1 of you want the rectangle filled">
 	  <value id="0" name="NoFill"/>
 	  <value id="1" name="Fill"/>
 	</variable>  
 	<variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	<variable name="Width" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
 	<variable name="Height" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
 	<variable name="Radius" type="uint" start_bit="40" bit_length="8" unit="" description="Only valid for non-fill rectangles"/>
       </variables>
-      </command>
-      
-      <command id="135" name="LCD_DrawLine" type="specific" module="KS0108" description="Draw a line on LCD">
-	<variables>
-	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
-	    <value id="0" name="Standard"/>
-	    <value id="1" name="Inverted"/>
-	  </variable>
-	  <variable name="X1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	  <variable name="Y1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	  <variable name="X2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-	  <variable name="Y2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-	</variables>
-      </command>
-    
-      <command id="136" name="LCD_DrawCircle" type="specific" module="KS0108" description="Draw a circle on LCD">
-	<variables>
-	  <variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
-	    <value id="0" name="Standard"/>
-	    <value id="1" name="Inverted"/>
-	  </variable>
-	  <variable name="Xcentre" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-	  <variable name="Ycentre" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-	  <variable name="Radius" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-	</variables>
-      </command>    
-
+    </command>
+    <command id="135" name="LCD_DrawLine" type="specific" module="KS0108" description="Draw a line on LCD">
+      <variables>
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="X1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Y1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="X2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Y2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>   
+    <command id="136" name="LCD_DrawCircle" type="specific" module="KS0108" description="Draw a circle on LCD">
+      <variables>
+	<variable name="Inverted" type="enum" start_bit="0" bit_length="1" unit="" description="Set to 1 of you want an inverted screen">
+	  <value id="0" name="Standard"/>
+	  <value id="1" name="Inverted"/>
+	</variable>
+	<variable name="Xcentre" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Ycentre" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Radius" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>     
     <command id="137" name="LCD_InvertRect" type="specific" module="KS0108" description="Invert pixels in an rectangle on the LCD">
       <variables>
 	<variable name="X" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
 	<variable name="Width" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
 	<variable name="Height" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
-    </command>
-    
+    </command>    
     <command id="138" name="LCD_New_Image" type="specific" module="KS0108" description="Store a new image in eeprom">
       <variables>
 	<variable name="image_id" type="uint" start_bit="0" bit_length="8" unit="" description="the new image id"/>
-        <variable name="size_X" type="uint" start_bit="8" bit_length="8" unit="" description="Size in x direction"/>
-        <variable name="size_Y" type="uint" start_bit="16" bit_length="8" unit="" description="Size in y direction"/>
+	<variable name="size_X" type="uint" start_bit="8" bit_length="8" unit="" description="Size in x direction"/>
+	<variable name="size_Y" type="uint" start_bit="16" bit_length="8" unit="" description="Size in y direction"/>
       </variables>
     </command>
-        <command id="139" name="LCD_Ack" type="specific" module="KS0108" description="Data correctly received">
+    <command id="139" name="LCD_Ack" type="specific" module="KS0108" description="Data correctly received">
       <variables>
 	<variable name="packet_id" type="uint" start_bit="0" bit_length="8" unit="" description="Id of the packet that is acknoleged"/>
       </variables>
     </command>
-     
-        <command id="140" name="LCD_Error" type="specific" module="KS0108" description="Data error"/>
-    
-        <command id="141" name="LCD_Image_Data" type="specific" module="KS0108" description="Data"/>
-        <command id="141" name="LCD_Image_Data_7" type="specific" module="KS0108" description="Data">
+    <command id="140" name="LCD_Error" type="specific" module="KS0108" description="Data error"/>   
+    <command id="141" name="LCD_Image_Data" type="specific" module="KS0108" description="Data"/>
+    <command id="141" name="LCD_Image_Data_7" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
 	<variable name="Data6" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_6" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Data5" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_5" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data4" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_4" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_3" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_2" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="141" name="LCD_Image_Data_1" type="specific" module="KS0108" description="Data">
       <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="142" name="LCD_Data_id_Error" type="specific" module="KS0108" description="Wrong data id received">
@@ -1029,355 +1037,364 @@
 	<variable name="id" type="uint" start_bit="0" bit_length="8" unit="" description="The expected id"/>
       </variables>
     </command>
-    
-        <command id="143" name="LCD_Data_Done" type="specific" module="KS0108" description="All data sent">
+    <command id="143" name="LCD_Data_Done" type="specific" module="KS0108" description="All data sent">
       <variables>
       </variables>
     </command>
-
+    
     <command id="128" name="Motion" type="specific" module="PIR" description="Motion and brightness from PIR-sensor">
-     <variables>
-        <variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Brightness" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
-        <variable name="MotionDetect" type="enum" start_bit="24" bit_length="8" unit="" description="">
-		    <value id="0" name="NoMotion"/>
-		    <value id="1" name="MotionDetected"/>
-	    </variable>
+      <variables>
+	<variable name="Id" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Brightness" type="uint" start_bit="8" bit_length="16" unit="" description=""/>
+	<variable name="MotionDetect" type="enum" start_bit="24" bit_length="8" unit="" description="">
+	  <value id="0" name="NoMotion"/>
+	  <value id="1" name="MotionDetected"/>
+	</variable>
       </variables>
-    </command>
-
+    </command>  
     
     <command id="128" name="Demo" type="specific" module="Dimmer230" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
-        <variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
+	<variable name="Steps" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
-    </command>
-    
+    </command>   
     <command id="129" name="Start_Fade" type="specific" module="Dimmer230" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="Stop_Fade" type="specific" module="Dimmer230" description="If a fade is in progress, then stop">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="131" name="Abs_Fade" type="specific" module="Dimmer230" description="Fade to a defined value, stops when another command is received">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="EndValue" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="EndValue" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="132" name="Rel_Fade" type="specific" module="Dimmer230" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
-        <variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description="Number of steps to fade"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
+	<variable name="Steps" type="uint" start_bit="24" bit_length="8" unit="" description="Number of steps to fade"/>
       </variables>
     </command>
     <command id="133" name="Netinfo" type="specific" module="Dimmer230" description="Information about the connected net power">
-     <variables>
-        <variable name="Connection" type="enum" start_bit="0" bit_length="1" unit="" description="If the dimmer is connected to net power">
-	    <value id="0" name="Disconnected"/>
-	    <value id="1" name="Connected"/>
+      <variables>
+	<variable name="Connection" type="enum" start_bit="0" bit_length="1" unit="" description="If the dimmer is connected to net power">
+	  <value id="0" name="Disconnected"/>
+	  <value id="1" name="Connected"/>
 	</variable>
-        <variable name="Frequency" type="enum" start_bit="1" bit_length="2" unit="" description="Frequency of the net power">
-	    <value id="0" name="Error_Unknown"/>
-	    <value id="1" name="50Hz"/>
-	    <value id="2" name="60Hz"/>
+	<variable name="Frequency" type="enum" start_bit="1" bit_length="2" unit="" description="Frequency of the net power">
+	  <value id="0" name="Error_Unknown"/>
+	  <value id="1" name="50Hz"/>
+	  <value id="2" name="60Hz"/>
 	</variable>
 	<variable name="DimmerValue" type="uint" start_bit="8" bit_length="8" unit="" description="Current dimmer value"/>
 	<variable name="Channel" type="uint" start_bit="16" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
+    
     <command id="128" name="Demo" type="specific" module="hwPWM" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
-        <variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
+	<variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
       </variables>
     </command>
     <command id="129" name="Start_Fade" type="specific" module="hwPWM" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="Stop_Fade" type="specific" module="hwPWM" description="If a fade is in progress, then stop">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="131" name="Abs_Fade" type="specific" module="hwPWM" description="Fade to a defined value, stops when another command is received">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
       </variables>
     </command>
     <command id="132" name="Rel_Fade" type="specific" module="hwPWM" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
-        <variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
+	<variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
       </variables>
     </command>
-
+    
     <command id="128" name="Demo" type="specific" module="PCAPWM" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
-        <variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
+	<variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
       </variables>
     </command>
     <command id="129" name="Start_Fade" type="specific" module="PCAPWM" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="Stop_Fade" type="specific" module="PCAPWM" description="If a fade is in progress, then stop">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="131" name="Abs_Fade" type="specific" module="PCAPWM" description="Fade to a defined value, stops when another command is received">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
       </variables>
     </command>
     <command id="132" name="Rel_Fade" type="specific" module="PCAPWM" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
-        <variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
+	<variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
       </variables>
     </command>
     
- <command id="128" name="Demo" type="specific" module="RGBW" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
-        <variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
+    <command id="128" name="Demo" type="specific" module="RGBW" description="Fade to x+steps, then to x-steps and then back to x. If x is close to, or at, top or bottom then fade more to the other direction">
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms"/>
+	<variable name="Steps" type="uint" start_bit="16" bit_length="16" unit="" description="number of percent to step in %/100"/>
       </variables>
     </command>
-    
     <command id="129" name="Start_Fade" type="specific" module="RGBW" description="Fade in a direction and don't stop until another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
       </variables>
     </command>
     <command id="130" name="Stop_Fade" type="specific" module="RGBW" description="If a fade is in progress, then stop">
       <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
       </variables>
     </command>
     <command id="131" name="Abs_Fade" type="specific" module="RGBW" description="Fade to a defined value, stops when another command is received">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="EndValue" type="uint" start_bit="16" bit_length="16" unit="" description="end value in percent in %/100"/>
       </variables>
     </command>
     <command id="132" name="Rel_Fade" type="specific" module="RGBW" description="Fade a number of steps in a defined direction, stops when another command is received or top/bottom is reached">
-     <variables>
-        <variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
-        <variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
-        <variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
-		    <value id="0" name="Decrease"/>
-		    <value id="1" name="Increase"/>
-	    </variable>
-        <variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
+      <variables>
+	<variable name="Channel" type="uint" start_bit="0" bit_length="8" unit="" description="Dimmer channel"/>
+	<variable name="Speed" type="uint" start_bit="8" bit_length="8" unit="" description="Speed is 1/127 steps per 10ms up to 127 steps per 10ms, set speed to 0 if no fading is to be used (go to target immediately)"/>
+	<variable name="Direction" type="enum" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="Decrease"/>
+	  <value id="1" name="Increase"/>
+	</variable>
+	<variable name="Steps" type="uint" start_bit="24" bit_length="16" unit="" description="Number of percent to step in %/100"/>
       </variables>
     </command>
-
+    
     <command id="128" name="Id" type="specific" module="identification" description="Broadcast this nodes ID">
-     <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
-     </variables>
+      <variables>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+      </variables>
     </command>
-
+    
     <command id="128" name="CONFIG" type="specific" module="softPWM" description="Configure the PWM">
-     <variables>
-        <variable name="Period" type="uint" start_bit="0" bit_length="16" unit="ms" description=""/>
-        <variable name="Resolution" type="uint" start_bit="16" bit_length="8" unit="ms" description=""/>
-     </variables>
+      <variables>
+	<variable name="Period" type="uint" start_bit="0" bit_length="16" unit="ms" description=""/>
+	<variable name="Resolution" type="uint" start_bit="16" bit_length="8" unit="ms" description=""/>
+      </variables>
     </command>
+    
     <command id="128" name="Gesture" type="specific" module="Touch" description="Parsed touch data as a gesture">
-     <variables>
-        <variable name="f1" type="uint" start_bit="0" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and the straight line f(x) which connects the first and last point of the gesture"/>
-        <variable name="f7" type="uint" start_bit="8" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and all horizontal lines yi, where i is between 0 and n, that constitute a gesture"/>
-        <variable name="f3" type="enum" start_bit="16" bit_length="1" unit="" description="Indicates the sign value of area gap between g(x) and f(x)">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f4" type="enum" start_bit="17" bit_length="1" unit="" description="Represents the sign value of the sum of the x coordinates of all the points that constitute strokes minus the x coordinates of the last point">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f5" type="enum" start_bit="18" bit_length="1" unit="" description="Checks the sign value of the sum of the x coordinates of all the points that constitute strokes minus x coordinates of the first point">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f6" type="enum" start_bit="19" bit_length="1" unit="" description="Indicates the sign value of the y coordinates of the last point minus y coordinates of the first point">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f8" type="enum" start_bit="20" bit_length="1" unit="" description="Checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f9" type="enum" start_bit="21" bit_length="1" unit="" description="Represents the sign value of the multiplication of x coordinates of the first point and the last point minus the mediate value of x coordinates of all the points">
-   	       <value id="0" name="M"/>
-   	       <value id="1" name="P"/>
-        </variable>
-        <variable name="f2" type="enum" start_bit="22" bit_length="2" unit="" description="Checks if the y coordinates of the points which exist between the intersection point and the last point are greater than the y coordinates of the intersection point">
-	       <value id="0" name="M"/>
-	       <value id="1" name="P"/>
-	       <value id="2" name="U"/>
-        </variable>
-     </variables>
+      <variables>
+	<variable name="f1" type="uint" start_bit="0" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and the straight line f(x) which connects the first and last point of the gesture"/>
+	<variable name="f7" type="uint" start_bit="8" bit_length="8" unit="#" description="Indicates the number of intersection points between an input gesture g(x) and all horizontal lines yi, where i is between 0 and n, that constitute a gesture"/>
+	<variable name="f3" type="enum" start_bit="16" bit_length="1" unit="" description="Indicates the sign value of area gap between g(x) and f(x)">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f4" type="enum" start_bit="17" bit_length="1" unit="" description="Represents the sign value of the sum of the x coordinates of all the points that constitute strokes minus the x coordinates of the last point">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f5" type="enum" start_bit="18" bit_length="1" unit="" description="Checks the sign value of the sum of the x coordinates of all the points that constitute strokes minus x coordinates of the first point">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f6" type="enum" start_bit="19" bit_length="1" unit="" description="Indicates the sign value of the y coordinates of the last point minus y coordinates of the first point">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f8" type="enum" start_bit="20" bit_length="1" unit="" description="Checks whether or not x coordinates of all the points except for the first point and the last point is between x0 and xn">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f9" type="enum" start_bit="21" bit_length="1" unit="" description="Represents the sign value of the multiplication of x coordinates of the first point and the last point minus the mediate value of x coordinates of all the points">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	</variable>
+	<variable name="f2" type="enum" start_bit="22" bit_length="2" unit="" description="Checks if the y coordinates of the points which exist between the intersection point and the last point are greater than the y coordinates of the intersection point">
+	  <value id="0" name="M"/>
+	  <value id="1" name="P"/>
+	  <value id="2" name="U"/>
+	</variable>
+      </variables>
     </command>
     <command id="129" name="Raw" type="specific" module="Touch" description="Raw touch data">
-     <variables>
-        <variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="Gives the current push status">
-          <value id="1" name="Pressed"/>
-          <value id="0" name="Released"/>
-        </variable>
-        <variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-     </variables>
+      <variables>
+	<variable name="Status" type="enum" start_bit="0" bit_length="8" unit="" description="Gives the current push status">
+	  <value id="1" name="Pressed"/>
+	  <value id="0" name="Released"/>
+	</variable>
+	<variable name="X" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Y" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+      </variables>
     </command>
     
     <command id="128" name="Position" type="specific" module="linearAct" description="Set and get position">
-     <variables>
-        <variable name="Position" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description="">
-        	 <value id="0" name="NotMoving"/>
-		    <value id="1" name="MovingUp"/>
-		    <value id="2" name="MovingDown"/>
-		  </variable>
+      <variables>
+	<variable name="Position" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Direction" type="uint" start_bit="16" bit_length="8" unit="" description="">
+	  <value id="0" name="NotMoving"/>
+	  <value id="1" name="MovingUp"/>
+	  <value id="2" name="MovingDown"/>
+	</variable>
       </variables>
     </command>
     <command id="129" name="Limits" type="specific" module="linearAct" description="Set and get limits">
-     <variables>
-        <variable name="Min" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-		  <variable name="Low" type="uint" start_bit="16" bit_length="16" unit="" description=""/>  
-	     <variable name="High" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
-	     <variable name="Max" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
+      <variables>
+	<variable name="Min" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Low" type="uint" start_bit="16" bit_length="16" unit="" description=""/>  
+	<variable name="High" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="Max" type="uint" start_bit="48" bit_length="16" unit="" description=""/>
       </variables>
     </command>
     <command id="130" name="Calibration" type="specific" module="linearAct" description="Start calibration">
-     <variables>
-        <variable name="OptionalPosition" type="uint" start_bit="0" bit_length="16" unit="" description="Option to set current value for position"/>
+      <variables>
+	<variable name="OptionalPosition" type="uint" start_bit="0" bit_length="16" unit="" description="Option to set current value for position"/>
       </variables>
     </command>
-
+    
     <command id="128" name="setCounter" type="specific" module="counter" description="Set the counter value on the counter module">
       <variables>
-        <variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
+	<variable name="PinId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Count" type="uint" start_bit="8" bit_length="32" unit="" description=""/>
       </variables>
     </command>
-
+    
     <command id="128" name="ImageDataModule1" type="specific" module="DotMatrix" description="">
       <variables>
-        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+	<variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="129" name="ImageDataModule2" type="specific" module="DotMatrix" description="">
       <variables>
-        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+	<variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="130" name="ImageDataModule3" type="specific" module="DotMatrix" description="">
       <variables>
-        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+	<variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </command>
     <command id="131" name="ImageDataModule4" type="specific" module="DotMatrix" description="">
       <variables>
-        <variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-        <variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+	<variable name="Row1" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Row2" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Row3" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Row4" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Row5" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Row6" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Row7" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Row8" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </command>
-
+    
     <command id="128" name="setVolume" type="specific" module="water" description="Set the volume value on the water meter module">
       <variables>
-        <variable name="Volume" type="uint" start_bit="0" bit_length="32" unit="Liter" description=""/>
+	<variable name="Volume" type="uint" start_bit="0" bit_length="32" unit="Liter" description=""/>
       </variables>
     </command>
-
+    
+    <command id="128" name="UltasonicConfig" type="specific" module="ultrasonic" description="Configure an ultrasonic module to output 0 to 100%">
+      <variables>
+	<variable name="SensorId" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="0Percent" type="uint" start_bit="8" bit_length="16" unit="mm" description=""/>
+	<variable name="100Percent" type="uint" start_bit="24" bit_length="16" unit="mm" description=""/>
+	<variable name="SensorMode" type="enum" start_bit="40" bit_length="8" unit="" description="">
+	  <value id="0" name="Length"/>
+	  <value id="1" name="Percent"/>
+	</variable>
+      </variables>
+    </command>
+    
   </commands>
   
   
   <modules>
     <module id="0" name="Debug" class="tst"/>
     <module id="1" name="Default" class="def"/>
-
     <module id="3" name="DS18x20" class="sns"/>
     <module id="4" name="heatPower" class="sns"/>
     <module id="5" name="FOST02" class="sns"/>
@@ -1409,8 +1426,8 @@
     <module id="31" name="ChnController" class="chn"/>
     <module id="32" name="rfid" class="sns"/>
     <module id="33" name="water" class="sns"/>
-
-
+    
+    
     <module id="45" name="PIR" class="sns"/>
     <module id="46" name="TCN75A" class="sns"/>
     <module id="47" name="VoltageCurrent" class="sns"/>
@@ -1419,13 +1436,13 @@
     <module id="50" name="inputAnalog" class="sns"/>
     <module id="51" name="LM335" class="sns"/>
     <module id="52" name="SH11" class="sns"/>
-
-
+    
+    
     <module id="55" name="NTC" class="sns"/>
     <module id="56" name="sigmadelta_dimmer" class="act"/>
     <module id="57" name="counter" class="sns"/>
     <module id="58" name="multiSwitch" class="act"/>
-    <module id="59" name="linearAct" class="act"/>§
+    <module id="59" name="linearAct" class="act"/>
     <module id="60" name="DotMatrix" class="act"/>
     <module id="61" name="DHT11" class="sns"/>
     <module id="62" name="rfTransceive" class="sns"/>
@@ -1444,131 +1461,131 @@
     <nmt_message id="0" name="Time"/>
     <nmt_message id="4" name="Reset">
       <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="8" name="Bios_Start">
       <variables>
-        <variable name="BiosVersion" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="HasApplication" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="DeviceType" type="enum" start_bit="24" bit_length="8" unit="" description="">
+	<variable name="BiosVersion" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="HasApplication" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="DeviceType" type="enum" start_bit="24" bit_length="8" unit="" description="">
 	  <value id="0" name="unknown"/>
-          <value id="1" name="atmega8"/>
-          <value id="2" name="atmega48"/>
-          <value id="3" name="atmega88"/>
-          <value id="4" name="atmega168"/>
-          <value id="5" name="atmega328p"/>
-        </variable>
-        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+	  <value id="1" name="atmega8"/>
+	  <value id="2" name="atmega48"/>
+	  <value id="3" name="atmega88"/>
+	  <value id="4" name="atmega168"/>
+	  <value id="5" name="atmega328p"/>
+	</variable>
+	<variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="12" name="Pgm_Start">
       <variables>
-        <variable name="Address0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Address1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Address2" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Address3" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
+	<variable name="Address0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Address1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Address2" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Address3" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data">
       <variables>
-        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-        <variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
+	<variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Data" type="uint" start_bit="16" bit_length="48" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_48">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
-        <variable name="Data5" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Data5" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_8">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_16">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_24">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_32">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="16" name="Pgm_Data_40">
       <variables>
-        <variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
-        <variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Offset0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Offset1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Data0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Data1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Data2" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Data3" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Data4" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="20" name="Pgm_End"/>
     <nmt_message id="24" name="Pgm_Copy">
       <variables>
-        <variable name="Source0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
-        <variable name="Source1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
-        <variable name="Destination0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
-        <variable name="Destination1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
-        <variable name="Length0" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
-        <variable name="Length1" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Source0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Source1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Destination0" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Destination1" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Length0" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Length1" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="28" name="Pgm_Ack">
       <variables>
-        <variable name="Data" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Data" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="32" name="Pgm_Nack">
       <variables>
-        <variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="Offset" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="36" name="Start_App" description="Send to node to start the application in the node">
       <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="40" name="App_Start" description="Sent by the application in a node when it starts">
       <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
       </variables>
     </nmt_message>
     <nmt_message id="44" name="Heartbeat">
       <variables>
-        <variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
-        <variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="HardwareId" type="uint" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="NumberOfModules" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
       </variables>
     </nmt_message>
   </nmt_messages>
