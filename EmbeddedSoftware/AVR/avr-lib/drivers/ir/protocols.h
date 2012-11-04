@@ -54,13 +54,16 @@ typedef struct {
 # define IR_PROTOCOLS_USE_SKY		1
 #endif
 #ifndef IR_PROTOCOLS_USE_NEXA2
-# define IR_PROTOCOLS_USE_NEXA2		1
+# define IR_PROTOCOLS_USE_NEXA2	1
 #endif
 #ifndef IR_PROTOCOLS_USE_NEXA1
-# define IR_PROTOCOLS_USE_NEXA1		1
+# define IR_PROTOCOLS_USE_NEXA1	1
 #endif
 #ifndef IR_PROTOCOLS_USE_VIKING
 # define IR_PROTOCOLS_USE_VIKING	1
+#endif
+#ifndef IR_PROTOCOLS_USE_VIKING_STEAK
+# define IR_PROTOCOLS_USE_VIKING_STEAK	1
 #endif
 
 /* All these functions take a buffer with pulse times and tries to parse it
@@ -100,6 +103,9 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 #endif
 #if (IR_PROTOCOLS_USE_VIKING)
 int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
+#endif
+#if (IR_PROTOCOLS_USE_VIKING_STEAK)
+int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
 
 /* Try to parse all above protocols until a match is found. */
@@ -332,6 +338,18 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_VIKING_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_VIKING_TOL_DIV	(3)
 
+/* Viking Steak temperature sensor Implementation
+ * Receiver: 
+ */
+#define IR_PROTO_VIKING_STEAK		(13)
+#define IR_VIKING_STEAK_HIGH		(700*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_VIKING_STEAK_LOW_ONE	(4000*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_VIKING_STEAK_LOW_ZERO	(1700*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_VIKING_STEAK_LOW_START	(7800*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_VIKING_STEAK_TIMEOUT	(0)									//ms BURST!	(time between ir frames)
+#define IR_VIKING_STEAK_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_VIKING_STEAK_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_VIKING_STEAK_TOL_DIV	(2)
 
 #define IR_PROTO_HASH		0xfe
 #define IR_PROTO_UNKNOWN	0xff								//
