@@ -57,7 +57,7 @@ volatile uint8_t bios_msg_full;
 Can_Message_t* bios_msg_ptr; // only a pointer to main-local structure to save .bss space
 extern char __bios_start; // Start of BIOS area in flash, from ld-script.
 
-prog_uint32_t hwid = NODE_HW_ID;
+const uint32_t hwid PROGMEM = NODE_HW_ID;
 
 #if defined(AUTOSTART)
 uint8_t autostart_cnt;
