@@ -681,6 +681,18 @@
 	<variable name="Text" type="ascii" start_bit="0" bit_length="64" unit="" description=""/>
       </variables>
     </command>
+    <command id="129" name="Benchmark" type="specific" module="Debug" description="Used for sending debug data with benchmark module">
+      <variables>
+	<variable name="Byte0" type="uint" start_bit="0" bit_length="8" unit="" description=""/>
+	<variable name="Byte1" type="uint" start_bit="8" bit_length="8" unit="" description=""/>
+	<variable name="Byte2" type="uint" start_bit="16" bit_length="8" unit="" description=""/>
+	<variable name="Byte3" type="uint" start_bit="24" bit_length="8" unit="" description=""/>
+	<variable name="Byte4" type="uint" start_bit="32" bit_length="8" unit="" description=""/>
+	<variable name="Byte5" type="uint" start_bit="40" bit_length="8" unit="" description=""/>
+	<variable name="Byte6" type="uint" start_bit="48" bit_length="8" unit="" description=""/>
+	<variable name="Byte7" type="uint" start_bit="56" bit_length="8" unit="" description=""/>
+      </variables>
+    </command>
     
     <command id="128" name="LCD_Clear" type="specific" module="HD44789" description="Clear LCD"/>
     <command id="129" name="LCD_Cursor" type="specific" module="HD44789" description="Set LCD cursor position">
