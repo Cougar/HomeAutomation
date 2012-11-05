@@ -1,0 +1,14 @@
+## Section tst_Benchmark -- Do not edit this line
+
+
+tst_Benchmark_ID=<ID>
+
+# Test 1, CanSend
+# Measures the time to call StdCan_Put
+tst_Benchmark_CanSend_TestActive=1
+tst_Benchmark_CanSend_TIMER=<TIMER>
+tst_Benchmark_CanSend_PERIOD_MS=500
+tst_Benchmark_CanSend_NumTx=1
+
+
+## End section tst_Benchmark -- Do not edit this line
