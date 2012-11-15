@@ -5,10 +5,17 @@ tst_Benchmark_ID=<ID>
 
 # Test 1, CanSend
 # Measures the time to call StdCan_Put
-tst_Benchmark_CanSend_TestActive=1
+tst_Benchmark_CanSend_TestActive=0
 tst_Benchmark_CanSend_TIMER=<TIMER>
 tst_Benchmark_CanSend_PERIOD_MS=500
 tst_Benchmark_CanSend_NumTx=1
+
+# Test 2, "CPU-time"
+# Measures the time between calls to _Process()-function
+# Useful by installing the benchmark module with other modules to test their "CPU-usage"
+tst_Benchmark_CpuTime_TestActive=1
+tst_Benchmark_CpuTime_SEND_TIMER=<TIMER>
+tst_Benchmark_CpuTime_SEND_PERIOD_MS=500
 
 
 ## End section tst_Benchmark -- Do not edit this line
