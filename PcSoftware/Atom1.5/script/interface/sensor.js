@@ -244,9 +244,10 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		"module_name" : module_name,
 		"module_id"   : module_id,
 		"group"       : false	});
-
+		
 		/* Must check sensor here in case no alias is stored the adress needs to be printed */
 		var VikingSuccess = "NoVikingSensor";
+		var VikingSteakSuccess = "NoVikingSteakSensor";
 		if (variables["Protocol"] == "Viking")
 		{
 			/*
@@ -276,6 +277,15 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 			{
 				Log("\033[33mWarning: VikingSensor, unknown part="+unknown+", data="+data+"\033[0m");
 			}
+		} else if (variables["Protocol"] == "VikingSteak")
+		{
+			var data = variables["IRdata"];
+			var addr = (data>>>4)&0xFF;
+			var byte0 = rshift(data,32)&0xF;
+			var byte1 = rshift(data,28)&0xF;
+			var byte2 = rshift(data,24)&0xF;
+			var temp = Math.round((((((byte1^byte2)<<8)+((byte0^byte1)<<4)+byte0^10)-122)*5)/9);
+			VikingSteakSuccess = "VikingNotFound";
 		}
 				
 		loopAliases:	/* Label to break nested */
@@ -312,6 +322,46 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 								last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
 							}
 
+							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+							
+							break loopAliases;
+						}
+						break;
+					}
+					case "VikingSteak":
+					{	/* Add alias with these specifics: Channel=0,Proto=VikingSteak,Address=<address of sensor> */
+						/* if no Address is added to the alias, all vikingSteaksensors will match*/
+						if (aliases_data[alias_name]["specific"]["Address"] == undefined) 
+						{
+							VikingSteakSuccess = "VikingFound";
+							var last_value = {};
+							var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+							if (last_value_string)
+							{
+								last_value = eval("(" + last_value_string + ")");
+							}
+
+							var timestamp = get_time();
+							last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
+							last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
+							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+							break loopAliases;
+						}
+						else if (addr == aliases_data[alias_name]["specific"]["Address"])
+						{
+							VikingSteakSuccess = "VikingFound";
+							var last_value = {};
+							var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+							if (last_value_string)
+							{
+								last_value = eval("(" + last_value_string + ")");
+							}
+
+							var timestamp = get_time();
+							last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
+							last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
 							Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 							
 							break loopAliases;
@@ -368,6 +418,10 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		if (VikingSuccess == "VikingNotFound")
 		{
 			Log("Found unknown vikingsensor address="+addr+" temperature="+temp+" humidity="+humidity+" unknown="+unknown);
+		}
+		if (VikingSteakSuccess == "VikingNotFound")
+		{
+			Log("Found unknown vikingSteaksensor address="+addr+" temperature="+temp);
 		}
 	}
 }
