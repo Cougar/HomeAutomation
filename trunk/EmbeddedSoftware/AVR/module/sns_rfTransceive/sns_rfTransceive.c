@@ -93,47 +93,61 @@ void sns_rfTransceive_Init(void)
 
 
 ///////////// DEBUG!!!!
-#if 0
+#if (sns_rfTransceive_SEND_DEBUG==1)
 StdCan_Msg_t irTxMsg;
-void send_debug(uint16_t *buffer, uint8_t len) {
+void send_debug(uint16_t *buffer, uint8_t startindex, uint8_t endindex) {
 
 	/* the protocol is unknown so the raw ir-data is sent, makes it easier to develop a new protocol */
 
 	StdCan_Set_class(irTxMsg.Header, CAN_MODULE_CLASS_SNS);
 	StdCan_Set_direction(irTxMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	irTxMsg.Length = 8;
-	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_IRRECEIVE;
+	irTxMsg.Header.ModuleType = CAN_MODULE_TYPE_SNS_RFTRANSCEIVE;
 	irTxMsg.Header.ModuleId = 0;
 	irTxMsg.Header.Command = CAN_MODULE_CMD_IRRECEIVE_IRRAW;
-	for (uint8_t i = 0; i < len>>2; i++) {
-		uint8_t index = i<<2;
-
-		irTxMsg.Data[0] = (buffer[index]>>8)&0xff;
-		irTxMsg.Data[1] = (buffer[index]>>0)&0xff;
-		irTxMsg.Data[2] = (buffer[index+1]>>8)&0xff;
-		irTxMsg.Data[3] = (buffer[index+1]>>0)&0xff;
-		irTxMsg.Data[4] = (buffer[index+2]>>8)&0xff;
-		irTxMsg.Data[5] = (buffer[index+2]>>0)&0xff;
-		irTxMsg.Data[6] = (buffer[index+3]>>8)&0xff;
-		irTxMsg.Data[7] = (buffer[index+3]>>0)&0xff;
-				
-		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
-		_delay_ms(1);
-	}
-	
-	uint8_t lastpacketcnt = len&0x03;
-	if (lastpacketcnt > 0) {
-		irTxMsg.Length = lastpacketcnt<<1;
-		for (uint8_t i = 0; i < lastpacketcnt; i++) {
-			irTxMsg.Data[i<<1] = (buffer[(len&0xfc)|i]>>8)&0xff;
-			irTxMsg.Data[(i<<1)+1] = (buffer[(len&0xfc)|i]>>0)&0xff;
+	while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+	  _delay_ms(1);
+	//_------------------
+	uint8_t i= startindex;
+	while(i != endindex) {
+	  irTxMsg.Length = 2;
+	  irTxMsg.Data[0] = (buffer[i]>>8)&0xff;
+	  irTxMsg.Data[1] = (buffer[i]>>0)&0xff;
+	  i++;
+	  if (i == MAX_NR_TIMES) {
+	    i=0;
+	  }
+	  if(i != endindex) {
+	    irTxMsg.Length = 4;
+	    irTxMsg.Data[2] = (buffer[i]>>8)&0xff;
+	    irTxMsg.Data[3] = (buffer[i]>>0)&0xff;
+	    i++;
+	    if (i == MAX_NR_TIMES) {
+	      i=0;
+	    }
+	    if(i != endindex) {
+	      irTxMsg.Length = 6;
+	      irTxMsg.Data[4] = (buffer[i]>>8)&0xff;
+	      irTxMsg.Data[5] = (buffer[i]>>0)&0xff;
+	      i++;
+	      if (i == MAX_NR_TIMES) {
+		i=0;
+	      }
+	      if(i != endindex) {
+		irTxMsg.Length = 8;
+		irTxMsg.Data[6] = (buffer[i]>>8)&0xff;
+		irTxMsg.Data[7] = (buffer[i]>>0)&0xff;
+		i++;
+		if (i == MAX_NR_TIMES) {
+		  i=0;
 		}
-		/* buffers will be filled when sending more than 2-3 messages, so retry until sent */
-		while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
-		_delay_ms(1);
+	      }
+	    }
+	  }
+	  /* buffers will be filled when sending more than 2-3 messages, so retry until sent */
+	  while (StdCan_Put(&irTxMsg) != StdCan_Ret_OK) {}
+	  _delay_ms(1);
 	}
-
 }
 #endif
 
@@ -205,6 +219,13 @@ void sns_rfTransceive_Process(void)
 #endif
 					rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
 				}
+#if (sns_rfTransceive_SEND_DEBUG==1)
+				else if (res2 == IR_SEND_DEBUG) 
+				{
+					send_debug(rfRxChannel_buf, rfRxChannel_proto.data & 0xFFu, rfRxChannel_index);
+					rfRxChannel_state = sns_rfTransceive_STATE_START_RECEIVE;
+				}
+#endif
 			}
 			break;
 

@@ -134,14 +134,14 @@ int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 
 
-#define IR_OK 				1
+#define IR_OK 			1
 #define IR_NO_PROTOCOL		2
 #define IR_TIME_OVFL		3
-#define IR_NO_DATA 			4
-#define IR_NOT_CORRECT_DATA 5
+#define IR_NO_DATA 		4
+#define IR_NOT_CORRECT_DATA 	5
 #define IR_TO_MUCH_DATA		6
 #define IR_NOT_FINISHED		7
-
+#define IR_SEND_DEBUG		8
 #define IR_BUTTON_DOWN		0x0
 #define IR_BUTTON_UP		0xf
 
@@ -349,7 +349,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_VIKING_STEAK_TIMEOUT	(0)									//ms BURST!	(time between ir frames)
 #define IR_VIKING_STEAK_REPS		(1)									//		(minimum number of times to repeat code)
 #define IR_VIKING_STEAK_F_MOD		(38)								//kHz	(modulation frequency)
-#define IR_VIKING_STEAK_TOL_DIV	(2)
+#define IR_VIKING_STEAK_TOL_DIV	(4)
 
 #define IR_PROTO_HASH		0xfe
 #define IR_PROTO_UNKNOWN	0xff								//

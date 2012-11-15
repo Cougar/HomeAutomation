@@ -205,6 +205,14 @@
 	<variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
       </variables>
     </command>
+    <command id="128" name="IRraw" type="specific" module="rfTransceive" description="If a protocol not could be found, then send raw data">
+      <variables>
+	<variable name="Act1" type="uint" start_bit="0" bit_length="16" unit="Microsecond" description="First active time"/>
+	<variable name="Pas1" type="uint" start_bit="16" bit_length="16" unit="Microsecond" description="First passive time"/>
+	<variable name="Act2" type="uint" start_bit="32" bit_length="16" unit="Microsecond" description="Second active time"/>
+	<variable name="Pas2" type="uint" start_bit="48" bit_length="16" unit="Microsecond" description="Second passive time"/>
+      </variables>
+    </command>
     <command id="129" name="IrConfig" type="specific" module="irTransceive" description="irTransceive config">
       <variables>
 	<variable name="Channel" type="uint" start_bit="0" bit_length="4" unit="" description="Which channel to configure"/>

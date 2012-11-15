@@ -256,7 +256,7 @@ void dotmatrixInit(){
 	USART_SPI_XCK_DDR |= (1<<USART_SPI_XCK); // xck (sck) output
 	UCSR0C = (1<<UMSEL01)|(1<<UMSEL00)|(0<<UCPHA0)|(0<<UCPOL0);
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-	UBRR0 = 3;
+	UBRR0 = 1;
 
 	dotmatrixClear();
 
