@@ -28,6 +28,10 @@ void tst_Benchmark_List(uint8_t ModuleSequenceNumber);
 #define tst_Benchmark_CanSend_TestActive 0
 #endif
 
+#ifndef tst_Benchmark_CpuTime_TestActive
+#define tst_Benchmark_CpuTime_TestActive 0
+#endif
+
 
 #ifndef tst_Benchmark_USEEEPROM
 #define tst_Benchmark_USEEEPROM 0
