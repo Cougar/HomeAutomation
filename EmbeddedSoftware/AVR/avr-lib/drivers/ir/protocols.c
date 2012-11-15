@@ -17,6 +17,7 @@
 
 
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) {
+	uint8_t res;
 	proto->protocol=IR_PROTO_UNKNOWN;
 	proto->data=0;
 	proto->timeout=1;
@@ -58,7 +59,8 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 	if (parseViking(buf, len, index, proto)==IR_OK) return IR_OK;
 #endif
 #if (IR_PROTOCOLS_USE_VIKING_STEAK)
-	if (parseVikingSteak(buf, len, index, proto)==IR_OK) return IR_OK;
+	res = parseVikingSteak(buf, len, index, proto);
+	if (res!=IR_NOT_CORRECT_DATA) return res;
 #endif
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
@@ -1349,32 +1351,20 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 {
 #if IR_RX_CONTINUOUS_MODE==1
 	/* check if we have correct amount of data */ 
-	if (len < 76) {
+	if (len < 74) {
 		return IR_NOT_CORRECT_DATA;
 	}
 	uint8_t i, i2;
 	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
 	
 	/* Check start bit condition */
-	i2=index-76;
+	i2=index-74;
 	if (i2>index)
 		i2+=MAX_NR_TIMES;
 
-	if ((buf[i2] < IR_VIKING_STEAK_LOW_ZERO - IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_LOW_ZERO + IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_TOL_DIV)) 
-	{
-		return IR_NOT_CORRECT_DATA;
-	}
-	i2++;
-	if (i2>index)
-		i2+=MAX_NR_TIMES;
-	if ((buf[i2] < IR_VIKING_STEAK_HIGH - IR_VIKING_STEAK_HIGH/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_HIGH + IR_VIKING_STEAK_HIGH/IR_VIKING_TOL_DIV)) 
-	{
-		return IR_NOT_CORRECT_DATA;
-	}
-	i2++;
-	if (i2>index)
-		i2+=MAX_NR_TIMES;
-	if ((buf[i2] < IR_VIKING_STEAK_LOW_START - IR_VIKING_STEAK_LOW_START/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_LOW_START + IR_VIKING_STEAK_LOW_START/IR_VIKING_TOL_DIV)) 
+	proto->data=i2;		/*Store startindex for debug output */
+	
+	if ((buf[i2] < IR_VIKING_STEAK_LOW_START - IR_VIKING_STEAK_LOW_START/IR_VIKING_STEAK_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_LOW_START + IR_VIKING_STEAK_LOW_START/IR_VIKING_STEAK_TOL_DIV)) 
 	{
 		return IR_NOT_CORRECT_DATA;
 	}
@@ -1391,7 +1381,7 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 
 		if ((i&1) != 0) 
 		{		/* if odd, no data */
-			if ((buf[i2] < IR_VIKING_STEAK_HIGH - IR_VIKING_STEAK_HIGH/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_HIGH + IR_VIKING_STEAK_HIGH/IR_VIKING_TOL_DIV)) 
+			if ((buf[i2] < IR_VIKING_STEAK_HIGH - IR_VIKING_STEAK_HIGH/IR_VIKING_STEAK_TOL_DIV) || (buf[i2] > IR_VIKING_STEAK_HIGH + IR_VIKING_STEAK_HIGH/IR_VIKING_STEAK_TOL_DIV)) 
 			{
 				return IR_NOT_CORRECT_DATA;
 			}
@@ -1399,13 +1389,13 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 		else
 		{			/* if even, data */
 			/* check length of transmit pulse */
-			if ((buf[i2] > IR_VIKING_STEAK_LOW_ONE - IR_VIKING_STEAK_LOW_ONE/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_STEAK_LOW_ONE + IR_VIKING_STEAK_LOW_ONE/IR_VIKING_TOL_DIV)) 
+			if ((buf[i2] > IR_VIKING_STEAK_LOW_ONE - IR_VIKING_STEAK_LOW_ONE/IR_VIKING_STEAK_TOL_DIV) && (buf[i2] < IR_VIKING_STEAK_LOW_ONE + IR_VIKING_STEAK_LOW_ONE/IR_VIKING_STEAK_TOL_DIV)) 
 			{
 				/* write a one */
 				rawbitsTemp = rawbitsTemp<<1;
 				rawbitsTemp |= 1;
 			}
-			else if ((buf[i2] > IR_VIKING_STEAK_LOW_ZERO - IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_STEAK_LOW_ZERO + IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_TOL_DIV)) 
+			else if ((buf[i2] > IR_VIKING_STEAK_LOW_ZERO - IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_STEAK_TOL_DIV) && (buf[i2] < IR_VIKING_STEAK_LOW_ZERO + IR_VIKING_STEAK_LOW_ZERO/IR_VIKING_STEAK_TOL_DIV)) 
 			{
 				/* do nothing, a zero is already in rawbits */
 				rawbitsTemp = rawbitsTemp<<1;
