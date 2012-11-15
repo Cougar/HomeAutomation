@@ -346,7 +346,7 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_VIKING_STEAK_LOW_ONE	(4000*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_VIKING_STEAK_LOW_ZERO	(1700*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_VIKING_STEAK_LOW_START	(7800*CYCLES_PER_US/TIMER_PRESC)		//us
-#define IR_VIKING_STEAK_TIMEOUT	(0)									//ms BURST!	(time between ir frames)
+#define IR_VIKING_STEAK_TIMEOUT	(200)									//ms BURST!	(time between ir frames)
 #define IR_VIKING_STEAK_REPS		(1)									//		(minimum number of times to repeat code)
 #define IR_VIKING_STEAK_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_VIKING_STEAK_TOL_DIV	(4)

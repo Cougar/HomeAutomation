@@ -1411,7 +1411,7 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 	//rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
 	proto->protocol=IR_PROTO_VIKING_STEAK;
-	proto->timeout=0;
+	proto->timeout=IR_VIKING_STEAK_TIMEOUT;
 	proto->data=rawbitsTemp;
 
 	return IR_OK;
