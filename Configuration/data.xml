@@ -115,6 +115,7 @@
 	  <value id="11" name="Nexa"/>
 	  <value id="12" name="Viking"/>
 	  <value id="13" name="VikingSteak"/>
+	  <value id="14" name="Rubicson"/>
 	  <value id="255" name="Unknown"/>
 	</variable>
 	<variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
