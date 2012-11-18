@@ -65,6 +65,11 @@ typedef struct {
 #ifndef IR_PROTOCOLS_USE_VIKING_STEAK
 # define IR_PROTOCOLS_USE_VIKING_STEAK	1
 #endif
+#ifndef IR_PROTOCOLS_USE_RUBICSON
+# define IR_PROTOCOLS_USE_RUBICSON	1
+#endif
+
+
 
 /* All these functions take a buffer with pulse times and tries to parse it
  * to a Ir_Protocol_Data_t structure. They return IR_OK on success
@@ -107,6 +112,10 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 #if (IR_PROTOCOLS_USE_VIKING_STEAK)
 int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
+#if (IR_PROTOCOLS_USE_RUBICSON)
+int8_t parseRubicson(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
+#endif
+
 
 /* Try to parse all above protocols until a match is found. */
 int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
@@ -350,6 +359,19 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_VIKING_STEAK_REPS		(1)									//		(minimum number of times to repeat code)
 #define IR_VIKING_STEAK_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_VIKING_STEAK_TOL_DIV	(4)
+
+/* Rubicson temperature sensor Implementation
+ * Receiver: 
+ */
+#define IR_PROTO_RUBICSON		(14)
+#define IR_RUBICSON_HIGH		(550*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RUBICSON_LOW_ONE		(1880*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RUBICSON_LOW_ZERO		(900*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_RUBICSON_LOW_START		(3850*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_RUBICSON_TIMEOUT		(200)									//ms BURST!	(time between ir frames)
+#define IR_RUBICSON_REPS		(1)									//		(minimum number of times to repeat code)
+#define IR_RUBICSON_F_MOD		(38)								//kHz	(modulation frequency)
+#define IR_RUBICSON_TOL_DIV		(4)
 
 #define IR_PROTO_HASH		0xfe
 #define IR_PROTO_UNKNOWN	0xff								//

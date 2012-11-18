@@ -62,6 +62,12 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 	res = parseVikingSteak(buf, len, index, proto);
 	if (res!=IR_NOT_CORRECT_DATA) return res;
 #endif
+#if (IR_PROTOCOLS_USE_RUBICSON)
+	res = parseRubicson(buf, len, index, proto);
+	if (res!=IR_NOT_CORRECT_DATA) return res;
+#endif
+		
+	
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
 	return IR_NOT_CORRECT_DATA;
@@ -1420,3 +1426,94 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 #endif
 }
 #endif
+
+#if (IR_PROTOCOLS_USE_RUBICSON)
+/**
+ * Test data on Rubicson temperature sensor protocol
+ * 
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+
+int8_t parseRubicson(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
+{
+#if IR_RX_CONTINUOUS_MODE==1
+	/* check if we have correct amount of data */ 
+	if (len < 74) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint8_t i, i2;
+	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
+	
+	/* Check start bit condition */
+	i2=index-74;
+	if (i2>index)
+		i2+=MAX_NR_TIMES;
+
+	proto->data=i2;		/*Store startindex for debug output */
+	
+	if ((buf[i2] < IR_RUBICSON_LOW_START - IR_RUBICSON_LOW_START/IR_RUBICSON_TOL_DIV) || (buf[i2] > IR_RUBICSON_LOW_START + IR_RUBICSON_LOW_START/IR_RUBICSON_TOL_DIV)) 
+	{
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+	for (i = 73; i > 0; i--)
+	{
+		i2=index-i;
+		if (i2>index)
+			i2+=MAX_NR_TIMES;
+
+		/* Check if correct amount of data have been received */
+		//if ((i == 78) && (rawbitsTemp != 0b00001))
+		//	return IR_NOT_CORRECT_DATA;
+
+		if ((i&1) != 0) 
+		{		/* if odd, no data */
+			if ((buf[i2] < IR_RUBICSON_HIGH - IR_RUBICSON_HIGH/IR_VIKING_STEAK_TOL_DIV) || (buf[i2] > IR_RUBICSON_HIGH + IR_RUBICSON_HIGH/IR_RUBICSON_TOL_DIV)) 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		} 
+		else
+		{			/* if even, data */
+			/* check length of transmit pulse */
+			if ((buf[i2] > IR_RUBICSON_LOW_ONE - IR_RUBICSON_LOW_ONE/IR_RUBICSON_TOL_DIV) && (buf[i2] < IR_RUBICSON_LOW_ONE + IR_RUBICSON_LOW_ONE/IR_RUBICSON_TOL_DIV)) 
+			{
+				/* write a one */
+				rawbitsTemp = rawbitsTemp<<1;
+				rawbitsTemp |= 1;
+			}
+			else if ((buf[i2] > IR_RUBICSON_LOW_ZERO - IR_RUBICSON_LOW_ZERO/IR_RUBICSON_TOL_DIV) && (buf[i2] < IR_RUBICSON_LOW_ZERO + IR_RUBICSON_LOW_ZERO/IR_RUBICSON_TOL_DIV)) 
+			{
+				/* do nothing, a zero is already in rawbits */
+				rawbitsTemp = rawbitsTemp<<1;
+			}
+			else 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	
+	//rawbitsTemp = ~rawbitsTemp;
+	//rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
+	
+	proto->protocol=IR_PROTO_RUBICSON;
+	proto->timeout=IR_RUBICSON_TIMEOUT;
+	proto->data=rawbitsTemp;
+
+	return IR_OK;
+#else
+	return IR_NOT_CORRECT_DATA;
+#endif
+}
+#endif
+
