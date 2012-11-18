@@ -25,8 +25,8 @@ StdCan_Msg_t tst_Benchmark_CanSend_txMsg;
 #if tst_Benchmark_CpuTime_TestActive == 1
 uint16_t tst_Benchmark_CpuTime_Min = 0xffff;
 uint16_t tst_Benchmark_CpuTime_Max = 0x0000;
-uint16_t tst_Benchmark_CpuTime_Avg = 0x0000;
-uint16_t tst_Benchmark_CpuTime_Avg_Cnt = 0;
+uint32_t tst_Benchmark_CpuTime_Avg = 0x0000;
+//uint16_t tst_Benchmark_CpuTime_Avg_Cnt = 0;
 StdCan_Msg_t tst_Benchmark_CpuTime_txMsg;
 uint16_t tst_Benchmark_CpuTime_timer_val;
 #endif
@@ -117,19 +117,15 @@ void tst_Benchmark_Process(void)
 		tst_Benchmark_CpuTime_Max = timeSpent;
 	}
 	
-	uint32_t sum = tst_Benchmark_CpuTime_Avg * tst_Benchmark_CpuTime_Avg_Cnt + timeSpent;
-	if (tst_Benchmark_CpuTime_Avg_Cnt < 0xffff)
-	{
-		tst_Benchmark_CpuTime_Avg_Cnt++;
-	}
-	tst_Benchmark_CpuTime_Avg = sum / tst_Benchmark_CpuTime_Avg_Cnt;
+	uint64_t sum = tst_Benchmark_CpuTime_Avg * 127 + (timeSpent<<8);
+	tst_Benchmark_CpuTime_Avg = sum / 128;
 
 	if (Timer_Expired(tst_Benchmark_CpuTime_SEND_TIMER))
 	{
 		tst_Benchmark_CpuTime_txMsg.Data[0] = 0; // Write test number?
 		tst_Benchmark_CpuTime_txMsg.Data[1] = 0;
-		tst_Benchmark_CpuTime_txMsg.Data[2] = (tst_Benchmark_CpuTime_Avg>>8)&0xff;
-		tst_Benchmark_CpuTime_txMsg.Data[3] = tst_Benchmark_CpuTime_Avg&0xff;
+		tst_Benchmark_CpuTime_txMsg.Data[2] = (tst_Benchmark_CpuTime_Avg>>16)&0xff;
+		tst_Benchmark_CpuTime_txMsg.Data[3] = (tst_Benchmark_CpuTime_Avg>>8)&0xff;
 		tst_Benchmark_CpuTime_txMsg.Data[4] = (tst_Benchmark_CpuTime_Min>>8)&0xff;
 		tst_Benchmark_CpuTime_txMsg.Data[5] = tst_Benchmark_CpuTime_Min&0xff;
 		tst_Benchmark_CpuTime_txMsg.Data[6] = (tst_Benchmark_CpuTime_Max>>8)&0xff;
