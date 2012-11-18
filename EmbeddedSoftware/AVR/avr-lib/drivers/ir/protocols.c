@@ -1477,7 +1477,7 @@ int8_t parseRubicson(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 
 		if ((i&1) != 0) 
 		{		/* if odd, no data */
-			if ((buf[i2] < IR_RUBICSON_HIGH - IR_RUBICSON_HIGH/IR_VIKING_STEAK_TOL_DIV) || (buf[i2] > IR_RUBICSON_HIGH + IR_RUBICSON_HIGH/IR_RUBICSON_TOL_DIV)) 
+			if ((buf[i2] < IR_RUBICSON_HIGH - IR_RUBICSON_HIGH/IR_RUBICSON_TOL_DIV) || (buf[i2] > IR_RUBICSON_HIGH + IR_RUBICSON_HIGH/IR_RUBICSON_TOL_DIV)) 
 			{
 				return IR_NOT_CORRECT_DATA;
 			}
