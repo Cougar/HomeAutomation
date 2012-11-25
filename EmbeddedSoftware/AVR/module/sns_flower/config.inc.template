@@ -1,0 +1,50 @@
+## Section sns_flower -- Do not edit this line
+
+#Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
+#sns_flower_USEEEPROM=1
+
+sns_flower_ID=<ID>
+sns_flower_MEASUREMENT_TIMER=<TIMER>
+sns_flower_WAIT_TIMER=<TIMER>
+
+
+# How long to wait between measurements (resolution in seconds) (Max is 65)
+sns_flower_WAIT_PERIOD_S=60u
+
+# How long to wait after voltage is applied to sensor before analog measurement (resolution in milliseconds)
+sns_flower_MEASUREMENT_PERIOD_MS=10u
+
+# How long to wait between CAN messages when sending result (resolution in milliseconds)
+sns_flower_CAN_MSG_PAUS_MS=50u
+
+sns_flower_highSide_PIN=EXP_C
+sns_flower_lowSide_PIN=EXP_D
+
+# Use # to disable a channel
+
+### Config first measurement port ###
+# AD channel
+sns_flower0AD=7
+
+### Config second measurement port ###
+# AD channel
+#sns_flower1AD=1
+
+### Config third measurement port ###
+# AD channel
+#sns_flower2AD=0
+
+### Config fourth measurement port ###
+# AD channel
+#sns_flower3AD=2
+
+### Config fifth measurement port ###
+# AD channel
+#sns_flower4AD=2
+
+### Config sixth measurement port ###
+# AD channel
+#sns_flower5AD=2
+
+
+## End section sns_flower -- Do not edit this line
