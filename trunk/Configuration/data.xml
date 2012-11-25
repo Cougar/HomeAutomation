@@ -1448,7 +1448,7 @@
     <module id="31" name="ChnController" class="chn"/>
     <module id="32" name="rfid" class="sns"/>
     <module id="33" name="water" class="sns"/>
-    
+    <module id="34" name="flower" class="sns"/>
     
     <module id="45" name="PIR" class="sns"/>
     <module id="46" name="TCN75A" class="sns"/>
