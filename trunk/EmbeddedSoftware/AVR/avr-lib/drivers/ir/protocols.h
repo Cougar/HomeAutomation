@@ -53,6 +53,9 @@ typedef struct {
 #ifndef IR_PROTOCOLS_USE_SKY
 # define IR_PROTOCOLS_USE_SKY		1
 #endif
+#ifndef IR_PROTOCOLS_USE_IROBOT
+# define IR_PROTOCOLS_USE_IROBOT		1
+#endif
 #ifndef IR_PROTOCOLS_USE_NEXA2
 # define IR_PROTOCOLS_USE_NEXA2	1
 #endif
@@ -98,6 +101,10 @@ int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *prot
 #if (IR_PROTOCOLS_USE_SKY)
 int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
 #endif
+#if (IR_PROTOCOLS_USE_IROBOT)
+int8_t parseiRobot(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto);
+#endif
+
 
 /* RF protocols needs index parameter */
 #if (IR_PROTOCOLS_USE_NEXA2)
@@ -137,6 +144,7 @@ int8_t expandSamsung(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandMarantz(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandPanasonic(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
+int8_t expandiRobot(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandNexa2(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Pass the Ir_Protocol_Data_t automatically to the correct function. */
@@ -176,7 +184,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_RC5		(0)
 #define IR_RC5_HALF_BIT		(889*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_RC5_BIT			(889*2*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_RC5_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
@@ -188,7 +195,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: 
  * Transmitter: 
  */
-#define IR_PROTO_RC6		(1)
 #define IR_RC6_ST_BIT		(1*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_RC6_TIMEOUT		(50-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
 #define IR_RC6_REPS			(1)									//		(minimum number of times to repeat code)
@@ -199,7 +205,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: 
  * Transmitter: 
  */
-#define IR_PROTO_RCMM		(2)
 #define IR_RCMM_ST_BIT		(256*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_RCMM_TIMEOUT 	(170-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
 #define IR_RCMM_REPS		(1)									//		(minimum number of times to repeat code)
@@ -210,7 +215,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_SIRC		(3)
 #define IR_SIRC_ST_BIT		(2400*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_SIRC_LOW			(600*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_SIRC_HIGH_ONE	(1200*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -224,7 +228,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: 
  */
-#define IR_PROTO_SHARP		(4)
 #define IR_SHARP_HIGH		(280*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_SHARP_LOW_ONE	(1850*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_SHARP_LOW_ZERO	(780*CYCLES_PER_US/TIMER_PRESC)		//us
@@ -237,7 +240,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_NEC		(5)
 #define IR_NEC_ST_BIT		(9000*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEC_ST_PAUSE		(4500*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEC_LOW_ONE		(1690*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -253,7 +255,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_SAMS		(6)
 #define IR_SAMS_ST_BIT		(4500*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_SAMS_ST_PAUSE	(4500*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_SAMS_LOW_ONE		(1720*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -268,7 +269,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE (has not been tested with odd adressbits)
  * Transmitter: DONE
  */
-#define IR_PROTO_MARANTZ		(7)
 #define IR_MARANTZ_HALF_BIT		(889*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_MARANTZ_BIT			(889*2*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_MARANTZ_TIMEOUT		(117-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
@@ -280,7 +280,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_PANASONIC	(8)
 #define IR_PANA_ST_BIT		(3570*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_PANA_ST_PAUSE	(1630*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_PANA_LOW_ONE		(1240*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -295,7 +294,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: 
  */
-#define IR_PROTO_SKY		(9)
 #define IR_SKY_ST_BIT		(2800*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_SKY_SHORT		(460*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_SKY_LONG			(920*CYCLES_PER_US/TIMER_PRESC)		//us
@@ -304,12 +302,23 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_SKY_F_MOD		(38)								//kHz	(modulation frequency)
 #define IR_SKY_TOL_DIV		(4)
 
+/* iRobot Implementation
+ * Receiver: -
+ * Transmitter: DONE
+ */
+#define IR_IROBOT_ST_BIT		(2800*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_IROBOT_SHORT		(1000*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_IROBOT_LONG		(3000*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_IROBOT_TIMEOUT		(162-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
+#define IR_IROBOT_REPS		(3)									//		(minimum number of times to repeat code)
+#define IR_IROBOT_F_MOD		(40)								//kHz	(modulation frequency)
+#define IR_IROBOT_TOL_DIV		(4)
+
 
 /* Nexa2 Implementation
  * Receiver: DONE
  * Transmitter: DONE
  */
-#define IR_PROTO_NEXA2		(10)
 #define IR_NEXA2_START1 	(10000*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEXA2_START2 	(2500*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEXA2_HIGH 		(320*CYCLES_PER_US/TIMER_PRESC)		//us
@@ -325,7 +334,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
  * Receiver: DONE
  * Transmitter: 
  */
-#define IR_PROTO_NEXA1		(11)
 #define IR_NEXA1_START	 	(10000*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_NEXA1_SHORT 		(370*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_NEXA1_LONG		(1050*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -338,7 +346,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Viking Temperature sensor Implementation
  * Receiver: 
  */
-#define IR_PROTO_VIKING		(12)
 #define IR_VIKING_LOW 		(940*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_VIKING_HIGH_ONE	(1483*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_VIKING_HIGH_ZERO	(550*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -350,7 +357,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Viking Steak temperature sensor Implementation
  * Receiver: 
  */
-#define IR_PROTO_VIKING_STEAK		(13)
 #define IR_VIKING_STEAK_HIGH		(700*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_VIKING_STEAK_LOW_ONE	(4000*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_VIKING_STEAK_LOW_ZERO	(1700*CYCLES_PER_US/TIMER_PRESC)	//us
@@ -363,7 +369,6 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Rubicson temperature sensor Implementation
  * Receiver: 
  */
-#define IR_PROTO_RUBICSON		(14)
 #define IR_RUBICSON_HIGH		(550*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_RUBICSON_LOW_ONE		(1880*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_RUBICSON_LOW_ZERO		(900*CYCLES_PER_US/TIMER_PRESC)	//us

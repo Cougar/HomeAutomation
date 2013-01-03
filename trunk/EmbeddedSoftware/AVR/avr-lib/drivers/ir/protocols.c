@@ -10,7 +10,7 @@
 #include "protocols.h"
 #include <bios.h>
 
-
+#include <drivers/can/moduleid.h>
 
 //#include <drivers/mcu/gpio.h>
 
@@ -45,6 +45,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 #endif
 #if (IR_PROTOCOLS_USE_SKY)
 	if (parseSky(buf, len, proto)==IR_OK) return IR_OK;
+#endif
+#if (IR_PROTOCOLS_USE_IROBOT)
+	if (parseiRobot(buf, len, proto)==IR_OK) return IR_OK;
 #endif
 
 
@@ -85,25 +88,27 @@ int8_t parseHash(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	/* Call the expand function for the specified protocol. */
 	switch (proto->protocol) {
-	case IR_PROTO_SIRC:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SIRC:
 		return expandSIRC(buf, len, proto);
-	case IR_PROTO_RC5:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_RC5:
 		return expandRC5(buf, len, proto);
-	case IR_PROTO_SHARP:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SHARP:
 		return expandSharp(buf, len, proto);
-	case IR_PROTO_NEC:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEC:
 		return expandNEC(buf, len, proto);
-	case IR_PROTO_SAMS:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SAMSUNG:
 		return expandSamsung(buf, len, proto);
-	case IR_PROTO_MARANTZ:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_MARANTZ:
 		return expandMarantz(buf, len, proto);
-	case IR_PROTO_PANASONIC:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_PANASONIC:
 		return expandPanasonic(buf, len, proto);
-	case IR_PROTO_SKY:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SKY:
 		return expandSky(buf, len, proto);
-	case IR_PROTO_NEXA2:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_IROBOT:
+		return expandiRobot(buf, len, proto);
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEXA2:
 		return expandNexa2(buf, len, proto);
-	case IR_PROTO_NEXA1:
+	case CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEXA:
 		return expandNexa1(buf, len, proto);
 	}
 	/* Invalid protocol specified. */
@@ -162,7 +167,7 @@ int8_t parseSIRC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 	
-	proto->protocol = IR_PROTO_SIRC;
+	proto->protocol = CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SIRC;
 	proto->timeout = IR_SIRC_TIMEOUT;
 	proto->data = rawbits; 
 	
@@ -249,7 +254,7 @@ int8_t parseRC5(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		
 	}
 
-	proto->protocol=IR_PROTO_RC5;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_RC5;
 	proto->timeout=IR_RC5_TIMEOUT;
 	//support RC5-extended keeping second startbit 
 	//remove togglebit
@@ -397,7 +402,7 @@ int8_t parseSharp(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 	
-	proto->protocol=IR_PROTO_SHARP;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SHARP;
 	proto->timeout=IR_SHARP_TIMEOUT;
 	proto->data=rawbits;
 	return IR_OK;
@@ -475,7 +480,7 @@ int8_t parseNEC(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 
-	proto->protocol=IR_PROTO_NEC;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEC;
 	proto->timeout=IR_NEC_TIMEOUT;
 	proto->data=rawbits;	
 	return IR_OK;
@@ -580,7 +585,7 @@ int8_t parseSamsung(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 		}
 	}
 	
-	proto->protocol=IR_PROTO_SAMS;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SAMSUNG;
 	proto->timeout=IR_SAMS_TIMEOUT;
 	proto->data=rawbits;	
 	return IR_OK;
@@ -666,7 +671,7 @@ int8_t parseMarantz(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto)
 		
 	}
 	
-	proto->protocol=IR_PROTO_MARANTZ;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_MARANTZ;
 	proto->timeout=IR_MARANTZ_TIMEOUT;
 	proto->data = rawbits&0x0001ffff;
 	
@@ -797,7 +802,7 @@ int8_t parsePanasonic(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *prot
 		}
 	}
 	
-	proto->protocol=IR_PROTO_PANASONIC;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_PANASONIC;
 	proto->timeout=IR_PANA_TIMEOUT;
 	proto->data=rawbits;	
 	return IR_OK;
@@ -945,7 +950,7 @@ int8_t parseSky(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
 		
 	}
 	
-	proto->protocol = IR_PROTO_SKY;
+	proto->protocol = CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_SKY;
 	proto->timeout = IR_SKY_TIMEOUT;
 	proto->data = rawbits; 
 	
@@ -974,6 +979,148 @@ int8_t expandSky(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 	
 	return IR_NOT_CORRECT_DATA;
 }
+
+#if (IR_PROTOCOLS_USE_IROBOT)
+/**
+ * Test data on iRobot protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+int8_t parseiRobot(const uint16_t *buf, uint8_t len, Ir_Protocol_Data_t *proto) {
+	/* parse buf[], max is len */	
+	uint32_t rawbits=0;
+	uint8_t current=0;
+	uint8_t previous=0;
+	uint8_t cnt=0;
+#define IROBOTLONG 0
+#define IROBOTSHORT 1
+
+	/* check if we have correct amount of data */ 
+	if (len != 16) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	
+
+	for (uint8_t i = 0; i < len; i++) 
+	{
+		if (buf[i] > IR_IROBOT_SHORT - IR_IROBOT_SHORT/IR_IROBOT_TOL_DIV && buf[i] < IR_IROBOT_SHORT + IR_IROBOT_SHORT/IR_IROBOT_TOL_DIV) {
+			current = IROBOTSHORT;
+		}
+		else if (buf[i] > IR_IROBOT_LONG - IR_IROBOT_LONG/IR_IROBOT_TOL_DIV && buf[i] < IR_IROBOT_LONG + IR_IROBOT_LONG/IR_IROBOT_TOL_DIV) {
+			current = IROBOTLONG;
+		}
+		else {
+			return IR_NOT_CORRECT_DATA;
+		}
+		
+		/* if level is low */
+		if ((rawbits&1)==0) {
+			/* and there is a long pulse */
+			if (current == IROBOTLONG) {
+				/* push a one */
+				rawbits = rawbits<<1;
+				rawbits |= 1;
+				cnt = 0;
+			}
+			else if (cnt == 0) {
+				cnt=1;
+				/* push a zero */
+				rawbits = rawbits<<1;
+				
+			} 
+			else {
+				cnt = 0;
+			}
+		}
+		
+		/* if level is high */
+		if ((rawbits&1)==1) {
+			/* and there is a long pulse */
+			if (current == IROBOTLONG) {
+				/* push a zero */
+				rawbits = rawbits<<1;
+				
+				if (previous == IROBOTLONG) {
+					cnt = 1;
+				}
+				else {
+					cnt = 0;
+				}
+			}
+			else if (cnt == 0) {
+				cnt=1;
+				/* push a one */
+				rawbits = rawbits<<1;
+				rawbits |= 1;
+			} 
+			else {
+				cnt = 0;
+			}
+		}
+		
+		previous=current;
+		
+	}
+	
+	proto->protocol = CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_IROBOT;
+	proto->timeout = IR_IROBOT_TIMEOUT;
+	proto->data = rawbits; 
+	
+	return IR_OK;
+}
+#endif
+
+/**
+ * Expand data from iRobot protocol
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to store the expanded data
+ * @param len
+ * 		Pointer to length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data expanded successfully, one of several errormessages if not
+ */
+int8_t expandiRobot(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
+	uint8_t temp;
+	uint8_t lookup[16] = {
+				   0x0, 0x8, 0x4, 0xC,
+				   0x2, 0xA, 0x6, 0xE,
+				   0x1, 0x9, 0x5, 0xD,
+				   0x3, 0xB, 0x7, 0xF };
+	temp = (uint8_t)proto->data;
+	temp = (lookup[temp &0x0F] << 4) | lookup[temp >>4];
+	proto->data = temp << 8;
+	proto->data += 0x52;
+	for (uint8_t i = 0; i < 32; i++) {
+		if ((proto->data>>(i>>1))&1) {
+			buf[i] = IR_IROBOT_LONG;
+			i++;
+			buf[i] = IR_IROBOT_SHORT;	
+		} else {
+			buf[i] = IR_IROBOT_SHORT;
+			i++;
+			buf[i] = IR_IROBOT_LONG;
+		}
+	}
+	
+	*len = 31;
+	proto->modfreq=IR_IROBOT_F_MOD;
+	proto->timeout=IR_IROBOT_TIMEOUT;
+	proto->repeats=IR_IROBOT_REPS;
+	return IR_OK;
+}
+
 
 #if (IR_PROTOCOLS_USE_NEXA2)
 /**
@@ -1060,7 +1207,7 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 		}
 	}
 	
-	proto->protocol=IR_PROTO_NEXA2;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEXA2;
 	proto->timeout=IR_NEXA2_TIMEOUT;
 	proto->data=rawbitsTemp;
 
@@ -1202,7 +1349,7 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 		return IR_NOT_CORRECT_DATA;
 	}
 	
-	proto->protocol=IR_PROTO_NEXA1;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEXA;
 	proto->timeout=IR_NEXA1_TIMEOUT;
 	proto->data=rawbitsTemp;
 	return IR_OK;
@@ -1325,7 +1472,7 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 	rawbitsTemp = ~rawbitsTemp;
 	rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
-	proto->protocol=IR_PROTO_VIKING;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKING;
 	proto->timeout=0;
 	proto->data=rawbitsTemp;
 
@@ -1416,7 +1563,7 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 	//rawbitsTemp = ~rawbitsTemp;
 	//rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
-	proto->protocol=IR_PROTO_VIKING_STEAK;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKING_STEAK;
 	proto->timeout=IR_VIKING_STEAK_TIMEOUT;
 	proto->data=rawbitsTemp;
 
@@ -1506,7 +1653,7 @@ int8_t parseRubicson(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 	//rawbitsTemp = ~rawbitsTemp;
 	//rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
-	proto->protocol=IR_PROTO_RUBICSON;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_RUBICSON;
 	proto->timeout=IR_RUBICSON_TIMEOUT;
 	proto->data=rawbitsTemp;
 
