@@ -1563,7 +1563,7 @@ int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Prot
 	//rawbitsTemp = ~rawbitsTemp;
 	//rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
 	
-	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKING_STEAK;
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKINGSTEAK;
 	proto->timeout=IR_VIKING_STEAK_TIMEOUT;
 	proto->data=rawbitsTemp;
 
