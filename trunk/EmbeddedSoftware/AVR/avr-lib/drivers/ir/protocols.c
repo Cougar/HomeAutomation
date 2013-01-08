@@ -1100,9 +1100,10 @@ int8_t expandiRobot(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 				   0x3, 0xB, 0x7, 0xF };
 	temp = (uint8_t)proto->data;
 	temp = (lookup[temp &0x0F] << 4) | lookup[temp >>4];
-	proto->data = temp << 8;
-	proto->data += 0x52;
-	for (uint8_t i = 0; i < 32; i++) {
+	proto->data = temp;
+	//proto->data = temp << 8;
+	//proto->data += 0x52;
+	for (uint8_t i = 0; i < 16; i++) {
 		if ((proto->data>>(i>>1))&1) {
 			buf[i] = IR_IROBOT_LONG;
 			i++;
@@ -1114,7 +1115,7 @@ int8_t expandiRobot(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 		}
 	}
 	
-	*len = 31;
+	*len = 15;
 	proto->modfreq=IR_IROBOT_F_MOD;
 	proto->timeout=IR_IROBOT_TIMEOUT;
 	proto->repeats=IR_IROBOT_REPS;

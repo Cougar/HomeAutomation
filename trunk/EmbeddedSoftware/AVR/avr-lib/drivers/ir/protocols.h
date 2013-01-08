@@ -309,8 +309,8 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 #define IR_IROBOT_ST_BIT		(2800*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_IROBOT_SHORT		(1000*CYCLES_PER_US/TIMER_PRESC)		//us
 #define IR_IROBOT_LONG		(3000*CYCLES_PER_US/TIMER_PRESC)		//us
-#define IR_IROBOT_TIMEOUT		(162-IR_MAX_PULSE_WIDTH/1000)		//ms	(time between ir frames)
-#define IR_IROBOT_REPS		(3)									//		(minimum number of times to repeat code)
+#define IR_IROBOT_TIMEOUT		30		//ms	(time between ir frames)
+#define IR_IROBOT_REPS		(6)									//		(minimum number of times to repeat code)
 #define IR_IROBOT_F_MOD		(40)								//kHz	(modulation frequency)
 #define IR_IROBOT_TOL_DIV		(4)
 
