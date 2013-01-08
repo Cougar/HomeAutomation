@@ -1,0 +1,10 @@
+Up={"protocol":"iRobot","data":"130"}
+Up2={"protocol":"iRobot","data":"65"}
+Left={"protocol":"iRobot","data":"129"}
+Right={"protocol":"iRobot","data":"131"}
+Spot={"protocol":"iRobot","data":"132"}
+Clean={"protocol":"iRobot","data":"136"}
+Clean2={"protocol":"iRobot","data":"17"}
+Dock={"protocol":"iRobot","data":"133"}
+Off={"protocol":"iRobot","data":"138"}
+Pause={"protocol":"iRobot","data":"137"}
