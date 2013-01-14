@@ -20,7 +20,7 @@ $pageConfiguration = array(
                                  ),
                             array("page" => "phonecalls",
                                   "title" => "Telefonhistorik",
-				   "template" => "page-phonecalls-item-template",
+				                          "template" => "page-phonecalls-item-template",
                                   "aliases" => array("dtmf"),
                                   "limit" => 40,
                                   "inText" => "Inkommande samtal från",
@@ -31,6 +31,15 @@ $pageConfiguration = array(
                                   "aliases" => array("tvbankut"),
                                   "remotes" => array("LG_MKJ42519615")
                                   ),
+                            array("page" => "flipswitches",
+                                  "title" => "Lampor",
+                                  "aliases" => array("RFLaundryAlias"),
+                                  "flipswitches" => array(
+                            							array("Utebelysning", "Anslut3pack", "On1", "Off1"),
+                            						  array("Lampa vid stereo", "FR002T", "A_A_I_1_On", "A_A_I_1_Off"),
+                       						        array("Lampa vid soffan", "FR002T", "A_A_I_3_On", "A_A_I_3_Off")
+                            							)
+                                 ),
                             array("page" => "buttons",
                                   "title" => "TV Sovrum",
                                   "buttons" => array("On" => "Serial_Send('tv','ka 0 01');",
@@ -58,15 +67,15 @@ $pageConfiguration = array(
                                   					"backDoor"
                                                      )
                                  ),
-			    array("page" => "PID",
+			                      array("page" => "PID",
                                   "title" => "Värme",
                                   "alias" => "PID",
-				   "picture" => "http://linuxz.mine.nu/CANgraph/regulator.png"
+				                          "picture" => "http://linuxz.mine.nu/CANgraph/regulator.png"
                                  ),
-			    array("page" => "Power",
+			                     array("page" => "Power",
                                   "title" => "El",
                                   "alias" => "Power",
-				   "picture" => "http://linuxz.mine.nu/CANgraph/power.png"
+				                         "picture" => "http://linuxz.mine.nu/CANgraph/power.png"
                                  )
                            );
 
