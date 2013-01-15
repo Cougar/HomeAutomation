@@ -1,0 +1,14 @@
+<script id="page-graphs-images-template" type="text/x-jquery-tmpl" data-enhance="false">
+<div data-role="collapsible-set" data-inset="false">
+{{each image}}
+  <div data-role="collapsible" data-collapsed="${collapsed}" data-inset="false">
+    <h3>${url}</h3>
+    <p>
+         <div style="width: 100%; position: relative; background-color: #fbfbfb; border: 1px solid #b8b8b8;">
+    	     <img src=${url} id="${idx}" alt="image" style="width: 100%" />
+        </div>	
+    </p>
+	</div>
+{{/each}}
+</div>
+</script>

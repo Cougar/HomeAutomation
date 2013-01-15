@@ -77,6 +77,16 @@ $pageConfiguration = array(
                                   "alias" => "Power",
 				                         "picture" => "http://linuxz.mine.nu/CANgraph/power.png"
                                  )
+                          array("page" => "graphs",
+                                  "title" => "Temperatur",
+				                           "pictures" => array(
+                                        "http://lars.i4s.se/CAN_data/Temperature_2H.png",
+                                        "http://lars.i4s.se/CAN_data/Temperature_24H.png",
+                                        "http://lars.i4s.se/CAN_data/Temperature_weekly.png",
+                                        "http://lars.i4s.se/CAN_data/Temperature_monthly.png",
+                                        "http://lars.i4s.se/CAN_data/Temperature_yearly.png"
+                                        )
+                                 ),
                            );
 
 ?>
