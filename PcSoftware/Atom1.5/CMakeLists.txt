@@ -83,7 +83,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Find Boost
 ###############################################################################
-set(BOOST_LIBS thread-mt system-mt signals-mt program_options-mt filesystem-mt date_time-mt)
+set(BOOST_LIBS thread system signals program_options filesystem date_time)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 find_package(Threads REQUIRED)
 
