@@ -117,6 +117,7 @@
 	  <value id="13" name="VikingSteak"/>
 	  <value id="14" name="Rubicson"/>
 	  <value id="15" name="iRobot"/>
+	  <value id="16" name="Oregon"/>
 	  <value id="255" name="Unknown"/>
 	</variable>
 	<variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
