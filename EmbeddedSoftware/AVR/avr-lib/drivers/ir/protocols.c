@@ -69,7 +69,10 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 	res = parseRubicson(buf, len, index, proto);
 	if (res!=IR_NOT_CORRECT_DATA) return res;
 #endif
-		
+#if (IR_PROTOCOLS_USE_OREGON)
+	res = parseOregon(buf, len, index, proto);
+	if (res!=IR_NOT_CORRECT_DATA) return res;
+#endif		
 	
 	/* No protocol matched. */
 	proto->protocol = IR_PROTO_UNKNOWN;
@@ -1665,3 +1668,219 @@ int8_t parseRubicson(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 }
 #endif
 
+
+
+#if (IR_PROTOCOLS_USE_OREGON)
+/**
+ * Test data on OREGON weather sensor protocol
+ * 
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+
+int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
+{
+#if IR_RX_CONTINUOUS_MODE==1
+	/* check if we have correct amount of data */ 
+	if (len < 74) {	//Ändra till vettigt värde
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint8_t data[IR_OREGON_DATASIZE]; //Verifiera minsta möjliga storlek
+	uint8_t i2 = 0;
+	uint8_t b_i;
+	uint8_t	currentBit = 0;
+	uint8_t done = 0;
+	uint8_t invert = 0;
+	uint8_t shift = 0;
+	uint8_t i = index;
+	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
+	
+	/* Check stop condition */
+	if (buf[i] < IR_OREGON_END) 
+	{
+		return IR_NOT_CORRECT_DATA;
+	}
+	i--; //set index to last bit
+	len--; //Store remaining length
+	//loop to store data
+	while (done == 0) { //Wait for sync pulse and preamble, loop for all bytes
+		for (b_i = 0;b_i<8;b_i++) { //loop for each bit
+			if (((buf[i] < IR_OREGON_SHORT_L) && (buf[i] > IR_OREGON_SHORT_S)) ) {
+				i--;
+				if (i > MAX_NR_TIMES) i = MAX_NR_TIMES - 1;
+				if (((buf[i] < IR_OREGON_SHORT_L) && (buf[i] > IR_OREGON_SHORT_S))) {
+					//Keep previous bit value
+					data[i2] = data[b_i] << 1;
+					data[i2] += currentBit;
+					i--;
+					if (i > MAX_NR_TIMES) i = MAX_NR_TIMES - 1;
+				} else { return IR_NOT_CORRECT_DATA;}	
+			} 
+			else if (((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S))) {
+				//Invert previous bit value
+				if (currentBit) 
+					currentBit = 0;
+				else 
+					currentBit = 1;
+				data[i2] = data[b_i] << 1;
+				data[i2] += currentBit;
+				i--;
+				if (i > MAX_NR_TIMES) i = MAX_NR_TIMES - 1;
+			}
+			else { return IR_NOT_CORRECT_DATA;}
+		}
+		//swap nibbles to make parsing easier
+		uint8_t temp = data[i2] << 4;
+		data[i2] = (data[i2] >> 4) + temp;
+		//check for end condition
+		if (i2 > 6) { // TODO check what value to use here
+			if (data[i2] == 0xFFu && data[i2-1] == 0xFAu) {
+				done = 1;
+			}
+			if (data[i2] == 0x00u && data[i2-1] == 0x05u) {
+				done = 1;
+				invert = 1;
+			}
+			if (data[i2] == 0xFFu && (data[i2-1]&0xF0u) == 0xA0u) {
+				shift = 1;
+				done = 1;
+			}
+			if (data[i2] == 0x00u && (data[i2-1]&0xF0u) == 0x50u) {
+				shift = 1;
+				done = 1;
+				invert = 1;
+			}
+		}
+		i2++;
+		if (i2 >= IR_OREGON_DATASIZE) 
+		{
+			return IR_NOT_CORRECT_DATA;
+		}
+	}	
+	i2--; //restore index
+	if (invert == 1) {
+		for (b_i = 0;b_i<=i2;b_i++) { //loop for each byte
+			data[b_i] ^= 0xFFu;
+		}
+	}
+	if (shift == 1) {
+		for (b_i = i2;b_i>0;b_i--) { //loop for each byte
+			data[b_i] = (data[b_i] << 4) + (data[(b_i - 1)] & 0x0Fu);
+		}
+		data[0] = data[0] << 4;
+		i2--; //remove sync byte
+	} else {
+		i2--; //remove sync byte
+		i2--; //remove sync byte
+	}
+	
+	
+	switch (data[i2]) {
+		case 0x19u:	
+			if (data[i2-1] == 0x84 || data[i2-1] == 0x94 ) { //Anemometer
+				i2-=2; //Remove Sensor id
+				rawbitsTemp = 0x100000000000uL; //Anemometer id
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 36; //store channel as MSB
+				i2--;
+				if (data[i2] == 0x4u)
+					rawbitsTemp |= 0x080000000000uL; //Bat Low flag
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 28; //store wind direction 0x0->0xF
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2]&0x0Fu)) << 24; //store current wind speed
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 16; //store current wind speed
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 8; //store average wind speed
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 0; //store current wind speed
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+			break;
+		case 0x1Du:	
+		case 0xF8u:
+			if (data[i2-1] == 0x20 || data[i2-1] == 0x24 || data[i2-1] == 0xB4 ) { //Temperature/humidity
+				i2-=2; //Remove Sensor id
+				rawbitsTemp = 0x200000000000uL; //Temp/humidity id
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 36; //store channel as MSB
+				i2--;
+				if (data[i2] == 0x4u)
+					rawbitsTemp |= 0x080000000000uL; //Bat Low flag
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 16; //store temp
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 8; //store temp and temp sign
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 0; //store humidity
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+			break;
+		case 0x29u:	
+			if (data[i2-1] == 0x14) { //Rain Gauge (inches)
+				i2-=2; //Remove Sensor id
+				rawbitsTemp = 0x300000000000uL; //Rain inches id
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 36; //store channel as MSB
+				i2--;
+				if (data[i2] == 0x4u)
+					rawbitsTemp |= 0x080000000000uL; //Bat Low flag
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 32; //Rain per hour
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 24; //Rain per hour
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 16; //store total rain
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 8; //store total rain
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 0; //store total rain
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+			break;		
+		case 0x2Du:	
+			if (data[i2-1] == 0x10) { //Rain Gauge (mm)
+				i2-=2; //Remove Sensor id
+				rawbitsTemp = 0x400000000000uL; //Rain mm id
+				rawbitsTemp |= ((uint64_t)(data[i2]&0xF0u)) << 36; //store channel as MSB
+				i2--;
+				if (data[i2] == 0x4u)
+					rawbitsTemp |= 0x080000000000uL; //Bat Low flag
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 32; //Rain per hour
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 24; //Rain per hour
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 16; //store total rain
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 8; //store total rain
+				i2--;
+				rawbitsTemp |= ((uint64_t)(data[i2])) << 0; //store total rain
+			} else {
+				return IR_NOT_CORRECT_DATA;
+			}
+			break;		
+		default:
+			return IR_NOT_CORRECT_DATA;
+			break;
+	}
+	
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_OREGON;
+	proto->timeout=IR_OREGON_TIMEOUT;
+	proto->data=rawbitsTemp;
+
+	return IR_OK;
+#else
+	return IR_NOT_CORRECT_DATA;
+#endif
+}
+#endif
