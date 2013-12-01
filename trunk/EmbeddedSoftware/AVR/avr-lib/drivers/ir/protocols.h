@@ -385,16 +385,15 @@ int8_t expandProtocol(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto);
 /* Oregon weather sensor Implementation
  * Receiver: 
  */
-#define IR_OREGON_SHORT_S		(300*CYCLES_PER_US/TIMER_PRESC)		//us
-#define IR_OREGON_SHORT_L		(650*CYCLES_PER_US/TIMER_PRESC)		//us
-#define IR_OREGON_LONG_S		(850*CYCLES_PER_US/TIMER_PRESC)		//us
-#define IR_OREGON_LONG_L		(1100*CYCLES_PER_US/TIMER_PRESC)	//us
-#define IR_OREGON_END			(6000*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_OREGON_SHORT_S		(250*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_OREGON_SHORT_L		(700*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_OREGON_LONG_S		(750*CYCLES_PER_US/TIMER_PRESC)		//us
+#define IR_OREGON_LONG_L		(1250*CYCLES_PER_US/TIMER_PRESC)	//us
+#define IR_OREGON_END			(2000*CYCLES_PER_US/TIMER_PRESC)	//us
 #define IR_OREGON_DATASIZE		25
 #define IR_OREGON_TIMEOUT		(200)								//ms BURST!	(time between ir frames)
 #define IR_OREGON_REPS			(1)									//		(minimum number of times to repeat code)
 #define IR_OREGON_F_MOD			(38)								//kHz	(modulation frequency)
-#define IR_OREGON_TOL_DIV		(4)
 
 
 #define IR_PROTO_HASH		0xfe

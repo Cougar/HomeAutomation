@@ -9,6 +9,7 @@
 
 #include "protocols.h"
 #include <bios.h>
+#include <drivers/mcu/gpio.h>
 
 #include <drivers/can/moduleid.h>
 
@@ -70,7 +71,12 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 	if (res!=IR_NOT_CORRECT_DATA) return res;
 #endif
 #if (IR_PROTOCOLS_USE_OREGON)
+	
 	res = parseOregon(buf, len, index, proto);
+	gpio_clr_pin(EXP_K);
+	gpio_clr_pin(EXP_L);
+	gpio_clr_pin(EXP_M);
+	gpio_clr_pin(EXP_N);
 	if (res!=IR_NOT_CORRECT_DATA) return res;
 #endif		
 	
@@ -1214,7 +1220,6 @@ int8_t parseNexa2(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_NEXA2;
 	proto->timeout=IR_NEXA2_TIMEOUT;
 	proto->data=rawbitsTemp;
-
 	return IR_OK;
 }
 #endif
@@ -1690,6 +1695,459 @@ int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 {
 #if IR_RX_CONTINUOUS_MODE==1
 	/* check if we have correct amount of data */ 
+	if (len < 160) {	//Ändra till vettigt värde
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint8_t data[IR_OREGON_DATASIZE]; //Verifiera minsta möjliga storlek
+	uint8_t i2 = 0;
+	uint8_t b_i;
+	uint8_t	currentBit = 1;
+	uint8_t done = 0;
+	uint8_t bits = 0;
+	uint8_t shift = 0;
+	uint16_t temperature=0;
+	uint8_t i = index;
+	uint16_t temp =0;
+	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
+	const uint8_t nibbleSwap[16] = {0x0u,0x8u,0x4u,0xCu,0x2u,0xAu,0x6u,0xEu,0x1u,0x9u,0x5u,0xDu,0x3u,0xBu,0x7u,0xFu};
+	
+	gpio_set_pin(EXP_K);
+	/* Check stop condition */
+	/*if (buf[i] < IR_OREGON_END) 
+	{
+	  //printf("data: %d of %d\n", buf[i], IR_OREGON_END);
+	    return IR_NOT_CORRECT_DATA;
+	}
+	*/
+	//gpio_set_pin(EXP_L);
+	
+	if (160 > index) {
+	  i = MAX_NR_TIMES-160+index;
+	} else {
+	  i = index - 160;
+	}
+	len= 160; //Store remaining length
+	
+	
+	while (len>117) {
+	  if ((buf[i] > IR_OREGON_SHORT_L) || (buf[i] < IR_OREGON_SHORT_S)){
+	    gpio_set_pin(EXP_L);
+	    return IR_NOT_CORRECT_DATA;
+	  }
+	  i++;
+	  if (i>= MAX_NR_TIMES){
+	    i=0;
+	  }
+	  len--;
+	}
+	gpio_set_pin(EXP_M);
+	if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	  gpio_set_pin(EXP_N);    
+	} else  {
+	  return IR_NOT_CORRECT_DATA;
+	}
+	i++;
+	len--;
+	if (i>= MAX_NR_TIMES){
+	  i=0;
+	}
+	if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	  gpio_toggle_pin(EXP_N);    
+	} else  {
+	  return IR_NOT_CORRECT_DATA;
+	}
+	i++;
+	len--;
+	if (i>= MAX_NR_TIMES){
+	  i=0;
+	}
+	if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	  gpio_toggle_pin(EXP_N);    
+	} else  {
+	  return IR_NOT_CORRECT_DATA;
+	}
+	i++;
+	len--;
+	if (i>= MAX_NR_TIMES){
+	  i=0;
+	}
+	if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	  gpio_toggle_pin(EXP_N);    
+	} else  {
+	  return IR_NOT_CORRECT_DATA;
+	}
+	i++;
+	len--;
+	if (i>= MAX_NR_TIMES){
+	  i=0;
+	}
+	gpio_set_pin(EXP_L);
+	i2=i;
+	i2++;
+	if (i2>= MAX_NR_TIMES){
+	  i2=0;
+	}
+	bits = 0;
+	while ( bits < 16) {
+	    if ((buf[i] < IR_OREGON_SHORT_L) && (buf[i] > IR_OREGON_SHORT_S)){
+	      if ((buf[i2] < IR_OREGON_SHORT_L) && (buf[i2] > IR_OREGON_SHORT_S)){
+		  i++;
+		  i2++; 
+	      } else {
+		printf("d1: %d %d %d\n", (int)(buf[i]*CYCLES_PER_US/TIMER_PRESC),(int)(buf[i2]*CYCLES_PER_US/TIMER_PRESC), len);
+		return IR_NOT_CORRECT_DATA;
+	      }
+	    } else if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	      currentBit = !currentBit;
+	    } else {
+	      printf("d2: %d %d\n", (int)(buf[i]*CYCLES_PER_US/TIMER_PRESC), len);
+	      return IR_NOT_CORRECT_DATA; 
+	    }
+	    gpio_toggle_pin(EXP_M); 
+	    bits++;
+	    if (currentBit) {
+	      rawbitsTemp = rawbitsTemp<<1;
+	      rawbitsTemp |= 1;
+	    } else {
+	      rawbitsTemp = rawbitsTemp<<1;
+	    }
+	    i++;
+	    len--;
+	    if (i>= MAX_NR_TIMES){
+	      i=0;
+	    }
+	    i2++;
+	    if (i2>= MAX_NR_TIMES){
+	      i2=0;
+	    }
+	}
+	bits = 0;
+	//inverse bitorder
+	while (bits < 16) {
+	  bits++;
+	  if (rawbitsTemp & 0x1u) {
+	      temp |= 1u;
+	  }
+	  if (bits == 16) {
+	    break;
+	  }
+	  temp = temp << 1;
+	  rawbitsTemp = rawbitsTemp >> 1;
+	}
+	//restore nibbleorder
+	rawbitsTemp = ((temp & 0xFu) << 12)+((temp>>4 & 0xFu) << 8)+((temp>>8 & 0xFu) << 4)+((temp>>12 & 0xFu));
+/*
+	if ((rawbitsTemp != 0xf824) && (rawbitsTemp != 0x1d20) && (rawbitsTemp != 0xf8b4) ) {
+	  printf("Found sens: %x\n", (uint16_t)rawbitsTemp);
+	  return IR_NOT_CORRECT_DATA;
+	}
+	*/
+	//----------------------
+	uint8_t bitlenght = 0;
+	uint16_t sensorType = (uint16_t)rawbitsTemp;
+	switch (sensorType) 
+	{
+	  case 0xf824:
+	  case 0x1d20:
+	  case 0xf8b4:
+	    // Temperature and humidity
+	    //printf("Found temp\n");
+	    bitlenght = 40;
+	    break;
+	  case 0x2914:
+	    // Rain gage inches
+	    printf("Found rain\n");
+	    bitlenght = 56;
+	    break;
+	  case 0x1984:
+	  case 0x1994:    
+	    // Wind speed and direction
+	    printf("Found wind\n");
+	    bitlenght = 52;
+	    break;
+	  default: 
+	    printf("Found sens: %x\n", (uint16_t)rawbitsTemp);
+	    return IR_NOT_CORRECT_DATA;
+	}
+
+	
+	bits = 0;
+	rawbitsTemp = 0;
+	while ( bits < bitlenght) {
+	    if ((buf[i] < IR_OREGON_SHORT_L) && (buf[i] > IR_OREGON_SHORT_S)){
+	      if ((buf[i2] < IR_OREGON_SHORT_L) && (buf[i2] > IR_OREGON_SHORT_S)){
+		  i++;
+		  i2++; 
+	      } else {
+		printf("x1: %d %d %d\n", (int)(buf[i]*CYCLES_PER_US/TIMER_PRESC),(int)(buf[i2]*CYCLES_PER_US/TIMER_PRESC), len);
+		return IR_NOT_CORRECT_DATA;
+	      }
+	    } else if ((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S)){
+	      currentBit = !currentBit;
+	    } else {
+	      printf("x2: %d %d\n", (int)(buf[i]*CYCLES_PER_US/TIMER_PRESC), len);
+	      return IR_NOT_CORRECT_DATA; 
+	    }
+	    gpio_toggle_pin(EXP_M); 
+	    bits++;
+	    if (currentBit) {
+	      rawbitsTemp = rawbitsTemp<<1;
+	      rawbitsTemp |= 1;
+	    } else {
+	      rawbitsTemp = rawbitsTemp<<1;
+	    }
+	    i++;
+	    len--;
+	    if (i>= MAX_NR_TIMES){
+	      i=0;
+	    }
+	    i2++;
+	    if (i2>= MAX_NR_TIMES){
+	      i2=0;
+	    }
+	}
+	
+	proto->data = 0;
+	bits = 0;
+	
+	switch (sensorType) 
+	{
+	  case 0xf824:
+	  case 0x1d20:
+	  case 0xf8b4:
+	   /* ----------- Data order rawbitsTemp ------ 
+	    * aa bc cc de ef
+	    * fe ed cc cb aa
+	    * aa  = Humidity in BCD %
+	    * b   = Sign for temperature (1 => -, 0 => +)
+	    * ccc = Temperature in BCD celcius
+	    * d   = 0x01 bat low, 0x00 bat OK
+	    * ee  = Rolling code, random value each time batteries is inserted
+	    * f   =  Channel
+	    * -----------------------------*/
+	    //printf("begi: %x %x %x %x\n", (uint16_t)(rawbitsTemp>>48), (uint16_t)(rawbitsTemp>>32), (uint16_t)(rawbitsTemp>>16), (uint16_t)rawbitsTemp);
+	    
+	    //Convert hunmidity to decimal from BCD
+	    i = (uint8_t)( (rawbitsTemp & 0xFF ));
+	    //printf("humi: %x\n", i);
+	    i = ((uint8_t)nibbleSwap[i & 0xF]<<4) + ((uint8_t)(nibbleSwap[(i>>4) & 0xF])&0x0f);
+	    //printf("humi: %x\n", i);
+	    index = (i>>4)*10 + (i & 0x0Fu);
+	    proto->data = index; // humidity
+	    
+	    //Convert temperature to decimal from BCD
+	    temperature = (uint16_t)( ((rawbitsTemp >> 8) & 0x7FFF ));
+	    //printf("temp: %x\n", temperature);
+	    temperature = ((nibbleSwap[(temperature>>0) & 0xF]<<12)&0xf000) + ((nibbleSwap[(temperature>>4) & 0xF]<<8)&0x0f00) + ((nibbleSwap[(temperature>>8) & 0xF]<<4)&0x00f0) + ((nibbleSwap[(temperature>>12) & 0xF]<<0)&0x000f);
+	    //printf("temp: %x\n", temperature);
+	    
+	    temperature = ((temperature>>12) & 0x0Fu)*1000 +((temperature>>8) & 0x0Fu)*100 +((temperature>>4) & 0x0Fu)*10 + (temperature & 0x0Fu);
+	    //printf("temd: %d\n", temperature);
+	    
+	    if (rawbitsTemp & 0x0080000000 ) {
+	      temperature = -temperature;
+	    }
+	    proto->data += ((temperature & 0xFFFF) << 8); 
+
+
+	    //Add channel information
+	    proto->data += ((uint64_t)nibbleSwap[(uint8_t)( ((rawbitsTemp >> 36 ) & 0xF))]) << 46;
+	    //printf("chan: %d\n", nibbleSwap[(uint8_t)( ((rawbitsTemp >> 36 ) & 0xF))]);
+	    
+	    //Add battery information
+	    proto->data += ((uint64_t)(nibbleSwap[(uint8_t)( ((rawbitsTemp >> 24 ) & 0xF))])&0x1) << 45;
+	    //printf("bat : %d\n", ((nibbleSwap[(uint8_t)( ((rawbitsTemp >> 24 ) & 0xF))])&0x1));
+	    
+	    //Add rolling code information
+	    i = (uint8_t)((rawbitsTemp >> 28 ) & 0xFF);
+	    i = (uint8_t)nibbleSwap[i & 0xF] + ((uint8_t)(nibbleSwap[(i>>4) & 0xF]<<4)&0xf0);
+	    i = i & 0x1F;
+	    proto->data += ((uint64_t)(i)) << 40;
+	    //printf("roll : %d\n", i);
+	    
+	    
+	    /* ----------- Data order proto-data ------ 
+	    * cc 00 00 bb bb aa
+	    * aa   = Humidity in %
+	    * bbbb = Temperature*10 in celcius
+	    * cc   = 0xddefffff
+	    * 	dd = Channel
+	    * 	e  = Battery low flag
+	    * 	fffff = Lower part of rolling code
+	    * -----------------------------*/
+	    
+	    //printf("done: %x %x %x %x\n", (uint16_t)(proto->data>>48), (uint16_t)(proto->data>>32), (uint16_t)(proto->data>>16), (uint16_t)proto->data);
+	    proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_OREGONTEMPHUM;
+	    proto->timeout=IR_OREGON_TIMEOUT;
+	    return IR_OK;
+	    break;
+	  case 0x2914:
+	    // Rain gage inches
+	    /* ----------- Data order rawbitsTemp ------ 
+	    * aa aa bb bb bb de ef
+	    * fe ed bb bb bb aa aa
+	    * a   = Rain in 0.01 inches per hour
+	    * b   = Total Rain in 0.001 inches
+	    * d   = 0x01 bat low, 0x00 bat OK
+	    * ee  = Rolling code, random value each time batteries is inserted
+	    * f   =  Channel
+	    * -----------------------------*/
+	    printf("begi: %x %x %x %x\n", (uint16_t)(rawbitsTemp>>48), (uint16_t)(rawbitsTemp>>32), (uint16_t)(rawbitsTemp>>16), (uint16_t)rawbitsTemp);
+	    
+	    //Convert rain per hour
+	    temp = (uint16_t)( (rawbitsTemp & 0xFFFF ));
+	    printf("i/h : %x\n", temp);
+	    temp = ((nibbleSwap[(temp>>0) & 0xF]<<12)&0xf000) + ((nibbleSwap[(temp>>4) & 0xF]<<8)&0x0f00) + ((nibbleSwap[(temp>>8) & 0xF]<<4)&0x00f0) + ((nibbleSwap[(temp>>12) & 0xF]<<0)&0x000f);
+	    printf("i/h : %x\n", temp);
+	    printf("i/h : %d\n", temp);
+	    temp = ((temp>>12) & 0x0Fu)*1000 +((temp>>8) & 0x0Fu)*100 +((temp>>4) & 0x0Fu)*10 + (temp & 0x0Fu);
+	    proto->data = temp; // inches per hour
+	    
+	    uint32_t temp32 = 0;
+	    
+	    //Convert temperature to decimal from BCD
+	    temp32 = (uint32_t)( ((rawbitsTemp >> 16) & 0xFFFFFF ));
+	    printf("temp: %x\n", temp32);
+	    temp32 = (((uint32_t)nibbleSwap[(temp32>>0) & 0xF]<<20)&0xf00000) + (((uint32_t)nibbleSwap[(temp32>>4) & 0xF]<<16)&0x0f0000) + (((uint32_t)nibbleSwap[(temp32>>8) & 0xF]<<12)&0x00f000) + (((uint32_t)nibbleSwap[(temp32>>12) & 0xF]<<8)&0x000f00) + (((uint32_t)nibbleSwap[(temp32>>16) & 0xF]<<4)&0x0000f0) + (((uint32_t)nibbleSwap[(temp32>>20) & 0xF]<<0)&0x00000f);
+	    //printf("temp: %x\n", temperature);
+	    
+	    //temperature = ((temperature>>12) & 0x0Fu)*1000 +((temperature>>8) & 0x0Fu)*100 +((temperature>>4) & 0x0Fu)*10 + (temperature & 0x0Fu);
+	    //printf("temd: %d\n", temperature);
+	    printf("tota: %x\n", temp32);
+	    printf("tota: %d\n", temp32);
+	    
+	    proto->data += (temp32 << 16); 
+
+
+	    //Add channel information
+	    proto->data += ((uint64_t)nibbleSwap[(uint8_t)( ((rawbitsTemp >> 52 ) & 0xF))]) << 46;
+	    printf("chan: %d\n", nibbleSwap[(uint8_t)( ((rawbitsTemp >> 52 ) & 0xF))]);
+	    
+	    //Add battery information
+	    proto->data += ((uint64_t)(nibbleSwap[(uint8_t)( ((rawbitsTemp >> 40 ) & 0xF))])&0x1) << 45;
+	    printf("bat : %d\n", ((nibbleSwap[(uint8_t)( ((rawbitsTemp >> 40 ) & 0xF))])&0x1));
+	    
+	    //Add rolling code information
+	    i = (uint8_t)((rawbitsTemp >> 44 ) & 0xFF);
+	    i = (uint8_t)nibbleSwap[i & 0xF] + ((uint8_t)(nibbleSwap[(i>>4) & 0xF]<<4)&0xf0);
+	    i = i & 0x1F;
+	    proto->data += ((uint64_t)(i)) << 40;
+	    printf("roll : %d\n", i);
+	    
+	    
+	    /* ----------- Data order proto-data ------ 
+	    * cc bb bb bb aa aa
+	    * a   = Rain in 0.01 inches per hour
+	    * b   = Total Rain in 0.001 inches
+	    * cc   = 0xddefffff
+	    * 	dd = Channel
+	    * 	e  = Battery low flag
+	    * 	fffff = Lower part of rolling code
+	    * -----------------------------*/
+	    
+	    printf("done: %x %x %x %x\n", (uint16_t)(proto->data>>48), (uint16_t)(proto->data>>32), (uint16_t)(proto->data>>16), (uint16_t)proto->data);
+	    proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_OREGONRAIN;
+	    proto->timeout=IR_OREGON_TIMEOUT;
+	    return IR_OK;
+	    break;
+	    
+	  case 0x1994:
+	  case 0x1984:
+	   /* ----------- Data order rawbitsTemp ------ 
+	    * a? ?b bb cc cd ee f
+	    * fe ed x? ?c cc aa a
+	    * x   = Direction (0-F) steps of 22.5 degrees
+	    * ccc = Temperature in BCD celcius
+	    * ccc = Temperature in BCD celcius
+	    * d   = 0x01 bat low, 0x00 bat OK
+	    * ee  = Rolling code, random value each time batteries is inserted
+	    * f   =  Channel
+	    * -----------------------------*/
+	    printf("begi: %x %x %x %x\n", (uint16_t)(rawbitsTemp>>48), (uint16_t)(rawbitsTemp>>32), (uint16_t)(rawbitsTemp>>16), (uint16_t)rawbitsTemp);
+	    
+	    //Convert average wind to decimal from BCD
+	    temp = (uint16_t)( (rawbitsTemp & 0xFFF ));
+	    //printf("w_av: %x\n", temp);
+	    temp = (uint16_t)nibbleSwap[temp & 0xF] + ((uint16_t)(nibbleSwap[(temp>>4) & 0xF]<<4)&0xf0) + ((uint16_t)(nibbleSwap[(temp>>8) & 0xF]<<8)&0xf0);
+	    //printf("humi: %x\n", temp);
+	    temp = ((temp>>8) & 0x0Fu)*100 +((temp>>4) & 0x0Fu)*10 + (temp & 0x0Fu);
+	    proto->data = temp; // wind average
+	    
+	    //Convert current wind to decimal from BCD
+	    temp = (uint16_t)( ((rawbitsTemp >> 12) & 0xFFF ));
+	    //printf("w_av: %x\n", temp);
+	    temp = (uint16_t)nibbleSwap[temp & 0xF] + ((uint16_t)(nibbleSwap[(temp>>4) & 0xF]<<4)&0xf0) + ((uint16_t)(nibbleSwap[(temp>>8) & 0xF]<<8)&0xf0);
+	    //printf("humi: %x\n", temp);
+	    temp = ((temp>>8) & 0x0Fu)*100 +((temp>>4) & 0x0Fu)*10 + (temp & 0x0Fu);
+	    proto->data += (temp << 12) & 0xFFF000; // wind average
+	    
+	    //store direction
+	    i = (uint8_t)( ((rawbitsTemp >> 32) & 0xF ));
+	    proto->data += (uint32_t)i << 24;
+
+	    //Add channel information
+	    proto->data += ((uint64_t)nibbleSwap[(uint8_t)( ((rawbitsTemp >> 48 ) & 0xF))]) << 46;
+	    //printf("chan: %d\n", nibbleSwap[(uint8_t)( ((rawbitsTemp >> 36 ) & 0xF))]);
+	    
+	    //Add battery information
+	    proto->data += ((uint64_t)(nibbleSwap[(uint8_t)( ((rawbitsTemp >> 36 ) & 0xF))])&0x1) << 45;
+	    //printf("bat : %d\n", ((nibbleSwap[(uint8_t)( ((rawbitsTemp >> 24 ) & 0xF))])&0x1));
+	    
+	    //Add rolling code information
+	    i = (uint8_t)((rawbitsTemp >> 36 ) & 0xFF);
+	    i = (uint8_t)nibbleSwap[i & 0xF] + ((uint8_t)(nibbleSwap[(i>>4) & 0xF]<<4)&0xf0);
+	    i = i & 0x1F;
+	    proto->data += ((uint64_t)(i)) << 40;
+	    //printf("roll : %d\n", i);
+	    
+	    
+	    /* ----------- Data order proto-data ------ 
+	    * cc 00 0d bb ba aa
+	    * aaa  = wind speed average (in 0.1m/s)
+	    * bbb  = wind speed current (in 0.1m/s)
+	    * d    = Direction in 22.5 degrees
+	    * cc   = 0xddefffff
+	    * 	dd = Channel
+	    * 	e  = Battery low flag
+	    * 	fffff = Lower part of rolling code
+	    * -----------------------------*/
+	    
+	    //printf("done: %x %x %x %x\n", (uint16_t)(proto->data>>48), (uint16_t)(proto->data>>32), (uint16_t)(proto->data>>16), (uint16_t)proto->data);
+	    proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_OREGONWIND;
+	    proto->timeout=IR_OREGON_TIMEOUT;
+	    return IR_OK;
+	    break;
+	    
+	  default: 
+	    return IR_NOT_CORRECT_DATA;
+	}
+	
+
+#else
+	return IR_NOT_CORRECT_DATA;
+#endif
+}
+#endif
+
+/**
+ * Test data on OREGON weather sensor protocol
+ * 
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+
+int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
+{
+#if IR_RX_CONTINUOUS_MODE==1
+	/* check if we have correct amount of data */ 
 	if (len < 74) {	//Ändra till vettigt värde
 		return IR_NOT_CORRECT_DATA;
 	}
@@ -1710,8 +2168,10 @@ int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 	}
 	i--; //set index to last bit
 	len--; //Store remaining length
+	printf("End\n");
 	//loop to store data
 	while (done == 0) { //Wait for sync pulse and preamble, loop for all bytes
+		data[i2] = 00;
 		for (b_i = 0;b_i<8;b_i++) { //loop for each bit
 			if (((buf[i] < IR_OREGON_SHORT_L) && (buf[i] > IR_OREGON_SHORT_S)) ) {
 				i--;
@@ -1722,7 +2182,7 @@ int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 					data[i2] += currentBit;
 					i--;
 					if (i > MAX_NR_TIMES) i = MAX_NR_TIMES - 1;
-				} else { return IR_NOT_CORRECT_DATA;}	
+				} else { printf("1: %d, %x %x %x %x %x %x %x\n", buf[i], data[0], data[1], data[2], data[3], data[4], data[5], data[6]);  return IR_NOT_CORRECT_DATA;}	
 			} 
 			else if (((buf[i] < IR_OREGON_LONG_L) && (buf[i] > IR_OREGON_LONG_S))) {
 				//Invert previous bit value
@@ -1735,7 +2195,14 @@ int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 				i--;
 				if (i > MAX_NR_TIMES) i = MAX_NR_TIMES - 1;
 			}
-			else { return IR_NOT_CORRECT_DATA;}
+			else { 
+				printf("2: %d, %x %x %x %x %x %x %x\n", buf[i], data[0], data[1], data[2], data[3], data[4], data[5], data[6]); 
+					
+			
+			
+				return IR_NOT_CORRECT_DATA;
+			}
+			printf("8 bits\n");
 		}
 		//swap nibbles to make parsing easier
 		uint8_t temp = data[i2] << 4;
@@ -1762,9 +2229,11 @@ int8_t parseOregon(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 		i2++;
 		if (i2 >= IR_OREGON_DATASIZE) 
 		{
+			printf("Ovr\n");
 			return IR_NOT_CORRECT_DATA;
 		}
 	}	
+	printf("Found\n");
 	i2--; //restore index
 	if (invert == 1) {
 		for (b_i = 0;b_i<=i2;b_i++) { //loop for each byte
