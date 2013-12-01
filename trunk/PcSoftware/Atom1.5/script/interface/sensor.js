@@ -1,5 +1,5 @@
 
-Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11", "VoltageCurrent", "ultrasonic" ];
+Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11", "VoltageCurrent", "ultrasonic", "flower" ];
 SensorRf_ModuleNames    = [ "rfTransceive" ];
 Sensor_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Sensor_Aliases        = function() { return Module_GetAliasNames(Sensor_ModuleNames); };
@@ -223,9 +223,7 @@ function Sensor_OnMessage(module_name, module_id, command, variables)
           {
             last_value = eval("(" + last_value_string + ")");
           }
-
-          last_value[command] = { "value" : variables["Value"], "timestamp" : get_time() };
-
+	  last_value[command] = { "value" : variables["Value"], "timestamp" : get_time() };
           Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
         }
 
@@ -238,6 +236,7 @@ Module_RegisterToOnMessage("all", Sensor_OnMessage);
 
 function SensorRf_OnMessage(module_name, module_id, command, variables)
 {
+  
 	if (in_array(SensorRf_ModuleNames, module_name))
 	{
 		var aliases_data = Module_LookupAliases({
@@ -247,9 +246,94 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		
 		/* Must check sensor here in case no alias is stored the adress needs to be printed */
 		var RubicsonSuccess = "NoRubicsonSensor";
+		var OregonRainSuccess = "NoSensor";
+		var OregonTempHumSuccess = "NoSensor";
+		var OregonWindSuccess = "NoSensor";
 		var VikingSuccess = "NoVikingSensor";
 		var VikingSteakSuccess = "NoVikingSteakSensor";
-		if (variables["Protocol"] == "Rubicson")
+		//Log("found sensor: "+variables["Protocol"]);
+		if (variables["Protocol"] == "OregonRain")
+		{
+			/* ----------- Data order proto-data ------ 
+			* cc bb bb bb aa aa
+			* a   = Rain in 0.01 inches per hour
+			* b   = Total Rain in 0.001 inches
+			* cc   = 0xddefffff
+			* 	dd = Channel
+			* 	e  = Battery low flag
+			* 	fffff = Lower part of rolling code
+			* -----------------------------*/
+			var data = variables["IRdata"];
+			var inchPerHour = (data)&0xFFFF;
+			inchPerHour = inchPerHour/100;
+			var totInch = (data>>>16)&0xFFFFFF;
+			totInch = totInch/1000;
+			var totMM = totInch * 25.4;
+			var mmPerHour = inchPerHour * 25.4;
+			
+			var addr = rshift(data,46)&0x3;
+			var bat = rshift(data,45)&0x1;
+			var unknown = rshift(data,40)&0x1F;
+
+			OregonRainSuccess = "NotFound";
+			
+		} else if (variables["Protocol"] == "OregonTempHum")
+		{
+		       /* ----------- Data order proto-data ------ 
+			* cc 00 00 bb bb aa
+			* aa   = Humidity in %
+			* bbbb = Temperature*10 in celcius
+			* cc   = 0xddefffff
+			* 	dd = Channel
+			* 	e  = Battery low flag
+			* 	fffff = Lower part of rolling code
+			* -----------------------------*/	
+			var data = variables["IRdata"];
+			var humidity = (data)&0xFF;
+			var temp = (data>>>8)&0x7FFF;
+			var sign = (temp>>>23)&1;
+			if (sign > 0)
+			{
+				temp = temp^0x7FFF;
+				temp += 1;
+				temp = -temp;
+			}
+			temp = temp/10;
+			var addr = rshift(data,46)&0x3;
+			var bat = rshift(data,45)&0x1;
+			var unknown = rshift(data,40)&0x1F;
+
+			OregonTempHumSuccess = "NotFound";
+			
+		} else if (variables["Protocol"] == "OregonWind")
+		{
+			/* ----------- Data order proto-data ------ 
+			* cc 00 0d bb ba aa
+			* aaa  = wind speed average (in 0.1m/s)
+			* bbb  = wind speed current (in 0.1m/s)
+			* d    = Direction in 22.5 degrees
+			* cc   = 0xddefffff
+			* 	dd = Channel
+			* 	e  = Battery low flag
+			* 	fffff = Lower part of rolling code
+			* -----------------------------*/
+			var data = variables["IRdata"];
+			var average = (data)&0xFFF;
+			average = average/10;
+			
+			var current = rshift(data,12)&0xFFF;
+			current = current/10;
+			
+			var direction = rshift(data,24)&0xF;
+			direction = direction*22.5;
+			
+			var addr = rshift(data,46)&0x3;
+			var bat = rshift(data,45)&0x1;
+			var unknown = rshift(data,40)&0x1F;
+
+			OregonWindSuccess = "NotFound";
+			
+		} else if (variables["Protocol"] == "Rubicson")
 		{
 			/*
 					  ??? aaaaaaaa sttttttttttt hhhhhhhh cccccccc
@@ -517,6 +601,18 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		if (RubicsonSuccess == "RubicsonNotFound")
 		{
 			Log("Found unknown Rubicson sensor address="+addr+" temperature="+temp);
+		}
+		if (OregonTempHumSuccess == "NotFound")
+		{
+			Log("Found unknown oregon temp/humidity sensor address="+addr+" temperature="+temp +" humidity="+humidity+" unknown="+unknown + " bat="+bat);
+		}
+		if (OregonRainSuccess == "NotFound")
+		{
+			Log("Found unknown oregon rain sensor address="+addr+" tot inch="+totInch +" totMM="+totMM+" inch/h="+inchPerHour + " mm/h="+mmPerHour +" bat="+bat);
+		}
+		if (OregonWindSuccess == "NotFound")
+		{
+			Log("Found unknown oregon wind sensor address="+addr+" Average="+average +" current="+current+" direction="+direction +" bat="+bat);
 		}
 	}
 }
