@@ -41,49 +41,6 @@ uint8_t calculatePID_flag,sendPID_flag = 0;
 uint16_t pwmValue=0;
 float referenceValue, measurementValue, outputValue;
 
-void calculatePID(void) {
-	if (PID_Status == PID_OFF){
-		;// use current PWMvalue
-	} else {
-//printf("PWM: %d\n",pwmValue);
-uint16_t tempPwm = pwmValue;
-		//tempPwm += (int16_t) pid_Controller(referenceValue, measurementValue, &pidData, &pidDebugData);
-//printf("InOut: ref: %d, meas: %d\n",(int16_t) (referenceValue*10), (int16_t) (measurementValue*10));
-//printf("PWM: %d\n",pwmValue);
-
-		if (tempPwm < MIN_PWM_VALUE) {
-			tempPwm = MIN_PWM_VALUE;
-		}
-		else if (tempPwm > MAX_PWM_VALUE) {
-			tempPwm = MAX_PWM_VALUE-1;
-		}
-		cli();
-		pwmValue = tempPwm;
-		sei();
-//printf("PWM: %d\n",pwmValue);
-		//send current PWM value as soon as possible
-		sendPID_flag=1;
-	}
-
-}
-
-
-void calculatePID_callback(uint8_t timer)
-{
-
-	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
-		static uint8_t seconds = 0;
-		seconds++;
-		if (seconds >= eeprom_read_word(EEDATA16.Time))
-		{
-			seconds = 0;
-			calculatePID_flag = 1;
-		}
-	} else {
-		calculatePID_flag = 1;
-	}
-}
-
 void sendPID(void)
 {
 	if (eeprom_read_byte(EEDATA.actuatorModuleType) != 0) {	
@@ -112,8 +69,8 @@ void sendPID(void)
 	txMsg.Data[2] = (uint8_t)0x00ff & (((uint32_t)(referenceValue*64))>>8);
 	txMsg.Data[3] = (uint8_t)0x00ff & ((uint32_t)(referenceValue*64));
 	//uint16_t tempPWM =(uint16_t) (pwmValue*10000);
-		txMsg.Data[4] = ( ((uint16_t)outputValue)>>8)&0xff;
-		txMsg.Data[5] = ( ((uint16_t)outputValue))&0xff;
+		txMsg.Data[4] = (uint8_t)( ((uint16_t)outputValue)>>8)&0xff;
+		txMsg.Data[5] = (uint8_t)( ((uint16_t)outputValue))&0xff;
 	txMsg.Data[6] = ((int16_t) (PID_GetITerm(&pid))>>8)&0xff;
 	txMsg.Data[7] = ((int16_t) (PID_GetITerm(&pid)))&0xff;
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
@@ -159,9 +116,9 @@ void act_PIDv1_Init(void)
 	  eeprom_write_byte_crc(EEDATA.sensorModuleType, PIDv1_TEMPERATURE_SENSOR_MODULE_TYPE, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.sensorModuleId, PIDv1_TEMPERATURE_SENSOR_MODULE_ID, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.sensorId, PIDv1_TEMPERATURE_SENSOR, WITHOUT_CRC);
-	  eeprom_write_dword_crc(EEDATA32.K_P, 0, WITHOUT_CRC);
-	  eeprom_write_dword_crc(EEDATA32.K_I, 0, WITHOUT_CRC);
-	  eeprom_write_dword_crc(EEDATA32.K_D, 0, WITHOUT_CRC);
+	  eeprom_write_dword_crc(EEDATA32.K_P, 850.0, WITHOUT_CRC);
+	  eeprom_write_dword_crc(EEDATA32.K_I, 0.5, WITHOUT_CRC);
+	  eeprom_write_dword_crc(EEDATA32.K_D, 0.1, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.TimeMsOrS, DEFAULT_PIDv1_CALC_PERIOD_UNIT, WITHOUT_CRC);
 	  eeprom_write_word_crc(EEDATA16.Time, DEFAULT_PIDv1_CALC_PERIOD, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleType, PIDv1_PWM_ACTUATOR_MODULE_TYPE, WITHOUT_CRC);
@@ -310,9 +267,9 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 				eeprom_write_byte_crc(EEDATA.TimeMsOrS, ((rxMsg->Data[6]&0x80)>>7), WITHOUT_CRC);
 				eeprom_write_word_crc(EEDATA16.Time, (uint16_t)rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
 				if (eeprom_read_byte(EEDATA.TimeMsOrS) == 0) {
-					Timer_SetTimeout(act_PIDv1_TIMER, 1000, TimerTypeFreeRunning, &calculatePID_callback);
+					//Timer_SetTimeout(act_PIDv1_TIMER, 1000, TimerTypeFreeRunning, &calculatePID_callback);
 				} else {
-					Timer_SetTimeout(act_PIDv1_TIMER, eeprom_read_word(EEDATA16.Time), TimerTypeFreeRunning, &calculatePID_callback);
+					//Timer_SetTimeout(act_PIDv1_TIMER, eeprom_read_word(EEDATA16.Time), TimerTypeFreeRunning, &calculatePID_callback);
 				}
 
 				//pid_Init((float) eeprom_read_word(EEDATA16.K_P)/64 * SCALING_FACTOR, (float) eeprom_read_word(EEDATA16.K_I)/64 * SCALING_FACTOR , (float) eeprom_read_word(EEDATA16.K_D)/64 * SCALING_FACTOR , &pidData);
