@@ -18,8 +18,6 @@ NODE_HW_ID=<GENERATE_HW>
 # example:
 #NODE_HW_ID=0x12345678 
 
-# This number should be unique on your network (for nodes with HW_ID it's not clear if this id is needed)
-
 # F_CPU is the clock frequency of your microcontroller, check fuses below for external/internal clock source
 F_CPU=8000000UL
 
