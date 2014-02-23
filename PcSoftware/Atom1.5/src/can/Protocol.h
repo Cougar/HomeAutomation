@@ -72,6 +72,8 @@ public:
     void EncodeUint(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
     std::string DecodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
     void EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
+    std::string DecodeIEEE32(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
+    void EncodeIEEE32(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
     std::string DecodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);
     void EncodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value);
     std::string DecodeHexstring(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length);

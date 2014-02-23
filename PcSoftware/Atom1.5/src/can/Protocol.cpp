@@ -388,6 +388,40 @@ void Protocol::EncodeFloat(common::Bitset& bitset, unsigned int start_bit, unsig
     this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
 }
 
+std::string Protocol::DecodeIEEE32(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
+{
+    if (bit_length != 32)
+    {
+      return 0;
+    }
+    uint64_t result = bitset.Read(start_bit, bit_length);
+    LOG.Info("uint32_t: " + boost::lexical_cast<std::string>((uint64_t)result));
+    uint32_t result2 = result & 0xFFFFFFFF;
+    float *ptr;
+    ptr = (float*)&result2;
+    float float_value = *ptr;
+    LOG.Info("float: " + boost::lexical_cast<std::string>(float_value));
+    //LOG.Debug("DecodeFloat::float_value1=" + boost::lexical_cast<std::string>(float_value));;
+
+    //LOG.Debug("DecodeFloat::float_value2=" + boost::lexical_cast<std::string>(float_value));
+    float_value = boost::lexical_cast<float>(this->DecodeInt(bitset, start_bit, bit_length));
+    LOG.Info("float: " + boost::lexical_cast<std::string>(float_value));
+    
+    return boost::lexical_cast<std::string>(float_value);
+}
+
+void Protocol::EncodeIEEE32(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length, std::string value)
+{
+    if (bit_length != 32)
+    {
+      return;
+    }
+    long int_value = boost::lexical_cast<float>(value) * 64.0f;
+    //LOG.Info("Float: " + int_value);
+
+    this->EncodeInt(bitset, start_bit, bit_length, boost::lexical_cast<std::string>(int_value));
+}
+
 std::string Protocol::DecodeAscii(common::Bitset& bitset, unsigned int start_bit, unsigned int bit_length)
 {
     std::string value;
