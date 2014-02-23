@@ -190,6 +190,10 @@ void Network::SlotOnMessageHandler(broker::Message::Pointer message)
             {
                 Protocol::Instance()->EncodeFloat(databits, start_bit, bit_length, value);
             }
+            else if (type == "IEEE32")
+            {
+                Protocol::Instance()->EncodeIEEE32(databits, start_bit, bit_length, value);
+            }
             else if (type == "ascii")
             {
                 Protocol::Instance()->EncodeAscii(databits, start_bit, bit_length, value);
@@ -527,6 +531,10 @@ void Network::ProcessBuffer()
             else if (type == "float")
             {
                 value = Protocol::Instance()->DecodeFloat(databits, start_bit, bit_length);
+            }
+            else if (type == "IEEE32")
+            {
+                value = Protocol::Instance()->DecodeIEEE32(databits, start_bit, bit_length);
             }
             else if (type == "ascii")
             {
