@@ -21,6 +21,8 @@ PIDv1_PWM_ACTUATOR_MODULE_TYPE=CAN_MODULE_TYPE_ACT_SOFTPWM
 PIDv1_PWM_ACTUATOR_MODULE_ID=1
 PIDv1_PWM_ACTUATOR=0
 
+PIDv1_SEND_DEBUG_PRINTF=1
+
 #Uncomment the line below if you want to use EEPROM with this module, dont forget to also uncomment the line in sources.list
 act_PIDv1_USEEEPROM=1
 

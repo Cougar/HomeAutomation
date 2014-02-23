@@ -1,6 +1,7 @@
 # List all files that needs to be compiled here
 act_PIDv1/act_PIDv1.c
 drivers/misc/PID_v1.c
+drivers/misc/PID_AutoTune.c
 #Uncomment the line below if you want to use EEPROM with this module
 drivers/misc/eeprom_crc8.c
 #Uncomment the line below if you want to use the PCINT driver in this module
