@@ -112,7 +112,6 @@ void sendPID_debug_callback(uint8_t timer)
 	txMsg.Header.Command = CAN_MODULE_CMD_PID_P_I_TERM;
 	txMsg.Length = 8;
 	FloatType data = PID_GetPTerm(&pid);
-	data = 1.0f;
 	uint8_t *ptr;
 	ptr = (uint8_t*)&data;
 	txMsg.Data[0] = ptr[0];
@@ -120,7 +119,6 @@ void sendPID_debug_callback(uint8_t timer)
 	txMsg.Data[2] = ptr[2];
 	txMsg.Data[3] = ptr[3];
 	data = PID_GetITerm(&pid);
-	data = -2.0f;
 	ptr = (uint8_t*)&data;
 	txMsg.Data[4] = ptr[0];
 	txMsg.Data[5] = ptr[1];
