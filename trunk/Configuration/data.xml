@@ -858,6 +858,35 @@
       </variables>
     </command>
     
+    <command id="133" name="P_I_term" type="specific" module="PID" description="Debug data from PID regulator">
+      <variables>
+	<variable name="P_term" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="I_term" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="134" name="D_term_Out" type="specific" module="PID" description="Debug data from PID regulator">
+      <variables>
+	<variable name="D_term" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="Output" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="135" name="CONFIG_PARAMETER_P_I" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="K_P" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="K_I" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="136" name="CONFIG_PARAMETER_D_T" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
+      <variables>
+	<variable name="K_D" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
+	  <value id="0" name="s"/>
+	  <value id="1" name="ms"/>
+	</variable>
+	<variable name="RegulatorTime" type="uint" start_bit="49" bit_length="15" unit="" description=""/>
+      </variables>
+    </command>
+    
     <command id="128" name="CONFIG" type="specific" module="SlowPWM" description="Configure PWM output, if message is sent with 0 data bytes, module will respond with current configuration">
       <variables>
 	<variable name="pwmPeriod" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
