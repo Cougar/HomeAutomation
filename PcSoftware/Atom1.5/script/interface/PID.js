@@ -3,6 +3,9 @@ PID_ModuleNames    = [ "PID" ];
 PID_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 //PID_Energy         = function() { return [ 0, 500, 1000, 5000, 10000 ]; };
 PID_Temperatures	= function() { return [ 20, 25, 30, 35 ]; };
+PID_Constants		= function() { return [ 0, 0.1, 0.5, 1, 10, 100, 1000 ]; };
+PID_TimeUnits	= function() { return [ "s", "ms"]; };
+PID_Times	= function() { return [ 1, 5, 10, 15, 20, 40, 60]; };
 PID_Aliases        = function() { return Module_GetAliasNames(PID_ModuleNames); };
 PID_AvailableIds   = function() { return Module_GetAvailableIds(PID_ModuleNames); };
 
@@ -101,11 +104,33 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 					"K_D"     : KD,
 					"RegulatorTime"     : Time,
 					"TimeUnit"     : Unit };
-		
+		var variables_P_I = {	"K_P"     : KP,
+					"K_I"     : KI };
+		var variables_D_T = {	"K_D"     : KD,
+					"RegulatorTime"     : Time,
+					"TimeUnit"     : Unit };
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER", variables))
 		{
 			Log("\033[32mCommand sent successfully to " + name + ".\033[0m");
 			Log("\033[32mK_P = " + KP + "K_I = " + KI + "K_D = " + KD + "RegTime = " + Time + "Unit = " + Unit + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_P_I", variables_P_I))
+		{
+			Log("\033[32mK_P = " + KP + "K_I = " + KI + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_D_T", variables_D_T))
+		{
+			Log("\033[32mK_D = " + KD + "RegTime = " + Time + "Unit = " + Unit + ".\033[0m\n");
 		}
 		else
 		{
@@ -123,6 +148,7 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 
 	return true;
 }
+Console_RegisterCommand(PID_setParameters, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Constants(), PID_Constants(), PID_Constants(), PID_Times(), PID_TimeUnits()); });
 
 function PID_getConfiguration(alias_name)
 {
@@ -170,7 +196,22 @@ function PID_getConfiguration(alias_name)
 		{
 			Log("\033[31mFailed to send command 4 to " + name + ".\033[0m\n");
 		}
-		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_P_I", variables))
+		{
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command 5 to " + name + ".\033[0m\n");
+		}
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_D_T", variables))
+		{
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command 6 to " + name + ".\033[0m\n");
+		}
 		found = true;
 	}
 
