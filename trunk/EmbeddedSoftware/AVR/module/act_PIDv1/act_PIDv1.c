@@ -21,7 +21,6 @@ struct eeprom_act_PIDv1 EEMEM eeprom_act_PIDv1 =
 		CAN_MODULE_TYPE_ACT_SOFTPWM,	//ActuatorModuleType
 		0x00,	//ActuatorModuleId
 		0x00,	//ActuatorId
-		10,	//SendPeriod
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 };
@@ -38,7 +37,7 @@ PidType pid;
 
 uint8_t sensorModuleType, sensorModuleId,sensorId;
 uint8_t PID_Status;
-uint8_t calculatePID_flag,sendPID_flag = 0;
+uint8_t sendDebug_flag = 0;
 uint16_t pwmValue=0;
 float referenceValue, measurementValue, outputValue;
 
@@ -77,34 +76,10 @@ void sendPID(void)
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 }
 
-void sendPID_callback(uint8_t timer) {
-  sendPID_flag=1;
-}
-
-#ifdef act_PIDv1_SEND_DEBUG_TIMER
-void sendPID_debug_callback(uint8_t timer)
+#ifdef act_PIDv1_SEND_DEBUG
+void sendDebug(void)
 {
-	
 	StdCan_Msg_t txMsg;
-	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT); ///TODO: Change this to the actual class type
-	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
-	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_PID; ///TODO: Change this to the actual module type
-	txMsg.Header.ModuleId = act_PIDv1_ID;
-	txMsg.Header.Command = CAN_MODULE_CMD_PID_DEBUG;
-	txMsg.Length = 8;
-
-	txMsg.Data[0] = ((int16_t) (PID_GetPTerm(&pid))>>8)&0xff;
-	txMsg.Data[1] = ((int16_t) (PID_GetPTerm(&pid)))&0xff;
-	txMsg.Data[2] = ((int16_t) (PID_GetITerm(&pid))>>8)&0xff;
-	txMsg.Data[3] = ((int16_t) (PID_GetITerm(&pid)))&0xff;
-	txMsg.Data[4] = ((int16_t) (PID_GetDTerm(&pid))>>8)&0xff;
-	txMsg.Data[5] = ((int16_t) (PID_GetDTerm(&pid)))&0xff;
-	//txMsg.Data[6] = ((int16_t) (pidDebugData.Sum)>>8)&0xff;
-	//txMsg.Data[7] = ((int16_t) (pidDebugData.Sum))&0xff;
-	txMsg.Data[6] = 0;
-	txMsg.Data[7] = 0;
-	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
-	
 	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_ACT);
 	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_FROM_OWNER);
 	txMsg.Header.ModuleType = CAN_MODULE_TYPE_ACT_PID; 
@@ -167,7 +142,6 @@ void act_PIDv1_Init(void)
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleType, PIDv1_PWM_ACTUATOR_MODULE_TYPE, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleId, PIDv1_PWM_ACTUATOR_MODULE_ID, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorId, PIDv1_PWM_ACTUATOR, WITHOUT_CRC);
-	  eeprom_write_byte_crc(EEDATA.sendPeriod, 10, WITHOUT_CRC);
 	  EEDATA_UPDATE_CRC;
 	}
 	
@@ -179,11 +153,17 @@ void act_PIDv1_Init(void)
 	sensorModuleType = eeprom_read_byte(EEDATA.sensorModuleType);
 	sensorModuleId = eeprom_read_byte(EEDATA.sensorModuleId);
 	sensorId = eeprom_read_byte(EEDATA.sensorId);
-	
-	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, (float) eeprom_read_dword(EEDATA32.K_P), (float) eeprom_read_dword(EEDATA32.K_I), (float) eeprom_read_dword(EEDATA32.K_D), PID_Direction_Direct);
+	uint32_t data_P = eeprom_read_dword(EEDATA32.K_P);
+	uint32_t data_I = eeprom_read_dword(EEDATA32.K_I);
+	uint32_t data_D = eeprom_read_dword(EEDATA32.K_D);
+	float data_P_f = *((float*)((&data_P)));
+	float data_I_f = *((float*)((&data_I)));
+	float data_D_f = *((float*)(&data_D));
+	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, PID_Direction_Direct);
 
 	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
 		PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time))*1000);
+
 	} else {
 		PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time)));
 	}
@@ -191,21 +171,25 @@ void act_PIDv1_Init(void)
 	outputValue = DEFAULT_PWM_VALUE;
 
 	PID_SetMode(&pid, PID_Mode_Automatic);
-	
-	Timer_SetTimeout(act_PIDv1_SEND_TIMER, eeprom_read_byte(EEDATA.sendPeriod)*1000, TimerTypeFreeRunning, &sendPID_callback);
-	#ifdef act_PIDv1_SEND_DEBUG_TIMER
-	  Timer_SetTimeout(act_PIDv1_SEND_DEBUG_TIMER, PIDv1_SEND_DEBUG_PERIOD, TimerTypeFreeRunning, &sendPID_debug_callback);
-	#endif
 }
 
 void act_PIDv1_Process(void)
 {
-	PID_Compute(&pid);
+	uint8_t newValueCalculated = PID_Compute(&pid);
 	
-	if (sendPID_flag) {
+	if (newValueCalculated) {
 		sendPID();
-		sendPID_flag= 0;
+	#ifdef act_PIDv1_SEND_DEBUG
+		sendDebug_flag= 1;
+		return;
 	}
+	if (sendDebug_flag) {
+		sendDebug_flag = 0;
+		sendDebug();
+	}
+	#else
+	}
+	#endif
 }
 
 void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
@@ -222,7 +206,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS:
 			if (rxMsg->Data[0]==0)	//sensor id shall be zero
 			{
-				printf("New setpoint with: %X %X\n",rxMsg->Data[1],rxMsg->Data[2]);
+				//printf("New setpoint with: %X %X\n",rxMsg->Data[1],rxMsg->Data[2]);
 
 				if (rxMsg->Length == 3)
 				{
@@ -276,59 +260,23 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 			rxMsg->Length = 3;
 			while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
 		break;
-		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
-			if (rxMsg->Length == 1) {
-				if (65 <= rxMsg->Data[0])
-					rxMsg->Data[0]=65;
-				if (0 == rxMsg->Data[0])
-					rxMsg->Data[0]=1;
-				eeprom_write_byte_crc(EEDATA.sendPeriod, rxMsg->Data[0], WITH_CRC);
-				Timer_SetTimeout(act_PIDv1_SEND_TIMER, rxMsg->Data[0]*1000, TimerTypeFreeRunning, &sendPID_callback);
-				StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
-				while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
-			}
-		break;
-
-		case CAN_MODULE_CMD_PID_CONFIG_PARAMETER:
-			if (rxMsg->Length == 8)
-			{
-				eeprom_write_dword_crc(EEDATA32.K_P, (((float)((rxMsg->Data[0]<<8) + rxMsg->Data[1]))/64), WITHOUT_CRC);
-				eeprom_write_dword_crc(EEDATA32.K_I, (((float)((rxMsg->Data[2]<<8) + rxMsg->Data[3]))/64), WITHOUT_CRC);
-				eeprom_write_dword_crc(EEDATA32.K_D, (((float)((rxMsg->Data[4]<<8) + rxMsg->Data[5]))/64), WITHOUT_CRC);
-				eeprom_write_byte_crc(EEDATA.TimeMsOrS, ((rxMsg->Data[6]&0x80)>>7), WITHOUT_CRC);
-				eeprom_write_word_crc(EEDATA16.Time, (uint16_t)rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
-				if (eeprom_read_byte(EEDATA.TimeMsOrS) == 0) {
-					//Timer_SetTimeout(act_PIDv1_TIMER, 1000, TimerTypeFreeRunning, &calculatePID_callback);
-				} else {
-					//Timer_SetTimeout(act_PIDv1_TIMER, eeprom_read_word(EEDATA16.Time), TimerTypeFreeRunning, &calculatePID_callback);
-				}
-				PID_SetTunings(&pid, (float) eeprom_read_dword(EEDATA32.K_P), (float) eeprom_read_dword(EEDATA32.K_I), (float) eeprom_read_dword(EEDATA32.K_D));
-				PID_Status = PID_ON;
-				pwmValue = DEFAULT_PWM_VALUE;
-			}
-			rxMsg->Data[0] = ((int16_t) (PID_GetKp(&pid))>>8)&0xff;
-			rxMsg->Data[1] = ((int16_t) (PID_GetKp(&pid)))&0xff;
-			rxMsg->Data[2] = ((int16_t) (PID_GetKi(&pid))>>8)&0xff;
-			rxMsg->Data[3] = ((int16_t) (PID_GetKi(&pid)))&0xff;
-			rxMsg->Data[4] = ((int16_t) (PID_GetKd(&pid))>>8)&0xff;
-			rxMsg->Data[5] = ((int16_t) (PID_GetKd(&pid)))&0xff;
-			rxMsg->Data[6] = (0x7f&(eeprom_read_word(EEDATA16.Time)>>8));
-			rxMsg->Data[7] = (0xff&(eeprom_read_word(EEDATA16.Time)));
-			rxMsg->Data[6] |= (0x80&(eeprom_read_byte(EEDATA.TimeMsOrS))<<7);
-			StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
-			rxMsg->Length = 8;
-			while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
-		break;
 		
 		case CAN_MODULE_CMD_PID_CONFIG_PARAMETER_D_T:
 			if (rxMsg->Length == 8)
 			{
-				float *data = (float*)&rxMsg->Data[0];
-				
-				eeprom_write_dword_crc(EEDATA32.K_D, *data, WITHOUT_CRC);
+				uint32_t* data_32;
+				float* data = (float*)&rxMsg->Data[0];
+				data_32 = (uint32_t*)data;
+				eeprom_write_dword_crc(EEDATA32.K_D, *data_32, WITHOUT_CRC);				
 				eeprom_write_byte_crc(EEDATA.TimeMsOrS, ((rxMsg->Data[6]&0x80)>>7), WITHOUT_CRC);
 				eeprom_write_word_crc(EEDATA16.Time, (uint16_t)rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
-				PID_SetTunings(&pid, PID_GetKp(&pid), PID_GetKi(&pid), (float) eeprom_read_dword(EEDATA32.K_D));
+				PID_SetTunings(&pid, PID_GetKp(&pid), PID_GetKi(&pid), *data);
+				if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
+					PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time))*1000);
+
+				} else {
+					PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time)));
+				}
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
 			}
@@ -351,13 +299,16 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 		case CAN_MODULE_CMD_PID_CONFIG_PARAMETER_P_I:
 			if (rxMsg->Length == 8)
 			{
-				float *data = (float*)&rxMsg->Data[0];
+				uint32_t* data_32;
+				float* data = (float*)&rxMsg->Data[0];
+				data_32 = (uint32_t*)data;
+				eeprom_write_dword_crc(EEDATA32.K_P, *data_32, WITHOUT_CRC);
+				//data = (float*)&rxMsg->Data[4];
+				float* data1 = (float*)&rxMsg->Data[4];
+				data_32 = (uint32_t*)data1;
+				eeprom_write_dword_crc(EEDATA32.K_I, *data_32, WITH_CRC);
 				
-				eeprom_write_dword_crc(EEDATA32.K_P, *data, WITHOUT_CRC);
-				data = (float*)&rxMsg->Data[4];
-				eeprom_write_dword_crc(EEDATA32.K_I, *data, WITH_CRC);
-				
-				PID_SetTunings(&pid, (float) eeprom_read_dword(EEDATA32.K_P), (float) eeprom_read_dword(EEDATA32.K_I), PID_GetKd(&pid));
+				PID_SetTunings(&pid, *data, *data1, PID_GetKd(&pid));
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
 			}

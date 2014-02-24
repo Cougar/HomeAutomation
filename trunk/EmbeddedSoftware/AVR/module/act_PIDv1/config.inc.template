@@ -31,11 +31,9 @@ MIN_PWM_VALUE=1000
 MAX_PWM_VALUE=9900
 
 act_PIDv1_ID=<ID>
-act_PIDv1_SEND_TIMER=<TIMER>
-PIDv1_SEND_PERIOD=11000
 
-#undefine below two rows if PID debug data shall be sent on the bus
-act_PIDv1_SEND_DEBUG_TIMER=<TIMER>
-PIDv1_SEND_DEBUG_PERIOD=10000
+#undefine below row if PID debug data shall be sent on the bus
+act_PIDv1_SEND_DEBUG=1
+
 
 ## End section act_PIDv1 -- Do not edit this line
