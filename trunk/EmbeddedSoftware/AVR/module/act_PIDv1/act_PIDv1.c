@@ -1,6 +1,7 @@
 
 #include "act_PIDv1.h"
 #include <drivers/misc/PID_v1.h>
+#include <string.h>
 #include <drivers/misc/PID_AutoTune.h>
 
 #if act_PIDv1_USEEEPROM==1
@@ -156,9 +157,12 @@ void act_PIDv1_Init(void)
 	uint32_t data_P = eeprom_read_dword(EEDATA32.K_P);
 	uint32_t data_I = eeprom_read_dword(EEDATA32.K_I);
 	uint32_t data_D = eeprom_read_dword(EEDATA32.K_D);
-	float data_P_f = *((float*)((&data_P)));
-	float data_I_f = *((float*)((&data_I)));
-	float data_D_f = *((float*)(&data_D));
+	float data_P_f;// = *((float*)((&data_P)));
+	float data_I_f;// = *((float*)((&data_I)));
+	float data_D_f;// = *((float*)(&data_D));
+	memcpy(&data_P_f, &data_P, sizeof(data_P));
+	memcpy(&data_I_f, &data_I, sizeof(data_I));
+	memcpy(&data_D_f, &data_D, sizeof(data_D));
 	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, PID_Direction_Direct);
 
 	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
