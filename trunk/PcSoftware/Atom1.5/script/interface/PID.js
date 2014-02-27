@@ -1,13 +1,18 @@
 
-PID_ModuleNames    = [ "PID" ];
-PID_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
-//PID_Energy         = function() { return [ 0, 500, 1000, 5000, 10000 ]; };
+PID_ModuleNames    	= [ "PID" ];
+PID_SensorModuleNames 	= [ "DS18x20", "FOST02", "DHT11", "NTC", "TC1047A", "LM335", "TCN75A" ];
+PID_ActModuleNames 	= [ "hwPWM", "softPWM", "SlowPWM", "PCAPWM" ];
+
+PID_Intervals      	= function() { return [ 1, 5, 10, 15, 20 ]; };
+//PID_Energy         	= function() { return [ 0, 500, 1000, 5000, 10000 ]; };
 PID_Temperatures	= function() { return [ 20, 25, 30, 35 ]; };
 PID_Constants		= function() { return [ 0, 0.1, 0.5, 1, 10, 100, 1000 ]; };
-PID_TimeUnits	= function() { return [ "s", "ms"]; };
-PID_Times	= function() { return [ 1, 5, 10, 15, 20, 40, 60]; };
-PID_Aliases        = function() { return Module_GetAliasNames(PID_ModuleNames); };
-PID_AvailableIds   = function() { return Module_GetAvailableIds(PID_ModuleNames); };
+PID_TimeUnits		= function() { return [ "s", "ms"]; };
+PID_Times		= function() { return [ 1, 5, 10, 15, 20, 40, 60]; };
+PID_Aliases        	= function() { return Module_GetAliasNames(PID_ModuleNames); };
+PID_AvailableIds   	= function() { return Module_GetAvailableIds(PID_ModuleNames); };
+PID_SensorAliases	= function() { return Module_GetAliasNames(PID_SensorModuleNames); };
+PID_ActAliases		= function() { return Module_GetAliasNames(PID_ActModuleNames); };
 
 function PID_SetReportInterval(alias_name, interval)
 {
@@ -86,6 +91,151 @@ function PID_setValue(alias_name, temperature)
 }
 Console_RegisterCommand(PID_setValue, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Temperatures());  });
 
+function PID_setSensor(alias_name, alias_sensor)
+{
+	if (arguments.length < 2)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	var aliases_data = Module_ResolveAlias(alias_name, PID_ModuleNames);
+	var found = false;
+	
+	var sensor_aliases_data = Module_ResolveAlias(alias_sensor, PID_SensorModuleNames);
+	var first = true;
+	for (var sensor in sensor_aliases_data) 
+	{
+		if (first == false)
+		{
+			Log("\033[31mNo sensor by the name " + alias_sensor + " were applicable for this command, or alias was a group.\033[0m\n");
+			return false;
+		}
+		Log ("Called Set Sensor:\n");
+		Log ("sensorModuleType:   " + sensor_aliases_data[sensor]["module_name"]+"\n");
+		Log ("sensorModuleId:     " + sensor_aliases_data[sensor]["module_id"]+"\n");
+		Log ("SensorId:           " + sensor_aliases_data[sensor]["specific"]["SensorId"]+"\n");
+		var id = 0;
+		switch (sensor_aliases_data[sensor]["module_name"])
+		{
+		  case "DS18x20": id = 3; break;
+		  case "FOST02": id = 5; break;
+		  case "TC1047A": id = 17; break;
+		  case "TCN75A": id = 46; break;
+		  case "LM335": id = 51; break;
+		  case "NTC": id = 55; break;
+		  case "DHT11": id = 61; break;
+		  default: 
+		    Log("\033[31mCould not resolve sensor module type.\033[0m\n");
+		    return; break;
+		}
+		
+		
+		for (var name in aliases_data)
+		{
+			var variables = {	"sensorModuleType"     : id,
+						"sensorModuleId"       : sensor_aliases_data[sensor]["module_id"], 
+						"sensorId"     : sensor_aliases_data[sensor]["specific"]["SensorId"] };
+
+			if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_SENSOR", variables))
+			{
+				Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			}
+			else
+			{
+				Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+			}
+			
+			found = true;
+		}
+		first = false;
+		if (!found)
+		{
+			Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+			return false;
+		}
+	}
+
+	if (!found)
+	{
+		Log("\033[31mNo sensor aliases by the name " + alias_sensor + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+
+	return true;
+}
+Console_RegisterCommand(PID_setSensor, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_SensorAliases());  });
+
+function PID_setActuator(alias_name, alias_actuator)
+{
+	if (arguments.length < 2)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	var aliases_data = Module_ResolveAlias(alias_name, PID_ModuleNames);
+	var found = false;
+	
+	var act_aliases_data = Module_ResolveAlias(alias_actuator, PID_ActModuleNames);
+	var first = true;
+	for (var act in act_aliases_data) 
+	{
+		if (first == false)
+		{
+			Log("\033[31mNo actuator by the name " + alias_actuator + " were applicable for this command, or alias was a group.\033[0m\n");
+			return false;
+		}
+		Log ("Called Set Actuator:\n");
+		Log ("actModuleType:   " + act_aliases_data[act]["module_name"]+"\n");
+		Log ("actModuleId:     " + act_aliases_data[act]["module_id"]+"\n");
+		Log ("actId:           " + act_aliases_data[act]["specific"]["Channel"]+"\n");
+		var id = 0;
+		switch (act_aliases_data[act]["module_name"])
+		{
+		  case "hwPWM": id = 13; break;
+		  case "softPWM": id = 21; break;
+		  case "SlowPWM": id = 19; break;
+		  case "PCAPWM": id = 29; break;
+		  default: 
+		    Log("\033[31mCould not resolve actuator module type.\033[0m\n");
+		    return; break;
+		}
+		
+		
+		for (var name in aliases_data)
+		{
+			var variables = {	"actuatorModuleType"     : id,
+						"actuatorModuleId"       : act_aliases_data[act]["module_id"], 
+						"actuatorId"             : act_aliases_data[act]["specific"]["Channel"] };
+
+			if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_ACTUATOR", variables))
+			{
+				Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+			}
+			else
+			{
+				Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+			}
+			
+			found = true;
+		}
+		first = false;
+		if (!found)
+		{
+			Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+			return false;
+		}
+	}
+
+	if (!found)
+	{
+		Log("\033[31mNo actuator aliases by the name " + alias_actuator + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+
+	return true;
+}
+Console_RegisterCommand(PID_setActuator, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_ActAliases());  });
+
 
 function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 {
@@ -150,6 +300,44 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 }
 Console_RegisterCommand(PID_setParameters, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Constants(), PID_Constants(), PID_Constants(), PID_Times(), PID_TimeUnits()); });
 
+
+function PID_setOutputMaxMin(alias_name, Max,Min)
+{
+	if (arguments.length < 3)
+	{
+		Log("\033[31mNot enough parameters given.\033[0m\n");
+		return false;
+	}
+	var aliases_data = Module_ResolveAlias(alias_name, PID_ModuleNames);
+	var found = false;
+
+	for (var name in aliases_data)
+	{
+		var variables = {	"Min"     : Min,
+					"Max"     : Max };
+		
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "OutMinMax", variables))
+		{
+			Log("\033[32mMin = " + Min + "Max = " + Max + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command to " + name + ".\033[0m\n");
+		}
+		
+		found = true;
+	}
+
+	if (!found)
+	{
+		Log("\033[31mNo aliases by the name " + alias_name + " were applicable for this command.\033[0m\n");
+		return false;
+	}
+
+	return true;
+}
+Console_RegisterCommand(PID_setOutputMaxMin, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Constants(), PID_Constants()); });
+
 function PID_getConfiguration(alias_name)
 {
 	if (arguments.length < 1)
@@ -205,6 +393,14 @@ function PID_getConfiguration(alias_name)
 			Log("\033[31mFailed to send command 5 to " + name + ".\033[0m\n");
 		}
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_D_T", variables))
+		{
+			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
+		}
+		else
+		{
+			Log("\033[31mFailed to send command 6 to " + name + ".\033[0m\n");
+		}
+		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "OutMinMax", variables))
 		{
 			//Log("\033[32mCommand sent successfully to " + name + ".\033[0m\n");
 		}

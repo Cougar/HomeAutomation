@@ -1,5 +1,5 @@
 
-Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11", "VoltageCurrent", "ultrasonic", "flower" ];
+Sensor_ModuleNames    = [ "DS18x20", "FOST02", "BusVoltage", "SimpleDTMF", "DHT11", "VoltageCurrent", "ultrasonic", "flower", "NTC", "TC1047A", "LM335", "TCN75A"];
 SensorRf_ModuleNames    = [ "rfTransceive" ];
 Sensor_Intervals      = function() { return [ 1, 5, 10, 15, 20 ]; };
 Sensor_Aliases        = function() { return Module_GetAliasNames(Sensor_ModuleNames); };
