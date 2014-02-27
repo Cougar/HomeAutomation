@@ -228,6 +228,12 @@ FloatType PID_GetKi(PidType* pid) {
 FloatType PID_GetKd(PidType* pid) {
   return pid->dispKd;
 }
+FloatType PID_GetMin(PidType* pid) {
+  return pid->outMin;
+}
+FloatType PID_GetMax(PidType* pid) {
+  return pid->outMax;
+}
 
 PidModeType PID_GetMode(PidType* pid) {
   return pid->mode;
