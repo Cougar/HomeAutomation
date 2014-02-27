@@ -107,6 +107,8 @@ void PID_SetMaxKd(PidType* pid, FloatType newMaxKd);
 FloatType PID_GetKp(PidType* pid);
 FloatType PID_GetKi(PidType* pid);
 FloatType PID_GetKd(PidType* pid);
+FloatType PID_GetMin(PidType* pid);
+FloatType PID_GetMax(PidType* pid);
 PidModeType PID_GetMode(PidType* pid);
 PidDirectionType PID_GetDirection(PidType* pid);
 FloatType PID_GetPTerm(PidType* pid);
