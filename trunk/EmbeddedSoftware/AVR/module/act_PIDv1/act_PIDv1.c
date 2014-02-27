@@ -22,6 +22,8 @@ struct eeprom_act_PIDv1 EEMEM eeprom_act_PIDv1 =
 		CAN_MODULE_TYPE_ACT_SOFTPWM,	//ActuatorModuleType
 		0x00,	//ActuatorModuleId
 		0x00,	//ActuatorId
+		0x00000000,	//uint32_t MAX; (float)
+		0x00000000,	//uint32_t MIN; (float)
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 };
@@ -138,6 +140,8 @@ void act_PIDv1_Init(void)
 	  eeprom_write_dword_crc(EEDATA32.K_P, 850.0f, WITHOUT_CRC);
 	  eeprom_write_dword_crc(EEDATA32.K_I, 0.5f, WITHOUT_CRC);
 	  eeprom_write_dword_crc(EEDATA32.K_D, 0.1f, WITHOUT_CRC);
+	  eeprom_write_dword_crc(EEDATA32.MIN, 0, WITHOUT_CRC);
+	  eeprom_write_dword_crc(EEDATA32.MAX, 0, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.TimeMsOrS, DEFAULT_PIDv1_CALC_PERIOD_UNIT, WITHOUT_CRC);
 	  eeprom_write_word_crc(EEDATA16.Time, DEFAULT_PIDv1_CALC_PERIOD, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleType, PIDv1_PWM_ACTUATOR_MODULE_TYPE, WITHOUT_CRC);
@@ -157,12 +161,18 @@ void act_PIDv1_Init(void)
 	uint32_t data_P = eeprom_read_dword(EEDATA32.K_P);
 	uint32_t data_I = eeprom_read_dword(EEDATA32.K_I);
 	uint32_t data_D = eeprom_read_dword(EEDATA32.K_D);
+	uint32_t Max_D = eeprom_read_dword(EEDATA32.MAX);
+	uint32_t Min_D = eeprom_read_dword(EEDATA32.MIN);
 	float data_P_f;// = *((float*)((&data_P)));
 	float data_I_f;// = *((float*)((&data_I)));
 	float data_D_f;// = *((float*)(&data_D));
+	float Max_out_f;// = *((float*)((&data_I)));
+	float Min_out_f;// = *((float*)(&data_D));
 	memcpy(&data_P_f, &data_P, sizeof(data_P));
 	memcpy(&data_I_f, &data_I, sizeof(data_I));
 	memcpy(&data_D_f, &data_D, sizeof(data_D));
+	memcpy(&Min_out_f, &Min_D, sizeof(Min_D));
+	memcpy(&Max_out_f, &Max_D, sizeof(Max_D));
 	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, PID_Direction_Direct);
 
 	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
@@ -171,7 +181,7 @@ void act_PIDv1_Init(void)
 	} else {
 		PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time)));
 	}
-
+	PID_SetOutputLimits(&pid, Min_out_f, Max_out_f);
 	outputValue = DEFAULT_PWM_VALUE;
 
 	PID_SetMode(&pid, PID_Mode_Automatic);
@@ -234,6 +244,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 			}
 		break;
 		case CAN_MODULE_CMD_PID_CONFIG_SENSOR:
+			//printf("New sensor with: %X %X %X len: %d\n",rxMsg->Data[1],rxMsg->Data[2] ,rxMsg->Data[2],rxMsg->Length);
 			if (rxMsg->Length == 3)
 			{
 				eeprom_write_byte_crc(EEDATA.sensorModuleType, rxMsg->Data[0] , WITHOUT_CRC);
@@ -242,6 +253,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 				sensorModuleType = eeprom_read_byte(EEDATA.sensorModuleType);
 				sensorModuleId = eeprom_read_byte(EEDATA.sensorModuleId);
 				sensorId = eeprom_read_byte(EEDATA.sensorId);
+				//printf("Stored\n");
 			}
 			rxMsg->Data[0] = eeprom_read_byte(EEDATA.sensorModuleType);
 			rxMsg->Data[1] = eeprom_read_byte(EEDATA.sensorModuleId);
@@ -332,6 +344,37 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 			rxMsg->Length = 8;
 			while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
 		break;
+		case CAN_MODULE_CMD_PID_OUTMINMAX:
+			if (rxMsg->Length > 1)
+			{
+				uint32_t* data_32;
+				float* data = (float*)&rxMsg->Data[0];
+				data_32 = (uint32_t*)data;
+				eeprom_write_dword_crc(EEDATA32.MIN, *data_32, WITHOUT_CRC);
+				//data = (float*)&rxMsg->Data[4];
+				float* data1 = (float*)&rxMsg->Data[4];
+				data_32 = (uint32_t*)data1;
+				eeprom_write_dword_crc(EEDATA32.MAX, *data_32, WITH_CRC);
+				PID_SetOutputLimits(&pid, *data, *data1);
+	
+			}
+			data2 = PID_GetMin(&pid);
+			ptr = (uint8_t*)&data2;
+			rxMsg->Data[0] = ptr[0];
+			rxMsg->Data[1] = ptr[1];
+			rxMsg->Data[2] = ptr[2];
+			rxMsg->Data[3] = ptr[3];
+			data2 = PID_GetMax(&pid);
+			ptr = (uint8_t*)&data2;
+			rxMsg->Data[4] = ptr[0];
+			rxMsg->Data[5] = ptr[1];
+			rxMsg->Data[6] = ptr[2];
+			rxMsg->Data[7] = ptr[3];
+			StdCan_Set_direction(rxMsg->Header, DIRECTIONFLAG_FROM_OWNER);
+			rxMsg->Length = 8;
+			while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
+		break;
+		
 		}
 	}
 
