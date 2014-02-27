@@ -839,9 +839,9 @@
     </command>
     <command id="131" name="CONFIG_PARAMETER" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
       <variables>
-	<variable name="K_P" type="uint" start_bit="0" bit_length="16" unit="" description=""/>
-	<variable name="K_I" type="uint" start_bit="16" bit_length="16" unit="" description=""/>
-	<variable name="K_D" type="uint" start_bit="32" bit_length="16" unit="" description=""/>
+	<variable name="K_P" type="float" start_bit="0" bit_length="16" unit="" description=""/>
+	<variable name="K_I" type="float" start_bit="16" bit_length="16" unit="" description=""/>
+	<variable name="K_D" type="float" start_bit="32" bit_length="16" unit="" description=""/>
 	<variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
 	  <value id="0" name="s"/>
 	  <value id="1" name="ms"/>
@@ -884,6 +884,12 @@
 	  <value id="1" name="ms"/>
 	</variable>
 	<variable name="RegulatorTime" type="uint" start_bit="49" bit_length="15" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="137" name="OutMinMax" type="specific" module="PID" description="Set minimum and maximum PWM output from controller">
+      <variables>
+	<variable name="Min" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="Max" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
       </variables>
     </command>
     
