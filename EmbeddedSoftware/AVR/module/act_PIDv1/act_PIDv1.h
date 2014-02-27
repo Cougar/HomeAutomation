@@ -42,6 +42,8 @@ void act_PIDv1_List(uint8_t ModuleSequenceNumber);
 		uint8_t actuatorModuleType;
 		uint8_t actuatorModuleId;
 		uint8_t actuatorId;
+		float MAX;
+		float MIN;
 	};	
 #endif
 
