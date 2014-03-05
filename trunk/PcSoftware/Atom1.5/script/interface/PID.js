@@ -8,6 +8,7 @@ PID_Intervals      	= function() { return [ 1, 5, 10, 15, 20 ]; };
 PID_Temperatures	= function() { return [ 20, 25, 30, 35 ]; };
 PID_Constants		= function() { return [ 0, 0.1, 0.5, 1, 10, 100, 1000 ]; };
 PID_TimeUnits		= function() { return [ "s", "ms"]; };
+PID_ControllerDirection = function() { return [ "direct", "reverse"]; };
 PID_Times		= function() { return [ 1, 5, 10, 15, 20, 40, 60]; };
 PID_Aliases        	= function() { return Module_GetAliasNames(PID_ModuleNames); };
 PID_AvailableIds   	= function() { return Module_GetAvailableIds(PID_ModuleNames); };
@@ -237,7 +238,7 @@ function PID_setActuator(alias_name, alias_actuator)
 Console_RegisterCommand(PID_setActuator, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_ActAliases());  });
 
 
-function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
+function PID_setParameters(alias_name, KP,KI,KD,Time,Unit,ControllerDirection)
 {
 	if (arguments.length < 6)
 	{
@@ -249,16 +250,17 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 
 	for (var name in aliases_data)
 	{
-		var variables = {	"K_P"     : KP,
-					"K_I"     : KI,
-					"K_D"     : KD,
-					"RegulatorTime"     : Time,
-					"TimeUnit"     : Unit };
-		var variables_P_I = {	"K_P"     : KP,
-					"K_I"     : KI };
-		var variables_D_T = {	"K_D"     : KD,
-					"RegulatorTime"     : Time,
-					"TimeUnit"     : Unit };
+		var variables = {	"K_P"     		: KP,
+					"K_I"     		: KI,
+					"K_D"     		: KD,
+					"RegulatorTime"     	: Time,
+					"TimeUnit"     		: Unit };
+		var variables_P_I = {	"K_P"     		: KP,
+					"K_I"     		: KI };
+		var variables_D_T = {	"K_D"     		: KD,
+					"ControllerDirection"   : ControllerDirection,
+					"RegulatorTime"     	: Time,
+					"TimeUnit"     		: Unit };
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER", variables))
 		{
 			Log("\033[32mCommand sent successfully to " + name + ".\033[0m");
@@ -280,7 +282,7 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 		
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "CONFIG_PARAMETER_D_T", variables_D_T))
 		{
-			Log("\033[32mK_D = " + KD + "RegTime = " + Time + "Unit = " + Unit + ".\033[0m\n");
+			Log("\033[32mK_D = " + KD + " RegTime = " + Time + " Unit = " + Unit + " Direction = " + ControllerDirection +".\033[0m\n");
 		}
 		else
 		{
@@ -298,7 +300,7 @@ function PID_setParameters(alias_name, KP,KI,KD,Time,Unit)
 
 	return true;
 }
-Console_RegisterCommand(PID_setParameters, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Constants(), PID_Constants(), PID_Constants(), PID_Times(), PID_TimeUnits()); });
+Console_RegisterCommand(PID_setParameters, function(arg_index, args) { return Console_StandardAutocomplete(arg_index, args, PID_Aliases(), PID_Constants(), PID_Constants(), PID_Constants(), PID_Times(), PID_TimeUnits(), PID_ControllerDirection()); });
 
 
 function PID_setOutputMaxMin(alias_name, Max,Min)
@@ -508,7 +510,7 @@ function PID_OnMessage(module_name, module_id, command, variables)
 					last_value["PID_status"] = { "value" : { "Measurment" : variables["Measurment"],"Reference" : variables["Reference"],"PWM" : variables["PWM"],"Sum" : variables["Sum"] }, "timestamp" : get_time() };
 					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 				}
-	//log("PID status: mea:" + this.Measurment + " ref:" + this.Reference + " pwm:" + this.PWM/100 + " sum:" + this.Sum + "\n");
+	//Log("PID status: mea:" + this.Measurment + " ref:" + this.Reference + " pwm:" + this.PWM/100 + " sum:" + this.Sum + "\n");
 				//this.callEvent("newValue", canMessage.getData("Id"));
 
 	//var self = this;
@@ -532,6 +534,84 @@ function PID_OnMessage(module_name, module_id, command, variables)
 			case "Report_Interval":
 				this.myReportInterval = canMessage.getData("Time");
 				break;
+				
+			case "CONFIG_PARAMETER_P_I":
+				for (var alias_name in aliases_data)
+				{
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					
+					last_value["Parameters"] = { "value" : { "K_P" : variables["K_P"],"K_I" : variables["K_I"], "K_D" : last_value["Parameters"]["value"]["K_D"],"ControllerDirection" : last_value["Parameters"]["value"]["ControllerDirection"],"TimeUnit" : last_value["Parameters"]["value"]["TimeUnit"],"RegulatorTime" : last_value["Parameters"]["value"]["RegulatorTime"] }, "timestamp" : get_time() };
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+				}	
+			case "CONFIG_PARAMETER_D_T":
+				for (var alias_name in aliases_data)
+				{
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					last_value["Parameters"] = { "value" : { "K_P" : last_value["Parameters"]["value"]["K_P"],"K_I" : last_value["Parameters"]["value"]["K_I"], "K_D" : variables["K_D"],"ControllerDirection" : variables["ControllerDirection"],"TimeUnit" : variables["TimeUnit"],"RegulatorTime" : variables["RegulatorTime"] }, "timestamp" : get_time() };
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+				}	
+			case "P_I_term":
+				for (var alias_name in aliases_data)
+				{
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					
+					last_value["Debug"] = { "value" : { "P_term" : variables["P_term"],"I_term" : variables["I_term"],"D_term" : last_value["Debug"]["value"]["D_term"],"Output" : last_value["Debug"]["value"]["Output"],"Min" : last_value["Debug"]["value"]["Min"],"Max" : last_value["Debug"]["value"]["Max"] }, "timestamp" : get_time() };
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+					//Log("Got message DEBUG");
+				}
+			break;	
+			case "D_term_Out":
+				for (var alias_name in aliases_data)
+				{
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					
+					Log("Got message DEBUG");
+					
+					last_value["Debug"] = { "value" : { "P_term" : last_value["Debug"]["value"]["P_term"],"I_term" : last_value["Debug"]["value"]["I_term"],"D_term" : variables["D_term"],"Output" : variables["Output"],"Min" : last_value["Debug"]["value"]["Min"],"Max" : last_value["Debug"]["value"]["Max"] }, "timestamp" : get_time() };
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+					//Log("Got message DEBUG");
+				}
+			break;		
+			case "OutMinMax":
+				for (var alias_name in aliases_data)
+				{
+					var last_value = {};
+					var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+					if (last_value_string)
+					{
+						last_value = eval("(" + last_value_string + ")");
+					}
+					
+					last_value["Debug"] = { "value" : { "P_term" : last_value["Debug"]["value"]["P_term"],"I_term" : last_value["Debug"]["value"]["I_term"],"D_term" : last_value["Debug"]["value"]["D_term"],"Output" : last_value["Debug"]["value"]["Output"], "Min" : variables["Min"],"Max" : variables["Max"] }, "timestamp" : get_time() };
+					Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+					//Log("Got message DEBUG");
+				}
+			break;	
 		}
 	}
 }
