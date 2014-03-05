@@ -879,6 +879,10 @@
     <command id="136" name="CONFIG_PARAMETER_D_T" type="specific" module="PID" description="Configure PID regulator constants, if message is sent with 0 data bytes, module will respond with current configuration">
       <variables>
 	<variable name="K_D" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="ControllerDirection" type="enum" start_bit="40" bit_length="1" unit="" description="">
+	  <value id="0" name="direct"/>
+	  <value id="1" name="reverse"/>
+	</variable>
 	<variable name="TimeUnit" type="enum" start_bit="48" bit_length="1" unit="" description="">
 	  <value id="0" name="s"/>
 	  <value id="1" name="ms"/>

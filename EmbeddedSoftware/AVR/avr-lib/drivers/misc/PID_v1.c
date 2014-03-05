@@ -145,7 +145,7 @@ void PID_SetSampleTime(PidType* pid, uint32_t NewSampleTime)
  **************************************************************************/
 void PID_SetOutputLimits(PidType* pid, FloatType newMin, FloatType newMax) {
   if (newMin >= newMax) {
-    return;
+    return;  
   }
   pid->outMin = newMin;
   pid->outMax = newMax;
