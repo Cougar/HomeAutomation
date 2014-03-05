@@ -24,6 +24,7 @@ struct eeprom_act_PIDv1 EEMEM eeprom_act_PIDv1 =
 		0x00,	//ActuatorId
 		0x00000000,	//uint32_t MAX; (float)
 		0x00000000,	//uint32_t MIN; (float)
+		0x00,	//uint8_t ControllerDirection;
 	},
 	0	// crc, must be a correct value, but this will also be handled by the EEPROM module or make scripts
 };
@@ -147,6 +148,7 @@ void act_PIDv1_Init(void)
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleType, PIDv1_PWM_ACTUATOR_MODULE_TYPE, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorModuleId, PIDv1_PWM_ACTUATOR_MODULE_ID, WITHOUT_CRC);
 	  eeprom_write_byte_crc(EEDATA.actuatorId, PIDv1_PWM_ACTUATOR, WITHOUT_CRC);
+	  eeprom_write_byte_crc(EEDATA.ControllerDirection, 0, WITHOUT_CRC);
 	  EEDATA_UPDATE_CRC;
 	}
 	
@@ -173,7 +175,7 @@ void act_PIDv1_Init(void)
 	memcpy(&data_D_f, &data_D, sizeof(data_D));
 	memcpy(&Min_out_f, &Min_D, sizeof(Min_D));
 	memcpy(&Max_out_f, &Max_D, sizeof(Max_D));
-	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, PID_Direction_Direct);
+	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, eeprom_read_byte(EEDATA.ControllerDirection);
 
 	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
 		PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time))*1000);
@@ -285,6 +287,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 				data_32 = (uint32_t*)data;
 				eeprom_write_dword_crc(EEDATA32.K_D, *data_32, WITHOUT_CRC);				
 				eeprom_write_byte_crc(EEDATA.TimeMsOrS, ((rxMsg->Data[6]&0x80)>>7), WITHOUT_CRC);
+				eeprom_write_byte_crc(EEDATA.ControllerDirection, ((rxMsg->Data[5]&0x80)>>7), WITHOUT_CRC);
 				eeprom_write_word_crc(EEDATA16.Time, (uint16_t)rxMsg->Data[7]+((rxMsg->Data[6]&0x7f)<<8), WITH_CRC);
 				PID_SetTunings(&pid, PID_GetKp(&pid), PID_GetKi(&pid), *data);
 				if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
@@ -293,6 +296,9 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 				} else {
 					PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time)));
 				}
+				
+				PID_SetControllerDirection(&pid, eeprom_read_byte(EEDATA.ControllerDirection);
+	
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
 			}
@@ -303,7 +309,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 			rxMsg->Data[2] = ptr[2];
 			rxMsg->Data[3] = ptr[3];
 			rxMsg->Data[4] = 0u;
-			rxMsg->Data[5] = 0u;
+			rxMsg->Data[5] = (0x80&(eeprom_read_byte(EEDATA.ControllerDirection))<<7);
 			rxMsg->Data[6] = (0x7f&(eeprom_read_word(EEDATA16.Time)>>8));
 			rxMsg->Data[7] = (0xff&(eeprom_read_word(EEDATA16.Time)));
 			rxMsg->Data[6] |= (0x80&(eeprom_read_byte(EEDATA.TimeMsOrS))<<7);
@@ -345,6 +351,8 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 			while (StdCan_Put(rxMsg) != StdCan_Ret_OK);
 		break;
 		case CAN_MODULE_CMD_PID_OUTMINMAX:
+			//printf("New value with: %X %X %X %X %X %X %X %X\n",rxMsg->Data[0],rxMsg->Data[1],rxMsg->Data[2],rxMsg->Data[3],rxMsg->Data[4],rxMsg->Data[5],rxMsg->Data[6],rxMsg->Data[7]);
+			//printf("Len: %X\n",rxMsg->Length);
 			if (rxMsg->Length > 1)
 			{
 				uint32_t* data_32;
@@ -356,7 +364,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 				data_32 = (uint32_t*)data1;
 				eeprom_write_dword_crc(EEDATA32.MAX, *data_32, WITH_CRC);
 				PID_SetOutputLimits(&pid, *data, *data1);
-	
+				
 			}
 			data2 = PID_GetMin(&pid);
 			ptr = (uint8_t*)&data2;
@@ -377,7 +385,6 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 		
 		}
 	}
-
 
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS &&
 				StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
