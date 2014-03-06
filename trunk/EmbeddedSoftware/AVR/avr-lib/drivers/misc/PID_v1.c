@@ -235,6 +235,10 @@ FloatType PID_GetMax(PidType* pid) {
   return pid->outMax;
 }
 
+uint32_t PID_GetSampleTime(PidType* pid) {
+  return pid->SampleTime;
+}
+
 PidModeType PID_GetMode(PidType* pid) {
   return pid->mode;
 }

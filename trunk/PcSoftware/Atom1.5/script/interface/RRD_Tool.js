@@ -52,7 +52,7 @@ RRD_Tool_timerUpdate = function(timer)
 				}
 				else
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]]	 
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]];	 
 				}	
 			}
 			cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
