@@ -175,7 +175,7 @@ void act_PIDv1_Init(void)
 	memcpy(&data_D_f, &data_D, sizeof(data_D));
 	memcpy(&Min_out_f, &Min_D, sizeof(Min_D));
 	memcpy(&Max_out_f, &Max_D, sizeof(Max_D));
-	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, eeprom_read_byte(EEDATA.ControllerDirection);
+	PID_init(&pid, &measurementValue, &outputValue, &referenceValue, data_P_f, data_I_f, data_D_f, eeprom_read_byte(EEDATA.ControllerDirection));
 
 	if (eeprom_read_byte(EEDATA.TimeMsOrS) == CAN_MODULE_ENUM_PID_CONFIG_PARAMETER_TIMEUNIT_S) {
 		PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time))*1000);
@@ -297,7 +297,7 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 					PID_SetSampleTime(&pid, (uint32_t)(eeprom_read_word(EEDATA16.Time)));
 				}
 				
-				PID_SetControllerDirection(&pid, eeprom_read_byte(EEDATA.ControllerDirection);
+				PID_SetControllerDirection(&pid, eeprom_read_byte(EEDATA.ControllerDirection));
 	
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
