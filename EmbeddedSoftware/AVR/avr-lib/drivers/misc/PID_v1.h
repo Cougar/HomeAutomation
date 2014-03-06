@@ -109,6 +109,7 @@ FloatType PID_GetKi(PidType* pid);
 FloatType PID_GetKd(PidType* pid);
 FloatType PID_GetMin(PidType* pid);
 FloatType PID_GetMax(PidType* pid);
+uint32_t PID_GetSampleTime(PidType* pid);
 PidModeType PID_GetMode(PidType* pid);
 PidDirectionType PID_GetDirection(PidType* pid);
 FloatType PID_GetPTerm(PidType* pid);

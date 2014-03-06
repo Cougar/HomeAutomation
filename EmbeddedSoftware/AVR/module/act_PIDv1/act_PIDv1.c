@@ -39,7 +39,7 @@ PidType pid;
 //struct PID_DATA pidData;
 //struct PIDv1_DEBUG_DATA pidDebugData;
 
-uint8_t sensorModuleType, sensorModuleId,sensorId;
+uint8_t sensorModuleType, sensorModuleId,sensorId, sensorReportIntervall;
 uint8_t PID_Status;
 uint8_t sendDebug_flag = 0;
 uint16_t pwmValue=0;
@@ -72,9 +72,8 @@ void sendPID(void)
 	txMsg.Data[1] = (uint8_t)0x00ff & ((uint32_t)(measurementValue*64));
 	txMsg.Data[2] = (uint8_t)0x00ff & (((uint32_t)(referenceValue*64))>>8);
 	txMsg.Data[3] = (uint8_t)0x00ff & ((uint32_t)(referenceValue*64));
-	//uint16_t tempPWM =(uint16_t) (pwmValue*10000);
-		txMsg.Data[4] = (uint8_t)( ((uint16_t)outputValue)>>8)&0xff;
-		txMsg.Data[5] = (uint8_t)( ((uint16_t)outputValue))&0xff;
+	txMsg.Data[4] = (uint8_t)( ((uint16_t)outputValue)>>8)&0xff;
+	txMsg.Data[5] = (uint8_t)( ((uint16_t)outputValue))&0xff;
 	txMsg.Data[6] = ((int16_t) (PID_GetITerm(&pid))>>8)&0xff;
 	txMsg.Data[7] = ((int16_t) (PID_GetITerm(&pid)))&0xff;
 	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
@@ -187,6 +186,17 @@ void act_PIDv1_Init(void)
 	outputValue = DEFAULT_PWM_VALUE;
 
 	PID_SetMode(&pid, PID_Mode_Automatic);
+	
+	/* Send request for sensor report intervall */
+	StdCan_Msg_t txMsg;
+	StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+	StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_TO_OWNER);
+	txMsg.Header.ModuleType = sensorModuleType; 
+	txMsg.Header.ModuleId = sensorModuleId;
+	txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+	txMsg.Length = 0;
+	while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
+	      
 }
 
 void act_PIDv1_Process(void)
@@ -301,6 +311,16 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 	
 				PID_Status = PID_ON;
 				pwmValue = DEFAULT_PWM_VALUE;
+				/* Send request for sensor report intervall */
+				
+				StdCan_Msg_t txMsg;
+				StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+				StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_TO_OWNER);
+				txMsg.Header.ModuleType = sensorModuleType; 
+				txMsg.Header.ModuleId = sensorModuleId;
+				txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+				txMsg.Length = 0;
+				while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 			}
 			data2 = PID_GetKd(&pid);
 			ptr = (uint8_t*)&data2;
@@ -387,24 +407,59 @@ void act_PIDv1_HandleMessage(StdCan_Msg_t *rxMsg)
 	}
 
 	if (	StdCan_Ret_class(rxMsg->Header) == CAN_MODULE_CLASS_SNS &&
-				StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
-				rxMsg->Header.ModuleType == sensorModuleType &&
-				rxMsg->Header.ModuleId == sensorModuleId &&
-				rxMsg->Header.Command == CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS &&
-				rxMsg->Data[0] == sensorId)
+		StdCan_Ret_direction(rxMsg->Header) == DIRECTIONFLAG_FROM_OWNER &&
+		rxMsg->Header.ModuleType == sensorModuleType &&
+		rxMsg->Header.ModuleId == sensorModuleId)
+	{
+		switch (rxMsg->Header.Command)
 		{
-			if (0x80 == rxMsg->Data[1] && 0x00 == rxMsg->Data[2])
+		case CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL:
+			sensorReportIntervall = rxMsg->Data[0]; 
+			
+			if (sensorReportIntervall*1000 > PID_GetSampleTime(&pid))
 			{
-				//Error on the temperature signal, do something
+			    uint8_t newReportTime = 20;
+			    if (PID_GetSampleTime(&pid) < 2000)
+			    {
+				newReportTime = 1;
+			    } else if (PID_GetSampleTime(&pid) > 20000) 
+			    {
+				newReportTime = 20;
+			    } else 
+			    {
+				newReportTime = (uint8_t)(PID_GetSampleTime(&pid)/1000) - 1;
+			    }
+			    StdCan_Msg_t txMsg;
+			    StdCan_Set_class(txMsg.Header, CAN_MODULE_CLASS_SNS);
+			    StdCan_Set_direction(txMsg.Header, DIRECTIONFLAG_TO_OWNER);
+			    txMsg.Header.ModuleType = sensorModuleType; 
+			    txMsg.Header.ModuleId = sensorModuleId;
+			    txMsg.Header.Command = CAN_MODULE_CMD_GLOBAL_REPORT_INTERVAL;
+			    txMsg.Length = 1;
+			    txMsg.Data[0] = newReportTime;
+			    while (StdCan_Put(&txMsg) != StdCan_Ret_OK);
 			}
-			else
+			
+			
+			break;
+		case CAN_MODULE_CMD_PHYSICAL_TEMPERATURE_CELSIUS: 
+			if (rxMsg->Data[0] == sensorId)
 			{
-				measurementValue = ((float)((rxMsg->Data[1]<<8) + rxMsg->Data[2]))/64;
+				if (0x80 == rxMsg->Data[1] && 0x00 == rxMsg->Data[2])
+				{
+					//Error on the temperature signal, do something
+				}
+				else
+				{
+					measurementValue = ((float)((rxMsg->Data[1]<<8) + rxMsg->Data[2]))/64;
+				}
 			}
+			break;
 
 		}
+	}
 }
-
+		
 void act_PIDv1_List(uint8_t ModuleSequenceNumber)
 {
 	StdCan_Msg_t txMsg;
