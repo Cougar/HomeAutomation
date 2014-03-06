@@ -40,6 +40,13 @@ RRD_Tool_timerUpdate = function(timer)
 			{
 				//Log("Found label: "+label+"\n");
 				var data = eval("(" + alias_string[RRD_Tool_StoredData[name]["rrdNames"][label]["Module"]] + ")");
+				var datatype=RRD_Tool_StoredData[name]["rrdNames"][label]["data"];
+				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"];
+				if ((get_time() - periodicity*2) > data[datatype]["timestamp"])
+				{
+				    //Log("\033[31mError: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+".\033[0m");
+				    continue;
+				}
 				if (first == 1) {
 					names += label;
 					first = 0;
@@ -52,12 +59,14 @@ RRD_Tool_timerUpdate = function(timer)
 				}
 				else
 				{
-					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]];	 
+					values += ":"+data[RRD_Tool_StoredData[name]["rrdNames"][label]["data"]]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]];
 				}	
 			}
-			cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
-			//Log("Command: "+cmd);
-			Execute(cmd);
+			if (first != 1) {
+				cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
+				//Log("Command: "+cmd);
+				Execute(cmd);
+			}
 			break;
 		}
 	}
