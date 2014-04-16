@@ -181,7 +181,7 @@ DEP = $(OBJ:.o=.d)
 BUILDDIRS = $(sort $(filter-out ./,$(dir $(OBJ))))
 
 # Compiler flags to generate dependency files.
-GENDEPFLAGS = -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
+GENDEPFLAGS = -MMD -MP
 
 # Default target.
 all: check_binaries sizebefore buildtree build lib sizeafter
@@ -310,11 +310,6 @@ lib: bios.h $(LIBNAME).a($(LIBNAME).o)
 %.o : %.S
 	@$(ECHO) $(MSG_ASSEMBLING) $<
 	@$(CC) -c $(ASFLAGS) $< -o $@
-
-# Depends: create dependency files from c source files.
-#%.d : %.c | $(BUILDDIRS)
-#	@$(ECHO) $(MSG_DEPEND) $<
-#	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
 
 # Buildtree: create directories for output files.
 $(BUILDDIRS) :

@@ -188,7 +188,7 @@ BUILDDIRS = $(sort $(filter-out ./,$(dir $(OBJ))))
 BIOS_RAM_END := $(shell $(AWK) '/0x[0-9a-f]+.*__bios_ram_end/ { print $$1 }' $(BIOSDIR)/bios.map)
 
 # Compiler flags to generate dependency files.
-GENDEPFLAGS = -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
+GENDEPFLAGS = -MMD -MP
 
 # Default target.
 all: sizebefore buildtree config.h build sizeafter
@@ -289,11 +289,6 @@ extcoff: $(TARGET).elf
 %.o : %.S
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ASFLAGS) $< -o $@
-
-# Depends: create dependency files from c source files.
-#%.d : %.c | $(BUILDDIRS)
-#	@echo $(MSG_DEPEND) $<
-#	@$(CC) -c $(CFLAGS) $(GENDEPFLAGS) $<
 
 # Buildtree: create directories for output files.
 $(BUILDDIRS) :
