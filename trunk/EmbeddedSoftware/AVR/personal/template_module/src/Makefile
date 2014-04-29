@@ -123,7 +123,12 @@ MATH_LIB = -lm
 
 EXTMEMOPTS =
 
-BIOSOPTS = -Wl,-L$(BIOSDIR),-Tdata,$(BIOS_RAM_END) 
+# GCC bug workaround:
+# Note that due to a GCC bug we must use '--section-start .data=' here instead
+# of the shorthand '-Tdata'. The GCC driver already adds '-Tdata 0x800100' to
+# the ld command line for some AVRs and it seems impossible to override it with
+# another -Tdata, however --section-start works.
+BIOSOPTS = -Wl,-L$(BIOSDIR),--section-start,.data=$(BIOS_RAM_END)
 
 # Linker flags.
 #  -Wl,...:     tell GCC to pass this to linker.
@@ -265,14 +270,9 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
-# GCC bug workaround:
-# The compiler driver adds '-Tdata 0x800100' to the ld command line for some
-# AVRs, making it impossible to override the .data placement with a
-# subsequent -Tdata option. Detect the broken case and re-run ld with the
-# correct .data location substituted.
 %.elf: $(OBJ)
 	@echo $(MSG_LINKING) $@
-	@eval $$($(CC) -v $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS) 2>&1 | $(AWK) '{ if (gsub("0x800100","$(BIOS_RAM_END)") == 1) print }')
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 #$(LDLIBS)
 
