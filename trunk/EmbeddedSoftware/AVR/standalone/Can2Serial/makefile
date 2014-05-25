@@ -77,7 +77,6 @@ SRC =	$(TARGET).c\
 		$(LIBDIR)drivers/uart/serial.c\
 		$(LIBDIR)drivers/uart/uart.c\
 		$(LIBDIR)drivers/timer/timebase.c\
-		$(LIBDIR)drivers/mcu/mcu.c\
 		$(LIBDIR)drivers/can/stdcan.c\
 		$(LIBDIR)drivers/can/mcp2515/mcp2515.c\
 		
