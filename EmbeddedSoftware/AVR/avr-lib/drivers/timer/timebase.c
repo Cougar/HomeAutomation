@@ -29,7 +29,6 @@ volatile uint32_t gMilliSecTick;
  * Interrupt Service Routines
  *---------------------------------------------------------------------------*/
 #if defined(TIMEBASE_NEW_IMPLEMENTATION)
-
 #if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
 #if defined(TIMER2)
 ISR(TIMER2_COMPA_vect) {
@@ -149,7 +148,7 @@ void Timebase_Init() {
 	TIMSK |= (1<<TOIE0); // enable overflow-interrupt
 	#endif
 	
-	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
+	#if defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega64C1__)
 	#if TIMEBASE_PRESCALE == 64
 	TCCR0B = (1<<CS01) | (1<<CS00);	// prescaler: 64
 	#elif TIMEBASE_PRESCALE == 256
