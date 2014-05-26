@@ -12,7 +12,9 @@
  * Defines
  *---------------------------------------------------------------------------*/
 /* Enable timer2 if you want to use as many PWM outputs as possible */
+#ifndef TIMEBASE_TIMER0
 #define TIMER2
+#endif
 
 // Uncomment the following line to test the improved timebase implementation
 //#define TIMEBASE_NEW_IMPLEMENTATION
