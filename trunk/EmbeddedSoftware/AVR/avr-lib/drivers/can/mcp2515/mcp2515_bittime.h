@@ -35,6 +35,11 @@
 // either WAKFIL_ENABLE	or WAKFIL_DISABLE
 #define MCP_GENERAL_WAKFIL (WAKFIL_DISABLE)
 
+#ifndef MCP_CAN_BITRATE_KBPS
+#ifdef CAN_BAUDRATE
+#define MCP_CAN_BITRATE_KBPS CAN_BAUDRATE
+#endif
+#endif
 
 /*
  * The following bitrate settings use values close or equal to SJW = 1, SP = 75%.

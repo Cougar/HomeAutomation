@@ -16,9 +16,6 @@
 
 /**@{*/
 
-//#error StdCan: For discussion only! Do not use in application code.
-//#warning StdCan: Not thouroughly tested yet.
-
 #ifndef STDCAN_H_
 #define STDCAN_H_
 
@@ -98,8 +95,6 @@ typedef struct {
 	unsigned short Version; /**< Application version number (application defined). */
 	unsigned char Id; /**< Node ID. */
 } Node_Desc_t;
-
-//(why have constats passed as parameters? they are defined at compiletime /arune)
 
 
 /**

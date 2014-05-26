@@ -6,6 +6,11 @@
 #endif
 
 //---------------------------------------------------------------------------
+// CAN controller definitions
+#define CAN_AVR_INTERNAL 0
+#define MCP2515 1
+
+//---------------------------------------------------------------------------
 // CAN ID definitions
 
 #define CAN_MASK_CLASS		0x1E000000

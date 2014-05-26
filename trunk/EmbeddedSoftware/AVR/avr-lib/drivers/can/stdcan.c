@@ -1,9 +1,20 @@
 #include "stdcan.h"
+
+#ifdef MCP_CAN_BITRATE_KBPS
+#ifndef CAN_BAUDRATE
+#define CAN_BAUDRATE MCP_CAN_BITRATE_KBPS
+#endif
+#endif
+
 #if defined(_AVRLIB_BIOS_)
 #include <bios.h>
 #define Can_Send BIOS_CanSend
 #else
+#if (CAN_CONTROLLER == MCP2515)
 #include <drivers/can/mcp2515/mcp2515.h>
+#elif (CAN_CONTROLLER == CAN_AVR_INTERNAL)
+#include <drivers/can/avr_internal/avr_internal.h>
+#endif
 #endif
 
 #include <avr/interrupt.h>
