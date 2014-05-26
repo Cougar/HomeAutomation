@@ -138,7 +138,7 @@
 #define NR_GPIO_B2		PB2
 
 //Included for completeness, be sure to check availability before using!
-/*
+
 //Note: This is the MOSI pin used for programming with ISP
 #define GPIO_B3			&PORTB,&PINB,&DDRB,PB3,3
 #define GPIO_B3_PCINT_vect	PCINT0_vect
@@ -169,7 +169,7 @@
 #define PIN_GPIO_B6		PINB
 #define DDR_GPIO_B6		DDRB
 #define NR_GPIO_B6		PB6
-*/
+
 
 #define GPIO_B7			&PORTB,&PINB,&DDRB,PB7,7
 #define GPIO_B7_PCINT_vect	PCINT0_vect
