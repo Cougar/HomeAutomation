@@ -10,4 +10,4 @@ Package: atom
 Architecture: any 
 Depends
 Description: 
- Contains atomd and atomic for controlling your can network. Works in unison with the hardware on http://project.auml.se.
+ Contains atomd and atomic for controlling your can network. Works in unison with the hardware on http://projekt.auml.se.
