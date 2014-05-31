@@ -1,7 +1,48 @@
+/*
+
+Enable TCP interface (normally port 9090):
+in System/Settings/Network/Services activate 
+Allow programs on this system to control XBMC for localhost access only 
+and Allow programs on other systems to control XBMC for access from other computers as well
+
+http://wiki.xbmc.org/?title=JSON-RPC_API
+
+
+https://groups.google.com/forum/#!msg/commandfusion/eYMgfNSfTuE/sdBuLO5TdeAJ
+Quit 		jsonrpc?{"jsonrpc":"2.0","method":"Application.Quit","id":1}
+Home 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Home","id":1}
+Update Vid 		jsonrpc?{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}
+Clean Vid 		jsonrpc?{"jsonrpc":"2.0","method":"VideoLibrary.Clean","id":1}
+Hibernate 		jsonrpc?{"jsonrpc":"2.0","method":"System.Hibernate","id":1}
+Reboot 		jsonrpc?{"jsonrpc":"2.0","method":"System.Reboot","id":1}
+30Sec Forward 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.Seek","params":{"playerid":1,"value":"smallforward"}}
+30Sec Back 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.Seek","params":{"playerid":1,"value":"smallbackward"}}
+10Min Forward 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.Seek","params":{"playerid":1,"value":"bigforward"}}
+10Min Back 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.Seek","params":{"playerid":1,"value":"bigbackward"}}
+Play/Pause 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.PlayPause","params":{"playerid":1}}
+Stop 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.Stop","params":{"playerid":1}}
+FF 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.SetSpeed","params":{"playerid":1,"speed":"increment"}}
+Rew 		jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.SetSpeed","params":{"playerid":1,"speed":"decrement"}}
+Enter 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Select","id":1}
+Up 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Up","id":1}
+Down 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Down","id":1}
+Left 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Left","id":1}
+Right 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Right","id":1}
+Back 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Back","id":1}
+Subtitle Off		 jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.SetSubtitle","params":{"playerid":1,"subtitle":"off"}}
+Subtitle On		 jsonrpc?{"jsonrpc":"2.0","id":1,"method":"Player.SetSubtitle","params":{"playerid":1,"subtitle":"on"}}
+Select 		jsonrpc?{"jsonrpc":"2.0","method":"Input.Select","id":1}
+Suspend		 jsonrpc?{"jsonrpc":"2.0","method":"System.Suspend","id":1}
+Menu 		jsonrpc?{"jsonrpc":"2.0","method":"Input.ContextMenu","id":1}
+Info		 jsonrpc?{"jsonrpc":"2.0","method":"Input.Info","id":1}
+Show 		OSD jsonrpc?{"jsonrpc":"2.0","method":"Input.ShowOSD","id":1}
+
+*/
 
 var Xbmc_Socket_Id = null;
 var Xbmc_Susbscribers = [];
 var Xbmc_Sessions = {};
+Xmbc_SeekValues      = function() { return [ "30sec", "10min" ]; };
 
 function Xbmc_SendCommand(command_name, params, callback)
 {
@@ -179,3 +220,28 @@ function Xbmc_Stop()
 }
 Console_RegisterCommand(Xbmc_Stop);
 
+function Xbmc_Forward(value)
+{
+  seekValue = "smallforward";
+
+  if (value == "30sec")
+    seekValue = "smallforward";
+  if (value == "10min")
+    seekValue = "bigforward";
+
+  return Xbmc_SendCommand("Player.Seek", { "playerid" : 1, "value" : seekValue });
+}
+Console_RegisterCommand(Xbmc_Forward, function(arg_index, args) { return Console_StandardAutocomplete( arg_index, args, Xmbc_SeekValues() ); } );
+
+function Xbmc_Backward(value)
+{
+  seekValue = "smallforward";
+
+  if (value == "30sec")
+    seekValue = "smallforward";
+  if (value == "10min")
+    seekValue = "bigforward";
+
+  return Xbmc_SendCommand("Player.Seek", { "playerid" : 1, "value" : seekValue });
+}
+Console_RegisterCommand(Xbmc_Backward, function(arg_index, args) { return Console_StandardAutocomplete( arg_index, args, Xmbc_SeekValues() ); } );
