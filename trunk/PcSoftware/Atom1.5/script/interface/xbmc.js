@@ -238,9 +238,9 @@ function Xbmc_Backward(value)
   seekValue = "smallforward";
 
   if (value == "30sec")
-    seekValue = "smallforward";
+    seekValue = "smallbackward";
   if (value == "10min")
-    seekValue = "bigforward";
+    seekValue = "bigbackward";
 
   return Xbmc_SendCommand("Player.Seek", { "playerid" : 1, "value" : seekValue });
 }
