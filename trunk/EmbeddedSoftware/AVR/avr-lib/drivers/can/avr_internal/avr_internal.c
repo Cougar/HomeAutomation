@@ -11,11 +11,32 @@
 #include <vectors.h>
 #include <drivers/can/avr_internal/can_lib.h>
 
+#define DATA_BUFFER_SIZE 8 // Up to 8 bytes Max
+
 static Can_Message_t msgbuf;
+static uint8_t receive_buffer[DATA_BUFFER_SIZE]; // buffer to hold payload from Sensor Nodes
+static st_cmd_t receive_msg; // Response Mob
 
 Can_Return_t Can_Receive(Can_Message_t *msg);
-/*
-ISR(MCP_INT_VECTOR) {
+
+Can_Return_t Can_ActivateRxMOb(void)
+{
+	receive_msg.pt_data = &receive_buffer[0]; // Point Response MOb to first element of buffer
+	receive_msg.status = 0; // clear status
+	for(uint8_t i=0; i<DATA_BUFFER_SIZE; i++) {receive_buffer[i] = 0;} // clear message object data buffer
+	//response_msg.id.ext = 0; 
+	receive_msg.ctrl.ide = 1; // This message object accepts extended (2.0A) CAN frames
+	receive_msg.ctrl.rtr = 0; // this message object is not requesting a remote node to transmit data back
+	//response_msg.dlc = DATA_BUFFER_SIZE; // Number of bytes (8 max) of data to expect
+	receive_msg.cmd = CMD_RX_DATA; // assign this as a "Receive Standard (2.0A) CAN frame" message object
+
+	while(can_cmd(&receive_msg) != CAN_CMD_ACCEPTED); // Wait for MOb to configure (Must re-configure MOb for every transaction)
+
+	return CAN_OK;
+}
+
+// /usr/lib/avr/include/avr/iom64c1.h
+ISR(CAN_INT_vect) {
 	// Get first available message from controller and pass it to
 	// application handler. If both RX buffers contain messages
 	// we will get another interrupt as soon as this one returns.
@@ -23,15 +44,23 @@ ISR(MCP_INT_VECTOR) {
 		// Callbacks are run with global interrupts disabled but
 		// with controller flag cleared so another msg can be
 		// received while this one is processed.
-#if MCP_CAN_PROCESS_RENAMED == 1
-		// when running a gateway application which uses stdcan
-		Can_Process_USART(&msgbuf);
-#else
 		Can_Process(&msgbuf);
-#endif
+		
 	}
+	//???
+	Can_ActivateRxMOb();
+	/* Clear interrupt flag */
+	CANGIT |= (1<<BXOK);
 }
-*/
+
+
+Can_Return_t Can_EnableRxInterrupt(void) {
+	CANGIE |= (1<<ENIT|1<<ENRX);
+	
+	return CAN_OK;
+}
+
+
 /*-----------------------------------------------------------------------------
  * Public Functions
  *---------------------------------------------------------------------------*/
@@ -47,8 +76,13 @@ ISR(MCP_INT_VECTOR) {
  */
 Can_Return_t Can_Init(void) {
 	can_init(0);
+	Can_ActivateRxMOb();
+	Can_EnableRxInterrupt();
+	
 	return CAN_OK;
 }
+
+
 
 /**
  * Sends a CAN message immediately with the controller hardware. If the CAN
@@ -62,7 +96,6 @@ Can_Return_t Can_Init(void) {
  *		CAN_FAIL if the controller is busy.
  */
 Can_Return_t Can_Send(Can_Message_t *msg) {
-	#define DATA_BUFFER_SIZE 8 // Up to 8 bytes Max
 	uint8_t tx_remote_buffer[DATA_BUFFER_SIZE];
 	st_cmd_t tx_remote_msg; // 
 	tx_remote_msg.pt_data = &tx_remote_buffer[0]; // Point Remote Tx MOb to first element of buffer
@@ -95,7 +128,14 @@ Can_Return_t Can_Send(Can_Message_t *msg) {
  *		CAN_NO_MSG_AVAILABLE if there is no message available in the controller.
  */
 Can_Return_t Can_Receive(Can_Message_t *msg) {
+	if (can_get_status(&receive_msg) == CAN_STATUS_COMPLETED) {
+		msg->Id = receive_msg.id.ext;
+		msg->DataLength = receive_msg.dlc;
+		msg->RemoteFlag = receive_msg.ctrl.rtr;
+		for(uint8_t i=0; i<DATA_BUFFER_SIZE; i++) {msg->Data.bytes[i]=receive_buffer[i];} // set data
+		
+		return CAN_OK;
+	}
 
-
-	return CAN_OK;
+	return CAN_NO_MSG_AVAILABLE;
 }

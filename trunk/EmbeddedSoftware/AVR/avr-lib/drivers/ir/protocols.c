@@ -62,6 +62,9 @@ int8_t parseProtocol(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protoco
 #if (IR_PROTOCOLS_USE_VIKING)
 	if (parseViking(buf, len, index, proto)==IR_OK) return IR_OK;
 #endif
+#if (IR_PROTOCOLS_USE_VIKING_T3)
+	if (parseVikingT3(buf, len, index, proto)==IR_OK) return IR_OK;
+#endif
 #if (IR_PROTOCOLS_USE_VIKING_STEAK)
 	res = parseVikingSteak(buf, len, index, proto);
 	if (res!=IR_NOT_CORRECT_DATA) return res;
@@ -1416,8 +1419,8 @@ int8_t expandNexa1(uint16_t *buf, uint8_t *len, Ir_Protocol_Data_t *proto) {
 
 #if (IR_PROTOCOLS_USE_VIKING)
 /**
- * Test data on Viking temperature sensor protocol
- * 
+ * Test data on Viking sensor protocol
+ * This is protocol type 4 (temperature with sign and one more byte)
  * 
  * 
  * @param buf
@@ -1450,6 +1453,13 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 		if ((i == 78) && (rawbitsTemp != 0b00001))
 			return IR_NOT_CORRECT_DATA;
 
+/* Only check type if we have separate support for type 3 */
+#if (IR_PROTOCOLS_USE_VIKING_T3)
+		/* Check type, only allow type=4 (3 inverted) */
+		if ((i == 72) && (rawbitsTemp != 0b00001011))
+			return IR_NOT_CORRECT_DATA;
+#endif
+
 		if ((i&1) == 0) 
 		{		/* if even, no data */
 			if ((buf[i2] < IR_VIKING_LOW - IR_VIKING_LOW/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_LOW + IR_VIKING_LOW/IR_VIKING_TOL_DIV)) 
@@ -1480,6 +1490,139 @@ int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_
 	
 	rawbitsTemp = ~rawbitsTemp;
 	rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
+	
+	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKING;
+	proto->timeout=0;
+	proto->data=rawbitsTemp;
+
+	return IR_OK;
+#else
+	return IR_NOT_CORRECT_DATA;
+#endif
+}
+#endif
+
+
+#if (IR_PROTOCOLS_USE_VIKING_T3)
+/**
+ * Test data on Viking sensor protocol
+ * This is protocol type 3 (offseted temperature with three bytes)
+ * 
+ * 
+ * @param buf
+ * 		Pointer to buffer to where to data to parse is stored
+ * @param len
+ * 		Length of the data
+ * @param proto
+ * 		Pointer to protocol information
+ * @return
+ * 		IR_OK if data parsed successfully, one of several errormessages if not
+ */
+
+int8_t parseVikingT3(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto) 
+{
+#if IR_RX_CONTINUOUS_MODE==1
+	/* check if we have correct amount of data */ 
+	if (len < 106) {
+		return IR_NOT_CORRECT_DATA;
+	}
+	uint8_t i, i2;
+	uint64_t rawbitsTemp = 0;//0xffffffffffffffff;
+	//uint8_t rawbitsTempArr[6] = {0,0,0,0,0,0};
+	
+	for (i = 106; i > 16; i--)
+	{
+		i2=index-i;
+		if (i2>index)
+			i2+=MAX_NR_TIMES;
+
+		/* Check if correct amount of data have been received */
+		if ((i == 94) && (rawbitsTemp != 0b00001))
+			return IR_NOT_CORRECT_DATA;
+
+		/* Check type, only allow type=3 (4 inverted) */
+		if ((i == 88) && (rawbitsTemp != 0b00001100))
+			return IR_NOT_CORRECT_DATA;
+
+		if ((i&1) == 0) 
+		{		/* if even, no data */
+			if ((buf[i2] < IR_VIKING_LOW - IR_VIKING_LOW/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_LOW + IR_VIKING_LOW/IR_VIKING_TOL_DIV)) 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		} 
+		else
+		{			/* if odd, data */
+			/* check length of transmit pulse */
+			if ((buf[i2] > IR_VIKING_HIGH_ONE - IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ONE + IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV)) 
+			{
+				/* write a one */
+				rawbitsTemp = rawbitsTemp<<1;
+				rawbitsTemp |= 1;
+			}
+			else if ((buf[i2] > IR_VIKING_HIGH_ZERO - IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ZERO + IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV)) 
+			{
+				/* do nothing, a zero is already in rawbits */
+				rawbitsTemp = rawbitsTemp<<1;
+			}
+			else 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+
+	uint16_t rest = 0;
+	for (i = 16; i > 0; i--)
+	{
+		i2=index-i;
+		if (i2>index)
+			i2+=MAX_NR_TIMES;
+
+		if ((i&1) == 0) 
+		{		/* if even, no data */
+			if ((buf[i2] < IR_VIKING_LOW - IR_VIKING_LOW/IR_VIKING_TOL_DIV) || (buf[i2] > IR_VIKING_LOW + IR_VIKING_LOW/IR_VIKING_TOL_DIV)) 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		} 
+		else
+		{			/* if odd, data */
+			/* check length of transmit pulse */
+			if ((buf[i2] > IR_VIKING_HIGH_ONE - IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ONE + IR_VIKING_HIGH_ONE/IR_VIKING_TOL_DIV)) 
+			{
+				/* write a one */
+				rest = rest<<1;
+				rest |= 1;
+			}
+			else if ((buf[i2] > IR_VIKING_HIGH_ZERO - IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV) && (buf[i2] < IR_VIKING_HIGH_ZERO + IR_VIKING_HIGH_ZERO/IR_VIKING_TOL_DIV)) 
+			{
+				/* do nothing, a zero is already in rawbits */
+				rest = rest<<1;
+			}
+			else 
+			{
+				return IR_NOT_CORRECT_DATA;
+			}
+		}
+	}
+	rest = ~rest;
+	//rest = rest&0xFF;
+
+	rawbitsTemp = ~rawbitsTemp;
+	rawbitsTemp = rawbitsTemp&0xFFFFFFFFFF;
+	
+	uint8_t crc = 0;
+	crc = _crc_ibutton_update(crc, 0xFF);
+	crc = _crc_ibutton_update(crc, rawbitsTemp&0xFF);
+	crc = _crc_ibutton_update(crc, (rawbitsTemp>>8)&0xFF);
+	crc = _crc_ibutton_update(crc, (rawbitsTemp>>16)&0xFF);
+	crc = _crc_ibutton_update(crc, (rawbitsTemp>>24)&0xFF);
+	crc = _crc_ibutton_update(crc, (rawbitsTemp>>32)&0xFF);
+	//crc = _crc_ibutton_update(crc, (rawbitsTemp>>40)&0xFF);
+	
+	rawbitsTemp = rawbitsTemp&0xFFFFFF0000;
+	rawbitsTemp |= (crc<<8)|((rest>>8)&0xFF);
 	
 	proto->protocol=CAN_MODULE_ENUM_PHYSICAL_IR_PROTOCOL_VIKING;
 	proto->timeout=0;

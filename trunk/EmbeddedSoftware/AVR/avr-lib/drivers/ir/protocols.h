@@ -65,6 +65,9 @@ typedef struct {
 #ifndef IR_PROTOCOLS_USE_VIKING
 # define IR_PROTOCOLS_USE_VIKING	1
 #endif
+#ifndef IR_PROTOCOLS_USE_VIKING_T3
+# define IR_PROTOCOLS_USE_VIKING_T3	0
+#endif
 #ifndef IR_PROTOCOLS_USE_VIKING_STEAK
 # define IR_PROTOCOLS_USE_VIKING_STEAK	1
 #endif
@@ -117,6 +120,10 @@ int8_t parseNexa1(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_D
 #endif
 #if (IR_PROTOCOLS_USE_VIKING)
 int8_t parseViking(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
+#endif
+#if (IR_PROTOCOLS_USE_VIKING_T3)
+#include <util/crc16.h>
+int8_t parseVikingT3(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
 #endif
 #if (IR_PROTOCOLS_USE_VIKING_STEAK)
 int8_t parseVikingSteak(const uint16_t *buf, uint8_t len, uint8_t index, Ir_Protocol_Data_t *proto);
