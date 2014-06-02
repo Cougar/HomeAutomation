@@ -169,11 +169,11 @@ typedef uint8_t Bool;
 #   define Can_bit_timing(mode)  (can_fixed_baudrate(mode))
 #endif
     // ----------
-#define CAN_PORT_IN     PINC // edited for ATmegaxxM1
-#define CAN_PORT_DIR    DDRC // edited for ATmegaxxM1
-#define CAN_PORT_OUT    PORTC // edited for ATmegaxxM1
-#define CAN_INPUT_PIN   3 // edited for ATmegaxxM1
-#define CAN_OUTPUT_PIN  2 // edited for ATmegaxxM1
+#define CAN_PORT_IN     PINC // edited for ATmegaxxM1 (not used?)
+#define CAN_PORT_DIR    DDRC // edited for ATmegaxxM1 (not used?)
+#define CAN_PORT_OUT    PORTC // edited for ATmegaxxM1 (not used?)
+#define CAN_INPUT_PIN   3 // edited for ATmegaxxM1 (not used?)
+#define CAN_OUTPUT_PIN  2 // edited for ATmegaxxM1 (not used?)
     // ----------
 #define ERR_GEN_MSK ((1<<SERG)|(1<<CERG)|(1<<FERG)|(1<<AERG))            //! MaSK for GENeral ERRors INTerrupts
 #define INT_GEN_MSK ((1<<BOFFIT)|(1<<BXOK)|(ERR_GEN_MSK))                //! MaSK for GENeral INTerrupts
