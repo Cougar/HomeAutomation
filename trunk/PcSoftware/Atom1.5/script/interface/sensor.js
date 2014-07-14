@@ -458,8 +458,15 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 								var timestamp = get_time();
 								temp = temp-40.0;
 								waterlevel = (crc*256 + humidity)*0.3;
+								/* Using COUNTER as DS in rrdtool does only work if the data is integer, 
+								   to work around this let's create a second variable with the water level
+								   multiplied with 10 and rounded to integer.
+								   Then when generating graph, the data must be divided by 10 */
+								var waterlevel10xInt = Math.round(waterlevel*10);
+								
 								last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
 								last_value["WaterAbsolute_mm"] = { "value" : waterlevel.toString(), "timestamp" : timestamp };
+								last_value["WaterAbsolute10xInt_mm"] = { "value" : waterlevel10xInt.toString(), "timestamp" : timestamp };
 
 								Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
 								
