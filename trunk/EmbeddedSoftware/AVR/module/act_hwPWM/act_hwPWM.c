@@ -14,7 +14,7 @@ uint16_t hw_demoEndValue[4] = {0,0,0,0};
 uint16_t hw_demoHighValue[4] = {0,0,0,0};
 uint8_t hw_demoState[4] = {ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING, ACT_HWPWM_DEMO_STATE_NOT_RUNNING};
 
-static uint16_t lookuptable[257] PROGMEM = 
+static const uint16_t lookuptable[257] PROGMEM = 
 { 
   0	,  4	,  8	,  12	,  17	,  21	,  25	,  30	,  34	,  39	,  //0
 43	,  48	,  52	,  57	,  62	,  67	,  72	,  77	,  82	,  87	,  //10
@@ -390,7 +390,8 @@ void act_hwPWM_Process(void)
 		}
 		sei();
 		Timer_SetTimeout(act_hwPWM_STORE_VALUE_TIMEOUT, act_hwPWM_STORE_VALUE_TIMEOUT_TIME*1000, TimerTypeOneShot, 0);
-		//printf("CH2 PWM: %u, LED: %u, ORG: %u\n",pwmValue[2],(uint16_t)((lookuptable[(pwmValue[2]/39)-1]*act_hwPWM_CH3_FACT)>>8), (uint16_t)((pwmValue[2]*act_hwPWM_CH3_FACT)>>8));
+		//printf("CH2 PWM: %u, LED: %u, ORG: %u\n",pwmValue[2],(uint16_t)((pgm_read_word(&lookuptable[(pwmValue[2]/39)])*act_hwPWM_CH3_FACT)>>8)
+, (uint16_t)((pwmValue[2]*act_hwPWM_CH3_FACT)>>8));
 	}
 #endif
 #if act_hwPWM_CH4_COM>0
