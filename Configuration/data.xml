@@ -120,6 +120,7 @@
 	  <value id="16" name="OregonRain"/>
 	  <value id="17" name="OregonTempHum"/>
 	  <value id="18" name="OregonWind"/>
+	  <value id="19" name="RubicsonStn"/>
 	  <value id="255" name="Unknown"/>
 	</variable>
 	<variable name="IRdata" type="uint" start_bit="16" bit_length="48" unit="" description="Button protocol unique ID"/>
@@ -894,6 +895,44 @@
       <variables>
 	<variable name="Min" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
 	<variable name="Max" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="138" name="RUN_AUTOTUNE" type="specific" module="PID" description="Run Autotune with algorithm from variable">
+      <variables>
+	<variable name="Method" type="enum" start_bit="0" bit_length="8" unit="" description="">
+	  <value id="0" name="ZIEGLER_NICHOLS_PI"/>
+	  <value id="1" name="ZIEGLER_NICHOLS_PID"/>
+	  <value id="2" name="TYREUS_LUYBEN_PI"/>
+	  <value id="3" name="TYREUS_LUYBEN_PID"/>
+	  <value id="4" name="CIANCONE_MARLIN_PI"/>
+	  <value id="5" name="CIANCONE_MARLIN_PID"/>
+	  <value id="6" name="AMIGOF_PI"/>
+	  <value id="7" name="PESSEN_INTEGRAL_PID"/>
+	  <value id="8" name="SOME_OVERSHOOT_PID"/>
+	  <value id="9" name="NO_OVERSHOOT_PID"/>
+	  <value id="10" name="STOP"/>
+	</variable>
+	<variable name="LookBackTime" type="uint" start_bit="8" bit_length="16" unit="s" description="Lookbacktime in Seconds"/>
+      </variables>
+    </command>
+    <command id="139" name="CONFIG_AUTOTUNE_NOISE_STEP" type="specific" module="PID" description="Set NoiseBand and OutputStep from autotune algorithm">
+      <variables>
+	<variable name="NoiseBand" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="OutputStep" type="IEEE32" start_bit="32" bit_length="32" unit="" description=""/>
+      </variables>
+    </command>
+    <command id="140" name="CONFIG_ONOFF_REGULATOR" type="specific" module="PID" description="Limits for when to use ON-OFF regulator instead of PID">
+      <variables>
+	<variable name="OnValue" type="uint" start_bit="0" bit_length="16" unit="" description="Value to send when On"/>
+	<variable name="OffValue" type="uint" start_bit="16" bit_length="16" unit="" description="Value to send when Off"/>
+	<variable name="OuterRange" type="float" start_bit="32" bit_length="16" unit="Celsius" description="measured value outside of reference value + or - this value will enable OnOff regulator, if this is 0 the onOff regulator is off"/>
+	<variable name="InnerRange" type="float" start_bit="48" bit_length="16" unit="Celsius" description="measured value inside of reference value + or - this value will enable PID regulator"/>
+      </variables>
+    </command>
+    <command id="141" name="CONFIG_PID_START_VALUE" type="specific" module="PID" description="Configure start value for integrating part of regulator">
+      <variables>
+	<variable name="Factor" type="IEEE32" start_bit="0" bit_length="32" unit="" description=""/>
+	<variable name="Offset" type="IEEE32" start_bit="32" bit_length="32" unit="" description="Startvalue is Factor*reference value + offset"/>
       </variables>
     </command>
     
