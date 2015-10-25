@@ -1,11 +1,12 @@
 
 
-function badrumsdimmer(aliasnameSensor, aliasnameDimmer1, aliasnameRotary, aliasnameDimmer2, aliasnameOutput)
+function badrumsdimmer(aliasnameSensor, aliasnameDimmer1, aliasnameRotary, aliasnameDimmer2, aliasnameOutput, secondSensor)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
 	var self = this;
 	this.mySensor = aliasnameSensor;
+	this.mySensor2 = secondSensor;
 	this.myDimmer1 = aliasnameDimmer1;
 	this.myOutput = aliasnameOutput;
 	this.myDimmer2 = aliasnameDimmer2;
@@ -13,6 +14,7 @@ function badrumsdimmer(aliasnameSensor, aliasnameDimmer1, aliasnameRotary, alias
 	this.myMode = 3;
 
 	Module_RegisterToOnMessage(aliasnameSensor, function(alias_name, command, variables) { self.sensorOnMessage(alias_name, command, variables) });
+	Module_RegisterToOnMessage(secondSensor, function(alias_name, command, variables) { self.sensorOnMessage(alias_name, command, variables) });
 	Module_RegisterToOnMessage(this.myRotary, function(alias_name, command, variables) { self.rotary_OnMessage(alias_name, command, variables) });
 	//Module_RegisterToOnChange(this.myRotary, function(alias_name, available,test) { self.rotaryOnline(alias_name, available,test) });
 	

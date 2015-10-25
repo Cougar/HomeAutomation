@@ -251,7 +251,8 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		var OregonWindSuccess = "NoSensor";
 		var VikingSuccess = "NoVikingSensor";
 		var VikingSteakSuccess = "NoVikingSteakSensor";
-		//Log("found sensor: "+variables["Protocol"]);
+		var RubicsonStationSuccessPkt1 = "NoSensor";
+		var RubicsonStationSuccessPkt2 = "NoSensor";
 		if (variables["Protocol"] == "OregonRain")
 		{
 			/* ----------- Data order proto-data ------ 
@@ -397,7 +398,55 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 			var byte2 = rshift(data,24)&0xF;
 			var temp = Math.round((((((byte1^byte2)<<8)+((byte0^byte1)<<4)+byte0^10)-122)*5)/9);
 			VikingSteakSuccess = "VikingNotFound";
-		}
+		} else if (variables["Protocol"] == "RubicsonStn")
+		{
+			var data = variables["IRdata"];
+			var pkt = rshift(data,39)&0x1;
+			if (pkt == 0)  //This is the first part
+			{		
+				/*
+				      aaaaaaaa 0dddsttt tttttttt hhhhhhhh wwwwwwww wwwwwwww
+				    0b11111001 11111001 00001100 10110010 11100011 01101111
+				a = address = winddirection, s = sign, t = temperature, h = humidity, w = vindspeed
+				*/
+				var windspeed_avg = (rshift(data,8) & 0xFF)*0.8;
+				var windspeed_max = (data & 0xFF)*0.8;
+				//var crc = data&0xFF;
+				var humidity = rshift(data,16)&0xFF;
+				var temp = rshift(data,24)&0xFFF;
+				var winddirection = (rshift(data,36)&0x7)*360/8;
+				
+				var addr = rshift(data,40)&0xFF;
+				//var calccrc=crc8(rshift(data,8), 32);
+						
+				var sign = (temp>>>11)&1;
+				if (sign > 0)
+				{
+					temp = temp^0xFFF;
+					temp += 1;
+					temp = -temp;
+				}
+				temp = temp/10;
+
+				RubicsonStationSuccessPkt1 = "NotFound";
+				
+				
+			} else //This is the second part
+			{
+				/*
+				      aaaaaaaa 1------- -------b rrrrrrrr rrrrrrrr rrrrrrrr
+				    0b11111001 11111001 00001100 10110010 11100011 01101111
+				a = address b = battery empty, r = rain
+				*/
+				var battery = rshift(data,24) & 0x1;
+				//var crc = data&0xFF;
+				var rain = 0.4*(data&0xFFFFFF);
+				var addr = rshift(data,40)&0xFF;
+
+				RubicsonStationSuccessPkt2 = "NotFound";
+			}
+			
+		} 
 				
 		loopAliases:	/* Label to break nested */
 		for (var alias_name in aliases_data)
@@ -407,6 +456,88 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 			{
 				switch (variables["Protocol"])
 				{
+					case "RubicsonStn":
+					{	/* Add alias with these specifics: Channel=0,Proto=RubicsonStn,Address=<address of sensor> */
+						/* if no Address is added to the alias, all RubicsonStn will match*/
+						if (aliases_data[alias_name]["specific"]["Address"] == undefined) 
+						{
+							if (pkt == 0)
+							{
+								var last_value = {};
+								var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+								if (last_value_string)
+								{
+									last_value = eval("(" + last_value_string + ")");
+								}
+								var timestamp = get_time();
+								last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
+								last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
+								last_value["Wind_Speed_Avg"] = { "value" : windspeed_avg.toString(), "timestamp" : timestamp };
+								last_value["Wind_Speed_Max"] = { "value" : windspeed_max.toString(), "timestamp" : timestamp };
+								last_value["Wind_Direction"] = { "value" : winddirection.toString(), "timestamp" : timestamp };
+								last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
+								Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+								RubicsonStationSuccessPkt1 = "RubicsonStnFound";
+								break loopAliases;
+							} else
+							{
+							  var last_value = {};
+								var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+								if (last_value_string)
+								{
+									last_value = eval("(" + last_value_string + ")");
+								}
+								var timestamp = get_time();
+								last_value["WaterAbsolute_mm"] = { "value" : rain.toString(), "timestamp" : timestamp };
+								last_value["Battery_Low"] = { "value" : battery.toString(), "timestamp" : timestamp };
+								last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
+								Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+								RubicsonStationSuccessPkt2 = "RubicsonStnFound";
+								break loopAliases;
+							}
+						}
+						else if (addr == aliases_data[alias_name]["specific"]["Address"])
+						{
+							if (pkt == 0)
+							{
+								var last_value = {};
+								var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+								if (last_value_string)
+								{
+									last_value = eval("(" + last_value_string + ")");
+								}
+								var timestamp = get_time();
+								last_value["Temperature_Celsius"] = { "value" : temp.toString(), "timestamp" : timestamp };
+								last_value["Humidity_Percent"] = { "value" : humidity.toString(), "timestamp" : timestamp };
+								last_value["Wind_Speed"] = { "value" : windspeed.toString(), "timestamp" : timestamp };
+								last_value["Wind_Direction"] = { "value" : winddirection.toString(), "timestamp" : timestamp };
+								last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
+								Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+								RubicsonStationSuccessPkt1 = "RubicsonStnFound";
+								break loopAliases;
+							} else
+							{
+							  var last_value = {};
+								var last_value_string = Storage_GetParameter("LastValues", alias_name);
+
+								if (last_value_string)
+								{
+									last_value = eval("(" + last_value_string + ")");
+								}
+								var timestamp = get_time();
+								last_value["WaterAbsolute_mm"] = { "value" : (rain*0.4).toString(), "timestamp" : timestamp };
+								last_value["Battery_Low"] = { "value" : battery.toString(), "timestamp" : timestamp };
+								last_value["Address"] = { "value" : addr, "timestamp" : timestamp };
+								Storage_SetParameter("LastValues", alias_name, JSON.stringify(last_value));
+								RubicsonStationSuccessPkt2 = "RubicsonStnFound";
+								break loopAliases;
+							}
+						}
+						break;
+					}
 					case "Viking":
 					{	/* Add alias with these specifics: Channel=0,Proto=Viking,Address=<address of sensor> */
 						if (type == 4)
@@ -617,6 +748,14 @@ function SensorRf_OnMessage(module_name, module_id, command, variables)
 		if (OregonWindSuccess == "NotFound")
 		{
 			Log("Found unknown oregon wind sensor address="+addr+" Average="+average +" current="+current+" direction="+direction +" bat="+bat);
+		}
+		if (RubicsonStationSuccessPkt1 == "NotFound")
+		{
+			Log("Found unknown rubicson weather station, Packet 1 address="+addr + " temperature="+temp + " humidity="+humidity+" WindSpeed="+windspeed + " WindDirection="+winddirection);
+		}
+		if (RubicsonStationSuccessPkt2 == "NotFound")
+		{
+			Log("Found unknown rubicson weather station, Packet 2 address="+addr + " Rain="+rain + "mm BatteryLow="+battery);
 		}
 	}
 }

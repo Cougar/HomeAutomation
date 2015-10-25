@@ -1,6 +1,6 @@
 
 
-function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_blue, aliasnameTouch, aliasnameDimmer1, aliasnameDimmer2, aliasnameDimmer3, aliasnameDimmer4, aliasnameDimmer5, aliasnameDimmer6)
+function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_blue, aliasnameTouch, aliasnameDimmer1, aliasnameDimmer2, aliasnameDimmer3, aliasnameDimmer4, aliasnameDimmer5, aliasnameDimmer6,aliasnameDimmer7, aliasnameIR )
 {
 
 /* Declaration of instance variables, for static variables remove prototype */
@@ -18,6 +18,8 @@ function TouchPanel(aliasnameRGBLED_red,aliasnameRGBLED_green, aliasnameRGBLED_b
 	this.myDimmer4 = aliasnameDimmer4;
 	this.myDimmer5 = aliasnameDimmer5;
 	this.myDimmer6 = aliasnameDimmer6;
+	this.myDimmer7 = aliasnameDimmer7;
+	this.myIR = aliasnameIR;
 	this.myTouchMode = "Gesture";
 	this.myTouchRawX = 0;
 	this.myTouchRawY = 0;
@@ -38,6 +40,7 @@ TouchPanel.prototype.myDimmer3 = null;
 TouchPanel.prototype.myDimmer4 = null;
 TouchPanel.prototype.myDimmer5 = null;
 TouchPanel.prototype.myDimmer6 = null;
+TouchPanel.prototype.myDimmer7 = null;
 TouchPanel.prototype.myTouch = null;
 TouchPanel.prototype.myRGBLED_red = null;
 TouchPanel.prototype.myRGBLED_green = null;
@@ -87,6 +90,20 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					this.setLED(0,255,0);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
+					
+					
+					/* Check if it is time to turn on ljusstake i sovrummet */
+					
+					if (get_time() > TouchGetTsFromTime("7:00") && get_time() < TouchGetTsFromTime("9:30"))
+					{
+						TouchstartSend("rf", "NexaRemote", "Dosa_3_On", 4);
+					}
+					if (get_time() > TouchGetTsFromTime("16:00") && get_time() < TouchGetTsFromTime("22:00"))
+					{
+						TouchstartSend("rf", "NexaRemote", "Dosa_3_On", 4);
+					}
+					
+					
 				}
 				else if (gesture == "JOIN")
 				{
@@ -95,10 +112,16 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					//getDimmerService('TakSovrum').absFade(0,132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer1, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer2, 132, 0);
-					Dimmer_AbsoluteFade(this.myDimmer3, 132, 0);
+					var shorttime = new Date().getTimeShortFormated();
+					/* Remove leading zero if any */
+					var data = parseInt(shorttime.substr(0,2));
+					//if (data < 22 && data >= 6) {
+	   					Dimmer_AbsoluteFade(this.myDimmer3, 132, 0);
+					//}
 					Dimmer_AbsoluteFade(this.myDimmer4, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer5, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer6, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer7, 132, 0);
 					this.setLED(0,0,255);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
@@ -119,13 +142,20 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 					//getDimmerService('TakSovrum').absFade(0,105, 0);
 					Dimmer_AbsoluteFade(this.myDimmer1, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer2, 117, 0);
-					Dimmer_AbsoluteFade(this.myDimmer3, 103, 0);
+					Dimmer_AbsoluteFade(this.myDimmer3, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer4, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer5, 132, 0);
 					Dimmer_AbsoluteFade(this.myDimmer6, 132, 0);
+					Dimmer_AbsoluteFade(this.myDimmer7, 132, 0);
 					Timer_Cancel(this.myInterval);
 					this.myInterval = Timer_SetTimer(function(timer) {self.timerUpdate(timer)}, 5000, true);
+				} else if (gesture == "INSERT_LINE")
+				{
+					Log("Starting Roomba\n");
+					this.setLED(255,0,0);
+					IROut_SendBurst(this.myIR, "Roomba", "Clean");			
 				}
+
 			}
 			
 			
@@ -136,6 +166,41 @@ TouchPanel.prototype.touchOnMessage = function(alias_name, command, variables)
 	}
 
 }
+
+function TouchGetTsFromTime(time)
+{
+	var date = new Date().getDateFormated();
+	var timestamp = Date.parse(date + " " + time);
+	return timestamp/1000;
+}
+
+/* Start sending command, could be command to start heating or stop heating */
+/* A command is sent <count> number of times to make sure its actually sent */
+function TouchstartSend(alias, remote, button, count)
+{
+	if (count > 0)
+	{
+//Log("carHeater: Start sending heater command, count="+count);
+		sendCounter = count;
+		sendTimer_id = Timer_SetTimer(function(timer) {send(alias, remote, button)}, 5000, true);
+		send(alias, remote, button);
+	}
+}
+
+function Touchsend(alias, remote, button)
+{
+	if (sendCounter > 0)
+	{
+//Log("carHeater: Sending heater command, count="+sendCounter);
+		IROut_SendBurst(alias, remote, button);
+	}
+	sendCounter--;
+	if (sendCounter == 0)
+	{
+		Timer_Cancel(sendTimer_id);
+	}
+}
+
 
 TouchPanel.prototype.timerUpdate = function(timer)
 {

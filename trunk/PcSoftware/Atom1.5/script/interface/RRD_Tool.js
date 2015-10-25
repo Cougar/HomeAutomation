@@ -41,11 +41,35 @@ RRD_Tool_timerUpdate = function(timer)
 				//Log("Found label: "+label+"\n");
 				var data = eval("(" + alias_string[RRD_Tool_StoredData[name]["rrdNames"][label]["Module"]] + ")");
 				var datatype=RRD_Tool_StoredData[name]["rrdNames"][label]["data"];
-				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"];
-				if ((get_time() - periodicity*2) > data[datatype]["timestamp"])
+				if (typeof data[datatype] == 'undefined')
 				{
-				    //Log("\033[31mError: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+".\033[0m");
-				    continue;
+					//Log("\033[31mCould not find datatype: "+RRD_Tool_StoredData[name]["rrdNames"][label]["data"]+".\033[0m");
+					continue;
+				}
+				if (typeof data[datatype]["value"][RRD_Tool_StoredData[name]["rrdNames"][label]["value"]] == 'undefined')
+				{
+					//Log("\033[33mwifipid: result was: " + JSON.stringify(data[datatype]) + "\033[0m\n");
+					
+					//Log("\033[31mCould not find value: "+RRD_Tool_StoredData[name]["rrdNames"][label]["value"]+".\033[0m");
+					continue;
+				}
+				var periodicity=RRD_Tool_StoredData[name]["rrd"]["Period_s"];
+				//Log("\033[31mTimeout: "+RRD_Tool_StoredData[name]["rrdNames"][label]["noTimeOut"]+"  "+datatype+".\033[0m");
+				if (typeof RRD_Tool_StoredData[name]["rrdNames"][label]["noTimeOut"] == 'undefined')
+				{
+//				  Log("\033[31mUndef.\033[0m");
+					if (((get_time() - periodicity*2) > data[datatype]["timestamp"]))
+					{
+//					    Log("\033[31mError1: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+" data: "+RRD_Tool_StoredData[name]["rrdNames"][label]["data"]+" value: "+RRD_Tool_StoredData[name]["rrdNames"][label]["value"]+".\033[0m");
+					    continue;
+					}
+				} else {
+//				  Log("\033[31mDef.\033[0m");
+					if (((get_time() - periodicity*2) > data[datatype]["timestamp"])&& RRD_Tool_StoredData[name]["rrdNames"][label]["noTimeOut"] != '1')
+					{
+//					    Log("\033[31mError2: RRD-store "+name+" could not store data, too old. Current time="+get_time()+", periodicity="+periodicity+", data timestamp="+data[datatype]["timestamp"]+" data: "+RRD_Tool_StoredData[name]["rrdNames"][label]["data"]+" value: "+RRD_Tool_StoredData[name]["rrdNames"][label]["value"]+".\033[0m");
+					    continue;
+					}
 				}
 				if (first == 1) {
 					names += label;
@@ -64,7 +88,7 @@ RRD_Tool_timerUpdate = function(timer)
 			}
 			if (first != 1) {
 				cmd += names + " "+RRD_Tool_StoredData[name]["rrd"]["file"]+" "+values;
-				//Log("Command: "+cmd);
+//				Log("Command: "+cmd);
 				Execute(cmd);
 			}
 			break;

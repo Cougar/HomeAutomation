@@ -33,7 +33,7 @@ function CLCD_Display(aliasnameLCD, aliasnameRotary)
 	this.SensorMenuItem = new SensorMenuItem(this, this.myCLCDService);
 	this.DimmerMenuItem = new DimmerMenuItem(this, this.myCLCDService);
 	this.HdmiMenuItem = new HDMISwitchMenuItem(this, this.myCLCDService);
-	this.PIDMenuItem = new DtmfMenuItem(this, this.myCLCDService);
+	//this.PIDMenuItem = new DtmfMenuItem(this, this.myCLCDService);
 	
 	this.currentMenuItem = this.MainMenuItem;
 
@@ -47,11 +47,11 @@ function CLCD_Display(aliasnameLCD, aliasnameRotary)
 	this.MainMenuItem.LeftItem=this.SensorMenuItem;
 	this.MainMenuItem.RightItem=this.HdmiMenuItem;
 	this.DimmerMenuItem.RightItem=this.SensorMenuItem;
-	this.DimmerMenuItem.LeftItem=this.PIDMenuItem;
+	this.DimmerMenuItem.LeftItem=this.HdmiMenuItem;
 	this.HdmiMenuItem.LeftItem=this.MainMenuItem
-	this.HdmiMenuItem.RightItem=this.PIDMenuItem
-	this.PIDMenuItem.LeftItem=this.HdmiMenuItem
-	this.PIDMenuItem.RightItem=this.DimmerMenuItem
+	this.HdmiMenuItem.RightItem=this.DimmerMenuItem
+	//this.PIDMenuItem.LeftItem=this.HdmiMenuItem
+	//this.PIDMenuItem.RightItem=this.DimmerMenuItem
 }
 
 /* Declaration of instance variables, for static variables remove prototype */
