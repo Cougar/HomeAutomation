@@ -1,13 +1,14 @@
 
 
-function skohylla(aliasnameSensor, aliasnameDimmer)
+function skohylla(aliasnameSensor, aliasnameDimmer, triggerstate, defaultValue)
 {
 	/* We must always call the parent constructor, initialization
 	   of variables could be done here, but initialize is a better place */
 	var self = this;
 	this.mySensor = aliasnameSensor;
 	this.myDimmer = aliasnameDimmer;
-
+	this.triggstate = triggerstate;
+	this.defaultValue = defaultValue;
 	Module_RegisterToOnMessage(aliasnameSensor, function(alias_name, command, variables) { self.sensorOnMessage(alias_name, command, variables) });
 	Module_RegisterToOnChange( aliasnameSensor, function(alias_name, available,test) { self.sensorOnline(alias_name, available,test) });
 	Module_RegisterToOnChange( aliasnameDimmer, function(alias_name, available) { self.dimmerOnline(alias_name, available) });
@@ -21,11 +22,13 @@ function skohylla(aliasnameSensor, aliasnameDimmer)
 
 /* Declaration of instance variables, for static variables remove prototype */
 skohylla.prototype.myDimmer = null;
+skohylla.prototype.triggstate = null;
 skohylla.prototype.mySensor = null;
 skohylla.prototype.outputStatus = "Low";
 skohylla.prototype.myInterval = null;
 skohylla.prototype.oldPwmValue = 0;
 skohylla.prototype.turnOffCnt = 0;
+skohylla.prototype.defaultValue = 255;
 const SkoMovementTimeout = 100;
 
 skohylla.prototype.sensorOnline = function(alias_name, available)
@@ -46,14 +49,14 @@ skohylla.prototype.sensorOnMessage = function(alias_name, command, variables)
 		case "PinStatus":
 		{
 			
-			if (variables["Status"] == "Low") {
+			if (variables["Status"] == this.triggstate) {
 			  //Log("\033[33mPin low.\033[0m\n");
 				var last_value_string = Storage_GetParameter("LastValues", this.myDimmer);
 				var last_value = eval("(" + last_value_string + ")");
 				if (last_value["Level"]["value"] == 0) { 
 				      //log(this.myName + ":" + this.myId + "> Light on.\n");
 					if (this.oldPwmValue == 0) {
-						this.oldPwmValue = 255;
+						this.oldPwmValue = this.defaultValue;
 					}
 					Dimmer_AbsoluteFade(this.myDimmer, 129, this.oldPwmValue);
 				}

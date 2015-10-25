@@ -74,7 +74,8 @@ function IROut_Send_Raw(alias_name, protocol, data, status)
 	}
 	
 	var aliases_data = Module_ResolveAlias(alias_name, IROut_ModuleNames);
-	
+	var found = false;
+
 	for (var name in aliases_data)
 	{
 		var variables = {
