@@ -59,7 +59,7 @@ case $DIST in
     BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.54-dev, libboost-filesystem1.54-dev, libboost-program-options1.54-dev, libboost-signals1.54-dev, libboost-thread1.54-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
     ;;
   trusty)
-    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.54.0, libboost-system1.54.0, libboost-signals1.54.0, libboost-filesystem1.54.0, libboost-date-time1.54.0, libboost-program-options1.54.0, libv8-3.14.5, libmysqlclient18"
+    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.54.0, libboost-system1.54.0, libboost-signals1.54.0, libboost-filesystem1.54.0, libboost-date-time1.54.0, libboost-program-options1.54.0, libv8-3.14.5, libmysqlclient18, libx11-6"
     BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.54-dev, libboost-filesystem1.54-dev, libboost-program-options1.54-dev, libboost-signals1.54-dev, libboost-thread1.54-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
     ;;
   utopic)
@@ -67,7 +67,7 @@ case $DIST in
     BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.55-dev, libboost-filesystem1.55-dev, libboost-program-options1.55-dev, libboost-signals1.55-dev, libboost-thread1.55-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
     ;;
   xenial)
-    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.58.0, libboost-system1.58.0, libboost-signals1.58.0, libboost-filesystem1.58.0, libboost-date-time1.58.0, libboost-program-options1.58.0, libv8-3.14.5, libmysqlclient18"
+    DEPS="libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libboost-thread1.58.0, libboost-system1.58.0, libboost-signals1.58.0, libboost-filesystem1.58.0, libboost-date-time1.58.0, libboost-program-options1.58.0, libv8-3.14.5, libmysqlclient18, libx11-6"
     BDEPS="debhelper (>= 7.0.50~), cmake, libc6 (>= 2.3.6), libgcc1 (>= 1:4.1), libv8-dev (>= 2.2.18), libboost-date-time1.58-dev, libboost-filesystem1.58-dev, libboost-program-options1.58-dev, libboost-signals1.58-dev, libboost-thread1.58-dev, libreadline-dev, libx11-dev (>= 2:1.3), libmysqlclient-dev"
     ;;
 esac
