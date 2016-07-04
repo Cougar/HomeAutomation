@@ -34,4 +34,54 @@ void sns_counter_List(uint8_t ModuleSequenceNumber);
 	};
 #endif
 
+#ifndef sns_counter_CH0_pullup
+#define	sns_counter_CH0_pullup 0
+#endif
+#ifndef sns_counter_CH1_pullup
+#define	sns_counter_CH1_pullup 1
+#endif
+#ifndef sns_counter_CH2_pullup
+#define	sns_counter_CH2_pullup 2
+#endif
+#ifndef sns_counter_CH3_pullup
+#define	sns_counter_CH3_pullup 3
+#endif
+#ifndef sns_counter_CH4_pullup
+#define	sns_counter_CH4_pullup 4
+#endif
+#ifndef sns_counter_CH5_pullup
+#define	sns_counter_CH5_pullup 5
+#endif
+#ifndef sns_counter_CH6_pullup
+#define	sns_counter_CH6_pullup 6
+#endif
+#ifndef sns_counter_CH7_pullup
+#define	sns_counter_CH7_pullup 7
+#endif
+
+#ifndef sns_counter_CH0_DEBOUNCE_TIME_MS
+#define	sns_counter_CH0_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH1_DEBOUNCE_TIME_MS
+#define	sns_counter_CH1_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH2_DEBOUNCE_TIME_MS
+#define	sns_counter_CH2_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH3_DEBOUNCE_TIME_MS
+#define	sns_counter_CH3_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH4_DEBOUNCE_TIME_MS
+#define	sns_counter_CH4_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH5_DEBOUNCE_TIME_MS
+#define	sns_counter_CH5_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH6_DEBOUNCE_TIME_MS
+#define	sns_counter_CH6_DEBOUNCE_TIME_MS 0
+#endif
+#ifndef sns_counter_CH7_DEBOUNCE_TIME_MS
+#define	sns_counter_CH7_DEBOUNCE_TIME_MS 0
+#endif
+
 #endif // SNS_COUNTER
