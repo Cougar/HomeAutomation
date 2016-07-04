@@ -18,7 +18,9 @@ function Counter_SetCount(alias_name, count)
 
 	for (var name in aliases_data)
 	{
-		var variables = {"Count"     : count };
+		var variables = {
+			"PinId" : aliases_data[name]["specific"]["PinId"],
+			"Count" : count };
 
 		if (Module_SendMessage(aliases_data[name]["module_name"], aliases_data[name]["module_id"], "setCounter", variables))
 		{

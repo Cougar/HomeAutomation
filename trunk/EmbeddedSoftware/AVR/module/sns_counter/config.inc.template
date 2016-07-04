@@ -11,13 +11,68 @@ sns_counter_SEND_TIMER=<TIMER>
 #Default report interval in seconds, not greater then 64.
 sns_counter_SEND_PERIOD=10
 
-#Only one channel is supported right now
-sns_counter_CH0=EXP_D
+sns_counter_CH0=EXP_A
+sns_counter_CH0_pullup=0
 sns_counter_PCINT_CH0=<PCINT>
 #Uncomment the line below if you want to update EEPROM in every N-th change
 #sns_counter_CH0_EEPROM_FREQ=1000
-
 #Uncomment the line below if you want to use debounce timer
-sns_counter_DEBOUNCE_TIME_MS=20
+sns_counter_CH0_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH1=EXP_K
+#sns_counter_CH1_pullup=0
+#sns_counter_PCINT_CH1=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH1_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH1_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH2=EXP_F
+#sns_counter_CH2_pullup=0
+#sns_counter_PCINT_CH2=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH2_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH2_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH3=EXP_D
+#sns_counter_CH3_pullup=0
+#sns_counter_PCINT_CH3=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH3_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH3_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH4=EXP_J
+#sns_counter_CH4_pullup=0
+#sns_counter_PCINT_CH4=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH4_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH4_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH5=EXP_A
+#sns_counter_CH5_pullup=0
+#sns_counter_PCINT_CH5=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH5_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH5_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH6=EXP_A
+#sns_counter_CH6_pullup=0
+#sns_counter_PCINT_CH6=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH6_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH6_DEBOUNCE_TIME_MS=20
+
+#sns_counter_CH7=EXP_A
+#sns_counter_CH7_pullup=0
+#sns_counter_PCINT_CH7=<PCINT>
+##Uncomment the line below if you want to update EEPROM in every N-th change
+##sns_counter_CH7_EEPROM_FREQ=1000
+##Uncomment the line below if you want to use debounce timer
+#sns_counter_CH7_DEBOUNCE_TIME_MS=20
 
 ## End section sns_counter -- Do not edit this line
