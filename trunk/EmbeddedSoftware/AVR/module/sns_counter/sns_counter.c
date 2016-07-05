@@ -1,7 +1,7 @@
 
 #include "sns_counter.h"
 
-#ifdef sns_counter_CH0_DEBOUNCE_TIME_MS==1 | sns_counter_CH1_DEBOUNCE_TIME_MS==1 | sns_counter_CH2_DEBOUNCE_TIME_MS==1 | sns_counter_CH3_DEBOUNCE_TIME_MS==1 | sns_counter_CH4_DEBOUNCE_TIME_MS==1 | sns_counter_CH5_DEBOUNCE_TIME_MS==1 | sns_counter_CH6_DEBOUNCE_TIME_MS==1 | sns_counter_CH7_DEBOUNCE_TIME_MS==1
+#if sns_counter_CH0_DEBOUNCE_TIME_MS | sns_counter_CH1_DEBOUNCE_TIME_MS | sns_counter_CH2_DEBOUNCE_TIME_MS | sns_counter_CH3_DEBOUNCE_TIME_MS | sns_counter_CH4_DEBOUNCE_TIME_MS | sns_counter_CH5_DEBOUNCE_TIME_MS | sns_counter_CH6_DEBOUNCE_TIME_MS | sns_counter_CH7_DEBOUNCE_TIME_MS
 static uint32_t volatile PreviousTimerValue[8];
 #endif
 #if sns_counter_USEEEPROM==1
