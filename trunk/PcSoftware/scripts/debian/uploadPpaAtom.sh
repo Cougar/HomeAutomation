@@ -9,8 +9,8 @@ fi
 #exit 1
 
 ATOMDIR=/tmp/atomppa
-SVNURL=http://svn.auml.se/svn/HomeAutomation/trunk/PcSoftware/Atom1.5
-SVNURLCNF=http://svn.auml.se/svn/HomeAutomation/trunk/Configuration
+SVNURL=https://svn.auml.se/svn/HomeAutomation/trunk/PcSoftware/Atom1.5
+SVNURLCNF=https://svn.auml.se/svn/HomeAutomation/trunk/Configuration
 SVNDIR=AtomSvn
 SVNDIRCNF=ConfigSvn
 CNFDIR=Configuration
