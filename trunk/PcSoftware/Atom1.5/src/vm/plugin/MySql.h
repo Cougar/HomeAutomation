@@ -19,7 +19,7 @@
  */
 
 #ifndef VM_PLUGIN_MYSQL_H
-#define VM_PLUGIN_XORG_H
+#define VM_PLUGIN_MYSQL_H
 
 #include <stdint.h>
 #include <boost/shared_ptr.hpp>
