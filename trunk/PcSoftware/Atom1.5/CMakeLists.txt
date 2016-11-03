@@ -20,6 +20,63 @@ endmacro(GET_SVN_REVISION)
 ###############################################################################
 include(FindX11)
 
+###############################################################################
+# - Find mosquitto
+# Finds and includes the library
+#
+#  MOSQUITTO_INCLUDE_DIR - where to find mosquitto.h, etc.
+#  MOSQUITTO_LIBRARIES   - List of libraries when using mosquitto or mosquittopp.
+#  MOSQUITTO_FOUND       - True if mosquitto found.
+###############################################################################
+
+IF (MOSQUITTO_INCLUDE_DIR)
+  # Already in cache, be silent
+  SET(MOSQUITTO_FIND_QUIETLY TRUE)
+ENDIF (MOSQUITTO_INCLUDE_DIR)
+
+FIND_PATH(MOSQUITTO_INCLUDE_DIR mosquitto.h
+  /usr/include/
+)
+
+SET(MOSQUITTO_NAMES mosquitto)
+FIND_LIBRARY(MOSQUITTO_LIBRARY
+  NAMES ${MOSQUITTO_NAMES}
+  PATHS /usr/lib /usr/local/lib
+  PATH_SUFFIXES 
+)
+
+SET(MOSQUITTOPP_NAMES mosquittopp)
+FIND_LIBRARY(MOSQUITTOPP_LIBRARY
+  NAMES ${MOSQUITTOPP_NAMES}
+  PATHS /usr/lib /usr/local/lib
+  PATH_SUFFIXES 
+)
+
+IF (MOSQUITTO_INCLUDE_DIR AND MOSQUITTO_LIBRARY)
+  SET(MOSQUITTO_FOUND TRUE)
+  SET( MOSQUITTO_LIBRARIES ${MOSQUITTO_LIBRARY} ${MOSQUITTOPP_LIBRARY} )
+ELSE (MOSQUITTO_INCLUDE_DIR AND MOSQUITTO_LIBRARY)
+  SET(MOSQUITTO_FOUND FALSE)
+  SET( MOSQUITTO_LIBRARIES )
+ENDIF (MOSQUITTO_INCLUDE_DIR AND MOSQUITTO_LIBRARY)
+
+IF (MOSQUITTO_FOUND)
+  #IF (NOT MOSQUITTO_FIND_QUIETLY)
+    MESSAGE(STATUS "Found Mosquitto: ${MOSQUITTO_LIBRARY}")
+  #ENDIF (NOT MOSQUITTO_FIND_QUIETLY)
+ELSE (MOSQUITTO_FOUND)
+  IF (MOSQUITTO_FIND_REQUIRED)
+    MESSAGE(STATUS "Looked for Mosquitto libraries named ${MOSQUITTO_NAMES}.")
+    MESSAGE(FATAL_ERROR "Could NOT find Mosquitto library")
+  ENDIF (MOSQUITTO_FIND_REQUIRED)
+ENDIF (MOSQUITTO_FOUND)
+
+MARK_AS_ADVANCED(
+  MOSQUITTO_LIBRARY
+  MOSQUITTO_INCLUDE_DIR
+)
+
+
 
 ###############################################################################
 # - Find mysqlclient
@@ -40,7 +97,7 @@ FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
   /usr/include/mysql
 )
 
-SET(MYSQL_NAMES mysqlclient mysqlclient_r)
+SET(MYSQL_NAMES mysqlclient mysqlclient_r mosquitto)
 FIND_LIBRARY(MYSQL_LIBRARY
   NAMES ${MYSQL_NAMES}
   PATHS /usr/lib /usr/local/lib
@@ -74,6 +131,7 @@ MARK_AS_ADVANCED(
 
 
 ###############################################################################
+include_directories(${MOSQUITTO_INCLUDE_DIR})
 include_directories(${MYSQL_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(src)
@@ -127,10 +185,22 @@ endif(${X11_FOUND})
 
 if(${MYSQL_FOUND})
     message(STATUS "Building with MySql support")
+    message(STATUS "Adding lib: ${MYSQL_LIBRARIES}")
+    message(STATUS "Atomd libs: ${ATOMD_LIBS}")
     set(USE_PLUGIN_MYSQL ON)
     set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/MySql.cpp)
     set(ATOMD_LIBS ${ATOMD_LIBS} ${MYSQL_LIBRARIES})
+    message(STATUS "Atomd libs: ${ATOMD_LIBS}")
 endif(${MYSQL_FOUND})
+
+if(${MOSQUITTO_FOUND})
+    message(STATUS "Building with Mqtt support")
+    message(STATUS "Adding lib: ${MOSQUITTO_LIBRARIES}")
+    set(USE_PLUGIN_MOSQUITTO ON)
+    set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/Mqtt.cpp)
+    set(ATOMD_LIBS ${ATOMD_LIBS} ${MOSQUITTO_LIBRARIES})
+    message(STATUS "Atomd libs: ${ATOMD_LIBS}")
+endif(${MOSQUITTO_FOUND})
 
 add_executable(atomd ${ATOMD_FILES})
 target_link_libraries(atomd ${ATOMD_LIBS})
