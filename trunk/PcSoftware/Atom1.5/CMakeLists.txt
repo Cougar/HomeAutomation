@@ -61,9 +61,9 @@ ELSE (MOSQUITTO_INCLUDE_DIR AND MOSQUITTO_LIBRARY)
 ENDIF (MOSQUITTO_INCLUDE_DIR AND MOSQUITTO_LIBRARY)
 
 IF (MOSQUITTO_FOUND)
-  #IF (NOT MOSQUITTO_FIND_QUIETLY)
+  IF (NOT MOSQUITTO_FIND_QUIETLY)
     MESSAGE(STATUS "Found Mosquitto: ${MOSQUITTO_LIBRARY}")
-  #ENDIF (NOT MOSQUITTO_FIND_QUIETLY)
+  ENDIF (NOT MOSQUITTO_FIND_QUIETLY)
 ELSE (MOSQUITTO_FOUND)
   IF (MOSQUITTO_FIND_REQUIRED)
     MESSAGE(STATUS "Looked for Mosquitto libraries named ${MOSQUITTO_NAMES}.")
@@ -131,7 +131,6 @@ MARK_AS_ADVANCED(
 
 
 ###############################################################################
-include_directories(${MOSQUITTO_INCLUDE_DIR})
 include_directories(${MYSQL_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(src)
@@ -193,6 +192,7 @@ endif(${MYSQL_FOUND})
 if(${MOSQUITTO_FOUND})
     message(STATUS "Building with Mqtt support")
     set(USE_PLUGIN_MOSQUITTO ON)
+    include_directories(${MOSQUITTO_INCLUDE_DIR})
     set(ATOMD_FILES ${ATOMD_FILES} src/vm/plugin/Mqtt.cpp)
     set(ATOMD_LIBS ${ATOMD_LIBS} ${MOSQUITTO_LIBRARIES})
 endif(${MOSQUITTO_FOUND})
