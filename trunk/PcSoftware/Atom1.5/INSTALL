@@ -6,6 +6,10 @@ Install Ubuntu optional dependencies:
 =====================================
 aptitude install libx11-dev libmysqlclient-dev
 
+Install Ubuntu optional dependencies for mqtt:
+====================================
+apt install mosquitto-dev
+
 Build atomd and atomic:
 =======================
 cd <atom root directory>
